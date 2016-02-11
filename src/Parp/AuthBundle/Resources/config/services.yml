@@ -1,0 +1,6 @@
+parameters:
+  parp_user_provider.class: Parp\AuthBundle\Security\ParpUserProvider
+
+services:
+  parp_user_provider:
+    class: "%parp_user_provider.class%"

@@ -1,0 +1,37 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+
+    {% for flashMessage in app.session.flashbag.get('warning') %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
+
+    <center>
+        <div class="btn-group">
+            <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+            <a class="btn btn-primary btn-xs" href="">Eksport</a>
+            <a class="btn btn-primary btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
+        </div>
+    </center>
+
+    {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+    <script>
+        $(".popoverElement").on('click', function (e) {
+            e.preventDefault();
+            $('.popoverElement').not(this).popover('hide');
+            var skadZdjecie = $(this).attr('href');
+            $(this).attr('data-content', '<center><img style="height: 120px;" src="' + skadZdjecie + '" /></center>');
+        });
+        $(".popoverElement").popover(
+                );
+        $('#submitexport').on('click', function (e) {
+            e.preventDefault();
+            $("#{{ grid.hash }}}").submit();
+            $('#export-grid').val('-1');
+        })
+    </script>
+{% endblock body %}

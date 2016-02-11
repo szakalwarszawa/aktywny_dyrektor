@@ -1,0 +1,6 @@
+<label for="imienazwisko">Wybierz przełożonego</label>
+<select class="form-control" id="manager" name="manager">
+    {% for row in dane %}
+        <option value="{{ row }}">{{ row}}</option>
+    {% endfor %}
+</select>

@@ -1,0 +1,171 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+    {% if not form.vars.valid %}
+        <div class="alert alert-danger" role="alert">
+            {{ form_errors(form.samaccountname)}}
+            {{ form_errors(form.cn)}}
+            {{ form_errors(form.initials)}}
+            {{ form_errors(form.department)}}
+            {{ form_errors(form.info)}}
+            {{ form_errors(form.manager)}}
+            {{ form_errors(form.title)}}
+            {{ form_errors(form.fromWhen)}} 
+            {{ form_errors(form.initialrights)}}  
+        </div>
+    {% endif %}
+
+    <div class="col-sm-8">
+        <h3>Dodaj pracownika</h3>
+        <form class="form-horizontal" method="POST" role="form">
+            {{  form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.samaccountname) }}
+                <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.cn) }}
+                <div class="col-sm-8">{{ form_widget(form.cn) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.initials) }}
+                <div class="col-sm-4">
+                    {{ form_widget(form.initials) }}
+                </div>
+                <div class="col-sm-4">
+                    <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.department) }}
+                <div class="col-sm-8">{{ form_widget(form.department) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.info) }}
+                <div class="col-sm-8">{{ form_widget(form.info) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.title) }}
+                <div class="col-sm-4">{{ form_widget(form.title) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.initialrights) }}
+                <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.manager) }}
+                <div class="col-sm-4">
+                    {{ form_widget(form.manager) }}
+                </div>
+                <div class="col-sm-4 btn-group">
+                    <a class="btn btn-primary col-sm-12" id="nadaj" name="nadaj"><i class="fa fa-users"></i>Nadaj</a>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.accountExpires) }}
+                <div class='col-sm-8'>
+                    <div class="input-group datepicker"  id="datepicker1">
+                        {{ form_widget(form.accountExpires) }}
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                {{ form_label(form.fromWhen) }}
+                <div class='col-sm-8'>
+                    <div class="input-group datepicker"  id="datepicker2">
+                        {{ form_widget(form.fromWhen) }}
+                        <span class="input-group-addon">
+                            <span class="fa fa-calendar"></span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
+            </div>
+    </div>
+    {{ form_rest(form) }}
+
+
+
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Wybierz przełożonego</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="imienazwisko">Wpisz imie i nazwisko</label>
+                            <input type="text" class="form-control" id="imienazwisko" placeholder="imie i nazwisko">
+                        </div>
+                        <div class="form-group" id="lista" name="lista">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                    <button type="button" class="btn btn-primary" id="zapisz" name="zapisz">Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        $('.datepicker').datetimepicker({
+            pickTime: false,
+            language: 'pl',
+            format: 'DD-MM-YYYY',
+        });
+        $('#form_fromWhen').mask("99-99-9999");
+        $('#form_accountExpires').mask("99-99-9999");
+        $('#suggestinitials').click(function () {
+            var samaccountname = $('#form_samaccountname').val();
+            var department = $('#form_department').val();
+            var cn = $('#form_cn').val();
+            if (!samaccountname.trim()) {
+                alert('Prosze wprrowadzic nazwę konta.');
+                return;
+            }
+            if (!cn.trim()) {
+                alert('Prosze wprowadzic imię i nazwisko pracownika.');
+                return;
+            }
+            if (!department.trim()) {
+                alert('Nie wybrano Biura/Departamentu');
+                return;
+            }
+            $.post("{{ path('suggest_initials') }}", {samaccountname: samaccountname, department: department, cn: cn}, function (data) {
+                $("#form_initials").val(data);
+            }).fail(function () {
+                alert("Wystapił błąd pobierania danych!");
+            })
+        });
+        $('#nadaj').click(function () {
+            $("#myModal").modal('show');
+        });
+        $("#imienazwisko").keyup(function () {
+            var imienazwisko = null;
+            imienazwisko = $("#imienazwisko").val();
+            if (imienazwisko.trim()) {
+                $.post("{{ path('find_manager') }}", {imienazwisko: imienazwisko}, function (data) {
+                    $("#lista").html(data);
+                }).fail(function () {
+                    alert("Wystapił błąd pobierania danych przy wyborze przełożonego!");
+                })
+            }
+        });
+        $('#zapisz').click(function () {
+            $("#myModal").modal('hide');
+            $("#form_manager").val($("#manager").val());
+            $("#imienazwisko").val();
+        });
+
+    </script>
+{% endblock %}

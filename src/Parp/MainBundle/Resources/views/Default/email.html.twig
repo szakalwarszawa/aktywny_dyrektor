@@ -1,0 +1,36 @@
+<html>
+    <head>
+
+    </head>
+    <body>
+        xxx {{ person.cn }}
+        
+        <img src="http://www.parp.gov.pl/img/logo_parp.gif"/>
+        <p><b>Poniższe zestawienie zawiera informacje dla Administratorów Zasobów o zmianach kadrowych w PARP z dnia {{ person.fromWhen|date('Y-m-d')  }}</b></p>
+        <p>Administrator powinien wykorzystać te informacje (jeżeli dotyczą Użytkowników zarządzanych przez niego zasobów) do modyfikacji uprawnień - zgodnie z zapisami „Procedury zarządzania dostępem do zasobów informatycznych w PARP” (rozdz. 5.5.2. pkt 5. z podpunktami).</p>
+
+        {% if odebrane|length > 0 %}
+            <p><b>Odebranie uprawnień {{ person.cn }} - {{ person.samaccountname }}</b></p>  
+            <table>
+                <tr><th></th></tr>
+                        {% for key, value in odebrane%}
+                    <tr><td>{{ key + 1 }}.</td><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>  
+        {% endif %}
+        <br />
+        <br />
+        {% if nadane|length > 0  %}
+            <p><b>Nadanie uprawnień {{ person.cn }} - {{ person.samaccountname }}</b></p>
+            <table>
+                <tr><th></th></tr>
+                        {% for key, value in nadane%}
+                    <tr><td>{{ key + 1 }}.</td><td>{{ value }}</td></tr>
+                {% endfor %}
+            </table>  
+        {% endif %}   
+
+
+
+    </body>
+</html>

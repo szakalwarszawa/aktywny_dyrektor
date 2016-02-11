@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8" />
+        {% block stylesheets %}
+            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+            {#<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">#}
+            {#<link rel="stylesheet" href="//bootswatch.com/cerulean/bootstrap.min.css">#}
+            <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
+            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+            <link rel="stylesheet" href="{{ asset('css/bootstrap-datetimepicker.min.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+        {% endblock %}
+
+        {% block javascripts %}
+            <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+            {#        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>#}
+            <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
+            <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
+            <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src="{{ asset('js/bootstrap-datetimepicker.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/bootstrap-slider.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/jquery.maskedinput.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/bootstrap-filestyle.min.js') }}"></script>
+            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+
+            <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+            <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+            <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+            <![endif]-->
+        {% endblock %}
+
+        <title>Aktywny Dyrektor 2.0 {% block title %}{% endblock %}</title>
+        <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
+    </head>
+    <body>
+    </div>
+        {% if app.user %}
+            <nav class="navbar navbar-default" role="navigation">
+                <div class="container-fluid">
+                    <!-- Brand and toggle get grouped for better mobile display -->
+                    <div class="navbar-header">
+                        <a class="navbar-brand" href="#">Aktywny Dyrektor <small>v2.0 beta</small></a>
+                    </div>
+                    
+                    <!-- Collect the nav links, forms, and other content for toggling -->
+                    <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                        <ul class="nav navbar-nav">
+                            <li class=""><a href="{{ path('main') }}"><i class="fa fa-home"></i> Strona główna</a></li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('departament') }}">Biura / Departamenty</a></li>
+                                    <li><a href="{{ path('section') }}">Sekcje</a></li>
+                                    <li><a href="{{ path('position') }}">Stanowiska</a></li>
+                                    <li><a href="{{ path('engagement') }}">Zaangażowania</a></li>
+                                </ul>
+                            </li>
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-file-text"></i> Raporty <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="#">Raport 1</a></li>
+                                    <li class="divider"></li>
+                                    <li><a href="#">Raport 2</a></li>
+                                </ul>
+                            </li>
+                            <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane z ECM</a></li>
+                        </ul>
+                        <ul class="nav navbar-nav navbar-right">
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </div><!-- /.navbar-collapse -->
+                </div><!-- /.container-fluid -->
+            </nav>
+        {% endif %}
+        <div class="container">
+            {% if not app.user %}
+            <div class="row">
+                <div class="page-header">
+                    <h1>Aktywny Dyrektor <small>v2.0<small> beta</small></small></h1>
+                </div>
+            </div>
+            {% endif %}
+            <div class="row">
+    {% block body %}{% endblock %}
+            </div>
+
+        </div>
+    </body>
+</html>

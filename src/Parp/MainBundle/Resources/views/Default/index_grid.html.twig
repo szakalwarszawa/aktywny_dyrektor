@@ -1,0 +1,22 @@
+{% extends '::grid.html.twig' %}
+
+{% block grid_column_name_cell %}
+    {{ value }} {% if row.field('initials') %}({{ row.field('initials') }}){% endif %}
+{% endblock %}
+
+{% block grid_column_thumbnailphoto_cell %}
+    {% if value %}
+    <a class="btn btn-primary btn-xs popoverElement"
+            {#data-container="body"#}
+            data-toggle="popover"
+            data-placement="right"
+            data-trigger="click"
+            data-html=true
+            data-title="{{ row.field('name') }}"
+            href="{{ path('userGetPhoto',{'samaccountname': row.field('samaccountname')}) }}">
+        <i class="fa fa-picture-o"></i>
+    </a>
+    {% endif %}
+{% endblock %}
+
+{#<img src="{{ path('userGetPhoto',{'samaccountname': row.field('samaccountname')}) }}" />#}

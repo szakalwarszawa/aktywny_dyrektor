@@ -1,0 +1,19 @@
+parp_cron:
+    resource: "@ParpCronBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+parp_main:
+    resource: "@ParpMainBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+parp_soap:
+    resource: "@ParpSoapBundle/Controller/"
+    type:     annotation
+    prefix:   /
+
+parp_auth:
+      resource: "@ParpAuthBundle/Controller/"
+      type:     annotation
+      prefix:   /

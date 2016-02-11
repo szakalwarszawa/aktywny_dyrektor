@@ -1,0 +1,28 @@
+.headerAD {
+    min-height: 120px;
+    max-height: 120px;
+    height: 120px;
+    /*width: 100%;*/
+    text-align: center;
+    background-color: RGB(27, 98, 149);
+    color: #ffffff;
+    /*position: absolute;*/
+    top: 0;
+    left: 0;
+}
+
+.popover {
+    height: 175px;
+}
+
+.center-me {
+    margin-left: auto;
+    margin-right: auto;
+}
+.center-block {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    overflow: hidden;
+}

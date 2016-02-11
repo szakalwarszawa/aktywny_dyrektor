@@ -1,0 +1,227 @@
+{% extends 'APYDataGridBundle::blocks.html.twig' %}
+
+{% block grid %}
+    <div class="grid" style="width:95%; margin-left: auto; margin-right: auto;">
+    {% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is sameas(false) %}
+        <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
+            <div class="grid_header">
+            {% if grid.massActions|length > 0 %}
+                {{ grid_actions(grid) }}
+            {% endif %}
+            </div>
+            <div class="grid_body">
+                <table class="table table-bordered table-striped">
+                {% if grid.isTitleSectionVisible %}
+                    {{ grid_titles(grid) }}
+                {% endif %}
+                {% if grid.isFilterSectionVisible %}
+                    {{ grid_filters(grid) }}
+                {% endif %}
+                {{ grid_rows(grid) }}
+                </table>
+            </div>
+            <div class="grid_footer">
+            {% if grid.isPagerSectionVisible %}
+                {{ grid_pager(grid) }}
+            {% endif %}
+            {% if grid.tweaks|length > 0 %}
+                {{ grid_tweaks(grid) }}
+            {% endif %}
+            {#{% if grid.exports|length > 0 %}
+                {{ grid_exports(grid) }}
+            {% endif %}#}
+            </div>
+            {% if withjs %}
+                {{ grid_scripts(grid) }}
+            {% endif %}
+        </form>
+    {% else %}
+        {{ grid_no_data(grid) }}
+    {% endif %}
+    </div>
+{% endblock %}
+    
+{% block grid_filters %}
+    <tr class="grid-row-filters">
+    {% set id="1" %}
+    {% for column in grid.columns %}
+        {% if column.visible(grid.isReadyForExport) %}
+        <th{% if loop.last %} class="last-column"{% endif %}{% if(column.size > -1) %} style="width:{{ column.size }}px;"{% endif %}>
+            {% if column.filterable %}
+                {% if column.isFiltered %}
+                    <i class="fa fa-flag pull-right" ></i>
+                {% endif %}
+                {% if grid_filter(column, grid) %}
+                    <i class="fa fa-filter" id="gridfilters_{{ id }}" ></i>
+                    <span id="gridfilter{{ id }}"><span>{{ grid_filter(column, grid) }}</span></span>
+                    <script>
+                        $("#gridfilter{{ id }}").slideToggle("fast");
+                        $("#gridfilters_{{ id }}").click(
+                            function(){
+                                $("#gridfilter{{ id }}").slideToggle("fast");
+                            })
+                    </script>
+                {% endif %}
+            {% endif %}
+            
+        </th>
+        {% endif %}
+        {% set id = id+1 %}
+    {% endfor %}
+    </tr>
+{% endblock grid_filters %}
+    
+
+{% block grid_exports %}
+<div class="pull-right">
+    <input id="valueexport" type="hidden" name="{{grid.hash}}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_EXPORT') }}]" value="-1" />
+    <button id="submitexport" type="submit" class="btn btn-default"><i class="fa fa-download"></i>{{ 'Export'|trans }}</button>
+</div>
+{% endblock grid_exports %}
+    
+{% block grid_pager %}
+    {% if pagerfanta %}
+        <div class="row">
+
+        <div class="col-xs-2 ">
+            <div class="col-xs-7">
+            <select class="form-control" onchange="return {{ grid.hash }}_resultsPerPage(this.value);">
+            {% for key, value in grid.limits %}
+                <option value="{{ key }}"{% if (key == grid.limit) %} selected="selected"{% endif %}>{{ value }}</option>
+            {% endfor %}
+            </select>
+            </div>
+            <div>Rekordów</div>
+        </div>
+        {{ grid_pagerfanta(grid) }}
+    {% else %}
+        <div class="pager" style="float:left">
+            {{ grid_pager_totalcount(grid) }}
+            {{ grid_pager_selectpage(grid) }}
+            {{ grid_pager_results_perpage(grid) }}
+        </div>
+    {% endif %}
+        <div class="pagination col-xs-2">
+        {% if grid.exports|length > 0 %}
+                {{ grid_exports(grid) }}
+        {% endif %}
+        </div>
+    </div>
+{% endblock grid_pager %}
+            
+{% block grid_titles %}
+    <tr class="grid-row-titles">
+    {% for column in grid.columns %}
+        {% if column.visible(grid.isReadyForExport) %}
+            <th class="{% if column.align != 'left'%}align-{{ column.align }}{% endif %}{% if loop.last %} last-column{% endif %}"{% if(column.size > -1) %} style="width:{{ column.size }}px;"{% endif %}>
+            {% if column.type == 'massaction' %}
+                <input type="checkbox" class="grid-mass-selector" onclick="{{ grid.hash }}_markVisible(this.checked);"/>
+            {% else %}
+                {% set columnTitle = grid.prefixTitle ~ column.title ~ '__abbr' %}
+                {% if columnTitle|trans == columnTitle %}
+                    {% set columnTitle = grid.prefixTitle ~ column.title %}
+                {% endif %}
+                {% if (column.sortable) %}
+                    {% if column.isSorted %}
+                        {% if column.order == 'asc' %}
+                            <div class="sort_up fa fa-sort-alpha-desc"></div>
+                        {% elseif column.order == 'desc' %}
+                            <div class="sort_down fa fa-sort-alpha-asc"></div>
+                        {% endif %}
+                    {% endif %}
+                    <a class="order" href="{{ grid_url('order', grid, column) }}" title="{{ 'Order by'|trans }} {{ columnTitle|trans }}">{{ columnTitle|trans }}</a>
+                {% else %}
+                    {% if columnTitle == "prev" %}
+                        <a href="#" id="{{columnTitle}}">&larr;</a>
+                    {% elseif columnTitle == "next" %}
+                        <a href="#" id="{{columnTitle}}">&rarr;</a>
+                    {% else %}
+                        {{ columnTitle|trans }}
+                    {% endif %}
+                {% endif %}
+            {% endif %}
+            </th>
+        {% endif %}
+    {% endfor %}
+    </tr>
+{% endblock grid_titles %}
+    
+{% block grid_column_boolean_cell %}
+    {% if value=="true" %}
+        <i class="glyphicon glyphicon-ok" title="true"> </i>
+    {% elseif value=="false" %}
+        <i class="glyphicon glyphicon-remove" title="false"> </i>
+    {% endif %}
+{% endblock %}
+
+{% block grid_column_actions_cell %}
+    {% set actions = column.getActionsToRender(row) %}
+    <div class="btn-group-vertical">
+    {% for action in actions %}
+
+        <a href="{{ url(action.route, column.routeParameters(row, action), false) }}"
+            target="{{ action.target }}"
+        {% if action.confirm %}
+            onclick="return confirm('{{ action.confirmMessage }}')"
+        {% endif %}
+        {% for name, value in action.attributes %}
+            {{ name }}="{{ value }}"
+        {% endfor %}>
+            {{ action.title|raw }}
+        </a>
+    {% endfor %}
+    </div>
+{% endblock %}
+
+        
+{% block grid_actions %}
+    <div class="btn-group btn-group-xs">
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(true);">{{ 'Select visible'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(false);">{{ 'Deselect visible'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(true);">{{ 'Select all'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(false);">{{ 'Deselect all'|trans }}</span>
+    </div>
+    <span class="mass-actions-selected" id="{{ grid.hash }}_mass_action_selected"></span>
+{#<div class="mass-actions">
+    {% spaceless %}
+    <div style="float:right;" class="grid_massactions">
+        <input type="hidden" id="{{ grid.hash }}_mass_action_all" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION_ALL_KEYS_SELECTED') }}]" value="0"/>
+        <input type="hidden" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]" value="0">
+    </div>
+    {% endspaceless %}
+</div>#}
+{% endblock grid_actions %}
+{#{% block grid_column_actions_cell %}
+    {% for action in column.rowActions %}
+        {% if (action.attributes.alt == 'Evaluation' 
+            and (row.field('position')=='Tester'
+            or row.field('position')=='Senior Tester'
+            or row.field('position')=='Junior Tester'
+            or row.field('position')=='Compliance Engineer'
+            or row.field('position')=='Linguistic Specialist'
+            )) 
+            or (action.attributes.alt != 'Evaluation') %}
+        <a href="{{ url(action.route, column.routeParameters(row, action), false) }}" 
+           target="{{ action.target }}"
+                {% if action.confirm %} 
+                    onclick="return confirm('{{ action.confirmMessage }}')"
+                {% endif %}
+                {% for name, value in action.attributes %} 
+                    {% if name=="data-remote"%}
+                        {{ name }}="{{ url(action.route, column.routeParameters(row, action), false) }}"
+                    {% else %}
+                        {{ name }}="{{ value }}" 
+                    {% endif %}
+                {% endfor %}>
+                {% if action.attributes.icon %}
+                    &nbsp;<img src="{{ asset(action.attributes.icon) }}" 
+                    {% if action.attributes.alt %}
+                        alt="{{ action.attributes.alt }}"
+                        title="{{ action.attributes.alt }}"
+                    {% endif %}
+                        /> 
+                {% endif %}
+        </a> 
+        {% endif %}
+    {% endfor %}
+{% endblock %}#}

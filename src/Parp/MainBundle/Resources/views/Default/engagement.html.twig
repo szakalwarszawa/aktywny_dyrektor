@@ -1,0 +1,421 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+    <h3>Zaangażowanie dla {{ user.name }}:</h3>
+    <form method="post" name="formularz">
+        <div class="btn-group" data-toggle="buttons">      
+            {% for y in 2008..2020 %}
+
+                {% if year|default('')|length>0 %}
+                    <label class="btn btn-primary {% if y == year %}active{% endif %}">
+                        <input type="radio" name="year" value="{{y}}"> {{ y }}
+                    </label>
+                {% else %}
+                    <label class="btn btn-primary {% if y == "now"|date("Y") %}active{% endif %}">
+                        <input type="radio" name="year" value="{{y}}"> {{ y }}
+                    </label>
+                {% endif %}    
+
+            {% endfor %}
+        </div>
+        <br/><br/>
+
+        {% if dane is empty %}
+
+            <table class="table table-bordered table-striped">
+                <tr>
+                    <th></th>
+                    <th>Sty</th>
+                    <th>Lut</th>
+                    <th>Mar</th>
+                    <th>Kwi</th>
+                    <th>Maj</th>
+                    <th>Cze</th>
+                    <th>Lip</th>
+                    <th>Sie</th>
+                    <th>Wrz</th>
+                    <th>Paź</th>
+                    <th>Lis</th>
+                    <th>Gru</th>
+                </tr>
+                {# pętla z programami#}
+
+                {% for engagement in engagements %}
+                    <tr>
+                        <th>{{ engagement.name }}</th>
+                        <td><input name="angaz[{{ engagement.name }}][sty]" class="sty float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][lut]" class="lut float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][mar]" class="mar float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][kwi]" class="kwi float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][maj]" class="maj float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][cze]" class="cze float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][lip]" class="lip float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][sie]" class="sie float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][wrz]" class="wrz float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][paz]" class="paz float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][lis]" class="lis float" size="4"/></td>
+                        <td><input name="angaz[{{ engagement.name }}][gru]" class="gru float" size="4"/></td>
+                    </tr>
+
+                {% endfor %}
+                <tr>
+                    <th>Suma:</th>
+                    <td><input id="sumSty" size="4" readonly="true"/></td>
+                    <td><input id="sumLut" size="4" readonly="true"/></td>
+                    <td><input id="sumMar" size="4" readonly="true"/></td>
+                    <td><input id="sumKwi" size="4" readonly="true"/></td>
+                    <td><input id="sumMaj" size="4" readonly="true"/></td>
+                    <td><input id="sumCze" size="4" readonly="true"/></td>
+                    <td><input id="sumLip" size="4" readonly="true"/></td>
+                    <td><input id="sumSie" size="4" readonly="true"/></td>
+                    <td><input id="sumWrz" size="4" readonly="true"/></td>
+                    <td><input id="sumPaz" size="4" readonly="true"/></td>
+                    <td><input id="sumLis" size="4" readonly="true"/></td>
+                    <td><input id="sumGru" size="4" readonly="true"/></td>
+                </tr>
+            </table>
+
+        {% else %}
+
+            <table class="table table-bordered table-striped">
+
+                <tr>
+                    <th></th>
+                    <th>Sty</th>
+                    <th>Lut</th>
+                    <th>Mar</th>
+                    <th>Kwi</th>
+                    <th>Maj</th>
+                    <th>Cze</th>
+                    <th>Lip</th>
+                    <th>Sie</th>
+                    <th>Wrz</th>
+                    <th>Paź</th>
+                    <th>Lis</th>
+                    <th>Gru</th>
+                </tr>
+
+                {% for key, row in dane %}
+                    <tr>
+                        <th>{{ key }}</th>
+                            {% for key2, row2 in row %}
+                            <td>
+                                <input name="angaz[{{ key }}][{{key2}}]" class="{{ key2 }} float" size="4" value="{{row2}}"/>
+                            </td>
+                        {% endfor%}
+
+                    </tr>
+                {%endfor%}
+
+                <tr>
+                    <th>Suma:</th>
+                        {% for key, value in sumy %}
+                        <td><input id="{{ key }}" size="4" readonly="true" value="{{ value }}"/></td>
+                        {% endfor %}
+                </tr>
+            </table>
+
+        {% endif %}
+        <input type="hidden" name="samaccountname" id="samaccountname" value="{{user.samaccountname}}" />
+        <div class="alert alert-warning" role="alert">
+            <p><strong>Uwaga!</strong></p>
+            <p>Wartości należy wprowadzać jako wartości procentowe (np. 25%).</p>
+        </div>
+        <div class="alert alert-success" role="alert">
+            <p><strong>Uwaga!</strong></p>
+            <p>Nie wypełnienie pola powoduje przeniesienie wartości z ostatniego wypełnione miesiąca. Np. jeżeli cały rok ma mieć takie same
+                zaangażowanie, wystarczy wypełnić prawidłowo miesiąc styczeń. Reszta wartości zostanie przeniesiona.</p>
+        </div>
+        <div>
+            <button type="submit" class="btn btn-primary col-lg-12">Zapisz</button>
+        </div>
+    </form>
+    <script>
+
+
+        $('input:radio[name=year]').change(function () {
+            var year = $("form input[type='radio']:checked").val();
+            var samaccountname = $('#samaccountname').val();
+            //alert("Value of Changed Radio is : " +rok +' '+samaccountname);
+
+            var tmpurl = "{{ path('engageUser',{'samaccountname':'tmpid1','year':'tmpid2'}) }}";
+            var url = tmpurl.replace('tmpid1', samaccountname).replace('tmpid2', year);
+
+            window.location.href = url;
+
+        });
+
+
+        $(".sty").on('keyup', function (e) {
+            var sum = 0;
+            $(".sty").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumSty').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.sty').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.sty').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".lut").on('keyup', function (e) {
+            var sum = 0;
+            $(".lut").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumLut').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.lut').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.lut').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".mar").on('keyup', function (e) {
+            var sum = 0;
+            $(".mar").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumMar').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.mar').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.mar').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".kwi").on('keyup', function (e) {
+            var sum = 0;
+            $(".kwi").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumKwi').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.kwi').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.kwi').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".maj").on('keyup', function (e) {
+            var sum = 0;
+            $(".maj").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumMaj').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.maj').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.maj').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".cze").on('keyup', function (e) {
+            var sum = 0;
+            $(".cze").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumCze').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.cze').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.cze').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".lip").on('keyup', function (e) {
+            var sum = 0;
+            $(".lip").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumLip').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.lip').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.lip').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".sie").on('keyup', function (e) {
+            var sum = 0;
+            $(".sie").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumSie').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.sie').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.sie').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".wrz").on('keyup', function (e) {
+            var sum = 0;
+            $(".wrz").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumWrz').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.wrz').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.wrz').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".paz").on('keyup', function (e) {
+            var sum = 0;
+            $(".paz").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumPaz').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.paz').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.paz').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".lis").on('keyup', function (e) {
+            var sum = 0;
+            $(".lis").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumLis').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.lis').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.lis').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".gru").on('keyup', function (e) {
+            var sum = 0;
+            $(".gru").each(function () {
+                if ($.isNumeric($(this).val())) {
+                    var smallSum = parseFloat($(this).val());
+                    sum = sum + smallSum;
+                }
+            });
+            $('#sumGru').val(sum);
+            if (e.keyCode == 40) {
+                $(this).closest('tr').next().find('.gru').select();
+            }
+            if (e.keyCode == 38) {
+                $(this).closest('tr').prev().find('.gru').select();
+            }
+            if (e.keyCode == 39) {
+                $(this).closest('td').next().find('input').select();
+            }
+            if (e.keyCode == 37) {
+                $(this).closest('td').prev().find('input').select();
+            }
+        });
+        $(".float").on('keyup', function () {
+            var val = $(this).val();
+            val = val.replace(",", ".");
+            val = val.replace(/[aZ]/g, "")
+            $(this).val(val);
+        })
+    </script>
+{% endblock %}
