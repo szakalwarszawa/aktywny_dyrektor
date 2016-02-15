@@ -590,11 +590,11 @@ class DefaultController extends Controller
         if ($form->isValid()) {
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
-            // CN=Artur Testowy aaa,OU=BI,OU=Zespoly,OU=PARP Pracownicy,DC=parp,DC=local
             $tab = explode(".", $this->container->getParameter('ad_domain'));
+            $ou = explode(".", $this->container->getParameter('ad_ou'));
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($entry->getDepartment());
 
-            $distinguishedname = "CN=" . $entry->getCn() . ", OU=" . $department->getShortname() . ",OU=Zespoly,OU=PARP Pracownicy, DC=" . $tab[0] . ",DC=" . $tab[1];
+            $distinguishedname = "CN=" . $entry->getCn() . ", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
 
             $entry->setDistinguishedName($distinguishedname);
             $em->persist($entry);

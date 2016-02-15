@@ -262,7 +262,10 @@ class UprawnieniaService
             }
             //znajdz te do edycji
             $grupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname()));
-            $edytowanlne = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findEdytowalneDlaGrupy($grupa->getGrupa());
+            if($grupa)
+                $edytowanlne = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findEdytowalneDlaGrupy($grupa->getGrupa());
+            else
+                $edytowanlne = array();
 
             foreach ($edytowanlne as $edytowalny) {
 
@@ -309,15 +312,17 @@ class UprawnieniaService
             // znajdz stare uprawnienie       
             $uprawnienieuser = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findSekcja($person->getSamaccountname());
             //ustaw stare na niekatualne i wtsaw date
-            $uprawnienieuser->setCzyAktywne(false);
-            $uprawnienieuser->setdataOdebrania(new \DateTime());
-
-            $odebrane[] = $uprawnienieuser->getOpis();
-
-            $this->doctrine->persist($uprawnienieuser);
+            if($uprawnienieuser){
+                $uprawnienieuser->setCzyAktywne(false);
+                $uprawnienieuser->setdataOdebrania(new \DateTime());
+    
+                $odebrane[] = $uprawnienieuser->getOpis();
+    
+                $this->doctrine->persist($uprawnienieuser);
+            }
 
             $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-            if (mb_strtoupper($section->getShortname() !== 'ND')) {
+            if (mb_strtoupper($section->getShortname() !== 'ND') && $uprawnienieuser) {
                 $id = $uprawnienieuser->getUprawnienieId();
                 //$this->doctrine->persist($uprawnienie);
                 //utworz nowe z nawą konta
@@ -370,7 +375,7 @@ class UprawnieniaService
         $message = \Swift_Message::newInstance()
                 ->setSubject('Zmiana uprawnień')
                 ->setFrom('intranet@parp.gov.pl')
-                ->setTo('tomasz_bonczak@parp.gov.pl')
+                ->setTo('kamil_jakackik@parp.gov.pl')
                 ->setBody($view)
                 ->setContentType("text/html");
 

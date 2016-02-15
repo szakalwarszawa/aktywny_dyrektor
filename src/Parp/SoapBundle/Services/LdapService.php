@@ -20,6 +20,7 @@ class LdapService
     protected $ad_domain;
     protected $container;
     protected $patch;
+    protected $useradn ;
 
     public function __construct(SecurityContextInterface $securityContext, Container $container)
     {
@@ -32,16 +33,19 @@ class LdapService
         
         $env = $this->container->get('kernel')->getEnvironment();
         
+        $this->useradn = $this->container->getParameter('ad_ou');
         if ($env === 'prod') {
             $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         } else {
-            $this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
+            //$this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
+            $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
+        //die($this->patch);
     }
 
     public function getAllFromAD()
     {
-        $userdn = "OU=Zespoly, OU=PARP Pracownicy" . $this->patch;
+        $userdn = $this->useradn . $this->patch;
 //        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
@@ -215,7 +219,7 @@ class LdapService
     {
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = "OU=Zespoly, OU=PARP Pracownicy" . $this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         //if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
         //    $memcached = new \Memcache;
@@ -324,7 +328,7 @@ class LdapService
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
-        $userdn = "OU=" . $OU . ",OU=Zespoly,OU=PARP Pracownicy" . $this->patch;
+        $userdn = "OU=" . $OU . ",".$this->useradn . $this->patch;
 
         $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=*)(objectClass=person))", array(
             "samaccountname",

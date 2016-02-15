@@ -23,6 +23,7 @@ class LdapAdminService
     protected $ad_domain;
     protected $container;
     protected $patch;
+    protected $useradn ;
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
@@ -38,12 +39,14 @@ class LdapAdminService
         $tab = explode(".", $this->container->getParameter('ad_domain'));
         $env = $this->container->get('kernel')->getEnvironment();
         
+        $this->useradn = $this->container->getParameter('ad_ou');
         if ($env === 'prod') {
             $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         } else {
-            $this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
+            //$this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
+            $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         }
-        die('a');
+        //die('a');
     }
 
     public function getUserFromAD($samaccountname = null, $cnname = null)
@@ -52,7 +55,7 @@ class LdapAdminService
         //$ldapdomain = "@parp.local";
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = "OU=Zespoly, OU=PARP Pracownicy" . $this->patch;
+        $userdn = $this->useradn . $this->patch;
 //        $memcached = new \Memcached;
 //        $memcached->addServer('localhost', 11211);
 //        $fromMemcached = $memcached->get('ldap-detail-'.$samaccountname);
@@ -78,7 +81,7 @@ class LdapAdminService
         } else {
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
-
+echo "$userdn";
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",
             "initials",
@@ -132,7 +135,7 @@ class LdapAdminService
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
         $ldapdomain = $this->ad_domain;
-        $userdn = "OU=Zespoly, OU=PARP Pracownicy" . $this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
@@ -199,7 +202,8 @@ class LdapAdminService
                 $entry['description'] = $department->getShortname();
             }
         }
-       
+        print_r($entry);
+       echo ".".$dn.".";
         ldap_modify($ldapconn, $dn, $entry);
 
 
@@ -227,7 +231,8 @@ class LdapAdminService
 
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = "OU=Test";//"OU=Zespoly, OU=PARP Pracownicy" . $this->patch;
+        //$userdn = "OU=Test";
+        $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
@@ -274,9 +279,8 @@ class LdapAdminService
             $tmpResults = ldap_get_entries($ldapconn, $search);
             $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
         }
-
         $tab = explode(' ', $entry['cn']);
-        $entry['sn'] = $tab[1];
+        $entry['sn'] = count($tab) > 1 ? $tab[1] : "";
         $entry['givenName'] = $tab[0];
         $entry['name'] = $entry['cn'];
         $entry['userPrincipalName'] = $person->getSamaccountname() . $this->ad_domain;
@@ -302,11 +306,12 @@ class LdapAdminService
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
         }
-       
+        print_r($dn);
+        print_r($entry);
         ldap_add($ldapconn, $dn, $entry);
         
          /*
-          $dn = "CN=Tomasz Bolek,OU=BI,OU=Zespoly,OU=PARP Pracownicy,DC=boniek,DC=test";
+          $dn = "CN=Tomasz Bolek,OU=BI,OU=Test,DC=boniek,DC=test";
           $newuser["objectClass"]['0'] = "top";
           $newuser["objectClass"]['1'] = "person";
           $newuser["objectClass"]['2'] = "organizationalPerson";
