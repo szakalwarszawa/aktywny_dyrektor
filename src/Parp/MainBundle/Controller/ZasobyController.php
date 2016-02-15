@@ -10,6 +10,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Parp\MainBundle\Entity\Zasoby;
 use Parp\MainBundle\Form\ZasobyType;
 
+
 /**
  * Zasoby controller.
  *
@@ -29,7 +30,8 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        //$entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        $entities = $em->getRepository('ParpMainBundle:Zasoby')->findBy(array(), array('nazwa'=>'asc'));
 
         return array(
             'entities' => $entities,
@@ -53,7 +55,10 @@ class ZasobyController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            return $this->redirect($this->generateUrl('zasoby_show', array('id' => $entity->getId())));
+            //return $this->redirect($this->generateUrl('zasoby_show', array('id' => $entity->getId())));
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Zasób został utworzony.');
+            return $this->redirect($this->generateUrl('zasoby'));
         }
 
         return array(
@@ -148,6 +153,7 @@ class ZasobyController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'id' => $id
         );
     }
 
@@ -165,7 +171,10 @@ class ZasobyController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array(
+            'label' => 'Update',
+            'attr' => array('class' => 'btn btn-primary' )
+        ));
 
         return $form;
     }
@@ -192,7 +201,7 @@ class ZasobyController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-
+            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
         }
 
@@ -200,6 +209,7 @@ class ZasobyController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'id' => $id,
         );
     }
     /**
@@ -240,7 +250,10 @@ class ZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array(
+                'label' => 'Delete',
+                'attr' => array('class' => 'btn btn-danger' )
+            ))
             ->getForm()
         ;
     }

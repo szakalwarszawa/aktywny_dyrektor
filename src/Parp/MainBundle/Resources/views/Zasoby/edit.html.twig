@@ -3,6 +3,9 @@
 {% block body -%}
     <h1>Zasoby edit</h1>
 
+
+{% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
+
     {{ form(edit_form) }}
 
         <ul class="record_actions">
