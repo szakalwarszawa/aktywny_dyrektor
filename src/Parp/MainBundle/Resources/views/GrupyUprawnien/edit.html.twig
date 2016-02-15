@@ -1,14 +1,14 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Edycja Zasoby </h1>
+    <h1>Edycja GrupyUprawnien </h1>
     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
     {{ form(edit_form) }}
     
         <div class="btn-group">
 
-<a class="btn btn-primary" href="{{ path('zasoby') }}">
-    <i class="fa fa-list"></i> Lista Zasoby
+<a class="btn btn-primary" href="{{ path('grupyuprawnien') }}">
+    <i class="fa fa-list"></i> Lista GrupyUprawnien
 </a>
 </div>
 {% endblock %}

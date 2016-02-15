@@ -3,62 +3,24 @@
 {% endblock extends %}
 
 {% block body %}
-{{ "{% block body -%}" }}
-    <h1>{{ entity }} list</h1>
+{{ '{% block body %}' }}
+<h1>Lista {{ entity }}</h1>
+{{ "{% for flashMessage in app.session.flashbag.get('warning') %}" }}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Uwaga!</strong> 
+        {{ "{{ flashMessage }}" }}
+    </div>       
+{{ "{% endfor %}" }}
 
-    <table class="records_list">
-        <thead>
-            <tr>
-            {%- for field, metadata in fields %}
+<center>
+    <div class="btn-group">
+        <a class="btn btn-primary btn-xs" href="?{{ "{{ grid.hash }}" }}[_reset]=">Wyczyść filtr i sortowanie</a>
+        <a class="btn btn-primary btn-xs" href="{{ "{{ path('" ~ route_name_prefix ~ "_new') }}" }}">Dodaj {{entity}}</a>
+    </div>
+</center>
 
-                <th>{{ field|capitalize }}</th>
+{{ "{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}" }}
 
-            {%- endfor %}
-
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {{ '{% for entity in entities %}' }}
-            <tr>
-
-        {%- for field, metadata in fields %}
-            {%- if loop.first and ('show' in actions) %}
-
-                <td><a href="{{ "{{ path('" ~ route_name_prefix ~ "_show', { 'id': entity.id }) }}" }}">{{ '{{ entity.' ~ field|replace({'_': ''}) ~ ' }}' }}</a></td>
-
-            {%- elseif metadata.type in ['date', 'datetime'] %}
-
-                <td>{{ '{% if entity.' ~ field|replace({'_': ''}) ~ ' %}{{ entity.' ~ field|replace({'_': ''}) ~ '|date(\'Y-m-d H:i:s\') }}{% endif %}' }}</td>
-
-            {%- else %}
-
-                <td>{{ '{{ entity.' ~ field|replace({'_': ''}) ~ ' }}' }}</td>
-
-            {%- endif %}
-
-            {%- if loop.last %}
-
-                <td>
-                    {%- include "crud/views/others/actions.html.twig.twig" %}
-                </td>
-
-            {%- endif %}
-        {%- endfor %}
-
-            </tr>
-        {{ '{% endfor %}' }}
-        </tbody>
-    </table>
-
-    {% if 'new' in actions %}
-    <ul>
-        <li>
-            <a href="{{ "{{ path('" ~ route_name_prefix ~ "_new') }}" }}">
-                Create a new entry
-            </a>
-        </li>
-    </ul>
-    {% endif %}
-{{ "{% endblock %}" }}
+{{ '{% endblock %}' }}
 {% endblock body %}

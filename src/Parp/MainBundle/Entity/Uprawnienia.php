@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="uprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
+ * @GRID\Source(columns="id, opis")
  */
 class Uprawnienia
 {
@@ -168,5 +170,8 @@ class Uprawnienia
     public function getCzyEdycja()
     {
         return $this->czy_edycja;
+    }
+    public function __toString(){
+        return $this->getOpis();
     }
 }

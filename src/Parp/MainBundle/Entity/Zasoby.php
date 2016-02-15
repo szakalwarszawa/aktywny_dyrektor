@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -9,6 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="zasoby")
  * @ORM\Entity
+ * @GRID\Source(columns="id, nazwa, opis, biuro")
  */
 class Zasoby
 {

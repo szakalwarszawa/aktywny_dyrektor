@@ -1,9 +1,9 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Usuwanie: Zasoby</h1>
+    <h1>Usuwanie: GrupyUprawnien</h1>
     <div class="alert alert-danger">
-        Czy na pewno chcesz skasować poniższy Zasoby ?
+        Czy na pewno chcesz skasować poniższy GrupyUprawnien ?
     </div>
     <table class="record_properties table table-striped">
         <tbody>
@@ -12,16 +12,12 @@
                 <td>{{ entity.id }}</td>
             </tr>
             <tr>
-                <th>Nazwa</th>
-                <td>{{ entity.nazwa }}</td>
+                <th>Kod</th>
+                <td>{{ entity.kod }}</td>
             </tr>
             <tr>
                 <th>Opis</th>
                 <td>{{ entity.opis }}</td>
-            </tr>
-            <tr>
-                <th>Biuro</th>
-                <td>{{ entity.biuro }}</td>
             </tr>
         </tbody>
     </table>

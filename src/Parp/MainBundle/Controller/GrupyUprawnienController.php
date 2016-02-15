@@ -14,29 +14,29 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Zasoby;
-use Parp\MainBundle\Form\ZasobyType;
+use Parp\MainBundle\Entity\GrupyUprawnien;
+use Parp\MainBundle\Form\GrupyUprawnienType;
 
 /**
- * Zasoby controller.
+ * GrupyUprawnien controller.
  *
- * @Route("/zasoby")
+ * @Route("/grupyuprawnien")
  */
-class ZasobyController extends Controller
+class GrupyUprawnienController extends Controller
 {
 
     /**
-     * Lists all Zasoby entities.
+     * Lists all GrupyUprawnien entities.
      *
-     * @Route("/index", name="zasoby")
+     * @Route("/index", name="grupyuprawnien")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        //$entities = $em->getRepository('ParpMainBundle:GrupyUprawnien')->findAll();
     
-        $source = new Entity('ParpMainBundle:Zasoby');
+        $source = new Entity('ParpMainBundle:GrupyUprawnien');
     
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -51,12 +51,12 @@ class ZasobyController extends Controller
                 ->setSafe(true);
     
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'zasoby_edit');
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'grupyuprawnien_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
     
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'zasoby_delete');
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'grupyuprawnien_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
     
@@ -73,15 +73,15 @@ class ZasobyController extends Controller
         return $grid->getGridResponse();
     }
     /**
-     * Creates a new Zasoby entity.
+     * Creates a new GrupyUprawnien entity.
      *
-     * @Route("/", name="zasoby_create")
+     * @Route("/", name="grupyuprawnien_create")
      * @Method("POST")
-     * @Template("ParpMainBundle:Zasoby:new.html.twig")
+     * @Template("ParpMainBundle:GrupyUprawnien:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity = new Zasoby();
+        $entity = new GrupyUprawnien();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -90,8 +90,8 @@ class ZasobyController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Zasoby został utworzony.');
-                return $this->redirect($this->generateUrl('zasoby'));
+            $this->get('session')->getFlashBag()->set('warning', 'GrupyUprawnien został utworzony.');
+                return $this->redirect($this->generateUrl('grupyuprawnien'));
         }
 
         return array(
@@ -101,34 +101,34 @@ class ZasobyController extends Controller
     }
 
     /**
-     * Creates a form to create a Zasoby entity.
+     * Creates a form to create a GrupyUprawnien entity.
      *
-     * @param Zasoby $entity The entity
+     * @param GrupyUprawnien $entity The entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(Zasoby $entity)
+    private function createCreateForm(GrupyUprawnien $entity)
     {
-        $form = $this->createForm(new ZasobyType(), $entity, array(
-            'action' => $this->generateUrl('zasoby_create'),
+        $form = $this->createForm(new GrupyUprawnienType(), $entity, array(
+            'action' => $this->generateUrl('grupyuprawnien_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zasoby', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', 'submit', array('label' => 'Utwórz GrupyUprawnien', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
 
     /**
-     * Displays a form to create a new Zasoby entity.
+     * Displays a form to create a new GrupyUprawnien entity.
      *
-     * @Route("/new", name="zasoby_new")
+     * @Route("/new", name="grupyuprawnien_new")
      * @Method("GET")
      * @Template()
      */
     public function newAction()
     {
-        $entity = new Zasoby();
+        $entity = new GrupyUprawnien();
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -138,9 +138,9 @@ class ZasobyController extends Controller
     }
 
     /**
-     * Finds and displays a Zasoby entity.
+     * Finds and displays a GrupyUprawnien entity.
      *
-     * @Route("/{id}", name="zasoby_show")
+     * @Route("/{id}", name="grupyuprawnien_show")
      * @Method("GET")
      * @Template()
      */
@@ -148,10 +148,10 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+            throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -163,9 +163,9 @@ class ZasobyController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Zasoby entity.
+     * Displays a form to edit an existing GrupyUprawnien entity.
      *
-     * @Route("/{id}/edit", name="zasoby_edit")
+     * @Route("/{id}/edit", name="grupyuprawnien_edit")
      * @Method("GET")
      * @Template()
      */
@@ -173,10 +173,10 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+            throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
         }
 
         $editForm = $this->createEditForm($entity);
@@ -190,16 +190,16 @@ class ZasobyController extends Controller
     }
 
     /**
-    * Creates a form to edit a Zasoby entity.
+    * Creates a form to edit a GrupyUprawnien entity.
     *
-    * @param Zasoby $entity The entity
+    * @param GrupyUprawnien $entity The entity
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(Zasoby $entity)
+    private function createEditForm(GrupyUprawnien $entity)
     {
-        $form = $this->createForm(new ZasobyType(), $entity, array(
-            'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
+        $form = $this->createForm(new GrupyUprawnienType(), $entity, array(
+            'action' => $this->generateUrl('grupyuprawnien_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
@@ -208,20 +208,20 @@ class ZasobyController extends Controller
         return $form;
     }
     /**
-     * Edits an existing Zasoby entity.
+     * Edits an existing GrupyUprawnien entity.
      *
-     * @Route("/{id}", name="zasoby_update")
+     * @Route("/{id}", name="grupyuprawnien_update")
      * @Method("PUT")
-     * @Template("ParpMainBundle:Zasoby:edit.html.twig")
+     * @Template("ParpMainBundle:GrupyUprawnien:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+            throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -231,7 +231,7 @@ class ZasobyController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
-            return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('grupyuprawnien_edit', array('id' => $id)));
         }
 
         return array(
@@ -241,9 +241,9 @@ class ZasobyController extends Controller
         );
     }
     /**
-     * Deletes a Zasoby entity.
+     * Deletes a GrupyUprawnien entity.
      *
-     * @Route("/{id}", name="zasoby_delete")
+     * @Route("/{id}", name="grupyuprawnien_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
@@ -253,21 +253,21 @@ class ZasobyController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+            $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Zasoby entity.');
+                throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
             }
 
             $em->remove($entity);
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('zasoby'));
+        return $this->redirect($this->generateUrl('grupyuprawnien'));
     }
 
     /**
-     * Creates a form to delete a Zasoby entity by id.
+     * Creates a form to delete a GrupyUprawnien entity by id.
      *
      * @param mixed $id The entity id
      *
@@ -276,9 +276,9 @@ class ZasobyController extends Controller
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('zasoby_delete', array('id' => $id)))
+            ->setAction($this->generateUrl('grupyuprawnien_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Skasuj GrupyUprawnien','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

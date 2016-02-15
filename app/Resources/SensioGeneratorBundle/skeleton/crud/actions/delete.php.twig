@@ -49,7 +49,7 @@
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('{{ route_name_prefix }}_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Skasuj {{entity}}','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

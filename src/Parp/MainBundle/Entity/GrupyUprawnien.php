@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -8,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * GrupyUprawnien
  *
  * @ORM\Table(name="grupyuprawnien")
+ * @GRID\Source(columns="id, kod, opis")
  * @ORM\Entity
  */
 class GrupyUprawnien
@@ -137,5 +139,8 @@ class GrupyUprawnien
     public function getUprawnienia()
     {
         return $this->uprawnienia;
+    }
+    public function __toString(){
+        return $this->getKod();
     }
 }
