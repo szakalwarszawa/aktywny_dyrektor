@@ -1,0 +1,8 @@
+{{ '{% extends app.request.xmlHttpRequest ? \'::base_ajax.html.twig\' : \'::base.html.twig\' %}' }}
+{{ '{% block body %}' }}
+<h1>{{ entity }} list</h1>
+{{ "{{ grid(grid,'::_grid.html.twig') }}" }}
+{% if 'new' in actions %}
+<a href="{{ "{{ path('" ~ route_name_prefix ~ "_new') }}" }}"  class='btn btn-primary dialogOpen'>Create a new entry</a>
+{% endif %}
+{{ '{% endblock %}' }}
