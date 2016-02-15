@@ -5,7 +5,8 @@
      *
 {% block phpdoc_method_annotations %}
 {% if 'annotation' == format %}
-     * @Route("/delete/{id}", name="{{ route_name_prefix }}_delete")
+     * @Route("/{id}", name="{{ route_name_prefix }}_delete")
+     * @Method("DELETE")
 {% endif %}
 {% endblock phpdoc_method_annotations %}
      */
@@ -16,69 +17,22 @@
 {% block method_body %}
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
-        $message = "";
-        $autoclose = false;
+
         if ($form->isValid()) {
+            $em = $this->getDoctrine()->getManager();
+            $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
+
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find {{ entity }} entity.');
             }
-            $vs = $form->getData();
-            $code = md5($vs[('authcode')]);
-            $context = "{{ entity }}";
-            $auth = $this->get('authcode')->checkAuthcode($code, $context, $id);
-            if($auth == 1){
-                /*
-                -related entites start-
-                $md1 = $em->getClassMetadata('{{ bundle }}:{{ entity }}');
-                foreach($md1->getAssociationMappings() as $o => $m){
-                    $fname = "get".ucfirst($o);
-                    foreach($entity->$fname() as $o2)
-                    {
-                        $fname = "set{{ entity }}";
-                        $o2->$fname(null);
-                        $em->persist($o2);
-                    }
-                }
-                -related entites end-
-                */
-                $backlog = $this->get('backlog');
-                $backlog->saveLog(null,
-                    'Deleted {{ entity }}',
-                    '{{ entity }}',
-                    $entity->getId()
-                ); 
-                $em->remove($entity);
-                $em->flush();
-                $message = "Deleted {{ entity }}. (This window will close in 5 seconds)";
-                $autoclose = true;
-            }else{
-                
-                $message = ('Wrong code!');
-            }
-        }
-        $data = array();
-        if(!$autoclose && 1 == 0){
-            $md1 = $em->getClassMetadata('{{ bundle }}:{{ entity }}');
-            foreach($md1->getAssociationMappings() as $o => $m){
-                $fname = "get".ucfirst($o);
-                $c = count($entity->$fname());
-                if($c > 0)
-                 $data[] = array('object' => $o, 'objectName' => ucfirst($o), 'targetEntity' => $m['targetEntity'], 'count' => $c);
-            }
+
+            $em->remove($entity);
+            $em->flush();
         }
 {% endblock method_body %}
 
 {% block method_return %}
-        return $this->render('BgnMainBundle:NoteType:new.html.twig', array(
-            'entity'      => $entity,
-            'form' => $form->createView(),
-            'jsguid' => ('deleteNoteType'.$id),
-            'data' => $data,
-            'message' => $message,
-            'autoclose' => $autoclose
-        ));
+        return $this->redirect($this->generateUrl('{{ route_name_prefix }}'));
 {% endblock method_return %}
     }
 
@@ -94,9 +48,8 @@
     {
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('{{ route_name_prefix }}_delete', array('id' => $id)))
-            ->setMethod('POST')
-            ->add('authcode', 'password', array('label' => 'Authorization code', 'required' => true))
-            ->add('submit', 'submit', array('label' => 'Delete', 'attr' => array('class' => 'btn btn-danger')))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Delete'))
             ->getForm()
         ;
     }

@@ -8,12 +8,6 @@ use Symfony\Component\HttpFoundation\Request;
 {%- endif %}
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\HttpFoundation\Response;
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Source\Entity;
-use APY\DataGridBundle\Grid\Column;
-use APY\DataGridBundle\Grid\Export\PHPExcel2007Export;
 {% if 'annotation' == format -%}
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -33,7 +27,7 @@ use {{ namespace }}\Form\{{ entity }}Type;
  *
 {% block phpdoc_class_annotations %}
 {% if 'annotation' == format %}
- * @Route("/admin/{{ route_prefix }}")
+ * @Route("/{{ route_prefix }}")
 {% endif %}
 {% endblock phpdoc_class_annotations %}
  */

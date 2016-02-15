@@ -1,95 +1,14 @@
-{{ "{% extends app.request.xmlHttpRequest ? '::base_ajax.html.twig' : '::base.html.twig' %}" }}
+{% block extends %}
+{{ "{% extends '::base.html.twig' %}" }}
+{% endblock extends %}
 
-{{ "{% form_theme form _self %}" }}
-{{ "{% block form_row %}" }}
-{{ "{% spaceless %}" }}
-    <tr>
-        <th class="col-lg-6 col-md-6 col-sm-6">
-            {{ "{{ form_label(form) }}" }}
-        </th>
-        <td class="col-lg-6 col-md-6 col-sm-6">
-            <div class="control-group">
-                <div class="controls">
-                    {{ "{{ form_widget(form) }}" }}
-                </div>
-            </div>
-        </td>
-    </tr>
-{{ "{% endspaceless %}" }}
-{{ "{% endblock form_row %}" }}
+{% block body %}
+{{ "{% block body -%}" }}
+    <h1>{{ entity }} creation</h1>
 
-{{ "{% block body %}" }}
-<div class="container-fluid thisStudent thisObject" id="thisNoteTypeDeleteDiv{{ "{{jsguid}}" }}">
-    
-    {{ "{% if data|length > 0 %}" }}
-    
-        <div class="alert alert-warning">
-            <a href="#" class="close" data-dismiss="alert">&times;</a>
-            <strong>Warning, there are related objects which will be unlinked (or deleted if needed)!</strong> 
-            <table>
-                <tr>
-                    <th>Related object</th>
-                    <th>Count</th>
-                </tr>
-                {{ "{% for d in data %}" }}
-                    <tr>
-                        <th>{{ "{{ d.objectName }}" }}</th>
-                        <th>{{ "{{ d.count }}" }}</th>
-                    </tr>
-                
-                {{ "{% endfor %}" }}
-            </table>
-        </div>
-    {{ "{% endif %}" }}
-    
-    
-    {{ "{% if message|length > 0 %}" }}
-        
-        <div class="alert alert-warning">
-            <a href="#" class="close" data-dismiss="alert">&times;</a>
-            <strong>Warning!</strong> 
-            <span id="thisNoteTypeMessageDiv{{ "{{jsguid}}" }}">{{ "{{message}}" }}</span>
-        </div>
-        {{ "{% if autoclose %}" }}
-        <script>
-            var timeoutLeft{{ "{{jsguid}}" }} = 5;
-            var closeTimout{{ "{{jsguid}}" }} = setInterval(function(){ 
-                timeoutLeft{{ "{{jsguid}}" }}--;
-                $('#thisNoteTypeMessageDiv{{ "{{jsguid}}" }}').text('Deleted. (This window will close in '+timeoutLeft{{ "{{jsguid}}" }}+' seconds)');
-                if(timeoutLeft{{ "{{jsguid}}" }} <= 0){
-                    clearInterval(closeTimout{{ "{{jsguid}}" }});
-                    $('#thisNoteTypeDeleteDiv{{ "{{jsguid}}" }}').closest('.ui-dialog-content').dialog('close');
-                }
-            }, 1000);
-        </script>
-        {{ "{% endif %}" }}
-    {{ "{% endif %}" }}
-    
-    {{ "{{ form_start(form, {'attr' : {'id': 'form'}}) }}" }}
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        <h3 class="panel-title"><label class="required">General data</label></h3>
-      </div>
-      <div class="panel-body">
-        <table class="table table-striped table-bordered">
-            {{ "{{- form_widget(form) -}}" }}
-        </table>
-      </div>
-    </div> 
-    {{ "{{ form_end(form) }}" }}
-</div>
+    {{ '{{ form(form) }}' }}
 
-{{ "{% include '::javascripts.html.twig' %}" }}
-<script>
-    var idd{{ "{{jsguid}}" }} = 'NoteType';
-    addIsDirtySupport(
-        $('#form', '#this'+idd{{ "{{jsguid}}" }}+'{{ "{{jsguid}}" }}'), 
-        'this'+idd{{ "{{jsguid}}" }}+'{{ "{{jsguid}}" }}', 
-        $('.bgn_submit_button', '#this'+idd{{ "{{jsguid}}" }}+'{{ "{{jsguid}}" }}')
-    );
-    addSavedTabSupport($('#'+idd{{ "{{jsguid}}" }}+'Tabs{{ "{{jsguid}}" }}'), ''+idd{{ "{{jsguid}}" }}+'TabsActiveTab{{ "{{jsguid}}" }}');
-    
-</script>
+    {% set hide_edit, hide_delete = true, true %}
+    {% include 'crud/views/others/record_actions.html.twig.twig' %}
 {{ "{% endblock %}" }}
-
-     
+{% endblock body %}

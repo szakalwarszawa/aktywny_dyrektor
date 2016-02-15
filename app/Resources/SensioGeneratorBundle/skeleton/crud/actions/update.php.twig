@@ -5,8 +5,8 @@
      *
 {% block phpdoc_method_annotations %}
 {% if 'annotation' == format %}
-     * @Route("/update/{id}", name="{{ route_name_prefix }}_update")
-     * @Method("POST")
+     * @Route("/{id}", name="{{ route_name_prefix }}_update")
+     * @Method("PUT")
      * @Template("{{ bundle }}:{{ entity }}:edit.html.twig")
 {% endif %}
 {% endblock phpdoc_method_annotations %}
@@ -17,7 +17,7 @@
     {
 {% block method_body %}
         $em = $this->getDoctrine()->getManager();
-        $changes = array();
+
         $entity = $em->getRepository('{{ bundle }}:{{ entity }}')->find($id);
 
         if (!$entity) {
@@ -27,27 +27,27 @@
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
-        $warnings = "";
 
         if ($editForm->isValid()) {
-            $changemessage = $this->get('entitychanges')->GenerateEntityChanges($entity, $changes, '{{ entity|capitalize }}', 'edit');
             $em->flush();
-            $this->get('session')->getFlashBag()->add('notice', $changemessage);
 
             return $this->redirect($this->generateUrl('{{ route_name_prefix }}_edit', array('id' => $id)));
-        }else{
-            $warnings .= ($editForm->getErrorsAsString());
         }
 {% endblock method_body %}
 
 {% block method_return %}
+{% if 'annotation' == format %}
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+{% else %}
         return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:edit.html.twig', array(
             'entity'      => $entity,
-            'form'   => $editForm->createView(),
-            //'delete_form' => $deleteForm->createView(),
-            'jsguid' => ('edit{{ entity }}'.$id),
-            'warnings' => $warnings,
-            'readonly' => false,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
         ));
+{% endif %}
 {% endblock method_return %}
     }

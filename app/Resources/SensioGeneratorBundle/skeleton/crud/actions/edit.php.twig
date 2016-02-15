@@ -6,7 +6,7 @@
      *
 {% block phpdoc_method_annotations %}
 {% if 'annotation' == format %}
-     * @Route("/edit/{id}", name="{{ route_name_prefix }}_edit")
+     * @Route("/{id}/edit", name="{{ route_name_prefix }}_edit")
      * @Method("GET")
      * @Template()
 {% endif %}
@@ -30,16 +30,19 @@
 {% endblock method_body %}
 
 {% block method_return %}
-        $backlog = $this->get('backlog');
+{% if 'annotation' == format %}
+        return array(
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
+        );
+{% else %}
         return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:edit.html.twig', array(
             'entity'      => $entity,
-            'form'   => $editForm->createView(),
-            //'delete_form' => $deleteForm->createView(),,
-            'jsguid' => ('edit{{ entity_class }}'.$id),
-            'warnings' => '',
-            'readonly' => true,
-            'log' => $backlog->getLogForObject('{{ entity|capitalize }}', $id),
+            'edit_form'   => $editForm->createView(),
+            'delete_form' => $deleteForm->createView(),
         ));
+{% endif %}
 {% endblock method_return %}
     }
 
@@ -55,7 +58,7 @@
     {
         $form = $this->createForm(new {{ entity_class }}Type(), $entity, array(
             'action' => $this->generateUrl('{{ route_name_prefix }}_update', array('id' => $entity->getId())),
-            'method' => 'POST',
+            'method' => 'PUT',
         ));
 
         $form->add('submit', 'submit', array('label' => 'Update'));

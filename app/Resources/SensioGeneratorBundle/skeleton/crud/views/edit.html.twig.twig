@@ -1,104 +1,14 @@
-{{ '{% extends app.request.xmlHttpRequest ? \'::base_ajax.html.twig\' : \'::base.html.twig\' %}' }}
+{% block extends %}
+{{ "{% extends '::base.html.twig' %}" }}
+{% endblock extends %}
 
-{{ "{% form_theme form _self %}" }}
-{{ "{% block form_row %}" }}
-{{ "{% spaceless %}" }}
-    <tr>
-        <th class="col-lg-6 col-md-6 col-sm-6">
-            {{ "{{ form_label(form) }}" }}
-        </th>
-        <td class="col-lg-6 col-md-6 col-sm-6">
-            <div class="control-group">
-                <div class="controls">
-                    {{ "{{ form_widget(form) }}" }}
-                    {#{ form_errors(form) }#}
-                </div>
-            </div>
-        </td>
-    </tr>
-{{ "{% endspaceless %}" }}
-{{ "{% endblock form_row %}" }}
+{% block body %}
+{{ "{% block body -%}" }}
+    <h1>{{ entity }} edit</h1>
 
-{{ '{% block body %}' }}
-<script src="{{ "{{ asset('js/common_form_functions.js') }}" }}"></script>
-<script>
-</script>
-<div class="container-fluid thisStudent thisObject" id="this{{ entity }}{{ '{{jsguid}}' }}">
-    
-    {{ "{{ form_start(form, {'attr' : {'id': 'form'}}) }}" }}
-    <!-- Nav tabs -->
-    <ul class="nav nav-pills" role="tablist" id="{{ entity }}Tabs{{ '{{jsguid}}' }}">
-      <li class="active"><a id="tab{{ entity }}General{{ '{{jsguid}}' }}" href="#general{{ entity }}{{ '{{jsguid}}' }}" role="tab" data-toggle="tab">General</a></li>
-      <li><a id="tabBacklog{{ entity }}{{ '{{jsguid}}' }}" href="#backlog{{ entity }}{{ '{{jsguid}}' }}" role="tab" data-toggle="tab">Activity log</a></li>
-      
-        {{ '{% if readonly == false or 1 == 1 %}' }}
-          <li class="alignRight">
-            {{ "{{ form_widget(form.submit, {'label' : 'Save', 'attr' : {'onclick' : \"$(this).prop('disabled', true); SaveTheForm(this)\", 'value' : 'Save', 'id' : 'bgn_submit_form{{jsguid}}', 'class' : 'btn btn-success col-xs-12 bgn_submit_button'}}) }}" }}                 
-            {#
-            <input type="button" onclick="unlockWithSpecialAuthCode{{ '{{jsguid}}' }}()" value="Unlock" id="bgn_unlock_student_form{{ '{{jsguid}}' }}"  class="btn btn-warning col-xs-12" />
-            #}
-          </li>
-          <li class="alignRight">
-            <input type="button" onclick="unlockWithSpecialAuthCode('{{ entity }}{{ '{{jsguid}}' }}', '{{ entity }}', ('#form #general{{ entity }}{{ '{{jsguid}}' }}', $('#this{{ entity }}{{ '{{jsguid}}' }}')), this, '{{ "{{entity.id}}" }}')" value="Unlock" id="bgn_unlock_{{ entity }}_form{{ '{{jsguid}}' }}"  class="btn btn-warning col-xs-12" />
-          </li>
-          <li class="alignRight">
-            <input type="button" onclick="$('#this{{ entity }}{{ '{{jsguid}}' }}').closest('.ui-dialog-content').dialog('close');" value="Cancel" id="bgn_cancel_{{ entity }}_form{{ '{{jsguid}}' }}"  class="btn btn-danger col-xs-12" />
-          </li>
-        {{ '{% endif %}' }}
-    </ul>
-    
-    <div class="spacer5">
-    </div>
-    
-    
-    
-    {{ "{% for messages in app.session.flashbag.get('notice') %}" }}
-        <div class="alert alert-info">
-            <a href="#" class="close" data-dismiss="alert">&times;</a>
-            <strong>{{ "{{messages}}" }}</strong> 
-        </div>
-    {{ "{% endfor %}" }}
-    {{ "{% if warnings|length > 0 %}" }}
-        
-        <div class="alert alert-warning">
-            <a href="#" class="close" data-dismiss="alert">&times;</a>
-            <strong>Warning!</strong> {{ "{{warnings}}" }}
-        </div>
-    {{ "{% endif %}" }}
-    
-    
-    <!-- Tab panes -->
-    <div class="tab-content">
-      <div class="tab-pane active tab-content  fade in" id="general{{ entity }}{{ '{{jsguid}}' }}">
-        <div class="panel panel-info">
-          <div class="panel-heading">
-            <h3 class="panel-title"><label class="required">General data</label></h3>
-          </div>
-          <div class="panel-body">
-            <table class="table table-striped table-bordered">
-                {{ "{{- form_widget(form) -}}" }}
-            </table>
-          </div>
-        </div>      
-      </div>
-      <div class="tab-pane tab-content fade" id="backlog{{ entity }}{{ '{{jsguid}}' }}">
-            {{ '{% include "BgnStudentBundle:Student:tabBacklog.html.twig" %}' }}
-      </div>
-    </div>
-    {{ "{{ form_end(form) }}" }}
-</div>
-{{ "{% include '::javascripts.html.twig' %}" }}
-<script>
-    {{"{% if readonly == true %}"}}
-        makeReadonly(('#form #general{{entity}}{{"{{jsguid}}"}}', $('#this{{entity}}{{"{{jsguid}}"}}')), true);
-    {{"{% endif %}"}}
-    var idd{{ '{{jsguid}}' }} = '{{ entity }}';
-    addIsDirtySupport(
-        $('#form', '#this'+idd{{ '{{jsguid}}' }}+'{{ '{{jsguid}}' }}'), 
-        'this'+idd{{ '{{jsguid}}' }}+'{{ '{{jsguid}}' }}', 
-        $('.bgn_submit_button', '#this'+idd{{ '{{jsguid}}' }}+'{{ '{{jsguid}}' }}')
-    );
-    addSavedTabSupport($('#'+idd{{ '{{jsguid}}' }}+'Tabs{{ '{{jsguid}}' }}'), ''+idd{{ '{{jsguid}}' }}+'TabsActiveTab{{ '{{jsguid}}' }}');
+    {{ '{{ form(edit_form) }}' }}
 
-</script>
-{{ '{% endblock %}' }}
+    {% set hide_edit, hide_delete = true, false %}
+    {% include 'crud/views/others/record_actions.html.twig.twig' %}
+{{ "{% endblock %}" }}
+{% endblock body %}

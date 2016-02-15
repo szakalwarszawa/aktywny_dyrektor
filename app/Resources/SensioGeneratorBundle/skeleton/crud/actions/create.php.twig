@@ -5,9 +5,9 @@
      *
 {% block phpdoc_method_annotations %}
 {% if 'annotation' == format %}
-     * @Route("/create", name="{{ route_name_prefix }}_create")
+     * @Route("/", name="{{ route_name_prefix }}_create")
      * @Method("POST")
-     * @Template("{{ bundle }}:{{ entity }}:edit.html.twig")
+     * @Template("{{ bundle }}:{{ entity }}:new.html.twig")
 {% endif %}
 {% endblock phpdoc_method_annotations %}
      */
@@ -19,23 +19,18 @@
         $entity = new {{ entity_class }}();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-        $warnings = "";
+
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $em->persist($entity);
             $em->flush();
-            $changemessage = $this->get('entitychanges')->GenerateEntityChanges($entity, array(), '{{ entity|capitalize }}', 'add');
-            
-            $this->get('session')->getFlashBag()->add('notice', $changemessage);
 
             {% if 'show' in actions -%}
-                return $this->redirect($this->generateUrl('{{ route_name_prefix }}_edit', array('id' => $entity->getId())));
+                return $this->redirect($this->generateUrl('{{ route_name_prefix }}_show', array('id' => $entity->getId())));
             {%- else -%}
                 return $this->redirect($this->generateUrl('{{ route_name_prefix }}'));
             {%- endif %}
 
-        }else{
-            $warnings .= ($form->getErrorsAsString());
         }
 {% endblock method_body %}
 
@@ -44,19 +39,11 @@
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'jsguid' => ('new{{ entity }}'),
-            'warnings' => $warnings,
-            'readonly' => false,
-            'log' => array(),
         );
 {% else %}
         return $this->render('{{ bundle }}:{{ entity|replace({'\\': '/'}) }}:new.html.twig', array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'jsguid' => ('new{{ entity }}'),
-            'warnings' => $warnings,
-            'readonly' => false,
-            'log' => array(),
         ));
 {% endif %}
 {% endblock method_return %}
