@@ -1066,10 +1066,12 @@ class DefaultController extends Controller
 
                 $wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
                 $dane = explode(";", $wiersz);
-                $cnname = $this->ldap_escape($dane[1]) . '*' . $this->ldap_escape($dane[0]);
-                $ADUser = $ldap->getUserFromAD(null, $cnname);
-
-                if (!empty($ADUser)) {
+                if($dane[1] != "" && $dane[1] != ""){
+                    $cnname = $this->ldap_escape($dane[1]) . '*' . $this->ldap_escape($dane[0]);
+                    //echo ".".$wiersz.".<br>";
+                    $ADUser = $ldap->getUserFromAD(null, $cnname);
+                }
+                if ($dane[1] != "" && $dane[1] != "" && !empty($ADUser)) {
                     // znajdz zasob                    
                     $zasob = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa(trim($dane[2]));
                     if (!$zasob) {
