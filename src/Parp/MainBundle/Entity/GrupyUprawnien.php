@@ -141,6 +141,6 @@ class GrupyUprawnien
         return $this->uprawnienia;
     }
     public function __toString(){
-        return $this->getKod();
+        return $this->getOpis();
     }
 }

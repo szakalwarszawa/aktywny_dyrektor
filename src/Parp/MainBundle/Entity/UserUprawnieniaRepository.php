@@ -42,5 +42,34 @@ class UserUprawnieniaRepository extends EntityRepository
 
         return $query->getResult();
     }
+    
+    public function findUsersByUprawnienieId($uprawnienieId){
+        global $kernel;
+        
+        if ('AppCache' == get_class($kernel)) {
+            $kernel = $kernel->getKernel();
+        }
+        
+        $ldap = $kernel->getContainer()->get('ldap_service');
+        
+        $query = $this->getEntityManager()->createQuery('SELECT uu FROM ParpMainBundle:UserUprawnienia uu
+              JOIN ParpMainBundle:Uprawnienia u
+              WHERE uu.uprawnienie_id = u.id
+              AND u.id = :uprawnienieId
+              ORDER BY uu.samaccountname ASC
+              ')->setParameter('uprawnienieId', $uprawnienieId);
+               
+        
+        $res = $query->getResult();
+        
+        foreach($res as $uz){
+            //echo $uz->getSamaccountname()."<br>";
+            
+            $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
+            //echo "<pre>";print_r($ADUser); echo "</pre>";
+            $uz->setADUser($ADUser[0]);
+        }
+        return $res;
+    }
 
 }

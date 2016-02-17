@@ -27,7 +27,7 @@ class UserZasobyRepository extends EntityRepository
     public function findNameByAccountname($samaccountname)
     {
 
-        $query = $this->getEntityManager()->createQuery('SELECT uz.samaccountname,z.nazwa, z.opis FROM ParpMainBundle:UserZasoby uz
+        $query = $this->getEntityManager()->createQuery('SELECT uz.samaccountname,z.nazwa, z.opis, z.id FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname
@@ -37,5 +37,32 @@ class UserZasobyRepository extends EntityRepository
         
         return $query->getResult();
     }
-
+    public function findUsersByZasobId($zasobId){
+        global $kernel;
+        
+        if ('AppCache' == get_class($kernel)) {
+            $kernel = $kernel->getKernel();
+        }
+        
+        $ldap = $kernel->getContainer()->get('ldap_service');
+        
+        $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND z.id = :zasobId
+              ORDER BY uz.samaccountname ASC
+              ')->setParameter('zasobId', $zasobId);
+               
+        
+        $res = $query->getResult();
+        
+        foreach($res as $uz){
+            //echo $uz->getSamaccountname()."<br>";
+            
+            $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
+            //echo "<pre>";print_r($ADUser); echo "</pre>";
+            $uz->setADUser($ADUser[0]);
+        }
+        return $res;
+    }
 }

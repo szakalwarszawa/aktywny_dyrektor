@@ -35,7 +35,30 @@ class UserZasoby
      */
     private $zasobId;
 
+    
+    private $_ADUser;
+    /**
+     * Set _ADUser
+     *
+     * @param array $_ADUser
+     * @return array
+     */
+    public function setADuser($_ADUser)
+    {
+        $this->_ADUser = $_ADUser;
 
+        return $this;
+    }
+
+    /**
+     * Get _ADUser
+     *
+     * @return array 
+     */
+    public function getADUser()
+    {
+        return $this->_ADUser;
+    }
     /**
      * Get id
      *

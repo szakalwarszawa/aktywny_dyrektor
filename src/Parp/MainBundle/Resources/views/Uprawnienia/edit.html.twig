@@ -1,11 +1,28 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
+<div class="col-sm-4">
     <h1>Edycja Uprawnienia </h1>
     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
     {{ form(edit_form) }}
+</div>
+<div class="col-sm-4">
+    <h1>Lista Użytkowników Uprawnienia</h1>
+    <table class="table table-striped table-bordered">
+            <tr>
+                <th>Imię Nazwisko</th>
+            </tr>
+            {% for uz in users %}
+                <tr>
+                    <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname})}}">{{ uz.ADUser.name }}</a></td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+</div> 
     
-        <div class="btn-group">
+<div class="btn-group">
 
 <a class="btn btn-primary" href="{{ path('uprawnienia') }}">
     <i class="fa fa-list"></i> Lista Uprawnienia

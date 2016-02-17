@@ -2,6 +2,7 @@
 
 {% block body %}
 
+    <a href="{{ path('userEdit', {samaccountname: user.samaccountname})}}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{user.name}}</a>
     <h3>Zaangażowanie dla {{ user.name }}:</h3>
     <form method="post" name="formularz">
         <div class="btn-group" data-toggle="buttons">      

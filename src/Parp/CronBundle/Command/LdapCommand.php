@@ -43,7 +43,8 @@ class LdapCommand extends ContainerAwareCommand
     
                 $output->writeln('<info>Znalazłem następujące zmiany:</info>');
                 foreach ($zmiany as $zmiana) {
-                    $output->writeln($zmiana->getCn() . ':');
+                    $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
+                    $output->writeln($userNow[0]['name'] . ':');
                 }
     
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
@@ -113,9 +114,10 @@ class LdapCommand extends ContainerAwareCommand
                         }
     
                         // zmiana uprawnien początkowych nie powduje zadnch zmian w ldap-ie
-                        if (!$zmiana->getInitialrights()) {
+                        //if (!$zmiana->getInitialrights() && count($zmiany) == 1) {
+                            //print_r($zmiana);
                             $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
-                        }
+                        //}
                         $uprawnienia->zmianaUprawnien($zmiana);
     
                         $zmiana->setIsImplemented(1);

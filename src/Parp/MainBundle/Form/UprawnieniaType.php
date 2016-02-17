@@ -18,7 +18,7 @@ class UprawnieniaType extends AbstractType
             ->add('opis')
             ->add('czy_sekcja')
             ->add('czy_edycja')
-            ->add('grupy')
+            ->add('grupy', null, array('expanded' => true))
         ;
     }
     

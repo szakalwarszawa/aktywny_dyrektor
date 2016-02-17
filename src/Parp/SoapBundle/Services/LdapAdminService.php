@@ -49,7 +49,7 @@ class LdapAdminService
         //die('a');
     }
 
-    public function getUserFromAD($samaccountname = null, $cnname = null)
+    public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
     {
         //$ldapconn = ldap_connect('srv-adc01.parp.local');
         //$ldapdomain = "@parp.local";
@@ -78,10 +78,12 @@ class LdapAdminService
 //            $cnname = substr($cnname,3,stripos($cnname,',')-3);
             $searchString = $cnname;
 //            echo $searchString;
-        } else {
+        } elseif($query) {
+            $searchString = "(&(".$query.")(objectClass=person))";
+        }else {
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
-echo "$userdn";
+//echo "$searchString";
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",
             "initials",
@@ -148,9 +150,7 @@ echo "$userdn";
         $dn = $ldapUser;
         $entry = array();
 
-        if ($person->getCn()) {
-            $entry['cn'] = $person->getCn();
-        }
+        
         if ($person->getAccountExpires()) {
             $entry['accountExpires'] = $this->UnixtoLDAP($person->getAccountExpires()->getTimestamp());
         }
@@ -202,9 +202,9 @@ echo "$userdn";
                 $entry['description'] = $department->getShortname();
             }
         }
-        print_r($entry);
-       echo ".".$dn.".";
-        ldap_modify($ldapconn, $dn, $entry);
+        //print_r($entry);
+        if(count($entry) > 0)
+            ldap_modify($ldapconn, $dn, $entry);
 
 
         //zmiana kontenera - obsługujemy nie modyfikacja
@@ -215,10 +215,20 @@ echo "$userdn";
             // zmien ds pracownika
             $userAD = $this->getUserFromAD($person->getSamaccountname());
             $parent = 'OU=' . $entry['description'] . ',' . $userdn;
-
-            $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $userAD[0]['name'], $parent, TRUE);
+                        
+            $cn = $userAD[0]['name'];
+            //na koncu razem z kontenerem zmieniamy cn bo wtedy nic nie znajdzie w ad
+            if ($person->getCn()) {
+                $cn = $person->getCn();
+            }
+            $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
             //var_dump($b);
+        }elseif($person->getCn()){
+            //zmieniamy tylko cn
+            $cn = $person->getCn();
+            $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
         }
+        
         ldap_unbind($ldapconn);
 
         //$person->setIsImplemented(1);

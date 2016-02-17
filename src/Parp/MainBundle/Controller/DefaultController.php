@@ -33,7 +33,7 @@ class DefaultController extends Controller
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
-
+//echo "<pre>"; print_r($ADUsers); die();
         $source = new Vector($ADUsers);
 
         $grid = $this->get('grid');
@@ -218,7 +218,8 @@ class DefaultController extends Controller
         foreach ($rightsEntity as $tmp) {
             $rights[$tmp->getKod()] = $tmp->getOpis();
         }
-
+        $now = new \Datetime();
+        $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
         $form = $this->createFormBuilder($defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
@@ -323,6 +324,7 @@ class DefaultController extends Controller
                         'class' => 'col-lg-4 control-label',
                     ),
                     'required' => false,
+                    'data' => $now->format("d-m-Y")
                 ))
                 ->add('initialrights', 'choice', array(
                     'required' => false,
@@ -393,10 +395,14 @@ class DefaultController extends Controller
                 return $this->redirect($this->generateUrl('main'));
             }
         }
+        $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname));
+
 
         return array(
             'user' => $ADUser[0],
             'form' => $form->createView(),
+            'zasoby' => $zasoby,
+            'uprawnienia' => $uprawnienia
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
     }
@@ -616,11 +622,13 @@ class DefaultController extends Controller
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
         // Pobieramy naszego przełożonego
-
-        $ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
+        $mancn = str_replace("CN=", "", substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
+        $ADManager = $ldap->getUserFromAD(null, $mancn);
 
         // Pobieramy wszystkich jego pracowników (w których występuje jako przełożony)
-        $ADWorkers = $ldap->getUserFromAD(null, "manager=" . $ADUser[0]["distinguishedname"]);
+        $ADWorkers = $ldap->getUserFromAD(null, null, "manager=" . $ADUser[0]["distinguishedname"]."");
+
+        //echo "<pre>";print_r($ADManager); print_r($ADUser); print_r($ADWorkers);die();
 
         return array(
             'przelozony' => isset($ADManager[0]) ? $ADManager[0] : "",
@@ -1139,7 +1147,7 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
-        // Pobieramy listę stanowisk
+        // Pobieramy listę zasobow
         $userZasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
 
         return $this->render('ParpMainBundle:Default:resources.html.twig', array('user' => $ADUser[0]['name'], 'zasoby' => $userZasoby));

@@ -17,7 +17,7 @@ class GrupyUprawnienType extends AbstractType
         $builder
             ->add('kod')
             ->add('opis')
-            ->add('uprawnienia')
+            ->add('uprawnienia', null, array('expanded' => true))
         ;
     }
     

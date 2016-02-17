@@ -215,7 +215,7 @@ class LdapService
         return $accountControl;
     }
 
-    public function getUserFromAD($samaccountname = null, $cnname = null)
+    public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
     {
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
@@ -250,11 +250,13 @@ class LdapService
             //$xx = ldap_escape("\(Michalik\)");
             //$searchString = '(&(sn=*Rucińska '.$xx.'*)(givenName=Marta*)(objectClass=person))';
 //            echo $searchString;
-        } else {
+        } elseif($query) {
+            $searchString = "(&(".$query.")(objectClass=person))";
+        }else {
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
 
-
+//echo "!!!".$searchString."!!!";
 
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",

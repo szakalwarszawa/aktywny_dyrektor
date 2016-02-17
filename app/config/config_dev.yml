@@ -39,8 +39,8 @@ parameters:
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
     ad_password : F4UCorsair
-    ad_ou : "OU=ADUsers"
-#    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
+#    ad_ou : "OU=ADUsers"
+    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
 #    ad_host: 10.10.16.21
 #    ad_host: srv-adc01.parp.local
 #    ad_domain: parp.local
