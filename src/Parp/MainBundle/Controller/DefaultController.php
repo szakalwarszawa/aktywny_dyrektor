@@ -321,7 +321,7 @@ class DefaultController extends Controller
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
-                        'class' => 'col-lg-4 control-label',
+                        'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
                     'data' => $now->format("d-m-Y")
