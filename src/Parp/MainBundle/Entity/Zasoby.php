@@ -43,6 +43,164 @@ class Zasoby
      * @ORM\Column(name="biuro", type="string", length=255)
      */
     private $biuro;
+    
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $wlascicielZasobu;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $administratorZasobu;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $administratorTechnicznyZasobu;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $uzytkownicy;
+    /**
+    * @var boolean
+     *
+     * @ORMColumn(type="boolean", nullable=true)
+     */
+    private $daneOsobowe;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $komorkaOrgazniacyjna;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $miejsceInstalacji;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $opisZasobu;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $modulFunkcja;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $poziomDostepu;
+    /**
+    * @var \DateTime
+     *
+     * @ORMColumn(type="datetime", nullable=true)
+     */
+    private $dataZakonczeniaWdrozenia;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $wykonawca;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $nazwaWykonawcy;
+    /**
+    * @var boolean
+     *
+     * @ORMColumn(type="boolean", nullable=true)
+     */
+    private $asystaTechniczna;
+    /**
+    * @var \DateTime
+     *
+     * @ORMColumn(type="datetime", nullable=true)
+     */
+    private $dataWygasnieciaAsystyTechnicznej;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $dokumentacjaFormalna;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $dokumentacjaProjektowoTechniczna;
+    /**
+    * @var string
+     *
+     * @ORMColumn(type="string", length=255, nullable=true)
+     */
+    private $technologia;
+    /**
+    * @var boolean
+     *
+     * @ORMColumn(type="boolean", nullable=true)
+     */
+    private $testyBezpieczenstwa;
+    /**
+    * @var boolean
+     *
+     * @ORMColumn(type="boolean", nullable=true)
+     */
+    private $testyWydajnosciowe;
+    /**
+    * @var \DateTime
+     *
+     * @ORMColumn(type="datetime", nullable=true)
+     */
+    private $dataZleceniaOstatniegoPrzegladuUprawnien;
+    /**
+    * @var integer
+     *
+     * @ORMColumn(type="integer", nullable=true)
+     */
+    private $interwalPrzegladuUprawnien;
+    /**
+    * @var \DateTime
+     *
+     * @ORMColumn(type="datetime", nullable=true)
+     */
+    private $dataZleceniaOstatniegoPrzegladuAktywnosci;
+    /**
+    * @var integer
+     *
+     * @ORMColumn(type="integer", nullable=true)
+     */
+    private $interwalPrzegladuAktywnosci;
+    /**
+    * @var \DateTime
+     *
+     * @ORMColumn(type="datetime", nullable=true)
+     */
+    private $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
+    /**
+    * @var integer
+     *
+     * @ORMColumn(type="integer", nullable=true)
+     */
+    private $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
+
 
 
     /**

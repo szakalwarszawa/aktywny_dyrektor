@@ -1074,9 +1074,6 @@ class DefaultController extends Controller
 
     protected function wczytajPlik($file)
     {
-        
-        
-        
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
 
@@ -1086,7 +1083,130 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
         $numDeleted = $query->execute();
+        $wiersz2getter = array(
+            3 => "LoginDoZasobu",
+            4 => "Modul",
+            5 => "PoziomDostepu",
+            6 => "AktywneOd",
+            7 => "Bezterminowo",
+            8 => "AktywneDo",
+            9 => "KanalDostepu",
+            10 => "UprawnieniaAdministracyjne",
+            11 => "OdstepstwoOdProcedury",
+        );
+        $pierwszyWiersz = explode(";", $list[0]);
+        $komorka = $pierwszyWiersz[0];
+        if($komorka == "Nazwa zasobu"){
+            $this->wczytajPlikZasoby($file);
+        }else{
+            $this->wczytajPlikZasobyUser($file);
+        }
+        return true;
+    }
+    protected function wczytajPlikZasoby($file)
+    {
+        $dane = file_get_contents($file->getPathname());
+        // $xxx = iconv('windows-1250', 'utf-8', $dane );
 
+        $list = explode("\n", $dane);
+        $ldap = $this->get('ldap_service');
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+        $numDeleted = $query->execute();
+        $wiersz2getter = array(
+            1 => "WlascicielZasobu",
+            2 => "AdministratorZasobu",
+            3 => "AdministratorTechnicznyZasobu",
+            4 => "Uzytkownicy",
+            5 => "DaneOsobowe",
+            6 => "KomorkaOrgazniacyjna",
+            7 => "MiejsceInstalacji",
+            8 => "OpisZasobu",
+            9 => "ModulFunkcja",
+            10 => "PoziomDostepu",
+            11 => "DataZakonczeniaWdrozenia",
+            12 => "Wykonawca",
+            13 => "NazwaWykonawcy",
+            14 => "AsystaTechniczna",
+            15 => "DataWygasnieciaAsystyTechnicznej",
+            16 => "DokumentacjaFormalna",
+            17 => "DokumentacjaProjektowoTechniczna",
+            18 => "Technologia",
+            19 => "TestyBezpieczenstwa",
+            20 => "TestyWydajnosciowe",
+            21 => "DataZleceniaOstatniegoPrzegladuUprawnien",
+            22 => "InterwalPrzegladuUprawnien",
+            23 => "DataZleceniaOstatniegoPrzegladuAktywnosci",
+            24 => "InterwalPrzegladuAktywnosci",
+            25 => "DataOstatniejZmianyHaselKontAdministracyjnychISerwisowych",
+            26 => "InterwalZmianyHaselKontaAdministracyjnychISerwisowych"
+        );
+        $tablica = array();
+        foreach ($list as $wiersz) {
+            // ostatni wiersz w pliku może być pusty!
+            if (!empty($wiersz)) {
+                //echo $wiersz ."\n";
+
+                $wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
+                $dane = explode(";", $wiersz);
+                if ($dane[1] != "" && $dane[1] != "") {
+                    // znajdz zasob                    
+                    $zasob = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa(trim($dane[0]));
+                    if (!$zasob) {
+                        //echo "nie znaleziono $dane[2] " . "<br>";
+                        //nie rób nic na razie
+                        $zasob = new Zasob();
+                        $zasob->setNazwa(trim($dane[0]));
+                    }
+                    foreach($value['dane'] as $k => $v){
+                        $v = trim($v);
+                        if($k >= 3 && $v != ""){
+                            $setter = $wiersz2getter[$k];
+                            if(strstr($setter, "Data") !== false){
+                                echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
+                                $v = \DateTime::createFromFormat('D M d H:i:s e Y', $v);
+                                print_r($v);
+                                //die();
+                            }
+                            if($v)
+                                $zasob->{"set".$setter}($v);                        
+                        }                    
+                    }
+                    $em->persist($zasob);
+                    
+                }
+            }
+        }
+
+        $em->flush();
+
+        return true;
+    }
+    
+    
+    protected function wczytajPlikZasobyUser($file)
+    {
+        $dane = file_get_contents($file->getPathname());
+        // $xxx = iconv('windows-1250', 'utf-8', $dane );
+
+        $list = explode("\n", $dane);
+        $ldap = $this->get('ldap_service');
+
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+        $numDeleted = $query->execute();
+        $wiersz2getter = array(
+            3 => "LoginDoZasobu",
+            4 => "Modul",
+            5 => "PoziomDostepu",
+            6 => "AktywneOd",
+            7 => "Bezterminowo",
+            8 => "AktywneDo",
+            9 => "KanalDostepu",
+            10 => "UprawnieniaAdministracyjne",
+            11 => "OdstepstwoOdProcedury",
+        );
         $tablica = array();
         foreach ($list as $wiersz) {
             // ostatni wiersz w pliku może być pusty!
@@ -1129,14 +1249,14 @@ class DefaultController extends Controller
                         // stworz tablice  bez powtorzen 
                         $samaccountname = $ADUser[0]['samaccountname'];
                         $zasobid = $zasob->getId();
-
+                        $dane['zasobId'] = $zasobid;
                         if (key_exists($samaccountname, $tablica)) {
                             $klucz = $tablica[$samaccountname];
                             if (!in_array($zasobid, $klucz)) {
-                                $tablica[$samaccountname][] = $zasobid;
+                                $tablica[$samaccountname][] = array("zasobId" => $zasobid, 'dane' => $dane);
                             }
                         } else {
-                            $tablica[$samaccountname][] = $zasobid;
+                            $tablica[$samaccountname][] = array("zasobId" => $zasobid, 'dane' => $dane);
                         }
                     }
                 }
@@ -1147,8 +1267,24 @@ class DefaultController extends Controller
             foreach ($values as $value) {
                 //echo $key . ' ' . $value . "<br>";
                 $newUserZasob = new UserZasoby();
+                $newUserZasob->setAktywneOd(null);
+                $newUserZasob->setAktywneDo(null);
                 $newUserZasob->setSamaccountname($key);
-                $newUserZasob->setZasobId($value);
+                $newUserZasob->setZasobId($value['zasobId']);
+                foreach($value['dane'] as $k => $v){
+                    $v = trim($v);
+                    if($k >= 3 && $v != ""){
+                        $setter = $wiersz2getter[$k];
+                        if($k == 6 || $k == 8){
+                            echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
+                            $v = \DateTime::createFromFormat('D M d H:i:s e Y', $v);
+                            print_r($v);
+                            //die();
+                        }
+                        if($v)
+                            $newUserZasob->{"set".$setter}($v);                        
+                    }                    
+                }
                 $em->persist($newUserZasob);
             }
         }
