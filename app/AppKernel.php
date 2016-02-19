@@ -22,6 +22,7 @@ class AppKernel extends Kernel
             new APY\DataGridBundle\APYDataGridBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new Parp\CronBundle\ParpCronBundle(),
+            //new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

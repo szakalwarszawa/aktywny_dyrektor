@@ -337,7 +337,9 @@ class DefaultController extends Controller
                         'class' => 'form-control',
                     ),
                     'choices' => $rights,
-                    'data' => $defaultData["initialrights"],
+                    'data' => array($defaultData["initialrights"]),
+                    'multiple' => true,
+                    'expanded' => false
                 ))
                 ->setMethod('POST')
                 ->getForm();
@@ -1056,6 +1058,9 @@ class DefaultController extends Controller
 
     protected function wczytajPlik($file)
     {
+        
+        
+        
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
 

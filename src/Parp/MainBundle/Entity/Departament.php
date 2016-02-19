@@ -5,11 +5,13 @@ namespace Parp\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Departament
  *
  * @ORM\Table(name="departament")
+ * aa@Gedmo\Loggable
  * @ORM\Entity
  * @UniqueEntity(
  *     fields={"name"},
