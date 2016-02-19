@@ -127,9 +127,12 @@ class UprawnieniaService
 
             //pobierz nowe uprawnienia
             $nowe = array();
-            $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $person->getInitialRights()));
-            foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
-                $nowe[] = $uprawnienie->getId();
+            $up = explode(",", $person->getInitialRights());
+            foreach($up as $kkod){
+                $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
+                foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
+                    $nowe[] = $uprawnienie->getId();
+                }
             }
 
             $istniejace = array();
@@ -220,7 +223,30 @@ class UprawnieniaService
             }
 
             // zmien grupę uprawneń
-            $usergrupa = $this->doctrine->getRepository('ParpMainBundle:Usergrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname()));
+            $usergrupa = $this->doctrine->getRepository('ParpMainBundle:Usergrupa')->findBy(array('samaccountname' => $person->getSamaccountname()));
+            $oldgrupy = array();
+            $newgrupy = explode(',', $person->getInitialrights());
+            foreach($usergrupa as $g){
+                $oldgrupy[] = $g->getGrupa();                                
+            }
+            
+            $grupDoUtworzenia = array_diff($newgrupy, $oldgrupy);
+            $grupDoSkasowania = array_diff($oldgrupy, $newgrupy);
+            
+            foreach($grupDoUtworzenia as $ug){
+                $usergrupa = new UserGrupa();
+                $usergrupa->setGrupa($ug);
+                $usergrupa->setSamaccountname($person->getSamaccountname());            
+                $this->doctrine->persist($usergrupa);
+            }
+            foreach($grupDoSkasowania as $ug){
+                $usergrupa = $this->doctrine->getRepository('ParpMainBundle:Usergrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));            
+                $this->doctrine->remove($usergrupa);
+            }
+            
+                
+                
+/*
             if ($usergrupa) {
                 $usergrupa->setGrupa($person->getInitialrights());
             } else {
@@ -229,6 +255,7 @@ class UprawnieniaService
                 $usergrupa->setSamaccountname($person->getSamaccountname());
             }
             $this->doctrine->persist($usergrupa);
+*/
 
             $this->doctrine->flush();
         }

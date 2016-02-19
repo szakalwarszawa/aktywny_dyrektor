@@ -184,9 +184,12 @@ class DefaultController extends Controller
         $defaultData = $ADUser[0];
 
         // pobierz uprawnienia poczatkowe
-        $initialrights = $this->getDoctrine()->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $ADUser[0]['samaccountname']));
+        $initialrights = $this->getDoctrine()->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $ADUser[0]['samaccountname']));
         if (!empty($initialrights)) {
-            $defaultData['initialrights'] = $initialrights->getGrupa();
+            foreach($initialrights as $initialright)
+                $defaultData['initialrights'][] = $initialright->getGrupa();
+                
+            //$defaultData['initialrights'] = implode(",", $defaultData['initialrights']);
         }else{
             $defaultData['initialrights'] = null;
         }
@@ -220,6 +223,7 @@ class DefaultController extends Controller
         }
         $now = new \Datetime();
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
+        
         $form = $this->createFormBuilder($defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
@@ -337,7 +341,7 @@ class DefaultController extends Controller
                         'class' => 'form-control',
                     ),
                     'choices' => $rights,
-                    'data' => array($defaultData["initialrights"]),
+                    'data' => ($defaultData["initialrights"]),
                     'multiple' => true,
                     'expanded' => false
                 ))
@@ -349,14 +353,25 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            if (0 < count(array_diff($form->getData(), $previousData))) {
+            $ndata = $form->getData();
+            $newrights = $ndata['initialrights'];
+            $odata = $previousData;
+            $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
+            unset($ndata['initialrights']);
+            unset($odata['initialrights']);
+            //$df = array_diff($form->getData(), $previousData);
+            //echo "<pre>"; print_r($previousData); print_r($form->getData()); die();
+            if (0 < count(array_diff($ndata, $odata)) || $roznicauprawnien) {
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
                 $entry = new Entry();
                 $entry->setSamaccountname($samaccountname);
                 $entry->setDistinguishedName($previousData["distinguishedname"]);
-                $newData = array_diff($form->getData(), $previousData);
-
+                $newData = array_diff($ndata, $odata);
+                if(($roznicauprawnien)){
+                    $value = implode(",", $newrights);
+                    $entry->setInitialrights($value);
+                }
                 foreach ($newData as $key => $value) {
                     switch ($key) {
                         case "name":
@@ -383,7 +398,8 @@ class DefaultController extends Controller
                         case "fromWhen":
                             $entry->setFromWhen(new \DateTime($value));
                             break;
-                        case "initialrights":
+                        case "initialrights"://nieuzywane bo teraz jako array idzie
+                            $value = implode(",", $value);
                             $entry->setInitialrights($value);
                             break;
                     }
@@ -397,7 +413,7 @@ class DefaultController extends Controller
                 return $this->redirect($this->generateUrl('main'));
             }
         }
-        $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname));
+        $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname, 'czyAktywne' => true));
 
 
         return array(

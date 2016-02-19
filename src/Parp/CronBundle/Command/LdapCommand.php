@@ -103,11 +103,14 @@ class LdapCommand extends ContainerAwareCommand
     
                         if ($zmiana->getInitialrights()) {
                             // pobierzmy stare
-                            $old = $em->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $zmiana->getSamaccountname()));
+                            $old = $em->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $zmiana->getSamaccountname()));
+                            $oldg = array();
+                            foreach($old as $o)
+                                $oldg[] = $o->getGrupa();
     
                             // jezeli do tej pory nie miał żadnych
                             if ($old) {
-                                $output->writeln('  - Zmiana uprawnień początkowych : ' . $old->getGrupa() . ' -> ' . $zmiana->getInitialrights());
+                                $output->writeln('  - Zmiana uprawnień początkowych : ' . implode(",", $oldg) . ' -> ' . $zmiana->getInitialrights());
                             } else {
                                 $output->writeln('  - Nadanie uprawnień początkowych : ' . $zmiana->getInitialrights());
                             }
