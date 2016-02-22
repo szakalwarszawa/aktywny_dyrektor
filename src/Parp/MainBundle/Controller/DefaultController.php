@@ -20,6 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
 use Parp\MainBundle\Entity\UserZasoby;
+use Parp\MainBundle\Entity\Zasoby;
 
 class DefaultController extends Controller
 {
@@ -1105,10 +1106,9 @@ class DefaultController extends Controller
     }
     protected function wczytajPlikZasoby($file)
     {
-        $dane = file_get_contents($file->getPathname());
-        // $xxx = iconv('windows-1250', 'utf-8', $dane );
+        //$dane = file_get_contents($file->getPathname());
 
-        $list = explode("\n", $dane);
+        $handle = fopen($file->getPathname(),'r');
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
@@ -1143,30 +1143,44 @@ class DefaultController extends Controller
             26 => "InterwalZmianyHaselKontaAdministracyjnychISerwisowych"
         );
         $tablica = array();
+        $out = $this->poprawPlikCsv($file);
+        $out = iconv('windows-1250', 'utf-8', $out );
+        $list = explode("\n", $out);
         foreach ($list as $wiersz) {
+        //while ( ($wiersz = fgetcsv($handle, 0, ";", '"') ) !== FALSE ) {
             // ostatni wiersz w pliku może być pusty!
-            if (!empty($wiersz)) {
+/*
+            if($wiersz[0] == "CMS-EXPO"){
+                print_r($wiersz); die();
+                }
+*/
+            if (!empty($wiersz[0])) {
                 //echo $wiersz ."\n";
 
-                $wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
-                $dane = explode(";", $wiersz);
+                //$wiersz = $wiersz[0];//$wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
+                //print_r($wiersz); 
+                $dane = explode(";", $wiersz);//$wiersz;//
+                //print_r($dane); die();
                 if ($dane[1] != "" && $dane[1] != "") {
                     // znajdz zasob                    
                     $zasob = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa(trim($dane[0]));
                     if (!$zasob) {
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
-                        $zasob = new Zasob();
+                        $zasob = new Zasoby();
+                        $zasob->setOpis("");
+                        $zasob->setBiuro("");
                         $zasob->setNazwa(trim($dane[0]));
                     }
-                    foreach($value['dane'] as $k => $v){
+                    foreach($dane as $k => $v){
                         $v = trim($v);
-                        if($k >= 3 && $v != ""){
+                        //echo ".".$v.".";
+                        if($k >= 1 && $v != "" && $k < 27){
                             $setter = $wiersz2getter[$k];
                             if(strstr($setter, "Data") !== false){
-                                echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
+                                //echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
                                 $v = \DateTime::createFromFormat('D M d H:i:s e Y', $v);
-                                print_r($v);
+                                //print_r($v);
                                 //die();
                             }
                             if($v)
@@ -1319,6 +1333,36 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         $userEngagements = $em->getRepository('ParpMainBundle:UserUprawnienia')->findSekcja('lolek_lolek');
         var_dump($userEngagements);
+    }
+    
+    public function poprawPlikCsv($file){
+        $dane = file_get_contents($file->getPathname());
+        // $xxx = iconv('windows-1250', 'utf-8', $dane );
+
+        $list = explode("\n", $dane);
+        $out = "";
+        $buffer = "";
+        $inTheMiddle = false;
+        foreach($list as $line){            
+            $c = substr_count($line, '"');
+            if($c%2 == 1){
+                if($inTheMiddle){
+                    $buffer .= $line;
+                    $out .= $buffer."\n";
+                    $inTheMiddle = false;
+                    $buffer = "";
+                }else{
+                    $inTheMiddle = true;
+                    //$buffer = "";
+                    $buffer = $line."\\n";
+                }
+            }elseif($inTheMiddle){
+                $buffer .= $line."\\n";
+            }else{
+                $out .= $line."\n";
+            }
+        }//die($out);
+        return $out;
     }
 
 }

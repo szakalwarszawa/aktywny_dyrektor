@@ -22,7 +22,8 @@
         "apy/datagrid-bundle": "^2.2",
         "white-october/pagerfanta-bundle": "1.0.*@dev",
         "phpoffice/phpexcel": "dev-master",
-        "stof/doctrine-extensions-bundle": "^1.2"
+        "stof/doctrine-extensions-bundle": "^1.2",
+        "parsecsv/php-parsecsv": "0.4.5"
     },
     "scripts": {
         "post-install-cmd": [
