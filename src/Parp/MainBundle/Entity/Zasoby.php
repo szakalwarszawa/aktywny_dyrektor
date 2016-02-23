@@ -879,4 +879,7 @@ class Zasoby
     {
         return $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych;
     }
+    public function __toString(){
+        return $this->getNazwa();
+    }
 }

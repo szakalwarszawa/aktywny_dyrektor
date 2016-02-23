@@ -131,6 +131,32 @@ class UserZasoby
     {
         return $this->_ADUser;
     }
+    
+    
+    private $_zasobNazwa;
+    /**
+     * Set _zasobNazwa
+     *
+     * @param string $_zasobNazwa
+     * @return string
+     */
+    public function setZasobNazwa($_zasobNazwa)
+    {
+        $this->_zasobNazwa = $_zasobNazwa;
+
+        return $this;
+    }
+
+    /**
+     * Get _zasobNazwa
+     *
+     * @return string 
+     */
+    public function getZasobNazwa()
+    {
+        return $this->_zasobNazwa;
+    }
+    
     /**
      * Get id
      *

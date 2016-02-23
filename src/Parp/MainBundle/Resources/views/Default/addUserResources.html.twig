@@ -1,0 +1,125 @@
+{% extends '::base.html.twig' %}
+
+{% block body %} 
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                Użytkownicy ({{users|length}})
+                </a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                    {% if users|length > 0 %}
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lp.</th>
+                                <th>Użytkownik</th>
+                                <th>Login</th>
+                            </tr>
+                        </thead>
+                        {% set n = 1 %}
+                        <tbody>
+                            {% for row in users %}
+                                <tr>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ n }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
+                                </tr>
+                                {% set n = n + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    
+                    </table>
+                    {% else %}
+                    
+                    <p>Nie wybrano użytkowników</p>
+                    
+                    {% endif %}
+                    
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    <div class="col-sm-12">
+        <div class="panel panel-default">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+                Dodawanie zasobów
+                </a>
+                </h4>
+            </div>
+            <div id="collapse1" class="panel-collapse collapse in">
+                <div class="panel-body">
+                {{ form_start(form) }}
+                {{form_widget(form.action)}}
+                {{form_widget(form.samaccountnames)}}
+                {{form_widget(form.fromWhen)}}
+{#                 {{form_widget(form.userzasoby)}} #}
+                {% if form.userzasoby is defined %}
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Nazwa</th>
+                                <th>Moduł</th>
+                                <th>Poziom dostępu</th>
+                                <th>Aktywne od</th>
+                                <th>Bezterminowo</th>
+                                <th>Aktywne do</th>
+                                <th>Kanał dostępu</th>
+                                <th>Uprawnienia administracyjne</th>
+                                <th>Odstepstwo od procedury</th>
+                            </tr>
+                        </thead>
+                        {% set n = 1 %}
+                        <tbody>
+                            {% for userzasoby in form.userzasoby %}
+                                <tr>
+                                    <td>
+                                        {{userzasoby.vars.value.zasobNazwa}}
+                                        {{form_widget(userzasoby.zasobNazwa)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.samaccountname)}}
+                                        {{form_widget(userzasoby.zasobId)}}
+                                        {{form_widget(userzasoby.modul)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.poziomDostepu)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.aktywneOd)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.bezterminowo)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.aktywneDo)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.kanalDostepu)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.uprawnieniaAdministracyjne)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.odstepstwoOdProcedury)}}
+                                    </td>
+                                </tr>                        
+                            {% endfor %}
+                        </tbody>
+                    
+                    </table>
+                {%endif%}
+                {{ form_end(form) }}
+{#                     {{form(form)}} #}
+                </div>
+            </div>
+        </div>
+    </div>
+{%endblock%}

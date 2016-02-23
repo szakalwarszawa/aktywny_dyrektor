@@ -15,12 +15,16 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
+use APY\DataGridBundle\Grid\Action\MassAction;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
 use Parp\MainBundle\Entity\UserZasoby;
+use Parp\MainBundle\Form\UserZasobyType;
 use Parp\MainBundle\Entity\Zasoby;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 
 class DefaultController extends Controller
 {
@@ -131,9 +135,316 @@ class DefaultController extends Controller
         $grid->addRowAction($rowAction4);
 
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+        
+        $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
+        $grid->addMassAction($massAction1);
+
+        $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
+        $grid->addMassAction($massAction2);     
+        $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAddPrivilegeToUsers', false, array('action' => 'addPrivileges'));
+        $grid->addMassAction($massAction3);
+        $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassRemovePrivilegeFromUsers', false, array('action' => 'removePrivileges'));
+        $grid->addMassAction($massAction4);
+
 
         return $grid->getGridResponse();
     }
+    /**
+     * @return array
+     * @Template();
+     */
+    public function processMassActionAction(Request $request, $action)
+    {
+        //print_r($action);
+        //print_r($_POST);
+        if (isset($_POST)) {
+            $array = array_shift($_POST);
+            if (isset($array['__action_id'])) {
+                $action_id = $array['__action_id'];
+            }
+            if (isset($array['__action'])) {
+                $actiond = $array['__action'];
+            }
+            $a = json_encode($actiond);
+            return $this->redirect($this->generateUrl('addRemoveAccessToUsersAction', array('samaccountnames' => $a, 'action' => $action)));
+        }
+        die();    
+    }
+    
+    /**
+     * @param $samaccountName
+     * @Route("/addRemoveAccessToUsersAction/{samaccountnames}/{action}", name="addRemoveAccessToUsersAction")
+     */
+    public function addRemoveAccessToUsersAction(Request $request, $samaccountnames, $action)
+    {
+        $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+        $choices = array();
+        foreach($chs as $ch){
+            $choices[$ch->getId()] = $ch->getNazwa();
+        }
+        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, 'Wybierz zasoby do dodania', $action);    
+    }
+    
+    protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action)
+    {
+        //print_r($samaccountnames);
+        $ldap = $this->get('ldap_service');
+        $samaccountnames = json_decode($samaccountnames);
+        $users = array();
+        foreach($samaccountnames as $sam => $v){
+            if($v){
+                
+                $ADUser = $ldap->getUserFromAD($sam);
+                $users[] = $ADUser[0];
+            }
+        }
+        
+        $now = new \Datetime();
+        
+        $builder = $this->createFormBuilder();
+        $form = $builder
+                ->add('action', 'hidden', array(
+                    'data' => $action
+                ))
+                ->add('samaccountnames', 'hidden', array(
+                    'required' => false,
+                    'read_only' => true,
+                    'label' => 'Nazwa kont',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                    'data' => json_encode($samaccountnames)
+                ))
+                ->add('fromWhen', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'data' => $now->format("d-m-Y")
+                ))
+
+                ->add('access', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => $title,
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    'choices' => $choices,
+                    'multiple' => true,
+                    'expanded' => false
+                ))
+
+                ->add('zapisz', 'submit', array(
+                    'attr' => array(
+                        'class' => 'btn btn-success col-sm-12',
+                    ),
+                ))
+                ->setMethod('POST')
+                ->getForm();
+        
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $ndata = $form->getData();
+            return $this->addResourcesToUsersAction($request, $ndata);
+        }
+        //print_r($users);
+        return $this->render('ParpMainBundle:Default:addRemoveUserAccess.html.twig', array(
+            'users' => $users,
+            'form' => $form->createView()    
+        ));
+    }
+    
+    /**
+     * @param $samaccountName
+     * @Route("/addResourcesToUsers/", name="addResourcesToUsers")
+     */
+    
+    public function addResourcesToUsersAction(Request $request, $ndata = null)
+    {
+        //print_r($ndata); die();
+        $action = "addResources";
+        $samaccountnamesPars = array(
+            'required' => false,
+            'read_only' => true,
+            'label' => 'Nazwa kont',
+            'label_attr' => array(
+                'class' => 'col-sm-4 control-label',
+            ),
+            'attr' => array(
+                'class' => 'form-control',
+            )
+        );
+        $fromWhenPars = array(
+            'attr' => array(
+                'class' => 'form-control',
+            ),
+//                'widget' => 'single_text',
+            'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+            'label_attr' => array(
+                'class' => 'col-sm-4 control-label',
+            ),
+            'required' => false
+        );
+        $userzasoby = array();
+
+        $choicesPoziomDostepu = array();
+        $choicesModul = array();
+        if($ndata == null){
+            //die('mam nulla');
+            $zids = array();
+            //print_r($_POST['form']['userzasoby']);
+            //$ndata2 = $form->getData();
+            foreach($_POST['form']['userzasoby'] as $v){
+                $zids[] = $v['zasobId'];
+            }
+            
+        }else{
+            $samaccountnames = json_decode($ndata['samaccountnames']);
+            $ldap = $this->get('ldap_service');
+            $users = array();
+            foreach($samaccountnames as $sam => $v){
+                if($v){
+                    
+                    $ADUser = $ldap->getUserFromAD($sam);
+                    $users[] = $ADUser[0];
+                }
+            }
+            $now = new \Datetime();                            
+            $samaccountnamesPars['data'] = json_encode($samaccountnames);
+            $fromWhenPars['data'] = $now->format("d-m-Y");
+            $zids = $ndata['access'];
+            //$userzasobyPars['data'] = array();//$userzasoby;    
+        }
+        foreach($zids as $v){
+            $z = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->find($v);
+            //echo ".".count($z->getUzytkownicy()).".";
+            $uz = new UserZasoby();
+            $uz->setZasobId($z->getId());
+            $uz->setPoziomDostepu($z->getPoziomDostepu());
+            $uz->setModul($z->getModulFunkcja());
+            $c1 = explode(",", $z->getPoziomDostepu());
+            foreach($c1 as $c){
+                $c = trim($c);
+                $choicesPoziomDostepu[$c] = $c;
+            }
+            $c2 = explode(",", $z->getModulFunkcja());
+            foreach($c2 as $c){
+                $c = trim($c);
+                $choicesModul[$c] = $c;
+            }
+            
+            $uz->setZasobNazwa($z->getNazwa());
+            //$uz->setSamaccountname($z->getId());
+            $userzasoby[] = $uz;
+        }
+        
+        
+        //print_r($userzasoby);
+        $form = $this->createFormBuilder()
+            ->add('action', 'hidden', array(
+                'data' => $action
+            ))
+            ->add('samaccountnames', 'hidden', $samaccountnamesPars)
+            ->add('fromWhen', 'hidden', $fromWhenPars)
+        ->add('userzasoby','collection', array(
+            'type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu),
+            'allow_add'    => true,
+            'allow_delete'    => true,
+            'by_reference' => false,
+            'label' => "Enrolments",
+            'prototype' => true,
+            'cascade_validation' => true,
+            'data' => $userzasoby
+        ))
+            ->add('zapisz', 'submit', array(
+                'attr' => array(
+                    'class' => 'btn btn-success col-sm-12',
+                ),
+            ))
+            ->setAction($this->generateUrl('addResourcesToUsers'))
+            ->setMethod('POST')
+            ->getForm();
+            
+        if($ndata == null){
+            $form->handleRequest($request);
+
+            if ($form->isValid()) {
+                $ndata = $form->getData();
+                //print_r($ndata);
+                //tworzy przypisania do zasobow
+                $sams = array();
+                $s1 = json_decode($ndata['samaccountnames']);
+                foreach($s1 as $k => $v){
+                    if($v)
+                        $sams[] = $k;
+                }
+                $msg = "";
+                $msg2 = "";
+                foreach($ndata['userzasoby'] as $oz){
+                    foreach($sams as $currentsam){
+                        $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
+                        //print_r($suz);
+                        if($suz == null){
+                            $z = clone $oz;
+                            $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
+                            $z->setAktywneDo(new \DateTime($z->getAktywneDo()));
+                            
+                            
+                            $z->setSamaccountname($currentsam);
+                            $this->getDoctrine()->getManager()->persist($z);
+                            $msg = "Dodaje usera ".$currentsam." i zasob ".$oz->getZasobId()." bo go nie ma !";
+                            $this->addFlash('warning', $msg);
+                            //print_r( );
+                        }
+                        else{
+                            $msg2 = ( "!!! pomijamy usera ".$currentsam." i zasob ".$oz->getZasobId()." bo juz go ma !");
+                            $this->addFlash('notice', $msg2);
+                            
+                            //$this->get('session')->getFlashBag()->set('warning', $msg);
+                        }
+                    }
+                }
+                
+                $this->getDoctrine()->getManager()->flush();
+            
+                return $this->redirect($this->generateUrl('main'));
+            }else{
+                $ndata = $form->getData();
+                print_r($ndata);
+                $ee = array();
+                foreach($form->getErrors() as $e)
+                    $ee[] = $e->getMessage();
+                
+                print_r($ee);
+                die('mam blad forma '.count($form->getErrors())." ".$form->getErrorsAsString());
+            }
+        }
+        return $this->render('ParpMainBundle:Default:addUserResources.html.twig', array(
+            'users' => $users,
+            'form' => $form->createView()    
+        ));
+        //print_r($ndata); die();
+    }
+    
+    
+    
 
     /**
      * @param $samaccountName

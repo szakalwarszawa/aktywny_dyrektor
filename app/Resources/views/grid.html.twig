@@ -182,14 +182,23 @@
         <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(false);">{{ 'Deselect all'|trans }}</span>
     </div>
     <span class="mass-actions-selected" id="{{ grid.hash }}_mass_action_selected"></span>
-{#<div class="mass-actions">
+<div class="mass-actions">
     {% spaceless %}
     <div style="float:right;" class="grid_massactions">
         <input type="hidden" id="{{ grid.hash }}_mass_action_all" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION_ALL_KEYS_SELECTED') }}]" value="0"/>
         <input type="hidden" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]" value="0">
+        
+        <select  class="ays-ignore " id="{{ grid.hash }}_selectMassAction" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]">
+                    <option value="-1">Select action</option>
+                    {% for key, massAction in grid.massActions %}
+                        <option value="{{ key }}">{{ massAction.title|trans }}</option>
+                    {% endfor %}
+                </select>
+                <input type="submit" id="submitMassAction" class="ays-ignore btn btn-primary massAction" value="{{ 'Submit'|trans }}"/>
+        
     </div>
     {% endspaceless %}
-</div>#}
+</div>
 {% endblock grid_actions %}
 {#{% block grid_column_actions_cell %}
     {% for action in column.rowActions %}

@@ -112,10 +112,12 @@
                         <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
                         
                         {% endif %}
+                        
+                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
+                        
                     </div>
                 </div>
             </div>
-            <div class="panel-group" id="accordion">
             <div class="panel panel-default">
                 <div class="panel-heading">
                     <h4 class="panel-title">
