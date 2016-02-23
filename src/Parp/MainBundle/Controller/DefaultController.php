@@ -260,7 +260,43 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             $ndata = $form->getData();
-            return $this->addResourcesToUsersAction($request, $ndata);
+            switch($ndata['action']){
+                case "addResources":
+                    return $this->addResourcesToUsersAction($request, $ndata);        
+                    break;
+                case "removeResources":
+                    $sams = array();
+                    $s1 = json_decode($ndata['samaccountnames']);
+                    foreach($s1 as $k => $v){
+                        if($v)
+                            $sams[] = $k;
+                    }
+                    //print_r($ndata); die();
+                    foreach($ndata['access'] as $z){
+                        
+                        foreach($sams as $currentsam){
+                            $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $z));
+                            if($suz){
+                                $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
+                                $this->getDoctrine()->getManager()->persist($suz);
+                                $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo je ma";
+                                $this->addFlash('warning', $msg);
+                            }else{
+                                
+                                $msg = "NIE zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo ich nie ma !";
+                                $this->addFlash('notice', $msg);
+                            }
+                            
+                        }
+                    }
+                        
+                    $this->getDoctrine()->getManager()->flush();
+                
+                    return $this->redirect($this->generateUrl('main'));
+                    
+                    break;
+            }
+            
         }
         //print_r($users);
         return $this->render('ParpMainBundle:Default:addRemoveUserAccess.html.twig', array(
