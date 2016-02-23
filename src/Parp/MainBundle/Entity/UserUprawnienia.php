@@ -65,6 +65,23 @@ class UserUprawnienia
      * @ORM\Column(name="uprawnienie_id", type="integer")
      */
     private $uprawnienie_id;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $powodNadania;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $powodOdebrania;
+    
 
     private $_ADUser;
     /**
@@ -237,5 +254,53 @@ class UserUprawnienia
     public function getUprawnienieId()
     {
         return $this->uprawnienie_id;
+    }
+
+    /**
+     * Set powodNadania
+     *
+     * @param string $powodNadania
+     *
+     * @return UserUprawnienia
+     */
+    public function setPowodNadania($powodNadania)
+    {
+        $this->powodNadania = $powodNadania;
+
+        return $this;
+    }
+
+    /**
+     * Get powodNadania
+     *
+     * @return string
+     */
+    public function getPowodNadania()
+    {
+        return $this->powodNadania;
+    }
+
+    /**
+     * Set powodOdebrania
+     *
+     * @param string $powodOdebrania
+     *
+     * @return UserUprawnienia
+     */
+    public function setPowodOdebrania($powodOdebrania)
+    {
+        $this->powodOdebrania = $powodOdebrania;
+
+        return $this;
+    }
+
+    /**
+     * Get powodOdebrania
+     *
+     * @return string
+     */
+    public function getPowodOdebrania()
+    {
+        return $this->powodOdebrania;
     }
 }

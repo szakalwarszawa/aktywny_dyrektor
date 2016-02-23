@@ -5,6 +5,7 @@ namespace Parp\MainBundle\Controller;
 use Parp\MainBundle\Entity\Engagement;
 use Parp\MainBundle\Entity\Entry;
 use Parp\MainBundle\Entity\UserEngagement;
+use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Form\EngagementType;
 use Parp\MainBundle\Form\UserEngagementType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -141,9 +142,9 @@ class DefaultController extends Controller
 
         $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
         $grid->addMassAction($massAction2);     
-        $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAddPrivilegeToUsers', false, array('action' => 'addPrivileges'));
+        $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
         $grid->addMassAction($massAction3);
-        $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassRemovePrivilegeFromUsers', false, array('action' => 'removePrivileges'));
+        $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
         $grid->addMassAction($massAction4);
 
 
@@ -177,12 +178,34 @@ class DefaultController extends Controller
      */
     public function addRemoveAccessToUsersAction(Request $request, $samaccountnames, $action)
     {
-        $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+        
+        switch($action){
+            case "addResources":
+                $title = "Wybierz zasoby do dodania";
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+                break;
+            case "removeResources":
+                $title = "Odbierz zasoby";
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+                break;
+            case "addPrivileges":
+                $title = "Wybierz uprawnienia do dodania";
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findAll();
+                break;
+            case "removePrivileges":
+                $title = "Wybierz uprawnienia do odebrania";
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findAll();
+                break;
+        }
+        
         $choices = array();
         foreach($chs as $ch){
-            $choices[$ch->getId()] = $ch->getNazwa();
+            if($action == "addResources" || $action == "removeResources")
+                $choices[$ch->getId()] = $ch->getNazwa();
+            if($action == "addPrivileges" || $action == "removePrivileges")
+                $choices[$ch->getId()] = $ch->getOpis();
         }
-        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, 'Wybierz zasoby do dodania', $action);    
+        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action);    
     }
     
     protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action)
@@ -232,6 +255,16 @@ class DefaultController extends Controller
                     'required' => false,
                     'data' => $now->format("d-m-Y")
                 ))
+                ->add('powod', 'textarea', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                    'label' => 'Powód nadania/odebrania',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => true
+                ))
 
                 ->add('access', 'choice', array(
                     'required' => false,
@@ -264,6 +297,7 @@ class DefaultController extends Controller
                 case "addResources":
                     return $this->addResourcesToUsersAction($request, $ndata);        
                     break;
+                
                 case "removeResources":
                     $sams = array();
                     $s1 = json_decode($ndata['samaccountnames']);
@@ -271,6 +305,7 @@ class DefaultController extends Controller
                         if($v)
                             $sams[] = $k;
                     }
+                    $powod = $ndata['powod'];
                     //print_r($ndata); die();
                     foreach($ndata['access'] as $z){
                         
@@ -278,7 +313,10 @@ class DefaultController extends Controller
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $z));
                             if($suz){
                                 $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
+                                $suz->setCzyAktywne(false);
+                                $suz->setPowodOdebrania($powod);
                                 $this->getDoctrine()->getManager()->persist($suz);
+                                //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo je ma";
                                 $this->addFlash('warning', $msg);
                             }else{
@@ -289,11 +327,79 @@ class DefaultController extends Controller
                             
                         }
                     }
-                        
                     $this->getDoctrine()->getManager()->flush();
-                
                     return $this->redirect($this->generateUrl('main'));
-                    
+                    break;
+                case "addPrivileges":
+                    $sams = array();
+                    $s1 = json_decode($ndata['samaccountnames']);
+                    foreach($s1 as $k => $v){
+                        if($v)
+                            $sams[] = $k;
+                    }
+                    $powod = $ndata['powod'];
+                    //print_r($ndata); die();
+                    foreach($ndata['access'] as $z){
+                        
+                        foreach($sams as $currentsam){
+                            $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
+                            if($suz){
+                                $msg = "NIE nadaje userowi ".$currentsam." uprawnienia  ".$z." bo je ma !";
+                                $this->addFlash('notice', $msg);
+                                
+                            }else{
+                                $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
+                                $suz = new UserUprawnienia();
+                                $suz->setSamaccountname($currentsam);
+                                $suz->setOpis($u->getOpis());
+                                $suz->setDataNadania(new \Datetime($ndata['fromWhen']));
+                                $suz->setDataOdebrania(null);
+                                $suz->setCzyAktywne(true);
+                                $suz->setUprawnienieId($z);
+                                $suz->setPowodNadania($powod);
+                                $this->getDoctrine()->getManager()->persist($suz);
+                                //$this->getDoctrine()->getManager()->remove($suz);
+                                $msg = "Nadaje userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma";
+                                $this->addFlash('warning', $msg);
+                            }
+                            
+                        }
+                    }
+                    $this->getDoctrine()->getManager()->flush();
+                    return $this->redirect($this->generateUrl('main'));
+                    break;
+                case "removePrivileges":
+                    $sams = array();
+                    $s1 = json_decode($ndata['samaccountnames']);
+                    foreach($s1 as $k => $v){
+                        if($v)
+                            $sams[] = $k;
+                    }
+                    $powod = $ndata['powod'];
+                    //print_r($ndata); die();
+                    foreach($ndata['access'] as $z){
+                        
+                        foreach($sams as $currentsam){
+                            $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
+                            if($suz){
+                                
+                                $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
+                                $suz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                                $suz->setCzyAktywne(false);
+                                $suz->setPowodOdebrania($powod);
+                                $this->getDoctrine()->getManager()->persist($suz);
+                                //$this->getDoctrine()->getManager()->remove($suz);
+                                $msg = "Odbieram userowi ".$currentsam." uprawnienia  ".$z." bo je ma";
+                                $this->addFlash('warning', $msg);
+                            }else{
+                                $msg = "NIE odbieram userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma !";
+                                $this->addFlash('notice', $msg);
+                            }
+                            
+                        }
+                    }
+                    $this->getDoctrine()->getManager()->flush();
+                    return $this->redirect($this->generateUrl('main'));
                     break;
             }
             
@@ -301,7 +407,8 @@ class DefaultController extends Controller
         //print_r($users);
         return $this->render('ParpMainBundle:Default:addRemoveUserAccess.html.twig', array(
             'users' => $users,
-            'form' => $form->createView()    
+            'form' => $form->createView() ,
+            'title' => $title  
         ));
     }
     
@@ -338,6 +445,16 @@ class DefaultController extends Controller
             ),
             'required' => false
         );
+        $powodPars = array(
+            'attr' => array(
+                'class' => 'form-control',
+            ),
+            'label' => 'Powód nadania/odebrania',
+            'label_attr' => array(
+                'class' => 'col-sm-4 control-label',
+            ),
+            'required' => true
+        );
         $userzasoby = array();
 
         $choicesPoziomDostepu = array();
@@ -366,6 +483,7 @@ class DefaultController extends Controller
             $samaccountnamesPars['data'] = json_encode($samaccountnames);
             $fromWhenPars['data'] = $now->format("d-m-Y");
             $zids = $ndata['access'];
+            $powodPars['data'] = $ndata['powod'];
             //$userzasobyPars['data'] = array();//$userzasoby;    
         }
         foreach($zids as $v){
@@ -399,6 +517,7 @@ class DefaultController extends Controller
             ))
             ->add('samaccountnames', 'hidden', $samaccountnamesPars)
             ->add('fromWhen', 'hidden', $fromWhenPars)
+            ->add('powod', 'hidden', $powodPars)
         ->add('userzasoby','collection', array(
             'type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu),
             'allow_add'    => true,
@@ -433,16 +552,18 @@ class DefaultController extends Controller
                 }
                 $msg = "";
                 $msg2 = "";
+                $powod = $ndata['powod'];
                 foreach($ndata['userzasoby'] as $oz){
                     foreach($sams as $currentsam){
                         $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
                         //print_r($suz);
                         if($suz == null){
                             $z = clone $oz;
+                            $z->setCzyAktywne(true);
                             $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
                             $z->setAktywneDo(new \DateTime($z->getAktywneDo()));
                             
-                            
+                            $z->setPowodNadania($powod);
                             $z->setSamaccountname($currentsam);
                             $this->getDoctrine()->getManager()->persist($z);
                             $msg = "Dodaje usera ".$currentsam." i zasob ".$oz->getZasobId()." bo go nie ma !";
@@ -474,7 +595,7 @@ class DefaultController extends Controller
         }
         return $this->render('ParpMainBundle:Default:addUserResources.html.twig', array(
             'users' => $users,
-            'form' => $form->createView()    
+            'form' => $form->createView()
         ));
         //print_r($ndata); die();
     }

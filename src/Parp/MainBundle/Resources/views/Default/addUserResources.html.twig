@@ -60,7 +60,9 @@
                 {{form_widget(form.action)}}
                 {{form_widget(form.samaccountnames)}}
                 {{form_widget(form.fromWhen)}}
+                {{form_widget(form.powod)}}
 {#                 {{form_widget(form.userzasoby)}} #}
+{#                  <h3>Nadajesz zasoby od {{form.vars.value.fromWhen}} z powodu "{{form.vars.value.powod }}"</h3>  #}
                 {% if form.userzasoby is defined %}
                     <table class="table table-hover">
                         <thead>

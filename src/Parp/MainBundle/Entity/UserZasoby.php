@@ -105,6 +105,29 @@ class UserZasoby
      */
     private $odstepstwoOdProcedury;
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $powodNadania;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $powodOdebrania;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="czy_aktywne", type="boolean")
+     */
+    private $czyAktywne;
+    
     
 
     
@@ -441,5 +464,77 @@ class UserZasoby
     public function getOdstepstwoOdProcedury()
     {
         return $this->odstepstwoOdProcedury;
+    }
+
+    /**
+     * Set powodNadania
+     *
+     * @param string $powodNadania
+     *
+     * @return UserZasoby
+     */
+    public function setPowodNadania($powodNadania)
+    {
+        $this->powodNadania = $powodNadania;
+
+        return $this;
+    }
+
+    /**
+     * Get powodNadania
+     *
+     * @return string
+     */
+    public function getPowodNadania()
+    {
+        return $this->powodNadania;
+    }
+
+    /**
+     * Set powodOdebrania
+     *
+     * @param string $powodOdebrania
+     *
+     * @return UserZasoby
+     */
+    public function setPowodOdebrania($powodOdebrania)
+    {
+        $this->powodOdebrania = $powodOdebrania;
+
+        return $this;
+    }
+
+    /**
+     * Get powodOdebrania
+     *
+     * @return string
+     */
+    public function getPowodOdebrania()
+    {
+        return $this->powodOdebrania;
+    }
+
+    /**
+     * Set czyAktywne
+     *
+     * @param boolean $czyAktywne
+     *
+     * @return UserZasoby
+     */
+    public function setCzyAktywne($czyAktywne)
+    {
+        $this->czyAktywne = $czyAktywne;
+
+        return $this;
+    }
+
+    /**
+     * Get czyAktywne
+     *
+     * @return boolean
+     */
+    public function getCzyAktywne()
+    {
+        return $this->czyAktywne;
     }
 }
