@@ -116,22 +116,28 @@ class DevController extends Controller
             && strstr($file->getRelativePathname(), "DateEntityClass") === false
             && strstr($file->getRelativePathname(), "OrderItemDTO") === false
             ){
-                $h = file_get_contents($file->getRealpath());
-                
-                if(strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")') !== false){
-                    echo ('mamy zasob Z gedmo '.$file->getRealpath());
-                }else{
-                    echo('mamy zasob bez gedmo '.$file->getRealpath()."<br>\n");
-                    $patterns = array (
-                        '/(\n)(class)/', 
-                        '/(     \*\/)(\n)(    private \$)([^i][^d])/'
-                    );
-                    $replace = array (
-                        '/**$1 * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$1 */$1$2', 
-                        '     * @Gedmo\\Mapping\\Annotation\\Versioned$2$1$2$3$4'
-                    );
-                    $h = preg_replace($patterns, $replace, $h);
-                    file_put_contents($file->getRealpath(), $h);
+                $f = str_replace("/var/www/parp/aktywny_dyrektor/src", "", $file->getRealpath());
+                $f = str_replace("/", "\\", $f);            
+                $f = str_replace(".php", "", $f);
+                if($f != '\Parp\MainBundle\Entity\HistoriaWersji'){
+                    //die($f);
+                    $h = file_get_contents($file->getRealpath());
+                    
+                    if(strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")') !== false){
+                        echo ('mamy zasob Z gedmo '.$file->getRealpath());
+                    }else{
+                        echo('mamy zasob bez gedmo '.$file->getRealpath()."<br>\n");
+                        $patterns = array (
+                            '/(\n)(class)/', 
+                            '/(     \*\/)(\n)(    private \$)([^i][^d])/'
+                        );
+                        $replace = array (
+                            '/$1**$1 * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$1 */$1$2', 
+                            '     * @Gedmo\\Mapping\\Annotation\\Versioned$2$1$2$3$4'
+                        );
+                        $h = preg_replace($patterns, $replace, $h);
+                        file_put_contents($file->getRealpath(), $h);
+                    }
                 }
                 
                 //print_r($h); die();
