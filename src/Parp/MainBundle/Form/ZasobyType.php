@@ -19,6 +19,96 @@ class ZasobyType extends AbstractType
             ->add('opis')
             ->add('biuro')
             ->add('wlascicielZasobu')
+            ->add('administratorZasobu')
+            ->add('administratorTechnicznyZasobu')
+            ->add('uzytkownicy')
+            ->add('daneOsobowe')
+            ->add('komorkaOrgazniacyjna')
+            ->add('miejsceInstalacji')
+            ->add('opisZasobu')
+            ->add('modulFunkcja')
+            ->add('poziomDostepu')
+            ->add('dataZakonczeniaWdrozenia', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    
+                ))
+            ->add('wykonawca')
+            ->add('nazwaWykonawcy')
+            ->add('asystaTechniczna')
+            ->add('dataWygasnieciaAsystyTechnicznej', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    
+                ))
+            ->add('dokumentacjaFormalna')
+            ->add('dokumentacjaProjektowoTechniczna')
+            ->add('technologia')
+            ->add('testyBezpieczenstwa')
+            ->add('testyWydajnosciowe')
+            ->add('dataZleceniaOstatniegoPrzegladuUprawnien', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    
+                ))
+            ->add('interwalPrzegladuUprawnien')
+            ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    
+                ))
+            ->add('interwalPrzegladuAktywnosci')
+            ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    
+                ))
+            ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych')
         ;
     }
     

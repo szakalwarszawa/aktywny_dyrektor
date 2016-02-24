@@ -146,5 +146,39 @@ class DevController extends Controller
         }
         die('generujCreateHistoriaWersji');
     }
+    /**
+     * Kasuje wszedzie deletedAt z forms
+     *
+     * @Route("/fix_forms/",defaults={}, name="dev_fix_forms")
+     * @Template()
+     */
+    public function fixFormsAction()
+    {
+        $updateFiles = false;
+        
+        $finder = new Finder();
+        $finder->files()->in(__DIR__.'/../../../../src/*/*/Form');
+        
+        foreach ($finder as $file) {
+            // Print the absolute path
+            print $file->getRealpath()."\n 1 ";
+            $c = file_get_contents($file->getRealpath());
+            $deletedAt = true;
+            if(strstr($c, "->add('deletedAt',null,array(") === false){
+                $deletedAt = false;
+            }
+            
+            if($deletedAt){
+                $s = array("->add('deletedAt',null,array(");
+                $r = array("->add('deletedAt','hidden',array(");
+                $c = str_replace($s, $r, $c);
+                if($updateFiles)
+                    file_put_contents($file->getRealpath(), $c);
+            }
+            
+            print $file->getRelativePathname()."\n 3 ".($deletedAt ? "ma deleted at" : "NIE MA")." <br/>";
+        }
+    }
+
 
 }    
