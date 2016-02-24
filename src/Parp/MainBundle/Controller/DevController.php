@@ -128,11 +128,11 @@ class DevController extends Controller
                     }else{
                         echo('mamy zasob bez gedmo '.$file->getRealpath()."<br>\n");
                         $patterns = array (
-                            '/(\n)(class)/', 
+                            '/( \*\/)(\n)(class)/', 
                             '/(     \*\/)(\n)(    private \$)([^i][^d])/'
                         );
                         $replace = array (
-                            '/$1**$1 * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$1 */$1$2', 
+                            ' * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$2$1$2$3', 
                             '     * @Gedmo\\Mapping\\Annotation\\Versioned$2$1$2$3$4'
                         );
                         $h = preg_replace($patterns, $replace, $h);

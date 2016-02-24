@@ -7,6 +7,14 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Gedmo\Mapping\Annotation as Gedmo;
 
+
+// ALe można tez wymusic unikalnośc 2 pól na raz
+//@UniqueEntity(
+//     fields={"host", "port"},
+//     errorPath="port",
+//     message="This port is already in use on that host.")
+//
+
 /**
  * Departament
  *
@@ -22,14 +30,6 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     errorPath="shortname",
  *     message="Skrót Biura/Departamentu musi być unikalny")
  */
-
-// ALe można tez wymusic unikalnośc 2 pól na raz
-//@UniqueEntity(
-//     fields={"host", "port"},
-//     errorPath="port",
-//     message="This port is already in use on that host.")
-//
-
 class Departament
 {
     /**

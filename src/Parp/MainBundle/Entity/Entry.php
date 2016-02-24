@@ -4,14 +4,12 @@ namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * Entry
  *
  * @ORM\Table(name="entry")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
- * @Gedmo\Loggable
  */
 class Entry
 {
