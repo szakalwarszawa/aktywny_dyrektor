@@ -66,8 +66,11 @@ doctrine:
                 type: annotation
                 alias: Gedmo
                 prefix: Parp\MainBundle\Entity #Gedmo\Loggable\Entity
-                dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
-
+                dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
+        filters:
+            softdeleteable:
+                class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter
+                enabled: true
 # Swiftmailer Configuration
 swiftmailer:
     transport: "%mailer_transport%"
@@ -118,6 +121,13 @@ services:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ "@annotation_reader" ] ]
+    
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ @annotation_reader ] ]
     app.twig_extension:
         class: Parp\MainBundle\Twig\StringExtension
         public: false

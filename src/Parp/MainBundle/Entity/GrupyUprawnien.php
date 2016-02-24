@@ -9,9 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
  * GrupyUprawnien
  *
  * @ORM\Table(name="grupyuprawnien")
- * @GRID\Source(columns="id, kod, opis")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, kod, opis")
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
+ * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class GrupyUprawnien
@@ -25,6 +26,13 @@ class GrupyUprawnien
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $deletedAt;
 
     /**
      * @var string
@@ -199,5 +207,53 @@ class GrupyUprawnien
     public function preUpdate(){
         $this->setUprawnieniaHistoriaZmian();
         //die($this->getUprawnieniaHistoriaZmian());
+    }
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return GrupyUprawnien
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Add uprawnienium
+     *
+     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienium
+     *
+     * @return GrupyUprawnien
+     */
+    public function addUprawnienium(\Parp\MainBundle\Entity\Uprawnienia $uprawnienium)
+    {
+        $this->uprawnienia[] = $uprawnienium;
+
+        return $this;
+    }
+
+    /**
+     * Remove uprawnienium
+     *
+     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienium
+     */
+    public function removeUprawnienium(\Parp\MainBundle\Entity\Uprawnienia $uprawnienium)
+    {
+        $this->uprawnienia->removeElement($uprawnienium);
     }
 }

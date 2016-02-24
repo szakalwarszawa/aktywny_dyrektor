@@ -1751,6 +1751,7 @@ class DefaultController extends Controller
                 $newUserZasob = new UserZasoby();
                 $newUserZasob->setAktywneOd(null);
                 $newUserZasob->setAktywneDo(null);
+                $newUserZasob->setCzyAktywne(true);
                 $newUserZasob->setSamaccountname($key);
                 $newUserZasob->setZasobId($value['zasobId']);
                 foreach($value['dane'] as $k => $v){

@@ -10,8 +10,9 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="uprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
- * @GRID\Source(columns="id, opis")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis")
  * @ORM\HasLifecycleCallbacks()
+ * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Uprawnienia
@@ -25,6 +26,13 @@ class Uprawnienia
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $deletedAt;
 
     /**
      * @var string
@@ -231,5 +239,29 @@ class Uprawnienia
         //die('a');
         $this->setGrupyHistoriaZmian();
         //die($this->getUprawnieniaHistoriaZmian());
+    }
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return Uprawnienia
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
     }
 }
