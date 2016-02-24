@@ -229,6 +229,7 @@ class GrupyUprawnienController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+            $entity->setUprawnieniaHistoriaZmian();
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('grupyuprawnien_edit', array('id' => $id)));

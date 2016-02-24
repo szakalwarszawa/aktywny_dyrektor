@@ -25,20 +25,27 @@ class DoctrineExtensionListener implements ContainerAwareInterface
         //$translatable = $this->container->get('gedmo.listener.translatable');
         //$translatable->setTranslatableLocale($event->getRequest()->getLocale());
     }
+    public function preUpdate($event){
+        //die('b');
+        $event->setNewValue('grupyHistoriaZmian', $event->getEntity()->getGrupyHistoriaZmian());
+        $nv = $event->getEntity()->getGrupyHistoriaZmian();
+        
+        print_r($nv);
+        die('   preUpdate '.get_class($event));
+    }
 
     public function onConsoleCommand()
     {
         //$this->container->get('gedmo.listener.translatable')
             //->setTranslatableLocale($this->container->get('translator')->getLocale());
     }
-
     public function onKernelRequest(GetResponseEvent $event)
     {
         $securityContext = $this->container->get('security.context', ContainerInterface::NULL_ON_INVALID_REFERENCE);
         if (null !== $securityContext && null !== $securityContext->getToken() && $securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
             $loggable = $this->container->get('gedmo.listener.loggable');
             $loggable->setUsername($securityContext->getToken()->getUsername());
-            
+                 
         }
     }
 }

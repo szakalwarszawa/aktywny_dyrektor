@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="grupyuprawnien")
  * @GRID\Source(columns="id, kod, opis")
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class GrupyUprawnien
@@ -48,6 +49,14 @@ class GrupyUprawnien
      */
     private $uprawnienia;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $uprawnieniaHistoriaZmian;
+    
     /**
      * Get id
      *
@@ -121,6 +130,7 @@ class GrupyUprawnien
     public function addUprawnienie(\Parp\MainBundle\Entity\Uprawnienia $uprawnienia)
     {
         $this->uprawnienia[] = $uprawnienia;
+        $this->setUprawnieniaHistoriaZmian();
 
         return $this;
     }
@@ -132,7 +142,9 @@ class GrupyUprawnien
      */
     public function removeUprawnienie(\Parp\MainBundle\Entity\Uprawnienia $uprawnienia)
     {
+        
         $this->uprawnienia->removeElement($uprawnienia);
+        $this->setUprawnieniaHistoriaZmian();
     }
 
     /**
@@ -146,5 +158,46 @@ class GrupyUprawnien
     }
     public function __toString(){
         return $this->getOpis();
+    }
+
+    /**
+     * Set uprawnieniaHistoriaZmian
+     *
+     * @param string $uprawnieniaHistoriaZmian
+     *
+     * @return GrupyUprawnien
+     */
+    public function setUprawnieniaHistoriaZmian($uprawnieniaHistoriaZmian = null)
+    {
+        //die('aa');
+        if($uprawnieniaHistoriaZmian === null){
+            $uprawnieniaHistoriaZmian = array();
+            foreach($this->getUprawnienia() as $g){
+                $uprawnieniaHistoriaZmian[] = $g->getOpis();    
+            }
+            $uprawnieniaHistoriaZmian = implode(",", $uprawnieniaHistoriaZmian);
+        }
+        $this->uprawnieniaHistoriaZmian = $uprawnieniaHistoriaZmian;
+
+        return $this;
+    }
+
+    /**
+     * Get uprawnieniaHistoriaZmian
+     *
+     * @return string
+     */
+    public function getUprawnieniaHistoriaZmian()
+    {
+        return $this->uprawnieniaHistoriaZmian;
+    }
+    
+    /**
+     * @@ORM\PrePersist()
+     * @@ORM\PreUpdate()
+     */
+    public function preUpdate(){
+        $this->setUprawnieniaHistoriaZmian();
+        //die($this->getUprawnieniaHistoriaZmian());
     }
 }

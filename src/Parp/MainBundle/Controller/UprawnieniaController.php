@@ -233,9 +233,13 @@ class UprawnieniaController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+            $entity->setGrupyHistoriaZmian();
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            //die('a');//
             return $this->redirect($this->generateUrl('uprawnienia_edit', array('id' => $id)));
+        }else{
+            die($editForm->getErrorsAsString());
         }
 
         return array(

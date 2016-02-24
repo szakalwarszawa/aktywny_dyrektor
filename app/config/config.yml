@@ -110,13 +110,19 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
             # translatable sets locale such as default application locale before command execute
             - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
+            #- { name: doctrine.event_listener, event: preUpdate, connection: default }
+    
     gedmo.listener.loggable:
         class: Gedmo\Loggable\LoggableListener
         tags:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
             - [ setAnnotationReader, [ "@annotation_reader" ] ]
-
+    app.twig_extension:
+        class: Parp\MainBundle\Twig\StringExtension
+        public: false
+        tags:
+            - { name: twig.extension }
 
 apy_data_grid:
     pagerfanta:

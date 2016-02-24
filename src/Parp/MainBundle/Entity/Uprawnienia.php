@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="uprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
  * @GRID\Source(columns="id, opis")
+ * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Uprawnienia
@@ -51,10 +52,19 @@ class Uprawnienia
     private $czy_edycja;
 
     /**
-     * @ORM\ManyToMany(targetEntity="GrupyUprawnien", mappedBy="uprawnienia")
+     * @ORM\ManyToMany(targetEntity="GrupyUprawnien", inversedBy="uprawnienia")
+     * @ORM\JoinTable(name="uprawnienia_w_grupach")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $grupy;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $grupyHistoriaZmian;
 
     /**
      * Get id
@@ -107,7 +117,7 @@ class Uprawnienia
     {
         $this->grupy[] = $grupy;
         $grupy->addUprawnienie($uprawnienia);
-        
+        $this->setGrupyHistoriaZmian();
         return $this;
     }
 
@@ -118,7 +128,9 @@ class Uprawnienia
      */
     public function removeGrupy(\Parp\MainBundle\Entity\GrupyUprawnien $grupy)
     {
+        $grupy->removeUprawnienie($uprawnienia);
         $this->grupy->removeElement($grupy);
+        $this->setGrupyHistoriaZmian();
     }
 
     /**
@@ -178,5 +190,46 @@ class Uprawnienia
     }
     public function __toString(){
         return $this->getOpis();
+    }
+
+    /**
+     * Set grupyHistoriaZmian
+     *
+     * @param string $grupyHistoriaZmian
+     *
+     * @return Uprawnienia
+     */
+    public function setGrupyHistoriaZmian($grupyHistoriaZmian = null)
+    {
+        if($grupyHistoriaZmian === null){
+            $grupyHistoriaZmian = array();
+            foreach($this->getGrupy() as $g){
+                $grupyHistoriaZmian[] = $g->getOpis();    
+            }
+            $grupyHistoriaZmian = implode(",", $grupyHistoriaZmian);
+        }
+        $this->grupyHistoriaZmian = $grupyHistoriaZmian;
+
+        return $this;
+    }
+
+    /**
+     * Get grupyHistoriaZmian
+     *
+     * @return string
+     */
+    public function getGrupyHistoriaZmian()
+    {
+        return $this->grupyHistoriaZmian;
+    }
+    
+    /**
+     * @@ORM\PrePersist()
+     * @@ORM\PreUpdate()
+     */
+    public function preUpdate(){
+        //die('a');
+        $this->setGrupyHistoriaZmian();
+        //die($this->getUprawnieniaHistoriaZmian());
     }
 }
