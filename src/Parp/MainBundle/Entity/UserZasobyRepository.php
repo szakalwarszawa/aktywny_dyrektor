@@ -27,7 +27,7 @@ class UserZasobyRepository extends EntityRepository
     public function findNameByAccountname($samaccountname)
     {
 
-        $query = $this->getEntityManager()->createQuery('SELECT uz.samaccountname,z.nazwa, z.opis, z.id FROM ParpMainBundle:UserZasoby uz
+        $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname

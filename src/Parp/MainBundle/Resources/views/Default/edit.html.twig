@@ -94,16 +94,16 @@
                                 <tr>
                                     <th>Lp.</th>
                                     <th>Nazwa zasobu</th>
-                                    <th>Opis zasobu</th>
                                 </tr>
                             </thead>
                             {% set n = 1 %}
                             <tbody>
                                 {% for row in zasoby %}
                                     <tr>
-                                        <td><a href="{{ path('zasoby_edit', {id: row.id})}}">{{ n }}</a></td>
-                                        <td><a href="{{ path('zasoby_edit', {id: row.id})}}">{{ row.nazwa  }}</a></td>
-                                        <td><a href="{{ path('zasoby_edit', {id: row.id})}}">{{ row.opis  }}</a></td>
+                                        <td><a href="{{ path('zasoby_edit', {id: row.zid})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
+                                        <td><a href="{{ path('zasoby_edit', {id: row.zid})}}" 
+                                        data-toggle="popover" title="Uprawnienia" data-content="{{row.opisHtml|raw}}"
+                                        >{{ row.nazwa  }}<br>{{row.opisHtml|raw}}</a></td>
                                     </tr>
                                     {% set n = n + 1 %}
                                 {% endfor %}

@@ -1,0 +1,8 @@
+<script>
+$('.tagAjaxInput').tagit({
+    autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
+});
+$(document).ready(function(){
+    $('[data-toggle="popover"]').popover({ trigger: "hover", placement: 'bottom' , html: true}); 
+});
+</script>

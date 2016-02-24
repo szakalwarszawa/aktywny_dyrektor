@@ -11,6 +11,8 @@
             <link rel="stylesheet" href="{{ asset('css/bootstrap-datetimepicker.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
             <link rel="stylesheet" href="{{ asset('css/main.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -24,6 +26,8 @@
             <script type="text/javascript" src="{{ asset('js/jquery.maskedinput.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-filestyle.min.js') }}"></script>
             <script type="text/javascript" src="https://www.google.com/jsapi"></script>
+            <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+            <script type="text/javascript" src="{{ asset('js/tag-it.min.js') }}"></script>
 
             <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -97,5 +101,6 @@
             </div>
 
         </div>
+        {% include '::javascripts.html.twig' %}
     </body>
 </html>

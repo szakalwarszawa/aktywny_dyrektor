@@ -19,9 +19,15 @@ class ZasobyType extends AbstractType
             ->add('opis')
             ->add('biuro')
             ->add('wlascicielZasobu')
-            ->add('administratorZasobu')
-            ->add('administratorTechnicznyZasobu')
-            ->add('uzytkownicy')
+            ->add('administratorZasobu', 'text', array(
+                'attr' => array('class' => 'tagAjaxInput')
+            ))
+            ->add('administratorTechnicznyZasobu', 'text', array(
+                'attr' => array('class' => 'tagAjaxInput')
+            ))
+            ->add('uzytkownicy', 'choice', array(
+                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")
+            ))
             ->add('daneOsobowe')
             ->add('komorkaOrgazniacyjna')
             ->add('miejsceInstalacji')
@@ -42,7 +48,9 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     
                 ))
-            ->add('wykonawca')
+            ->add('wykonawca', 'choice', array(
+                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny")
+            ))
             ->add('nazwaWykonawcy')
             ->add('asystaTechniczna')
             ->add('dataWygasnieciaAsystyTechnicznej', 'text', array(

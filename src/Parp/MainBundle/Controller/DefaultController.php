@@ -692,6 +692,25 @@ class DefaultController extends Controller
         }
         $now = new \Datetime();
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
+        for($i = 0; $i < count($zasoby); $i++){
+            $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
+            $html = "";
+            if($uz->getLoginDoZasobu() != "")
+                $html .= "<b>Login:</b> ".$uz->getLoginDoZasobu()."<br>";
+            if($uz->getModul() != "")
+                $html .= "<b>Moduł:</b> ".$uz->getModul()."<br>";
+            if($uz->getPoziomDostepu() != "")
+                $html .= "<b>Poziom dostępu:</b> ".$uz->getPoziomDostepu()."<br>";
+            if($uz->getAktywneOd() != "")
+                $html .= "<b>Aktywne od:</b> ".$uz->getAktywneOd()->format("Y-m-d")."<br>";
+            if($uz->getAktywneDo() != "")
+                $html .= "<b>Aktywne do:</b> ".$uz->getAktywneDo()->format("Y-m-d")." ".($uz->getBezterminowo() ? "(bezterminowo)" : "")."<br>";
+            if($uz->getKanalDostepu() != "")
+                $html .= "<b>Kanał dostępu:</b> ".$uz->getKanalDostepu()."<br>";
+            if($uz->getUprawnieniaAdministracyjne() != "")
+                $html .= "<b>Uprawnienia Administracyjne:</b> TAK<br>";
+            $zasoby[$i]['opisHtml'] = $html;
+        }
         
         $form = $this->createFormBuilder($defaultData)
                 ->add('samaccountname', 'text', array(
@@ -1834,4 +1853,46 @@ class DefaultController extends Controller
         return $out;
     }
 
+
+    
+    /**
+     * @param $term
+     * @Route("/user/suggest/", name="userSuggest")
+     */
+    public function userSuggestAction(Request $request)
+    {
+        
+        $post = ($request->getMethod() == 'POST');
+        $ajax = $request->isXMLHttpRequest();
+
+        // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
+/*
+        if ((!$ajax) OR ( !$post)) {
+            return null;
+        }
+*/
+
+        $imienazwisko = $request->get('term', null);
+        if (empty($imienazwisko)) {
+            throw new \Exception('Nie przekazano imienia i nazwiska!');
+        }
+
+        $ldap = $this->get('ldap_service');
+
+        $ADUsers = $ldap->getAllFromAD();
+
+        $dane = array();
+        $i = 0;
+        foreach ($ADUsers as $user) {
+
+            if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== FALSE) {
+                $dane[$i] = $user['name'];
+                $i++;
+            }
+        }
+        
+        //$vals = array("Kamil Jakacki", "Kamamamama", "Costam");
+        $term = json_encode($dane);
+        die($term);
+    }
 }
