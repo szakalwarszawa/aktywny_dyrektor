@@ -11,6 +11,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="uprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
  * @GRID\Source(columns="id, opis")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Uprawnienia
 {
@@ -28,6 +29,7 @@ class Uprawnienia
      * @var string
      *
      * @ORM\Column(name="opis", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
     
@@ -35,6 +37,7 @@ class Uprawnienia
      * @var boolean
      *
      * @ORM\Column(name="czy_sekcja", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $czy_sekcja;
     
@@ -43,11 +46,13 @@ class Uprawnienia
      * @var boolean
      *
      * @ORM\Column(name="czy_edycja", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $czy_edycja;
 
     /**
      * @ORM\ManyToMany(targetEntity="GrupyUprawnien", mappedBy="uprawnienia")
+     * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $grupy;
 

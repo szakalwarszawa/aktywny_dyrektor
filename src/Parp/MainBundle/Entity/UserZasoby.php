@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="userzasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserZasobyRepository")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserZasoby
 {
@@ -25,6 +26,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
 
@@ -32,6 +34,7 @@ class UserZasoby
      * @var integer
      *
      * @ORM\Column(name="zasob_id", type="integer")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zasobId;
     
@@ -39,6 +42,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $loginDoZasobu;
     
@@ -46,6 +50,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $modul;
     
@@ -53,6 +58,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $poziomDostepu;
     
@@ -60,6 +66,7 @@ class UserZasoby
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $aktywneOd;
     
@@ -67,6 +74,7 @@ class UserZasoby
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $bezterminowo;
     
@@ -74,6 +82,7 @@ class UserZasoby
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $aktywneOdPomijac;
     
@@ -81,6 +90,7 @@ class UserZasoby
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $aktywneDo;
     
@@ -88,6 +98,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $kanalDostepu;
     
@@ -95,6 +106,7 @@ class UserZasoby
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $uprawnieniaAdministracyjne;
     
@@ -109,6 +121,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodNadania;
     
@@ -117,6 +130,7 @@ class UserZasoby
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodOdebrania;
     
@@ -125,6 +139,7 @@ class UserZasoby
      * @var boolean
      *
      * @ORM\Column(name="czy_aktywne", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $czyAktywne;
     

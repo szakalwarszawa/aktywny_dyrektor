@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"name"},
  *     errorPath="name",
  *     message="Nazwa zaangażowania musi być unikalna")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Engagement
 {
@@ -37,6 +38,7 @@ class Engagement
      *      max = 255,
      *      minMessage = "Nazwa zaangażowania musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa zaangażowania musi zawierać maxymalnie do {{ limit }} znaków.") 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
 
@@ -44,6 +46,7 @@ class Engagement
      * @var string
      *
      * @ORM\OneToMany(targetEntity="UserEngagement", mappedBy="engagement")
+     * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $users;
 

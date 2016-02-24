@@ -19,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"shortname"},
  *     errorPath="shortname",
  *     message="Skrót sekcji musi być unikalny")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Section
 {
@@ -41,6 +42,7 @@ class Section
      *      max = 255,
      *      minMessage = "Nazwa sekcji musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa sekcji musi zawierać maxymalnie do {{ limit }} znaków.")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
 
@@ -54,6 +56,7 @@ class Section
      *      max = 5,
      *      minMessage = "Skrót sekcji zawierać od {{ limit }} znaków.",
      *      maxMessage = "Skrót sekcji musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
 

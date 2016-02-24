@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="usergrupa")
  * @ORM\Entity
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserGrupa
 {
@@ -25,6 +26,7 @@ class UserGrupa
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
 
@@ -32,6 +34,7 @@ class UserGrupa
      * @var string
      *
      * @ORM\Column(name="grupa", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupa;
 

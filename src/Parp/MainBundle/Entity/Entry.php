@@ -10,6 +10,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="entry")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Entry
 {
@@ -33,6 +34,7 @@ class Entry
      *      max = 255,
      *      minMessage = "Nazwa konta musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa konta musi zawierać maxymalnie do {{ limit }} znaków.") 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
 
@@ -46,6 +48,7 @@ class Entry
      *      max = 255,
      *      minMessage = "Imię i nazwisko musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Imię i nazwisko musi zawierać maxymalnie do {{ limit }} znaków.") 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $cn;
 
@@ -53,6 +56,7 @@ class Entry
      * @var \DateTime
      *
      * @ORM\Column(name="accountExpires", type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $accountExpires;
 
@@ -66,6 +70,7 @@ class Entry
      *      max = 255,
      *      minMessage = "Nazwa Biura Departamentu musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa Biura Departamentu musi zawierać maxymalnie do {{ limit }} znaków.") 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $department;
 
@@ -73,6 +78,7 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="division", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $division;
 
@@ -93,6 +99,7 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="manager", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $manager;
 
@@ -106,6 +113,7 @@ class Entry
      *      max = 255,
      *      minMessage = "Nazwa stanowiska musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.") * 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $title;
 
@@ -126,6 +134,7 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="distinguishedname", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $distinguishedName;
 
@@ -135,6 +144,7 @@ class Entry
      * @ORM\Column(name="fromWhen", type="datetime", nullable=true)
      * @Assert\NotBlank(message = "Data zmiany nie jest wypełniona.");
      *  
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $fromWhen;
 

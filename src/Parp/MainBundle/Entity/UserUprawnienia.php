@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="useruprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserUprawnieniaRepository")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserUprawnienia
 {
@@ -26,6 +27,7 @@ class UserUprawnienia
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
 
@@ -33,6 +35,7 @@ class UserUprawnienia
      * @var string
      *
      * @ORM\Column(name="opis", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
 
@@ -40,6 +43,7 @@ class UserUprawnienia
      * @var \DateTime
      *
      * @ORM\Column(name="data_nadania", type="datetime")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dataNadania;
 
@@ -47,6 +51,7 @@ class UserUprawnienia
      * @var \DateTime
      *
      * @ORM\Column(name="data_odebrania", type="datetime",nullable = true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dataOdebrania;
 
@@ -54,6 +59,7 @@ class UserUprawnienia
      * @var boolean
      *
      * @ORM\Column(name="czy_aktywne", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $czyAktywne;
 
@@ -63,6 +69,7 @@ class UserUprawnienia
      * @var integer
      *
      * @ORM\Column(name="uprawnienie_id", type="integer")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $uprawnienie_id;
     
@@ -71,6 +78,7 @@ class UserUprawnienia
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodNadania;
     
@@ -79,6 +87,7 @@ class UserUprawnienia
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodOdebrania;
     

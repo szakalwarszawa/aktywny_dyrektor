@@ -5,7 +5,6 @@ namespace Parp\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-use Gedmo\Mapping\Annotation as Gedmo;
 
 
 // ALe można tez wymusic unikalnośc 2 pól na raz
@@ -29,6 +28,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *     fields={"shortname"},
  *     errorPath="shortname",
  *     message="Skrót Biura/Departamentu musi być unikalny")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Departament
 {
@@ -52,6 +52,7 @@ class Departament
      *      max = 255,
      *      minMessage = "Nazwa Biura/Departamentu musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa Biura/Departamentu musi zawierać maxymalnie do {{ limit }} znaków.")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
 
@@ -65,6 +66,7 @@ class Departament
      *      max = 5,
      *      minMessage = "Skrót Biura/Departamentu musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Skrót Biura/Departamentu musi zawierać maxymalnie do {{ limit }} znaków.")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
 

@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="userengagement")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserEngagementRepository")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserEngagement
 {
@@ -26,6 +27,7 @@ class UserEngagement
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
 
@@ -33,6 +35,7 @@ class UserEngagement
      *
      * @ORM\ManyToOne(targetEntity="Engagement", inversedBy="users")
      * @ORM\JoinColumn(name="engagement_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $engagement;
 
@@ -40,6 +43,7 @@ class UserEngagement
      * @var integer
      *
      * @ORM\Column(name="percent", type="integer",nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $percent;
 
@@ -47,6 +51,7 @@ class UserEngagement
      * @var integer
      *
      * @ORM\Column(name="month", type="integer")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $month;
 
@@ -54,6 +59,7 @@ class UserEngagement
      * @var integer
      *
      * @ORM\Column(name="year", type="integer")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $year;
 

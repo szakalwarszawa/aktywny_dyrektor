@@ -15,6 +15,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"name"},
  *     errorPath="name",
  *     message="Nazwa stanowiska musi być unikalna")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Position
 {
@@ -37,6 +38,7 @@ class Position
      *      max = 255,
      *      minMessage = "Nazwa stanowiska musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
 
