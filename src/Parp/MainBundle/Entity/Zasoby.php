@@ -2,6 +2,8 @@
 
 namespace Parp\MainBundle\Entity;
 use APY\DataGridBundle\Grid\Mapping as GRID;
+use Gedmo\Mapping\Annotation as Gedmo;
+
 
 use Doctrine\ORM\Mapping as ORM;
 
@@ -11,6 +13,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="zasoby")
  * @ORM\Entity
  * @GRID\Source(columns="id, nazwa, opis, biuro")
+ * @Gedmo\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Zasoby
 {
@@ -27,6 +30,7 @@ class Zasoby
      * @var string
      *
      * @ORM\Column(name="nazwa", type="string", length=255)
+     * @Gedmo\Versioned
      */
     private $nazwa;
 
@@ -34,6 +38,7 @@ class Zasoby
      * @var string
      *
      * @ORM\Column(name="opis", type="text")
+     * @Gedmo\Versioned
      */
     private $opis;
 
@@ -41,6 +46,7 @@ class Zasoby
      * @var string
      *
      * @ORM\Column(name="biuro", type="string", length=255)
+     * @Gedmo\Versioned
      */
     private $biuro;
     
@@ -48,156 +54,182 @@ class Zasoby
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $wlascicielZasobu;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $administratorZasobu;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $administratorTechnicznyZasobu;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $uzytkownicy;
     /**
     * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Versioned
      */
     private $daneOsobowe;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $komorkaOrgazniacyjna;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $miejsceInstalacji;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $opisZasobu;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $modulFunkcja;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $poziomDostepu;
     /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Versioned
      */
     private $dataZakonczeniaWdrozenia;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $wykonawca;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $nazwaWykonawcy;
     /**
     * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Versioned
      */
     private $asystaTechniczna;
     /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Versioned
      */
     private $dataWygasnieciaAsystyTechnicznej;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $dokumentacjaFormalna;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $dokumentacjaProjektowoTechniczna;
     /**
     * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Versioned
      */
     private $technologia;
     /**
     * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Versioned
      */
     private $testyBezpieczenstwa;
     /**
     * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Versioned
      */
     private $testyWydajnosciowe;
     /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Versioned
      */
     private $dataZleceniaOstatniegoPrzegladuUprawnien;
     /**
     * @var integer
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Versioned
      */
     private $interwalPrzegladuUprawnien;
     /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Versioned
      */
     private $dataZleceniaOstatniegoPrzegladuAktywnosci;
     /**
     * @var integer
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Versioned
      */
     private $interwalPrzegladuAktywnosci;
     /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Versioned
      */
     private $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
     /**
     * @var integer
      *
      * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Versioned
      */
     private $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
 

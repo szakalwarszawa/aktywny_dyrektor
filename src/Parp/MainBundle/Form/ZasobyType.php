@@ -18,6 +18,7 @@ class ZasobyType extends AbstractType
             ->add('nazwa')
             ->add('opis')
             ->add('biuro')
+            ->add('wlascicielZasobu')
         ;
     }
     

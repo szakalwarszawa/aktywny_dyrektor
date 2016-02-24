@@ -61,6 +61,12 @@ doctrine:
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
+        mappings:
+            loggable:
+                type: annotation
+                alias: Gedmo
+                prefix: Parp\MainBundle\Entity #Gedmo\Loggable\Entity
+                dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"
 
 # Swiftmailer Configuration
 swiftmailer:
@@ -92,6 +98,25 @@ services:
     session.handler.memcached:
         class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler
         arguments: [@session.memcached, { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
+    # KernelRequest listener
+    extension.listener:
+        class: Parp\MainBundle\Listener\DoctrineExtensionListener
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
+        tags:
+            # translatable sets locale after router processing
+            - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest, priority: -10 }
+            # loggable hooks user username if one is in security context
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+            # translatable sets locale such as default application locale before command execute
+            - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
+    gedmo.listener.loggable:
+        class: Gedmo\Loggable\LoggableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
+
 
 apy_data_grid:
     pagerfanta:

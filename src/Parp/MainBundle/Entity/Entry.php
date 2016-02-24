@@ -11,7 +11,7 @@ use Gedmo\Mapping\Annotation as Gedmo;
  *
  * @ORM\Table(name="entry")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
- * aa@Gedmo\Loggable
+ * @Gedmo\Loggable
  */
 class Entry
 {

@@ -1636,8 +1636,8 @@ class DefaultController extends Controller
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
                         $zasob = new Zasoby();
-                        $zasob->setOpis("");
-                        $zasob->setBiuro("");
+                        $zasob->setOpis(trim($dane[8]));
+                        $zasob->setBiuro(trim($dane[6]));
                         $zasob->setNazwa(trim($dane[0]));
                     }
                     foreach($dane as $k => $v){

@@ -85,6 +85,9 @@
                 </div>
                 <div id="collapse1" class="panel-collapse collapse in">
                     <div class="panel-body">
+                    
+                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
+                        
                         {% if zasoby|length > 0 %}
                         <table class="table table-hover">
                             <thead>
@@ -113,8 +116,6 @@
                         
                         {% endif %}
                         
-                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
-                        
                     </div>
                 </div>
             </div>
@@ -128,6 +129,9 @@
                 </div>
                 <div id="collapse2" class="panel-collapse collapse in">
                     <div class="panel-body">
+                    
+                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' })}}" class="btn btn-success">Dodaj uprawnienia</a>
+                        
                         {% if uprawnienia|length > 0 %}
                             <table class="table table-hover">
                                 <thead>

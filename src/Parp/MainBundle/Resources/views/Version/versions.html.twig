@@ -1,0 +1,37 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+<div class="col-sm-12">
+    <h3>Historia zmian dla obiektu {{entityname}} o id: {{id}} na chwilę: {{now}}</h3>
+    <table class="table table-striped table-bordered" style="width:100%;">
+            <tr>
+                <th>Operacja</th>
+                <th>Data</th>
+                <th>User</th>
+                {% for c in columns %}    
+                    <th>{{c}}</th>
+                {%endfor%}
+                <th>Url</th>
+                <th>Route</th>
+            </tr>
+            {% for e in entities %}
+                <tr>
+                    <td>{{e.log.action}}</td>
+                    <td>{{e.log.loggedAt|date("Y-m-d H:i:s")}}</td>
+                    <td>{{e.log.username}}</td>
+                {% for c in columns %}    
+                    <td>
+                        {%if c in e.log.data|keys %}<strong style="color:red">{%endif%}
+                        {{attribute(e.entity, c)}}
+                        {%if c in e.log.data|keys %}</strong>{%endif%}
+                    </td>
+                {%endfor%}
+                    <td>{{e.log.url}}</td>
+                    <td>{{e.log.route}}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{%endblock%}
