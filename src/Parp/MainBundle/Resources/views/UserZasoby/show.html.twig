@@ -1,0 +1,85 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: UserZasoby</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy UserZasoby ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Samaccountname</th>
+                <td>{{ entity.samaccountname }}</td>
+            </tr>
+            <tr>
+                <th>Zasobid</th>
+                <td>{{ entity.zasobId }}</td>
+            </tr>
+            <tr>
+                <th>Logindozasobu</th>
+                <td>{{ entity.loginDoZasobu }}</td>
+            </tr>
+            <tr>
+                <th>Modul</th>
+                <td>{{ entity.modul }}</td>
+            </tr>
+            <tr>
+                <th>Poziomdostepu</th>
+                <td>{{ entity.poziomDostepu }}</td>
+            </tr>
+            <tr>
+                <th>Aktywneod</th>
+                <td>{{ entity.aktywneOd|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Bezterminowo</th>
+                <td>{{ entity.bezterminowo }}</td>
+            </tr>
+            <tr>
+                <th>Aktywneodpomijac</th>
+                <td>{{ entity.aktywneOdPomijac }}</td>
+            </tr>
+            <tr>
+                <th>Aktywnedo</th>
+                <td>{{ entity.aktywneDo|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Kanaldostepu</th>
+                <td>{{ entity.kanalDostepu }}</td>
+            </tr>
+            <tr>
+                <th>Uprawnieniaadministracyjne</th>
+                <td>{{ entity.uprawnieniaAdministracyjne }}</td>
+            </tr>
+            <tr>
+                <th>Odstepstwoodprocedury</th>
+                <td>{{ entity.odstepstwoOdProcedury }}</td>
+            </tr>
+            <tr>
+                <th>Powodnadania</th>
+                <td>{{ entity.powodNadania }}</td>
+            </tr>
+            <tr>
+                <th>Powododebrania</th>
+                <td>{{ entity.powodOdebrania }}</td>
+            </tr>
+            <tr>
+                <th>Czyaktywne</th>
+                <td>{{ entity.czyAktywne }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}

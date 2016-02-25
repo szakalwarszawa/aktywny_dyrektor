@@ -273,7 +273,8 @@ class LdapService
             "accountExpires",
             "useraccountcontrol",
             "distinguishedName",
-            "cn"
+            "cn",
+            'memberOf'
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
 
@@ -284,6 +285,7 @@ class LdapService
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
             if ($tmpResult["samaccountname"]) {
+                //print_r($tmpResult); die();
                 $result[$i]["samaccountname"] = $tmpResult["samaccountname"][0];
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
                 $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";

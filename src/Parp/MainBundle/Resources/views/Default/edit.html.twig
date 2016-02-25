@@ -100,8 +100,8 @@
                             <tbody>
                                 {% for row in zasoby %}
                                     <tr>
-                                        <td><a href="{{ path('zasoby_edit', {id: row.zid})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
-                                        <td><a href="{{ path('zasoby_edit', {id: row.zid})}}" 
+                                        <td><a href="{{ path('userzasoby_edit', {id: row.id})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
+                                        <td><a href="{{ path('userzasoby_edit', {id: row.id})}}" 
                                         data-toggle="popover" title="Uprawnienia" data-content="{{row.opisHtml|raw}}"
                                         >{{ row.nazwa  }}<br>{{row.opisHtml|raw}}</a></td>
                                     </tr>

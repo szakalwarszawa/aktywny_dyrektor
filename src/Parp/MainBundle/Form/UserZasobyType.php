@@ -13,11 +13,13 @@ class UserZasobyType extends AbstractType
 {
     private $choicesModul;
     private $choicesPoziomDostepu;
+    private $isSubForm;
 
-    public function __construct($choicesModul, $choicesPoziomDostepu)
+    public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true)
     {
         $this->choicesModul = $choicesModul;
         $this->choicesPoziomDostepu = $choicesPoziomDostepu;
+        $this->isSubForm = $isSubForm;
     }
     
         /**
@@ -68,20 +70,22 @@ class UserZasobyType extends AbstractType
             ->add('uprawnieniaAdministracyjne')
             ->add('odstepstwoOdProcedury')
         ;
-        $builder->addEventListener(
-        FormEvents::PRE_SET_DATA,
-        function(FormEvent $event) use($builder){
-            $form = $event->getForm();
-            $o = $event->getData();
-            $choices = array();
-            if($o){
-                $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu");
-                $this->addChoicesFromDictionary($o, $form, "getModul", "modul");
+        if($this->isSubForm){
+            $builder->addEventListener(
+            FormEvents::PRE_SET_DATA,
+            function(FormEvent $event) use($builder){
+                $form = $event->getForm();
+                $o = $event->getData();
+                $choices = array();
+                if($o){
+                    $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu");
+                    $this->addChoicesFromDictionary($o, $form, "getModul", "modul");
+                    
+                }
                 
-            }
-            
-
-        });
+    
+            });
+        }
     }
     protected function addChoicesFromDictionary($o, $form, $getter, $fieldName){
         $ch = explode(",", $o->{$getter}());            

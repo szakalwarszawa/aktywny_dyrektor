@@ -73,6 +73,14 @@ class Uprawnienia
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupyHistoriaZmian;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $grupaAd;
 
     /**
      * Get id
@@ -263,5 +271,29 @@ class Uprawnienia
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Set grupaAd
+     *
+     * @param string $grupaAd
+     *
+     * @return Uprawnienia
+     */
+    public function setGrupaAd($grupaAd)
+    {
+        $this->grupaAd = $grupaAd;
+
+        return $this;
+    }
+
+    /**
+     * Get grupaAd
+     *
+     * @return string
+     */
+    public function getGrupaAd()
+    {
+        return $this->grupaAd;
     }
 }

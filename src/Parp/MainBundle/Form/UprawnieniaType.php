@@ -16,6 +16,7 @@ class UprawnieniaType extends AbstractType
     {
         $builder
             ->add('opis')
+            ->add('grupaAd')
             ->add('czy_sekcja')
             ->add('czy_edycja')
             ->add('grupy', null, array('expanded' => true))
