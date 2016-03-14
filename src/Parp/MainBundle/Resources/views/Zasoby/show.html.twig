@@ -12,6 +12,10 @@
                 <td>{{ entity.id }}</td>
             </tr>
             <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
                 <th>Nazwa</th>
                 <td>{{ entity.nazwa }}</td>
             </tr>
@@ -22,6 +26,110 @@
             <tr>
                 <th>Biuro</th>
                 <td>{{ entity.biuro }}</td>
+            </tr>
+            <tr>
+                <th>Wlascicielzasobu</th>
+                <td>{{ entity.wlascicielZasobu }}</td>
+            </tr>
+            <tr>
+                <th>Administratorzasobu</th>
+                <td>{{ entity.administratorZasobu }}</td>
+            </tr>
+            <tr>
+                <th>Administratortechnicznyzasobu</th>
+                <td>{{ entity.administratorTechnicznyZasobu }}</td>
+            </tr>
+            <tr>
+                <th>Uzytkownicy</th>
+                <td>{{ entity.uzytkownicy }}</td>
+            </tr>
+            <tr>
+                <th>Daneosobowe</th>
+                <td>{{ entity.daneOsobowe }}</td>
+            </tr>
+            <tr>
+                <th>Komorkaorgazniacyjna</th>
+                <td>{{ entity.komorkaOrgazniacyjna }}</td>
+            </tr>
+            <tr>
+                <th>Miejsceinstalacji</th>
+                <td>{{ entity.miejsceInstalacji }}</td>
+            </tr>
+            <tr>
+                <th>Opiszasobu</th>
+                <td>{{ entity.opisZasobu }}</td>
+            </tr>
+            <tr>
+                <th>Modulfunkcja</th>
+                <td>{{ entity.modulFunkcja }}</td>
+            </tr>
+            <tr>
+                <th>Poziomdostepu</th>
+                <td>{{ entity.poziomDostepu }}</td>
+            </tr>
+            <tr>
+                <th>Datazakonczeniawdrozenia</th>
+                <td>{{ entity.dataZakonczeniaWdrozenia|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Wykonawca</th>
+                <td>{{ entity.wykonawca }}</td>
+            </tr>
+            <tr>
+                <th>Nazwawykonawcy</th>
+                <td>{{ entity.nazwaWykonawcy }}</td>
+            </tr>
+            <tr>
+                <th>Asystatechniczna</th>
+                <td>{{ entity.asystaTechniczna }}</td>
+            </tr>
+            <tr>
+                <th>Datawygasnieciaasystytechnicznej</th>
+                <td>{{ entity.dataWygasnieciaAsystyTechnicznej|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Dokumentacjaformalna</th>
+                <td>{{ entity.dokumentacjaFormalna }}</td>
+            </tr>
+            <tr>
+                <th>Dokumentacjaprojektowotechniczna</th>
+                <td>{{ entity.dokumentacjaProjektowoTechniczna }}</td>
+            </tr>
+            <tr>
+                <th>Technologia</th>
+                <td>{{ entity.technologia }}</td>
+            </tr>
+            <tr>
+                <th>Testybezpieczenstwa</th>
+                <td>{{ entity.testyBezpieczenstwa }}</td>
+            </tr>
+            <tr>
+                <th>Testywydajnosciowe</th>
+                <td>{{ entity.testyWydajnosciowe }}</td>
+            </tr>
+            <tr>
+                <th>Datazleceniaostatniegoprzegladuuprawnien</th>
+                <td>{{ entity.dataZleceniaOstatniegoPrzegladuUprawnien|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Interwalprzegladuuprawnien</th>
+                <td>{{ entity.interwalPrzegladuUprawnien }}</td>
+            </tr>
+            <tr>
+                <th>Datazleceniaostatniegoprzegladuaktywnosci</th>
+                <td>{{ entity.dataZleceniaOstatniegoPrzegladuAktywnosci|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Interwalprzegladuaktywnosci</th>
+                <td>{{ entity.interwalPrzegladuAktywnosci }}</td>
+            </tr>
+            <tr>
+                <th>Dataostatniejzmianyhaselkontadministracyjnychiserwisowych</th>
+                <td>{{ entity.dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Interwalzmianyhaselkontaadministracyjnychiserwisowych</th>
+                <td>{{ entity.interwalZmianyHaselKontaAdministracyjnychISerwisowych }}</td>
             </tr>
         </tbody>
     </table>

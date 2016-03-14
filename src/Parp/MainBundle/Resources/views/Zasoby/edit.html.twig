@@ -1,35 +1,51 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-<div class="col-sm-8">
-    <h1>Edycja Zasoby </h1>
-    {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-    {{ form(edit_form) }}
-    
-</div>
-<div class="col-sm-4">
-    <h1>Lista Użytkowników Zasobu</h1>
-    <table class="table table-striped table-bordered">
-            <tr>
-                <th>Imię Nazwisko</th>
-            </tr>
-            {% for uz in users %}
-                <tr>
-                    <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname})}}">{{ uz.ADUser.name }}</a></td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+            <li><a data-toggle="tab" href="#userzasoby">Lista Użytkowników Zasobu</a></li>
+        </ul>
+        
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+                <h1>Edycja Zasoby </h1>
+                <div class="tabContent">
+                                        <div class="btn-group">
 
-</div>
-
-<div class="btn-group">
-
-<a class="btn btn-primary" href="{{ path('versions', {repository: 'Zasoby', id: edit_form.vars.value.id}) }}">
-    <i class="fa fa-list"></i> Pokaż historie zmian
-</a>
 <a class="btn btn-primary" href="{{ path('zasoby') }}">
     <i class="fa fa-list"></i> Lista Zasoby
 </a>
 </div>
+                    {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
+                    {{ form(edit_form) }}
+                </div>
+            </div>            
+            <div id="historia" class="tab-pane fade">
+                <div  class="tabContent">
+                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Zasoby', id: edit_form.vars.value.id})) }}
+                </div>
+            </div>
+            <div id="userzasoby" class="tab-pane fade">
+                <div  class="tabContent">
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>Imię Nazwisko</th>
+                        </tr>
+                        {% for uz in users %}
+                            <tr>
+                                <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname})}}">{{ uz.ADUser.name }}</a></td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+    
 {% endblock %}

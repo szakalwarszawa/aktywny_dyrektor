@@ -13,79 +13,81 @@
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h3>{{ user.name }}</h3>
-                <form class="form-horizontal" method="POST" role="form">
-                    {{  form_start(form) }}
-                    <div class="form-group">
-                        {{ form_label(form.samaccountname) }}
-                        <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.name) }}
-                        <div class="col-sm-8">{{ form_widget(form.name) }}</div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.initials) }}
-                        <div class="col-sm-4">
-                            {{ form_widget(form.initials) }}
+                <div  class="tabContent">
+                    <form class="form-horizontal" method="POST" role="form">
+                        {{  form_start(form) }}
+                        <div class="form-group">
+                            {{ form_label(form.samaccountname) }}
+                            <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
                         </div>
-                        <div class="col-sm-4">
-                            <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
+                        <div class="form-group">
+                            {{ form_label(form.name) }}
+                            <div class="col-sm-8">{{ form_widget(form.name) }}</div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.department) }}
-                        <div class="col-sm-8">{{ form_widget(form.department) }}</div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.title) }}
-                        <div class="col-sm-4">{{ form_widget(form.title) }}</div>
-                        <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.initialrights) }}
-                        <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.info) }}
-                        <div class="col-sm-8">{{ form_widget(form.info) }}</div>
-                    </div>
-                    {#<div class="form-group">#}
-                    {#{{ form_label(form.description) }}#}
-                    {#<div class="col-sm-8">{{ form_widget(form.description) }}</div>#}
-                    {#</div>#}
-                    {#<div class="form-group">#}
-                    {#{{ form_label(form.division) }}#}
-                    {#<div class="col-sm-8">{{ form_widget(form.division) }}</div>#}
-                    {#</div>#}
-                    <div class="form-group">
-                        {{ form_label(form.manager) }}
-                        <div class="col-sm-4">
-                            {{ form_widget(form.manager) }}
-                        </div>
-                        <div class="col-sm-4 btn-group">
-                            <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
-                            <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        {{ form_label(form.fromWhen) }}
-                        <div class='col-sm-8'>
-                            <div class="input-group datepicker"  id="datepicker">
-                                {{ form_widget(form.fromWhen) }}
-                                <span class="input-group-addon">
-                                    <span class="fa fa-calendar"></span>
-                                </span>
+                        <div class="form-group">
+                            {{ form_label(form.initials) }}
+                            <div class="col-sm-4">
+                                {{ form_widget(form.initials) }}
+                            </div>
+                            <div class="col-sm-4">
+                                <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
                             </div>
                         </div>
-                    </div>
-                    <div class="form-group">
-                        <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
-                    </div>
-                {{ form_rest(form) }}
+                        <div class="form-group">
+                            {{ form_label(form.department) }}
+                            <div class="col-sm-8">{{ form_widget(form.department) }}</div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.title) }}
+                            <div class="col-sm-4">{{ form_widget(form.title) }}</div>
+                            <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.initialrights) }}
+                            <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.info) }}
+                            <div class="col-sm-8">{{ form_widget(form.info) }}</div>
+                        </div>
+                        {#<div class="form-group">#}
+                        {#{{ form_label(form.description) }}#}
+                        {#<div class="col-sm-8">{{ form_widget(form.description) }}</div>#}
+                        {#</div>#}
+                        {#<div class="form-group">#}
+                        {#{{ form_label(form.division) }}#}
+                        {#<div class="col-sm-8">{{ form_widget(form.division) }}</div>#}
+                        {#</div>#}
+                        <div class="form-group">
+                            {{ form_label(form.manager) }}
+                            <div class="col-sm-4">
+                                {{ form_widget(form.manager) }}
+                            </div>
+                            <div class="col-sm-4 btn-group">
+                                <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
+                                <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.fromWhen) }}
+                            <div class='col-sm-8'>
+                                <div class="input-group datepicker"  id="datepicker">
+                                    {{ form_widget(form.fromWhen) }}
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
+                        </div>
+                    {{ form_rest(form) }}
+                </div>
             </div>
             <div id="zasoby" class="tab-pane fade">
                 <h3>Zasoby użytkownika ({{zasoby|length}})</h3>
-                <div>
+                <div class="tabContent">
                     <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
                         
                     {% if zasoby|length > 0 %}
@@ -133,7 +135,7 @@
             </div>
             <div id="uprawnienia" class="tab-pane fade">
                 <h3>Uprawnienia użytkownika ({{uprawnienia|length}})</h3>
-                <div>
+                <div class="tabContent">
                     <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' })}}" class="btn btn-success">Dodaj uprawnienia</a>
                         
                     {% if uprawnienia|length > 0 %}
@@ -171,11 +173,11 @@
             </div>
             <div id="historia" class="tab-pane fade">
                 <h3>Todo</h3>
-                <p>Under construction.</p>
+                <div  class="tabContent">Under construction.</div>
             </div>
             <div id="oczekujace" class="tab-pane fade">
                 <h3>Todo</h3>
-                <p>Under construction.</p>
+                <div  class="tabContent">Under construction.</div>
             </div>
         </div>
     
