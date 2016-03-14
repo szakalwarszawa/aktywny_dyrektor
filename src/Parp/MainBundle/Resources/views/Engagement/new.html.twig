@@ -1,36 +1,14 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Dodaj zaangażowanie</h1>
-    
-    {% if not form.vars.valid %}
-        <div class="alert alert-danger" role="alert">
-            {{ form_errors(form.name)}}
-        </div>
-    {% endif %}
-    
-    <form class="form-horizontal" name="parp_mainbundle_position" method="post" action="{{ path('engagement_create') }}">
-        <div class="form-group">
-            {{ form_label(form.name) }}
-            <div class="col-sm-10">
-                {{ form_widget(form.name) }}
-            </div>
-        </div>
+    <h1>Engagement creation</h1>
 
-        <div class="form-group">
+    {{ form(form) }}
 
-            <div class="col-sm-10">
-                <button id="Zapisz" name="Zapisz" type="submit" class="btn btn-primary"><i class="fa fa-plus"></i> Dodaj zaangażowanie</button>
+        <div class="btn-group">
 
-            </div>
-        </div>   
-        {{ form_widget(form._token) }}
-    </form> 
-
-
-    <div class="btn-group">
-        <a class="btn btn-primary" href="{{ path('engagement') }}">
-            <i class="fa fa-list"></i> Lista zaangażowań
-        </a>
-    </div>
+<a class="btn btn-primary" href="{{ path('engagement') }}">
+    <i class="fa fa-list"></i> Lista Engagement
+</a>
+</div>
 {% endblock %}

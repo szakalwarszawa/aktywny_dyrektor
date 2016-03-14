@@ -19,6 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"shortname"},
  *     errorPath="shortname",
  *     message="Skrót sekcji musi być unikalny")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */

@@ -1,13 +1,19 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Departament</h1>
-
-    <table class="record_properties">
+    <h1>Usuwanie: Departament</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy Departament ?
+    </div>
+    <table class="record_properties table table-striped">
         <tbody>
             <tr>
                 <th>Id</th>
                 <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
             </tr>
             <tr>
                 <th>Name</th>
@@ -20,17 +26,8 @@
         </tbody>
     </table>
 
-        <ul class="record_actions">
-    <li>
-        <a href="{{ path('departament') }}">
-            Back to the list
-        </a>
-    </li>
-    <li>
-        <a href="{{ path('departament_edit', { 'id': entity.id }) }}">
-            Edit
-        </a>
-    </li>
-    <li>{{ form(delete_form) }}</li>
-</ul>
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
 {% endblock %}

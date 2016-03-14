@@ -7,6 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use APY\DataGridBundle\APYDataGridBundle;
+use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Source\Entity;
+use APY\DataGridBundle\Grid\Column\ActionsColumn;
+use APY\DataGridBundle\Grid\Action\RowAction;
+use APY\DataGridBundle\Grid\Export\ExcelExport;
+
 use Parp\MainBundle\Entity\Departament;
 use Parp\MainBundle\Form\DepartamentType;
 
@@ -21,20 +28,49 @@ class DepartamentController extends Controller
     /**
      * Lists all Departament entities.
      *
-     * @Route("/", name="departament")
-     * @Method("GET")
+     * @Route("/index", name="departament")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
         //$entities = $em->getRepository('ParpMainBundle:Departament')->findAll();
-        $entities = $em->getRepository('ParpMainBundle:Departament')->findBy(array(), array('name'=>'asc'));
+    
+        $source = new Entity('ParpMainBundle:Departament');
+    
+        $grid = $this->get('grid');
+        $grid->setSource($source);
+    
+        // Dodajemy kolumnę na akcje
+        $actionsColumn = new ActionsColumn('akcje', 'Działania');
+        $grid->addColumn($actionsColumn);
+    
+        // Zdejmujemy filtr
+        $grid->getColumn('akcje')
+                ->setFilterable(false)
+                ->setSafe(true);
+    
+        // Edycja konta
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'departament_edit');
+        $rowAction2->setColumn('akcje');
+        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+        // Edycja konta
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'departament_delete');
+        $rowAction3->setColumn('akcje');
+        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+    
+       
+    
+        $grid->addRowAction($rowAction2);
+        $grid->addRowAction($rowAction3);
+    
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+    
 
-        return array(
-            'entities' => $entities,
-        );
+
+        $grid->isReadyForRedirect();
+        return $grid->getGridResponse();
     }
     /**
      * Creates a new Departament entity.
@@ -54,9 +90,8 @@ class DepartamentController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            //return $this->redirect($this->generateUrl('departament_show', array('id' => $entity->getId())));
-            $this->get('session')->getFlashBag()->set('warning', 'Departament został dodany');
-            return $this->redirect($this->generateUrl('departament'));
+            $this->get('session')->getFlashBag()->set('warning', 'Departament został utworzony.');
+                return $this->redirect($this->generateUrl('departament'));
         }
 
         return array(
@@ -79,7 +114,7 @@ class DepartamentController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Departament', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -151,7 +186,6 @@ class DepartamentController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id
         );
     }
 
@@ -169,7 +203,7 @@ class DepartamentController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -204,7 +238,6 @@ class DepartamentController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
     /**
@@ -245,7 +278,7 @@ class DepartamentController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('departament_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Skasuj Departament','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

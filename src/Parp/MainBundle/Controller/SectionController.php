@@ -7,6 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use APY\DataGridBundle\APYDataGridBundle;
+use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Source\Entity;
+use APY\DataGridBundle\Grid\Column\ActionsColumn;
+use APY\DataGridBundle\Grid\Action\RowAction;
+use APY\DataGridBundle\Grid\Export\ExcelExport;
+
 use Parp\MainBundle\Entity\Section;
 use Parp\MainBundle\Form\SectionType;
 
@@ -21,20 +28,49 @@ class SectionController extends Controller
     /**
      * Lists all Section entities.
      *
-     * @Route("/", name="section")
-     * @Method("GET")
+     * @Route("/index", name="section")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('ParpMainBundle:Section')->findAll();
+    
+        $source = new Entity('ParpMainBundle:Section');
+    
+        $grid = $this->get('grid');
+        $grid->setSource($source);
+    
+        // Dodajemy kolumnę na akcje
+        $actionsColumn = new ActionsColumn('akcje', 'Działania');
+        $grid->addColumn($actionsColumn);
+    
+        // Zdejmujemy filtr
+        $grid->getColumn('akcje')
+                ->setFilterable(false)
+                ->setSafe(true);
+    
+        // Edycja konta
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'section_edit');
+        $rowAction2->setColumn('akcje');
+        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+        // Edycja konta
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'section_delete');
+        $rowAction3->setColumn('akcje');
+        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+    
+       
+    
+        $grid->addRowAction($rowAction2);
+        $grid->addRowAction($rowAction3);
+    
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+    
 
-        //$entities = $em->getRepository('ParpMainBundle:Section')->findAll();    
-        $entities = $em->getRepository('ParpMainBundle:Section')->findBy(array(), array('name'=>'asc'));
 
-        return array(
-            'entities' => $entities,
-        );
+        $grid->isReadyForRedirect();
+        return $grid->getGridResponse();
     }
     /**
      * Creates a new Section entity.
@@ -54,10 +90,8 @@ class SectionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            //return $this->redirect($this->generateUrl('section_show', array('id' => $entity->getId())));
-            
-            $this->get('session')->getFlashBag()->set('warning', 'Sekcja została utworzona.');
-            return $this->redirect($this->generateUrl('section'));
+            $this->get('session')->getFlashBag()->set('warning', 'Section został utworzony.');
+                return $this->redirect($this->generateUrl('section'));
         }
 
         return array(
@@ -80,7 +114,7 @@ class SectionController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Section', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -152,7 +186,6 @@ class SectionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
 
@@ -170,7 +203,7 @@ class SectionController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -205,7 +238,6 @@ class SectionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
     /**
@@ -246,7 +278,7 @@ class SectionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('section_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Delete'))
+            ->add('submit', 'submit', array('label' => 'Skasuj Section','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

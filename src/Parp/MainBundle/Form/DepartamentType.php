@@ -35,9 +35,12 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',
+            )))
+/*
+            ->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',
             'attr' => array('class' => 'btn btn-primary'),
-        )); 
+
+        ))*/; 
     }
 
     /**

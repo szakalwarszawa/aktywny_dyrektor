@@ -7,6 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use APY\DataGridBundle\APYDataGridBundle;
+use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Source\Entity;
+use APY\DataGridBundle\Grid\Column\ActionsColumn;
+use APY\DataGridBundle\Grid\Action\RowAction;
+use APY\DataGridBundle\Grid\Export\ExcelExport;
+
 use Parp\MainBundle\Entity\Position;
 use Parp\MainBundle\Form\PositionType;
 
@@ -21,20 +28,49 @@ class PositionController extends Controller
     /**
      * Lists all Position entities.
      *
-     * @Route("/", name="position")
-     * @Method("GET")
+     * @Route("/index", name="position")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-
         //$entities = $em->getRepository('ParpMainBundle:Position')->findAll();
-        $entities = $em->getRepository('ParpMainBundle:Position')->findBy(array(), array('name'=>'asc'));
+    
+        $source = new Entity('ParpMainBundle:Position');
+    
+        $grid = $this->get('grid');
+        $grid->setSource($source);
+    
+        // Dodajemy kolumnę na akcje
+        $actionsColumn = new ActionsColumn('akcje', 'Działania');
+        $grid->addColumn($actionsColumn);
+    
+        // Zdejmujemy filtr
+        $grid->getColumn('akcje')
+                ->setFilterable(false)
+                ->setSafe(true);
+    
+        // Edycja konta
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'position_edit');
+        $rowAction2->setColumn('akcje');
+        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+        // Edycja konta
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'position_delete');
+        $rowAction3->setColumn('akcje');
+        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+    
+       
+    
+        $grid->addRowAction($rowAction2);
+        $grid->addRowAction($rowAction3);
+    
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+    
 
-        return array(
-            'entities' => $entities,
-        );
+
+        $grid->isReadyForRedirect();
+        return $grid->getGridResponse();
     }
     /**
      * Creates a new Position entity.
@@ -54,10 +90,8 @@ class PositionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            //return $this->redirect($this->generateUrl('position_show', array('id' => $entity->getId())));
-            
-            $this->get('session')->getFlashBag()->set('warning', 'Pozycja została utworzona.');
-            return $this->redirect($this->generateUrl('position'));
+            $this->get('session')->getFlashBag()->set('warning', 'Position został utworzony.');
+                return $this->redirect($this->generateUrl('position'));
         }
 
         return array(
@@ -80,7 +114,7 @@ class PositionController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Position', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -152,7 +186,6 @@ class PositionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id
         );
     }
 
@@ -170,10 +203,7 @@ class PositionController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array(
-            'label' => 'Update',
-            'attr' => array('class' => 'btn btn-primary' )
-        ));
+        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -208,7 +238,6 @@ class PositionController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
     /**
@@ -249,10 +278,7 @@ class PositionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('position_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array(
-                'label' => 'Delete',
-                'attr' => array('class' => 'btn btn-danger' )
-            ))
+            ->add('submit', 'submit', array('label' => 'Skasuj Position','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

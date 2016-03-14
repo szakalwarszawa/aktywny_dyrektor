@@ -7,6 +7,13 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use APY\DataGridBundle\APYDataGridBundle;
+use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Source\Entity;
+use APY\DataGridBundle\Grid\Column\ActionsColumn;
+use APY\DataGridBundle\Grid\Action\RowAction;
+use APY\DataGridBundle\Grid\Export\ExcelExport;
+
 use Parp\MainBundle\Entity\Engagement;
 use Parp\MainBundle\Form\EngagementType;
 
@@ -21,21 +28,50 @@ class EngagementController extends Controller
     /**
      * Lists all Engagement entities.
      *
-     * @Route("/", name="engagement")
-     * @Method("GET")
+     * @Route("/index", name="engagement")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+        //$entities = $em->getRepository('ParpMainBundle:Engagement')->findAll();
+    
+        $source = new Entity('ParpMainBundle:Engagement');
+    
+        $grid = $this->get('grid');
+        $grid->setSource($source);
+    
+        // Dodajemy kolumnę na akcje
+        $actionsColumn = new ActionsColumn('akcje', 'Działania');
+        $grid->addColumn($actionsColumn);
+    
+        // Zdejmujemy filtr
+        $grid->getColumn('akcje')
+                ->setFilterable(false)
+                ->setSafe(true);
+    
+        // Edycja konta
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'engagement_edit');
+        $rowAction2->setColumn('akcje');
+        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+        // Edycja konta
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'engagement_delete');
+        $rowAction3->setColumn('akcje');
+        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+    
+       
+    
+        $grid->addRowAction($rowAction2);
+        $grid->addRowAction($rowAction3);
+    
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+    
 
-        $entities = $em->getRepository('ParpMainBundle:Engagement')->findAll();
 
-        return array(
-            'entities' => $entities,
-        );
+        $grid->isReadyForRedirect();
+        return $grid->getGridResponse();
     }
-
     /**
      * Creates a new Engagement entity.
      *
@@ -54,14 +90,13 @@ class EngagementController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            //return $this->redirect($this->generateUrl('engagement_show', array('id' => $entity->getId())));
-            $this->get('session')->getFlashBag()->set('warning', 'Zaangażowanie zostało utworzone.');
-            return $this->redirect($this->generateUrl('engagement'));
+            $this->get('session')->getFlashBag()->set('warning', 'Engagement został utworzony.');
+                return $this->redirect($this->generateUrl('engagement'));
         }
 
         return array(
             'entity' => $entity,
-            'form' => $form->createView(),
+            'form'   => $form->createView(),
         );
     }
 
@@ -79,7 +114,7 @@ class EngagementController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Create'));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Engagement', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -94,11 +129,11 @@ class EngagementController extends Controller
     public function newAction()
     {
         $entity = new Engagement();
-        $form = $this->createCreateForm($entity);
+        $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
-            'form' => $form->createView(),
+            'form'   => $form->createView(),
         );
     }
 
@@ -122,7 +157,7 @@ class EngagementController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity' => $entity,
+            'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -148,20 +183,19 @@ class EngagementController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'entity' => $entity,
-            'edit_form' => $editForm->createView(),
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
 
     /**
-     * Creates a form to edit a Engagement entity.
-     *
-     * @param Engagement $entity The entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
+    * Creates a form to edit a Engagement entity.
+    *
+    * @param Engagement $entity The entity
+    *
+    * @return \Symfony\Component\Form\Form The form
+    */
     private function createEditForm(Engagement $entity)
     {
         $form = $this->createForm(new EngagementType(), $entity, array(
@@ -169,11 +203,10 @@ class EngagementController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Update'));
+        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
-
     /**
      * Edits an existing Engagement entity.
      *
@@ -202,13 +235,11 @@ class EngagementController extends Controller
         }
 
         return array(
-            'entity' => $entity,
-            'edit_form' => $editForm->createView(),
+            'entity'      => $entity,
+            'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'id' => $id,
         );
     }
-
     /**
      * Deletes a Engagement entity.
      *
@@ -245,11 +276,10 @@ class EngagementController extends Controller
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()
-                        ->setAction($this->generateUrl('engagement_delete', array('id' => $id)))
-                        ->setMethod('DELETE')
-                        ->add('submit', 'submit', array('label' => 'Delete'))
-                        ->getForm()
+            ->setAction($this->generateUrl('engagement_delete', array('id' => $id)))
+            ->setMethod('DELETE')
+            ->add('submit', 'submit', array('label' => 'Skasuj Engagement','attr' => array('class' => 'btn btn-danger' )))
+            ->getForm()
         ;
     }
-
 }

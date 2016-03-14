@@ -1,40 +1,22 @@
 {% extends '::base.html.twig' %}
 
-{% block body -%}
-    <h1>Lista Sekcji</h1>
-    
-    {% for flashMessage in app.session.flashbag.get('warning') %}
-        <div class="alert alert-info">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
-            {{ flashMessage }}
-        </div>       
-    {% endfor %}
+{% block body %}
+<h1>Lista Section</h1>
+{% for flashMessage in app.session.flashbag.get('warning') %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Uwaga!</strong> 
+        {{ flashMessage }}
+    </div>       
+{% endfor %}
 
-    <table class="table table-striped table-bordered">
-        <thead>
-            <tr>
-                <th>Pełna nazwa</th>
-                <th>Skrót</th>
-                <th>Działania</th>
-            </tr>
-        </thead>
-        <tbody>
-            {% for entity in entities %}
-                <tr>
-                    <td>{{ entity.name }}</td>
-                    <td>{{ entity.shortname }}</td>
-                    <td>
-                        <ul>
-                            <a class="btn btn-primary" href="{{ path('section_edit', { 'id': entity.id }) }}"><i class="fa fa-edit"></i> Edycja</a>
-                        </ul>
-                    </td>
-                </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+<center>
+    <div class="btn-group">
+        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+        <a class="btn btn-primary btn-xs" href="{{ path('section_new') }}">Dodaj Section</a>
+    </div>
+</center>
 
-    <a class="btn btn-primary" href="{{ path('section_new') }}">
-        <i class="fa fa-plus"></i> Dodaj sekcję
-    </a>     
+{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
 {% endblock %}
