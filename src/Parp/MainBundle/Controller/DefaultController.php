@@ -710,6 +710,12 @@ class DefaultController extends Controller
             if($uz->getUprawnieniaAdministracyjne() != "")
                 $html .= "<b>Uprawnienia Administracyjne:</b> TAK<br>";
             $zasoby[$i]['opisHtml'] = $html;
+            $zasoby[$i]['modul'] = $uz->getModul();
+            $zasoby[$i]['loginDoZasobu'] = $uz->getLoginDoZasobu();
+            $zasoby[$i]['poziomDostepu'] = $uz->getPoziomDostepu();
+            $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd()->format("Y-m-d");
+            $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo()->format("Y-m-d");
+            $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
         }
         
         $form = $this->createFormBuilder($defaultData)

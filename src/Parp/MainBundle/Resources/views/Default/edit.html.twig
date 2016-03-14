@@ -1,168 +1,185 @@
 {% extends '::base.html.twig' %}
 
 {% block body %} 
-    <div class="col-sm-8">
-        <h3>{{ user.name }}</h3>
-        <form class="form-horizontal" method="POST" role="form">
-            {{  form_start(form) }}
-            <div class="form-group">
-                {{ form_label(form.samaccountname) }}
-                <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.name) }}
-                <div class="col-sm-8">{{ form_widget(form.name) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.initials) }}
-                <div class="col-sm-4">
-                    {{ form_widget(form.initials) }}
-                </div>
-                <div class="col-sm-4">
-                    <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.department) }}
-                <div class="col-sm-8">{{ form_widget(form.department) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.title) }}
-                <div class="col-sm-4">{{ form_widget(form.title) }}</div>
-                <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.initialrights) }}
-                <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.info) }}
-                <div class="col-sm-8">{{ form_widget(form.info) }}</div>
-            </div>
-            {#<div class="form-group">#}
-            {#{{ form_label(form.description) }}#}
-            {#<div class="col-sm-8">{{ form_widget(form.description) }}</div>#}
-            {#</div>#}
-            {#<div class="form-group">#}
-            {#{{ form_label(form.division) }}#}
-            {#<div class="col-sm-8">{{ form_widget(form.division) }}</div>#}
-            {#</div>#}
-            <div class="form-group">
-                {{ form_label(form.manager) }}
-                <div class="col-sm-4">
-                    {{ form_widget(form.manager) }}
-                </div>
-                <div class="col-sm-4 btn-group">
-                    <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
-                    <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.fromWhen) }}
-                <div class='col-sm-8'>
-                    <div class="input-group datepicker"  id="datepicker">
-                        {{ form_widget(form.fromWhen) }}
-                        <span class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#zasoby">Zasoby użytkownika</a></li>
+            <li><a data-toggle="tab" href="#uprawnienia">Uprawnienia użytkownika</a></li>
+            <li><a data-toggle="tab" href="#historia">Historia zmian</a></li>
+            <li><a data-toggle="tab" href="#oczekujace">Oczekujące zmiany</a></li>
+        </ul>
+        
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+                <h3>{{ user.name }}</h3>
+                <form class="form-horizontal" method="POST" role="form">
+                    {{  form_start(form) }}
+                    <div class="form-group">
+                        {{ form_label(form.samaccountname) }}
+                        <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
                     </div>
-                </div>
+                    <div class="form-group">
+                        {{ form_label(form.name) }}
+                        <div class="col-sm-8">{{ form_widget(form.name) }}</div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.initials) }}
+                        <div class="col-sm-4">
+                            {{ form_widget(form.initials) }}
+                        </div>
+                        <div class="col-sm-4">
+                            <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.department) }}
+                        <div class="col-sm-8">{{ form_widget(form.department) }}</div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.title) }}
+                        <div class="col-sm-4">{{ form_widget(form.title) }}</div>
+                        <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.initialrights) }}
+                        <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.info) }}
+                        <div class="col-sm-8">{{ form_widget(form.info) }}</div>
+                    </div>
+                    {#<div class="form-group">#}
+                    {#{{ form_label(form.description) }}#}
+                    {#<div class="col-sm-8">{{ form_widget(form.description) }}</div>#}
+                    {#</div>#}
+                    {#<div class="form-group">#}
+                    {#{{ form_label(form.division) }}#}
+                    {#<div class="col-sm-8">{{ form_widget(form.division) }}</div>#}
+                    {#</div>#}
+                    <div class="form-group">
+                        {{ form_label(form.manager) }}
+                        <div class="col-sm-4">
+                            {{ form_widget(form.manager) }}
+                        </div>
+                        <div class="col-sm-4 btn-group">
+                            <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
+                            <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        {{ form_label(form.fromWhen) }}
+                        <div class='col-sm-8'>
+                            <div class="input-group datepicker"  id="datepicker">
+                                {{ form_widget(form.fromWhen) }}
+                                <span class="input-group-addon">
+                                    <span class="fa fa-calendar"></span>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
+                    </div>
+                {{ form_rest(form) }}
             </div>
-            <div class="form-group">
-                <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
-            </div>
-    </div>
-    
-    <div class="col-sm-4">
-        <div class="panel-group" id="accordion">
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                    Zasoby użytkownika ({{zasoby|length}})
-                    </a>
-                    </h4>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                    
-                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
+            <div id="zasoby" class="tab-pane fade">
+                <h3>Zasoby użytkownika ({{zasoby|length}})</h3>
+                <div>
+                    <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
                         
-                        {% if zasoby|length > 0 %}
+                    {% if zasoby|length > 0 %}
+                    <table class="table table-hover">
+                        <thead>
+                            <tr>
+                                <th>Lp.</th>
+                                <th>Nazwa zasobu</th>
+                                <th>Login do zasobu</th>
+                                <th>Moduł</th>
+                                <th>Poziom dostępu</th>
+                                <th>Kanał dostępu</th>
+                                <th>Aktywne od</th>
+                                <th>Aktywne do</th>
+                            </tr>
+                        </thead>
+                        {% set n = 1 %}
+                        <tbody>
+                            {% for row in zasoby %}
+                                <tr>
+                                    <td><a href="{{ path('userzasoby_edit', {id: row.id})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
+                                    <td><a href="{{ path('userzasoby_edit', {id: row.id})}}" 
+                                    data-toggle="popover" title="Uprawnienia" data-content="{{row.opisHtml|raw}}"
+                                    >{{ row.nazwa  }}<br>{{row.opisHtml|raw}}</a></td>
+                                    <td>{{row.loginDoZasobu}}</td>
+                                    <td>{{row.modul}}</td>
+                                    <td>{{row.kanalDostepu}}</td>
+                                    <td>{{row.poziomDostepu}}</td>
+                                    <td>{{row.aktywneOd}}</td>
+                                    <td>{{row.aktywneDo}}</td>
+                                    
+                                    
+                                </tr>
+                                {% set n = n + 1 %}
+                            {% endfor %}
+                        </tbody>
+                    
+                    </table>
+                    {% else %}
+                    
+                    <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
+                    
+                    {% endif %}
+                </div>
+            </div>
+            <div id="uprawnienia" class="tab-pane fade">
+                <h3>Uprawnienia użytkownika ({{uprawnienia|length}})</h3>
+                <div>
+                    <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' })}}" class="btn btn-success">Dodaj uprawnienia</a>
+                        
+                    {% if uprawnienia|length > 0 %}
                         <table class="table table-hover">
                             <thead>
                                 <tr>
                                     <th>Lp.</th>
-                                    <th>Nazwa zasobu</th>
+                                    <th>Opis zasobu</th>
+                                    <th>Data nadania</th>
+                                    <th>Data odebrania</th>
+                                    <th>Aktywne</th>
                                 </tr>
                             </thead>
                             {% set n = 1 %}
                             <tbody>
-                                {% for row in zasoby %}
+                                {% for row in uprawnienia %}
                                     <tr>
-                                        <td><a href="{{ path('userzasoby_edit', {id: row.id})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
-                                        <td><a href="{{ path('userzasoby_edit', {id: row.id})}}" 
-                                        data-toggle="popover" title="Uprawnienia" data-content="{{row.opisHtml|raw}}"
-                                        >{{ row.nazwa  }}<br>{{row.opisHtml|raw}}</a></td>
+                                        <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId})}}">{{ n }}</a></td>
+                                        <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId})}}">{{ row.opis  }}</a></td>
+                                        <td>{{row.dataNadania|date}}</td>
+                                        <td>{{row.dataOdebrania|date}}</td>
+                                        <td>{{row.czyAktywne}}</td>
                                     </tr>
                                     {% set n = n + 1 %}
                                 {% endfor %}
                             </tbody>
-                        
+            
                         </table>
-                        {% else %}
+                    {% else %}
                         
-                        <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
+                        <p>Użytkownik nie posiada żadnych uprawnień.</p>
                         
-                        {% endif %}
-                        
-                    </div>
+                    {% endif %}
                 </div>
             </div>
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <h4 class="panel-title">
-                    <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-                    Uprawnienia użytkownika ({{uprawnienia|length}})
-                    </a>
-                    </h4>
-                </div>
-                <div id="collapse2" class="panel-collapse collapse in">
-                    <div class="panel-body">
-                    
-                        <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' })}}" class="btn btn-success">Dodaj uprawnienia</a>
-                        
-                        {% if uprawnienia|length > 0 %}
-                            <table class="table table-hover">
-                                <thead>
-                                    <tr>
-                                        <th>Lp.</th>
-                                        <th>Opis zasobu</th>
-                                    </tr>
-                                </thead>
-                                {% set n = 1 %}
-                                <tbody>
-                                    {% for row in uprawnienia %}
-                                        <tr>
-                                            <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId})}}">{{ n }}</a></td>
-                                            <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId})}}">{{ row.opis  }}</a></td>
-                                        </tr>
-                                        {% set n = n + 1 %}
-                                    {% endfor %}
-                                </tbody>
-                
-                            </table>
-                        {% else %}
-                            
-                            <p>Użytkownik nie posiada żadnych uprawnień.</p>
-                            
-                        {% endif %}
-                    </div>
-                </div>
+            <div id="historia" class="tab-pane fade">
+                <h3>Todo</h3>
+                <p>Under construction.</p>
+            </div>
+            <div id="oczekujace" class="tab-pane fade">
+                <h3>Todo</h3>
+                <p>Under construction.</p>
             </div>
         </div>
+    
     </div>
-    {{ form_rest(form) }}
 
     <div id="myModal" class="modal fade">
         <div class="modal-dialog modal-lg">
