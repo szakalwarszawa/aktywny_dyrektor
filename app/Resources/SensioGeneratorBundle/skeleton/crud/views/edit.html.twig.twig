@@ -22,7 +22,7 @@
             </div>            
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ "{{ render(controller('ParpMainBundle:Version:versions', {repository: 'Zasoby', id: edit_form.vars.value.id})) }}" }}
+                    {{ "{{ render(controller('ParpMainBundle:Version:versions', {repository: '"}}{{ entity }}{{"', id: edit_form.vars.value.id})) }}" }}
                 </div>
             </div>
         </div>

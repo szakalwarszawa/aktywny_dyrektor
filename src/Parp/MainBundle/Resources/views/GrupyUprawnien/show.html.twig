@@ -12,12 +12,20 @@
                 <td>{{ entity.id }}</td>
             </tr>
             <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
                 <th>Kod</th>
                 <td>{{ entity.kod }}</td>
             </tr>
             <tr>
                 <th>Opis</th>
                 <td>{{ entity.opis }}</td>
+            </tr>
+            <tr>
+                <th>Uprawnieniahistoriazmian</th>
+                <td>{{ entity.uprawnieniaHistoriaZmian }}</td>
             </tr>
         </tbody>
     </table>
