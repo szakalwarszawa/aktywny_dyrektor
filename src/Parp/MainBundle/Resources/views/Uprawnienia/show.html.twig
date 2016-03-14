@@ -12,6 +12,10 @@
                 <td>{{ entity.id }}</td>
             </tr>
             <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
                 <th>Opis</th>
                 <td>{{ entity.opis }}</td>
             </tr>
@@ -22,6 +26,14 @@
             <tr>
                 <th>Czy_edycja</th>
                 <td>{{ entity.czyedycja }}</td>
+            </tr>
+            <tr>
+                <th>Grupyhistoriazmian</th>
+                <td>{{ entity.grupyHistoriaZmian }}</td>
+            </tr>
+            <tr>
+                <th>Grupaad</th>
+                <td>{{ entity.grupaAd }}</td>
             </tr>
         </tbody>
     </table>

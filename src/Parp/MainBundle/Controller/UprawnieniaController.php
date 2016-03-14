@@ -181,10 +181,7 @@ class UprawnieniaController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-
-        
         $uzs = $em->getRepository('Parp\MainBundle\Entity\UserUprawnienia')->findUsersByUprawnienieId($id);
-
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -236,10 +233,7 @@ class UprawnieniaController extends Controller
             $entity->setGrupyHistoriaZmian();
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
-            //die('a');//
             return $this->redirect($this->generateUrl('uprawnienia_edit', array('id' => $id)));
-        }else{
-            die($editForm->getErrorsAsString());
         }
 
         return array(
