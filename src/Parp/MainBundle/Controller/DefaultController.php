@@ -938,6 +938,8 @@ class DefaultController extends Controller
             }
         }
         $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname, 'czyAktywne' => true));
+        $historyEntries = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
+        $pendingEntries = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
         $up2grupaAd = array();
         foreach($uprawnienia as $u){
             $up = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($u->getUprawnienieId());
@@ -952,7 +954,9 @@ class DefaultController extends Controller
             'zasoby' => $zasoby,
             'uprawnienia' => $uprawnienia,
             'grupyAd' => $grupyAd,
-            'up2grupaAd' => $up2grupaAd
+            'up2grupaAd' => $up2grupaAd,
+            'pendingEntries' => $pendingEntries,
+            'historyEntries' => $historyEntries
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
     }

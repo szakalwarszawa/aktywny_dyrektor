@@ -9,8 +9,8 @@
                 {{ grid_actions(grid) }}
             {% endif %}
             </div>
-            <div class="grid_body">
-                <table class="table table-bordered table-striped">
+            <div class="grid_body row">
+                <table class="table table-hover table-striped table-bordered">
                 {% if grid.isTitleSectionVisible %}
                     {{ grid_titles(grid) }}
                 {% endif %}
@@ -129,7 +129,7 @@
                             <div class="sort_down fa fa-sort-alpha-asc"></div>
                         {% endif %}
                     {% endif %}
-                    <a class="order" href="{{ grid_url('order', grid, column) }}" title="{{ 'Order by'|trans }} {{ columnTitle|trans }}">{{ columnTitle|trans }}</a>
+                    <a class="order" href="{{ grid_url('order', grid, column) }}" title="{{ 'Order by'|trans }} {{ columnTitle|trans }}">{{ columnTitle|trans|gridTitles }}</a>
                 {% else %}
                     {% if columnTitle == "prev" %}
                         <a href="#" id="{{columnTitle}}">&larr;</a>

@@ -175,9 +175,6 @@
                                     </tr>
                                     {% set n = n + 1 %}
                                 {% endfor %}
-                                {% for a in grupyAd %}
-                                .{{a}}.
-                                {% endfor %}
                             </tbody>
             
                         </table>
@@ -189,12 +186,99 @@
                 </div>
             </div>
             <div id="historia" class="tab-pane fade">
-                <h3>Todo</h3>
-                <div  class="tabContent">Under construction.</div>
+                <div  class="tabContent">
+                    {% if historyEntries|length > 0 %}
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Lp. (id)</th>
+                                    <th>Imię i nazwisko</th>
+                                    <th>Inicjały</th>
+                                    <th>Departament</th>
+                                    <th>Sekcja</th>
+                                    <th>Manager</th>
+                                    <th>Stanowisko</th>
+                                    <th>Info</th>
+                                    <th>Uprawnienia początkowe</th>
+                                    <th>Ad zmiana</th>
+                                    <th>Od kiedy</th>
+                                </tr>
+                            </thead>
+                            {% set n = 1 %}
+                            <tbody>
+                                {% for row in historyEntries %}
+                                    <tr>
+                                        <td>{{ n }} ({{row.id}})</td>
+                                        <td>{{ row.cn  }}</td>
+                                        <td>{{row.initials}}</td>
+                                        <td>{{row.department}}</td>
+                                        <td>{{row.division}}</td>
+                                        <td>{{row.manager}}</td>
+                                        <td>{{row.title}}</td>
+                                        <td>{{row.info}}</td>
+                                        <td>{{row.initialrights}}</td>
+                                        <td>{{row.distinguishedName}}</td>
+                                        <td>{{row.fromWhen|date}}</td>
+                                    </tr>
+                                    {% set n = n + 1 %}
+                                {% endfor %}
+                            </tbody>
+            
+                        </table>
+                    {% else %}
+                        
+                        <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
+                        
+                    {% endif %}
+                </div>
             </div>
             <div id="oczekujace" class="tab-pane fade">
-                <h3>Todo</h3>
-                <div  class="tabContent">Under construction.</div>
+                <div  class="tabContent">
+                    {% if pendingEntries|length > 0 %}
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Lp.</th>
+                                    <th>Imię i nazwisko</th>
+                                    <th>Inicjały</th>
+                                    <th>Departament</th>
+                                    <th>Sekcja</th>
+                                    <th>Manager</th>
+                                    <th>Stanowisko</th>
+                                    <th>Info</th>
+                                    <th>Uprawnienia początkowe</th>
+                                    <th>Ad zmiana</th>
+                                    <th>Od kiedy</th>
+                                </tr>
+                            </thead>
+                            {% set n = 1 %}
+                            <tbody>
+                                {% for row in pendingEntries %}
+                                    <tr>
+                                        <td>{{ n }}</td>
+                                        <td>{{ row.cn  }}</td>
+                                        <td>{{row.initials}}</td>
+                                        <td>{{row.department}}</td>
+                                        <td>{{row.division}}</td>
+                                        <td>{{row.manager}}</td>
+                                        <td>{{row.title}}</td>
+                                        <td>{{row.info}}</td>
+                                        <td>{{row.initialrights}}</td>
+                                        <td>{{row.distinguishedName}}</td>
+                                        <td>{{row.fromWhen|date}}</td>
+                                    </tr>
+                                    {% set n = n + 1 %}
+                                {% endfor %}
+                            </tbody>
+            
+                        </table>
+                    {% else %}
+                        
+                        <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
+                        
+                    {% endif %}
+                
+                </div>
             </div>
         </div>
     

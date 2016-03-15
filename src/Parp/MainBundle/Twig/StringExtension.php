@@ -8,6 +8,7 @@ class StringExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
+            new \Twig_SimpleFilter('gridTitles', array($this, 'gridTitles')),
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
         );
     }
@@ -28,6 +29,23 @@ class StringExtension extends \Twig_Extension
         return $out;
     }
 
+    public function gridTitles($var)
+    {
+        $ret = "";
+        $last = "";
+        for($i = 0; $i < strlen($var); $i++){
+            $c = $var[$i];
+            $duza = $c == strtoupper($c);
+            if($last == "mala" && $duza){
+                $ret .= " ";
+            }
+            $ret .= $last == "" ? strtoupper($c) : $c;            
+            $last = $duza ? "duza" : "mala";
+        }
+        
+        return $ret;
+    }
+    
     public function getObjectValue($var)
     {   
         if ($var instanceof \DateTime) {

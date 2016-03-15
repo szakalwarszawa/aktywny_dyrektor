@@ -28,7 +28,7 @@ class ZadanieType extends AbstractType
             ->add(
                 $builder->create('dataDodania','text',array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datetimepicker',
                         'readonly' => true
                     ),
                     'label' => 'Data dodania',
@@ -41,8 +41,9 @@ class ZadanieType extends AbstractType
             )
             ->add(
                 $builder->create('dataUkonczenia','text',array(
+                    //'block_name' => 'custom_name',
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datetimepicker',
                     ),
                     'label' => 'Data ukończenia',
                     'label_attr' => array(

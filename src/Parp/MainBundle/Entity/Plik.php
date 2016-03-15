@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="plik")
  * @ORM\Entity
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, typ, opis, obiekt, obiektId, ")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, typ, opis, file")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -275,5 +275,29 @@ class Plik
     }
     public function getFilePath(){
         return $this->getUploadRootDir()."/".$this->getFile();
+    }
+
+    /**
+     * Set typ
+     *
+     * @param string $typ
+     *
+     * @return Plik
+     */
+    public function setTyp($typ)
+    {
+        $this->typ = $typ;
+
+        return $this;
+    }
+
+    /**
+     * Get typ
+     *
+     * @return string
+     */
+    public function getTyp()
+    {
+        return $this->typ;
     }
 }

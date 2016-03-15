@@ -26,3 +26,10 @@
     text-align: center;
     overflow: hidden;
 }
+.grid-filter-input input{
+    width:100%;
+}
+td {
+  word-wrap:break-word;
+  word-break:break-word;
+}

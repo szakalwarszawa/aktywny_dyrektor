@@ -1,5 +1,16 @@
 {% extends '::base.html.twig' %}
 
+
+{% form_theme edit_form _self %}
+{% block _parp_mainbundle_zadanie_dataUkonczenia_widget %}sss
+<div class="input-group datepicker" >
+    {{ block('form_widget_simple') }}
+    <span class="input-group-addon">
+        <span class="fa fa-calendar"></span>
+    </span>
+</div>
+{% endblock %} 
+
 {% block body -%}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
@@ -11,12 +22,12 @@
             <div id="general" class="tab-pane fade in active">
                 <h1>Edycja Zadanie </h1>
                 <div class="tabContent">
-                                        <div class="btn-group">
+                    <div class="btn-group">
 
-<a class="btn btn-primary" href="{{ path('zadanie') }}">
-    <i class="fa fa-list"></i> Lista Zadanie
-</a>
-</div>
+                    <a class="btn btn-primary" href="{{ path('zadanie') }}">
+                        <i class="fa fa-list"></i> Lista Zadanie
+                    </a>
+                    </div>
                     <div class="well">
                     
                         {{edit_form.vars.value.opis|raw}}

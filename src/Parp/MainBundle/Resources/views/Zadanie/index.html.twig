@@ -10,14 +10,43 @@
     </div>       
 {% endfor %}
 
-<center>
-    <div class="btn-group">
-        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-        <a class="btn btn-primary btn-xs" href="{{ path('zadanie_new') }}">Dodaj Zadanie</a>
-    </div>
-</center>
 
-{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+<div class="col-sm-12">
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#aktywne">Do zrobienia</a></li>
+        <li><a data-toggle="tab" href="#historia">Zrobione</a></li>
+    </ul>
+    
+    <div class="tab-content">
+        <div id="aktywne" class="tab-pane fade in active">
+            <div class="tabContent container">
+                <center>
+                    <div class="btn-group">
+                        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                        <a class="btn btn-primary btn-xs" href="{{ path('zadanie_new') }}">Dodaj Zadanie</a>
+                    </div>
+                </center>
+                
+                {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+            </div>
+        </div>            
+        <div id="historia" class="tab-pane fade">
+            <div  class="tabContent container">
+                <center>
+                    <div class="btn-group">
+                        <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                    </div>
+                </center>
+                
+                {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
 
 {% endblock %}
 

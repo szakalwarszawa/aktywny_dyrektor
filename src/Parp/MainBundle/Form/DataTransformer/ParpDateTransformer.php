@@ -27,6 +27,8 @@ class ParpDateTransformer implements DataTransformerInterface
      */
     public function transform($date)
     {
+        //print_r($date);
+        //die('a');
         if (null === $date) {
             return "";
         }
@@ -44,12 +46,16 @@ class ParpDateTransformer implements DataTransformerInterface
      */
     public function reverseTransform($datestr)
     {
+        //return $datestr;
+        //die('b '.$datestr);
         if (!$datestr) {
             return null;
         }
         //echo ".".$datestr;
-        //$d = explode(" ",$datestr);
-        //$datestr = $d[0]." 00:00:00";
+        if(strstr($datestr, " ") === false){
+            $d = explode(" ",$datestr);
+            $datestr = $d[0]." 00:00:00";
+        }
         $date = \DateTime::createFromFormat($this->input_format, $datestr);
         //die(print_r($date, true));
         return $date;
