@@ -871,6 +871,18 @@ class DefaultController extends Controller
             $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
             unset($ndata['initialrights']);
             unset($odata['initialrights']);
+            unset($ndata['memberOf']);
+            unset($odata['memberOf']);
+            
+            //hack by dalo sie puste inicjaly wprowadzic
+            if($ndata['initials'] == "")
+                $ndata['initials'] = "puste";
+            //print_r($ndata);
+            //print_r($odata);
+            //print_r(array_diff($ndata, $odata));
+            //die();
+            //print_r(array_diff($ndata, $odata));
+            //print_r($roznicauprawnien);
             //$df = array_diff($form->getData(), $previousData);
             //echo "<pre>"; print_r($previousData); print_r($form->getData()); die();
             if (0 < count(array_diff($ndata, $odata)) || $roznicauprawnien) {

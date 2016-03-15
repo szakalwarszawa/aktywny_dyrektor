@@ -192,7 +192,12 @@ class LdapAdminService
             $entry['title'] = $person->getTitle();
         }
         if ($person->getInitials()) {
-            $entry['initials'] = $person->getInitials();
+            //hack by dalo sie puste inicjaly wprowadzic
+            if($person->getInitials() == "puste"){
+                $entry['initials'] = array();
+            }else{
+                $entry['initials'] = $person->getInitials();
+            }
         }
 
         if ($person->getDepartment()) {
