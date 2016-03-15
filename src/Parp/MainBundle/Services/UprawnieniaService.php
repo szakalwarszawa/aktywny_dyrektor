@@ -395,7 +395,7 @@ class UprawnieniaService
           $dane[] = $uprawnienie->getOpis();
           }
          */
-         $o1 = (count($nadane) > 0 ? " nadanie " : "").(count($nadane) > 0 && count($odebrane) > 0 ? " i " : "").(count($odebrane) > 0 ? " odebranie " : "")
+         $o1 = (count($nadane) > 0 ? " nadanie " : "").(count($nadane) > 0 && count($odebrane) > 0 ? " i " : "").(count($odebrane) > 0 ? " odebranie " : "");
          $opis = $obiekt.($obiektId != 0 ? " o id : ".$obiektId : "")." dla użytkownika ".$person['cn'];
          $zadanie = new \Parp\MainBundle\Entity\Zadanie();
          $zadanie->setNazwa("Nowe zadanie o ".$o1." dot. ".$opis);

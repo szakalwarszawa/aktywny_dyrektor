@@ -30,6 +30,15 @@ class UserZasoby
     */
     private $deletedAt;
 
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $importedFromEcm = false;
+
     /**
      * @var string
      *
@@ -561,4 +570,52 @@ class UserZasoby
         return $this->czyAktywne;
     }
     
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return UserZasoby
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Set importedFromEcm
+     *
+     * @param boolean $importedFromEcm
+     *
+     * @return UserZasoby
+     */
+    public function setImportedFromEcm($importedFromEcm)
+    {
+        $this->importedFromEcm = $importedFromEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get importedFromEcm
+     *
+     * @return boolean
+     */
+    public function getImportedFromEcm()
+    {
+        return $this->importedFromEcm;
+    }
 }

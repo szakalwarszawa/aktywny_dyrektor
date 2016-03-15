@@ -52,7 +52,7 @@ class GrupyUprawnien
 
     /**
      * @ORM\ManyToMany(targetEntity="Uprawnienia", inversedBy="grupy")
-     * @ORM\JoinTable(name="uprawnienia_w_grupach")
+     *ORM\JoinTable(name="uprawnienia_w_grupach")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $uprawnienia;

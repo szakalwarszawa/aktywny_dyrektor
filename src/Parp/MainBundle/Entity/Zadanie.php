@@ -110,4 +110,278 @@ class Zadanie
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $obiektId;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return Zadanie
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Set nazwa
+     *
+     * @param string $nazwa
+     *
+     * @return Zadanie
+     */
+    public function setNazwa($nazwa)
+    {
+        $this->nazwa = $nazwa;
+
+        return $this;
+    }
+
+    /**
+     * Get nazwa
+     *
+     * @return string
+     */
+    public function getNazwa()
+    {
+        return $this->nazwa;
+    }
+
+    /**
+     * Set status
+     *
+     * @param string $status
+     *
+     * @return Zadanie
+     */
+    public function setStatus($status)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return string
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set opis
+     *
+     * @param string $opis
+     *
+     * @return Zadanie
+     */
+    public function setOpis($opis)
+    {
+        $this->opis = $opis;
+
+        return $this;
+    }
+
+    /**
+     * Get opis
+     *
+     * @return string
+     */
+    public function getOpis()
+    {
+        return $this->opis;
+    }
+
+    /**
+     * Set komentarz
+     *
+     * @param string $komentarz
+     *
+     * @return Zadanie
+     */
+    public function setKomentarz($komentarz)
+    {
+        $this->komentarz = $komentarz;
+
+        return $this;
+    }
+
+    /**
+     * Get komentarz
+     *
+     * @return string
+     */
+    public function getKomentarz()
+    {
+        return $this->komentarz;
+    }
+
+    /**
+     * Set osoby
+     *
+     * @param string $osoby
+     *
+     * @return Zadanie
+     */
+    public function setOsoby($osoby)
+    {
+        $this->osoby = $osoby;
+
+        return $this;
+    }
+
+    /**
+     * Get osoby
+     *
+     * @return string
+     */
+    public function getOsoby()
+    {
+        return $this->osoby;
+    }
+
+    /**
+     * Set dataDodania
+     *
+     * @param \DateTime $dataDodania
+     *
+     * @return Zadanie
+     */
+    public function setDataDodania($dataDodania)
+    {
+        $this->dataDodania = $dataDodania;
+
+        return $this;
+    }
+
+    /**
+     * Get dataDodania
+     *
+     * @return \DateTime
+     */
+    public function getDataDodania()
+    {
+        return $this->dataDodania;
+    }
+
+    /**
+     * Set dataUkonczenia
+     *
+     * @param \DateTime $dataUkonczenia
+     *
+     * @return Zadanie
+     */
+    public function setDataUkonczenia($dataUkonczenia)
+    {
+        $this->dataUkonczenia = $dataUkonczenia;
+
+        return $this;
+    }
+
+    /**
+     * Get dataUkonczenia
+     *
+     * @return \DateTime
+     */
+    public function getDataUkonczenia()
+    {
+        return $this->dataUkonczenia;
+    }
+
+    /**
+     * Set ukonczonePrzez
+     *
+     * @param string $ukonczonePrzez
+     *
+     * @return Zadanie
+     */
+    public function setUkonczonePrzez($ukonczonePrzez)
+    {
+        $this->ukonczonePrzez = $ukonczonePrzez;
+
+        return $this;
+    }
+
+    /**
+     * Get ukonczonePrzez
+     *
+     * @return string
+     */
+    public function getUkonczonePrzez()
+    {
+        return $this->ukonczonePrzez;
+    }
+
+    /**
+     * Set obiekt
+     *
+     * @param string $obiekt
+     *
+     * @return Zadanie
+     */
+    public function setObiekt($obiekt)
+    {
+        $this->obiekt = $obiekt;
+
+        return $this;
+    }
+
+    /**
+     * Get obiekt
+     *
+     * @return string
+     */
+    public function getObiekt()
+    {
+        return $this->obiekt;
+    }
+
+    /**
+     * Set obiektId
+     *
+     * @param integer $obiektId
+     *
+     * @return Zadanie
+     */
+    public function setObiektId($obiektId)
+    {
+        $this->obiektId = $obiektId;
+
+        return $this;
+    }
+
+    /**
+     * Get obiektId
+     *
+     * @return integer
+     */
+    public function getObiektId()
+    {
+        return $this->obiektId;
+    }
 }

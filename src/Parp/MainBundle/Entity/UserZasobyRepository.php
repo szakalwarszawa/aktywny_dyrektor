@@ -24,6 +24,20 @@ class UserZasobyRepository extends EntityRepository
         return $query->getOneOrNullResult();
     }
 
+    public function findByAccountnameAndEcm($samaccountname)
+    {
+
+        $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND uz.samaccountname = :samaccountname
+              AND uz.importedFromEcm = 1
+              ORDER BY z.nazwa ASC
+              ')->setParameter('samaccountname', $samaccountname);
+               
+        
+        return $query->getResult();
+    }
     public function findNameByAccountname($samaccountname)
     {
 

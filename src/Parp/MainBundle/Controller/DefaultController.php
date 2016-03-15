@@ -1543,9 +1543,19 @@ class DefaultController extends Controller
                 //$path = $file->getClientPathName();
                 //var_dump($file->getPathname());
                 // var_dump($name);
-
-                if ($this->wczytajPlik($file)) {
-                    $this->get('session')->getFlashBag()->set('warning', 'Plik został wczytany poprawnie.');
+                $ret = $this->wczytajPlik($file);
+                if ($ret) {
+                    $msg = 'Plik został wczytany poprawnie.';
+                    if(is_array($ret)){
+                        $msg = 'Plik został wczytany poprawnie. ';
+                        $w = array();
+                        foreach($ret as $k=>$v){
+                            $w[] = "$k : $v";
+                        }
+                        $msg .= implode(", ", $w);
+                        
+                    }
+                    $this->get('session')->getFlashBag()->set('warning', $msg);
                     return $this->redirect($this->generateUrl('main'));
                 }
             }
@@ -1603,17 +1613,17 @@ class DefaultController extends Controller
         $em = $this->getDoctrine()->getManager();
         
         //!!! tego sie pozbywam 
-        $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
-        $numDeleted = $query->execute();
+        //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+        //$numDeleted = $query->execute();
         
         $pierwszyWiersz = explode(";", $list[0]);
         $komorka = $pierwszyWiersz[0];
         if($komorka == "Nazwa zasobu"){
-            $this->wczytajPlikZasoby($file);
+            $ret = $this->wczytajPlikZasoby($file);
         }else{
-            $this->wczytajPlikZasobyUser($file);
+            $ret = $this->wczytajPlikZasobyUser($file);
         }
-        return true;
+        return $ret;
     }
     protected function wczytajPlikZasoby($file)
     {
@@ -1739,6 +1749,7 @@ class DefaultController extends Controller
     }
     protected function wczytajPlikZasobyUser($file)
     {
+        $wynik = array('utworzono' => 0, 'zmieniono' => 0, 'nie zmieniono' => 0, 'skasowano' => 0);
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
 
@@ -1748,8 +1759,8 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
-        $numDeleted = $query->execute();
+        //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby uz where uz.importedFromEcm = 1');
+        //$numDeleted = $query->execute();
         $wiersz2getter = array(
             3 => "LoginDoZasobu",
             4 => "Modul",
@@ -1816,36 +1827,82 @@ class DefaultController extends Controller
                 }
             }
         }
+        $pomijacKolumnyPrzyPorownaniu = array(3,4,5,7,9,10,11);
+        $uzsIdPokryteWimporcie = array();
+        
+        
         //print_r($tablica); die();
-        foreach ($tablica as $key => $values) {
+        foreach ($tablica as $samaccountname => $values) {
+            $samsUserZasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findByAccountnameAndEcm($samaccountname);                          
             foreach ($values as $value) {
                 //echo $key . ' ' . $value . "<br>";
-                $newUserZasob = new UserZasoby();
-                $newUserZasob->setAktywneOd(null);
-                $newUserZasob->setAktywneDo(null);
-                $newUserZasob->setCzyAktywne(true);
-                $newUserZasob->setSamaccountname($key);
-                $newUserZasob->setZasobId($value['zasobId']);
-                foreach($value['dane'] as $k => $v){
-                    $v = trim($v);
-                    if($k >= 3 && $v != ""){
-                        $setter = $wiersz2getter[$k];
-                        if($k == 6 || $k == 8){
-                            echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
-                            $v = \DateTime::createFromFormat('D M d H:i:s e Y', $v);
-                            print_r($v);
-                            //die();
+                
+                //echo "<br><br><br>szukam DUBLA $samaccountname ".$value['zasobId']."<br><br><br>";
+                $newUserZasob = null;
+                //szukam czy istnieje taki zasob
+                foreach($samsUserZasoby as $uzs){
+                    //uznajemy ze to ten sam userZasoby jesli rowne sa: (samaccountname) zasobId, poziomDostepu, aktywneOd i aktywneDo, kanalDostepu
+                    
+                    $equal  = $uzs->getZasobId() == $value['zasobId'];
+                    if($equal){
+                        foreach($wiersz2getter as $col => $getter){
+                            if(!in_array($col, $pomijacKolumnyPrzyPorownaniu)){
+                                $val = $uzs->{"get".$getter}();
+                                if($col == 6 || $col == 8){
+                                    $val = $val->format('D M d H:i:s T Y');
+                                }
+                                $equal = $equal && ($val == trim($value['dane'][$col]));
+                                //echo "<br>porownuje $getter <br>.".$val .".<br>.". $value['dane'][$col].".<br> wynik ".($val == $value['dane'][$col])." ".$equal."<br>";
+                            }                        
                         }
-                        if($v)
-                            $newUserZasob->{"set".$setter}($v);                        
-                    }                    
+                    }
+                    if($equal){
+                        //echo('mam dubla');
+                        $newUserZasob = $uzs;    
+                        $uzsIdPokryteWimporcie[] = $uzs->getId();
+                        $wynik['nie zmieniono'] += 1;
+                    }
+                }
+                if($newUserZasob == null){
+                    //echo "<br><br><br>NIE MAM DUBLA <br><br><br>";
+                    
+                    $newUserZasob = new UserZasoby();
+                    $newUserZasob->setImportedFromEcm(true);
+                    $newUserZasob->setAktywneOd(null);
+                    $newUserZasob->setAktywneDo(null);
+                    $newUserZasob->setCzyAktywne(true);
+                    $newUserZasob->setSamaccountname($samaccountname);
+                    $newUserZasob->setZasobId($value['zasobId']);
+                    foreach($value['dane'] as $k => $v){
+                        $v = trim($v);
+                        if($k >= 3 && $v != ""){
+                            $setter = $wiersz2getter[$k];
+                            if($k == 6 || $k == 8){
+                                //echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
+                                $v = \DateTime::createFromFormat('D M d H:i:s T Y', $v);
+                                //print_r($v);
+                                //die();
+                            }
+                            if($v)
+                                $newUserZasob->{"set".$setter}($v);                        
+                        }                    
+                    }
+                    $wynik['utworzono'] += 1;
                 }
                 $em->persist($newUserZasob);
+                
             }
+        }
+        
+        foreach($samsUserZasoby as $uzs){
+            if(!in_array($uzs->getId(), $uzsIdPokryteWimporcie)){                
+                $em->remove($uzs);
+                $wynik['skasowano'] += 1;
+            }            
         }
         $em->flush();
 
-        return true;
+        return $wynik;
     }
 
     /**
