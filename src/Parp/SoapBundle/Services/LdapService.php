@@ -298,12 +298,25 @@ class LdapService
                 $result[$i]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
+                $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
                 $i++;
             }
         }
 
 //        $memcached->set('ldap-detail-'.$samaccountname,$result);
         return $result;
+    }
+    protected function parseMemberOf($res){
+        $ret = array();
+        $gr = isset($res["memberof"]) ? $res["memberof"]: array();
+        foreach($gr as $k => $g){
+            if($k !== "count"){
+                $p = explode(",", $g);
+                $p2 = str_replace("CN=", "", $p[0]);
+                $ret[] = $p2;
+            }
+        }
+        return $ret;
     }
 
     public function getUsersFromOU($OU)

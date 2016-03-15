@@ -310,7 +310,9 @@ class DefaultController extends Controller
                     foreach($ndata['access'] as $z){
                         
                         foreach($sams as $currentsam){
+                            $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $z));
+                            $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($z);
                             if($suz){
                                 $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
                                 $suz->setCzyAktywne(false);
@@ -319,11 +321,14 @@ class DefaultController extends Controller
                                 //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo je ma";
                                 $this->addFlash('warning', $msg);
+                                $zmianaupr[] = $zasob->getOpis();
                             }else{
                                 
                                 $msg = "NIE zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
+                            if(count($zmianaupr) > 0)
+                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $z, $zasob->getAdministratorZasobu());
                             
                         }
                     }
@@ -342,6 +347,7 @@ class DefaultController extends Controller
                     foreach($ndata['access'] as $z){
                         
                         foreach($sams as $currentsam){
+                            $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
                             if($suz){
                                 $msg = "NIE nadaje userowi ".$currentsam." uprawnienia  ".$z." bo je ma !";
@@ -361,8 +367,11 @@ class DefaultController extends Controller
                                 //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Nadaje userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma";
                                 $this->addFlash('warning', $msg);
+                                $zmianaupr[] = $u->getOpis();
                             }
                             
+                            if(count($zmianaupr) > 0)
+                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), array(), $zmianaupr);
                         }
                     }
                     $this->getDoctrine()->getManager()->flush();
@@ -380,6 +389,7 @@ class DefaultController extends Controller
                     foreach($ndata['access'] as $z){
                         
                         foreach($sams as $currentsam){
+                            $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
                             if($suz){
                                 
@@ -391,11 +401,14 @@ class DefaultController extends Controller
                                 //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Odbieram userowi ".$currentsam." uprawnienia  ".$z." bo je ma";
                                 $this->addFlash('warning', $msg);
+                                $zmianaupr[] = $u->getOpis();
                             }else{
                                 $msg = "NIE odbieram userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
                             
+                            if(count($zmianaupr) > 0)
+                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array());
                         }
                     }
                     $this->getDoctrine()->getManager()->flush();
@@ -555,7 +568,9 @@ class DefaultController extends Controller
                 $powod = $ndata['powod'];
                 foreach($ndata['userzasoby'] as $oz){
                     foreach($sams as $currentsam){
+                        $zmianaupr = array();
                         $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
+                        $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($oz->getZasobId());
                         //print_r($suz);
                         if($suz == null){
                             $z = clone $oz;
@@ -568,6 +583,7 @@ class DefaultController extends Controller
                             $this->getDoctrine()->getManager()->persist($z);
                             $msg = "Dodaje usera ".$currentsam." i zasob ".$oz->getZasobId()." bo go nie ma !";
                             $this->addFlash('warning', $msg);
+                            $zmianaupr[] = $zasob->getOpis();
                             //print_r( );
                         }
                         else{
@@ -576,6 +592,8 @@ class DefaultController extends Controller
                             
                             //$this->get('session')->getFlashBag()->set('warning', $msg);
                         }
+                        if(count($zmianaupr) > 0)
+                            $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                     }
                 }
                 
@@ -908,13 +926,21 @@ class DefaultController extends Controller
             }
         }
         $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname, 'czyAktywne' => true));
-
-
+        $up2grupaAd = array();
+        foreach($uprawnienia as $u){
+            $up = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($u->getUprawnienieId());
+            if($up->getGrupaAd())
+                $up2grupaAd[$up->getId()] = $up->getGrupaAd();
+        }
+        $grupyAd = $ADUser[0]["memberOf"];
+        //print_r($ADUser); die();
         return array(
             'user' => $ADUser[0],
             'form' => $form->createView(),
             'zasoby' => $zasoby,
-            'uprawnienia' => $uprawnienia
+            'uprawnienia' => $uprawnienia,
+            'grupyAd' => $grupyAd,
+            'up2grupaAd' => $up2grupaAd
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
     }

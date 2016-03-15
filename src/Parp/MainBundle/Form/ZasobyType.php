@@ -38,10 +38,7 @@ class ZasobyType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control',
                     ),
-//                'widget' => 'single_text',
                     'label' => 'Data zmiany',
-//                'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),

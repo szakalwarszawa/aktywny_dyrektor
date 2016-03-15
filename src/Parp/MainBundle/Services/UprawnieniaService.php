@@ -380,7 +380,7 @@ class UprawnieniaService
         }
     }
 
-    public function wyslij($person, $odebrane = null, $nadane = null)
+    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil11')
     {
         //$view = $this->container->get('templating')->render(
         //'BatchingBundle:Default:email.html.twig', array('content' => $content)
@@ -395,9 +395,19 @@ class UprawnieniaService
           $dane[] = $uprawnienie->getOpis();
           }
          */
-
+         $o1 = (count($nadane) > 0 ? " nadanie " : "").(count($nadane) > 0 && count($odebrane) > 0 ? " i " : "").(count($odebrane) > 0 ? " odebranie " : "")
+         $opis = $obiekt.($obiektId != 0 ? " o id : ".$obiektId : "")." dla użytkownika ".$person['cn'];
+         $zadanie = new \Parp\MainBundle\Entity\Zadanie();
+         $zadanie->setNazwa("Nowe zadanie o ".$o1." dot. ".$opis);
+         $zadanie->setOsoby($zadanieDla);
+         $zadanie->setDataDodania(new \Datetime());
+         $zadanie->setObiekt($obiekt);
+         $zadanie->setObiektId($obiektId);
+         $zadanie->setStatus('utworzone');
+         $this->doctrine->persist($zadanie);
+         $this->doctrine->flush();
         $view = $this->container->get('templating')->render(
-                'ParpMainBundle:Default:email.html.twig', array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane));
+                'ParpMainBundle:Default:email.html.twig', array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie));
 
         $message = \Swift_Message::newInstance()
                 ->setSubject('Zmiana uprawnień')
@@ -408,6 +418,13 @@ class UprawnieniaService
 
         //var_dump($view);
         $this->container->get('mailer')->send($message);
+        
+        
+        $zadanie->setOpis($view);
+         $this->doctrine->persist($zadanie);
+         $this->doctrine->flush();
+        
+        
     }
 
 }

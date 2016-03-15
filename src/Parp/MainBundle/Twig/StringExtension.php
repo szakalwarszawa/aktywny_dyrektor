@@ -8,6 +8,7 @@ class StringExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
+            new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
         );
     }
 
@@ -27,6 +28,13 @@ class StringExtension extends \Twig_Extension
         return $out;
     }
 
+    public function getObjectValue($var)
+    {   
+        if ($var instanceof \DateTime) {
+            $var = $var->format("Y-m-d H:i:s");
+        }
+        return $var;
+    }
     public function getName()
     {
         return 'app_extension';

@@ -22,7 +22,7 @@
                 {% for c in columns %}    
                     <td>
                         {%if c in e.log.data|keys %}<strong style="color:red">{%endif%}
-                        {{attribute(e.entity, c | toCamelcase)}}
+                        {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
                         {%if c in e.log.data|keys %}</strong>{%endif%}
                     </td>
                 {%endfor%}

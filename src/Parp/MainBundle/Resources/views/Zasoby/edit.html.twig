@@ -6,6 +6,7 @@
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#userzasoby">Lista Użytkowników Zasobu</a></li>
+            <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
         </ul>
         
         <div class="tab-content">
@@ -40,6 +41,11 @@
                         {% endfor %}
                         </tbody>
                     </table>
+                </div>
+            </div>        
+            <div id="pliki" class="tab-pane fade">
+                <div  class="tabContent">
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'Zasoby', obiektId: edit_form.vars.value.id})) }}
                 </div>
             </div>
         </div>

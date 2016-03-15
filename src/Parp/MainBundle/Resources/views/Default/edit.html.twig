@@ -89,6 +89,7 @@
                 <h3>Zasoby użytkownika ({{zasoby|length}})</h3>
                 <div class="tabContent">
                     <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' })}}" class="btn btn-success">Dodaj zasoby</a>
+                    <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removeResources' })}}" class="btn btn-danger">Odbierz zasoby</a>
                         
                     {% if zasoby|length > 0 %}
                     <table class="table table-hover">
@@ -137,6 +138,7 @@
                 <h3>Uprawnienia użytkownika ({{uprawnienia|length}})</h3>
                 <div class="tabContent">
                     <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' })}}" class="btn btn-success">Dodaj uprawnienia</a>
+                    <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removePrivileges' })}}" class="btn btn-danger">Odbierz uprawnienia</a>
                         
                     {% if uprawnienia|length > 0 %}
                         <table class="table table-hover">
@@ -147,6 +149,7 @@
                                     <th>Data nadania</th>
                                     <th>Data odebrania</th>
                                     <th>Aktywne</th>
+                                    <th>Jest w AD</th>
                                 </tr>
                             </thead>
                             {% set n = 1 %}
@@ -158,8 +161,22 @@
                                         <td>{{row.dataNadania|date}}</td>
                                         <td>{{row.dataOdebrania|date}}</td>
                                         <td>{{row.czyAktywne}}</td>
+                                        <td>
+                                            {% if up2grupaAd[row.getUprawnienieId] is defined %}
+                                                {% if up2grupaAd[row.getUprawnienieId] not in grupyAd %}
+                                                    NIE
+                                                {%else%}
+                                                    TAK
+                                                {%endif%}
+                                            {%else%}
+                                                n/d
+                                            {%endif%}
+                                        </td>
                                     </tr>
                                     {% set n = n + 1 %}
+                                {% endfor %}
+                                {% for a in grupyAd %}
+                                .{{a}}.
                                 {% endfor %}
                             </tbody>
             
