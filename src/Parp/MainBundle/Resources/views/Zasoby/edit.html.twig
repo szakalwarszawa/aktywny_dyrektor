@@ -55,3 +55,13 @@
     
     
 {% endblock %}
+
+{% form_theme edit_form _self %}
+{% block _parp_mainbundle_zasoby_dataZakonczeniaWdrozenia_widget %}
+<div class="input-group datepicker" >
+    {{ block('form_widget_simple') }}
+    <span class="input-group-addon">
+        <span class="fa fa-calendar"></span>
+    </span>
+</div>
+{% endblock %} 

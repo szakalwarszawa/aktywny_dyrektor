@@ -62,3 +62,14 @@
         </div>
     </div>
 {%endblock%}
+
+{% form_theme form _self %}
+
+{% block _form_fromWhen_widget %}
+<div class="input-group datepicker" >
+    {{ block('form_widget_simple') }}
+    <span class="input-group-addon">
+        <span class="fa fa-calendar"></span>
+    </span>
+</div>
+{% endblock %} 

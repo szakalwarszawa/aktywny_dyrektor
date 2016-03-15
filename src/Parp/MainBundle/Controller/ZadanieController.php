@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\Zadanie;
 use Parp\MainBundle\Form\ZadanieType;
+use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * Zadanie controller.
@@ -37,6 +38,19 @@ class ZadanieController extends Controller
         //$entities = $em->getRepository('ParpMainBundle:Zadanie')->findAll();
     
         $source = new Entity('ParpMainBundle:Zadanie');
+        
+        $user = $this->get('security.context')->getToken()->getUser();
+        $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
+        //print_r($ad[0]); die();
+        
+        $username = $ad[0]['name'];
+        $source->manipulateQuery(
+            function ($query) use ($username)
+            {
+                $query->andWhere('_a.osoby like :user')->setParameter('user', '%'.$username.'%');
+            }
+        );
+        
     
         $grid = $this->get('grid');
         $grid->setSource($source);

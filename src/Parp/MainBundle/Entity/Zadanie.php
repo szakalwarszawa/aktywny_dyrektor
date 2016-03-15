@@ -48,17 +48,17 @@ class Zadanie
     private $status;
 
     /**
-     * @var string
+     * @var text
      *
-     * @ORM\Column(name="opis", type="string", length=255, nullable=true)
+     * @ORM\Column(name="opis", type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
     
     /**
-     * @var string
+     * @var text
      *
-     * @ORM\Column(name="komentarz", type="string", length=255, nullable=true)
+     * @ORM\Column(name="komentarz", type="text", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $komentarz;

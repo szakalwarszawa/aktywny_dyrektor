@@ -380,8 +380,24 @@ class UprawnieniaService
         }
     }
 
-    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil11')
+    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil')
     {
+        //$zadanieDla = "Lipiński Marcin";
+        $ldap = $this->container->get('ldap_admin_service');
+        $dlaKogo = explode(",", $zadanieDla);
+        $mails = array();
+        foreach($dlaKogo as $user){
+            $cn = "CN=".str_replace(" ", "*", trim($user));
+            print_r($cn);
+            $userAD = $ldap->getUserFromAD(null, $cn);
+            print_r($userAD);
+            if($userAD && count($userAD) > 0 && $userAD[0]['email'] != "")
+                $mails[] = $userAD[0]['email'];
+        }
+        
+        
+        print_r ($mails);
+        
         //$view = $this->container->get('templating')->render(
         //'BatchingBundle:Default:email.html.twig', array('content' => $content)
         //);
@@ -409,10 +425,14 @@ class UprawnieniaService
         $view = $this->container->get('templating')->render(
                 'ParpMainBundle:Default:email.html.twig', array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie));
 
+        $mails[] = 'kamil_jakacki@parp.gov.pl';
+        //$mails[] = 'kamil@zapytania.com';
+
         $message = \Swift_Message::newInstance()
                 ->setSubject('Zmiana uprawnień')
-                ->setFrom('intranet@parp.gov.pl')
-                ->setTo('kamil_jakackik@parp.gov.pl')
+                //->setFrom('intranet@parp.gov.pl')
+                ->setFrom("kamikacy@gmail.com")
+                ->setTo($mails)
                 ->setBody($view)
                 ->setContentType("text/html");
 
@@ -424,7 +444,7 @@ class UprawnieniaService
          $this->doctrine->persist($zadanie);
          $this->doctrine->flush();
         
-        
+        //die();
     }
 
 }

@@ -662,7 +662,7 @@ class DefaultController extends Controller
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
-
+        //print_r($ADUser); die();
         $ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
 
         // wyciagnij imie i nazwisko managera z nazwy domenowej
@@ -779,7 +779,7 @@ class DefaultController extends Controller
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                     ),
                     'data' => $defaultData["title"],
                     'choices' => $titles,
@@ -793,7 +793,7 @@ class DefaultController extends Controller
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                     ),
                     'choices' => $sections,
                     'data' => $defaultData['info'],
@@ -806,7 +806,7 @@ class DefaultController extends Controller
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                     ),
                     'choices' => $departments,
                     'data' => $defaultData["department"],
@@ -850,7 +850,7 @@ class DefaultController extends Controller
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control select2',
                     ),
                     'choices' => $rights,
                     'data' => ($defaultData["initialrights"]),

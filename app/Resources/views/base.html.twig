@@ -13,6 +13,7 @@
             <link rel="stylesheet" href="{{ asset('css/main.css') }}">
             <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
             <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
+            <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
         {% endblock %}
 
         {% block javascripts %}
@@ -28,6 +29,7 @@
             <script type="text/javascript" src="https://www.google.com/jsapi"></script>
             <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
             <script type="text/javascript" src="{{ asset('js/tag-it.min.js') }}"></script>
+            <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
 
             <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -54,6 +56,7 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
                             <li class=""><a href="{{ path('main') }}"><i class="fa fa-home"></i> Strona główna</a></li>
+                            <li><a href="{{ path('main') }}"><i class="fa fa-user"></i> użytkownicy</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
@@ -64,10 +67,9 @@
                                     <li><a href="{{ path('zasoby') }}">Zasoby</a></li>
                                     <li><a href="{{ path('uprawnienia') }}">Uprawnienia</a></li>
                                     <li><a href="{{ path('grupyuprawnien') }}">Grupy uprawnień</a></li>
-                                    <li><a href="{{ path('plik', {obiekt: 'Zasoby', obiektId: 2170}) }}">Pliki</a></li>
-                                    <li><a href="{{ path('zadanie') }}">Zadania</a></li>
                                 </ul>
                             </li>
+                            <li><a href="{{ path('zadanie') }}"><i class="fa fa-gear"></i> Zadania</a></li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-file-text"></i> Raporty <b class="caret"></b></a>
                                 <ul class="dropdown-menu">

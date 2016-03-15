@@ -20,3 +20,10 @@
 {% endblock %}
 
 {#<img src="{{ path('userGetPhoto',{'samaccountname': row.field('samaccountname')}) }}" />#}
+
+
+{% block grid_column_opis_cell  %}
+    <div class="text-right">
+     {{value|raw }} 
+    </div>
+{% endblock %}                               
