@@ -40,20 +40,18 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<info> [  OK  ]</info>');
     
             if ($zmiany) {
-    
-                $output->writeln('<info>Znalazłem następujące zmiany:</info>');
-                foreach ($zmiany as $zmiana) {
-                    $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-                    $output->writeln($userNow[0]['name'] . ':');
-                }
-    
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
     
                     $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-    
+                    
                     if ($userNow) {
     
+                        $output->writeln('<info>Znalazłem następujące zmiany:</info>');
+                        foreach ($zmiany as $zmiana) {
+                            $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
+                            $output->writeln($userNow[0]['name'] . ':');
+                        }
                         if ($zmiana->getAccountExpires()) {
                             // Wygasza się konto
                             $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));

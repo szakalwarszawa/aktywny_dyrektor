@@ -393,15 +393,15 @@ class UprawnieniaService
         $mails = array();
         foreach($dlaKogo as $user){
             $cn = "CN=".str_replace(" ", "*", trim($user));
-            print_r($cn);
+            //print_r($cn);
             $userAD = $ldap->getUserFromAD(null, $cn);
-            print_r($userAD);
+            //print_r($userAD);
             if($userAD && count($userAD) > 0 && $userAD[0]['email'] != "")
                 $mails[] = $userAD[0]['email'];
         }
         
         
-        print_r ($mails);
+        //print_r ($mails);
         
         //$view = $this->container->get('templating')->render(
         //'BatchingBundle:Default:email.html.twig', array('content' => $content)
@@ -417,7 +417,7 @@ class UprawnieniaService
           }
          */
          $o1 = (count($nadane) > 0 ? " nadanie " : "").(count($nadane) > 0 && count($odebrane) > 0 ? " i " : "").(count($odebrane) > 0 ? " odebranie " : "");
-         $opis = $obiekt.($obiektId != 0 ? " o id : ".$obiektId : "")." dla użytkownika ".$person['cn'];
+         $opis = $obiekt.($obiektId != 0 ? " o id : ".$obiektId : "")." dla użytkownika ".(is_array($person) ? $person['cn'] : $person->getCn());
          $zadanie = new \Parp\MainBundle\Entity\Zadanie();
          $zadanie->setNazwa("Nowe zadanie o ".$o1." dot. ".$opis);
          $zadanie->setOsoby($zadanieDla);

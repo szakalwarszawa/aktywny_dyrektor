@@ -1177,9 +1177,9 @@ class DefaultController extends Controller
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
             $tab = explode(".", $this->container->getParameter('ad_domain'));
-            $ou = explode(".", $this->container->getParameter('ad_ou'));
+            $ou = ($this->container->getParameter('ad_ou'));
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($entry->getDepartment());
-
+            //print_r($ou);die();
             $distinguishedname = "CN=" . $entry->getCn() . ", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
 
             $entry->setDistinguishedName($distinguishedname);

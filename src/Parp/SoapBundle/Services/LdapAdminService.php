@@ -360,8 +360,8 @@ class LdapAdminService
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
         }
-        print_r($dn);
-        print_r($entry);
+        //print_r($dn);
+        //print_r($entry);
         ldap_add($ldapconn, $dn, $entry);
         
          /*
