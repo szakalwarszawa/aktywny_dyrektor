@@ -318,7 +318,7 @@ class DefaultController extends Controller
                                 $suz->setCzyAktywne(false);
                                 $suz->setPowodOdebrania($powod);
                                 $this->getDoctrine()->getManager()->persist($suz);
-                                //$this->getDoctrine()->getManager()->remove($suz);
+                                $this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo je ma";
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $zasob->getOpis();
@@ -366,6 +366,19 @@ class DefaultController extends Controller
                                 $this->getDoctrine()->getManager()->persist($suz);
                                 //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Nadaje userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma";
+                                if($u->getGrupaAd() != ""){
+                                    $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
+                                    $msg .= "I dodaje do grupy AD : ".$u->getGrupaAd();
+                                    $entry = new Entry();
+                                    $entry->setFromWhen(new \Datetime());
+                                    $entry->setSamaccountname($currentsam);
+                                    $entry->setMemberOf("+".$u->getGrupaAd());
+                                    $entry->setIsImplemented(0);
+                                    $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
+                                    $this->getDoctrine()->getManager()->persist($entry);
+                                }
+                                
+                                
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $u->getOpis();
                             }
@@ -397,9 +410,22 @@ class DefaultController extends Controller
                                 $suz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
                                 $suz->setCzyAktywne(false);
                                 $suz->setPowodOdebrania($powod);
-                                $this->getDoctrine()->getManager()->persist($suz);
-                                //$this->getDoctrine()->getManager()->remove($suz);
+                                //$this->getDoctrine()->getManager()->persist($suz);
+                                $this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Odbieram userowi ".$currentsam." uprawnienia  ".$z." bo je ma";
+                                
+                                if($u->getGrupaAd() != ""){
+                                    $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
+                                    $msg .= "I wyjmuje z grupy AD : ".$u->getGrupaAd();
+                                    $entry = new Entry();
+                                    $entry->setFromWhen(new \Datetime());
+                                    $entry->setSamaccountname($currentsam);
+                                    $entry->setMemberOf("-".$u->getGrupaAd());
+                                    $entry->setIsImplemented(0);
+                                    $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
+                                    $this->getDoctrine()->getManager()->persist($entry);
+                                }
+                                
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $u->getOpis();
                             }else{

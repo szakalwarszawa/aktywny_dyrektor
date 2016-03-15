@@ -101,6 +101,7 @@ class LdapAdminService
             "useraccountcontrol",
             "distinguishedName",
             "cn",
+            'memberOf'
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
 
@@ -124,6 +125,7 @@ class LdapAdminService
                 $result[$i]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
+                $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
                 $i++;
             }
         }
@@ -132,6 +134,18 @@ class LdapAdminService
         return $result;
     }
 
+    protected function parseMemberOf($res){
+        $ret = array();
+        $gr = isset($res["memberof"]) ? $res["memberof"]: array();
+        foreach($gr as $k => $g){
+            if($k !== "count"){
+                $p = explode(",", $g);
+                $p2 = str_replace("CN=", "", $p[0]);
+                $ret[] = $p2;
+            }
+        }
+        return $ret;
+    }
     public function saveEntity($ldapUser, $person)
     {
 
@@ -209,7 +223,30 @@ class LdapAdminService
                 $entry['description'] = $department->getShortname();
             }
         }
-        //print_r($entry);
+        
+        $userAD = $this->getUserFromAD($person->getSamaccountname());
+        
+
+        if($person->getMemberOf() != ""){
+            $znak = substr($person->getMemberOf(), 0, 1);               
+            $g = substr($person->getMemberOf(), 1);
+            //print_r($userAD[0]['memberOf']);
+            if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){ 
+                $addtogroup = "CN=".$g.",OU=BA,".$userdn;            
+                ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn));
+            }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){
+                $addtogroup = "CN=".$g.",OU=BA,".$userdn; 
+                ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn));
+            }else{
+                echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");
+            }
+        }
+/*
+        
+        print_r($userdn);
+        print_r($entry);
+        print_r($dn);
+*/
         if(count($entry) > 0)
             ldap_modify($ldapconn, $dn, $entry);
 

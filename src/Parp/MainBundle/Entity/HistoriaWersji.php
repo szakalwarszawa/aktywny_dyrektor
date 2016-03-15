@@ -36,9 +36,9 @@ class HistoriaWersji extends AbstractLogEntry
     /**
      * @var string
      *
-     * @ORM\Column(name="route", type="string", length=255)
+     * @ORM\Column(name="route", type="string", length=255, nullable=true)
      */
-    private $route;
+    private $route = 'ldap_service';
 
     /**
      * Set url
@@ -105,5 +105,9 @@ class HistoriaWersji extends AbstractLogEntry
     public function getRoute()
     {
         return $this->route;
+    }
+    
+    public function __construct(){
+        $this->setRoute('ldap_service');
     }
 }

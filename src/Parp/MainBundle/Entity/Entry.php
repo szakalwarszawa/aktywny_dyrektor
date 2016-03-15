@@ -165,6 +165,15 @@ class Entry
      */
     private $initialrights;
 
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="memberOf", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $memberOf;
+
     /**
      * Get id
      *
@@ -481,5 +490,29 @@ class Entry
     public function getInitialrights()
     {
         return $this->initialrights;
+    }
+
+    /**
+     * Set memberOf
+     *
+     * @param string $memberOf
+     *
+     * @return Entry
+     */
+    public function setMemberOf($memberOf)
+    {
+        $this->memberOf = $memberOf;
+
+        return $this;
+    }
+
+    /**
+     * Get memberOf
+     *
+     * @return string
+     */
+    public function getMemberOf()
+    {
+        return $this->memberOf;
     }
 }

@@ -23,6 +23,10 @@ class UprawnieniaService
     {
         $this->doctrine = $OrmEntity;
         $this->container = $container;
+        if (PHP_SAPI == 'cli') {
+            $this->container->enterScope('request');
+            $this->container->set('request', new \Symfony\Component\HttpFoundation\Request(), 'request');
+        }
     }
 
     public function ustawPoczatkowe($person)
@@ -258,6 +262,7 @@ class UprawnieniaService
 */
 
             $this->doctrine->flush();
+                        
         }
 
         if ($czyZmianaDepartamentu === true) {

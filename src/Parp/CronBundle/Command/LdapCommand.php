@@ -115,14 +115,25 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie uprawnień początkowych : ' . $zmiana->getInitialrights());
                             }
                         }
-    
+                        
+                        if ($zmiana->getMemberOf()) {
+                            $znak = substr($zmiana->getMemberOf(), 0, 1);                 
+                            $g = substr($zmiana->getMemberOf(), 1);
+                            if ($znak == "+") {
+                                $output->writeln('  - Dodanie do grupy: ' . $g);
+                            } else {
+                                $output->writeln('  - Usunięciez grupy: ' . $g);
+                            }
+                        }
                         // zmiana uprawnien początkowych nie powduje zadnch zmian w ldap-ie
                         //if (!$zmiana->getInitialrights() && count($zmiany) == 1) {
                             //print_r($zmiana);
+                            
                             $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
                         //}
                         $uprawnienia->zmianaUprawnien($zmiana);
-    
+                        
+                        
                         $zmiana->setIsImplemented(1);
                         $em->persist($zmiana);
     

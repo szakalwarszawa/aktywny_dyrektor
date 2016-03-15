@@ -10,7 +10,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="uprawnienia")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis, grupaAd")
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
