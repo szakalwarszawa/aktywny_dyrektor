@@ -1601,19 +1601,11 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
+        
+        //!!! tego sie pozbywam 
         $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
         $numDeleted = $query->execute();
-        $wiersz2getter = array(
-            3 => "LoginDoZasobu",
-            4 => "Modul",
-            5 => "PoziomDostepu",
-            6 => "AktywneOd",
-            7 => "Bezterminowo",
-            8 => "AktywneDo",
-            9 => "KanalDostepu",
-            10 => "UprawnieniaAdministracyjne",
-            11 => "OdstepstwoOdProcedury",
-        );
+        
         $pierwszyWiersz = explode(";", $list[0]);
         $komorka = $pierwszyWiersz[0];
         if($komorka == "Nazwa zasobu"){
@@ -1717,13 +1709,42 @@ class DefaultController extends Controller
         return true;
     }
     
-    
+    protected function parseMultiRowsUserZasoby($list){
+        $ret = array();
+        $multirows = array(5,6,7,8,9);
+        foreach ($list as $wiersz) {
+            //$wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
+            $dane = explode(";", $wiersz);
+            $rowcount = 0;
+            foreach($multirows as $r){
+                $rowcount = substr_count($dane[$r], ",") > $rowcount ? substr_count($dane[$r], ",") : $rowcount;                
+            }
+            //die(".".$multirow);
+            if($rowcount > 0){
+                //ąecho $wiersz."<br>";
+                for($i = 0; $i < $rowcount+1; $i++){
+                    $nd = $dane;
+                    foreach($multirows as $r){
+                        //echo "<br>".$r." ".$i."<br>";
+                        $v = explode(",", $dane[$r]);
+                        $nd[$r] = $v[$i];
+                    }
+                    $ret[] = implode(";", $nd);
+                } 
+            }else{
+                $ret[] = $wiersz;    
+            }
+        }
+        return $ret;
+    }
     protected function wczytajPlikZasobyUser($file)
     {
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
 
         $list = explode("\n", $dane);
+        $list = $this->parseMultiRowsUserZasoby($list);
+        //print_r($list); die();
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
@@ -1795,7 +1816,7 @@ class DefaultController extends Controller
                 }
             }
         }
-
+        //print_r($tablica); die();
         foreach ($tablica as $key => $values) {
             foreach ($values as $value) {
                 //echo $key . ' ' . $value . "<br>";
