@@ -1,10 +1,35 @@
 <?php
+// Sprawdzenie czy adres uzytkownika (lub jego czesc) jest na liscie dozwolonych IP.
+$ipDozwolone = array(
+       '10.10.120.',               // Wewnetrzne adresy. 
+       
+);
+function czyIpJestDozwolony($ip = null)
+{
+       $ip = (string) $ip;
+       $remoteAddr = (string) @$_SERVER['REMOTE_ADDR'];
+       $wycinek = substr($remoteAddr, 0, strlen($ip));
+       $wynik = ($wycinek === $ip) ? true : false;
+       return $wynik;
+}
+$dostepZabroniony = true;
+foreach ($ipDozwolone as $ip) {
+       if (true === czyIpJestDozwolony($ip)) {
+               $dostepZabroniony = false;
+               break;
+       }
+}
+if (true === $dostepZabroniony) {
+       header('HTTP/1.0 403 Forbidden');
+       exit('Brak uprawnień do korzystania z zasobu.');
+}
+// Koniec sprawdzania IP.
+
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Debug\Debug;
-
 // If you don't want to setup permissions the proper way, just uncomment the following PHP line
 // read http://symfony.com/doc/current/book/installation.html#configuration-and-setup for more information
-//umask(0000);
+umask(0002);
 error_reporting(-1);
 ini_set('display_errors', 1); 
 // This check prevents access to debug front controllers that are deployed by accident to production servers.
