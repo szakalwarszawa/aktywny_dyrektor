@@ -105,6 +105,13 @@
             </div>
 
         </div>
+        {% if app.user %}
+            {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
+                <div class="text-center"><a href="{{path('nowa_pomoc_techniczna',{uri:app.request.uri|url_encode })}}"><small>Zgłoś problem techniczny</small></a></div>
+            {% endif %}
+        {% else %}
+           <div class="text-center"><a href="{{path('nowe_zgloszenie',{uri:app.request.uri|url_encode })}}"><small>Zgłoś problem techniczny</small></a></div>
+        {% endif %}
         {% include '::javascripts.html.twig' %}
     </body>
 </html>
