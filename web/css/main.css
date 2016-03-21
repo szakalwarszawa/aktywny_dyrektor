@@ -33,3 +33,7 @@ td {
   word-wrap:break-word;
   word-break:break-word;
 }
+form.dirty{
+    border:3px solid red;
+    background: rgba(255,0,0,0.3);
+}

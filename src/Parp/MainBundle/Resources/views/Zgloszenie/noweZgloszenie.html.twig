@@ -1,0 +1,58 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}Nowe zgłoszenie problemu technicznego{% endblock %}
+
+{% block body %}
+    {{ form_start(formularz) }}
+    <div class="form-horizontal">
+        <div class="form-group">
+            {{ form_label(formularz.temat) }}
+            <div class="col-xs-10">
+                {{ form_widget(formularz.temat) }}
+            </div>
+        </div>
+        <div class="form-group">
+            {{ form_label(formularz.imie_nazwisko) }}
+            <div class="col-xs-10">
+                {{ form_widget(formularz.imie_nazwisko) }}
+            </div>
+       </div>
+       <div class="form-group">
+            {{ form_label(formularz.email) }}
+            <div class="col-xs-10">
+                {{ form_widget(formularz.email) }}
+            </div>
+      </div>
+      <div class="form-group">
+            {{ form_label(formularz.telefon) }}
+            <div class="col-xs-10">
+                {{ form_widget(formularz.telefon) }}
+            </div>
+     </div>
+     <div class="form-group">
+            {{ form_label(formularz.opis) }}
+            <div class="col-xs-10">
+                {{ form_widget(formularz.opis) }}
+            </div>
+        </div>
+        {% set currentPath = app.request.attributes.get('_route') %}
+        {% if currentPath == 'pomoc_techiniczna_nowa' %}
+            <div class="form-group">
+                <div class="col-xs-12">
+                    <a href="{{ path('pomoc_techniczna') }}" class="btn btn-primary">Powrót do listy</a>
+                    {{ form_widget(formularz.zapisz) }}
+                </div>
+            </div>
+        {% else %}
+             <div class="form-group">
+                <div class="col-xs-12">
+                    <a href="#" onclick="window.history.go(-1); return false;" class="btn btn-primary">Powrót</a>
+                    {{ form_widget(formularz.zapisz) }}
+                </div>
+            </div>
+        {% endif %}    
+            
+    </div>
+{{ form_rest(formularz) }}
+
+{% endblock %}

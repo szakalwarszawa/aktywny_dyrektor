@@ -133,6 +133,11 @@ services:
         public: false
         tags:
             - { name: twig.extension }
+    
+    parp.redmine:
+        class: Parp\MainBundle\Service\RedmineConnectService
+        arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
+        
 
 apy_data_grid:
     pagerfanta:

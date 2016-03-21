@@ -37,6 +37,8 @@ class ZgloszenieController extends Controller
      */
     public function noweZgloszenieAction($uri = null)
     {
+        $user = $this->get('security.context')->getToken()->getUser();
+        $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
         $dane_wstepne = array("uri" => urldecode($uri));
         $form = $this->createFormBuilder($dane_wstepne)
             ->setAction($this->generateUrl('nowa_pomoc_techniczna_submit'))
@@ -51,7 +53,7 @@ class ZgloszenieController extends Controller
             ))
             ->add('imie_nazwisko', 'text', array(
                 'label' => 'Imię i Nazwisko',
-                'data' => $this->getUser()->getImie().' '.$this->getUser()->getNazwisko(),
+                'data' => trim(@$ad[0]['name']),
                 'attr' => array(
                     'class' => 'form-control col-xs-5',
                 ),
@@ -61,7 +63,7 @@ class ZgloszenieController extends Controller
             ))
         ->add('email', 'email', array(
                  'label' => 'Proszę podać email kontaktowy',
-                 'data' => $this->getUser()->getEmail(),
+                 'data' => trim(@$ad[0]['email']),
                  'attr' => array(
                     'class' => 'form-control col-xs-5',
                  ),
@@ -176,5 +178,142 @@ class ZgloszenieController extends Controller
         return array(
             'zgloszenia' => $zgloszenia['issues'],
         );
+    }
+    
+    /**
+     * @Route("/zgloszenie/nowe", name="nowe_zgloszenie")
+     *
+     * @Template()
+     * @return array
+     */
+    public function dodajZgloszenieAction(Request $request)
+    {
+
+        $form = $this->createFormBuilder()->setAction($this->generateUrl('nowe_zgloszenie'))
+                ->add('podmiot', 'text', array('label' => 'Nazwa podmiotu', 'attr' => array(
+                        'class' => 'form-control col-xs-5',
+                    ),
+                    'label_attr' => array(
+                        'class' => 'col-xs-2',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Pole nazwa podmiotu jest wymagane.')),
+                    ),
+                ))
+                ->add('temat', 'text', array(
+                    'label' => 'Temat zgłoszenia',
+                    'attr' => array(
+                        'class' => 'form-control col-xs-5',
+                    ),
+                    'label_attr' => array(
+                        'class' => 'col-xs-2',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Pole temat zgłoszenia jest wymagane.')),
+                    ),
+                ))
+                ->add('opis', 'textarea', array(
+                    'label' => 'Proszę opisać występujący problem techniczny',
+                    'attr' => array(
+                        'class' => 'form-control col-xs-5',
+                    ),
+                    'label_attr' => array(
+                        'class' => 'col-xs-2',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Pole opis problemu technicznego jest wymagane.')),
+                    ),
+                ))
+                ->add('email', 'email', array(
+                    'label' => 'Proszę podać email kontaktowy',
+                    'attr' => array(
+                        'class' => 'form-control col-xs-5',
+                    ),
+                    'label_attr' => array(
+                        'class' => 'col-xs-2',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Pole email kontaktowy jest wymagane.')),
+                        new Email(array('message' => 'Podany email kontaktowy jest niepoprawny.'))
+                    ),
+                ))
+                 ->add('telefon', 'text', array(
+                    'label' => 'Proszę podać telefon kontaktowy',
+                    'attr' => array(
+                        'class' => 'form-control col-xs-5',
+                    ),
+                    'label_attr' => array(
+                        'class' => 'col-xs-2',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Pole telefon kontaktowy jest wymagane.')),
+                    ),
+                 ))
+               ->add('uri', 'hidden')
+               ->add('zapisz', 'submit', array(
+                    'label' => 'Wyślij zgłoszenie',
+                    'attr' => array(
+                        'class' => 'btn btn-success pull-right',
+                    ),
+                ))
+                ->add('sciezka', 'hidden', array(
+                    'empty_data' => ''))
+                ->getForm();
+        
+        // jezeli adres powrotny raz ustwiony to go nie zmieniamy
+        $sciezka = $form->get('sciezka')->getData();
+        if (empty($sciezka)) {
+            $form->get('sciezka')->setData($this->getRequest()->headers->get('referer'));
+        }
+        
+        $form->handleRequest($request);
+        
+        if ($form->isValid()) {
+            $data = $form->getData();
+            $this->wyslijZgloszenie($data);
+            
+            /* 2270 - niby zawsze powinien być referer jeżeli mamy błąd - ale jak widać w zgłoszniu nie koniecznie.
+             * Wywalało "Cannot redirect to an empty URL."
+             * Dlatego kierujemy na domową gdy empty
+             */
+            $path = $form->get('sciezka')->getData();
+            if (empty($path)) {
+                $path = $this->generateUrl('home');
+            }
+            
+            return $this->redirect($path);
+        }
+
+        return array(
+            'formularz' => $form->createView(),
+        );
+    }
+
+    private function wyslijZgloszenie($formularz)
+    {
+
+        //$formularz = $this->getRequest()->get('form');
+
+        $podmiot = $formularz['podmiot'];
+        $temat = $formularz['temat'];
+        $opis = $formularz['opis'];
+        $kategoria = 11; # Zgłoszone przez użytkownika
+        $email = $formularz['email'];
+        $telefon = $formularz['telefon'];
+        $uri = strip_tags($formularz['uri']);
+
+        // niezalogowany więc 0
+        $userId = 0;
+//		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
+        $odpowiedz_tmp = $this->get('parp.redmine')->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, $uri, true, null, null, $podmiot, $email, $telefon);
+
+        if (preg_match('~\{(?:[^{}]|(?R))*\}~', $odpowiedz_tmp, $odpowiedz_json)) {
+            $odpowiedz = json_decode($odpowiedz_json[0], true);
+
+            $this->getRequest()->getSession()->getFlashBag()->add(
+                'success',
+                'Pomyślnie zgłoszono problem techniczny. Numer Twojego zgłoszenia to ' . $odpowiedz['issue']['id'] . '. Prosimy powoływać się na niego w kontaktach z PARP.'
+            );
+        }
     }
 }

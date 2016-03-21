@@ -126,6 +126,13 @@ class Zasoby
      */
     private $poziomDostepu;
     /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $grupyAD;
+    /**
     * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
@@ -942,5 +949,29 @@ class Zasoby
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Set grupyAD
+     *
+     * @param string $grupyAD
+     *
+     * @return Zasoby
+     */
+    public function setGrupyAD($grupyAD)
+    {
+        $this->grupyAD = $grupyAD;
+
+        return $this;
+    }
+
+    /**
+     * Get grupyAD
+     *
+     * @return string
+     */
+    public function getGrupyAD()
+    {
+        return $this->grupyAD;
     }
 }

@@ -15,10 +15,12 @@ security:
         dev:
             pattern:  ^/(_(profiler|wdt)|css|images|js)/
             security: false
-
         login:
             pattern: /login$|/images$
             security: false
+        zgloszenie_bledu:
+                pattern:  ^/zgloszenie
+                security: false
         secured_area:
             pattern:    ^/
             anonymous: false
