@@ -397,7 +397,7 @@ class UprawnieniaService
             $userAD = $ldap->getUserFromAD(null, $cn);
             //print_r($userAD);
             if($userAD && count($userAD) > 0 && $userAD[0]['email'] != "")
-                $mails[] = $userAD[0]['email'];
+                $mails[] = 'kamil_jakacki@parp.gov.pl'; //$userAD[0]['email'];
         }
         
         
@@ -435,8 +435,8 @@ class UprawnieniaService
 
         $message = \Swift_Message::newInstance()
                 ->setSubject('Zmiana uprawnień')
-                //->setFrom('intranet@parp.gov.pl')
-                ->setFrom("kamikacy@gmail.com")
+                ->setFrom('intranet@parp.gov.pl')
+                //->setFrom("kamikacy@gmail.com")
                 ->setTo($mails)
                 ->setBody($view)
                 ->setContentType("text/html");
