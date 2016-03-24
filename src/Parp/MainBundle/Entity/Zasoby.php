@@ -31,522 +31,219 @@ class Zasoby
     */
     private $deletedAt;
 
-
-
     /**
+     * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(name="nazwa", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkPolskaPelnaNazwaKlastraWynikajacaZDokumentu;
-
-
-    /**
-     *
-     * @ORM\Column(type="string", length=255, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dkAngielskaNazwaKlastra;
-
+    private $nazwa;
 
     /**
+     * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(name="opis", type="text")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkFormaOrganizacyjnoprawnaKlastra;
-
+    private $opis;
 
     /**
+     * @var string
      *
-     * @ORM\Column(type="string", length=100, nullable=false)
+     * @ORM\Column(name="biuro", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkAdresStronyInternetowejKlastra;
-
-
+    private $biuro;
+    
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkDominujacaBranza;
-
-
+    private $wlascicielZasobu;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkRokPowolaniaKlastra;
-
-
+    private $administratorZasobu;
     /**
+    * @var string
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkLiczbaCzlonkowKlastraZlokalizowanaNaTerenie;
-
-
+    private $administratorTechnicznyZasobu;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkNazwaWojewodztwaWKtorymZlokalizowaniSaCzlon;
-
-
-
-
+    private $uzytkownicy;
     /**
+    * @var boolean
      *
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dkNazwaKoordynatoraZgodnaZDokumentemRejestrow;
-
-
-
+    private $daneOsobowe;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=50, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asUlica;
-
-
+    private $komorkaOrgazniacyjna;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=10, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asNumerDomu;
-
-
+    private $miejsceInstalacji;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=10, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asNumerLokalu;
-
-
+    private $opisZasobu;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=50, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asMiejscowosc;
-
-
+    private $modulFunkcja;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=6, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asKodPocztowy;
-
-
+    private $poziomDostepu;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asWojewodztwo;
-
-
-
-
+    private $grupyAD;
     /**
+    * @var \DateTime
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $asNazwaDokumentuKlastraWKtorymPodmiotJestWska;
-
-
-
-
-
+    private $dataZakonczeniaWdrozenia;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=30, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $odNazwisko;
-
-
+    private $wykonawca;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", length=30, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $odImie;
-
-
+    private $nazwaWykonawcy;
     /**
+    * @var boolean
      *
-     * @ORM\Column(type="integer", length=30, nullable=false)
+     * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $odTelefon;
-
-
+    private $asystaTechniczna;
     /**
+    * @var \DateTime
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $odAdresEmail;
-
-
-
-
+    private $dataWygasnieciaAsystyTechnicznej;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $srKlasterPosiadaStrategie;
-
-
+    private $dokumentacjaFormalna;
     /**
+    * @var string
      *
-     * @ORM\Column(type="string", nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $srStrategiaSpisanaWFormieDokumentu;
-
-
-
-
+    private $dokumentacjaProjektowoTechniczna;
     /**
+    * @var string
      *
-     * @ORM\Column(type="integer", length=4, nullable=true)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skSumarycznaLiczbaCzlonkowKlastra;
-
-
+    private $technologia;
     /**
+    * @var boolean
      *
-     * @ORM\Column(type="integer", length=4, nullable=true)
+     * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skSumarycznaLiczbaPrzedsiebiorstw;
-
-
+    private $testyBezpieczenstwa;
     /**
+    * @var boolean
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaMikroPrzedsiebiorstw;
-
-
-
+    private $testyWydajnosciowe;
     /**
+    * @var \DateTime
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaMalychPrzedsiebiorstw;
-
-
-
+    private $dataZleceniaOstatniegoPrzegladuUprawnien;
     /**
+    * @var integer
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="integer", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaSrednichPrzedsiebiorstw;
-
-
-
+    private $interwalPrzegladuUprawnien;
     /**
+    * @var \DateTime
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaDuzychPrzedsiebiorstw;
-
-
-
+    private $dataZleceniaOstatniegoPrzegladuAktywnosci;
     /**
+    * @var integer
      *
-     * @ORM\Column(type="integer", length=3, nullable=true)
+     * @ORM\Column(type="integer", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skSumarycznaLiczbaIob;
-
-
+    private $interwalPrzegladuAktywnosci;
     /**
+    * @var \DateTime
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaOsrodkowInnowacji;
-
-
-
+    private $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
     /**
+    * @var integer
      *
-     * @ORM\Column(type="integer", length=3, nullable=false)
+     * @ORM\Column(type="integer", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $skLiczbaOsrodkowPrzedsiebiorczosci;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $skLiczbaNiebankowychInstytucjiFinansowych;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $skLiczbaJednostekNaukowych;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $skLiczbaInnychPodmiotow;
-
-
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zSumaryczneZatrudnienieWKlastrze;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zSumaryczneZatrudnienieWPrzedsiebiorstwach;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWMikroPrzedsiebiorstwach;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWMalychPrzedsiebiorstwach;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWSrednichPrzedsiebiorstwa;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWDuzychPrzedsiebiorstwach;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zSumarycznaLiczbaZatrudnionychWIob;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWOsrodkachInnowacji;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWOsrodkachPrzedsiebiorczo;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWNiebankowychInstytucjach;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWJednostkachNaukowychDoty;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=6, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $zLiczbaZatrudnionychWInnychPodmiotach;
-
-
-
-
-
-    /**
-     *
-     * @ORM\Column(type="string", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iNajwazniejszeKrajeWKtorychCzlonkowieKlastraP;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="string", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iPozostaleKrajeWKtorychCzlonkowieKlastraProwa;
-
-
-
-    /**
-     *
-     * @ORM\Column(type="string", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iCzyKlasterNalezyDoEuropeanCollborationPlatfo;
-
-
-    /**
-     *
-     * @ORM\Column(type="string", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iCzyKlasterNalezyDoEuropeanClusterObservatory;
-
-
-    /**
-     *
-     * @ORM\Column(type="string", length=250, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iNazwyMiedzynarodowychSieciStowarzyszenDoKtor;
-
-
-    /**
-     *
-     * @ORM\Column(type="string", length=250, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iNazwyZagranicznychKlastrowZKtorymiWspolpracu;
-
-
-    /**
-     *
-     * @ORM\Column(type="string", length=250, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iNazwyZagranicznychPodmiotowNieBedacychSiecia;
-
-
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iLiczbaSalKonferencyjnych;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iLiczbaSalSzkoleniowych;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iLiczbaCentrowBadawczych;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iLiczbaLaboratoriowSpecjalistycznych;
-
-
-    /**
-     *
-     * @ORM\Column(type="integer", length=3, nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $iLiczbaInnychElementowInfrastruktury;
-
-
-
-
-    /**
-     *
-     * @ORM\Column(type="string", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $oZasiegOddzialywaniaKlastraNaOtoczenie;
-
-
-
-
+    private $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
 
 
 
