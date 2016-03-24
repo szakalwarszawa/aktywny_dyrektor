@@ -62,7 +62,7 @@ class ParpUserProvider implements UserProviderInterface
                     //die( ".".$username.".".$ldapdomain.".".$password.".");
                 $ldapbind = ldap_bind($ldapconn, $username.$ldapdomain, $password);
             } catch (Exception $e) {
-                die('.1'); 
+                //die('.1'); 
                 throw new UsernameNotFoundException(sprintf('Użytkownik "%s" nie istnieje.', $username));
             }
 
@@ -74,7 +74,7 @@ class ParpUserProvider implements UserProviderInterface
 
                 return new ParpUser($username, $password, $salt, $roles);
             } else {
-                die('.2'.$this->ad_host);
+                //die('.2'.$this->ad_host);
                 throw new UsernameNotFoundException(sprintf('Użytkownik "%s" nie istnieje.', $username));
             }
 
