@@ -136,7 +136,7 @@ class ZgloszenieController extends Controller
         $email = $formularz['email'];
         $telefon = $formularz['telefon'];
         $opis = $formularz['opis'];
-        $kategoria = 11; # Zgłoszone przez użytkownika
+        $kategoria = 22; # Zgłoszone przez użytkownika
         $uri = strip_tags($formularz['uri']);
         
 //		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);

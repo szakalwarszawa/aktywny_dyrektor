@@ -135,7 +135,7 @@ services:
             - { name: twig.extension }
     
     parp.redmine:
-        class: Parp\MainBundle\Service\RedmineConnectService
+        class: Parp\MainBundle\Services\RedmineConnectService
         arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
         
 

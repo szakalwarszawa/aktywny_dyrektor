@@ -1793,8 +1793,18 @@ class DefaultController extends Controller
     {
         $wynik = array('utworzono' => 0, 'zmieniono' => 0, 'nie zmieniono' => 0, 'skasowano' => 0);
         $dane = file_get_contents($file->getPathname());
+        $zamianaSlownikaKanalDostepu = array(
+            "DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP" => "DZ_O - Zdalny - za pomocą komputera nie będącego własnością PARP",
+            "DZ_P - Zdalny, za pomocą komputera będącego własnością PARP" => "DZ_P - Zdalny - za pomocą komputera będącego własnością PARP",
+            "WK - Wewnętrzny kablowy" => "WK - Wewnętrzny kablowy",
+            "WR - Wewnętrzny radiowy" => "WR - Wewnętrzny radiowy",
+            "WRK - Wewnętrzny radiowy i kablowy" => "WRK - Wewnętrzny radiowy i kablowy",
+        );
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
-
+      
+        foreach($zamianaSlownikaKanalDostepu as $f => $r){
+            $dane = str_replace(iconv('utf-8//IGNORE', 'cp1250', $f), iconv('utf-8//IGNORE', 'cp1250', $r), $dane);
+        }
         $list = explode("\n", $dane);
         $list = $this->parseMultiRowsUserZasoby($list);
         //print_r($list); die();
@@ -1821,6 +1831,7 @@ class DefaultController extends Controller
                 //echo $wiersz ."\n";
 
                 $wiersz = iconv('cp1250', 'utf-8//IGNORE', $wiersz);
+                  
                 $dane = explode(";", $wiersz);
                 if($dane[1] != "" && $dane[1] != ""){
                     $cnname = $this->ldap_escape($dane[1]) . '*' . $this->ldap_escape($dane[0]);
@@ -1975,7 +1986,8 @@ class DefaultController extends Controller
         var_dump($userEngagements);
     }
     
-    public function poprawPlikCsv($file){
+    public function poprawPlikCsv($file)
+    {
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
 

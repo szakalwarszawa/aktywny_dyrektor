@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\Container;
 use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Entity\UserGrupa;
+use Parp\MainBundle\Services\RedmineConnectService;
 
 class UprawnieniaService
 {

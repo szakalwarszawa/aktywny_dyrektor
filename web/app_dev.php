@@ -3,7 +3,7 @@
 $ipDozwolone = array(
        '10.10.120.',               // Wewnetrzne adresy. 
        '192.168.',               // Wewnetrzne adresy. 
-       
+       ''
 );
 function czyIpJestDozwolony($ip = null)
 {
