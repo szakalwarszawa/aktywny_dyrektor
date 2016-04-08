@@ -21,8 +21,8 @@
                             <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
                         </div>
                         <div class="form-group">
-                            {{ form_label(form.name) }}
-                            <div class="col-sm-8">{{ form_widget(form.name) }}</div>
+                            {{ form_label(form.cn) }}
+                            <div class="col-sm-8">{{ form_widget(form.cn) }}</div>
                         </div>
                         <div class="form-group">
                             {{ form_label(form.initials) }}
@@ -68,10 +68,22 @@
                                 <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
                             </div>
                         </div>
+                                    
+                        <div class="form-group">
+                            {{ form_label(form.accountExpires) }}
+                            <div class='col-sm-8'>
+                                <div class="input-group datepicker"  id="datepicker1">
+                                    {{ form_widget(form.accountExpires) }}
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
                         <div class="form-group">
                             {{ form_label(form.fromWhen) }}
                             <div class='col-sm-8'>
-                                <div class="input-group datepicker"  id="datepicker">
+                                <div class="input-group datepicker"  id="datepicker2">
                                     {{ form_widget(form.fromWhen) }}
                                     <span class="input-group-addon">
                                         <span class="fa fa-calendar"></span>
@@ -309,9 +321,9 @@
             </div>
         </div>
     </div>   
-
+    <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
     <script>
-        $('#form_fromWhen').mask("99-99-9999");
+        //$('#form_fromWhen').mask("9999-99-99");
         $('#suggestinitials').click(function () {
             var samaccountname = $('#form_samaccountname').val();
             var department = $('#form_department').val();

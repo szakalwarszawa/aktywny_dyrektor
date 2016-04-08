@@ -18,7 +18,7 @@ class LdapAdminService
 
     protected $securityContext;
     protected $AdminUser = "aktywny_dyrektor";
-    protected $AdminPass = "Gq32hr9cAL";
+    protected $AdminPass = "F4UCorsair";
     protected $ad_host;
     protected $ad_domain;
     protected $container;
@@ -71,7 +71,7 @@ class LdapAdminService
         $ldap_password = $this->AdminPass;
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
-
+        
         if ($samaccountname) {
             $searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
         } elseif ($cnname) {
@@ -302,7 +302,7 @@ class LdapAdminService
         $entry = array();
         $entry['cn'] = $person->getCn();
         if (!empty($accountExpires)) {
-            //$entry['accountExpires'] = $this->UnixtoLDAP($accountExpires->getTimestamp());
+            $entry['accountExpires'] = $this->UnixtoLDAP($accountExpires->getTimestamp());
         } else {
            // $entry['accountExpires'] = 0;
         }

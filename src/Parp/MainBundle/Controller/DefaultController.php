@@ -695,7 +695,7 @@ class DefaultController extends Controller
         $ADUser[0]['manager'] = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
 
         $defaultData = $ADUser[0];
-
+        //print_r($defaultData); die();
         // pobierz uprawnienia poczatkowe
         $initialrights = $this->getDoctrine()->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $ADUser[0]['samaccountname']));
         if (!empty($initialrights)) {
@@ -708,33 +708,7 @@ class DefaultController extends Controller
         }
         $previousData = $defaultData;
 
-        // Pobieramy listę stanowisk
-        $titlesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
-        $titles = array();
-        foreach ($titlesEntity as $tmp) {
-            $titles[$tmp->getName()] = $tmp->getName();
-        }
-
-        // Pobieramy listę Biur i Departamentów
-        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array(), array('name' => 'asc'));
-        $departments = array();
-        foreach ($departmentsEntity as $tmp) {
-            $departments[$tmp->getName()] = $tmp->getName();
-        }
-        // Pobieramy listę Sekcji
-        $sectionsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
-        $sections = array();
-        foreach ($sectionsEntity as $tmp) {
-            $sections[$tmp->getName()] = $tmp->getName();
-        }
-
-        // Pobieramy listę Uprawnien
-        $rightsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findBy(array(), array('opis' => 'asc'));
-        $rights = array();
-        foreach ($rightsEntity as $tmp) {
-            $rights[$tmp->getKod()] = $tmp->getOpis();
-        }
-        $now = new \Datetime();
+        
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
         for($i = 0; $i < count($zasoby); $i++){
             $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
@@ -762,129 +736,7 @@ class DefaultController extends Controller
             $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
         }
         
-        $form = $this->createFormBuilder($defaultData)
-                ->add('samaccountname', 'text', array(
-                    'required' => false,
-                    'read_only' => true,
-                    'label' => 'Nazwa konta',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))
-                ->add('name', 'text', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Imię i nazwisko',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))
-                ->add('initials', 'text', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Inicjały',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))
-                ->add('title', 'choice', array(
-//                'class' => 'ParpMainBundle:Position',
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Stanowisko',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2',
-                    ),
-                    'data' => $defaultData["title"],
-                    'choices' => $titles,
-//                'mapped'=>false,
-                ))
-                ->add('info', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Sekcja',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2',
-                    ),
-                    'choices' => $sections,
-                    'data' => $defaultData['info'],
-                ))
-                ->add('department', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Biuro / Departament',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2',
-                    ),
-                    'choices' => $departments,
-                    'data' => $defaultData["department"],
-                ))
-                ->add('zapisz', 'submit', array(
-                    'attr' => array(
-                        'class' => 'btn btn-success col-sm-12',
-                    ),
-                ))
-                ->add('manager', 'text', array(
-                    'required' => false,
-                    'read_only' => true,
-                    'label' => 'Przełożony',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'data' => $defaultData['manager']
-                ))
-                ->add('fromWhen', 'text', array(
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-//                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
-//                'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'required' => false,
-                    'data' => $now->format("d-m-Y")
-                ))
-                ->add('initialrights', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Uprawnienia początkowe',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2',
-                    ),
-                    'choices' => $rights,
-                    'data' => ($defaultData["initialrights"]),
-                    'multiple' => true,
-                    'expanded' => false
-                ))
-                ->setMethod('POST')
-                ->getForm();
+        $form = $this->createUserEditForm($defaultData);
 
 
 
@@ -899,6 +751,8 @@ class DefaultController extends Controller
             unset($odata['initialrights']);
             unset($ndata['memberOf']);
             unset($odata['memberOf']);
+            unset($ndata['fromWhen']);
+            unset($odata['fromWhen']);
             
             //hack by dalo sie puste inicjaly wprowadzic
             if($ndata['initials'] == "")
@@ -914,6 +768,7 @@ class DefaultController extends Controller
             if (0 < count(array_diff($ndata, $odata)) || $roznicauprawnien) {
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
+                //print_r(array_diff($ndata, $odata)); die();
                 $entry = new Entry();
                 $entry->setSamaccountname($samaccountname);
                 $entry->setDistinguishedName($previousData["distinguishedname"]);
@@ -930,8 +785,8 @@ class DefaultController extends Controller
                         case "initials":
                             $entry->setInitials($value);
                             break;
-                        case "accountexpires":
-                            $entry->setAccountexpires($value);
+                        case "accountExpires":
+                            $entry->setAccountexpires(new \DateTime($value));
                             break;
                         case "title":
                             $entry->setTitle($value);
@@ -986,21 +841,7 @@ class DefaultController extends Controller
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
     }
-
-    /**
-     * @Route("/user/add", name="userAdd")
-     * @Template()
-     */
-    public function addAction(Request $request)
-    {
-        // Sięgamy do AD:
-        // $ldap = $this->get('ldap_service');
-        // $ADUser = $ldap->getUserFromAD($samaccountname);
-        //$ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
-        //$defaultData = $ADUser[0];
-        //$previousData = $defaultData;
-        $em = $this->getDoctrine()->getManager();
-
+    protected function createUserEditForm($defaultData){
         // Pobieramy listę stanowisk
         $titlesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
         $titles = array();
@@ -1027,9 +868,171 @@ class DefaultController extends Controller
         foreach ($rightsEntity as $tmp) {
             $rights[$tmp->getKod()] = $tmp->getOpis();
         }
+        $now = new \Datetime();
+        //$expires = @$defaultData['accountExpires'];
+        //print_r($expires);
+        //if($expires != "")
+            //$expires->format("d-m-Y");
+        $form = $this->createFormBuilder(@$defaultData)
+                ->add('samaccountname', 'text', array(
+                    'required' => false,
+                    'read_only' => true,
+                    'label' => 'Nazwa konta',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                ))
+                ->add('cn', 'text', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Imię i nazwisko',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                ))
+                ->add('initials', 'text', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Inicjały',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                ))
+                ->add('title', 'choice', array(
+//                'class' => 'ParpMainBundle:Position',
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Stanowisko',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    //'data' => @$defaultData["title"],
+                    'choices' => $titles,
+//                'mapped'=>false,
+                ))
+                ->add('info', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Sekcja',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    'choices' => $sections,
+                    //'data' => @$defaultData['info'],
+                ))
+                ->add('department', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Biuro / Departament',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    'choices' => $departments,
+                    //'data' => @$defaultData["department"],
+                ))
+                ->add('zapisz', 'submit', array(
+                    'attr' => array(
+                        'class' => 'btn btn-success col-sm-12',
+                    ),
+                ))
+                ->add('manager', 'text', array(
+                    'required' => false,
+                    'read_only' => true,
+                    'label' => 'Przełożony',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                    //'data' => @$defaultData['manager']
+                ))
+                ->add('accountExpires', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                    //'widget' => 'single_text',
+                    'label' => 'Data wygaśnięcia konta',
+                    //'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    //'data' => @$expires
+                ))
+                ->add('fromWhen', 'text', array(
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+//                'widget' => 'single_text',
+                    'label' => 'Data zmiany',
+//                'format' => 'dd-MM-yyyy',
+//                'input' => 'datetime',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'data' => $now->format("Y-m-d")
+                ))
+                ->add('initialrights', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Uprawnienia początkowe',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    'choices' => $rights,
+                    //'data' => (@$defaultData["initialrights"]),
+                    'multiple' => true,
+                    'expanded' => false
+                ))
+                ->setMethod('POST')
+                ->getForm();
+        return $form;
+    }
+    /**
+     * @Route("/user/add", name="userAdd")
+     * @Template()
+     */
+    public function addAction(Request $request)
+    {
+        // Sięgamy do AD:
+        // $ldap = $this->get('ldap_service');
+        // $ADUser = $ldap->getUserFromAD($samaccountname);
+        //$ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
+        //$defaultData = $ADUser[0];
+        //$previousData = $defaultData;
+        $em = $this->getDoctrine()->getManager();
+
+        
 
         $entry = new Entry();
-        $form = $this->createFormBuilder($entry)
+        $form = $this->createUserEditForm($entry);
+        
+        /*
+$this->createFormBuilder($entry)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
                     'read_only' => false,
@@ -1137,21 +1140,6 @@ class DefaultController extends Controller
                     ),
                     'required' => false,
                 ))
-                /* ->add('rights', 'choice', array(
-                  'constraints' => array(
-                  new NotBlank(array('message' => 'Nie wybrano uprawnień początkowych'))),
-                  'mapped' => false,
-                  'required' => false,
-                  'read_only' => false,
-                  'label' => 'Uprawnienia początkowe',
-                  'label_attr' => array(
-                  'class' => 'col-sm-4 control-label',
-                  ),
-                  'attr' => array(
-                  'class' => 'form-control',
-                  ),
-                  'choices' => $rights,
-                  )) */
                 ->add('initialrights', 'choice', array(
                     'required' => false,
                     'read_only' => false,
@@ -1170,6 +1158,7 @@ class DefaultController extends Controller
                     ),
                 ))->setMethod('POST')
                 ->getForm();
+*/
 
         $form->handleRequest($request);
 
@@ -1179,10 +1168,20 @@ class DefaultController extends Controller
             $tab = explode(".", $this->container->getParameter('ad_domain'));
             $ou = ($this->container->getParameter('ad_ou'));
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($entry->getDepartment());
-            //print_r($ou);die();
+            //print_r($form->get('department')->getData());die();
             $distinguishedname = "CN=" . $entry->getCn() . ", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
 
             $entry->setDistinguishedName($distinguishedname);
+            
+            $entry->setFromWhen(new \DateTime($entry->getFromWhen()));
+            
+            $entry->setAccountExpires(new \DateTime($entry->getAccountExpires()));
+            
+            $value = implode(",", $entry->getInitialrights());
+            $entry->setInitialrights($value);
+            
+            //print_r($entry->getAccountExpires()); 
+            //die();
             $em->persist($entry);
             $em->flush();
             return $this->redirect($this->generateUrl('main'));
@@ -1427,13 +1426,16 @@ class DefaultController extends Controller
         if ((!$ajax) OR ( !$post)) {
             return null;
         }
+        $p = explode(" ", $request->get('cn'));
+        $initials = substr($p[0], 0, 1). substr($p[1], 0, 1);
+        /*
 
         $samaccountname = $request->get('samaccountname', null);
         if (empty($samaccountname)) {
             throw new \Exception('Nie przekazano nazwy konta!');
         }
         $department = $request->get('department', null);
-        $cn = $request->get('cn', null);
+        $cn = $request->get('samaccountname', null);
 
         $ldap = $this->get('ldap_service');
 
@@ -1454,6 +1456,7 @@ class DefaultController extends Controller
 
         $temp0 = !empty($ADUser[0]['name']) ? $ADUser[0]['name'] : $cn;
         // rozbijaj imie i nazwisko na 2 lub 3 części
+        //print_r($temp0);
         $temp1 = split(" ", $temp0);
         $words = array();
         $temp2 = "";
@@ -1501,6 +1504,7 @@ class DefaultController extends Controller
             }
             $j++;
         }
+*/
         $initials = mb_strtoupper($initials, 'UTF-8');
 
         return $this->render('ParpMainBundle:Default:suggestinitials.html.twig', array('initials' => $initials));

@@ -287,7 +287,11 @@ class LdapService
         foreach ($tmpResults as $tmpResult) {
             if ($tmpResult["samaccountname"]) {
                 //print_r($tmpResult); die();
-                $result[$i]["samaccountname"] = $tmpResult["samaccountname"][0];
+                $date = new \DateTime();
+                $time = floor($tmpResult["accountexpires"][0])/10000000 - 11644473600;
+                $date->setTimestamp($time);
+                $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
+                $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
                 $result[$i]["email"] = isset($tmpResult["mail"][0]) ? $tmpResult["mail"][0] : "";
                 $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";

@@ -116,8 +116,9 @@
             </div>
         </div>
     </div>
-
+    <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
     <script>
+{#
         $('.datepicker').datetimepicker({
             pickTime: false,
             language: 'pl',
@@ -125,6 +126,7 @@
         });
         $('#form_fromWhen').mask("99-99-9999");
         $('#form_accountExpires').mask("99-99-9999");
+#}
         $('#suggestinitials').click(function () {
             var samaccountname = $('#form_samaccountname').val();
             var department = $('#form_department').val();

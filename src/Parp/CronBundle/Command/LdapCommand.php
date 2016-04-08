@@ -129,6 +129,7 @@ class LdapCommand extends ContainerAwareCommand
                             
                             $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
                         //}
+                        //print_r($zmiana); die();
                         $uprawnienia->zmianaUprawnien($zmiana);
                         
                         
@@ -139,6 +140,7 @@ class LdapCommand extends ContainerAwareCommand
                     } else {
     
                         $output->writeln('  - Dodanie praownika: ' . $zmiana->getCn());
+                        //print_r($zmiana); //die();
                         $ldap->createEntity($zmiana);
                         // nadaj uprawnieznia poczatkowe
                         $uprawnienia->ustawPoczatkowe($zmiana);

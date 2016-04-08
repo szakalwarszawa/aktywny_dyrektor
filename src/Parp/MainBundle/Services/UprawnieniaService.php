@@ -32,10 +32,25 @@ class UprawnieniaService
 
     public function ustawPoczatkowe($person)
     {
-
+        $uprawnienia = array();
+        //pobierz nowe uprawnienia
+        $grupy = array();
+        $up = explode(",", $person->getInitialRights());
+        foreach($up as $kkod){
+            $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
+            $grupy[] = $noweUprawnienia;
+            foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
+                $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
+            }
+        }
+        
+        
+        
+        /*
         $poczatkowe = $person->getInitialrights();
         $grupa = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneByKod($poczatkowe);
         $uprawnienia = $grupa->getUprawnienia();
+        */
 
         // znajdz biuro i sekcje
         $departament = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
@@ -96,12 +111,12 @@ class UprawnieniaService
 
             $this->wyslij($person, null, $nadane);
         }
-
-        $ug = new UserGrupa();
-        $ug->setSamaccountname($person->getSamaccountname());
-        $ug->setGrupa($poczatkowe);
-        $this->doctrine->persist($ug);
-
+        foreach($grupy as $g){
+            $ug = new UserGrupa();
+            $ug->setSamaccountname($person->getSamaccountname());
+            $ug->setGrupa($g);
+            $this->doctrine->persist($ug);
+        }
         $this->doctrine->flush();
 
         $this->wyslij($person);
@@ -142,8 +157,8 @@ class UprawnieniaService
 
             $istniejace = array();
             //pobierz istniejace
-            $istniejąceUprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE));
-            foreach ($istniejąceUprawnienia as $uprawnienie) {
+            $istniejaceUprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE));
+            foreach ($istniejaceUprawnienia as $uprawnienie) {
                 $istniejace[] = $uprawnienie->getUprawnienieId();
             }
 
