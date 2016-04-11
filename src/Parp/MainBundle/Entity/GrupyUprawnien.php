@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * GrupyUprawnien
  *
  * @ORM\Table(name="grupyuprawnien")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, kod, opis")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, kod, opis, uprawnienia.opis:group_concat", groupBy={"id"})
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -52,7 +52,8 @@ class GrupyUprawnien
 
     /**
      * @ORM\ManyToMany(targetEntity="Uprawnienia", inversedBy="grupy")
-     *ORM\JoinTable(name="uprawnienia_w_grupach")
+     * @ORM\JoinTable(name="uprawnienia_w_grupach")
+     * @GRID\Column(field="uprawnienia.opis:group_concat", title="Uprawnienia", filter="select", selectMulti="true")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $uprawnienia;

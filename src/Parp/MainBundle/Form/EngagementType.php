@@ -19,7 +19,7 @@ class EngagementType extends AbstractType
                 ->add('name', null, array(
                     'required' => false,
                     'read_only' => false,
-                    'label' => 'Nazwa stanowiska',
+                    'label' => 'Nazwa źródła finansowania',
                     'label_attr' => array(
                         'class' => 'col-sm-2 control-label',
                     ),

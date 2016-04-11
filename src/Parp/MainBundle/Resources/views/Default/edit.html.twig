@@ -48,7 +48,17 @@
                         </div>
                         <div class="form-group">
                             {{ form_label(form.info) }}
-                            <div class="col-sm-8">{{ form_widget(form.info) }}</div>
+                            <div class="col-sm-8">
+                                <div class="input-group">
+                                    <div id="formRowInfo">
+                                    {{ form_widget(form.info) }}
+                                    </div>
+                                    {{ form_widget(form.infoNew)}}
+                                    <span class="input-group-addon">
+                                        <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">Nowa Sekcja</button>
+                                    </span>
+                                </div>
+                            </div>
                         </div>
                         {#<div class="form-group">#}
                         {#{{ form_label(form.description) }}#}

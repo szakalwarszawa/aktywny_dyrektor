@@ -17,8 +17,10 @@ class ZasobyType extends AbstractType
         $builder
             ->add('nazwa')
             ->add('opis')
-            ->add('biuro')
-            ->add('wlascicielZasobu')
+            ->add('biuro', 'hidden')
+            ->add('wlascicielZasobu', 'text', array(
+                'attr' => array('class' => 'tagAjaxInput')
+            ))
             ->add('administratorZasobu', 'text', array(
                 'attr' => array('class' => 'tagAjaxInput')
             ))
@@ -29,7 +31,12 @@ class ZasobyType extends AbstractType
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")
             ))
             ->add('daneOsobowe')
-            ->add('komorkaOrgazniacyjna')
+            ->add('komorkaOrgazniacyjna', 'entity', array(
+                'class' => 'Parp\MainBundle\Entity\Departament',
+                'choice_value' => function($dep){
+                    return $dep->getName();
+                }
+            ))
             ->add('miejsceInstalacji')
             ->add('opisZasobu')
             ->add('modulFunkcja')

@@ -1,0 +1,45 @@
+{% extends '::base.html.twig' %}
+
+{% block body %} 
+    <div class="col-sm-12">
+
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Nazwa konta</label>
+            <div class="col-sm-8">{{ (entry.samaccountname) }}</div>
+        </div>
+        
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Imię i nazwisko</label>
+            <div class="col-sm-8">{{ (entry.cn) }}</div>
+        </div>
+        
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Inicjały</label>
+            <div class="col-sm-8">{{ (entry.initials) }}</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Login</label>
+            <div class="col-sm-8">{{ (entry.samaccountname) }}</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Departament</label>
+            <div class="col-sm-8">{{ (entry.department) }}</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Przełożony</label>
+            <div class="col-sm-8">{{ (entry.manager) }}</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Stanowisko</label>
+            <div class="col-sm-8">{{ (entry.title) }}</div>
+        </div>
+        <div class="form-group col-sm-12">
+            <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">Wygasa</label>
+            <div class="col-sm-8">{{ (entry.accountExpires|date) }}</div>
+        </div>
+    
+        <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: entry.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
+                            
+    </div>
+    
+{%endblock%}

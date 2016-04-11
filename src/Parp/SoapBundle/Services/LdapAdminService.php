@@ -282,7 +282,6 @@ class LdapAdminService
 
     public function createEntity($person)
     {
-
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
         //$userdn = "OU=Test";
@@ -362,7 +361,7 @@ class LdapAdminService
         }
         //print_r($dn);
         //print_r($entry);
-        ldap_add($ldapconn, $dn, $entry);
+        //ldap_add($ldapconn, $dn, $entry);
         
          /*
           $dn = "CN=Tomasz Bolek,OU=BI,OU=Test,DC=boniek,DC=test";
@@ -382,7 +381,7 @@ class LdapAdminService
         
         //$person->setIsImplemented(1);
         $this->doctrine->persist($person);
-        $this->doctrine->flush();
+        //$this->doctrine->flush();
     }
 
     protected function LDAPtoUnix($ldap_ts)

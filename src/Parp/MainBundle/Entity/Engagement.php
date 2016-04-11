@@ -48,6 +48,7 @@ class Engagement
      *      minMessage = "Nazwa zaangażowania musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa zaangażowania musi zawierać maxymalnie do {{ limit }} znaków.") 
      * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="name", title="Nazwa finansowania")
      */
     private $name;
 

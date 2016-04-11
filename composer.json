@@ -23,7 +23,8 @@
         "white-october/pagerfanta-bundle": "1.0.*@dev",
         "phpoffice/phpexcel": "dev-master",
         "stof/doctrine-extensions-bundle": "^1.2",
-        "parsecsv/php-parsecsv": "0.4.5"
+        "parsecsv/php-parsecsv": "0.4.5",
+        "beberlei/DoctrineExtensions": "^1.0"
     },
     "scripts": {
         "post-install-cmd": [

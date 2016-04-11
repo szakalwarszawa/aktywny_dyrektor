@@ -17,3 +17,10 @@ parameters:
     session_memcached_port: 11211
     session_memcached_prefix: sess_
     session_memcached_expire: 86400
+    redmine_protokol: http
+    redmine_serwer: redmine.parp.gov.pl
+#    redmine_serwer: localhost
+    redmine_uzytkownik: lsi
+    redmine_haslo: Paranoja.!
+    redmine_projekt: '87'
+    id_srodowiska: ''

@@ -180,5 +180,17 @@ class DevController extends Controller
         }
     }
 
+    /**
+     * @Route("/groupConcat", name="groupConcat")
+     * @Template()
+     */
+    public function groupConcatAction()
+    {
+        $sql = "select group_concat(e.samaccountname) from Parp\\MainBundle\\Entity\\Entry e";
+        $em = $this->getDoctrine()->getEntityManager();
+        $result= $em->createQuery($sql)->getResult();
+        \Doctrine\Common\Util\Debug::dump($result);
+        die('groupConcat');
+    }
 
 }    

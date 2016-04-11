@@ -90,7 +90,7 @@ class PositionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Position został utworzony.');
+            $this->get('session')->getFlashBag()->set('warning', 'Stanowisko zostało utworzone.');
                 return $this->redirect($this->generateUrl('position'));
         }
 
@@ -278,7 +278,7 @@ class PositionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('position_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Position','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Skasuj stanowisko','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

@@ -114,7 +114,7 @@ class EngagementController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Engagement', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Zaangażowanie', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }

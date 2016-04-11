@@ -680,6 +680,18 @@ class DefaultController extends Controller
     }
 
     /**
+     * @Route("/show_uncommited/{id}", name="show_uncommited");
+     * @Template();
+     */
+    function show_uncommitedAction($id, Request $request)
+    {
+        $entry = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->find($id);
+        return $this->render('ParpMainBundle:Default:show.html.twig', array(
+            'entry' => $entry
+        ));
+            
+    }
+    /**
      * @Route("/user/{samaccountname}/edit", name="userEdit");
      * @Template();
      */
@@ -744,6 +756,18 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             $ndata = $form->getData();
+            $newSection = $form->get('infoNew')->getData();
+            $oldSection = $form->get('info')->getData();
+            //echo ".".$oldSection.".";
+            if($newSection != ""){
+                $ns = new \Parp\MainBundle\Entity\Section();
+                $ns->setName($newSection);
+                $ns->setShortName($newSection);
+                $this->getDoctrine()->getManager()->persist($ns);
+                $ndata['info'] = $newSection;
+                unset($ndata['infoNew']);
+            }
+            //die($newSection);
             $newrights = $ndata['initialrights'];
             $odata = $previousData;
             $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
@@ -801,6 +825,7 @@ class DefaultController extends Controller
                             $entry->setManager($value);
                             break;
                         case "fromWhen":
+                            die($value);
                             $entry->setFromWhen(new \DateTime($value));
                             break;
                         case "initialrights"://nieuzywane bo teraz jako array idzie
@@ -810,7 +835,7 @@ class DefaultController extends Controller
                     }
                 }
                 if (!$entry->getFromWhen())
-                    $entry->setFromWhen(new \DateTime('tomorrow'));
+                    $entry->setFromWhen(new \DateTime('today'));
 
                 $this->getDoctrine()->getManager()->persist($entry);
                 $this->getDoctrine()->getManager()->flush();
@@ -922,6 +947,17 @@ class DefaultController extends Controller
                     'choices' => $titles,
 //                'mapped'=>false,
                 ))
+                ->add('infoNew', 'hidden', array(
+                    'mapped' => false,
+                    'label' => false,
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+                    ),
+                    
+                ))
                 ->add('info', 'choice', array(
                     'required' => false,
                     'read_only' => false,
@@ -984,7 +1020,7 @@ class DefaultController extends Controller
                         'class' => 'form-control',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
+                    'label' => 'Zśmiana obowiązuje od',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
@@ -1184,7 +1220,7 @@ $this->createFormBuilder($entry)
             //die();
             $em->persist($entry);
             $em->flush();
-            return $this->redirect($this->generateUrl('main'));
+            return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));
         }
 
         return $this->render('ParpMainBundle:Default:add.html.twig', array('form' => $form->createView()));
