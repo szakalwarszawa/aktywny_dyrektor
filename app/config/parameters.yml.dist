@@ -24,3 +24,4 @@ parameters:
     redmine_haslo: Paranoja.!
     redmine_projekt: '87'
     id_srodowiska: ''
+    blokada_na_zapis_tylko_userow_o_tym_nawisku: 'testowy'

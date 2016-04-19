@@ -25,7 +25,7 @@ class ADSecurityCheckService
     public function checkIfUserCanBeEdited($sam){
         $ps = explode("_", $sam);
         
-        $nazwisko = "wirtualny";
+        $nazwisko = $this->container->getParameter('blokada_na_zapis_tylko_userow_o_tym_nawisku');
         
         $ret = $ps[1] == $nazwisko;
         if(!$ret){
