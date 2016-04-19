@@ -3,11 +3,12 @@
     <head>
         <meta charset="UTF-8" />
         {% block stylesheets %}
-            <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css">
+{#             <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"> #}
             {#<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">#}
             {#<link rel="stylesheet" href="//bootswatch.com/cerulean/bootstrap.min.css">#}
+            <link rel="stylesheet" href="{{ asset('css/bootstrap1.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
-            <link rel="stylesheet" href="//netdna.bootstrapcdn.com/font-awesome/4.1.0/css/font-awesome.css">
+            <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap-datetimepicker.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
             <link rel="stylesheet" href="{{ asset('css/main.css') }}">
@@ -17,17 +18,17 @@
         {% endblock %}
 
         {% block javascripts %}
-            <script src="//code.jquery.com/jquery-1.11.0.min.js"></script>
+            <script src="{{ asset('js/jquery-1.11.0.min.js') }}"></script>
             {#        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>#}
             <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
-            <script type="text/javascript" src="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/js/bootstrap.min.js"></script>
+            <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-datetimepicker.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-slider.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.maskedinput.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-filestyle.min.js') }}"></script>
-            <script type="text/javascript" src="https://www.google.com/jsapi"></script>
-            <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.9.2/jquery-ui.min.js" type="text/javascript" charset="utf-8"></script>
+            <script type="text/javascript" src="{{ asset('js/jsapi.js') }}"></script>
+            <script src="{{ asset('js/jquery-ui.min.js') }}" type="text/javascript" charset="utf-8"></script>
             <script type="text/javascript" src="{{ asset('js/tag-it.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.are-you-sure.js') }}"></script>
