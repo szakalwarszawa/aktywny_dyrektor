@@ -174,6 +174,25 @@ class Entry
      */
     private $memberOf;
 
+
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="isDisabled", type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $isDisabled;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="disableDescription", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $disableDescription;
+    
+    
     /**
      * Get id
      *
@@ -514,5 +533,53 @@ class Entry
     public function getMemberOf()
     {
         return $this->memberOf;
+    }
+
+    /**
+     * Set isDisabled
+     *
+     * @param boolean $isDisabled
+     *
+     * @return Entry
+     */
+    public function setIsDisabled($isDisabled)
+    {
+        $this->isDisabled = $isDisabled;
+
+        return $this;
+    }
+
+    /**
+     * Get isDisabled
+     *
+     * @return boolean
+     */
+    public function getIsDisabled()
+    {
+        return $this->isDisabled;
+    }
+
+    /**
+     * Set disableDescription
+     *
+     * @param string $disableDescription
+     *
+     * @return Entry
+     */
+    public function setDisableDescription($disableDescription)
+    {
+        $this->disableDescription = $disableDescription;
+
+        return $this;
+    }
+
+    /**
+     * Get disableDescription
+     *
+     * @return string
+     */
+    public function getDisableDescription()
+    {
+        return $this->disableDescription;
     }
 }

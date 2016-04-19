@@ -2,8 +2,8 @@
 
 {% block body %}
 
-    <a href="{{ path('userEdit', {samaccountname: user.samaccountname})}}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{user.name}}</a>
-    <h3>Zaangażowanie dla {{ user.name }}:</h3>
+    <a href="{{ path('userEdit', {samaccountname: samaccountname})}}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{samaccountname}}</a>
+    <h3>Zaangażowanie dla {{ samaccountname }}:</h3>
     <form method="post" name="formularz">
         <div class="btn-group" data-toggle="buttons">      
             {% for y in 2008..2020 %}
@@ -118,7 +118,7 @@
             </table>
 
         {% endif %}
-        <input type="hidden" name="samaccountname" id="samaccountname" value="{{user.samaccountname}}" />
+        <input type="hidden" name="samaccountname" id="samaccountname" value="{{samaccountname}}" />
         <div class="alert alert-warning" role="alert">
             <p><strong>Uwaga!</strong></p>
             <p>Wartości należy wprowadzać jako wartości procentowe (np. 25%).</p>

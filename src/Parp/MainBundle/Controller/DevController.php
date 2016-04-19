@@ -193,4 +193,12 @@ class DevController extends Controller
         die('groupConcat');
     }
 
+    /**
+     * @Route("/getUzInfo", name="getUzInfo")
+     * @Template()
+     */
+    public function getUzInfoAction()
+    {
+        die("getUzInfo");
+    }
 }    

@@ -10,6 +10,8 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
             new \Twig_SimpleFilter('gridTitles', array($this, 'gridTitles')),
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
+            new \Twig_SimpleFilter('getMultipleCheckboxLabel', array($this, 'getMultipleCheckboxLabel')),
+            new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
         );
     }
 
@@ -53,6 +55,23 @@ class StringExtension extends \Twig_Extension
         }
         return $var;
     }
+    
+    public function getMultipleCheckboxLabel($string, $part)
+    {   
+        $e = explode("@@@", $string);
+        $ret = $part <= count($e) -1 ? $e[$part] : "";
+        return $ret;
+    }
+    public function getMultipleCheckboxLabelClasses($string){
+        $cs = $this->getMultipleCheckboxLabel($string, 2);
+        $ss = explode(",", $cs);
+        $ret = array();
+        foreach($ss as $id){
+            $ret[] = "grupaUprawnien".$id;
+        }
+        return implode(" ", $ret);
+    }
+    
     public function getName()
     {
         return 'app_extension';

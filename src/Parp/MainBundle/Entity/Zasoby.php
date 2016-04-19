@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Zasoby
  *
  * @ORM\Table(name="zasoby")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZasobyRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")

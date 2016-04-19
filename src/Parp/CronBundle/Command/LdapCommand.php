@@ -40,18 +40,21 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<info> [  OK  ]</info>');
     
             if ($zmiany) {
+                //print_r($zmiany); 
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
     
                     $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-                    
+                    //print_r($userNow); die();
                     if ($userNow) {
     
-                        $output->writeln('<info>Znalazłem następujące zmiany:</info>');
+                        $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+/*
                         foreach ($zmiany as $zmiana) {
                             $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
                             $output->writeln($userNow[0]['name'] . ':');
                         }
+*/
                         if ($zmiana->getAccountExpires()) {
                             // Wygasza się konto
                             $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
@@ -74,7 +77,7 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['cn']) {
                                 $output->writeln('  - Zmiana imienia i nazwiska : ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
                             } else {
-                                $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn());
+                                $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn().$zmiana->getId());
                             }
                         }
                         if ($zmiana->getManager()) {
@@ -113,6 +116,17 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie uprawnień początkowych : ' . $zmiana->getInitialrights());
                             }
                         }
+                        if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
+                            //print_r($userNow[0]);
+                            if ($zmiana->getIsDisabled()) {
+                                $output->writeln('  - Wyłączenie konta w domenie');
+                            }else{
+                                $output->writeln('  - Włączenie konta w domenie');
+                            }
+                            
+                        }else{
+                            $zmiana->setIsDisabled(null);
+                        }
                         
                         if ($zmiana->getMemberOf()) {
                             $znak = substr($zmiana->getMemberOf(), 0, 1);                 
@@ -139,7 +153,7 @@ class LdapCommand extends ContainerAwareCommand
                         // nie znaleziono w ldap tzn ze mamy nowego usera do wstawienia
                     } else {
     
-                        $output->writeln('  - Dodanie praownika: ' . $zmiana->getCn());
+                        $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()."</info>");
                         //print_r($zmiana); //die();
                         $ldap->createEntity($zmiana);
                         // nadaj uprawnieznia poczatkowe

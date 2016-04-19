@@ -53,5 +53,23 @@ function cancelForm(){
     });
      $('form').trigger('reinitialize.areYouSure');
 }
+$('*[data-ajaxload]').mouseenter(function() {
+    var e=$(this);
+    e.off('hover');
+    $.get(e.data('ajaxload'),function(d) {
+        e.popover({content: d}).popover('show');
+    });
+}).mouseleave(function() {
+    $(this).popover('hide');
+});
+{#
+$('*[data-ajaxload]').bind('hover',function(){
+  var e=$(this);
+  e.unbind('hover');
+  $.get(e.data('ajaxload'),function(d){
+      e.popover({content: d}).popover('show');
+  });
+});
+#}
 
 </script>

@@ -26,44 +26,60 @@ use Parp\MainBundle\Form\UserZasobyType;
 use Parp\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use APY\DataGridBundle\Grid\Column\TextColumn;
 
 class DefaultController extends Controller
 {
 
     /**
-     * @Route("/", name="main")
+     * @Route("/index/{onlyTemporary}", name="main", defaults={"onlyTemporary": "usersFromAd"})
+     * @Route("/", name="main_home")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($onlyTemporary = "usersFromAd")
     {
-        // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
-        $ADUsers = $ldap->getAllFromAD();
-//echo "<pre>"; print_r($ADUsers); die();
+        // Sięgamy do AD:
+        if($onlyTemporary != "usersFromAd"){
+            $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);
+        }else{
+            $ADUsers = $ldap->getAllFromAD();
+            //print_r($ADUsers);
+        }
+        if(count($ADUsers) == 0){
+            return $this->render('ParpMainBundle:Default:NoData.html.twig');
+        }
+        //echo "<pre>"; print_r($ADUsers); die();
         $source = new Vector($ADUsers);
 
         $grid = $this->get('grid');
 
-        $grid->setSource($source);
+        //$MyTypedColumn = new TextColumn(array('id' => 'samaccountname', 'field' => 'samaccountname', 'title' => 'Nazwa użytkownika', 'source' => true, 'filterable' => false, 'sortable' => true, 'primary' => true));
+        //$grid->addColumn($MyTypedColumn);
 
+        $source->setId('samaccountname');
+        $grid->setSource($source);
         $grid->hideColumns(array(
             'manager',
+            //'accountDisabled',
             //'info',
             'description',
             'division',
             //            'thumbnailphoto',
             'useraccountcontrol',
-            'samaccountname',
+            //'samaccountname',
             'initials'
         ));
 
         // Konfiguracja nazw kolumn
 
+
         $grid->getColumn('samaccountname')
                 ->setTitle('Nazwa użytkownika')
                 ->setOperators(array("like"))
                 ->setOperatorsVisible(false)
-                ->isPrimary();
+                ->setPrimary(true);
+
         $grid->getColumn('name')
                 ->setTitle("Nazwisko imię")
                 ->setOperators(array("like"))
@@ -96,6 +112,10 @@ class DefaultController extends Controller
         $grid->getColumn('thumbnailphoto')
                 ->setTitle('Zdj.')
                 ->setFilterable(false);
+        $grid->getColumn('isDisabled')
+                ->setTitle("Konto wyłączone")
+                ->setOperators(array("like"))
+                ->setOperatorsVisible(false);
 
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
@@ -106,34 +126,56 @@ class DefaultController extends Controller
                 ->setFilterable(false)
                 ->setSafe(true);
 
-        // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->setRouteParameters(
-                array('samaccountname')
-        );
-        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-
-        // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->setRouteParameters(
-                array('samaccountname')
-        );
-        $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-
-        // Edycja konta
-        $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
-        $rowAction4->setColumn('akcje');
-        $rowAction4->setRouteParameters(
-                array('samaccountname')
-        );
-        $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
-
-//        $grid->addRowAction($rowAction1);
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
-        $grid->addRowAction($rowAction4);
+        if($onlyTemporary == "usersFromAd"){
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
+            $rowAction4->setColumn('akcje');
+            $rowAction4->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
+    
+    //        $grid->addRowAction($rowAction1);
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+            $grid->addRowAction($rowAction4);
+        }else{
+            
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('id')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+        }
 
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
         
@@ -143,8 +185,10 @@ class DefaultController extends Controller
         $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
         $grid->addMassAction($massAction2);     
         $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
+        //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
         $grid->addMassAction($massAction3);
         $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+        //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
         $grid->addMassAction($massAction4);
 
 
@@ -154,10 +198,18 @@ class DefaultController extends Controller
      * @return array
      * @Template();
      */
-    public function processMassActionAction(Request $request, $action)
-    {
-        //print_r($action);
-        //print_r($_POST);
+    public function processMassActionAction($action, $primaryKeys, $allPrimaryKeys, $session = null, $parameters = null)
+    {/*
+
+        print_r($action);
+        echo "-------";
+        print_r($primaryKeys);
+        echo "-------";
+        print_r($parameters);
+        echo "-------";
+        print_r($_POST); 
+        die();
+*/
         if (isset($_POST)) {
             $array = array_shift($_POST);
             if (isset($array['__action_id'])) {
@@ -178,32 +230,107 @@ class DefaultController extends Controller
      */
     public function addRemoveAccessToUsersAction(Request $request, $samaccountnames, $action)
     {
+        //print_r($samaccountnames); die();
+        $samt = json_decode($samaccountnames);
+        //print_r($samaccountnames);
+        //print_r($sams); die();
+        $sams = array();
+        foreach($samt as $k=>$v){
+            if($v == 1){
+                
+                $sams[] = $k;
+            }
+        }
+        
         
         switch($action){
             case "addResources":
                 $title = "Wybierz zasoby do dodania";
+                $userzasoby = array();
+                $userzasobyOpisy = array();
+                $ids = array();
+                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
+                foreach($uzs as $uu){
+                    if(!in_array($uu->getZasobId(), $ids))
+                        $ids[] = $uu->getZasobId();
+                    $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
+                    $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
+                }
                 $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
                 break;
             case "removeResources":
                 $title = "Odbierz zasoby";
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+                $userzasoby = array();
+                $userzasobyOpisy = array();
+                $ids = array();
+                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
+                foreach($uzs as $uu){
+                    if(!in_array($uu->getZasobId(), $ids))
+                        $ids[] = $uu->getZasobId();
+                    $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
+                    $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
+                }
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($ids);
+                //$chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findBySamaccountnames($sams);
                 break;
             case "addPrivileges":
                 $title = "Wybierz uprawnienia do dodania";
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findAll();
+                
+                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
+                $ids = array();
+                $useruprawnienia = array();
+                foreach($uzs as $uu){
+                    if(!in_array($uu->getUprawnienieId(), $ids))
+                        $ids[] = $uu->getUprawnienieId();
+                    $useruprawnienia[$uu->getUprawnienieId()][] = $uu->getSamaccountname();
+                }
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findall();//ById($ids);
                 break;
             case "removePrivileges":
                 $title = "Wybierz uprawnienia do odebrania";
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findAll();
+                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
+                $ids = array();
+                $useruprawnienia = array();
+                foreach($uzs as $uu){
+                    if(!in_array($uu->getUprawnienieId(), $ids))
+                        $ids[] = $uu->getUprawnienieId();
+                    $useruprawnienia[$uu->getUprawnienieId()][] = $uu->getSamaccountname();
+                }
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findById($ids);
                 break;
         }
         
         $choices = array();
+        $choicesDescription = array();
         foreach($chs as $ch){
-            if($action == "addResources" || $action == "removeResources")
-                $choices[$ch->getId()] = $ch->getNazwa();
-            if($action == "addPrivileges" || $action == "removePrivileges")
-                $choices[$ch->getId()] = $ch->getOpis();
+            if($action == "addResources" || $action == "removeResources"){
+                $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
+                if(isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0){
+                    $ret = array();
+                    foreach($userzasoby[$ch->getId()] as $u){
+                        $ret[] = "<span data-toggle='popover' data-content='".$userzasobyOpisy[$ch->getId()][$u]."'>".$u."</span>";
+                    }
+                    
+                    
+                    //$uss = implode(",", $userzasoby[$ch->getId()]);
+                    $info = (count($userzasoby[$ch->getId()]) > 1 ? "Posiadają : " : "Posiada : ").implode(" ", $ret);
+                }
+                $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+            }
+            if($action == "addPrivileges" || $action == "removePrivileges"){
+                //die(".".count($sams));
+                $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
+                if(isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0){
+                    $uss = implode(",", $useruprawnienia[$ch->getId()]);
+                    $info = count($sams) > 1 ? "Posiadają : " . (count($useruprawnienia[$ch->getId()]) == count($sams) ? "WSZYSCY" : $uss) : "Posiada";
+                }
+                $gids = array();
+                foreach($ch->getGrupy() as $g){
+                    $gids[] = $g->getId();
+                }
+                //print_r($gids); die();
+                $choices[$ch->getId()] = $ch->getOpis()."@@@".$info."@@@".implode(",", $gids);
+            }
         }
         return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action);    
     }
@@ -214,14 +341,19 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
         $samaccountnames = json_decode($samaccountnames);
         $users = array();
+        
         foreach($samaccountnames as $sam => $v){
             if($v){
-                
+                //echo " $sam ";
                 $ADUser = $ldap->getUserFromAD($sam);
                 $users[] = $ADUser[0];
             }
         }
-        
+        $grupys = $this->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findAll();
+        $grupy = array();
+        foreach($grupys as $g){
+            $grupy[$g->getId()] = $g->getOpis();
+        }
         $now = new \Datetime();
         
         $builder = $this->createFormBuilder();
@@ -265,20 +397,57 @@ class DefaultController extends Controller
                     ),
                     'required' => true
                 ))
-
+                ->add('nazwafiltr', 'text', array(
+                    'label_attr' => array(
+                        'class' => 'col-sm-12 control-label text-left ',
+                    ),
+                    'label' => 'Filtruj po nazwie',
+                    'attr' => array(
+                        'class' => 'ays-ignore ',
+                    ),
+                    'required' => false
+                ))
+                ->add('grupy', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => "Filtruj po grupie uprawnień",
+                    'label_attr' => array(
+                        'class' => 'col-sm-12 control-label text-left '.($action == "addResources" || $action == "removeResources" ? "hidden" : ""),
+                    ),
+                    'attr' => array(
+                        'class' => 'ays-ignore '.($action == "addResources" || $action == "removeResources" ? "hidden" : ""),
+                    ),
+                    'choices' => $grupy,
+                    'multiple' => false,
+                    'expanded' => false
+                ))
+                ->add('buttonzaznacz', 'button', array(
+                    //'label' =>  false,
+                    'attr' => array(
+                        'class' => 'btn btn-info col-sm-12',
+                    ),
+                    'label' => 'Zaznacz wszystkie widoczne'
+                ))
+                ->add('buttonodznacz', 'button', array(
+                    //'label' =>  false,
+                    'attr' => array(
+                        'class' => 'btn btn-info col-sm-12',
+                    ),
+                    'label' => 'Odznacz wszystkie'
+                ))
                 ->add('access', 'choice', array(
                     'required' => false,
                     'read_only' => false,
                     'label' => $title,
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'col-sm-12 control-label text-left',
                     ),
                     'attr' => array(
-                        'class' => 'form-control select2',
+                        'class' => '',
                     ),
                     'choices' => $choices,
                     'multiple' => true,
-                    'expanded' => false
+                    'expanded' => true
                 ))
 
                 ->add('zapisz', 'submit', array(
@@ -292,19 +461,26 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            
+    
             $ndata = $form->getData();
+            $sams = array();
+            $s1 = json_decode($ndata['samaccountnames']);
+            foreach($s1 as $k => $v){
+                if($v){
+                    $sams[] = $k;                    
+                    $this->get('adcheck_service')->checkIfUserCanBeEdited($k);
+                }
+            }
+            
+            
+            
             switch($ndata['action']){
                 case "addResources":
                     return $this->addResourcesToUsersAction($request, $ndata);        
                     break;
                 
                 case "removeResources":
-                    $sams = array();
-                    $s1 = json_decode($ndata['samaccountnames']);
-                    foreach($s1 as $k => $v){
-                        if($v)
-                            $sams[] = $k;
-                    }
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
                     foreach($ndata['access'] as $z){
@@ -336,12 +512,6 @@ class DefaultController extends Controller
                     return $this->redirect($this->generateUrl('main'));
                     break;
                 case "addPrivileges":
-                    $sams = array();
-                    $s1 = json_decode($ndata['samaccountnames']);
-                    foreach($s1 as $k => $v){
-                        if($v)
-                            $sams[] = $k;
-                    }
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
                     foreach($ndata['access'] as $z){
@@ -391,12 +561,6 @@ class DefaultController extends Controller
                     return $this->redirect($this->generateUrl('main'));
                     break;
                 case "removePrivileges":
-                    $sams = array();
-                    $s1 = json_decode($ndata['samaccountnames']);
-                    foreach($s1 as $k => $v){
-                        if($v)
-                            $sams[] = $k;
-                    }
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
                     foreach($ndata['access'] as $z){
@@ -447,7 +611,8 @@ class DefaultController extends Controller
         return $this->render('ParpMainBundle:Default:addRemoveUserAccess.html.twig', array(
             'users' => $users,
             'form' => $form->createView() ,
-            'title' => $title  
+            'title' => $title,
+            'choicesDescription' => $choices
         ));
     }
     
@@ -598,7 +763,7 @@ class DefaultController extends Controller
                         $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
                         $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($oz->getZasobId());
                         //print_r($suz);
-                        if($suz == null){
+                        //if($suz == null){
                             $z = clone $oz;
                             $z->setCzyAktywne(true);
                             $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
@@ -611,6 +776,7 @@ class DefaultController extends Controller
                             $this->addFlash('warning', $msg);
                             $zmianaupr[] = $zasob->getOpis();
                             //print_r( );
+/*
                         }
                         else{
                             $msg2 = ( "!!! pomijamy usera ".$currentsam." i zasob ".$oz->getZasobId()." bo juz go ma !");
@@ -618,6 +784,7 @@ class DefaultController extends Controller
                             
                             //$this->get('session')->getFlashBag()->set('warning', $msg);
                         }
+*/
                         if(count($zmianaupr) > 0)
                             $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                     }
@@ -691,6 +858,16 @@ class DefaultController extends Controller
         ));
             
     }
+    function array_diff($a1, $a2){
+        $ret = array();
+        foreach($a1 as $k => $v1){
+            if(isset($a2[$k]) && $a2[$k] != $a1[$k])
+                $ret[$k] = $a1[$k];
+            elseif(!isset($a2[$k]))
+                $ret[$k] = $a1[$k];
+        }
+        return $ret;
+    }
     /**
      * @Route("/user/{samaccountname}/edit", name="userEdit");
      * @Template();
@@ -724,30 +901,20 @@ class DefaultController extends Controller
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
         for($i = 0; $i < count($zasoby); $i++){
             $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
-            $html = "";
-            if($uz->getLoginDoZasobu() != "")
-                $html .= "<b>Login:</b> ".$uz->getLoginDoZasobu()."<br>";
-            if($uz->getModul() != "")
-                $html .= "<b>Moduł:</b> ".$uz->getModul()."<br>";
-            if($uz->getPoziomDostepu() != "")
-                $html .= "<b>Poziom dostępu:</b> ".$uz->getPoziomDostepu()."<br>";
-            if($uz->getAktywneOd() != "")
-                $html .= "<b>Aktywne od:</b> ".$uz->getAktywneOd()->format("Y-m-d")."<br>";
-            if($uz->getAktywneDo() != "")
-                $html .= "<b>Aktywne do:</b> ".$uz->getAktywneDo()->format("Y-m-d")." ".($uz->getBezterminowo() ? "(bezterminowo)" : "")."<br>";
-            if($uz->getKanalDostepu() != "")
-                $html .= "<b>Kanał dostępu:</b> ".$uz->getKanalDostepu()."<br>";
-            if($uz->getUprawnieniaAdministracyjne() != "")
-                $html .= "<b>Uprawnienia Administracyjne:</b> TAK<br>";
-            $zasoby[$i]['opisHtml'] = $html;
+            
+            $zasoby[$i]['opisHtml'] = $uz->getOpisHtml();
             $zasoby[$i]['modul'] = $uz->getModul();
             $zasoby[$i]['loginDoZasobu'] = $uz->getLoginDoZasobu();
             $zasoby[$i]['poziomDostepu'] = $uz->getPoziomDostepu();
             $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd()->format("Y-m-d");
             $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo()->format("Y-m-d");
             $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
+            $zasoby[$i]['powodOdebrania'] = $uz->getPowodOdebrania();
+            $zasoby[$i]['powodNadania'] = $uz->getPowodNadania();
+            $zasoby[$i]['czyAktywne'] = $uz->getCzyAktywne();
         }
         
+        //print_r($defaultData); die();
         $form = $this->createUserEditForm($defaultData);
 
 
@@ -755,6 +922,7 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
             $ndata = $form->getData();
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
@@ -781,28 +949,36 @@ class DefaultController extends Controller
             //hack by dalo sie puste inicjaly wprowadzic
             if($ndata['initials'] == "")
                 $ndata['initials'] = "puste";
+            $ndata['division'] = "";
             //print_r($ndata);
             //print_r($odata);
             //print_r(array_diff($ndata, $odata));
             //die();
-            //print_r(array_diff($ndata, $odata));
-            //print_r($roznicauprawnien);
+            //print_r($this->array_diff($ndata, $odata));
+            //print_r($ndata); die();
             //$df = array_diff($form->getData(), $previousData);
             //echo "<pre>"; print_r($previousData); print_r($form->getData()); die();
-            if (0 < count(array_diff($ndata, $odata)) || $roznicauprawnien) {
+            if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien) {
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
                 //print_r(array_diff($ndata, $odata)); die();
                 $entry = new Entry();
                 $entry->setSamaccountname($samaccountname);
                 $entry->setDistinguishedName($previousData["distinguishedname"]);
-                $newData = array_diff($ndata, $odata);
+                $newData = $this->array_diff($ndata, $odata);
                 if(($roznicauprawnien)){
                     $value = implode(",", $newrights);
                     $entry->setInitialrights($value);
                 }
+                //print_r($newData); die();
                 foreach ($newData as $key => $value) {
                     switch ($key) {
+                        case "isDisabled":
+                            $entry->setIsDisabled($value);
+                            break;
+                        case "disableDescription":
+                            $entry->setDisableDescription($value);
+                            break;
                         case "name":
                             $entry->setCn($value);
                             break;
@@ -810,7 +986,13 @@ class DefaultController extends Controller
                             $entry->setInitials($value);
                             break;
                         case "accountExpires":
-                            $entry->setAccountexpires(new \DateTime($value));
+                            if($value){
+                                $entry->setAccountexpires(new \DateTime($value));    
+                            }else{
+                                $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
+                            }
+                            //print_r($value); die();
+                            
                             break;
                         case "title":
                             $entry->setTitle($value);
@@ -843,7 +1025,7 @@ class DefaultController extends Controller
                 return $this->redirect($this->generateUrl('main'));
             }
         }
-        $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname, 'czyAktywne' => true));
+        $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
         $historyEntries = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
         $pendingEntries = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
         $up2grupaAd = array();
@@ -1020,7 +1202,7 @@ class DefaultController extends Controller
                         'class' => 'form-control',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Zśmiana obowiązuje od',
+                    'label' => 'Zmiana obowiązuje od',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
@@ -1044,6 +1226,32 @@ class DefaultController extends Controller
                     'multiple' => true,
                     'expanded' => false
                 ))
+                
+                ->add('isDisabled', 'choice', array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Konto wyłączone w AD',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select21',
+                    ),
+                    'choices' => array(
+                        '0' => 'NIE',
+                        '1' => 'TAK'
+                    ),
+                    //'data' => @$defaultData["department"],
+                ))
+                ->add('disableDescription', 'choice', array(
+                    'label' => 'Podaj powód wyłączenia konta',
+                    'choices' => array(
+                        "" => "",
+                        "Bo tak" => "Bo tak",
+                        "Kadry kazały" => "Kadry kazały",
+                    ),
+                    'required' => false
+                ))                                
                 ->setMethod('POST')
                 ->getForm();
         return $form;
@@ -1067,138 +1275,10 @@ class DefaultController extends Controller
         $entry = new Entry();
         $form = $this->createUserEditForm($entry);
         
-        /*
-$this->createFormBuilder($entry)
-                ->add('samaccountname', 'text', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Nazwa konta',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    )
-                ))->add('cn', 'text', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Imię i nazwisko',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))->add('department', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Biuro / Departament',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'choices' => $departments,
-                        //'data' => $defaultData["department"],
-                ))->add('initials', 'text', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Inicjały',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))->add('title', 'choice', array(
-//                'class' => 'ParpMainBundle:Position',
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Stanowisko',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    //'data' => $defaultData["title"],
-                    'choices' => $titles,
-//                'mapped'=>false,
-                ))
-                ->add('info', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Sekcja',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'choices' => $sections,
-                        //'data' => $defaultData['info'],
-                ))
-                ->add('manager', 'text', array(
-                    'required' => false,
-                    'read_only' => true,
-                    'label' => 'Przełożony',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                ))
-                ->add('accountExpires', 'datetime', array(
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'widget' => 'single_text',
-                    'label' => 'Data wygaśnięcia konta',
-                    'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
-                    'label_attr' => array(
-                        'class' => 'col-lg-4 control-label',
-                    ),
-                    'required' => false,
-                ))
-                ->add('fromWhen', 'datetime', array(
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'widget' => 'single_text',
-                    'label' => 'Data zmiany',
-                    'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
-                    'label_attr' => array(
-                        'class' => 'col-lg-4 control-label',
-                    ),
-                    'required' => false,
-                ))
-                ->add('initialrights', 'choice', array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Uprawnienia początkowe',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    ),
-                    'choices' => $rights,
-                ))
-                ->add('zapisz', 'submit', array(
-                    'attr' => array(
-                        'class' => 'btn btn-success col-sm-12',
-                    ),
-                ))->setMethod('POST')
-                ->getForm();
-*/
-
         $form->handleRequest($request);
 
         if ($form->isValid()) {
+            $this->get('adcheck_service')->checkIfUserCanBeEdited($entry->getSamaccountname());
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
             $tab = explode(".", $this->container->getParameter('ad_domain'));
@@ -1216,7 +1296,7 @@ $this->createFormBuilder($entry)
             $value = implode(",", $entry->getInitialrights());
             $entry->setInitialrights($value);
             
-            //print_r($entry->getAccountExpires()); 
+            print_r($entry); 
             //die();
             $em->persist($entry);
             $em->flush();
@@ -1416,7 +1496,8 @@ $this->createFormBuilder($entry)
         return array(
             'engagements' => $engagements,
             'userEngagements' => $userEngagements,
-            'user' => $ADUser[0],
+            'samaccountname' => $samaccountname,
+            'user' => @$ADUser[0],
             'dane' => $dane,
             'year' => $year,
             'sumy' => $sumy,
@@ -1604,12 +1685,13 @@ $this->createFormBuilder($entry)
                         new File(array(
                             'maxSize' => 1024 * 1024 * 10,
                             'maxSizeMessage' => 'Przekroczono rozmiar wczytywanego pliku',
-                            'mimeTypes' => array('text/csv', 'text/plain'),
+                            'mimeTypes' => array('text/csv', 'text/plain', 'application/vnd.ms-excel', 'application/msexcel', 'application/xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
                             'mimeTypesMessage' => 'Niewłaściwy typ plku. Proszę wczytac plik z rozszerzeniem csv'
                                 )),
                     ),
                     'mapped' => false,
                 ))
+                ->add('rok', 'text', array('required' => false, 'label' => 'Przy imporcie zaangażowań podaj rok', 'data' => date("Y")))
                 ->add('wczytaj', 'submit', array('attr' => array(
                         'class' => 'btn btn-success col-sm-12',
             )))
@@ -1688,24 +1770,148 @@ $this->createFormBuilder($entry)
     {
         $dane = file_get_contents($file->getPathname());
         // $xxx = iconv('windows-1250', 'utf-8', $dane );
-
-        $list = explode("\n", $dane);
-        $ldap = $this->get('ldap_service');
-
-        $em = $this->getDoctrine()->getManager();
         
-        //!!! tego sie pozbywam 
-        //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
-        //$numDeleted = $query->execute();
+        $ext = $file->guessExtension();
+        //print_r($ext);die();
         
-        $pierwszyWiersz = explode(";", $list[0]);
-        $komorka = $pierwszyWiersz[0];
-        if($komorka == "Nazwa zasobu"){
-            $ret = $this->wczytajPlikZasoby($file);
+        if($ext == "xlsx"){
+            $ret = $this->wczytajPlikZaangazowania($file->getPathname());
         }else{
-            $ret = $this->wczytajPlikZasobyUser($file);
+            $list = explode("\n", $dane);
+            $ldap = $this->get('ldap_service');
+    
+            $em = $this->getDoctrine()->getManager();
+            
+            //!!! tego sie pozbywam 
+            //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+            //$numDeleted = $query->execute();
+            
+            $pierwszyWiersz = explode(";", $list[0]);
+            $komorka = $pierwszyWiersz[0];
+            print_r($komorka); die();
+            if($komorka == "Nazwa zasobu"){
+                $ret = $this->wczytajPlikZasoby($file);
+            }else{
+                $ret = $this->wczytajPlikZasobyUser($file);
+            }
         }
         return $ret;
+    }
+    protected $col2month = array("G", "I", "K", 'M', 'O', 'Q', 'S', 'U', 'W', 'Y', 'AA', 'AC');
+    protected function getMonthsFromRow($row, $programy){
+        $months = array();
+        for($i = 1; $i <= 12; $i++){
+            $months[$i] = array();
+            $val = trim($row[$this->col2month[$i-1]]);
+            $val = $val == "" ? 0 : floatval($val);
+            $months[$i] = $val;
+
+        }
+        return $months;
+    }
+    protected $ADUsers = array();
+    protected function findUserByName($imienazwisko){
+        foreach ($this->ADUsers as $user) {
+            if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== FALSE) {
+                return $user;
+            }
+        }
+    }
+    protected function wczytajPlikZaangazowania($file){
+        
+        $rok = $this->get('request')->request->all()['form']['rok'];
+        $this->ADUsers = $this->get('ldap_service')->getAllFromAD();
+
+        $dane = array();
+        
+        $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
+        //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
+        if (!file_exists($file)) {
+            //exit("Please run 05featuredemo.php first." );
+            die('nie ma pliku');
+        }
+        $objPHPExcel = \PHPExcel_IOFactory::load($file);
+        //$EOL = "\r\n";
+        //echo date('H:i:s') , " Iterate worksheets" , $EOL;
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        
+        $progs = $this->get('doctrine')->getManager()->getRepository('ParpMainBundle:Engagement')->findAll();
+        $programy = array();
+        foreach($progs as $p){
+            $programy[$p->getName()] = $p;
+        }
+        
+        $userdane = array();
+        foreach($sheetData as $row){
+            //pomijamy pierwszy rzad
+            if($row['A'] != 'D/B'){
+                $pr = trim($row['F']);
+                $userdane[$row['B']][$pr] = $this->getMonthsFromRow($row, $programy);
+            }
+        }
+        //print_r($programy);
+        $ret = array();
+        foreach($userdane as $user => $angaz){
+            $u = $this->findUserByName($user);
+            if($u == null){
+                $this->addFlash('notice', 'Pomijam usera "'.$user.'" bo go nie ma w systemie');
+            }else{
+                foreach($angaz as $prog => $year){
+                    if(!isset($programy[$prog])){
+                        $this->addFlash('notice',  'Pomijam program "'.$prog.'" bo go nie ma w systemie');                    
+                    }else{
+                        //$pid = $programy[$prog]->getId();
+                        foreach($year as $m => $proc ){
+                            $pars = array(
+                                'samaccountname' => $u['samaccountname'],
+                                //'percent' => $proc*100,
+                                'engagement' => $programy[$prog],
+                                'month' => $m,
+                                'year' => $rok                        
+                            ); 
+                            $ue = $this->get('doctrine')->getManager()->getRepository('ParpMainBundle:UserEngagement')->findOneBy($pars);
+                            if($ue == null){
+                                //print_r($pars);
+                                //die('a');
+                                $ue = new \Parp\MainBundle\Entity\UserEngagement();
+                                $this->get('doctrine')->getManager()->persist($ue);
+                            }else{
+                                //die('b');
+                            }
+                            $ue->setSamaccountname($pars['samaccountname']);
+                            $ue->setPercent($proc*100);
+                            $ue->setEngagement($programy[$prog]);
+                            $ue->setMonth($pars['month']);
+                            $ue->setYear($pars['year']);
+                            
+                            $ret[] = $pars;       
+                        }
+                    }
+                }
+            }
+            
+        }       
+        $this->get('doctrine')->getManager()->flush();
+        
+        //die();
+        return true;
+        //print_r($ret); die(); 
+/*
+        
+        foreach ($objPHPExcel->getWorksheetIterator() as $worksheet) {
+            //echo 'Worksheet - ' , $worksheet->getTitle() , $EOL;
+            foreach ($worksheet->getRowIterator() as $row) {
+                //echo '    Row number - ' , $row->getRowIndex() , $EOL;
+                $cellIterator = $row->getCellIterator();
+                $cellIterator->setIterateOnlyExistingCells(false); // Loop all cells, even if it is not set
+                foreach ($cellIterator as $cell) {
+                    if (!is_null($cell)) {
+                        //echo '        Cell - ' , $cell->getCoordinate() , ' - ' , $cell->getCalculatedValue() , $EOL;
+                    }
+                }
+            }
+        }
+*/
     }
     protected function wczytajPlikZasoby($file)
     {
@@ -1964,6 +2170,7 @@ $this->createFormBuilder($entry)
                     $newUserZasob->setAktywneOd(null);
                     $newUserZasob->setAktywneDo(null);
                     $newUserZasob->setCzyAktywne(true);
+                    $newUserZasob->setPowodNadania("na podstawie wniosku z ECM-PARP");
                     $newUserZasob->setSamaccountname($samaccountname);
                     $newUserZasob->setZasobId($value['zasobId']);
                     foreach($value['dane'] as $k => $v){
@@ -1988,7 +2195,8 @@ $this->createFormBuilder($entry)
         }
         
         foreach($samsUserZasoby as $uzs){
-            if(!in_array($uzs->getId(), $uzsIdPokryteWimporcie)){                
+            if(!in_array($uzs->getId(), $uzsIdPokryteWimporcie)){
+                $uzs->setPowodOdebrania("na podstawie wniosku z ECM-PARP");                
                 $em->remove($uzs);
                 $wynik['skasowano'] += 1;
             }            

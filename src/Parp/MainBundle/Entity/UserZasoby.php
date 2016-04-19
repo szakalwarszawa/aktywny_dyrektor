@@ -9,6 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="userzasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserZasobyRepository")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -617,5 +618,23 @@ class UserZasoby
     public function getImportedFromEcm()
     {
         return $this->importedFromEcm;
+    }
+    public function getOpisHtml(){
+        $html = "";
+        if($this->getLoginDoZasobu() != "")
+            $html .= "<b>Login:</b> ".$this->getLoginDoZasobu()."<br>";
+        if($this->getModul() != "")
+            $html .= "<b>Moduł:</b> ".$this->getModul()."<br>";
+        if($this->getPoziomDostepu() != "")
+            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu()."<br>";
+        if($this->getAktywneOd() != "")
+            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d")."<br>";
+        if($this->getAktywneDo() != "")
+            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "")."<br>";
+        if($this->getKanalDostepu() != "")
+            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu()."<br>";
+        if($this->getUprawnieniaAdministracyjne() != "")
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK<br>";
+        return $html;
     }
 }

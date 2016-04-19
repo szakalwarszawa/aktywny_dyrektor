@@ -11,7 +11,7 @@ class ConsoleExceptionListener
 
     public function __construct(LoggerInterface $logger)
     {
-    $this->logger = $logger;
+        $this->logger = $logger;
     }
 
     public function onConsoleException(ConsoleExceptionEvent $event)

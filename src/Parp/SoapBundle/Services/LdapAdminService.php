@@ -27,7 +27,8 @@ class LdapAdminService
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
-
+        error_reporting(0);
+        //ini_set('error_reporting', E_ALL);
         $this->doctrine = $OrmEntity;
         $this->securityContext = $securityContext;
         $this->container = $container;
@@ -104,14 +105,15 @@ class LdapAdminService
             'memberOf'
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
+        //print_r($userdn); die();
 
         ldap_unbind($ldapconn);
-
         $result = array();
 
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
             if ($tmpResult["samaccountname"]) {
+                $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
                 $result[$i]["samaccountname"] = $tmpResult["samaccountname"][0];
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
                 $result[$i]["email"] = isset($tmpResult["mail"][0]) ? $tmpResult["mail"][0] : "";
@@ -148,7 +150,7 @@ class LdapAdminService
     }
     public function saveEntity($ldapUser, $person)
     {
-
+        $this->container->get('adcheck_service')->checkIfUserCanBeEdited($person->getSamaccountname());
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -168,13 +170,19 @@ class LdapAdminService
 
         
         if ($person->getAccountExpires()) {
-            $entry['accountExpires'] = $this->UnixtoLDAP($person->getAccountExpires()->getTimestamp());
+            $d = $this->UnixtoLDAP($person->getAccountExpires()->getTimestamp());
+            if($person->getAccountExpires()->format("Y") == "3000"){
+               $d = "9223372036854775807";
+            }
+            $entry['accountExpires'] = $d;
         }
         if ($person->getInfo()) {
             $entry['info'] = $person->getInfo();
             // obsłuz miane atrybuty division
             $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-            $entry['division'] =  $section->getShortname();
+            //print_r($person->getInfo());
+            //print_r($section);
+            $entry['division'] =  $section->getName();//getShortname();
         }
         if ($person->getManager()) {
             $manager = $person->getManager();
@@ -216,9 +224,9 @@ class LdapAdminService
             }
         }
 
+        $department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         if ($person->getDepartment()) {
             $entry['department'] = $person->getDepartment();
-            $department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
             if (!empty($department)) {
                 $entry['description'] = $department->getShortname();
             }
@@ -226,7 +234,6 @@ class LdapAdminService
         
         $userAD = $this->getUserFromAD($person->getSamaccountname());
         
-
         if($person->getMemberOf() != ""){
             $znak = substr($person->getMemberOf(), 0, 1);               
             $g = substr($person->getMemberOf(), 1);
@@ -241,11 +248,34 @@ class LdapAdminService
                 echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");
             }
         }
+        if ($person->getIsDisabled() !== null) {
+            //$ac = 544;//$tmpResults[0];
+            //print_r($ac);
+            //$enable =($ac & ~2);
+            //print_r($enable);die();
+            $entry['useraccountcontrol'][0] = $person->getIsDisabled() ? 546 : 544;
+            $sn = "Konto aktywowane";
+            if (!empty($department)) {
+                $sn = $department->getShortname();
+            }
+            
+            if($person->getIsDisabled()){
+                $entry['description'] = "Konto wyłączone bo: ".$person->getDisableDescription();
+            }else{
+                $entry['description'] = $sn;                
+            }
+        }
+        //print_r($entry);
 /*
+
+        print_r($entry);
+        die();
         
         print_r($userdn);
         print_r($entry);
         print_r($dn);
+
+        die();
 */
         if(count($entry) > 0)
             ldap_modify($ldapconn, $dn, $entry);
@@ -282,6 +312,7 @@ class LdapAdminService
 
     public function createEntity($person)
     {
+        $this->container->get('adcheck_service')->checkIfUserCanBeEdited($person->getSamaccountname());
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
         //$userdn = "OU=Test";
@@ -353,15 +384,18 @@ class LdapAdminService
         $entry["useraccountcontrol"] = 544; // włączenie konta i wymuszenie zmiany hasla
         $entry["info"] = $person->getInfo();
         $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-        $entry['division'] = $section->getShortname();
+        $entry['division'] = $section->getName();//$section->getShortname();
 
         $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
         }
+        $newuser_plaintext_password = "F4UCorsair";
+        $entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
         //print_r($dn);
-        //print_r($entry);
-        //ldap_add($ldapconn, $dn, $entry);
+        print_r($entry);
+        ldap_add($ldapconn, $dn, $entry);
+        //die();
         
          /*
           $dn = "CN=Tomasz Bolek,OU=BI,OU=Test,DC=boniek,DC=test";

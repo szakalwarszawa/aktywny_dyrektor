@@ -146,7 +146,11 @@ services:
             logger: "@logger"
         tags:
             - { name: kernel.event_listener, event: console.exception }
-
+            
+    adcheck_service:
+        class: Parp\MainBundle\Services\ADSecurityCheckService
+        arguments: ["@service_container" ]
+        tags: ~
 apy_data_grid:
     pagerfanta:
         enable: true    #default false

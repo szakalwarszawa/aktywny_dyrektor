@@ -103,6 +103,7 @@ class LdapService
         $index = 0;
 //$tmp = array();
         foreach ($tmpResults as $tmpResult) {
+            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
 
             $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
             $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
@@ -238,6 +239,12 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
         $ldap_username = $this->securityContext->getToken()->getUsername();
         $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
+        //echo "$ldap_username $ldap_password";        
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
@@ -275,21 +282,25 @@ class LdapService
             "useraccountcontrol",
             "distinguishedName",
             "cn",
-            'memberOf'
+            'memberOf',
+            'useraccountcontrol'
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
-
         ldap_unbind($ldapconn);
 
         $result = array();
+        //print_r($userdn); die();
 
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
             if ($tmpResult["samaccountname"]) {
-                //print_r($tmpResult); die();
+                //$st = $this->getAccountControl($tmpResult["samaccountname"]);
                 $date = new \DateTime();
-                $time = floor($tmpResult["accountexpires"][0])/10000000 - 11644473600;
+                $time = $this->LDAPtoUnix($tmpResult["accountexpires"][0]);
                 $date->setTimestamp($time);
+                //print_r($time); 
+                //print_r($date); 
+                $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
                 $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
                 $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
@@ -299,12 +310,14 @@ class LdapService
                 $result[$i]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
                 $result[$i]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
                 $result[$i]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
+                $result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $result[$i]["description"]);
                 $result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
                 $result[$i]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
+                //print_r($tmpResult); die();
                 $i++;
             }
         }
@@ -375,4 +388,13 @@ class LdapService
         return $result;
     }
 
+    protected function LDAPtoUnix($ldap_ts)
+    {
+        return ($ldap_ts / 10000000) - 11644473600;
+    }
+
+    protected function UnixtoLDAP($unix_ts)
+    {
+        return sprintf("%.0f", ($unix_ts + 11644473600) * 10000000);
+    }
 }
