@@ -60,7 +60,7 @@ class Uprawnienia
     private $czy_edycja;
 
     /**
-     * @ORM\ManyToMany(targetEntity="GrupyUprawnien", inversedBy="uprawnienia")
+     * @ORM\ManyToMany(targetEntity="GrupyUprawnien", mappedBy="uprawnienia")
      * @ORM\JoinTable(name="uprawnienia_w_grupach")
      * @GRID\Column(field="grupy.opis:group_concat", title="Grupy", filter="select", selectMulti="true")
      * @@Gedmo\Mapping\Annotation\Versioned
