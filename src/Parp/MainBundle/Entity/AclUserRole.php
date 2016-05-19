@@ -47,4 +47,86 @@ class AclUserRole
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $role;
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return AclUserRole
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Set samaccountname
+     *
+     * @param string $samaccountname
+     *
+     * @return AclUserRole
+     */
+    public function setSamaccountname($samaccountname)
+    {
+        $this->samaccountname = $samaccountname;
+
+        return $this;
+    }
+
+    /**
+     * Get samaccountname
+     *
+     * @return string
+     */
+    public function getSamaccountname()
+    {
+        return $this->samaccountname;
+    }
+
+    /**
+     * Set role
+     *
+     * @param \Parp\MainBundle\Entity\AclRole $role
+     *
+     * @return AclUserRole
+     */
+    public function setRole(\Parp\MainBundle\Entity\AclRole $role = null)
+    {
+        $this->role = $role;
+
+        return $this;
+    }
+
+    /**
+     * Get role
+     *
+     * @return \Parp\MainBundle\Entity\AclRole
+     */
+    public function getRole()
+    {
+        return $this->role;
+    }
 }

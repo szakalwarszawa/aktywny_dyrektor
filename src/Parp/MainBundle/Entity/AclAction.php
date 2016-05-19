@@ -75,11 +75,165 @@ class AclAction
     private $opis;
     
     /**
-     * @ORM\ManyToMany(targetEntity="AclRole", mappedBy="actions")
-     * @ORM\JoinTable(name="acl_role_action")
+     * @ORM\ManyToMany(targetEntity="AclRole", mappedBy="actions", cascade={"persist","remove"})
+     * ORM\JoinTable(name="acl_role_action")
      *GRID\Column(field="grupy.opis:group_concat", title="Grupy", filter="select", selectMulti="true")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $roles;
     
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->roles = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get id
+     *
+     * @return integer
+     */
+    public function getId()
+    {
+        return $this->id;
+    }
+
+    /**
+     * Set deletedAt
+     *
+     * @param \DateTime $deletedAt
+     *
+     * @return AclAction
+     */
+    public function setDeletedAt($deletedAt)
+    {
+        $this->deletedAt = $deletedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get deletedAt
+     *
+     * @return \DateTime
+     */
+    public function getDeletedAt()
+    {
+        return $this->deletedAt;
+    }
+
+    /**
+     * Set name
+     *
+     * @param string $name
+     *
+     * @return AclAction
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+
+        return $this;
+    }
+
+    /**
+     * Get name
+     *
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * Set skrot
+     *
+     * @param string $skrot
+     *
+     * @return AclAction
+     */
+    public function setSkrot($skrot)
+    {
+        $this->skrot = $skrot;
+
+        return $this;
+    }
+
+    /**
+     * Get skrot
+     *
+     * @return string
+     */
+    public function getSkrot()
+    {
+        return $this->skrot;
+    }
+
+    /**
+     * Set opis
+     *
+     * @param string $opis
+     *
+     * @return AclAction
+     */
+    public function setOpis($opis)
+    {
+        $this->opis = $opis;
+
+        return $this;
+    }
+
+    /**
+     * Get opis
+     *
+     * @return string
+     */
+    public function getOpis()
+    {
+        return $this->opis;
+    }
+
+    /**
+     * Add role
+     *
+     * @param \Parp\MainBundle\Entity\AclRole $role
+     *
+     * @return AclAction
+     */
+    public function addRole(\Parp\MainBundle\Entity\AclRole $role)
+    {
+        $this->roles[] = $role;
+        $role->addAction($this);
+
+        return $this;
+    }
+
+    /**
+     * Remove role
+     *
+     * @param \Parp\MainBundle\Entity\AclRole $role
+     */
+    public function removeRole(\Parp\MainBundle\Entity\AclRole $role)
+    {
+        $this->roles->removeElement($role);
+        $role->removeAction($this);
+    }
+
+    /**
+     * Get roles
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getRoles()
+    {
+        return $this->roles;
+    }
+    
+    public function __toString()
+    {
+        return $this->name;
+    }
 }
