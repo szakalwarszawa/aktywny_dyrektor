@@ -4,6 +4,7 @@
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#daneRekord">Dane z systemu rekord</a></li>
             <li><a data-toggle="tab" href="#zasoby">Zasoby użytkownika</a></li>
             <li><a data-toggle="tab" href="#uprawnienia">Uprawnienia użytkownika</a></li>
             <li><a data-toggle="tab" href="#historia">Historia zmian</a></li>
@@ -55,7 +56,9 @@
                                     </div>
                                     {{ form_widget(form.infoNew)}}
                                     <span class="input-group-addon">
-                                        <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">Nowa Sekcja</button>
+                                        <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
+                                        Nowa Sekcja
+                                        </button>
                                     </span>
                                 </div>
                             </div>
@@ -123,6 +126,34 @@
                         </div>
                     {{ form_rest(form) }}
                 </div>
+            </div>
+            <div id="daneRekord" class="tab-pane fade">
+                {% if dane_rekord != null %}
+                <table class="table striped">
+                    <tr>
+                        <th>Departament</th>
+                        <td>{{ dane_rekord.departament}}</td>
+                    </tr>
+                    <tr>
+                        <th>Stanowisko</th>
+                        <td>{{ dane_rekord.stanowisko}}</td>
+                    </tr>
+                    <tr>
+                        <th>Umowa</th>
+                        <td>{{ dane_rekord.umowa}}</td>
+                    </tr>
+                    <tr>
+                        <th>Umowa od</th>
+                        <td>{{ dane_rekord.umowaOd|date('Y-m-d')}}</td>
+                    </tr>
+                    <tr>
+                        <th>Umowa do</th>
+                        <td>{{ dane_rekord.umowaDo|date('Y-m-d')}}</td>
+                    </tr>
+                </table>
+                {% else %}
+                    Nie ma jeszcze zainportowanych danych z systemu rekord
+                {% endif %}
             </div>
             <div id="zasoby" class="tab-pane fade">
                 <ul class="nav nav-tabs">

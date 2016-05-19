@@ -36,6 +36,16 @@ class DepartamentType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control',
             )))
+                ->add('nameInRekord', null, array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Pełna nazwa w Systemie Rekord',
+                    'label_attr' => array(
+                        'class' => 'col-sm-2 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control',
+            )))
 /*
             ->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',
             'attr' => array('class' => 'btn btn-primary'),

@@ -36,6 +36,8 @@ assetic:
 #    delivery_address: me@example.com
 parameters:
     ad_host: 10.0.2.21
+    ad_host2: 10.0.2.21
+    ad_host3: 10.0.2.21
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
     ad_password : F4UCorsair

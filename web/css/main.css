@@ -43,3 +43,6 @@ form.dirty{
 .noPadding{
     padding:0!important;
 }
+.publishOutput span{
+    display:block;
+}

@@ -16,6 +16,7 @@ use Memcached;
 class LdapAdminService
 {
 
+    protected $debug = 0;
     protected $securityContext;
     protected $AdminUser = "aktywny_dyrektor";
     protected $AdminPass = "F4UCorsair";
@@ -24,6 +25,8 @@ class LdapAdminService
     protected $container;
     protected $patch;
     protected $useradn ;
+    protected $hostId = 3;
+    public $output;
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
@@ -32,7 +35,8 @@ class LdapAdminService
         $this->doctrine = $OrmEntity;
         $this->securityContext = $securityContext;
         $this->container = $container;
-        $this->ad_host = $this->container->getParameter('ad_host');
+        //$this->ad_host = $this->container->getParameter('ad_host'.($this->hostId ? $this->hostId : ""));
+        $this->switchServer();
         $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
         $this->AdminUser = $this->container->getParameter('ad_user');
         $this->AdminPass = $this->container->getParameter('ad_password');
@@ -49,8 +53,42 @@ class LdapAdminService
         }
         //die('a');
     }
-
+    
+    public function switchServer($error = ""){
+        $prevHost = $this->ad_host;
+        $this->hostId++;
+        if($this->hostId > 3){
+            $this->hostId = 1;
+        }
+        $this->ad_host = $this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ""));
+        if($error != ""){
+            $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
+            //print_r("\n".$this->ad_host."\n");
+            $this->output->writeln('<info>'.$msg.'</info>', false);
+        }
+    }
     public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
+    {
+        $maxConnections = $this->container->getParameter('maximum_ldap_reconnects');
+        $ldapstatus = "";
+        $i = 0;
+        $result = null;
+        do{
+            $i++;
+            try{
+                $result = $this->getUserFromADInt($samaccountname, $cnname, $query);
+                $ldapstatus = "Success";
+            }catch(\Exception $e){
+                $ldapstatus = ($e->getMessage());
+            }
+            //print_r("\n $ldapstatus \n");
+            if($ldapstatus != "Success"){
+                $this->switchServer($ldapstatus);
+            }
+        }while($ldapstatus != "Success" && $i < $maxConnections);
+        return $result;
+    }
+    public function getUserFromADInt($samaccountname = null, $cnname = null, $query = null)
     {
         //$ldapconn = ldap_connect('srv-adc01.parp.local');
         //$ldapdomain = "@parp.local";
@@ -106,7 +144,12 @@ class LdapAdminService
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
         //print_r($userdn); die();
-
+        $ldapstatus = ldap_error($ldapconn);
+        //print_r($ldapstatus); die();
+        if($ldapstatus != "Success"){
+            $e = new \Exception($ldapstatus);
+            throw $e;
+        }
         ldap_unbind($ldapconn);
         $result = array();
 
@@ -131,7 +174,7 @@ class LdapAdminService
                 $i++;
             }
         }
-
+        
 //        $memcached->set('ldap-detail-'.$samaccountname,$result);
         return $result;
     }
@@ -215,13 +258,15 @@ class LdapAdminService
         if ($person->getTitle()) {
             $entry['title'] = $person->getTitle();
         }
+        $entry['initials'] = array();
         if ($person->getInitials()) {
             //hack by dalo sie puste inicjaly wprowadzic
-            if($person->getInitials() == "puste"){
+            if($person->getInitials() == "puste" || $person->getInitials() == ""){
                 $entry['initials'] = array();
             }else{
                 $entry['initials'] = $person->getInitials();
             }
+            //echo(".".$person->getInitials().".");
         }
 
         $department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
@@ -277,8 +322,23 @@ class LdapAdminService
 
         die();
 */
-        if(count($entry) > 0)
+        if(count($entry) > 0){
+            if($this->debug){
+                echo "<pre>";print_r($dn);
+                print_r($entry);echo "</pre>";
+                //die();
+            }
+            
             ldap_modify($ldapconn, $dn, $entry);
+            
+            $ldapstatus = ldap_error($ldapconn);    
+            if($ldapstatus != "Success"){
+                if($this->debug){
+                    die($ldapstatus);    
+                }
+                return $ldapstatus;
+            }
+        }
 
 
         //zmiana kontenera - obsługujemy nie modyfikacja
@@ -296,23 +356,29 @@ class LdapAdminService
                 $cn = $person->getCn();
             }
             $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
+            
+            $ldapstatus = ldap_error($ldapconn);
             //var_dump($b);
         }elseif($person->getCn()){
             //zmieniamy tylko cn
             $cn = $person->getCn();
             $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
+            
+            $ldapstatus = ldap_error($ldapconn);
         }
         
         ldap_unbind($ldapconn);
 
         //$person->setIsImplemented(1);
         $this->doctrine->persist($person);
-        $this->doctrine->flush();
+        //$this->doctrine->flush();
+        return $ldapstatus;
     }
 
     public function createEntity($person)
     {
         $this->container->get('adcheck_service')->checkIfUserCanBeEdited($person->getSamaccountname());
+        
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
         //$userdn = "OU=Test";
@@ -382,19 +448,30 @@ class LdapAdminService
         $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
         // if (empty($accountExpires)) {
         $entry["useraccountcontrol"] = 544; // włączenie konta i wymuszenie zmiany hasla
-        $entry["info"] = $person->getInfo();
+        $entry["info"] = "aaa";//$person->getInfo();
         $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-        $entry['division'] = $section->getName();//$section->getShortname();
-
+        if($section)
+            $entry['division'] = $section->getName();//$section->getShortname();
+        else{
+            $entry['division'] = 'SD';
+        }
         $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
         }
         $newuser_plaintext_password = "F4UCorsair";
-        $entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
-        //print_r($dn);
-        print_r($entry);
+        //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
+        if($this->debug){
+            echo "<pre>";print_r($dn);
+            print_r($entry);echo "</pre>";
+        }
         ldap_add($ldapconn, $dn, $entry);
+        $ldapstatus = ldap_error($ldapconn);
+        if($this->debug){
+            
+            die($ldapstatus);
+        }
+        //print_r("\r\n".$errno."\r\n");
         //die();
         
          /*
@@ -416,6 +493,7 @@ class LdapAdminService
         //$person->setIsImplemented(1);
         $this->doctrine->persist($person);
         //$this->doctrine->flush();
+        return $ldapstatus;
     }
 
     protected function LDAPtoUnix($ldap_ts)
@@ -426,6 +504,58 @@ class LdapAdminService
     protected function UnixtoLDAP($unix_ts)
     {
         return sprintf("%.0f", ($unix_ts + 11644473600) * 10000000);
+    }
+    
+    public function syncDepartamentsOUs(){
+        
+        $ldapconn = ldap_connect($this->ad_host);
+        $ldapdomain = $this->ad_domain;
+        //$userdn = "OU=Test";
+        $userdn = $this->useradn . $this->patch;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldap_username = $this->AdminUser;
+        $ldap_password = $this->AdminPass;
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+        
+        
+        $em = $this->container->get('doctrine')->getManager();
+        $deps = $em->getRepository('ParpMainBundle:Departament')->findAll();
+        foreach($deps as $dep){
+            if($dep->getShortname()){
+                $userdn = "OU=".$dep->getShortname().", ".$this->useradn . $this->patch;
+                $filter="(objectClass=organizationalunit)"; 
+                $justthese = array("dn", "ou"); 
+                $sr=ldap_search($ldapconn, $userdn, $filter, $justthese); 
+                $info = ldap_get_entries($ldapconn, $sr); 
+                
+                if($info["count"] > 0){
+                    
+                    ldap_free_result($sr); 
+                }else{ 
+                    
+                    ldap_free_result($sr);
+                    $ldapstatus2 = ldap_error($ldapconn);
+                    $res = ldap_add($ldapconn, "OU=".$dep->getShortname().", ".$this->useradn . $this->patch, array(
+                        'ou' => $dep->getShortname(),
+                        'objectClass' => 'organizationalUnit',
+                        'l' => 'location'
+                    )); 
+                    $ldapstatus = ldap_error($ldapconn);
+                    //var_dump("Nie ma OU", $userdn."<br>", $info["count"]."<br>".$ldapstatus2."<br>".$ldapstatus."<br>".$res."<br>"."<br>");  
+                    
+                }
+                
+            }
+        }
+        ldap_unbind($ldapconn);  
+        
+        //echo "Zrobilem swoje ";
+         ///////////////
+         
     }
 
 }

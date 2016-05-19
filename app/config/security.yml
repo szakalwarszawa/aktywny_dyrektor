@@ -21,6 +21,9 @@ security:
         zgloszenie_bledu:
                 pattern:  ^/zgloszenie
                 security: false
+        import_rekord:
+                pattern:  ^/import_rekord
+                security: false
         secured_area:
             pattern:    ^/
             anonymous: false

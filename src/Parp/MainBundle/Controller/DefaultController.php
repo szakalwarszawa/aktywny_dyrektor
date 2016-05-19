@@ -1034,7 +1034,12 @@ class DefaultController extends Controller
             if($up->getGrupaAd())
                 $up2grupaAd[$up->getId()] = $up->getGrupaAd();
         }
+        //print_r($ADUser[0]); die();
         $grupyAd = $ADUser[0]["memberOf"];
+        $names = explode(' ', $ADUser[0]["name"]);
+        $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
+        
+        
         //print_r($ADUser); die();
         return array(
             'user' => $ADUser[0],
@@ -1044,7 +1049,8 @@ class DefaultController extends Controller
             'grupyAd' => $grupyAd,
             'up2grupaAd' => $up2grupaAd,
             'pendingEntries' => $pendingEntries,
-            'historyEntries' => $historyEntries
+            'historyEntries' => $historyEntries,
+            'dane_rekord' => $dane_rekord
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
     }
@@ -1279,6 +1285,20 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             $this->get('adcheck_service')->checkIfUserCanBeEdited($entry->getSamaccountname());
+            
+            
+            $newSection = $form->get('infoNew')->getData();
+            $oldSection = $form->get('info')->getData();
+            //echo ".".$oldSection.".";
+            if($newSection != ""){
+                $ns = new \Parp\MainBundle\Entity\Section();
+                $ns->setName($newSection);
+                $ns->setShortName($newSection);
+                $this->getDoctrine()->getManager()->persist($ns);
+                $entry->setInfo($newSection);
+                //unset($ndata['infoNew']);
+            }
+            //die();
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
             $tab = explode(".", $this->container->getParameter('ad_domain'));

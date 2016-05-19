@@ -1,0 +1,74 @@
+services:
+    ldap_service:
+        class: Parp\SoapBundle\Services\LdapService
+        arguments: ["@security.context","@service_container"]
+        tags: ~
+    ldap_admin_service:
+            class: Parp\SoapBundle\Services\LdapAdminService
+            arguments: ["@security.context","@service_container","@doctrine.orm.entity_manager"]
+            tags: ~
+    uprawnienia_service:
+        class : Parp\MainBundle\Services\UprawnieniaService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        tags: ~
+    session.memcached:
+        class: Memcached
+        arguments:
+            persistent_id: %session_memcached_prefix%
+        calls:
+            - [ addServer, [ %session_memcached_host%, %session_memcached_port% ]]
+    session.handler.memcached:
+        class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler
+        arguments: [@session.memcached, { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
+    # KernelRequest listener
+    extension.listener:
+        class: Parp\MainBundle\Listener\DoctrineExtensionListener
+        calls:
+            - [ setContainer, [ "@service_container" ] ]
+        tags:
+            # translatable sets locale after router processing
+            - { name: kernel.event_listener, event: kernel.request, method: onLateKernelRequest, priority: -10 }
+            # loggable hooks user username if one is in security context
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
+            # translatable sets locale such as default application locale before command execute
+            - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
+            #- { name: doctrine.event_listener, event: preUpdate, connection: default }
+    
+    gedmo.listener.loggable:
+        class: Gedmo\Loggable\LoggableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
+    
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ @annotation_reader ] ]
+    app.twig_extension:
+        class: Parp\MainBundle\Twig\StringExtension
+        public: false
+        tags:
+            - { name: twig.extension }
+    
+    parp.redmine:
+        class: Parp\MainBundle\Services\RedmineConnectService
+        arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
+    kernel.listener.command_dispatch:
+        class: Parp\MainBundle\EventListener\ConsoleExceptionListener
+        arguments:
+            logger: "@logger"
+        tags:
+            - { name: kernel.event_listener, event: console.exception }
+            
+    adcheck_service:
+        class: Parp\MainBundle\Services\ADSecurityCheckService
+        arguments: ["@service_container" ]
+        tags: ~
+    parp.administrator.glowne_bundle.event_listener.exception_listener:
+        class: Parp\MainBundle\EventListener\ExceptionListener
+        arguments: ["@kernel","@templating"]
+        tags:
+            - { name: kernel.event_subscriber }

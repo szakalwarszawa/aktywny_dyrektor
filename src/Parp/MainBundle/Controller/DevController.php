@@ -44,6 +44,23 @@ class DevController extends Controller
     {
         die('dev');
     }
+    
+    
+    /**
+     * @Route("/testou", name="testou")
+     * @Template()
+     */
+    public function testouAction()
+    {
+        $ls = $this->get('ldap_admin_service');
+        
+        $u = $ls->getUserFromAD('marcin_lipinski');
+        var_dump($u);die();
+        
+        
+        $ls->syncDepartamentsOUs();
+        die('testou');
+    }
     /**
      * @Route("/generujCreateHistoriaWersji", name="generujCreateHistoriaWersji")
      * @Template()

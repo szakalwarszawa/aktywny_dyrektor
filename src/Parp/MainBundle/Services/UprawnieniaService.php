@@ -37,10 +37,12 @@ class UprawnieniaService
         $grupy = array();
         $up = explode(",", $person->getInitialRights());
         foreach($up as $kkod){
-            $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
-            $grupy[] = $noweUprawnienia;
-            foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
-                $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
+            if($kkod != ""){
+                $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
+                $grupy[] = $noweUprawnienia;
+                foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
+                    $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
+                }
             }
         }
         

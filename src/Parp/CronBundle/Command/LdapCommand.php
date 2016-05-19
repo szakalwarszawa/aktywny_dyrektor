@@ -16,12 +16,12 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LdapCommand extends ContainerAwareCommand
 {
-
+    protected $debug = true;
     protected function configure()
     {
         $this->setName('parp:ldapsave')->setDescription('Pobiera niezapisane dane z bazy Aktywnego Dyrektora i wprowadza je do Active Directory');
     }
-
+    
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
@@ -29,6 +29,7 @@ class LdapCommand extends ContainerAwareCommand
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
             $ldap = $this->getContainer()->get('ldap_admin_service');
+            $ldap->output = $output;
             $output->writeln('<comment>Wczytano usługe ldap_admin_service...                             </comment>', false);
             $uprawnienia = $this->getContainer()->get('uprawnienia_service');
             $output->writeln('<comment>Wczytano usługe uprawnienia_service ...                             </comment>', false);
@@ -45,7 +46,7 @@ class LdapCommand extends ContainerAwareCommand
                 foreach ($zmiany as $zmiana) {
     
                     $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-                    //print_r($userNow); die();
+                    //print_r($zmiana->getSamaccountname()); var_dump($userNow); die();
                     if ($userNow) {
     
                         $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
@@ -140,36 +141,67 @@ class LdapCommand extends ContainerAwareCommand
                         // zmiana uprawnien początkowych nie powduje zadnch zmian w ldap-ie
                         //if (!$zmiana->getInitialrights() && count($zmiany) == 1) {
                             //print_r($zmiana);
+                        $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
+                        if($ldapstatus == "Success"){
+                            //$ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
+                            //}
+                            //print_r($zmiana); die();
+                            $uprawnienia->zmianaUprawnien($zmiana);
                             
-                            $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
-                        //}
-                        //print_r($zmiana); die();
-                        $uprawnienia->zmianaUprawnien($zmiana);
-                        
-                        
-                        $zmiana->setIsImplemented(1);
-                        $em->persist($zmiana);
+                            
+                            $zmiana->setIsImplemented(1);
+                            $em->persist($zmiana);
+                        }else{
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getCn().':</error>', false);
+                            $output->writeln('<error>'.$ldapstatus.'</error>', false);
+                        }
     
                         // nie znaleziono w ldap tzn ze mamy nowego usera do wstawienia
                     } else {
     
                         $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()."</info>");
                         //print_r($zmiana); //die();
-                        $ldap->createEntity($zmiana);
-                        // nadaj uprawnieznia poczatkowe
-                        $uprawnienia->ustawPoczatkowe($zmiana);
-                        $zmiana->setIsImplemented(1);
-                        $em->persist($zmiana);
+                        $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, true);
+                        if($ldapstatus == "Success"){
+                            //$ldapstatus = $ldap->createEntity($zmiana);
+                            // nadaj uprawnieznia poczatkowe
+                            $uprawnienia->ustawPoczatkowe($zmiana);
+                            $zmiana->setIsImplemented(1);
+                            $em->persist($zmiana);
+                        }else{
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzc użytkownika) '.$zmiana->getCn().':</error>', false);
+                            $output->writeln('<error>'.$ldapstatus.'</error>', false);
+                            die();
+                        }
                     }
                 }
-    
+                //die("\n $ldapstatus \n");
                 $em->flush();
             }
         }catch(\Exception $e){
                 
-            $output->writeln('<comment>Błąd...                             </comment>', false);
-            $output->writeln($e->getMessage(), false);
+            $output->writeln('<error>Błąd...                             </error>', false);
+            $output->writeln('<error>'.$e->getMessage()."</error>", false);
         }
+    }
+    
+    protected function tryToPushChanges($ldap, $zmiana, $output, $isCreating){
+        $maxConnections = $this->getContainer()->getParameter('maximum_ldap_reconnects');
+        $ldapstatus = "";
+        $i = 0;
+        do{
+            if($isCreating){
+                $ldapstatus = $ldap->createEntity($zmiana);
+            }else{
+                $ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
+            }
+            $i++;
+            //print_r("\n $ldapstatus $i \n");
+            if($ldapstatus != "Success"){
+                $ldap->switchServer($ldapstatus);
+            }
+        }while($ldapstatus != "Success" && $i < $maxConnections);
+        return $ldapstatus;
     }
 
 }

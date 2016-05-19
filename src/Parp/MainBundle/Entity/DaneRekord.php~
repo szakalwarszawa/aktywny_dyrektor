@@ -1,0 +1,101 @@
+<?php
+
+namespace Parp\MainBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+/**
+ * DaneRekord
+ *
+ * @ORM\Table(name="dane_rekord")
+ * @ORM\Entity
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, imie, nazwisko, departament, stanowisko, umowa, umowaOd, umowaDo")
+ * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ */
+class DaneRekord
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     */
+    private $id;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $deletedAt;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="imie", type="string", length=255, nullable=false)
+     * @Assert\NotBlank(message = "Imię nie może być puste.")
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="imie", title="Imię")
+     */
+    private $imie;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="nazwisko", type="string", length=255, nullable=false)
+     * @Assert\NotBlank(message = "Imię nie może być puste.")
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="nazwisko", title="Nazwisko")
+     */
+    private $nazwisko;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="departament", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="departament", title="Departament")
+     */
+    private $departament;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="stanowisko", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="stanowisko", title="Stanowisko")
+     */
+    private $stanowisko;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="umowa", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="umowa", title="Umowa")
+     */
+    private $umowa;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="umowaOd", title="Umowa od")
+    */
+    private $umowaOd;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="umowaDo", title="Umowa do")
+    */
+    private $umowaDo;
+    
+    
+}

@@ -86,12 +86,6 @@ class Entry
      * @var string
      *
      * @ORM\Column(name="info", type="string", length=255, nullable=true)
-     * @Assert\NotBlank(message = "Nie wybrano sekcji")
-     * @Assert\Length(
-     *      min = 2,
-     *      max = 255,
-     *      minMessage = "Nazwa sekcji musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa sekcji musi zawierać maxymalnie do {{ limit }} znaków.") 
      */
     private $info;
 
@@ -438,6 +432,8 @@ class Entry
         return $this->isImplemented;
     }
 
+    
+
     /**
      * Set samaccountname
      *
@@ -446,6 +442,12 @@ class Entry
      */
     public function setSamaccountname($samaccountname)
     {
+        $find = array('ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż');
+        $repl = array('a', 'c', 'e', 'l', 'n', 'o', 's', 'z', 'z');
+        
+        $samaccountname = strlen($samaccountname) > 20 ? substr($samaccountname, 0, 20) : $samaccountname;
+        $samaccountname = strtolower($samaccountname);
+        $samaccountname = str_replace($find, $repl, $samaccountname);
         $this->samaccountname = $samaccountname;
 
         return $this;

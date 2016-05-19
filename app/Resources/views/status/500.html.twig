@@ -1,0 +1,21 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <div class="col-xs-8 col-xs-offset-2">
+        <h1><i class="fa fa-frown-o fa-6"></i> Błąd aplikacji</h1>
+        <p>Niestety, aplikacja wykonała czynność, która nie była przewidziana i nastąpił bład.
+            Nasze służby techniczne już zostały powiadomione o tym fakcie i zapewne
+            już szukają przyczyny. Dołożymy wszelkich starań, aby takich zdarzeń było jak najmniej.</p>
+        <h2>Co dalej?</h2>
+        <p>Nie musisz zgłaszać tego zdarzenia, gdyż zrobiliśmy to za Państwa. Zgłoszenie, którego dokonaliśmy ma numer
+            <strong>#{{ nr_zgloszenia }}</strong>. Jak tylko ustalimy przyczynę i znajdziemy rozwiązanie - zgłosimy się do Państwa telefonicznie
+            lub poprzez pocztę elektroniczną.</p>
+        <p>Zapraszamy do skorzystania z naszego FAQ w celu znalezienia rozwiązania swojego błędu samodzielnie. Mogą Państwo
+            również skontaktować się z naszym Informatorium, które udziela informacji o programach pomocowych
+            realizowanych przez Polską Agencję Rozwoju Przedsiębiorczości. Nasi konsultanci są do Państwa dyspozycji od
+            poniedziałku do piątku w godzinach od 10:00 do 16:00 pod numerami telefonów:
+            22 432 89 91, 22 432 89 92, 22 432 89 93 oraz 0 801 33 22 02<sup>*</sup></p>
+        <p>Pytania można zadawać również drogą elektroniczną na adres: <a href="mailto:info@parp.gov.pl">info@parp.gov.pl</a>.</p>
+        <p><small><sup>*</sup>koszt połączenia jak za połączenie lokalne</small></p>
+    </div>
+{% endblock %}

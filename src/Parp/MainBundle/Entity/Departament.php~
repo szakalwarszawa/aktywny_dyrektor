@@ -82,7 +82,7 @@ class Departament
     /**
      * @var string
      *
-     * @ORM\Column(name="name_in_rekord", type="string", length=255)
+     * @ORM\Column(name="name_in_rekork", type="string", length=255)
      * @Assert\NotBlank(message = "Nazwa Biura/Departamentu w Systemie Rekod nie jest wypełniona.")
      * @Assert\Length(
      *      min = 2,
@@ -174,29 +174,5 @@ class Departament
     }
     public function __toString(){
         return $this->name;
-    }
-
-    /**
-     * Set nameInRekord
-     *
-     * @param string $nameInRekord
-     *
-     * @return Departament
-     */
-    public function setNameInRekord($nameInRekord)
-    {
-        $this->nameInRekord = $nameInRekord;
-
-        return $this;
-    }
-
-    /**
-     * Get nameInRekord
-     *
-     * @return string
-     */
-    public function getNameInRekord()
-    {
-        return $this->nameInRekord;
     }
 }
