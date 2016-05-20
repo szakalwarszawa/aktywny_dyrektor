@@ -35,6 +35,17 @@ use Symfony\Component\Finder\Finder;
  */
 class DevController extends Controller
 {
+    
+    /**
+     * @Route("/check_access/{action}", name="check_access")
+     * @Template()
+     */
+    public function checkAccessAction($action)
+    {
+        $this->get('check_access')->checkAccess($action);
+        
+        die("Dostęp udzielony.");
+    }
 
     /**
      * @Route("/index", name="index")

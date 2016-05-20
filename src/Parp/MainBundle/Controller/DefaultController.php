@@ -38,6 +38,8 @@ class DefaultController extends Controller
      */
     public function indexAction($onlyTemporary = "usersFromAd")
     {
+        //$this->get('check_access')->checkAccess('USER_MANAGEMENT');
+        
         $ldap = $this->get('ldap_service');
         // Sięgamy do AD:
         if($onlyTemporary != "usersFromAd"){
@@ -949,7 +951,24 @@ class DefaultController extends Controller
             //hack by dalo sie puste inicjaly wprowadzic
             if($ndata['initials'] == "")
                 $ndata['initials'] = "puste";
-            $ndata['division'] = "";
+            //$ndata['division'] = "";
+            if($ndata['isDisabled'] == 0)
+                $ndata['disableDescription'] = $ndata['description'];
+                
+                
+            $roles1 = $odata['roles'];
+            unset($odata['roles']);
+            $roles2 = $ndata['roles'];
+            unset($ndata['roles']);
+            
+            $rolesDiff = $roles1 != $roles2;
+/*
+            print_r($rolesDiff); 
+            print_r($odata);
+                print_r($ndata);
+                print_r($this->array_diff($ndata, $odata));
+            die();
+*/
             //print_r($ndata);
             //print_r($odata);
             //print_r(array_diff($ndata, $odata));
@@ -958,68 +977,88 @@ class DefaultController extends Controller
             //print_r($ndata); die();
             //$df = array_diff($form->getData(), $previousData);
             //echo "<pre>"; print_r($previousData); print_r($form->getData()); die();
-            if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien) {
+            if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $rolesDiff) {
+                
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
                 //print_r(array_diff($ndata, $odata)); die();
-                $entry = new Entry();
-                $entry->setSamaccountname($samaccountname);
-                $entry->setDistinguishedName($previousData["distinguishedname"]);
                 $newData = $this->array_diff($ndata, $odata);
-                if(($roznicauprawnien)){
-                    $value = implode(",", $newrights);
-                    $entry->setInitialrights($value);
-                }
-                //print_r($newData); die();
-                foreach ($newData as $key => $value) {
-                    switch ($key) {
-                        case "isDisabled":
-                            $entry->setIsDisabled($value);
-                            break;
-                        case "disableDescription":
-                            $entry->setDisableDescription($value);
-                            break;
-                        case "name":
-                            $entry->setCn($value);
-                            break;
-                        case "initials":
-                            $entry->setInitials($value);
-                            break;
-                        case "accountExpires":
-                            if($value){
-                                $entry->setAccountexpires(new \DateTime($value));    
-                            }else{
-                                $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
-                            }
-                            //print_r($value); die();
-                            
-                            break;
-                        case "title":
-                            $entry->setTitle($value);
-                            break;
-                        case "info":
-                            $entry->setInfo($value);
-                            break;
-                        case "department":
-                            $entry->setDepartment($value);
-                            break;
-                        case "manager":
-                            $entry->setManager($value);
-                            break;
-                        case "fromWhen":
-                            die($value);
-                            $entry->setFromWhen(new \DateTime($value));
-                            break;
-                        case "initialrights"://nieuzywane bo teraz jako array idzie
-                            $value = implode(",", $value);
-                            $entry->setInitialrights($value);
-                            break;
+                if($rolesDiff){
+                    $roles = $this->getDoctrine()->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($samaccountname);
+                    foreach($roles as $r){
+                        $this->getDoctrine()->remove($r);
                     }
+                    foreach($roles2 as $r){
+                        $role = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->find($r);
+                        $us = new \Parp\MainBundle\Entity\AclUserRole();
+                        $us->setSamaccountname($samaccountname);
+                        $us->setRole($role);
+                        $this->getDoctrine()->getManager()->persist($us);
+                    }
+                    $this->get('session')->getFlashBag()->set('warning', "Role zostały zmienione");
+                    
+                    //print_r($roles2); die('mamy zmiane rol');
                 }
-                if (!$entry->getFromWhen())
-                    $entry->setFromWhen(new \DateTime('today'));
+                if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien){
+                    $this->get('session')->getFlashBag()->set('warning', "Zmiany do AD zostały wprowadzone");
+                    $entry = new Entry();
+                    $entry->setSamaccountname($samaccountname);
+                    $entry->setDistinguishedName($previousData["distinguishedname"]);
+                    if(($roznicauprawnien)){
+                        $value = implode(",", $newrights);
+                        $entry->setInitialrights($value);
+                    }
+                    //print_r($newData); die();
+                    foreach ($newData as $key => $value) {
+                        switch ($key) {
+                            case "isDisabled":
+                                $entry->setIsDisabled($value);
+                                break;
+                            case "disableDescription":
+                                $entry->setDisableDescription($value);
+                                break;
+                            case "name":
+                                $entry->setCn($value);
+                                break;
+                            case "initials":
+                                $entry->setInitials($value);
+                                break;
+                            case "accountExpires":
+                                if($value){
+                                    $entry->setAccountexpires(new \DateTime($value));    
+                                }else{
+                                    $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
+                                }
+                                //print_r($value); die();
+                                
+                                break;
+                            case "title":
+                                $entry->setTitle($value);
+                                break;
+                            case "info":
+                                $entry->setInfo($value);
+                                break;
+                            case "department":
+                                $entry->setDepartment($value);
+                                break;
+                            case "manager":
+                                $entry->setManager($value);
+                                break;
+                            case "fromWhen":
+                                //die($value);
+                                $entry->setFromWhen(new \DateTime($value));
+                                break;
+                            case "initialrights"://nieuzywane bo teraz jako array idzie
+                                $value = implode(",", $value);
+                                $entry->setInitialrights($value);
+                                break;
+                        }
+                    }
+                    if (!$entry->getFromWhen())
+                        $entry->setFromWhen(new \DateTime('today'));
+                        $this->getDoctrine()->getManager()->persist($entry);
+                }
 
-                $this->getDoctrine()->getManager()->persist($entry);
                 $this->getDoctrine()->getManager()->flush();
 
                 return $this->redirect($this->generateUrl('main'));
@@ -1080,6 +1119,11 @@ class DefaultController extends Controller
         $rights = array();
         foreach ($rightsEntity as $tmp) {
             $rights[$tmp->getKod()] = $tmp->getOpis();
+        }
+        $rolesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
+        $roles = array();
+        foreach ($rolesEntity as $tmp) {
+            $roles[$tmp->getId()] = $tmp->getOpis();
         }
         $now = new \Datetime();
         //$expires = @$defaultData['accountExpires'];
@@ -1233,8 +1277,24 @@ class DefaultController extends Controller
                     'expanded' => false
                 ))
                 
-                ->add('isDisabled', 'choice', array(
+                ->add('roles', 'choice', array(
                     'required' => false,
+                    'read_only' => false,
+                    'label' => 'Role',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                    ),
+                    'choices' => $roles,
+                    //'data' => (@$defaultData["initialrights"]),
+                    'multiple' => true,
+                    'expanded' => false
+                ))
+                
+                ->add('isDisabled', 'choice', array(
+                    'required' => true,
                     'read_only' => false,
                     'label' => 'Konto wyłączone w AD',
                     'label_attr' => array(

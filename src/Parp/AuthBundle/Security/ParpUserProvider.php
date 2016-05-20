@@ -38,6 +38,7 @@ class ParpUserProvider implements UserProviderInterface
     
     public function loadUserByUsername($username)
     {
+        global $kernel;
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = "@".$this->ad_domain;//parp.local";
          if($_POST){
@@ -69,7 +70,15 @@ class ParpUserProvider implements UserProviderInterface
             if ($ldapbind) {
                 //echo ".12.";
                 $salt = null;
-                $roles = array('ROLE_USER');
+                
+                $rolesEntities = $kernel->getContainer()->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($username);
+                $roles = [];
+                foreach($rolesEntities as $r){
+                    $roles[] = $r->getRole()->getName();
+                }
+                //print_r($roles);
+                //die($username);                                
+                //$roles = array('ROLE_USER');
                 ldap_unbind($ldapconn);
 
                 return new ParpUser($username, $password, $salt, $roles);

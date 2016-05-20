@@ -11,6 +11,10 @@ services:
         class : Parp\MainBundle\Services\UprawnieniaService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
+    check_access:
+        class : Parp\MainBundle\Services\AccessCheckerService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        tags: ~
     session.memcached:
         class: Memcached
         arguments:

@@ -300,7 +300,7 @@ class LdapService
                 $date->setTimestamp($time);
                 //print_r($time); 
                 //print_r($date); 
-                $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+                $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546" ? 1 : 0;
                 $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
                 $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
@@ -311,13 +311,21 @@ class LdapService
                 $result[$i]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
                 $result[$i]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
                 $result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $result[$i]["description"]);
-                $result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
+                //$result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
                 $result[$i]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
-                //print_r($tmpResult); die();
+                
+                $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
+                $rs = array();
+                foreach($roles as $r){
+                    $rs[] = $r->getRole()->getName();
+                }
+                
+                $result[$i]['roles'] = $rs;//TODO: wczytywac role !!!
+                //print_r($result); die();
                 $i++;
             }
         }
