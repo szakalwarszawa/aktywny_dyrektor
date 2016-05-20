@@ -985,7 +985,7 @@ class DefaultController extends Controller
                 if($rolesDiff){
                     $roles = $this->getDoctrine()->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($samaccountname);
                     foreach($roles as $r){
-                        $this->getDoctrine()->remove($r);
+                        $this->getDoctrine()->getManager()->remove($r);
                     }
                     foreach($roles2 as $r){
                         $role = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->find($r);
