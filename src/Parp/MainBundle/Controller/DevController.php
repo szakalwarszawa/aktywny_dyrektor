@@ -44,7 +44,15 @@ class DevController extends Controller
     {
         $this->get('check_access')->checkAccess($action);
         
-        die("Dostęp udzielony.");
+        
+        
+        $u = $this->getUser();
+        echo "Array(\n\t[0] => Użytkownik posiada role:\n)\n";
+        print_r($u->getRoles());
+        //echo "Array(\n\t[0] => Dostep do akcji:\n)\n";
+        //print_r($u->getRoles());
+        
+        die();
     }
 
     /**
