@@ -924,7 +924,6 @@ class DefaultController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
             $ndata = $form->getData();
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
@@ -1000,6 +999,8 @@ class DefaultController extends Controller
                     //print_r($roles2); die('mamy zmiane rol');
                 }
                 if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien){
+                    //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
+                    $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
                     $this->get('session')->getFlashBag()->set('warning', "Zmiany do AD zostały wprowadzone");
                     $entry = new Entry();
                     $entry->setSamaccountname($samaccountname);
