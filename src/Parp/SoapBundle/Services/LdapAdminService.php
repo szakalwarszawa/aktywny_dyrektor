@@ -370,7 +370,7 @@ class LdapAdminService
         ldap_unbind($ldapconn);
 
         //$person->setIsImplemented(1);
-        $this->doctrine->persist($person);
+        //$this->doctrine->persist($person);
         //$this->doctrine->flush();
         return $ldapstatus;
     }
@@ -491,7 +491,7 @@ class LdapAdminService
       
         
         //$person->setIsImplemented(1);
-        $this->doctrine->persist($person);
+        //$this->doctrine->persist($person);
         //$this->doctrine->flush();
         return $ldapstatus;
     }

@@ -988,7 +988,7 @@ class DefaultController extends Controller
                         $this->getDoctrine()->getManager()->remove($r);
                     }
                     foreach($roles2 as $r){
-                        $role = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->find($r);
+                        $role = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findOneByName($r);
                         $us = new \Parp\MainBundle\Entity\AclUserRole();
                         $us->setSamaccountname($samaccountname);
                         $us->setRole($role);
@@ -1000,6 +1000,11 @@ class DefaultController extends Controller
                 }
                 if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien){
                     //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
+                    //print_r($odata);
+                    //print_r($ndata);
+                    
+                    //print_r($this->array_diff($ndata, $odata));
+                    
                     $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
                     $this->get('session')->getFlashBag()->set('warning', "Zmiany do AD zostały wprowadzone");
                     $entry = new Entry();
@@ -1124,13 +1129,15 @@ class DefaultController extends Controller
         $rolesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
         $roles = array();
         foreach ($rolesEntity as $tmp) {
-            $roles[$tmp->getId()] = $tmp->getOpis();
+            $roles[$tmp->getName()] = $tmp->getOpis();
         }
         $now = new \Datetime();
         //$expires = @$defaultData['accountExpires'];
         //print_r($expires);
         //if($expires != "")
             //$expires->format("d-m-Y");
+            
+        //print_r($defaultData); die();
         $form = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,

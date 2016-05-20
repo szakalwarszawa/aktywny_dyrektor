@@ -17,14 +17,28 @@ use Symfony\Component\Console\Output\OutputInterface;
 class LdapCommand extends ContainerAwareCommand
 {
     protected $debug = true;
+    protected $showonly = true;
+    
     protected function configure()
     {
-        $this->setName('parp:ldapsave')->setDescription('Pobiera niezapisane dane z bazy Aktywnego Dyrektora i wprowadza je do Active Directory');
+        $this->setName('parp:ldapsave')->setDescription('Pobiera niezapisane dane z bazy Aktywnego Dyrektora i wprowadza je do Active Directory')
+        ->addArgument(
+                'showonly',
+                InputArgument::OPTIONAL,
+                'Tylko pokazuje jakie zmiany by poszly do AD?'
+            );
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
+            
+            $this->showonly = $input->getArgument('showonly');
+            //die(".".$this->showonly);
+            $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
+            $output->writeln('<comment>'.$msg.'</comment>', false);
+            //die(".".$showonly);
+            
             $output->writeln('<comment>Wczytuję usługi ...                             </comment>', false);
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
@@ -146,7 +160,8 @@ class LdapCommand extends ContainerAwareCommand
                             //$ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
                             //}
                             //print_r($zmiana); die();
-                            $uprawnienia->zmianaUprawnien($zmiana);
+                            if(!$this->showonly)
+                                $uprawnienia->zmianaUprawnien($zmiana);
                             
                             
                             $zmiana->setIsImplemented(1);
@@ -165,18 +180,20 @@ class LdapCommand extends ContainerAwareCommand
                         if($ldapstatus == "Success"){
                             //$ldapstatus = $ldap->createEntity($zmiana);
                             // nadaj uprawnieznia poczatkowe
-                            $uprawnienia->ustawPoczatkowe($zmiana);
+                            if(!$this->showonly)
+                                $uprawnienia->ustawPoczatkowe($zmiana);
                             $zmiana->setIsImplemented(1);
                             $em->persist($zmiana);
                         }else{
-                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzc użytkownika) '.$zmiana->getCn().':</error>', false);
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
                             die();
                         }
                     }
                 }
                 //die("\n $ldapstatus \n");
-                $em->flush();
+                if(!$this->showonly)
+                    $em->flush();
             }
         }catch(\Exception $e){
                 
@@ -190,10 +207,14 @@ class LdapCommand extends ContainerAwareCommand
         $ldapstatus = "";
         $i = 0;
         do{
-            if($isCreating){
-                $ldapstatus = $ldap->createEntity($zmiana);
+            if($this->showonly){
+                $ldapstatus = "Success";                
             }else{
-                $ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
+                if($isCreating){
+                    $ldapstatus = $ldap->createEntity($zmiana);
+                }else{
+                    $ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
+                }
             }
             $i++;
             //print_r("\n $ldapstatus $i \n");

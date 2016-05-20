@@ -16,9 +16,9 @@ class PublishController extends Controller
 {
 
     /**
-     * @Route("/publish", name="publish")
+     * @Route("/publish/{showonly}", name="publish", defaults={"showonly" : 1})
      */
-    public function publishAction()
+    public function publishAction($showonly)
     {
         $kernel = $this->get('kernel');
         $application = new Application($kernel);
@@ -26,8 +26,10 @@ class PublishController extends Controller
 
         $input = new ArrayInput(array(
            'command' => 'parp:ldapsave',
+           'showonly' => $showonly
            //'--message-limit' => $messages,
         ));
+        
         // You can use NullOutput() if you don't need the output
         $output = new BufferedOutput(
             OutputInterface::VERBOSITY_NORMAL,
@@ -41,7 +43,7 @@ class PublishController extends Controller
         $converter = new AnsiToHtmlConverter();
         
         // return new Response(""), if you used NullOutput()
-        return $this->render('ParpMainBundle:Publish:publish.html.twig', array('content' => $converter->convert($content)));
+        return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => $showonly, 'content' => $converter->convert($content)));
     }
     
 }

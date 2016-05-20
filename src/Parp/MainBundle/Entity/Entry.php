@@ -584,4 +584,11 @@ class Entry
     {
         return $this->disableDescription;
     }
+    
+    public function getRoles(){
+        return array();
+    }
+    public function setRoles(){
+        return $this;
+    }
 }
