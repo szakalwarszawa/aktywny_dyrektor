@@ -19,10 +19,17 @@ parameters:
     session_memcached_expire: 86400
     redmine_protokol: http
     redmine_serwer: redmine.parp.gov.pl
-#    redmine_serwer: localhost
     redmine_uzytkownik: lsi
     redmine_haslo: Paranoja.!
     redmine_projekt: '87'
     id_srodowiska: ''
     blokada_na_zapis_tylko_userow_o_tym_nawisku: 'testowy'
     maximum_ldap_reconnects: 10
+
+    ad_host: 10.0.2.21
+    ad_host2: 10.0.2.21
+    ad_host3: 10.0.2.21
+    ad_domain: AD.TEST
+    ad_user:   aktywny_dyrektor
+    ad_password : F4UCorsair
+    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"    

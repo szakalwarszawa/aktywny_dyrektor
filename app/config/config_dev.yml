@@ -34,18 +34,5 @@ assetic:
 
 #swiftmailer:
 #    delivery_address: me@example.com
-parameters:
-    ad_host: 10.0.2.21
-    ad_host2: 10.0.2.21
-    ad_host3: 10.0.2.21
-    ad_domain: AD.TEST
-    ad_user:   aktywny_dyrektor
-    ad_password : F4UCorsair
-#    ad_ou : "OU=ADUsers"
-    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
-#    ad_host: 10.10.16.21
-#    ad_host: srv-adc01.parp.local
-#    ad_domain: parp.local
-#    ad_user:   aktywny_dyrektor
-#    ad_password : Gq32hr9cAL
+
   
