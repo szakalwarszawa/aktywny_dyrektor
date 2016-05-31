@@ -392,8 +392,8 @@ class DevController extends Controller
                 $sg = substr($z->getNazwa(), 0, 2) == "SG";
                 $exists = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName());
                 
-                $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()." RO");
-                $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()." RW");
+                $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RO");
+                $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RW");
                 if($sg){
                     if($existsRO && $existsRW)
                         $ret['sa SG']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()." RO"."',"."'".$z->parseZasobGroupName()." RW"."'";
