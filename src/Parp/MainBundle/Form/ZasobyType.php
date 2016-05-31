@@ -41,7 +41,9 @@ class ZasobyType extends AbstractType
             ->add('opisZasobu')
             ->add('modulFunkcja')
             ->add('poziomDostepu')
-            ->add('grupyAD')
+            ->add('grupyAD', 'text', array(
+                'attr' => array('class' => 'tagAjaxInput')
+            ))
             ->add('dataZakonczeniaWdrozenia', 'text', array(
                     'attr' => array(
                         'class' => 'form-control',

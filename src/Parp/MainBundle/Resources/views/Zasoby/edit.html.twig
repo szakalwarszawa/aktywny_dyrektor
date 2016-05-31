@@ -4,8 +4,9 @@
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
-            <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+            <li><a data-toggle="tab" href="#grupyad">Grupy AD</a></li>
             <li><a data-toggle="tab" href="#userzasoby">Lista Użytkowników Zasobu</a></li>
+            <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
         </ul>
         
@@ -42,7 +43,31 @@
                         </tbody>
                     </table>
                 </div>
-            </div>        
+            </div>    
+            <div id="grupyad" class="tab-pane fade">
+                <div  class="tabContent">
+                    <table class="table table-striped table-bordered">
+                        <tr>
+                            <th>Grupa</th>
+                            <th>Istnieje w AD</th>
+                            <th>Użytkownicy</th>
+                        </tr>
+                        {% for g,p in grupyAd %}
+                            <tr>
+                                <td>{{g}}</td>
+                                <td>{{p.exists ? "TAK" : "NIE"}} </td>
+                                <td>
+                                    {% for u in p.members %}
+                                        {{u.name}} ,                                     
+                                    {%endfor%}
+                                
+                                </td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>      
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'Zasoby', obiektId: edit_form.vars.value.id})) }}

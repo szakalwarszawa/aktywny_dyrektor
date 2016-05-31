@@ -237,4 +237,240 @@ class DevController extends Controller
     {
         die("getUzInfo");
     }
+    
+    
+    /**
+     * @Route("/membersOf", name="membersOf")
+     * @Template()
+     */
+    public function membersOfAction()
+    {
+                
+        // Example Output
+         
+         
+        print_r($this->get_members("INT-BA")); // Gets all members of 'Test Group'
+        print_r($this->get_members("INT-BI")); // Gets all users in 'Users'
+         
+/*
+        print_r($this->get_members(
+        			array("INT-BI","INT-BA")
+        		)); // EXCLUSIVE: Gets only members that belong to BOTH 'Test Group' AND 'Test Group 2'
+         
+        print_r($this->get_members(
+        			array("INT-BI","INT-BA"),TRUE
+        		)); // INCLUSIVE: Gets members that belong to EITHER 'Test Group' OR 'Test Group 2'
+        
+*/
+        //$gs = $this->get('ldap_service')->getMembersOfGroupFromAD("INT-BI"); 
+        die("membersOf");
+    }
+    
+    protected function get_members($group=FALSE,$inclusive=FALSE) {
+        // Active Directory server
+        $ldap_host = $this->getParameter('ad_host');
+     
+        // Active Directory DN
+        $ldap_dn_grup = "OU=Grupy,DC=AD,DC=TEST";
+        $ldap_dn_userow = "OU=Parp Pracownicy,DC=AD,DC=TEST";
+     
+        // Domain, for purposes of constructing $user
+        $ldap_usr_dom = "@AD.TEST";
+        //die($ldap_usr_dom);
+        $ldap_username = $this->getParameter('ad_user');
+        $ldap_password = $this->getParameter('ad_password');
+        // Active Directory user
+        $user = $ldap_username;
+        $password = $ldap_password;
+        //die("$user $password");
+     
+        // User attributes we want to keep
+        // List of User Object properties:
+        // http://www.dotnetactivedirectory.com/Understanding_LDAP_Active_Directory_User_Object_Properties.html
+        $keep = array(
+            "name",
+            "mail",
+            "initials",
+            "title",
+            "info",
+            "department",
+            "description",
+            "division",
+            "lastlogon",
+            "samaccountname",
+            "manager",
+            "thumbnailphoto",
+            "accountExpires",
+            "useraccountcontrol",
+            "distinguishedName",
+            "cn",
+            'memberOf',
+            'useraccountcontrol'
+        );
+     
+        // Connect to AD
+        $ldap = ldap_connect($ldap_host) or die("Could not connect to LDAP");
+        ldap_bind($ldap,$user.$ldap_usr_dom,$password) or die("Could not bind to LDAP");
+     
+     	// Begin building query
+     	if($group) $query = "(&"; else $query = "";
+     
+     	$query .= "(objectClass=User)";
+     
+        // Filter by memberOf, if group is set
+        if(is_array($group)) {
+        	// Looking for a members amongst multiple groups
+        		if($inclusive) {
+        			// Inclusive - get users that are in any of the groups
+        			// Add OR operator
+        			$query .= "(|";
+        		} else {
+    				// Exclusive - only get users that are in all of the groups
+    				// Add AND operator
+    				$query .= "(&";
+        		}
+     
+        		// Append each group
+        		foreach($group as $g) $query .= "(memberOf=CN=$g,$ldap_dn_grup)";
+     
+        		$query .= ")";
+        } elseif($group) {
+        	// Just looking for membership of one group
+        	$query .= "(memberOf=CN=$group,$ldap_dn_grup)";
+        }
+     
+        // Close query
+        if($group) $query .= ")"; else $query .= "";
+     //$query = "cn=$group";
+     
+     //(&(objectClass=User)(memberOf=CN=myGroup,OU=MyContainer,DC=myOrg,DC=local))
+    	// Uncomment to output queries onto page for debugging
+    	print_r($query);
+     
+        // Search AD
+        $results = ldap_search($ldap,$ldap_dn_userow,$query);
+        $entries = ldap_get_entries($ldap, $results);
+     
+        // Remove first entry (it's always blank)
+        array_shift($entries);
+     
+        $output = array(); // Declare the output array
+     
+        $i = 0; // Counter
+        // Build output array
+        foreach($entries as $u) {
+            foreach($keep as $x) {
+            	// Check for attribute
+        		if(isset($u[$x][0])) $attrval = $u[$x][0]; else $attrval = NULL;
+     
+            	// Append attribute to output array
+            	$output[$i][$x] = $attrval;
+            }
+            $i++;
+        }
+     
+        return $output;
+    }
+ 
+    
+    
+    /**
+     * @Route("/checkAdGroups", name="checkAdGroups")
+     * @Template()
+     */
+    public function checkAdGroupsAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        $ret = array('sa' => array(), 'sa SG' => array(), 'nie ma' => array(), 'nie ma SG' => array());
+        $retall = array();
+        $itek = 0;
+        foreach($zasoby as $z){
+            if($itek++ < 100000){
+                //echo ".".substr($z->getNazwa(), 0, 2).".";
+                $sg = substr($z->getNazwa(), 0, 2) == "SG";
+                $exists = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName());
+                
+                $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()." RO");
+                $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()." RW");
+                if($sg){
+                    if($existsRO && $existsRW)
+                        $ret['sa SG']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()." RO"."',"."'".$z->parseZasobGroupName()." RW"."'";
+                    else
+                        $ret['nie ma SG']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()." RO"."' - ".($existsRO ? "jest" : "nie ma").","."'".$z->parseZasobGroupName()." RW"."' - ".($existsRW ? "jest" : "nie ma")."";
+                }else{
+                    if($exists){
+                        $retall[$z->getNazwa()] = array(
+                            'nazwa' => $z->getNazwa(),
+                            'nazwaAd' => $z->parseZasobGroupName(),
+                            'istnieje' => $exists,
+                        );
+                        $ret['sa']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."'";
+                    }else{
+                        $retall[$z->getNazwa()] = array(
+                            'nazwa' => $z->getNazwa(),
+                            'nazwaAd' => $z->parseZasobGroupName(),
+                            'istnieje' => $exists,
+                        );
+                        $ret['nie ma']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."'";
+                    }
+                }
+            }
+        }
+        $html = '<div class="panel-group" id="accordion">';
+        $html .= '<div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Nie istnieja w AD (pojedyncze grupy) - '.count($ret['nie ma']).':</a>
+                      </h4>
+                    </div>';
+        $html .= '<div id="collapse1" class="panel-collapse collapse in"><div class="panel-body"><pre>'.print_r($ret['nie ma'], true)."</pre></div></div>";
+        
+        $html .= '<div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Nie istnieja w AD (SG grupy) - '.count($ret['nie ma SG']).':</a>
+                      </h4>
+                    </div>';
+        $html .= '<div id="collapse2" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['nie ma SG'], true)."</pre></div></div>";
+        
+        $html .= '<div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Istnieja w AD (SG grupy) - '.count($ret['sa']).':</a>
+                      </h4>
+                    </div>';
+        $html .= '<div id="collapse3" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa'], true)."</pre></div></div>";
+        
+        $html .= '<div class="panel panel-default">
+                    <div class="panel-heading">
+                      <h4 class="panel-title">
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Istnieja w AD (SG grupy) - '.count($ret['sa SG']).':</a>
+                      </h4>
+                    </div>';
+        $html .= '<div id="collapse4" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa SG'], true)."</pre></div></div>";
+        
+        $html .= "</div>";        
+/*
+        echo "</pre><h1>Nie istnieja w AD (SG grupy):</h1><pre>";
+        
+        print_r($ret['nie ma SG']);
+        
+        echo "</pre><h1>Istnieja w AD (pojedyncze grupy):</h1><pre>";
+        
+        print_r($ret['sa SG']);
+        
+        echo "</pre><h1>Istnieja w AD (SG grupy):</h1><pre>";
+        
+        print_r($ret['sa']);
+*/
+        
+        
+        
+        return array('html' => $html);    
+    }
+    protected function parseZasobGroupName(){
+        
+    }
 }    

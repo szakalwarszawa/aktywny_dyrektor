@@ -178,7 +178,14 @@ class ZasobyController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
-
+        $grupy = explode(",", $entity->getGrupyAD());
+        $grupyAd = array();
+        foreach($grupy as $g){
+            $grupyAd[$g] = array(
+                'exists' => $this->get('ldap_service')->checkGroupExistsFromAD($g),
+                'members' => $this->get('ldap_service')->getMembersOfGroupFromAD($g)
+            );
+        }
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $em = $this->getDoctrine()->getManager();
@@ -187,7 +194,9 @@ class ZasobyController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'users' => $uzs
+            'users' => $uzs,
+            'grupy' => $grupy,
+            'grupyAd' => $grupyAd
         );
     }
 

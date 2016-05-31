@@ -974,4 +974,10 @@ class Zasoby
     {
         return $this->grupyAD;
     }
+    
+    public function parseZasobGroupName(){
+        $ret = $this->getNazwa();
+        $ret = preg_replace("/\([^)]+\)/", "", $ret);
+        return trim($ret);
+    }
 }

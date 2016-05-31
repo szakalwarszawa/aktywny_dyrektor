@@ -17,6 +17,44 @@ class ImportRekordDaneController extends Controller
     /**
      * Lists all Klaster entities.
      *
+     * @Route("/importfirebird_test1", name="importfirebird_test1", defaults={})
+     * @Method("GET")
+     */
+    public function importfirebird1Action()
+    {
+/*
+        $em = $this->getDoctrine()->getManager();
+        $dr = $em->getRepository('ParpMainBundle:Plik')->find(5);
+            print_r($dr);
+            
+        $dr->setOpis('6565');
+        $uow = $em->getUnitOfWork();
+        $uow->computeChangeSets();
+        if ($uow->isEntityScheduled($dr)) {
+            // My entity has changed
+            echo "Zmiana!!!";
+        }else{
+            echo "brak zamiany!!!";
+        }
+            
+        die();
+*/
+        $sciecha = "";
+
+        $sql = 'select rdb$relation_name
+from rdb$relations
+where rdb$view_blr is null 
+and (rdb$system_flag is null or rdb$system_flag = 0);';
+
+
+        $rows = $this->executeQuery($sql);
+        echo "<pre>"; print_r($rows);
+        die('testfirebird');
+    }
+        
+    /**
+     * Lists all Klaster entities.
+     *
      * @Route("/", name="importfirebird_test", defaults={})
      * @Method("GET")
      */
