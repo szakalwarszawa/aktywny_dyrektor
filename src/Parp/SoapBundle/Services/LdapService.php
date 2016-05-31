@@ -188,10 +188,7 @@ class LdapService
         // Close query
         if($group) $query .= ")"; else $query .= "";
 
-        $search = ldap_search($ldapconn, $userdn, $query);
-        
-/*
-        , array(
+        $search = ldap_search($ldapconn, $userdn, $query, array(
             "name",
             "initials",
             "title",
@@ -206,7 +203,10 @@ class LdapService
             "accountExpires",
             "useraccountcontrol",
             "accountexpires",
-        )
+        ));
+        
+/*
+        
 */
         
         $results = ldap_get_entries($ldapconn, $search);
