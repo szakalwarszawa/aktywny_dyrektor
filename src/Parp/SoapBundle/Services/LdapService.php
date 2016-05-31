@@ -21,6 +21,7 @@ class LdapService
     protected $container;
     protected $patch;
     protected $useradn ;
+    protected $_ouWithGroups = "PARP Grupy";
 
     public function __construct(SecurityContextInterface $securityContext, Container $container)
     {
@@ -141,7 +142,7 @@ class LdapService
     public function getMembersOfGroupFromAD($group=FALSE,$inclusive=FALSE)
     {
         $userdn = $this->useradn . $this->patch;
-        $ldap_dn_grupy = "OU=PARP Grupy".$this->patch;
+        $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
         //die($ldap_dn);
 //        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
@@ -254,7 +255,7 @@ class LdapService
     public function  checkGroupExistsFromAD($group)
     {
         $userdn = $this->useradn . $this->patch;
-        $ldap_dn_grupy = "OU=Grupy".$this->patch;
+        $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
         //die($ldap_dn);
 //        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
