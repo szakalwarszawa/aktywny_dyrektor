@@ -141,7 +141,7 @@ class LdapService
     public function getMembersOfGroupFromAD($group=FALSE,$inclusive=FALSE)
     {
         $userdn = $this->useradn . $this->patch;
-        $ldap_dn_grupy = "OU=Grupy".$this->patch;
+        $ldap_dn_grupy = "OU=PARP Grupy".$this->patch;
         //die($ldap_dn);
 //        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
