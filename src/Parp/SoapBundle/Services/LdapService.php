@@ -211,7 +211,7 @@ class LdapService
         
         $results = ldap_get_entries($ldapconn, $search);
         //print_r($query);
-        //print_r($results); //die();
+        print_r($results); //die();
         ldap_bind($ldapconn);
 
         $result = array();
