@@ -88,7 +88,7 @@ class LdapService
                 "lastlogon",
                 "samaccountname",
                 "manager",
-                "thumbnailphoto",
+                //"thumbnailphoto",
                 "accountExpires",
                 "useraccountcontrol",
                 "accountexpires",
@@ -124,7 +124,7 @@ class LdapService
             $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
             $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
             $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
-            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
+            //$result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
             $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
 //            $tmp[]=$result[$index]["info"];
             if (isset($tmpResult["samaccountname"]))
