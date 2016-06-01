@@ -90,7 +90,7 @@ class LdapService
                 "manager",
                 "thumbnailphoto",
                 "accountExpires",
-                //"useraccountcontrol",
+                "useraccountcontrol",
                 "accountexpires",
             ));
             $results = ldap_get_entries($ldapconn, $search);
@@ -104,7 +104,7 @@ class LdapService
         $index = 0;
 //$tmp = array();
         foreach ($tmpResults as $tmpResult) {
-            //$result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
 
             $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
             $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
@@ -201,7 +201,7 @@ class LdapService
             "manager",
             "thumbnailphoto",
             "accountExpires",
-            //"useraccountcontrol",
+            "useraccountcontrol",
             "accountexpires",
         ));
         
@@ -218,7 +218,7 @@ class LdapService
         $index = 0;
 //$tmp = array();
         foreach ($results as $tmpResult) {
-            //$result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
 
             $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
             $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";

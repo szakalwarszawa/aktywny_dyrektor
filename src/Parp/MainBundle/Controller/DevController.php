@@ -383,37 +383,34 @@ class DevController extends Controller
         $em = $this->getDoctrine()->getEntityManager();
         
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
-        $ret = array('sa' => array(), 'sa SG' => array(), 'nie ma' => array(), 'nie ma SG' => array());
+        $ret = array('sa' => array(), 'sa multi' => array(), 'nie ma' => array());
         $retall = array();
         $itek = 0;
         foreach($zasoby as $z){
             if($itek++ < 100000){
                 //echo ".".substr($z->getNazwa(), 0, 2).".";
-                $sg = substr($z->getNazwa(), 0, 2) == "SG";
+                //echo($z->parseZasobGroupName());
                 $exists = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName());
                 
                 $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RO");
                 $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RW");
-                if($sg){
-                    if($existsRO && $existsRW)
-                        $ret['sa SG']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()." RO"."',"."'".$z->parseZasobGroupName()." RW"."'";
-                    else
-                        $ret['nie ma SG']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()." RO"."' - ".($existsRO ? "jest" : "nie ma").","."'".$z->parseZasobGroupName()." RW"."' - ".($existsRW ? "jest" : "nie ma")."";
+                $existsP = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-P");
+                
+                $liczba = ($exists ? 1 : 0) + ($existsRO ? 1 : 0) + ($existsRW ? 1 : 0) + ($existsP ? 1 : 0);
+                
+                
+                
+                if($liczba == 0){
+                    $ret['nie ma']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."' ani -RO ani -RW ani -P";
                 }else{
-                    if($exists){
-                        $retall[$z->getNazwa()] = array(
-                            'nazwa' => $z->getNazwa(),
-                            'nazwaAd' => $z->parseZasobGroupName(),
-                            'istnieje' => $exists,
-                        );
+                    if($liczba == 1){
                         $ret['sa']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."'";
                     }else{
-                        $retall[$z->getNazwa()] = array(
-                            'nazwa' => $z->getNazwa(),
-                            'nazwaAd' => $z->parseZasobGroupName(),
-                            'istnieje' => $exists,
-                        );
-                        $ret['nie ma']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."'";
+                        $sa = $exists ? "'".$z->parseZasobGroupName()."'" : " ";
+                        $sa .= $existsRO ? "'".$z->parseZasobGroupName()."-RO"."'" : " ";
+                        $sa .= $existsRW ? "'".$z->parseZasobGroupName()."-RW"."'" : " ";
+                        $sa .= $existsP ? "'".$z->parseZasobGroupName()."-P"."'" : " ";
+                        $ret['sa multi']["'".$z->getNazwa()."'"] = $sa;
                     }
                 }
             }
@@ -430,14 +427,6 @@ class DevController extends Controller
         $html .= '<div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">Nie istnieja w AD (SG grupy) - '.count($ret['nie ma SG']).':</a>
-                      </h4>
-                    </div>';
-        $html .= '<div id="collapse2" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['nie ma SG'], true)."</pre></div></div>";
-        
-        $html .= '<div class="panel panel-default">
-                    <div class="panel-heading">
-                      <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Istnieja w AD (pojedyncze grupy) - '.count($ret['sa']).':</a>
                       </h4>
                     </div>';
@@ -446,10 +435,10 @@ class DevController extends Controller
         $html .= '<div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
-                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Istnieja w AD (SG grupy) - '.count($ret['sa SG']).':</a>
+                        <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Istnieja w AD (multi grupy) - '.count($ret['sa multi']).':</a>
                       </h4>
                     </div>';
-        $html .= '<div id="collapse4" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa SG'], true)."</pre></div></div>";
+        $html .= '<div id="collapse4" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa multi'], true)."</pre></div></div>";
         
         $html .= "</div>";        
 /*
