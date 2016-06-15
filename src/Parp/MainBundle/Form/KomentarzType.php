@@ -15,13 +15,18 @@ class KomentarzType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('deletedAt')
-            ->add('samaccountname')
-            ->add('createdAt')
+            //->add('deletedAt')
+            ->add('samaccountname', 'text', array(
+                'attr' => array('readonly' => true)
+            ))
+            ->add('createdAt', 'datetime', array(
+                'attr' => array('readonly' => true),
+                'widget' => 'single_text'
+            ))
             ->add('tytul')
-            ->add('opis')
-            ->add('obiekt')
-            ->add('obiektId')
+            ->add('opis','textarea')
+            ->add('obiekt','hidden')
+            ->add('obiektId','hidden')
         ;
     }
     

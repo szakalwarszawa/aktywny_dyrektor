@@ -299,6 +299,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         foreach($viewers as $v){
             $wv = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowViewer();
             $wv->setWniosek($wniosek);
+            $wniosek->addViewer($wv);
             $wv->setSamaccountname($v);
             if ($debug) echo "<br>dodaje usera viewra ".$v;
             $em->persist($wv);
@@ -308,6 +309,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         foreach($editors as $v){
             $wv = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor();
             $wv->setWniosek($wniosek);
+            $wniosek->addEditor($wv);
             $wv->setSamaccountname($v);
             if ($debug) echo "<br>dodaje usera editora ".$v;
             $em->persist($wv);

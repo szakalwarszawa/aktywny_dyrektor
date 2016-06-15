@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="komentarz")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\KomentarzRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,createdAt,opis")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,createdAt,tytul,opis")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */

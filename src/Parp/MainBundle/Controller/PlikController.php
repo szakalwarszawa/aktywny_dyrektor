@@ -104,7 +104,13 @@ class PlikController extends Controller
         //$entities = $em->getRepository('ParpMainBundle:Plik')->findAll();
     
         $source = new Entity('ParpMainBundle:Plik');
-    
+        $tableAlias = $source->getTableAlias();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias, $obiekt, $obiektId)
+            {
+                $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
+            }
+        );
         $grid = $this->get('grid');
         $grid->setRouteUrl($this->generateUrl('plik', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->setSource($source);
@@ -201,16 +207,17 @@ class PlikController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function newAction($obiekt, $obiektId)
+    public function newAction(Request $request, $obiekt, $obiektId)
     {
         $entity = new Plik();
         $entity->setObiekt($obiekt);
         $entity->setObiektId($obiektId);
         $form   = $this->createCreateForm($entity);
-
+        
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'returnUrl' => $request->headers->get('referer') 
         );
     }
 

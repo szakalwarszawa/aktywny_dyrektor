@@ -5,6 +5,8 @@
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
+            <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
+            <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
         </ul>
         
@@ -54,7 +56,17 @@
                     </tbody>
                 </table>
                 
-            </div>           
+            </div>             
+            <div id="pliki" class="tab-pane fade">
+                <div  class="tabContent">
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: edit_form.vars.value.id})) }}
+                </div>
+            </div>            
+            <div id="komentarze" class="tab-pane fade">
+                <div  class="tabContent">
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: edit_form.vars.value.id})) }}
+                </div>
+            </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekNadanieOdebranieZasobow', id: edit_form.vars.value.id})) }}

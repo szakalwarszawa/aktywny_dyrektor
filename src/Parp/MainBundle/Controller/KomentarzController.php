@@ -28,16 +28,22 @@ class KomentarzController extends Controller
     /**
      * Lists all Komentarz entities.
      *
-     * @Route("/index", name="komentarz")
+     * @Route("/index/{obiekt}/{obiektId}", name="komentarz")
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($obiekt, $obiektId)
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Komentarz')->findAll();
     
         $source = new Entity('ParpMainBundle:Komentarz');
-    
+        $tableAlias = $source->getTableAlias();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias, $obiekt, $obiektId)
+            {
+                $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
+            }
+        );
         $grid = $this->get('grid');
         $grid->setSource($source);
     
@@ -68,9 +74,9 @@ class KomentarzController extends Controller
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
     
 
-
+        $grid->setRouteUrl($this->generateUrl('komentarz', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->isReadyForRedirect();
-        return $grid->getGridResponse();
+        return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId));
     }
     /**
      * Creates a new Komentarz entity.
@@ -91,7 +97,7 @@ class KomentarzController extends Controller
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Komentarz został utworzony.');
-                return $this->redirect($this->generateUrl('komentarz'));
+                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
         }
 
         return array(
@@ -122,18 +128,23 @@ class KomentarzController extends Controller
     /**
      * Displays a form to create a new Komentarz entity.
      *
-     * @Route("/new", name="komentarz_new")
+     * @Route("/new/{obiekt}/{obiektId}", name="komentarz_new")
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction(Request $request, $obiekt, $obiektId)
     {
         $entity = new Komentarz();
+        $entity->setObiekt($obiekt);
+        $entity->setObiektId($obiektId);
+        $entity->setCreatedAt(new \Datetime());
+        $entity->setSamaccountname($this->getUser()->getUsername());
         $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'returnUrl' => $request->headers->get('referer') 
         );
     }
 
@@ -169,7 +180,7 @@ class KomentarzController extends Controller
      * @Method("GET")
      * @Template()
      */
-    public function editAction($id)
+    public function editAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -186,6 +197,7 @@ class KomentarzController extends Controller
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'returnUrl' => $request->headers->get('referer')
         );
     }
 

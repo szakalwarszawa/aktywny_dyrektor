@@ -1,14 +1,14 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Plik creation</h1>
+    <h1>Plik tworzenie</h1>
 
     {{ form(form) }}
 
         <div class="btn-group">
 
-<a class="btn btn-primary" href="{{ path(form.vars.value.obiekt|lower ~ "_edit", { id: form.vars.value.obiektId}) }}">
-    <i class="fa fa-list"></i> Lista Plik
+<a class="btn btn-primary" href="{{ returnUrl}}">
+    <i class="fa fa-list"></i> Wstecz
 </a>
 </div>
 {% endblock %}
