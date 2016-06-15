@@ -4,8 +4,14 @@
     <div class="col-sm-12">
         <div class="btn-group">
             <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek</a>
+            {% if canReturn %}
             <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" class="btn btn-info">Zwrot do poprawy wniosek</a>
+            {%endif%}
+            {% if canUnblock %}
+            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek</a>
+            {%endif%}
             <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Zaakceptuj wniosek</a>
+            
         </div>
     
         <ul class="nav nav-tabs">
@@ -127,7 +133,7 @@
             </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekNadanieOdebranieZasobow', id: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: entity.id})) }}
                 </div>
             </div>
         </div>

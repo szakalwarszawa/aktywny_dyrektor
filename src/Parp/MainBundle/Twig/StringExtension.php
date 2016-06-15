@@ -9,6 +9,8 @@ class StringExtension extends \Twig_Extension
         return array(
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
             new \Twig_SimpleFilter('gridTitles', array($this, 'gridTitles')),
+            new \Twig_SimpleFilter('objectTitles', array($this, 'objectTitles')),
+            new \Twig_SimpleFilter('actionTitles', array($this, 'actionTitles')),
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabel', array($this, 'getMultipleCheckboxLabel')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
@@ -75,5 +77,28 @@ class StringExtension extends \Twig_Extension
     public function getName()
     {
         return 'app_extension';
+    }
+    
+    
+    public function objectTitles($var)
+    {
+        $titles = array(
+            'UserZasoby' => 'Uprawnienia użytkownika do zasobu',
+            'WniosekNadanieOdebranieZasobowEditor' => 'Możliwość edycji',
+            'WniosekNadanieOdebranieZasobowViewer' => 'Możliwość podglądu',
+            'WniosekNadanieOdebranieZasobow' => 'Wniosek o Nadanie uprawnień',
+        );
+        return (isset($titles[$var]) ? $titles[$var] : $var);
+    }
+    
+    
+    public function actionTitles($var)
+    {
+        $titles = array(
+            'create' => 'Utworzenie',
+            'update' => 'Edycja',
+            'remove' => 'Usunięcie',
+        );
+        return (isset($titles[$var]) ? $titles[$var] : $var);
     }
 }

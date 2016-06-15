@@ -237,6 +237,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
                             $where[$ADManager[0]['name']] = $ADManager[0]['name'];
+                        }else{
+                            throw $this->createNotFoundException('Nie moge znalezc managera w AD : '.$g);
                         }
                     }
                 }
@@ -248,8 +250,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $grupa = explode(",", $zasob->getAdministratorZasobu());
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        $ADManager = $ldap->getUserFromAD(null, $mancn);
-                        $where[$ADUser[0]['name']] = $ADUser[0]['name'];
+                        $ADManager = $ldap->getUserFromAD(null, $g);
+                        if(count($ADManager) > 0)
+                            $where[$ADManager[0]['name']] = $ADManager[0]['name'];
+                        else
+                            throw $this->createNotFoundException('Nie moge znalezc managera w AD : '.$g);
                     }
                 }
                 break;
@@ -337,7 +342,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
         
-        if($isAccepted == "reject"){
+        if($isAccepted == "unblock"){
+            $wniosek->setLockedBy(null);
+            $wniosek->setLockedAt(null);
+        }
+        elseif($isAccepted == "reject"){
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, "8_ROZPATRZONY_NEGATYWNIE");
         }else{
@@ -358,6 +367,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $wn->setCreatedAt($wniosek->getCreatedAt());
                                 $wn->setLockedBy($wniosek->getLockedBy());
                                 $wn->setLockedAt($wniosek->getLockedAt());
+                                $wn->setParentId($wniosek->getId());
                                 $wn->setJednostkaOrganizacyjna($wniosek->getJednostkaOrganizacyjna());
                                 $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                 $wn->setNumer('111');
@@ -496,12 +506,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-
         return array(
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
             'userzasoby' => $uzs,
-            'editor' => $editor
+            'editor' => $editor,
+            'canReturn' => ($entity->getStatus()->getNazwaSystemowa() != "0_TWORZONY" && $entity->getStatus()->getNazwaSystemowa() != "1_EDYCJA_WNIOSKODAWCA"),
+            'canUnblock' => ($entity->getLockedBy() == $this->getUser()->getUsername())
         );
     }
     
@@ -562,8 +573,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
 
+
+        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
@@ -573,6 +585,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'wniosek' => $entity
             )
         );
+        if($entity->getLockedBy()){
+            $editor = $entity->getLockedBy() == $this->getUser()->getUsername();
+        }else{
+            $entity->setLockedBy($this->getUser()->getUsername());
+            $entity->setLockedAt(new \Datetime());
+            $em->flush();
+        }
         $viewer = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
