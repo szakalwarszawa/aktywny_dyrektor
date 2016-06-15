@@ -1,0 +1,109 @@
+<div class="col-sm-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+            Użytkownicy ({{users|length}}) 
+            </a>
+            </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+            <div class="panel-body">
+                {% if users|length > 0 %}
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Lp.</th>
+                            <th>Użytkownik</th>
+                            <th>Login</th>
+                        </tr>
+                    </thead>
+                    {% set n = 1 %}
+                    <tbody>
+                        {% for row in users %}
+                            <tr>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ n }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
+                            </tr>
+                            {% set n = n + 1 %}
+                        {% endfor %}
+                    </tbody>
+                
+                </table>
+                {% else %}
+                
+                <p>Nie wybrano użytkowników</p>
+                
+                {% endif %}
+                
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="col-sm-12">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h4 class="panel-title">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+            {{title}}
+            </a>
+            </h4>
+        </div>
+        <div id="collapse1" class="panel-collapse collapse in">
+            <div class="panel-body">
+                 {{form_start(form)}}
+                 {{form_row(form.zapisz2)}} 
+                 {{form_rest(form)}} 
+                 {{form_end(form)}} 
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    function filtrujZasobUprawnienia(){
+        var v = $('#form_grupy').val();
+        var s = $('#form_nazwafiltr').val().toUpperCase();
+        if(v || s){
+            $('.uprawnienieRow').addClass('hidden');
+            console.log('.uprawnienieRow.grupaUprawnien'+v);                                
+            if(s){
+                $('.uprawnienieRow').each(function(){
+                    var txt = $(this).text().toUpperCase();
+                    var classes = $(this).attr('class');
+                    console.log('sprawdzam txt '+txt+' i classes '+classes);
+                    var show = false;
+                    if(v){
+                        show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien'+v) >= 0;
+                    }else{
+                        show = txt.indexOf(s) >= 0;
+                    } 
+                    if(show){
+                        $(this).removeClass('hidden');
+                    }
+                });
+            }else{
+                //pokazujemy szukane grupy
+                $('.uprawnienieRow.grupaUprawnien'+v+'').removeClass('hidden');
+            }
+            //pokazujemy zaznaczone
+            $('.uprawnienieRow input:checked').closest('.uprawnienieRow').removeClass('hidden');
+        }else{                
+            $('.uprawnienieRow').removeClass('hidden');
+        }
+    }
+    $('#form_grupy').change(function(){
+         filtrujZasobUprawnienia();
+    });
+    $('#form_nazwafiltr').bind('input', function(){
+         filtrujZasobUprawnienia();
+    });
+    $('#form_buttonzaznacz').click(function(){
+        $('.uprawnienieRow:not(.hidden) input[type=checkbox]').prop('checked', true);    
+    });
+    $('#form_buttonodznacz').click(function(){
+        $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);    
+    });
+
+</script>

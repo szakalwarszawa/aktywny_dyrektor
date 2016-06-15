@@ -1,0 +1,17 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Utwórz wniosek o nadanie zasobów</h1>
+
+    {{ form(form) }}
+
+        <div class="btn-group">
+
+<a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
+    <i class="fa fa-list"></i> Lista Wniosków o nadanie zasobów
+</a>
+</div>
+
+
+<script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
+{% endblock %}

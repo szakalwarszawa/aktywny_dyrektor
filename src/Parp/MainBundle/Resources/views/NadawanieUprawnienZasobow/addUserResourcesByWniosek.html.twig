@@ -1,0 +1,105 @@
+
+{% extends '::base.html.twig' %}
+
+
+{% block body %} 
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs">
+            <li><a data-toggle="tab" href="#wniosek">Wniosek</a></li>
+            <li><a data-toggle="tab" href="#zasobypast">Zasoby już we wniosku</a></li>
+            <li class="active"><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
+        </ul>
+        
+        
+        <div class="tab-content">
+            <div id="wniosek" class="tab-pane fade">
+                <table class="record_properties table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ wniosek.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Deletedat</th>
+                        <td>{{ wniosek.deletedAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Createdby</th>
+                        <td>{{ wniosek.createdBy }}</td>
+                    </tr>
+                    <tr>
+                        <th>Createdat</th>
+                        <td>{{ wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lockedby</th>
+                        <td>{{ wniosek.lockedBy }}</td>
+                    </tr>
+                    <tr>
+                        <th>Lockedat</th>
+                        <td>{{ wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Numer</th>
+                        <td>{{ wniosek.numer }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jednostkaorganizacyjna</th>
+                        <td>{{ wniosek.jednostkaOrganizacyjna }}</td>
+                    </tr>
+                    <tr>
+                        <th>Pracownikspozaparp</th>
+                        <td>{{ wniosek.pracownikSpozaParp }}</td>
+                    </tr>
+                </tbody>
+            </table>
+            </div>
+            <div id="zasobypast" class="tab-pane fade">
+        
+            
+                
+                <table class="record_properties table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Osoba</th>
+                            <th>Nazwa</th>
+                            <th>Moduł</th>
+                            <th>Poziom dostępu</th>
+                            <th>Sumowanie uprawnień</th>
+                            <th>Aktywne od</th>
+                            <th>Bezterminowo</th>
+                            <th>Aktywne do</th>
+                            <th>Kanał dostępu</th>
+                            <th>Uprawnienia administracyjne</th>
+                            <th>Odstepstwo od procedury</th>                           
+                        </tr>
+                        {% for z in wniosek.userzasoby %}
+                            <tr>
+                                <td>{{z.zasobNazwa}}</td>
+                                <td>{{z.samaccountname}}</td>
+                                <td>{{z.modul}}</td>
+                                <td>{{z.poziomDostepu}}</td>
+                                <td>{{z.sumowanieUprawnien}}</td>
+                                <td>{{z.aktywneOd|date}}</td>
+                                <td>{{z.bezterminowo}}</td>
+                                <td>{{z.aktywneDo|date}}</td>
+                                <td>{{z.kanalDostepu}}</td>
+                                <td>{{z.uprawnieniaAdministracyjne}}</td>
+                                <td>{{z.odstepstwoOdProcedury}}</td>
+                                
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+            <div id="zasoby" class="tab-pane fade in active ">
+                {% include 'ParpMainBundle:NadawanieUprawnienZasobow:addUserResourcesInner.html.twig' %}
+            
+            </div>
+        </div>
+
+
+    
+{%endblock%}
+

@@ -1,0 +1,128 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <div class="col-sm-12">
+        <div class="btn-group">
+            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek</a>
+            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" class="btn btn-info">Zwrot do poprawy wniosek</a>
+            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Zaakceptuj wniosek</a>
+        </div>
+    
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
+            <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+        </ul>
+        
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+                <h1>Wniosek o nadanie zasobów </h1>
+                <div class="tabContent">
+                    <table class="record_properties table table-striped">
+                        <tbody>
+                            
+                            <tr>
+                                <th>Numer</th>
+                                <td>{{ entity.numer }}</td>
+                            </tr>
+                            <tr>
+                                <th>Status</th>
+                                <td>{{ entity.status }}</td>
+                            </tr>
+                            <tr>
+                                <th>Jednostkaorganizacyjna</th>
+                                <td>{{ entity.jednostkaOrganizacyjna }}</td>
+                            </tr>
+                            <tr>
+                                <th>Pracownicy</th>
+                                <td>{{ entity.pracownicy }}</td>
+                            </tr>
+                            <tr>
+                                <th>Pracownikspozaparp</th>
+                                <td>{{ entity.pracownikSpozaParp }}</td>
+                            </tr>
+                            <tr>
+                                <th>Id</th>
+                                <td>{{ entity.id }}</td>
+                            </tr>
+                            <tr>
+                                <th>Deletedat</th>
+                                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Createdby</th>
+                                <td>{{ entity.createdBy }}</td>
+                            </tr>
+                            <tr>
+                                <th>Createdat</th>
+                                <td>{{ entity.createdAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lockedby</th>
+                                <td>{{ entity.lockedBy }}</td>
+                            </tr>
+                            <tr>
+                                <th>Lockedat</th>
+                                <td>{{ entity.lockedAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    {%if editor%}
+                    
+                    <a href="{{path('wnioseknadanieodebraniezasobow_edit', {id: entity.id})}}" class="btn btn-success">Edytuj dane wniosku</a>
+                    {%endif%}
+                </div>
+            </div>            
+            <div id="zasoby" class="tab-pane fade">
+        
+            
+                {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'addResources', 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj zasoby</a>{%endif%}
+                <table class="record_properties table table-striped">
+                    <tbody>
+                        <tr>
+                            <th>Osoba</th>
+                            <th>Nazwa</th>
+                            <th>Moduł</th>
+                            <th>Poziom dostępu</th>
+                            <th>Sumowanie uprawnień</th>
+                            <th>Aktywne od</th>
+                            <th>Bezterminowo</th>
+                            <th>Aktywne do</th>
+                            <th>Kanał dostępu</th>
+                            <th>Uprawnienia administracyjne</th>
+                            <th>Odstepstwo od procedury</th>   
+                            <th>Akcje</th>                            
+                        </tr>
+                        {% for z in userzasoby %}
+                            <tr>
+                                <td>{{z.zasobNazwa}}</td>
+                                <td>{{z.samaccountname}}</td>
+                                <td>{{z.modul}}</td>
+                                <td>{{z.poziomDostepu}}</td>
+                                <td>{{z.sumowanieUprawnien}}</td>
+                                <td>{{z.aktywneOd|date}}</td>
+                                <td>{{z.bezterminowo}}</td>
+                                <td>{{z.aktywneDo|date}}</td>
+                                <td>{{z.kanalDostepu}}</td>
+                                <td>{{z.uprawnieniaAdministracyjne}}</td>
+                                <td>{{z.odstepstwoOdProcedury}}</td>
+                                <td>{%if editor%}<a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>{%endif%}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                
+            </div>
+            <div id="historia" class="tab-pane fade">
+                <div  class="tabContent">
+                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekNadanieOdebranieZasobow', id: entity.id})) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    
+<script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
+
+{% endblock %}

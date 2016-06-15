@@ -1,0 +1,45 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: WniosekNadanieOdebranieZasobowStatus</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy WniosekNadanieOdebranieZasobowStatus ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Nazwa</th>
+                <td>{{ entity.nazwa }}</td>
+            </tr>
+            <tr>
+                <th>Nazwasystemowa</th>
+                <td>{{ entity.nazwaSystemowa }}</td>
+            </tr>
+            <tr>
+                <th>Opis</th>
+                <td>{{ entity.opis }}</td>
+            </tr>
+            <tr>
+                <th>Viewers</th>
+                <td>{{ entity.viewers }}</td>
+            </tr>
+            <tr>
+                <th>Editors</th>
+                <td>{{ entity.editors }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}

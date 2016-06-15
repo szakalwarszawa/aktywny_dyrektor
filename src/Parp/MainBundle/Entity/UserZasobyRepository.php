@@ -79,4 +79,25 @@ class UserZasobyRepository extends EntityRepository
         }
         return $res;
     }
+    public function findByWniosekWithZasob($wniosekId){
+        $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND uz.wniosek = :wniosekId
+              ORDER BY uz.samaccountname ASC
+              ')->setParameter('wniosekId', $wniosekId);
+               
+        $res = $query->getResult();
+        foreach($res as $uz){
+            $query2 = $this->getEntityManager()->createQuery('SELECT z FROM  ParpMainBundle:Zasoby z
+              WHERE z.id = :zasobId
+              ')->setParameter('zasobId', $uz->getZasobId());
+              $res2 = $query2->getResult();
+              if(count($res2) > 0){
+                  $uz->setZasobNazwa($res2[0]->getNazwa());
+              }
+        }
+        //print_r($res);die();
+        return $res;
+    }
 }

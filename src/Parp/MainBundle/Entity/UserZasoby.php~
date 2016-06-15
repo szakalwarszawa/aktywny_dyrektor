@@ -708,28 +708,4 @@ class UserZasoby
     {
         return $this->sumowanieUprawnien;
     }
-
-    /**
-     * Set wniosek
-     *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek
-     *
-     * @return UserZasoby
-     */
-    public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
-    {
-        $this->wniosek = $wniosek;
-
-        return $this;
-    }
-
-    /**
-     * Get wniosek
-     *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
-     */
-    public function getWniosek()
-    {
-        return $this->wniosek;
-    }
 }
