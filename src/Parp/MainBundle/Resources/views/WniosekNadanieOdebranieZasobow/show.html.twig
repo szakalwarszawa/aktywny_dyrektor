@@ -38,7 +38,7 @@
                                 <td>{{ entity.status }}</td>
                             </tr>
                             <tr>
-                                <th>Jednostkaorganizacyjna</th>
+                                <th>Jednostka organizacyjna</th>
                                 <td>{{ entity.jednostkaOrganizacyjna }}</td>
                             </tr>
                             <tr>
@@ -46,7 +46,7 @@
                                 <td>{{ entity.pracownicy }}</td>
                             </tr>
                             <tr>
-                                <th>Pracownikspozaparp</th>
+                                <th>Pracownik spoza parp</th>
                                 <td>{{ entity.pracownikSpozaParp }}</td>
                             </tr>
                             <tr>
@@ -54,24 +54,24 @@
                                 <td>{{ entity.id }}</td>
                             </tr>
                             <tr>
-                                <th>Deletedat</th>
-                                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+                                <th>Deleted at</th>
+                                <td>{{ entity.deletedAt|datetime }}</td>
                             </tr>
                             <tr>
-                                <th>Createdby</th>
+                                <th>Created by</th>
                                 <td>{{ entity.createdBy }}</td>
                             </tr>
                             <tr>
-                                <th>Createdat</th>
-                                <td>{{ entity.createdAt|date('Y-m-d H:i:s') }}</td>
+                                <th>Created at</th>
+                                <td>{{ entity.createdAt|datetime }}</td>
                             </tr>
                             <tr>
-                                <th>Lockedby</th>
+                                <th>Locked by</th>
                                 <td>{{ entity.lockedBy }}</td>
                             </tr>
                             <tr>
-                                <th>Lockedat</th>
-                                <td>{{ entity.lockedAt|date('Y-m-d H:i:s') }}</td>
+                                <th>Locked at</th>
+                                <td>{{ entity.lockedAt|datetime }}</td>
                             </tr>
                         </tbody>
                     </table>

@@ -57,6 +57,7 @@ class VersionController extends Controller
      */
     public function versionsHistoryAction($repository, $id)
     {
+        $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','','');
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
         $className = "Parp\\MainBundle\\Entity\\".$repository;
@@ -71,15 +72,18 @@ class VersionController extends Controller
         
         foreach($metadata->getAssociationMappings() as $m){
             if(!isset($m['joinColumns'])){
+                
                 $repos = explode("\\", $m['targetEntity']);
                 $repo = $repos[count($repos) - 1];
-                $f = "get".ucfirst($m['fieldName']);
-                $ents = $entity->{$f}();  
-                          
-                foreach($ents as $ed){
-                    //echo "<pre>";var_dump($f);// die();
-                    $entities2 = $this->getObjectHistory($repo, $ed->getId());
-                    $entities = array_merge($entities, $entities2);                
+                if(!in_array($repo, $pomijajRelacje)){
+                    $f = "get".ucfirst($m['fieldName']);
+                    $ents = $entity->{$f}();  
+                              
+                    foreach($ents as $ed){
+                        //echo "<pre>";var_dump($f);// die();
+                        $entities2 = $this->getObjectHistory($repo, $ed->getId());
+                        $entities = array_merge($entities, $entities2);                
+                    }
                 }
             }
         }
@@ -99,15 +103,30 @@ class VersionController extends Controller
             $entities2 = $this->getObjectHistory('Komentarz', $k->getId());
             $entities = array_merge($entities, $entities2); 
         }
-        
-        
         usort($entities, function($a, $b){
             return $a['log']->getLoggedAt() <  $b['log']->getLoggedAt();
         });
+        
+        $result = array();
+        foreach ($entities as $data) {
+          $idd = $data['log']->getLoggedAt()->format("YmdhIs");
+          //if (isset($result[$id])) {
+             $result[$idd]['data'][] = $data;
+             $result[$idd]['obiekt'][$this->get('rename_service')->objectTitles($data['repo'])] = $this->get('rename_service')->objectTitles($data['repo']);             
+             $result[$idd]['user'][$data['log']->getUsername()] = $data['log']->getUsername();
+             $result[$idd]['operacje'][$data['log']->getAction()] = $data['log']->getAction();
+             $result[$idd]['id'] = $data['log']->getLoggedAt()->format("Y-m-d H:i:s");
+          //} else {
+             //$result[$id] = array($data);
+          //}
+        }
+        //echo "<pre>";        \Doctrine\Common\Util\Debug::dump($result,10); die();
+        
         $em->getFilters()->enable('softdeleteable');
         
         $now = new \Datetime();
         return array(
+            'result' => $result,
             'entities' => $entities,
             'entityname' => $repository,
             'id' => $id,

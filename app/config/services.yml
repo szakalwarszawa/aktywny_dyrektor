@@ -53,6 +53,7 @@ services:
             - [ setAnnotationReader, [ @annotation_reader ] ]
     app.twig_extension:
         class: Parp\MainBundle\Twig\StringExtension
+        arguments: ["@rename_service"]
         public: false
         tags:
             - { name: twig.extension }
@@ -76,3 +77,7 @@ services:
         arguments: ["@kernel","@templating"]
         tags:
             - { name: kernel.event_subscriber }
+    
+    rename_service:
+        class : Parp\MainBundle\Services\RenameService
+        tags: ~

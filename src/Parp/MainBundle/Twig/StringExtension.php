@@ -4,11 +4,19 @@ namespace Parp\MainBundle\Twig;
 
 class StringExtension extends \Twig_Extension
 {
+    protected $renameService;
+
+    public function __construct(\Parp\MainBundle\Services\RenameService $renameService)
+    {
+        $this->renameService = $renameService;
+    }
+    
     public function getFilters()
     {
         return array(
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
             new \Twig_SimpleFilter('gridTitles', array($this, 'gridTitles')),
+            new \Twig_SimpleFilter('datetime', array($this, 'datetimeFormat')),
             new \Twig_SimpleFilter('objectTitles', array($this, 'objectTitles')),
             new \Twig_SimpleFilter('actionTitles', array($this, 'actionTitles')),
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
@@ -32,7 +40,14 @@ class StringExtension extends \Twig_Extension
 
         return $out;
     }
-
+    public function datetimeFormat($value){
+        if ($value instanceof \DateTime){
+            $value = $value->format("Y-m-d H:i:s");
+        }else{
+            $value = "";
+        }
+        return $value;
+    }
     public function gridTitles($var)
     {
         $ret = "";
@@ -52,7 +67,7 @@ class StringExtension extends \Twig_Extension
     
     public function getObjectValue($var)
     {   
-        if ($var instanceof \DateTime) {
+        if ($var instanceof \DateTime ) {
             $var = $var->format("Y-m-d H:i:s");
         }
         return $var;
@@ -82,23 +97,12 @@ class StringExtension extends \Twig_Extension
     
     public function objectTitles($var)
     {
-        $titles = array(
-            'UserZasoby' => 'Uprawnienia użytkownika do zasobu',
-            'WniosekNadanieOdebranieZasobowEditor' => 'Możliwość edycji',
-            'WniosekNadanieOdebranieZasobowViewer' => 'Możliwość podglądu',
-            'WniosekNadanieOdebranieZasobow' => 'Wniosek o Nadanie uprawnień',
-        );
-        return (isset($titles[$var]) ? $titles[$var] : $var);
+        return $this->renameService->objectTitles($var);
     }
     
     
     public function actionTitles($var)
     {
-        $titles = array(
-            'create' => 'Utworzenie',
-            'update' => 'Edycja',
-            'remove' => 'Usunięcie',
-        );
-        return (isset($titles[$var]) ? $titles[$var] : $var);
+        return $this->renameService->actionTitles($var);
     }
 }
