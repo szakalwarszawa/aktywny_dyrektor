@@ -62,7 +62,7 @@ class DefaultController extends Controller
         $source->setId('samaccountname');
         $grid->setSource($source);
         $grid->hideColumns(array(
-            'manager',
+            //'manager',
             //'accountDisabled',
             //'info',
             'description',
@@ -1139,7 +1139,7 @@ class DefaultController extends Controller
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
         if ((!$ajax) OR ( !$post)) {
-            return null;
+            //return null;
         }
 
         $imienazwisko = $request->get('imienazwisko', null);
@@ -1798,7 +1798,8 @@ class DefaultController extends Controller
         foreach ($ADUsers as $user) {
 
             if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== FALSE) {
-                $dane[$i] = $user['name'];
+                //$dane[$i] = $user['name'];
+                $dane[$i] = $this->get('renameService')->fixImieNazwisko($user['name']);
                 $i++;
             }
         }

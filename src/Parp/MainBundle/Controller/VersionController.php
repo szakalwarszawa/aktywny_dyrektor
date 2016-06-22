@@ -63,7 +63,7 @@ class VersionController extends Controller
         $className = "Parp\\MainBundle\\Entity\\".$repository;
         $entity = $em->getRepository($className)->find($id);
         $entities = $this->getObjectHistory($repository, $id);
-        $pid = $entity->getParentId();
+        $pid = $entity->getParent() ? $entity->getParent()->getId() : 0;
         if($pid > 0){
             $entities2 = $this->getObjectHistory($repository, $pid);
             $entities = array_merge($entities, $entities2);   

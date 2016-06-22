@@ -151,13 +151,18 @@ class WniosekNadanieOdebranieZasobow
     private $zasobId;
     
     
+    
     /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @ORM\OneToMany(targetEntity="WniosekNadanieOdebranieZasobow", mappedBy="parent")
      */
-    private $parentId;
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+    
 
     /**
      * @var string
@@ -550,15 +555,6 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->userZasoby;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
-    }
     
     public function getJsonSams(){
         $ar = explode(",", $this->getPracownicy());
@@ -595,30 +591,6 @@ class WniosekNadanieOdebranieZasobow
     }
 
     /**
-     * Set parentId
-     *
-     * @param integer $parentId
-     *
-     * @return WniosekNadanieOdebranieZasobow
-     */
-    public function setParentId($parentId)
-    {
-        $this->parentId = $parentId;
-
-        return $this;
-    }
-
-    /**
-     * Get parentId
-     *
-     * @return integer
-     */
-    public function getParentId()
-    {
-        return $this->parentId;
-    }
-
-    /**
      * Set statusname
      *
      * @param string $statusname
@@ -640,5 +612,87 @@ class WniosekNadanieOdebranieZasobow
     public function getStatusname()
     {
         return $this->statusname;
+    }
+
+    /**
+     * Set viewernames
+     *
+     * @param string $viewernames
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setViewernames($viewername)
+    {
+        $this->viewernames = $viewername;
+
+        return $this;
+    }
+    /**
+     * Set viewernames
+     *
+     * @param string $viewernames
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setViewernamesSet()
+    {
+        $names = array();
+        foreach($this->getViewers() as $v){
+            $names[] = $v->getSamaccountname();
+        }
+        $this->setViewernames(implode(",", $names));
+
+        return $this;
+    }
+
+    /**
+     * Get viewernames
+     *
+     * @return string
+     */
+    public function getViewernames()
+    {
+        return $this->viewernames;
+    }
+
+    /**
+     * Set editornames
+     *
+     * @param string $editornames
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setEditornames($editornames)
+    {
+        $this->editornames = $editornames;
+
+        return $this;
+    }
+    /**
+     * Set editornames
+     *
+     * @param string $editornames
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setEditornamesSet()
+    {
+        $names = array();
+        foreach($this->getEditors() as $v){
+            $names[] = $v->getSamaccountname();
+        }
+        $this->setEditornames(implode(",", $names));
+
+        return $this;
+    }
+
+    /**
+     * Get editornames
+     *
+     * @return string
+     */
+    public function getEditornames()
+    {
+        return $this->editornames;
     }
 }

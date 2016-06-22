@@ -94,8 +94,6 @@ class LdapService
                 "accountexpires",
             ));
             $results = ldap_get_entries($ldapconn, $search);
-//            var_dump($results);
-//            die();
             $tmpResults = array_merge($tmpResults, $results);
         }
         ldap_bind($ldapconn);
@@ -130,6 +128,8 @@ class LdapService
             if (isset($tmpResult["samaccountname"]))
                 $index++;
         }
+            //var_dump($result);
+            //die();
 //        foreach(array_unique($tmp) as $unTmp){
 //            echo "insert into section (`name`) values ('".$unTmp."');<br />";
 //        }
@@ -437,7 +437,7 @@ class LdapService
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
 
-//echo "!!!".$searchString."!!!";
+echo "!!!".$searchString."!!!";
 
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",

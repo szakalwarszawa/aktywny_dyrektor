@@ -151,13 +151,18 @@ class WniosekNadanieOdebranieZasobow
     private $zasobId;
     
     
+    
     /**
-     * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @ORM\OneToMany(targetEntity="WniosekNadanieOdebranieZasobow", mappedBy="parent")
      */
-    private $parentId;
+    private $children;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="children")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    private $parent;
+    
 
     /**
      * @var string
@@ -550,15 +555,6 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->userZasoby;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
-    }
     
     public function getJsonSams(){
         $ar = explode(",", $this->getPracownicy());
@@ -592,30 +588,6 @@ class WniosekNadanieOdebranieZasobow
     public function getZasobId()
     {
         return $this->zasobId;
-    }
-
-    /**
-     * Set parentId
-     *
-     * @param integer $parentId
-     *
-     * @return WniosekNadanieOdebranieZasobow
-     */
-    public function setParentId($parentId)
-    {
-        $this->parentId = $parentId;
-
-        return $this;
-    }
-
-    /**
-     * Get parentId
-     *
-     * @return integer
-     */
-    public function getParentId()
-    {
-        return $this->parentId;
     }
 
     /**
@@ -722,5 +694,73 @@ class WniosekNadanieOdebranieZasobow
     public function getEditornames()
     {
         return $this->editornames;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add child
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function addChild(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child)
+    {
+        $this->children[] = $child;
+
+        return $this;
+    }
+
+    /**
+     * Remove child
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child
+     */
+    public function removeChild(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child)
+    {
+        $this->children->removeElement($child);
+    }
+
+    /**
+     * Get children
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $parent
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setParent(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }

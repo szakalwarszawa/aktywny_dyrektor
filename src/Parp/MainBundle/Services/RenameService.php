@@ -19,6 +19,11 @@ class RenameService
     public function __construct(){
         
     }
+    public function fixImieNazwisko($imienazwisko)
+    {
+        $p = explode(" ", $imienazwisko);
+        return $p[1]." ".$p[0];
+    }
     public function objectTitles($var)
     {
         $titles = array(

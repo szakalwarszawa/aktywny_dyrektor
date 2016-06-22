@@ -37,6 +37,23 @@ class DevController extends Controller
 {
     
     /**
+     * @Route("/check_user_in_ad/{imienazwisko}", name="check_user_in_ad")
+     * @Template()
+     */
+    public function checkUserInAdAction($imienazwisko)
+    {
+        $ldap = $this->get('ldap_service');
+        //$imienazwisko = $this->get('renameService')->fixImieNazwisko($imienazwisko);
+        
+        $ADManager = $ldap->getUserFromAD(null, $imienazwisko);
+        if(count($ADManager) > 0){
+            echo "<br>added ".$ADManager[0]['name']."<br>";
+            //$where[$ADManager[0]['name']] = $ADManager[0]['name'];
+        }else{
+            throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$imienazwisko);
+        }
+    }
+    /**
      * @Route("/check_access/{action}", name="check_access")
      * @Template()
      */
