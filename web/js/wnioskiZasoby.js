@@ -9,7 +9,25 @@ function wniosekPracownikSpozaParp(){
         $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicy').closest('.form-group').removeClass('hidden');
     }
 }
-
+function usunUzytkownikaZwniosku(id, that){
+    console.log('kasuje '+id);
+    var sams = JSON.parse($('#form_samaccountnames').val());
+    console.log(sams);   
+    
+    for(k in sams){
+        if(k == id){
+            delete sams[k];
+        }
+    }
+    $('#form_samaccountnames').val(JSON.stringify(sams));
+    var table = $(that).closest('table');
+    $(that).closest('tr').remove();
+    var i = 0;
+    $('tr', $(table)).each(function(){
+        $('.rowNumber', $(this)).text(i++);
+    })
+    
+}
 $(document).ready(function(){
     wniosekPracownikSpozaParp();
     $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownikSpozaParp').change(wniosekPracownikSpozaParp);

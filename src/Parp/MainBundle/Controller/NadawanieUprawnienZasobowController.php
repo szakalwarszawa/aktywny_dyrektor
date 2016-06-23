@@ -33,10 +33,16 @@ class NadawanieUprawnienZasobowController extends Controller
 
     /**
      * @param $samaccountName
-     * @Route("/addRemoveAccessToUsersAction/{samaccountnames}/{action}/{wniosekId}", name="addRemoveAccessToUsersAction", defaults={"wniosekId":0})
+     * @Route("/addRemoveAccessToUsersAction/{action}/{wniosekId}", name="addRemoveAccessToUsersAction", defaults={"wniosekId":0})
      */
-    public function addRemoveAccessToUsersAction(Request $request, $samaccountnames, $action, $wniosekId = 0)
+    public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
+        if($request->getMethod() == "POST"){
+            //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();    
+            $samaccountnames = $request->get('form')['samaccountnames'];
+        }else{        
+            $samaccountnames = $request->get('samaccountnames');
+        }
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
@@ -184,6 +190,9 @@ class NadawanieUprawnienZasobowController extends Controller
         
         $builder = $this->createFormBuilder();
         $form = $builder
+                ->add('samaccountnames', 'hidden', array(
+                    'data' => $samaccountnames
+                ))
                 ->add('wniosekId', 'hidden', array(
                     'data' => $wniosekId
                 ))
@@ -291,6 +300,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Dalej'
                 ))
+                ->setAction($this->generateUrl('addRemoveAccessToUsersAction', array('wniosekId' => $wniosekId, 'action' => $action)))
                 ->setMethod('POST')
                 ->getForm();
         
@@ -331,12 +341,12 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $suz->setPowodOdebrania($powod);
                                 $this->getDoctrine()->getManager()->persist($suz);
                                 $this->getDoctrine()->getManager()->remove($suz);
-                                $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo je ma";
+                                $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."' bo je ma";
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $zasob->getOpis();
                             }else{
                                 
-                                $msg = "NIE zabiera userowi ".$currentsam." uprawnienia do zasobu ".$z." bo ich nie ma !";
+                                $msg = "NIE zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."' bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
                             if(count($zmianaupr) > 0)
@@ -355,12 +365,13 @@ class NadawanieUprawnienZasobowController extends Controller
                         foreach($sams as $currentsam){
                             $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
+                            
+                            $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
                             if($suz){
-                                $msg = "NIE nadaje userowi ".$currentsam." uprawnienia  ".$z." bo je ma !";
+                                $msg = "NIE nadaje userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma !";
                                 $this->addFlash('notice', $msg);
                                 
                             }else{
-                                $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
                                 $suz = new UserUprawnienia();
                                 $suz->setSamaccountname($currentsam);
                                 $suz->setOpis($u->getOpis());
@@ -371,7 +382,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $suz->setPowodNadania($powod);
                                 $this->getDoctrine()->getManager()->persist($suz);
                                 //$this->getDoctrine()->getManager()->remove($suz);
-                                $msg = "Nadaje userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma";
+                                $msg = "Nadaje userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma";
                                 if($u->getGrupaAd() != ""){
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
                                     $msg .= "I dodaje do grupy AD : ".$u->getGrupaAd();
@@ -412,7 +423,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $suz->setPowodOdebrania($powod);
                                 //$this->getDoctrine()->getManager()->persist($suz);
                                 $this->getDoctrine()->getManager()->remove($suz);
-                                $msg = "Odbieram userowi ".$currentsam." uprawnienia  ".$z." bo je ma";
+                                $msg = "Odbieram userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma";
                                 
                                 if($u->getGrupaAd() != ""){
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
@@ -429,7 +440,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $u->getOpis();
                             }else{
-                                $msg = "NIE odbieram userowi ".$currentsam." uprawnienia  ".$z." bo ich nie ma !";
+                                $msg = "NIE odbieram userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
                             
@@ -621,7 +632,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setPowodNadania($powod);
                             $z->setSamaccountname($currentsam);
                             $this->getDoctrine()->getManager()->persist($z);
-                            $msg = "Dodaje usera ".$currentsam." i zasob ".$oz->getZasobId().".";//." bo go nie ma !";
+                            $msg = "Dodaje usera ".$currentsam." do zasobu '".$this->get('renameService')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                             if($wniosekId == 0)
                                 $this->addFlash('warning', $msg);
                             $zmianaupr[] = $zasob->getOpis();

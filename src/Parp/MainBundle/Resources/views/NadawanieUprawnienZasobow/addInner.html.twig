@@ -16,15 +16,17 @@
                             <th>Lp.</th>
                             <th>Użytkownik</th>
                             <th>Login</th>
+                                <th>Akcja</th>
                         </tr>
                     </thead>
                     {% set n = 1 %}
                     <tbody>
                         {% for row in users %}
                             <tr>
-                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ n }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" class="rowNumber">{{ n }}</a></td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
+                                    <td><a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
                             </tr>
                             {% set n = n + 1 %}
                         {% endfor %}
@@ -107,3 +109,4 @@
     });
 
 </script>
+<script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
