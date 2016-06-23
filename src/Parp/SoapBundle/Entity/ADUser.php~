@@ -4,6 +4,7 @@ namespace Parp\SoapBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 /**
  * UserZasoby
@@ -208,6 +209,21 @@ class ADUser
     private $rolesNames;
     
     
+    /**
+     * @ORM\ManyToMany(targetEntity="ADGroup", mappedBy="ADUsers")
+     * @ORM\JoinTable(name="aduser_adgroup")
+     * @GRID\Column(field="ADGroups.cn:group_concat", title="ADGroups", filter="select", selectMulti="true")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ADGroups;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="ADOrganizationalUnit", mappedBy="ADUsers")
+     * @ORM\JoinTable(name="aduser_adou")
+     * @GRID\Column(field="ADOUs.dn:group_concat", title="ADOUs", filter="select", selectMulti="true")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ADOUs;
 
     /**
      * Get id
@@ -652,4 +668,52 @@ class ADUser
         return $this->description;
     }
 
+
+    /**
+     * Set memberOfNames
+     *
+     * @param string $memberOfNames
+     *
+     * @return ADUser
+     */
+    public function setMemberOfNames($memberOfNames)
+    {
+        $this->memberOfNames = $memberOfNames;
+
+        return $this;
+    }
+
+    /**
+     * Get memberOfNames
+     *
+     * @return string
+     */
+    public function getMemberOfNames()
+    {
+        return $this->memberOfNames;
+    }
+
+    /**
+     * Set rolesNames
+     *
+     * @param string $rolesNames
+     *
+     * @return ADUser
+     */
+    public function setRolesNames($rolesNames)
+    {
+        $this->rolesNames = $rolesNames;
+
+        return $this;
+    }
+
+    /**
+     * Get rolesNames
+     *
+     * @return string
+     */
+    public function getRolesNames()
+    {
+        return $this->rolesNames;
+    }
 }

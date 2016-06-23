@@ -198,7 +198,55 @@ class LdapService
         return $result;
     }
     
-    public function  checkGroupExistsFromAD($group)
+    
+    public function getOUsFromAD($ou){
+        
+        $ldapconn = ldap_connect($this->ad_host);
+        $ldapdomain = $this->ad_domain;
+        //$userdn = "OU=Test";
+        $userdn = $this->useradn . $this->patch;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldap_username = $this->securityContext->getToken()->getUsername();
+        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+        
+        
+        //$userdn = "OU=".$dep->getShortname().", ".$this->useradn . $this->patch;
+        $userdn = $this->useradn . $this->patch;
+        $filter="(objectClass=organizationalunit)"; 
+        $justthese = array(
+            "objectclass", 
+            "ou", 
+            "distinguishedname", 
+            "instancetype", 
+            "whencreated", 
+            "whenchanged", 
+            "usncreated", 
+            "usnchanged", 
+            "name", 
+            "objectguid", 
+            "objectcategory", 
+            "dscorepropagationdata", 
+            "dn", 
+        ); 
+        $sr=ldap_search($ldapconn, $userdn, $filter); 
+        $info = ldap_get_entries($ldapconn, $sr); 
+        
+        //echo "<pre>"; print_r($info); echo "</pre>";
+            
+        ldap_free_result($sr); 
+        ldap_unbind($ldapconn);  
+        
+        //echo "Zrobilem swoje ";
+         ///////////////
+        return $info;
+    }
+    
+    public function  getGroupsFromAD($group)
     {
         $userdn = $this->useradn . $this->patch;
         $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
@@ -222,7 +270,8 @@ class LdapService
      
      	$query .= "(&(objectClass=group))";
          $group2 = ldap_escape($group);
-        $query .= "(CN=$group2)";
+         if($group)
+            $query .= "(CN=$group2)";
         
      
         // Close query
@@ -232,32 +281,21 @@ class LdapService
         }catch(\Exception $e){
             die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage()." ");
         }
-/*
-        , array(
-            "name",
-            "initials",
-            "title",
-            "info",
-            "department",
-            "description",
-            "division",
-            "lastlogon",
-            "samaccountname",
-            "manager",
-            "thumbnailphoto",
-            "accountExpires",
-            "useraccountcontrol",
-            "accountexpires",
-        )
-*/
         
         $results = ldap_get_entries($ldapconn, $search);
         //print_r($query);
-        //print_r($results); die();
+        //echo "<pre>"; print_r($results); die();
         ldap_bind($ldapconn);
 
         
-        return ($results['count']) > 0;
+        return $results;
+    }
+    public function  checkGroupExistsFromAD($group)
+    {
+        $result = $this->getGroupsFromAD($group);
+
+        
+        return ($result['count']) > 0;
     }
 
     public function getAccountControl($userAccountControl)
@@ -542,6 +580,7 @@ class LdapService
 
     public function getUsersFromOU($OU)
     {
+        echo ".$OU";
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -567,25 +606,27 @@ class LdapService
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         $userdn = "OU=" . $OU . ",".$this->useradn . $this->patch;
-
-        $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=*)(objectClass=person))", array(
-            "samaccountname",
-            "name",
-            "initials",
-        ));
-        $tmpResults = ldap_get_entries($ldapconn, $search);
-        ldap_unbind($ldapconn);
-
-        $result = array();
-        $i = 0;
-        foreach ($tmpResults as $tmpResult) {
-            if ($tmpResult["samaccountname"]) {
-                $result[$i]["samaccountname"] = $tmpResult["samaccountname"][0];
-                $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
-                $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
-                $i++;
+        $result = null;
+        try{
+            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=*)(objectClass=person))", array(
+                "samaccountname",
+                "name",
+                "initials",
+            ));
+            $tmpResults = ldap_get_entries($ldapconn, $search);
+            ldap_unbind($ldapconn);
+    
+            $result = array();
+            $i = 0;
+            foreach ($tmpResults as $tmpResult) {
+                if ($tmpResult["samaccountname"]) {
+                    $result[$i]["samaccountname"] = $tmpResult["samaccountname"][0];
+                    $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
+                    $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
+                    $i++;
+                }
             }
-        }
+        }catch(\Exception $e){}
 
         return $result;
     }

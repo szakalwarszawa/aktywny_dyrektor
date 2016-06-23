@@ -4,6 +4,7 @@ namespace Parp\SoapBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 /**
  * UserZasoby
@@ -208,6 +209,21 @@ class ADUser
     private $rolesNames;
     
     
+    /**
+     * @ORM\ManyToMany(targetEntity="ADGroup", mappedBy="ADUsers")
+     * @ORM\JoinTable(name="aduser_adgroup")
+     * @GRID\Column(field="ADGroups.cn:group_concat", title="ADGroups", filter="select", selectMulti="true")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ADGroups;
+    
+    /**
+     * @ORM\ManyToMany(targetEntity="ADOrganizationalUnit", mappedBy="ADUsers")
+     * @ORM\JoinTable(name="aduser_adou")
+     * @GRID\Column(field="ADOUs.dn:group_concat", title="ADOUs", filter="select", selectMulti="true")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ADOUs;
 
     /**
      * Get id
@@ -699,5 +715,81 @@ class ADUser
     public function getRolesNames()
     {
         return $this->rolesNames;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ADGroups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->ADOUs = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add aDGroup
+     *
+     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     *
+     * @return ADUser
+     */
+    public function addADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    {
+        $this->ADGroups[] = $aDGroup;
+
+        return $this;
+    }
+
+    /**
+     * Remove aDGroup
+     *
+     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     */
+    public function removeADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    {
+        $this->ADGroups->removeElement($aDGroup);
+    }
+
+    /**
+     * Get aDGroups
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getADGroups()
+    {
+        return $this->ADGroups;
+    }
+
+    /**
+     * Add aDOU
+     *
+     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     *
+     * @return ADUser
+     */
+    public function addADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    {
+        $this->ADOUs[] = $aDOU;
+
+        return $this;
+    }
+
+    /**
+     * Remove aDOU
+     *
+     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     */
+    public function removeADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    {
+        $this->ADOUs->removeElement($aDOU);
+    }
+
+    /**
+     * Get aDOUs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getADOUs()
+    {
+        return $this->ADOUs;
     }
 }

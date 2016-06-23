@@ -400,6 +400,18 @@ class DevController extends Controller
         return $output;
     }
  
+    /**
+     * @Route("/getAdGroups", name="getAdGroups")
+     * @Template()
+     */
+    public function getAdGroupsAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        
+        $exists = $this->get('ldap_service')->checkGroupExistsFromAD(null);
+                
+    }
     
     
     /**
