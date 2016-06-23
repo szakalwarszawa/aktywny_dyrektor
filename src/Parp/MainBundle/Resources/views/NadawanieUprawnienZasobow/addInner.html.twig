@@ -16,7 +16,7 @@
                             <th>Lp.</th>
                             <th>Użytkownik</th>
                             <th>Login</th>
-                                <th>Akcja</th>
+                            <th>Akcja</th>
                         </tr>
                     </thead>
                     {% set n = 1 %}
@@ -26,7 +26,9 @@
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" class="rowNumber">{{ n }}</a></td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
-                                    <td><a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+                                <td>                                                 
+                                    <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+                                </td>
                             </tr>
                             {% set n = n + 1 %}
                         {% endfor %}

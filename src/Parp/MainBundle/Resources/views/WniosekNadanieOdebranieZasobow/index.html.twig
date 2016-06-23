@@ -1,22 +1,62 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-<h1>Lista Wniosków o nadanie zasobów</h1>
-{% for flashMessage in app.session.flashbag.get('warning') %}
-    <div class="alert alert-info">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>Uwaga!</strong> 
-        {{ flashMessage }}
-    </div>       
-{% endfor %}
 
-<center>
-    <div class="btn-group">
-        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-        <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+<div class="col-sm-12">
+        
+    {% for flashMessage in app.session.flashbag.get('warning') %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
+
+    <h1>Lista Wniosków o nadanie zasobów </h1>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#wtoku">W toku</a></li>
+        <li><a data-toggle="tab" href="#oczekujace">Oczekujące na Twoją akceptację</a></li>
+        <li><a data-toggle="tab" href="#zakonczone">Zakończone</a></li>
+    </ul>
+    
+    <div class="tab-content">
+        <div id="wtoku" class="tab-pane fade in active">
+            <center>
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                </div>
+            </center>
+            
+            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="oczekujace" class="tab-pane fade">
+            <center>
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                </div>
+            </center>
+            
+            {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="zakonczone" class="tab-pane fade">
+            <center>
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-xs" href="?{{ grid3.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                </div>
+            </center>
+            
+            {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
     </div>
-</center>
+</div>
 
-{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+
+
+
+
 
 {% endblock %}

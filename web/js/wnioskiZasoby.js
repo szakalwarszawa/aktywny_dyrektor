@@ -35,4 +35,6 @@ $(document).ready(function(){
         $('*[disabled]').attr('disabled', false);
         return true;    
     });
+    $('[data-toggle="tooltip"]').tooltip(); 
+
 });

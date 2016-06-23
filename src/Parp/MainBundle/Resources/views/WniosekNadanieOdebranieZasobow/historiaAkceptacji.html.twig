@@ -1,0 +1,32 @@
+<table class="record_properties table table-striped">
+    <tbody>
+        
+        <tr>
+            <th>Data</th>
+            <th>Kto</th>
+            <th>Nowy status</th>
+            <th>Zaakceptowano</th>
+        </tr>
+
+        {% for ss in entity.statusy %}
+            <tr>
+                <td>{{ ss.createdAt|date("Y-m-d H:i:s")}}</td>
+                <td>{{ ss.createdBy }}</td>
+                <td>{{ ss.statusName }}</td>
+                <td>
+                {% if ss.rejected %}
+                    <div class="alert alert-danger">
+                    NIE <br>
+                    {{ss.opis}}
+                    </br>
+                {%else%}
+                    <div class="alert alert-success">
+                    TAK
+                    </div>
+                {%endif%}
+                </td>
+            </tr>
+        {%endfor%}
+
+    </tbody>
+</table>

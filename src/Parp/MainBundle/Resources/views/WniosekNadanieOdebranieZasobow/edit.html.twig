@@ -8,6 +8,7 @@
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
             <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+            <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
         </ul>
         
         <div class="tab-content">
@@ -70,6 +71,11 @@
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: edit_form.vars.value.id})) }}
+                </div>
+            </div>
+            <div id="historiaAkceptacji" class="tab-pane fade">
+                <div  class="tabContent">
+                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}                
                 </div>
             </div>
         </div>

@@ -236,6 +236,22 @@ class UserZasoby
         return $this->_zasobNazwa;
     }
     
+    protected $idd;
+    public function get_Idd()
+    {
+        return $this->idd;
+    }
+    public function getIdd()
+    {
+        return $this->id;
+    }
+    public function setIdd($idd)
+    {
+        return $this->idd = $idd;
+    }
+    
+    
+    
     /**
      * Get id
      *
@@ -269,6 +285,10 @@ class UserZasoby
         return $this->samaccountname;
     }
 
+    public function getSamaccountnames(){
+        //uzywane przy generaowaniu linka do edycji userZasoby przy wniosku
+        return '{"'.$this->samaccountname.'" : 1}';
+    }
     /**
      * Set zasobId
      *

@@ -14,12 +14,14 @@ class UserZasobyType extends AbstractType
     private $choicesModul;
     private $choicesPoziomDostepu;
     private $isSubForm;
+    private $datauz;
 
-    public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true)
+    public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true, $datauz = null)
     {
         $this->choicesModul = $choicesModul;
         $this->choicesPoziomDostepu = $choicesPoziomDostepu;
         $this->isSubForm = $isSubForm;
+        $this->datauz = $datauz;
     }
     
         /**
@@ -29,13 +31,28 @@ class UserZasobyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $now = new \Datetime();
+        $d1 = $this->datauz ? $this->datauz['aktywneOd'] : $now->format("d-m-Y");
+        //print_r($this->datauz);
         $builder
+            ->add('idd', 'hidden')
             ->add('samaccountname', 'hidden')
             ->add('zasobNazwa', 'hidden')
             ->add('zasobId', 'hidden')
             //->add('loginDoZasobu')
-            ->add('modul', /* NestedComboType::class */ 'choice', array("required" => false, 'empty_value' => null,"choices" => $this->choicesModul))
-            ->add('poziomDostepu', /* NestedComboType::class */ 'choice', array("required" => false, 'empty_value' => null, "choices" => $this->choicesPoziomDostepu))
+            ->add('modul', /* NestedComboType::class */ 'choice', array(
+                "required" => false, 
+                'empty_value' => null,
+                "choices" => $this->choicesModul,
+                    //'data' => ($this->datauz ? $this->datauz['modul'] : "")
+                )
+            )
+            ->add('poziomDostepu', /* NestedComboType::class */ 'choice', array(
+                "required" => false, 
+                'empty_value' => null, 
+                "choices" => $this->choicesPoziomDostepu,
+                    //'data' => ($this->datauz ? $this->datauz['poziomDostepu'] : "")
+                )
+            )
             ->add('aktywneOd', 'text', array(
                     'attr' => array(
                         'class' => 'form-control',
@@ -48,7 +65,7 @@ class UserZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'data' => $now->format("d-m-Y")
+                    'data' => $d1
                 ))
             ->add('bezterminowo')
             //->add('aktywneOdPomijac')
@@ -64,7 +81,7 @@ class UserZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'data' => $now->format("d-m-Y")
+                    'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("d-m-Y") : $now->format("d-m-Y"))
                 ))
             ->add('kanalDostepu')
             ->add('uprawnieniaAdministracyjne')
@@ -100,7 +117,9 @@ class UserZasobyType extends AbstractType
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
         $form->add($fieldName, NestedComboType::class,
-            array("choices" => $choices)
+            array("choices" => $choices,
+                    'data' => (isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "")
+                )
         );
     }
     

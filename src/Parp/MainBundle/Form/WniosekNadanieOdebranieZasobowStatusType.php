@@ -29,6 +29,7 @@ class WniosekNadanieOdebranieZasobowStatusType extends AbstractType
         $builder
             ->add('nazwa')
             ->add('nazwaSystemowa')
+            ->add('finished')
             ->add('opis')
             ->add($builder->create('viewers', 'choice', array(
                 'multiple' => true,

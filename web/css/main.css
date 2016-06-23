@@ -46,3 +46,6 @@ form.dirty{
 .publishOutput span{
     display:block;
 }
+.form-horizontal .radio, .form-horizontal .checkbox {
+    min-height: 49px;
+}

@@ -27,7 +27,10 @@
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" class="rowNumber">{{ n }}</a></td>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
-                                    <td><a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+                                    <td>
+                                        
+                                        <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+                                    </td>
                                 </tr>
                                 {% set n = n + 1 %}
                             {% endfor %}
@@ -50,14 +53,16 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                Dodawanie zasobów 
+                {{action == "addResources" ? "Dodawanie" : "Edycja"}} uprawnień do zasobów 
                 </a>
                 </h4>
             </div>
             <div id="collapse1" class="panel-collapse collapse in">
+                {%if users|length > 1%}
                 <div class="alert alert-info">
                 wszystkim użytkownikom zostanie przypisany ten sam zestaw parametrów: Moduł, Poziom Dostępu etc., po zapisie będzie można edytować to pole per użytkownik
                 </div>
+                {%endif%}
                 <div class="panel-body">
                 {{ form_start(form) }}
                 {{form_widget(form.wniosekId)}}
@@ -87,6 +92,7 @@
                             {% for userzasoby in form.userzasoby %}
                                 <tr>
                                     <td>
+                                        {{form_widget(userzasoby.idd)}}
                                         {{userzasoby.vars.value.zasobNazwa}}
                                         {{form_widget(userzasoby.zasobNazwa)}}
                                     </td>

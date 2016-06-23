@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"nazwaSystemowa"},
  *     errorPath="nazwaSystemowa",
  *     message="Nazwa systemowa musi być unikalna")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,numer,createdBy,createdAt")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,nazwaSystemowa,viewers,editors")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -90,6 +90,13 @@ class WniosekNadanieOdebranieZasobowStatus
     private $editors;
     
     
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $finished = false;
     
     /**
      * Constructor
@@ -228,6 +235,7 @@ class WniosekNadanieOdebranieZasobowStatus
     {
         return $this->viewers;
     }
+    
 
     /**
      * Set editors
@@ -285,5 +293,9 @@ class WniosekNadanieOdebranieZasobowStatus
     public function getWnioski()
     {
         return $this->wnioski;
+    }
+    
+    public function __toString(){
+        return $this->nazwa;
     }
 }

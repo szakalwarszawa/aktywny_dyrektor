@@ -90,6 +90,13 @@ class WniosekNadanieOdebranieZasobowStatus
     private $editors;
     
     
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $finished = false;
     
     /**
      * Constructor
@@ -290,5 +297,29 @@ class WniosekNadanieOdebranieZasobowStatus
     
     public function __toString(){
         return $this->nazwa;
+    }
+
+    /**
+     * Set finished
+     *
+     * @param boolean $finished
+     *
+     * @return WniosekNadanieOdebranieZasobowStatus
+     */
+    public function setFinished($finished)
+    {
+        $this->finished = $finished;
+
+        return $this;
+    }
+
+    /**
+     * Get finished
+     *
+     * @return boolean
+     */
+    public function getFinished()
+    {
+        return $this->finished;
     }
 }

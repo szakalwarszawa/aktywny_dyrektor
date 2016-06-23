@@ -1,0 +1,97 @@
+<?php
+
+namespace Parp\MainBundle\Entity;
+
+use Doctrine\ORM\Mapping as ORM;
+use APY\DataGridBundle\Grid\Mapping as GRID;
+
+/**
+ * UserZasoby
+ *
+ * @ORM\Table(name="wniosek_historia_statusow")
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekHistoriaStatusowRepository")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status,createdBy,createdAt,statusName")
+ * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ */
+class WniosekHistoriaStatusow
+{
+    /**
+     * @var integer
+     *
+     * @ORM\Column(name="id", type="integer")
+     * @ORM\Id
+     * @ORM\GeneratedValue(strategy="AUTO")
+     * @GRID\Column(field="id", title="Numer")
+     */
+    private $id;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $deletedAt;
+
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $rejected = false;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $createdBy;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $createdAt;
+  
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="statusy")
+     * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
+     * @GRID\Column(field="wniosek.id", title="Numer wniosku")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wniosek;
+    
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobowStatus")
+     * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @GRID\Column(field="status.nazwa", title="Status")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $status;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $statusname;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $opis;
+
+    
+}

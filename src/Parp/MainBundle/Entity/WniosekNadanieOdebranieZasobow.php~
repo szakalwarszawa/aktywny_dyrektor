@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,pracownicy")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,pracownicy,userZasoby.opis:group_concat,editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -141,7 +141,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
-     * @GRID\Column(field="userZasoby.opis:group_concat", title="Uprawnienia", filter="select", selectMulti="true")
+     * @GRID\Column(field="userZasoby.opis", title="Uprawnienia", filter="select", selectMulti="true")
      */
     private $userZasoby;
     
@@ -182,6 +182,16 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $editornames;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="WniosekHistoriaStatusow", mappedBy="wniosek")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     * @GRID\Column(field="statusy.nazwa:group_concat", title="Statusy", filter="select", selectMulti="true")
+     */
+    private $statusy;
 
     /**
      * Get id
@@ -699,16 +709,6 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->editornames;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-    }
 
     /**
      * Add child
@@ -767,4 +767,41 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->parent;
     }
+    
+    
+    public function getViewersNames()
+    {
+        $names = [];
+        foreach($this->getViewers() as $v){
+            $names[$v->getSamaccountname()] = $v->getSamaccountname();
+        }    
+        return implode(", ", $names);
+    }
+    
+    public function getEditorsNames()
+    {
+        if(substr($this->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
+            return "";    
+        }
+        $names = [];
+        foreach($this->getEditors() as $v){
+            $names[$v->getSamaccountname()] = $v->getSamaccountname();
+        }    
+        return implode(", ", $names);
+    }
+
+    /**
+     * Add statusy
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $statusy
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function addStatusy(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $statusy)
+    {
+        $this->statusy[] = $statusy;
+
+        return $this;
+    }
+
 }

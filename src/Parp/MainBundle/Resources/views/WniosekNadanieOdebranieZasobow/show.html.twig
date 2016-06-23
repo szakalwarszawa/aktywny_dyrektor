@@ -2,30 +2,51 @@
 
 {% block body -%}
     <div class="col-sm-12">
-        {% if editor %}
-        <div class="btn-group">
-            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek</a>
-            {% if canReturn %}
-            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" class="btn btn-info">Zwrot do poprawy wniosek</a>
-            {%endif%}
-            {% if canUnblock %}
-            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek</a>
-            {%endif%}
-            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek</a>
-            
+        <div class="alert alert-info">
+            <h1>Wniosek o nadanie zasobów numer : {{entity.id}}</h1>
+            <ul>                
+                <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
+                <li><b>Zasoby: </b>
+                {% set i = 0 %}
+                {% for z in entity.userZasoby %}                
+                    {% set i = i + 1%}
+                    {{z.zasobId|zasobNazwa}} {% if i != entity.userZasoby|length %},{%endif%}
+                {% endfor%}
+                </li>
+                <li><b>Statusy:</b></li>
+            </ul>
+            <div class="btn-group">            
+                {% for ss in entity.statusy %}
+                    <span class="btn btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  data-toggle="tooltip" title="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }}" data-placement="right"><i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> </span>
+                {%endfor%}
+                {% if editor %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
+                    {% if canReturn %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                    {%endif%}
+                    {% if canUnblock %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                    {%endif%}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    
+                {% endif %}
+            </div>
         </div>
-        {% endif %}
+    </div>
+    
+    <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
             <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+            <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
         </ul>
         
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Wniosek o nadanie zasobów </h1>
+                
                 <div class="tabContent">
                     <table class="record_properties table table-striped">
                         <tbody>
@@ -49,7 +70,7 @@
                                         Na wnioski:
                                         <ul class="list-group">
                                         {% for w in entity.children %}
-                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.id})}}">{{w.id}} - {{w.createdBy}} @ {{w.createdAt|date}} : {{w.status.nazwa}}</a></li>
+                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.id})}}">Wniosek nr {{w.id}} - {{w.status.nazwa}}</a></li>
                                         {%endfor %}                           
                                         </ul>
                                     {%endif%}
@@ -103,7 +124,7 @@
                     </table>
                     {%if editor%}
                     
-                    <a href="{{path('wnioseknadanieodebraniezasobow_edit', {id: entity.id})}}" class="btn btn-success">Edytuj dane wniosku</a>
+                    <a href="{{path('wnioseknadanieodebraniezasobow_edit', {id: entity.id})}}" class="btn btn-success">Dodaj / usuń użytkowników do wniosku</a>
                     {%endif%}
                 </div>
             </div>            
@@ -140,7 +161,10 @@
                                 <td>{{z.kanalDostepu}}</td>
                                 <td>{{z.uprawnieniaAdministracyjne}}</td>
                                 <td>{{z.odstepstwoOdProcedury}}</td>
-                                <td>{%if editor%}<a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>{%endif%}</td>
+                                <td>{%if editor%}
+                                    <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
+                                    <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
+                                    {%endif%}</td>
                             </tr>
                         {% endfor %}
                     </tbody>
@@ -160,6 +184,11 @@
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: entity.id})) }}
+                </div>
+            </div>
+            <div id="historiaAkceptacji" class="tab-pane fade">
+                <div  class="tabContent">
+                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}                
                 </div>
             </div>
         </div>
