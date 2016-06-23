@@ -141,6 +141,8 @@ class LdapService
     
     public function getMembersOfGroupFromAD($group=FALSE,$inclusive=FALSE)
     {
+        
+         $group = $group ? ldap_escape($group) : $group;
         $userdn = $this->useradn . $this->patch;
         $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
         //die($ldap_dn);
@@ -188,22 +190,29 @@ class LdapService
         // Close query
         if($group) $query .= ")"; else $query .= "";
 
-        $search = ldap_search($ldapconn, $userdn, $query, array(
-            "name",
-            "initials",
-            "title",
-            "info",
-            "department",
-            "description",
-            "division",
-            "lastlogon",
-            "samaccountname",
-            "manager",
-            "thumbnailphoto",
-            "accountExpires",
-            "useraccountcontrol",
-            "accountexpires",
-        ));
+
+        try{
+            $search = ldap_search($ldapconn, $userdn, $query, array(
+                "name",
+                "initials",
+                "title",
+                "info",
+                "department",
+                "description",
+                "division",
+                "lastlogon",
+                "samaccountname",
+                "manager",
+                "thumbnailphoto",
+                "accountExpires",
+                "useraccountcontrol",
+                "accountexpires",
+            ));
+        }catch(\Exception $e){
+            die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage()." ");
+        }
+
+        
         
 /*
         
@@ -275,15 +284,17 @@ class LdapService
      	$query = "(&"; 
      
      	$query .= "(&(objectClass=group))";
-     
-        $query .= "(CN=$group)";
+         $group2 = ldap_escape($group);
+        $query .= "(CN=$group2)";
         
      
         // Close query
         $query .= ")";
-
-        $search = ldap_search($ldapconn, $ldap_dn_grupy, $query);
-        
+        try{
+            $search = ldap_search($ldapconn, $ldap_dn_grupy, $query);
+        }catch(\Exception $e){
+            die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage()." ");
+        }
 /*
         , array(
             "name",
@@ -437,7 +448,7 @@ class LdapService
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
 
-echo "!!!".$searchString."!!!";
+//echo "!!!".$searchString."!!!";
 
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",

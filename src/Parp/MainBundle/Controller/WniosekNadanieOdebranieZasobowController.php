@@ -24,7 +24,7 @@ use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
  */
 class WniosekNadanieOdebranieZasobowController extends Controller
 {
-    protected $debug = true;
+    protected $debug = false;
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
@@ -246,7 +246,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
-                            $where[$ADManager[0]['name']] = $ADManager[0]['name'];
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }else{
                             throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
                         }
@@ -263,7 +263,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
-                            $where[$ADManager[0]['name']] = $ADManager[0]['name'];
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }
                         else
                             throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
@@ -278,7 +278,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     foreach($grupa as $g){
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $ADManager = $ldap->getUserFromAD(null, $g);
-                        $where[$ADUser[0]['name']] = $ADUser[0]['name'];
+                        $where[$ADUser[0]['samaccountname']] = $ADUser[0]['samaccountname'];
                         if ($this->debug) echo "<br>added ".$ADUser[0]['name']."<br>";
                     }
                 }
@@ -386,7 +386,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                             }
                             
-                            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($przelozeni); echo "</pre>"; 
+                            if ($this->debug) echo "<pre>"; \Doctrine\Common\Util\Debug::dump($przelozeni); echo "</pre>"; 
                             //teraz dla kazdego przelozonego tworzy oddzielny wniosek
                             foreach($przelozeni as $sam => $p){
                                 if ($this->debug) echo "<br><br>Tworzy nowy wniosek dla przelozonego  ".$sam." wzietego z osoby  ".$p[0]->getSamaccountname()." :<br><br>";
@@ -401,11 +401,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $wn->setNumer('111');
                                 $users = array();
                                 foreach($p as $uz){
-                                    $wn->setZasobId($uz->getZasobId());
-                                    $users[] =  $uz->getSamaccountname();                               
+                                    $nuz = clone $uz;
+                                    $em->persist($nuz);
+                                    $wn->setZasobId($nuz->getZasobId());
+                                    $users[$nuz->getSamaccountname()] =  $nuz->getSamaccountname();                               
                                     //$wn = new \Parp\MainBundle\Entity\UserZa();
-                                    $uz->setWniosek($wn);
-                                    $wn->addUserZasoby($uz);
+                                    $nuz->setWniosek($wn);
+                                    $wn->addUserZasoby($nuz);
                                 }
                                 
                                 
@@ -415,7 +417,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             }
                             $this->setWniosekStatus($wniosek, "10_PODZIELONY");
                             //$em->remove($wniosek);
-                            die('<br>wszystko poszlo ok');
+                            if ($this->debug) die('<br>wszystko poszlo ok');
                             break;
                         case "return":
                             //nie powinno miec miejsca
@@ -555,6 +557,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'wniosek' => $entity
             )
         );
+        //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
@@ -565,6 +568,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             
             
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
+        }
+        if(substr($entity->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
+            $editor = false;
         }
 
         $deleteForm = $this->createDeleteForm($id);

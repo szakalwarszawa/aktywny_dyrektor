@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="zasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZasobyRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */

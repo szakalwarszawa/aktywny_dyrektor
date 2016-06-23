@@ -57,6 +57,7 @@ class VersionController extends Controller
      */
     public function versionsHistoryAction($repository, $id)
     {
+        //nowe
         $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','','');
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');

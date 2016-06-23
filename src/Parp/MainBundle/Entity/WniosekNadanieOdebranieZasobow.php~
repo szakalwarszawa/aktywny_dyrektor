@@ -3,13 +3,14 @@
 namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 /**
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,numer,createdBy,createdAt")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,pracownicy")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -21,6 +22,7 @@ class WniosekNadanieOdebranieZasobow
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @GRID\Column(field="id", title="Numer")
      */
     private $id;
     
@@ -68,7 +70,7 @@ class WniosekNadanieOdebranieZasobow
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=false)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $numer;
@@ -111,6 +113,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobowStatus", inversedBy="wnioski")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
+     * @GRID\Column(field="status.nazwa", title="Status")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $status;
@@ -138,6 +141,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
+     * @GRID\Column(field="userZasoby.opis:group_concat", title="Uprawnienia", filter="select", selectMulti="true")
      */
     private $userZasoby;
     
@@ -330,7 +334,7 @@ class WniosekNadanieOdebranieZasobow
      */
     public function getNumer()
     {
-        return $this->numer;
+        return $this->id ? $this->id : "Wniosek w trakcie tworzenia";
     }
 
     /**
@@ -694,5 +698,73 @@ class WniosekNadanieOdebranieZasobow
     public function getEditornames()
     {
         return $this->editornames;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add child
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function addChild(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child)
+    {
+        $this->children[] = $child;
+
+        return $this;
+    }
+
+    /**
+     * Remove child
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child
+     */
+    public function removeChild(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $child)
+    {
+        $this->children->removeElement($child);
+    }
+
+    /**
+     * Get children
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getChildren()
+    {
+        return $this->children;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $parent
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setParent(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $parent = null)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }

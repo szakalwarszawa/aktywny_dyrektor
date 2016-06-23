@@ -228,6 +228,7 @@ class WniosekNadanieOdebranieZasobowStatus
     {
         return $this->viewers;
     }
+    
 
     /**
      * Set editors
