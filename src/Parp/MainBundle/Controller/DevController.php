@@ -37,6 +37,17 @@ class DevController extends Controller
 {
     
     /**
+     * @Route("/zasobNazwa/{zid}", name="zasobNazwa")
+     * @Template()
+     */
+    public function zasobNazwaAction($zid)
+    {
+        $n = $this->get('renameService')->zasobNazwa($zid);
+        die($n);
+        
+    }
+    
+    /** 
      * @Route("/check_user_in_ad/{imienazwisko}", name="check_user_in_ad")
      * @Template()
      */

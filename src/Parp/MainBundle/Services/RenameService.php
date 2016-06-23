@@ -16,7 +16,13 @@ use Parp\MainBundle\Services\RedmineConnectService;
 
 class RenameService
 {
-    public function __construct(){
+    protected $doctrine;
+    protected $container;
+
+    public function __construct(EntityManager $OrmEntity, Container $container)
+    {
+        $this->doctrine = $OrmEntity;
+        $this->container = $container;
         
     }
     public function fixImieNazwisko($imienazwisko)
@@ -45,5 +51,20 @@ class RenameService
             'remove' => 'Usunięcie',
         );
         return (isset($titles[$var]) ? $titles[$var] : $var);
+    }
+    
+    public function zasobNazwa($zid){
+        //echo ".".$zid.".";
+        $z = null;
+        try{
+            $this->doctrine->getFilters()->disable('softdeleteable');
+            $z = $this->doctrine->getRepository('ParpMainBundle:Zasoby')->find($zid);
+            
+            $this->doctrine->getFilters()->enable('softdeleteable');
+        }catch(\Exception $e){
+            echo $e->getMessage();
+        }
+        
+        return $z ? $z->getNazwa() : $zid;    
     }
 }

@@ -89,15 +89,15 @@ class UserZasobyType extends AbstractType
     }
     protected function addChoicesFromDictionary($o, $form, $getter, $fieldName){
         $ch = explode(",", $o->{$getter}());            
-        $choices = array();
+        $choices = array("do wypełnienia przez administratora zasobu" => "do wypełnienia przez administratora zasobu");
         foreach($ch as $c){
             $c = trim($c);
             if($c != "")
                 $choices[$c] = $c;
         }
         //print_r($choices);
-        if(count($choices) == 0){
-            $choices = array('n/a' => 'n/a');
+        if(count($choices) == 1){
+            $choices = array('nie dotyczy' => 'nie dotyczy');
         }
         $form->add($fieldName, NestedComboType::class,
             array("choices" => $choices)

@@ -80,4 +80,5 @@ services:
     
     rename_service:
         class : Parp\MainBundle\Services\RenameService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~

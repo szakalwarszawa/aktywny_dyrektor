@@ -48,11 +48,14 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                Dodawanie zasobów
+                Dodawanie zasobów 
                 </a>
                 </h4>
             </div>
             <div id="collapse1" class="panel-collapse collapse in">
+                <div class="alert alert-info">
+                wszystkim użytkownikom zostanie przypisany ten sam zestaw parametrów: Moduł, Poziom Dostępu etc., po zapisie będzie można edytować to pole per użytkownik
+                </div>
                 <div class="panel-body">
                 {{ form_start(form) }}
                 {{form_widget(form.wniosekId)}}

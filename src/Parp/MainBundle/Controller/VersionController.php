@@ -112,6 +112,7 @@ class VersionController extends Controller
         foreach ($entities as $data) {
           $idd = $data['log']->getLoggedAt()->format("YmdhIs");
           //if (isset($result[$id])) {
+             //print_r($data); 
              $result[$idd]['data'][] = $data;
              $result[$idd]['obiekt'][$this->get('rename_service')->objectTitles($data['repo'])] = $this->get('rename_service')->objectTitles($data['repo']);             
              $result[$idd]['user'][$data['log']->getUsername()] = $data['log']->getUsername();

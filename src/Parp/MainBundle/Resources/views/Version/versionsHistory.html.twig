@@ -43,7 +43,11 @@
                                     {%if c in e.log.data|keys or 1 == 1%}
                                         <li class="list-group-item col-sm-4">{{c|gridTitles}} : 
                                         {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}<strong style="color:red">{%endif%}
-                                        {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
+                                        {%if c == "zasobId"%}
+                                            {{ (attribute(e.entity, c))|zasobNazwa}}                               
+                                        {%else%}
+                                            {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
+                                        {%endif%}
                                         {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}</strong>{%endif%}
                                     {%endif%}
                                         </li>
