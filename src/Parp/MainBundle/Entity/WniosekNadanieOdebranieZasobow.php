@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,pracownicy,userZasoby.opis:group_concat,editornames")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */

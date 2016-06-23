@@ -626,7 +626,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $em->flush();
 
         
-        if($wniosek->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){
+        if($isAccepted == "unblock"){
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
+            )));
+        }elseif($wniosek->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
             )));
             
@@ -659,6 +662,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'wniosek' => $entity
             )
         );
+        if($entity->getLockedBy()){
+            $editor = $entity->getLockedBy() == $this->getUser()->getUsername();
+        }elseif($editor){
+            $entity->setLockedBy($this->getUser()->getUsername());
+            $entity->setLockedAt(new \Datetime());
+            $em->flush();
+        }
         //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
@@ -671,9 +681,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
+        
+        
+        
         if(substr($entity->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
+        
 
         $deleteForm = $this->createDeleteForm($id);
         return array(
