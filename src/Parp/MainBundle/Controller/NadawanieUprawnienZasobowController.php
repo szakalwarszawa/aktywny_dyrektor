@@ -154,7 +154,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     
                     $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
                 }else{
-                    if($wniosek->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
+                    if($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
                         $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
                     }else{
                         //tylko jesli juz jest we wniosku

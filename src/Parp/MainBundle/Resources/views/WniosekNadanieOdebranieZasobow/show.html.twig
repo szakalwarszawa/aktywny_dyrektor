@@ -16,7 +16,7 @@
                 <li><b>Statusy:</b></li>
             </ul>
             <div class="btn-group">            
-                {% for ss in entity.statusy %}
+                {% for ss in entity.wniosek.statusy %}
                     <span class="btn btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  data-toggle="tooltip" title="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }}" data-placement="right"><i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> </span>
                 {%endfor%}
                 {% if editor %}
@@ -27,7 +27,7 @@
                     {% if canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                     {%endif%}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                     
                 {% endif %}
             </div>
@@ -54,19 +54,19 @@
                             <tr>
                                 <th>Numer</th>
                                 <td>
-                                    <div class="alert alert-success">{{ entity.numer }}</div>
+                                    <div class="alert alert-success">{{ entity.wniosek.numer }}</div>
                                     
-                                    {% if entity.parent%}
+                                    {% if entity.wniosek.parent%}
                                         
-                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.parent.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.parent.id}}</a>
+                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.id}}</a>
                                     {%endif%}
                                 </td>
                             </tr>
                             <tr>
                                 <th>Status</th>
                                 <td>
-                                    {{ entity.status }}
-                                    {% if entity.status.nazwaSystemowa == "10_PODZIELONY" %}
+                                    {{ entity.wniosek.status }}
+                                    {% if entity.wniosek.status.nazwaSystemowa == "10_PODZIELONY" %}
                                         Na wnioski:
                                         <ul class="list-group">
                                         {% for w in entity.children %}
@@ -78,7 +78,7 @@
                             </tr>
                             <tr>
                                 <th>Jednostka organizacyjna</th>
-                                <td>{{ entity.jednostkaOrganizacyjna }}</td>
+                                <td>{{ entity.wniosek.jednostkaOrganizacyjna }}</td>
                             </tr>
                             <tr>
                                 <th>Pracownicy</th>
@@ -98,27 +98,27 @@
                             </tr>
                             <tr>
                                 <th>Created by</th>
-                                <td>{{ entity.createdBy }}</td>
+                                <td>{{ entity.wniosek.createdBy }}</td>
                             </tr>
                             <tr>
                                 <th>Created at</th>
-                                <td>{{ entity.createdAt|datetime }}</td>
+                                <td>{{ entity.wniosek.createdAt|datetime }}</td>
                             </tr>
                             <tr>
                                 <th>Locked by</th>
-                                <td>{{ entity.lockedBy }}</td>
+                                <td>{{ entity.wniosek.lockedBy }}</td>
                             </tr>
                             <tr>
                                 <th>Locked at</th>
-                                <td>{{ entity.lockedAt|datetime }}</td>
+                                <td>{{ entity.wniosek.lockedAt|datetime }}</td>
                             </tr>
                             <tr>
                                 <th>Viewers</th>
-                                <td>{{ entity.viewersnames }}</td>
+                                <td>{{ entity.wniosek.viewersnames }}</td>
                             </tr>
                             <tr>
                                 <th>Editors</th>
-                                <td>{{ entity.editorsnames }}</td>
+                                <td>{{ entity.wniosek.editorsnames }}</td>
                             </tr>
                         </tbody>
                     </table>

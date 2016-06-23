@@ -21,17 +21,6 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     {
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
-            //->add('deletedAt')
-            ->add('numer', 'text', array(
-                'attr' => array('readonly' => true)
-            ))
-            ->add('jednostkaOrganizacyjna', 'text', array(
-                'attr' => array('readonly' => true)
-            ))
-            ->add('status', 'entity', array(
-                'class' => 'ParpMainBundle:WniosekNadanieOdebranieZasobowStatus',
-                'attr' => array('readonly' => true, 'disabled' => 'disabled'),
-            ))
             ->add('pracownikSpozaParp')
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,
@@ -43,24 +32,10 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'mapped' => true,
                 'required' => false
             ))
-            ->add('createdBy', 'text', array(
-                'attr' => array('readonly' => true),
-                'label' => 'Utworzony przez'
-            ))
-            ->add('createdAt', 'datetime', array(
-                'attr' => array('readonly' => true),
-                'label' => 'Utworzony dnia',
-                'widget' => 'single_text'
-            ))
-            ->add('lockedBy', 'text', array(
-                'attr' => array('readonly' => true),
-                'label' => 'Edytowany (zablokowany) przez'
-            ))
-            ->add('lockedAt', 'datetime', array(
-                'attr' => array('readonly' => true),
-                'label' => 'Edytowany (zablokowany) dnia',
-                'widget' => 'single_text'
-            ))
+            
+            ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
+                'data_class' => 'Parp\MainBundle\Entity\Wniosek')
+            )
         ;
     }
     

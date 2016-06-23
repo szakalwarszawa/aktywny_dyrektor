@@ -60,7 +60,7 @@ class WniosekHistoriaStatusow
   
     /**
      *
-     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="statusy")
+     * @ORM\ManyToOne(targetEntity="Wniosek", inversedBy="statusy")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @GRID\Column(field="wniosek.id", title="Numer wniosku")
      * @Gedmo\Mapping\Annotation\Versioned
@@ -69,7 +69,7 @@ class WniosekHistoriaStatusow
     
     /**
      *
-     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobowStatus")
+     * @ORM\ManyToOne(targetEntity="WniosekStatus")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      * @GRID\Column(field="status.nazwa", title="Status")
      * @Gedmo\Mapping\Annotation\Versioned
@@ -249,14 +249,15 @@ class WniosekHistoriaStatusow
         return $this->opis;
     }
 
+
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
      *
      * @return WniosekHistoriaStatusow
      */
-    public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
+    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -266,7 +267,7 @@ class WniosekHistoriaStatusow
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     * @return \Parp\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {
@@ -276,11 +277,11 @@ class WniosekHistoriaStatusow
     /**
      * Set status
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatus $status
+     * @param \Parp\MainBundle\Entity\WniosekStatus $status
      *
      * @return WniosekHistoriaStatusow
      */
-    public function setStatus(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatus $status = null)
+    public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
     {
         $this->status = $status;
 
@@ -290,13 +291,10 @@ class WniosekHistoriaStatusow
     /**
      * Get status
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatus
+     * @return \Parp\MainBundle\Entity\WniosekStatus
      */
     public function getStatus()
     {
         return $this->status;
-    }
-    public function __toString(){
-        return $this->getStatusname();
     }
 }

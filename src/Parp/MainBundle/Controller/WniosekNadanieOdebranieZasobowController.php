@@ -75,10 +75,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $sam, $ktore)
             {
-                $query->leftJoin($tableAlias . '.viewers', 'w');
-                $query->leftJoin($tableAlias . '.editors', 'e');
-                $query->leftJoin($tableAlias . '.status', 's');
-                $query->andWhere('w.samaccountname = \''.$sam.'\'');
+                $query->leftJoin($tableAlias . '.wniosek', 'w');
+                $query->leftJoin('w.viewers', 'v');
+                $query->leftJoin('w.editors', 'e');
+                $query->leftJoin('w.status', 's');
+                $query->andWhere('v.samaccountname = \''.$sam.'\'');
                 
                 $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
                 switch($ktore){
@@ -157,6 +158,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $em = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, "00_TWORZONY", false);
             $em->persist($entity);
+            $em->persist($entity->getWniosek());
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
@@ -226,16 +228,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
         
-        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
         
         $entity = new WniosekNadanieOdebranieZasobow();
-        $entity->setCreatedAt(new \Datetime());
-        $entity->setLockedAt(new \Datetime());
-        $entity->setCreatedBy($this->getUser()->getUsername());
-        $entity->setLockedBy($this->getUser()->getUsername());
-        $entity->setNumer('wniosek w trakcie tworzenia');
-        $entity->setJednostkaOrganizacyjna($ADUser[0]['department']);
-        $entity->setStatus($status);
+        $entity->getWniosek()->setCreatedAt(new \Datetime());
+        $entity->getWniosek()->setLockedAt(new \Datetime());
+        $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
+        $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
+        $entity->getWniosek()->setStatus($status);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -256,7 +258,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "podmiot":
                 //
-                foreach($wniosek->getUserZasoby() as $u){
+                foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();   
                     if ($this->debug) echo "<br>added ".$u->getSamaccountname()."<br>"; 
                 }
@@ -344,60 +346,60 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         
         $em = $this->getDoctrine()->getManager();
-        $status = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowStatus')->findOneByNazwaSystemowa($statusName);
-        $wniosek->setStatus($status);
-        $wniosek->setLockedBy(null);
-        $wniosek->setLockedAt(null);
+        $status = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($statusName);
+        $wniosek->getWniosek()->setStatus($status);
+        $wniosek->getWniosek()->setLockedBy(null);
+        $wniosek->getWniosek()->setLockedAt(null);
         $viewers = array();
         $editors = array();
         $vs = explode(",",$status->getViewers());
         foreach($vs as $v){
-            $this->addViewersEditors($wniosek, $viewers, $v);
+            $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
         }
         //if(!$rejected){
             $es = explode(",", $status->getEditors());
             foreach($es as $e){
-                $this->addViewersEditors($wniosek, $editors, $e);
+                $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
             }
         //}
         
         
         //kasuje viewerow
-        foreach($wniosek->getViewers() as $v){
-            $wniosek->removeViewer($v);
+        foreach($wniosek->getWniosek()->getViewers() as $v){
+            $wniosek->getWniosek()->removeViewer($v);
             $em->remove($v);
         }
         //kasuje editorow
-        foreach($wniosek->getEditors() as $v){
-            $wniosek->removeEditor($v);
+        foreach($wniosek->getWniosek()->getEditors() as $v){
+            $wniosek->getWniosek()->removeEditor($v);
             $em->remove($v);
         }
         //dodaje viewerow 
         foreach($viewers as $v){
-            $wv = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowViewer();
-            $wv->setWniosek($wniosek);
-            $wniosek->addViewer($wv);
+            $wv = new \Parp\MainBundle\Entity\WniosekViewer();
+            $wv->setWniosek($wniosek->getWniosek());
+            $wniosek->getWniosek()->addViewer($wv);
             $wv->setSamaccountname($v);
             if ($this->debug) echo "<br>dodaje usera viewra ".$v;
             $em->persist($wv);
         }
-        $wniosek->setViewernamesSet();
+        $wniosek->getWniosek()->setViewernamesSet();
         //dodaje editorow
         foreach($editors as $v){
-            $wv = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor();
-            $wv->setWniosek($wniosek);
-            $wniosek->addEditor($wv);
+            $wv = new \Parp\MainBundle\Entity\WniosekEditor();
+            $wv->setWniosek($wniosek->getWniosek());
+            $wniosek->getWniosek()->addEditor($wv);
             $wv->setSamaccountname($v);
             if ($this->debug) echo "<br>dodaje usera editora ".$v;
             $em->persist($wv);
         }
         
-        $wniosek->setEditornamesSet();
+        $wniosek->getWniosek()->setEditornamesSet();
         
         //wstawia historie statusow
         $sh = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
-        $sh->setWniosek($wniosek);
-        $wniosek->addStatusy($sh);
+        $sh->setWniosek($wniosek->getWniosek());
+        $wniosek->getWniosek()->addStatusy($sh);
         $sh->setCreatedAt(new \Datetime());
         $sh->setRejected($rejected);
         $sh->setCreatedBy($this->getUser()->getUsername());
@@ -434,7 +436,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, "08_ROZPATRZONY_NEGATYWNIE", true);
         }else{
-            switch($wniosek->getStatus()->getNazwaSystemowa()){
+            switch($wniosek->getWniosek()->getStatus()->getNazwaSystemowa()){
                 case "00_TWORZONY":
                     switch($isAccepted){
                         case "accept":
@@ -657,20 +659,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
         
-        $editor = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->findOneBy(array(
+        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
             )
         );
-        if($entity->getLockedBy()){
-            $editor = $entity->getLockedBy() == $this->getUser()->getUsername();
+        if($entity->getWniosek()->getLockedBy()){
+            $editor = $entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername();
         }elseif($editor){
-            $entity->setLockedBy($this->getUser()->getUsername());
-            $entity->setLockedAt(new \Datetime());
+            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+            $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
         //die(($editor->getId()).".");
-        $viewer = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findOneBy(array(
+        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
             )
@@ -684,7 +686,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         
         
-        if(substr($entity->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
+        if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
         
@@ -695,8 +697,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'delete_form' => $deleteForm->createView(),
             'userzasoby' => $uzs,
             'editor' => $editor,
-            'canReturn' => ($entity->getStatus()->getNazwaSystemowa() != "00_TWORZONY" && $entity->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA"),
-            'canUnblock' => ($entity->getLockedBy() == $this->getUser()->getUsername())
+            'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA"),
+            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername())
         );
     }
     
@@ -764,7 +766,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
         
-        $editor = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->findOneBy(array(
+        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
             )
@@ -776,7 +778,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $entity->setLockedAt(new \Datetime());
             $em->flush();
         }
-        $viewer = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findOneBy(array(
+        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity
             )

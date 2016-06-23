@@ -7,7 +7,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 
-class WniosekNadanieOdebranieZasobowStatusType extends AbstractType
+class WniosekStatusType extends AbstractType
 {
     protected $role = array(
                     'wnioskodawca' => 'wnioskodawca',
@@ -59,7 +59,7 @@ class WniosekNadanieOdebranieZasobowStatusType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatus'
+            'data_class' => 'Parp\MainBundle\Entity\WniosekStatus'
         ));
     }
 
@@ -68,6 +68,6 @@ class WniosekNadanieOdebranieZasobowStatusType extends AbstractType
      */
     public function getName()
     {
-        return 'parp_mainbundle_wnioseknadanieodebraniezasobowstatus';
+        return 'parp_mainbundle_wniosekstatus';
     }
 }

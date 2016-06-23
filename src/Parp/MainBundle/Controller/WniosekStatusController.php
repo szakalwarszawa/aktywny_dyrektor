@@ -14,30 +14,39 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor;
-use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowEditorType;
+use Parp\MainBundle\Entity\WniosekStatus;
+use Parp\MainBundle\Form\WniosekStatusType;
 
 /**
- * WniosekNadanieOdebranieZasobowEditor controller.
+ * WniosekStatus controller.
  *
- * @Route("/wnioseknadanieodebraniezasoboweditor")
+ * @Route("/wniosekstatus")
  */
-class WniosekNadanieOdebranieZasobowEditorController extends Controller
+class WniosekStatusController extends Controller
 {
 
     /**
-     * Lists all WniosekNadanieOdebranieZasobowEditor entities.
+     * Lists all WniosekStatus entities.
      *
-     * @Route("/index", name="wnioseknadanieodebraniezasoboweditor")
+     * @Route("/index", name="wniosekstatus")
      * @Template()
      */
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->findAll();
+        //$entities = $em->getRepository('ParpMainBundle:WniosekStatus')->findAll();
     
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor');
+        $source = new Entity('ParpMainBundle:WniosekStatus');
     
+        $tableAlias = $source->getTableAlias();
+        //die($co);
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias)
+            {
+                $query->addOrderBy($tableAlias . '.nazwaSystemowa', 'ASC');
+                
+            }
+        );
         $grid = $this->get('grid');
         $grid->setSource($source);
     
@@ -51,12 +60,12 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
                 ->setSafe(true);
     
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wnioseknadanieodebraniezasoboweditor_edit');
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosekstatus_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
     
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasoboweditor_delete');
+        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosekstatus_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
     
@@ -73,15 +82,15 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
         return $grid->getGridResponse();
     }
     /**
-     * Creates a new WniosekNadanieOdebranieZasobowEditor entity.
+     * Creates a new WniosekStatus entity.
      *
-     * @Route("/", name="wnioseknadanieodebraniezasoboweditor_create")
+     * @Route("/", name="wniosekstatus_create")
      * @Method("POST")
-     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobowEditor:new.html.twig")
+     * @Template("ParpMainBundle:WniosekStatus:new.html.twig")
      */
     public function createAction(Request $request)
     {
-        $entity = new WniosekNadanieOdebranieZasobowEditor();
+        $entity = new WniosekStatus();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
 
@@ -90,8 +99,8 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'WniosekNadanieOdebranieZasobowEditor został utworzony.');
-                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasoboweditor'));
+            $this->get('session')->getFlashBag()->set('warning', 'WniosekStatus został utworzony.');
+                return $this->redirect($this->generateUrl('wniosekstatus'));
         }
 
         return array(
@@ -101,34 +110,34 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     }
 
     /**
-     * Creates a form to create a WniosekNadanieOdebranieZasobowEditor entity.
+     * Creates a form to create a WniosekStatus entity.
      *
-     * @param WniosekNadanieOdebranieZasobowEditor $entity The entity
+     * @param WniosekStatus $entity The entity
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(WniosekNadanieOdebranieZasobowEditor $entity)
+    private function createCreateForm(WniosekStatus $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowEditorType(), $entity, array(
-            'action' => $this->generateUrl('wnioseknadanieodebraniezasoboweditor_create'),
+        $form = $this->createForm(new WniosekStatusType(), $entity, array(
+            'action' => $this->generateUrl('wniosekstatus_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz WniosekNadanieOdebranieZasobowEditor', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Status', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
 
     /**
-     * Displays a form to create a new WniosekNadanieOdebranieZasobowEditor entity.
+     * Displays a form to create a new WniosekStatus entity.
      *
-     * @Route("/new", name="wnioseknadanieodebraniezasoboweditor_new")
+     * @Route("/new", name="wniosekstatus_new")
      * @Method("GET")
      * @Template()
      */
     public function newAction()
     {
-        $entity = new WniosekNadanieOdebranieZasobowEditor();
+        $entity = new WniosekStatus();
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -138,9 +147,9 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     }
 
     /**
-     * Finds and displays a WniosekNadanieOdebranieZasobowEditor entity.
+     * Finds and displays a WniosekStatus entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasoboweditor_show")
+     * @Route("/{id}", name="wniosekstatus_show")
      * @Method("GET")
      * @Template()
      */
@@ -148,10 +157,10 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
+            throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -163,9 +172,9 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing WniosekNadanieOdebranieZasobowEditor entity.
+     * Displays a form to edit an existing WniosekStatus entity.
      *
-     * @Route("/{id}/edit", name="wnioseknadanieodebraniezasoboweditor_edit")
+     * @Route("/{id}/edit", name="wniosekstatus_edit")
      * @Method("GET")
      * @Template()
      */
@@ -173,10 +182,10 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
+            throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
         }
 
         $editForm = $this->createEditForm($entity);
@@ -190,16 +199,16 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     }
 
     /**
-    * Creates a form to edit a WniosekNadanieOdebranieZasobowEditor entity.
+    * Creates a form to edit a WniosekStatus entity.
     *
-    * @param WniosekNadanieOdebranieZasobowEditor $entity The entity
+    * @param WniosekStatus $entity The entity
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(WniosekNadanieOdebranieZasobowEditor $entity)
+    private function createEditForm(WniosekStatus $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowEditorType(), $entity, array(
-            'action' => $this->generateUrl('wnioseknadanieodebraniezasoboweditor_update', array('id' => $entity->getId())),
+        $form = $this->createForm(new WniosekStatusType(), $entity, array(
+            'action' => $this->generateUrl('wniosekstatus_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
@@ -208,20 +217,20 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
         return $form;
     }
     /**
-     * Edits an existing WniosekNadanieOdebranieZasobowEditor entity.
+     * Edits an existing WniosekStatus entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasoboweditor_update")
+     * @Route("/{id}", name="wniosekstatus_update")
      * @Method("PUT")
-     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobowEditor:edit.html.twig")
+     * @Template("ParpMainBundle:WniosekStatus:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
+            throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -231,7 +240,7 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
-            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasoboweditor_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('wniosekstatus_edit', array('id' => $id)));
         }
 
         return array(
@@ -241,9 +250,9 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
         );
     }
     /**
-     * Deletes a WniosekNadanieOdebranieZasobowEditor entity.
+     * Deletes a WniosekStatus entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasoboweditor_delete")
+     * @Route("/{id}", name="wniosekstatus_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)
@@ -253,21 +262,21 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+            $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
+                throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
             }
 
             $em->remove($entity);
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasoboweditor'));
+        return $this->redirect($this->generateUrl('wniosekstatus'));
     }
 
     /**
-     * Creates a form to delete a WniosekNadanieOdebranieZasobowEditor entity by id.
+     * Creates a form to delete a WniosekStatus entity by id.
      *
      * @param mixed $id The entity id
      *
@@ -276,9 +285,9 @@ class WniosekNadanieOdebranieZasobowEditorController extends Controller
     private function createDeleteForm($id)
     {
         return $this->createFormBuilder()
-            ->setAction($this->generateUrl('wnioseknadanieodebraniezasoboweditor_delete', array('id' => $id)))
+            ->setAction($this->generateUrl('wniosekstatus_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj WniosekNadanieOdebranieZasobowEditor','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Skasuj Status','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

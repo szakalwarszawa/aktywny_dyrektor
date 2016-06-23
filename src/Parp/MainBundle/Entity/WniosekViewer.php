@@ -7,13 +7,13 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserZasoby
  *
- * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow_editor")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditorRepository")
+ * @ORM\Table(name="wniosek_viewer")
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekViewerRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
-class WniosekNadanieOdebranieZasobowEditor
+class WniosekViewer
 {
     /**
      * @var integer
@@ -42,7 +42,7 @@ class WniosekNadanieOdebranieZasobowEditor
     
     /**
      *
-     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="editors")
+     * @ORM\ManyToOne(targetEntity="Wniosek", inversedBy="viewers")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */
@@ -63,7 +63,7 @@ class WniosekNadanieOdebranieZasobowEditor
      *
      * @param \DateTime $deletedAt
      *
-     * @return WniosekNadanieOdebranieZasobowEditor
+     * @return WniosekViewer
      */
     public function setDeletedAt($deletedAt)
     {
@@ -87,7 +87,7 @@ class WniosekNadanieOdebranieZasobowEditor
      *
      * @param string $samaccountname
      *
-     * @return WniosekNadanieOdebranieZasobowEditor
+     * @return WniosekViewer
      */
     public function setSamaccountname($samaccountname)
     {
@@ -109,11 +109,11 @@ class WniosekNadanieOdebranieZasobowEditor
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
      *
-     * @return WniosekNadanieOdebranieZasobowEditor
+     * @return WniosekViewer
      */
-    public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
+    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -123,7 +123,7 @@ class WniosekNadanieOdebranieZasobowEditor
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     * @return \Parp\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {

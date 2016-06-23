@@ -13,7 +13,7 @@
                 <div class="tabContent">
                                         <div class="btn-group">
 
-<a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobowstatus') }}">
+<a class="btn btn-primary" href="{{ path('wniosekstatus') }}">
     <i class="fa fa-list"></i> Lista statusów
 </a>
 </div>
@@ -23,7 +23,7 @@
             </div>            
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekNadanieOdebranieZasobowStatus', id: edit_form.vars.value.id})) }}
+                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekStatus', id: edit_form.vars.value.id})) }}
                 </div>
             </div>
         </div>

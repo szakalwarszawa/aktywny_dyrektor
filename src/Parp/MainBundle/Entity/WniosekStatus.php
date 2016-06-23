@@ -8,8 +8,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 /**
  * UserZasoby
  *
- * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow_status")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowStatusRepository")
+ * @ORM\Table(name="wniosek_status")
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekStatusRepository")
   * @UniqueEntity(
  *     fields={"nazwaSystemowa"},
  *     errorPath="nazwaSystemowa",
@@ -18,7 +18,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
-class WniosekNadanieOdebranieZasobowStatus
+class WniosekStatus
 {
     /**
      * @var integer
@@ -41,7 +41,7 @@ class WniosekNadanieOdebranieZasobowStatus
     /**
      * @var string
      *
-     * @ORM\OneToMany(targetEntity="WniosekNadanieOdebranieZasobow", mappedBy="status")
+     * @ORM\OneToMany(targetEntity="Wniosek", mappedBy="status")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $wnioski;
@@ -121,7 +121,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param \DateTime $deletedAt
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setDeletedAt($deletedAt)
     {
@@ -145,7 +145,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param string $nazwa
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setNazwa($nazwa)
     {
@@ -169,7 +169,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param string $nazwaSystemowa
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setNazwaSystemowa($nazwaSystemowa)
     {
@@ -193,7 +193,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param string $opis
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setOpis($opis)
     {
@@ -217,7 +217,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param string $viewers
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setViewers($viewers)
     {
@@ -242,7 +242,7 @@ class WniosekNadanieOdebranieZasobowStatus
      *
      * @param string $editors
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
     public function setEditors($editors)
     {
@@ -261,41 +261,32 @@ class WniosekNadanieOdebranieZasobowStatus
         return $this->editors;
     }
 
+
     /**
-     * Add wnioski
+     * Set finished
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wnioski
+     * @param boolean $finished
      *
-     * @return WniosekNadanieOdebranieZasobowStatus
+     * @return WniosekStatus
      */
-    public function addWnioski(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wnioski)
+    public function setFinished($finished)
     {
-        $this->wnioski[] = $wnioski;
+        $this->finished = $finished;
 
         return $this;
     }
 
     /**
-     * Remove wnioski
+     * Get finished
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wnioski
+     * @return boolean
      */
-    public function removeWnioski(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wnioski)
+    public function getFinished()
     {
-        $this->wnioski->removeElement($wnioski);
-    }
-
-    /**
-     * Get wnioski
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getWnioski()
-    {
-        return $this->wnioski;
+        return $this->finished;
     }
     
     public function __toString(){
-        return $this->nazwa;
+        return $this->getNazwa();
     }
 }

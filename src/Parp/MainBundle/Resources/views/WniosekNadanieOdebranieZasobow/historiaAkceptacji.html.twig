@@ -8,7 +8,7 @@
             <th>Zaakceptowano</th>
         </tr>
 
-        {% for ss in entity.statusy %}
+        {% for ss in entity.wniosek.statusy %}
             <tr>
                 <td>{{ ss.createdAt|date("Y-m-d H:i:s")}}</td>
                 <td>{{ ss.createdBy }}</td>
