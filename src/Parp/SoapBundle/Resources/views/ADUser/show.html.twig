@@ -1,0 +1,93 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: ADUser</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy ADUser ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Samaccountname</th>
+                <td>{{ entity.samaccountname }}</td>
+            </tr>
+            <tr>
+                <th>Isdisabled</th>
+                <td>{{ entity.isDisabled }}</td>
+            </tr>
+            <tr>
+                <th>Accountexpires</th>
+                <td>{{ entity.accountExpires }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ entity.name }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ entity.email }}</td>
+            </tr>
+            <tr>
+                <th>Initials</th>
+                <td>{{ entity.initials }}</td>
+            </tr>
+            <tr>
+                <th>Title</th>
+                <td>{{ entity.title }}</td>
+            </tr>
+            <tr>
+                <th>Info</th>
+                <td>{{ entity.info }}</td>
+            </tr>
+            <tr>
+                <th>Department</th>
+                <td>{{ entity.department }}</td>
+            </tr>
+            <tr>
+                <th>Division</th>
+                <td>{{ entity.division }}</td>
+            </tr>
+            <tr>
+                <th>Lastlogon</th>
+                <td>{{ entity.lastlogon }}</td>
+            </tr>
+            <tr>
+                <th>Manager</th>
+                <td>{{ entity.manager }}</td>
+            </tr>
+            <tr>
+                <th>Thumbnailphoto</th>
+                <td>{{ entity.thumbnailphoto }}</td>
+            </tr>
+            <tr>
+                <th>Useraccountcontrol</th>
+                <td>{{ entity.useraccountcontrol }}</td>
+            </tr>
+            <tr>
+                <th>Distinguishedname</th>
+                <td>{{ entity.distinguishedname }}</td>
+            </tr>
+            <tr>
+                <th>Cn</th>
+                <td>{{ entity.cn }}</td>
+            </tr>
+            <tr>
+                <th>Memberof</th>
+                <td>{{ entity.memberOf }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}

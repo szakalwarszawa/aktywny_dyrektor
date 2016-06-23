@@ -22,6 +22,26 @@ class LdapService
     protected $patch;
     protected $useradn ;
     protected $_ouWithGroups = "PARP Grupy";
+    
+    protected $ADattributes = array(
+        "name",
+        "initials",
+        "title",
+        "info",
+        "department",
+        "description",
+        "division",
+        "lastlogon",
+        "samaccountname",
+        "manager",
+        "thumbnailphoto",
+        "accountExpires",
+        "accountexpires",
+        "useraccountcontrol",
+        "distinguishedName",
+        "cn",
+        'memberOf',
+    );
 
     public function __construct(SecurityContextInterface $securityContext, Container $container)
     {
@@ -77,57 +97,16 @@ class LdapService
 
         $tmpResults = array();
         foreach ($letters_array as $letter) {
-            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=" . $letter . "*)(objectClass=person))", array(
-                "name",
-                "initials",
-                "title",
-                "info",
-                "department",
-                "description",
-                "division",
-                "lastlogon",
-                "samaccountname",
-                "manager",
-                "thumbnailphoto",
-                "accountExpires",
-                "useraccountcontrol",
-                "accountexpires",
-            ));
+            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=" . $letter . "*)(objectClass=person))", $this->ADattributes);
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
         }
         ldap_bind($ldapconn);
 
-        $result = array();
-        $index = 0;
-//$tmp = array();
-        foreach ($tmpResults as $tmpResult) {
-            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+        
+        $result = $this->parseResults($tmpResults);
 
-            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
-            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
-            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
-            if (isset($tmpResult["accountexpires"][0])) {
-                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
-                    $result[$index]["accountexpires"] = "";
-                } else {
-                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
-                }
-            }
-
-            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
-            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
-            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
-            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
-            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
-            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
-            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
-            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
-            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
-//            $tmp[]=$result[$index]["info"];
-            if (isset($tmpResult["samaccountname"]))
-                $index++;
-        }
+        //echo "<pre>";
             //var_dump($result);
             //die();
 //        foreach(array_unique($tmp) as $unTmp){
@@ -192,22 +171,7 @@ class LdapService
 
 
         try{
-            $search = ldap_search($ldapconn, $userdn, $query, array(
-                "name",
-                "initials",
-                "title",
-                "info",
-                "department",
-                "description",
-                "division",
-                "lastlogon",
-                "samaccountname",
-                "manager",
-                "thumbnailphoto",
-                "accountExpires",
-                "useraccountcontrol",
-                "accountexpires",
-            ));
+            $search = ldap_search($ldapconn, $userdn, $query, $this->ADattributes);
         }catch(\Exception $e){
             die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage()." ");
         }
@@ -223,36 +187,9 @@ class LdapService
         //print_r($results); //die();
         ldap_bind($ldapconn);
 
-        $result = array();
-        $index = 0;
-//$tmp = array();
-        foreach ($results as $tmpResult) {
-            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+        
+        $result = $this->parseResults($results);
 
-            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
-            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
-            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
-            if (isset($tmpResult["accountexpires"][0])) {
-                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
-                    $result[$index]["accountexpires"] = "";
-                } else {
-                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
-                }
-            }
-
-            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
-            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
-            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
-            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
-            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
-            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
-            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
-            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
-            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
-//            $tmp[]=$result[$index]["info"];
-            if (isset($tmpResult["samaccountname"]))
-                $index++;
-        }
 //        foreach(array_unique($tmp) as $unTmp){
 //            echo "insert into section (`name`) values ('".$unTmp."');<br />";
 //        }
@@ -450,29 +387,17 @@ class LdapService
 
 //echo "!!!".$searchString."!!!";
 
-        $search = ldap_search($ldapconn, $userdn, $searchString, array(
-            "name",
-            "mail",
-            "initials",
-            "title",
-            "info",
-            "department",
-            "description",
-            "division",
-            "lastlogon",
-            "samaccountname",
-            "manager",
-            "thumbnailphoto",
-            "accountExpires",
-            "useraccountcontrol",
-            "distinguishedName",
-            "cn",
-            'memberOf',
-            'useraccountcontrol'
-        ));
+        $search = ldap_search($ldapconn, $userdn, $searchString, $this->ADattributes);
         $tmpResults = ldap_get_entries($ldapconn, $search);
         ldap_unbind($ldapconn);
 
+        $result = $this->parseResults($tmpResults);
+
+//        $memcached->set('ldap-detail-'.$samaccountname,$result);
+        return $result;
+    }
+    
+    protected function parseResults($tmpResults){
         $result = array();
         //print_r($userdn); die();
 
@@ -488,6 +413,13 @@ class LdapService
                 $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546" ? 1 : 0;
                 $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
                 $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
+                if (isset($tmpResult["accountexpires"][0])) {
+                    if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
+                        $result[$i]["accountexpires"] = "";
+                    } else {
+                        $result[$i]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
+                    }
+                }
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
                 $result[$i]["email"] = isset($tmpResult["mail"][0]) ? $tmpResult["mail"][0] : "";
                 $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
@@ -495,10 +427,13 @@ class LdapService
                 $result[$i]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
                 $result[$i]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
                 $result[$i]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
-                $result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $result[$i]["description"]);
+                $result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
+                //$result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $tmpResult["description"][0]);
+                $result[$i]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
                 //$result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
                 $result[$i]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
+                $result[$i]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
@@ -514,10 +449,84 @@ class LdapService
                 $i++;
             }
         }
+        
+        /*
+            
+        $result = array();
+        $index = 0;
+//$tmp = array();
+        foreach ($results as $tmpResult) {
+            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
 
-//        $memcached->set('ldap-detail-'.$samaccountname,$result);
+            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
+            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
+            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
+            if (isset($tmpResult["accountexpires"][0])) {
+                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
+                    $result[$index]["accountexpires"] = "";
+                } else {
+                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
+                }
+            }
+
+            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
+            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
+            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
+            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
+            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
+            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
+            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
+            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
+            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
+//            $tmp[]=$result[$index]["info"];
+            if (isset($tmpResult["samaccountname"]))
+                $index++;
+        }
+            
+            */
+        
+        
+        /*
+            
+            
+            
+        $result = array();
+        $index = 0;
+//$tmp = array();
+        foreach ($tmpResults as $tmpResult) {
+            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
+
+            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
+            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
+            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
+            if (isset($tmpResult["accountexpires"][0])) {
+                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
+                    $result[$index]["accountexpires"] = "";
+                } else {
+                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
+                }
+            }
+
+            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
+            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
+            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
+            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
+            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
+            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
+            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
+            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
+            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
+//            $tmp[]=$result[$index]["info"];
+            if (isset($tmpResult["samaccountname"]))
+                $index++;
+        }
+            
+            */
+        
         return $result;
     }
+    
+    
     protected function parseMemberOf($res){
         $ret = array();
         $gr = isset($res["memberof"]) ? $res["memberof"]: array();

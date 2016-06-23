@@ -138,12 +138,12 @@ class VersionController extends Controller
     
     
     /**
-     * @Route("/versions/{repository}/{id}", name="versions")
+     * @Route("/versions/{repository}/{id}/{bundle}", name="versions", defaults={"bundle" : "MainBundle"})
      * @Template()
      */
-    public function versionsAction($repository, $id)
+    public function versionsAction($repository, $id, $bundle = "MainBundle")
     {
-        $className = "Parp\\MainBundle\\Entity\\".$repository;
+        $className = "Parp\\".$bundle."\\Entity\\".$repository;
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
         $entity = $em->find($className, $id);

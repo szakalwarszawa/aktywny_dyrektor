@@ -1,0 +1,22 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+<h1>Lista ADUser</h1>
+{% for flashMessage in app.session.flashbag.get('warning') %}
+    <div class="alert alert-info">
+        <button type="button" class="close" data-dismiss="alert">&times;</button>
+        <strong>Uwaga!</strong> 
+        {{ flashMessage }}
+    </div>       
+{% endfor %}
+
+<center>
+    <div class="btn-group">
+        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+        <a class="btn btn-primary btn-xs" href="{{ path('aduser_new') }}">Dodaj ADUser</a>
+    </div>
+</center>
+
+{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+{% endblock %}
