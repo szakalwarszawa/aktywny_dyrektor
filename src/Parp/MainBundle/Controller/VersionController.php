@@ -115,7 +115,7 @@ class VersionController extends Controller
              $result[$idd]['data'][] = $data;
              $result[$idd]['obiekt'][$this->get('rename_service')->objectTitles($data['repo'])] = $this->get('rename_service')->objectTitles($data['repo']);             
              $result[$idd]['user'][$data['log']->getUsername()] = $data['log']->getUsername();
-             $result[$idd]['operacje'][$data['log']->getAction()] = $data['log']->getAction();
+             $result[$idd]['operacje'][$data['log']->getAction()] = $this->get('renameService')->actionTitles($data['log']->getAction());
              $result[$idd]['id'] = $data['log']->getLoggedAt()->format("Y-m-d H:i:s");
           //} else {
              //$result[$id] = array($data);

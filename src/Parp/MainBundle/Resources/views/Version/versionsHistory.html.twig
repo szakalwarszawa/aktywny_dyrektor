@@ -13,16 +13,16 @@
             {% for t,a in result %}
                 <tr class="treegrid-{{t}}">
                     <td colspan="1">
-                        {{a.obiekt|join(",")}}
+                        {{a.obiekt|join(", ")}}
                     </td>
                     <td colspan="1">
-                        {{a.operacje|join(",")}}
+                        {{a.operacje|join(", ")}}
                     </td>
                     <td colspan="1">
                         {{a.id}}
                     </td>
                     <td colspan="1">
-                        {{a.user|join(",")}}
+                        {{a.user|join(", ")}}
                     </td>
                 </tr>
                 
@@ -34,42 +34,24 @@
                         <td style="border-bottom:none;">{{e.log.username}}</td> 
                     </tr>
                     <tr class="treegrid-{{e.log.id}}2 treegrid-parent-{{t}}"> 
-                        <td colspan="4" style="border-top:none;">    
+                        <td colspan="4" style="border-top:none;">   
+                             
                             {%if(e.cols|length > 0)%}
-                            <div class="panel-group">
-                              <div class="panel panel-default">
-                                <div class="panel-heading">
-                                  <h4 class="panel-title">
-                                    <a data-toggle="collapse" href="#collapse{{e.log.id}}">Lista zmian</a>
-                                  </h4>
+                                <div class=" col-sm-12">
+                                  <ul class="list-group">
+                                    {% for c in e.cols %}
+                                    {%if c in e.log.data|keys or 1 == 1%}
+                                        <li class="list-group-item col-sm-4">{{c|gridTitles}} : 
+                                        {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}<strong style="color:red">{%endif%}
+                                        {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
+                                        {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}</strong>{%endif%}
+                                    {%endif%}
+                                        </li>
+                                    {%endfor%} 
+                                  </ul>
                                 </div>
-                                <div id="collapse{{e.log.id}}" class="panel-collapse collapse container">
-                                    <div class=" col-sm-12">
-                                      <ul class="list-group">
-                                                
-                                        {% for c in e.cols %}
-                                        {%if c in e.log.data|keys or 1 == 1%}
-                                            <li class="list-group-item col-sm-4">{{c|gridTitles}} : 
-                                            <strong style="color:red">
-                                            {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
-                                            </strong>{%endif%}
-                                            </li>
-                                        {%endfor%} 
-                                      </ul>
-                                    </div>
-                                </div>
-                              </div>
-                            </div>
                             {%endif%}
-                        
-    {#
-                            {% for c in columns %}
-                            {%if c in e.log.data|keys %}<strong style="color:red">{%endif%}
-                            {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
-                            {%if c in e.log.data|keys %}</strong>{%endif%}
-                            {%endfor%}
-     
-    #}                   </td>
+                        </td>
                     </tr>
                 {% endfor %}
             {% endfor %}
