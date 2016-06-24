@@ -267,7 +267,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //bierze managera tworzacego - jednak nie , ma byc po podmiotach
                 //$ADUser = $ldap->getUserFromAD($wniosek->getCreatedBy());  
                 //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
-                $uss = explode(",", $wniosek->getPracownicy());
+                $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
                 $ADUser = $ldap->getUserFromAD($uss[0]);  
                 $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                 
@@ -290,7 +290,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "wlasciciel":
                 //
-                foreach($wniosek->getUserZasoby() as $u){
+                foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
                     $grupa = explode(",", $zasob->getWlascicielZasobu());
                     foreach($grupa as $g){
@@ -308,7 +308,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "administrator":
                 //
-                foreach($wniosek->getUserZasoby() as $u){
+                foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
                     $grupa = explode(",", $zasob->getAdministratorZasobu());
                     foreach($grupa as $g){
@@ -327,7 +327,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "techniczny":
                 //
-                foreach($wniosek->getUserZasoby() as $u){
+                foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
                     $grupa = explode(",", $zasob->getAdministratorTechnicznyZasobu());
                     foreach($grupa as $g){
@@ -449,13 +449,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 
                                 $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                                 $ADManager = $ldap->getUserFromAD(null, $mgr);
-                                //print_r($ADUser);
-                                //echo "<pre>"; print_r($ADManager);
-                                
                                 if(count($ADManager) == 0){
                                     die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
                                 }
-                                //$uz->getId()
                                 $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                             }
                             
@@ -466,34 +462,32 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 foreach($przelozeni as $sam => $p){
                                     if ($this->debug) echo "<br><br>Tworzy nowy wniosek dla przelozonego  ".$sam." wzietego z osoby  ".$p[0]->getSamaccountname()." :<br><br>";
                                     $wn = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
-                                    $wn->setCreatedBy($wniosek->getCreatedBy());
-                                    $wn->setCreatedAt($wniosek->getCreatedAt());
-                                    $wn->setLockedBy($wniosek->getLockedBy());
-                                    $wn->setLockedAt($wniosek->getLockedAt());
-                                    $wn->setParent($wniosek);
-                                    $wn->setJednostkaOrganizacyjna($wniosek->getJednostkaOrganizacyjna());
+                                    $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
+                                    $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
+                                    $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
+                                    $wn->getWniosek()->setLockedAt($wniosek->getWniosek()->getLockedAt());
+                                    $wn->getWniosek()->setParent($wniosek->getWniosek());
+                                    $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
-                                    $wn->setNumer('111');
+                                    $wn->getWniosek()->setNumer('111');
                                     $users = array();
                                     foreach($p as $uz){
                                         $nuz = clone $uz;
                                         $em->persist($nuz);
                                         $wn->setZasobId($nuz->getZasobId());
-                                        $users[$nuz->getSamaccountname()] =  $nuz->getSamaccountname();                               
-                                        //$wn = new \Parp\MainBundle\Entity\UserZa();
+                                        $users[$nuz->getSamaccountname()] =  $nuz->getSamaccountname();
                                         $nuz->setWniosek($wn);
                                         $wn->addUserZasoby($nuz);
                                     }
-                                    
-                                    
                                     $wn->setPracownicy(implode(",", $users));
                                     //klonuje wszystkie historie statusow
-                                    foreach($wniosek->getStatusy() as $s){
+                                    foreach($wniosek->getWniosek()->getStatusy() as $s){
                                         $s2 = clone $s;
-                                        $s2->setWniosek($wn);
+                                        $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
                                     $this->setWniosekStatus($wn, "02_EDYCJA_PRZELOZONY", false);
+                                    $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             }else{
@@ -534,33 +528,32 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 foreach($zasoby as $z){
                                     if ($this->debug) echo "<br><br>Tworzy nowy wniosek dla zasobu ".$z->getZasobId()."<br><br>";
                                         $wn = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
-                                        $wn->setCreatedBy($wniosek->getCreatedBy());
-                                        $wn->setCreatedAt($wniosek->getCreatedAt());
-                                        $wn->setLockedBy($wniosek->getLockedBy());
-                                        $wn->setLockedAt($wniosek->getLockedAt());
-                                        $wn->setParent($wniosek);
-                                        $wn->setJednostkaOrganizacyjna($wniosek->getJednostkaOrganizacyjna());
+                                        $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
+                                        $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
+                                        $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
+                                        $wn->getWniosek()->setLockedAt($wniosek->getWniosek()->getLockedAt());
+                                        $wn->getWniosek()->setParent($wniosek->getWniosek());
+                                        $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                         $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
-                                        $wn->setNumer('111');
+                                        $wn->getWniosek()->setNumer('111');
                                         $users = array();
                                         foreach($z as $uz){
-                                            $wn->setZasobId($uz->getZasobId());
-                                            $users[] =  $uz->getSamaccountname();                               
-                                            //$wn = new \Parp\MainBundle\Entity\UserZa();
-                                            $uz->setWniosek($wn);
-                                            $wn->addUserZasoby($uz);
+                                            $nuz = clone $uz;
+                                            $em->persist($nuz);
+                                            $wn->setZasobId($nuz->getZasobId());
+                                            $users[$nuz->getSamaccountname()] =  $nuz->getSamaccountname();
+                                            $nuz->setWniosek($wn);
+                                            $wn->addUserZasoby($nuz);
                                         }
-                                        
-                                        
                                         $wn->setPracownicy(implode(",", $users));
-                                        
                                         //klonuje wszystkie historie statusow
-                                        foreach($wniosek->getStatusy() as $s){
+                                        foreach($wniosek->getWniosek()->getStatusy() as $s){
                                             $s2 = clone $s;
-                                            $s2->setWniosek($wn);
+                                            $s2->setWniosek($wn->getWniosek());
                                             $em->persist($s2);
                                         }
                                         $this->setWniosekStatus($wn, "03_EDYCJA_WLASCICIEL", false);
+                                        $em->persist($wn->getWniosek());
                                         $em->persist($wn);
                                 }
                             }else{
@@ -631,7 +624,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if($isAccepted == "unblock"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
             )));
-        }elseif($wniosek->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){
+        }elseif($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
             )));
             

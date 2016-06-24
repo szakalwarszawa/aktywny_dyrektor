@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.status.nazwa,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.opis:group_concat,wniosek.editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -38,6 +38,12 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
+     * @GRID\Column(field="wniosek.status.nazwa", title="Status")
+     * @GRID\Column(field="wniosek.createdBy", title="Utworzony przez")
+     * @GRID\Column(field="wniosek.createdAt", type="date", title="Utworzono")
+     * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez")
+     * @GRID\Column(field="wniosek.lockedAt", type="date", title="Zablokowano")
+     * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
     private $wniosek; 
     
@@ -270,7 +276,7 @@ class WniosekNadanieOdebranieZasobow
     public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
-
+        $wniosek->setWniosekNadanieOdebranieZasobow($this);
         return $this;
     }
 

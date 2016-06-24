@@ -69,7 +69,7 @@
                                     {% if entity.wniosek.status.nazwaSystemowa == "10_PODZIELONY" %}
                                         Na wnioski:
                                         <ul class="list-group">
-                                        {% for w in entity.children %}
+                                        {% for w in entity.wniosek.children %}
                                             <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.id})}}">Wniosek nr {{w.id}} - {{w.status.nazwa}}</a></li>
                                         {%endfor %}                           
                                         </ul>
