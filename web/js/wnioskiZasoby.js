@@ -37,4 +37,9 @@ $(document).ready(function(){
     });
     $('[data-toggle="tooltip"]').tooltip(); 
 
+    $('.tagAjaxInputNoAjax').tagit({
+        'allowSpaces' : true,
+        'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną'
+        //autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
+    });
 });

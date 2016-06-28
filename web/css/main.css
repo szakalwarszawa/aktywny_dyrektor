@@ -49,3 +49,9 @@ form.dirty{
 .form-horizontal .radio, .form-horizontal .checkbox {
     min-height: 49px;
 }
+body ul.tagit{
+    background:white;
+}
+body ul.tagit li{
+    width:100%;
+}

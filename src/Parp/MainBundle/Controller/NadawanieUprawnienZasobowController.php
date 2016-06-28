@@ -198,8 +198,16 @@ class NadawanieUprawnienZasobowController extends Controller
         foreach($samaccountnames as $sam => $v){
             if($v){
                 //echo " $sam ";
-                $ADUser = $ldap->getUserFromAD($sam);
-                $users[] = $ADUser[0];
+                if($wniosek && $wniosek->getPracownikSpozaParp()){
+                    //$ADUser = $ldap->getUserFromAD($sam);
+                    $users[] = array(
+                        'samaccountname' => $sam,
+                        'name' => $sam
+                    );
+                }else{
+                    $ADUser = $ldap->getUserFromAD($sam);
+                    $users[] = $ADUser[0];
+                }
             }
         }
         $grupys = $this->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findAll();
@@ -552,9 +560,16 @@ class NadawanieUprawnienZasobowController extends Controller
             $users = array();
             foreach($samaccountnames as $sam => $v){
                 if($v){
-                    
-                    $ADUser = $ldap->getUserFromAD($sam);
-                    $users[] = $ADUser[0];
+                    if($wniosek && $wniosek->getPracownikSpozaParp()){
+                        //$ADUser = $ldap->getUserFromAD($sam);
+                        $users[] = array(
+                            'samaccountname' => $sam,
+                            'name' => $sam
+                        );
+                    }else{
+                        $ADUser = $ldap->getUserFromAD($sam);
+                        $users[] = $ADUser[0];
+                    }
                 }
             }                          
             $samaccountnamesPars['data'] = json_encode($samaccountnames);

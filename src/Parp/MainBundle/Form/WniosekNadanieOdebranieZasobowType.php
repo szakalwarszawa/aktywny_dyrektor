@@ -22,16 +22,15 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('pracownikSpozaParp')
+
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,
                 'multiple' => true,
+                'required' => false,
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             
-            ->add('pracownicySpozaParp', 'text', array(
-                'mapped' => true,
-                'required' => false
-            ))
+            ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
             
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
                 'data_class' => 'Parp\MainBundle\Entity\Wniosek')

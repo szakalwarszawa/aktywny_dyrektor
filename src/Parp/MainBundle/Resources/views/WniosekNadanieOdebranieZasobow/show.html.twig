@@ -27,6 +27,9 @@
                     {% if canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                     {%endif%}
+                    {% if(entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Opublikuj <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    {%endif%}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                     
                 {% endif %}
@@ -135,8 +138,8 @@
                 <table class="record_properties table table-striped">
                     <tbody>
                         <tr>
-                            <th>Osoba</th>
                             <th>Nazwa</th>
+                            <th>Osoba</th>
                             <th>Moduł</th>
                             <th>Poziom dostępu</th>
                             <th>Sumowanie uprawnień</th>
