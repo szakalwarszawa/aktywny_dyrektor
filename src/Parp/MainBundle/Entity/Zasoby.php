@@ -42,7 +42,7 @@ class Zasoby
     /**
      * @var string
      *
-     * @ORM\Column(name="opis", type="text")
+     * @ORM\Column(name="opis", type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
@@ -50,7 +50,7 @@ class Zasoby
     /**
      * @var string
      *
-     * @ORM\Column(name="biuro", type="string", length=255)
+     * @ORM\Column(name="biuro", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $biuro;

@@ -16,16 +16,16 @@ class ZasobyType extends AbstractType
     {
         $builder
             ->add('nazwa')
-            ->add('opis')
+            ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden')
             ->add('wlascicielZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput')
+                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))
             ->add('administratorZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput')
+                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))
             ->add('administratorTechnicznyZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput')
+                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))
             ->add('uzytkownicy', 'choice', array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")
@@ -35,24 +35,28 @@ class ZasobyType extends AbstractType
                 'class' => 'Parp\MainBundle\Entity\Departament',
                 'choice_value' => function($dep){
                     return $dep->getName();
-                }
+                },
+                'label' => 'Komórka organizacyjna'
             ))
             ->add('miejsceInstalacji')
             ->add('opisZasobu')
             ->add('modulFunkcja')
             ->add('poziomDostepu')
             ->add('grupyAD', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput')
+                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))
-            ->add('dataZakonczeniaWdrozenia', 'text', array(
+            
+            
+            ->add('dataZakonczeniaWdrozenia', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
-                    'label' => 'Data zmiany',
+                    'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
+                    'widget' => 'single_text'
                     
                 ))
             ->add('wykonawca', 'choice', array(
@@ -60,67 +64,76 @@ class ZasobyType extends AbstractType
             ))
             ->add('nazwaWykonawcy')
             ->add('asystaTechniczna')
-            ->add('dataWygasnieciaAsystyTechnicznej', 'text', array(
+            ->add('dataWygasnieciaAsystyTechnicznej', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
+                    'label' => 'Data wygaśnięcia asysty technicznej',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
+                    'widget' => 'single_text'
                     
                 ))
-            ->add('dokumentacjaFormalna')
-            ->add('dokumentacjaProjektowoTechniczna')
+
+            ->add('dokumentacjaFormalna', 'choice', array(
+                'choices' => array('protok. odbioru' => 'protok. odbioru', "SIWZ" => "SIWZ", "umowa" => "umowa", "inna" => "inna")
+            ))
+            ->add('dokumentacjaProjektowoTechniczna', 'choice', array(
+                'choices' => array('brak' => 'brak', "inna" => "inna", "powdrożeniowa" => "powdrożeniowa", "proj. techniczny" => "proj. techniczny", "raport z analizy" => "raport z analizy", "specyf. wymagań" => "specyf. wymagań")
+            ))
             ->add('technologia')
             ->add('testyBezpieczenstwa')
             ->add('testyWydajnosciowe')
-            ->add('dataZleceniaOstatniegoPrzegladuUprawnien', 'text', array(
+            ->add('dataZleceniaOstatniegoPrzegladuUprawnien', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
+                    'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
+                    'widget' => 'single_text'
                     
                 ))
             ->add('interwalPrzegladuUprawnien')
-            ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', 'text', array(
+            ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
+                    'label' => 'Data zlecenia ostatniego przeglądu aktywności',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
+                    'widget' => 'single_text'
                     
                 ))
             ->add('interwalPrzegladuAktywnosci')
-            ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', 'text', array(
+            ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zmiany',
+                    'label' => 'Data zlecenia ostatniej zmiany haseł',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
+                    'widget' => 'single_text'
                     
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych')

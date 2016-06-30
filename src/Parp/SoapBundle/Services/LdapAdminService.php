@@ -16,7 +16,7 @@ use Memcached;
 class LdapAdminService
 {
 
-    protected $debug = 0;
+    protected $debug = 1;
     protected $securityContext;
     protected $AdminUser = "aktywny_dyrektor";
     protected $AdminPass = "F4UCorsair";
@@ -60,7 +60,8 @@ class LdapAdminService
         if($this->hostId > 3){
             $this->hostId = 1;
         }
-        $this->ad_host = $this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ""));
+        $this->ad_host = "ldaps://".$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : "")).":389";
+        $this->ad_host = "ldap://".$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ""))."";
         if($error != ""){
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
@@ -324,12 +325,31 @@ class LdapAdminService
 */
         if(count($entry) > 0){
             if($this->debug){
+                $newuser_plaintext_password = "Dupa456!";
+                
+                
+                $encoded_newPassword = "{SHA}" . base64_encode( pack( "H*", sha1( $newuser_plaintext_password ) ) );
+                //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
+                $entry["userPassword"] = "$encoded_newPassword";
+                unset($entry['initials']);
+                
+                //$entry = $this->pwd_encryption($newuser_plaintext_password);
+                
+                
                 echo "<pre>";print_r($dn);
                 print_r($entry);echo "</pre>";
                 //die();
             }
             
-            ldap_modify($ldapconn, $dn, $entry);
+            $res = ldap_modify($ldapconn, $dn, $entry);
+            
+            
+            $error = ldap_error($ldapconn);
+            $errno = ldap_errno($ldapconn);
+            
+            var_dump($res, $error, $errno); die();
+            
+            
             
             $ldapstatus = ldap_error($ldapconn);    
             if($ldapstatus != "Success"){
@@ -373,6 +393,19 @@ class LdapAdminService
         //$this->doctrine->persist($person);
         //$this->doctrine->flush();
         return $ldapstatus;
+    }
+
+    function pwd_encryption( $newPassword ) {
+    
+        $newPassword = "\"" . $newPassword . "\"";
+        $len = strlen( $newPassword );
+        $newPassw = "";
+        for ( $i = 0; $i < $len; $i++ )
+        { 
+            $newPassw .= "{$newPassword{$i}}\000"; 
+        } 
+        $userdata["unicodePwd"] = $newPassw; 
+        return $userdata; 
     }
 
     public function createEntity($person)

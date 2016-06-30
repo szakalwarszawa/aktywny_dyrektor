@@ -34,8 +34,9 @@ td {
   word-break:break-word;
 }
 form.dirty{
-    border:3px solid red;
-    background: rgba(255,0,0,0.3);
+    border:3px solid rgba(26, 188, 156,1);;
+    background: rgba(26, 188, 156,0.3);
+
 }
 .hidden{
     display:none;
