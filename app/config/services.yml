@@ -1,4 +1,9 @@
 services:
+    my.handler.session_idle:
+        class: Parp\AuthBundle\Handler\SessionIdleHandler
+        arguments: ["@session", "@security.context", "@router", %session_max_idle_time%]
+        tags:
+            - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
         class: Parp\SoapBundle\Services\LdapService
         arguments: ["@security.context","@service_container"]

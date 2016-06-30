@@ -32,4 +32,5 @@ parameters:
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
     ad_password : F4UCorsair
-    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"    
+    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"   
+    session_max_idle_time: 3600 
