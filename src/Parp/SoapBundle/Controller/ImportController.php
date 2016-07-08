@@ -71,12 +71,13 @@ class ImportController extends Controller
      */
     public function importGroupsAction()
     {
+        $pomijajPola = ["objectguid", "objectsid"];
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         // Sięgamy do AD:
         $ADgroups = $this->get('ldap_service')->getGroupsFromAD(null);
         $proccessed = array();
-        echo "<pre>"; print_r($ADgroups); echo "</pre>";
+        //echo "<pre>"; print_r($ADgroups); echo "</pre>"; die();
         foreach($ADgroups as $k1 => $adg){
                 //echo "<pre>"; print_r($k1); echo "</pre>";
                 //echo "<pre>"; print_r($k1 !== intval($k1)); echo "</pre>";
@@ -88,26 +89,28 @@ class ImportController extends Controller
                 //echo "<pre>"; print_r($k1); echo "</pre>";
                 //echo "<pre>"; print_r((int)$k1); echo "</pre>";
                 foreach($adg as $k => $valarr){
-                    $set = "set".ucfirst($k);
-                    
-                    if(method_exists($g, $set)){
-                        $val = array();
-                        if(is_array($valarr)){
-                            for($i = 0; $i < $valarr['count']; $i++){
-                                $v2 = $valarr[$i];
-                                //echo "<pre>0  "; print_r($k2); echo "</pre>";
-                                //if($k2 != "count"){
-                                    $val[] = $v2;
-                                //}
+                    if(!in_array($k, $pomijajPola)){
+                        $set = "set".ucfirst($k);
+                        
+                        if(method_exists($g, $set)){
+                            $val = array();
+                            if(is_array($valarr)){
+                                for($i = 0; $i < $valarr['count']; $i++){
+                                    $v2 = $valarr[$i];
+                                    //echo "<pre>0  "; print_r($k2); echo "</pre>";
+                                    //if($k2 != "count"){
+                                        $val[] = $v2;
+                                    //}
+                                }
+                            }else{
+                                $val[] = $valarr;
                             }
-                        }else{
-                            $val[] = $valarr;
+                            //echo "<pre>1"; print_r($set); echo "</pre>";
+                            //echo "<pre>2"; print_r($valarr); echo "</pre>";
+                            //echo "<pre>3"; print_r($val); echo "</pre>";
+                            //echo "<pre>4"; print_r(implode(";", $val)); echo "</pre>";
+                            $g->{$set}(implode(";", $val));
                         }
-                        echo "<pre>1"; print_r($set); echo "</pre>";
-                        echo "<pre>2"; print_r($valarr); echo "</pre>";
-                        echo "<pre>3"; print_r($val); echo "</pre>";
-                        echo "<pre>4"; print_r(implode(";", $val)); echo "</pre>";
-                        $g->{$set}(implode(";", $val));
                     }
                 }
                 $em->persist($g);

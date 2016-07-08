@@ -245,19 +245,89 @@ class LdapService
          ///////////////
         return $info;
     }
-    
-    public function  getGroupsFromAD($group)
+    public function getGroupsFromAD($group){
+        // Begin building query
+     	$query = "(&"; 
+     	$query .= "(&(objectClass=group))";
+        $group2 = ldap_escape($group);
+        if($group){
+            $query .= "(CN=$group2$wilcardSearch)";            
+        }
+        
+     
+        // Close query
+        $query .= ")";
+        
+        $ret = $this->paginated_search($query);
+        return $ret;
+/*
+        $letters = "abcdefghijklmnopqrstuvwxyz1234567890-_";
+        $letters_array = str_split($letters);
+
+        $tmpResults = array();
+        if($group){
+            
+        }else{
+            //jesli bierzemy wszystko to w iteracji po kloei literkami alfabetu bo wystepuja blad:            
+            //Warning: ldap_search(): Partial search results returned: Sizelimit exceeded
+            foreach ($letters_array as $letter) {
+                foreach ($letters_array as $letter2) {
+                    foreach ($letters_array as $letter3) {
+                        echo ".szukam literki $letter$letter2$letter3 ...";
+                        $results = $this->getGroupsFromADint($letter.$letter2.$letter3, "*");
+                        $tmpResults = array_merge($tmpResults, $results);
+                    }
+                }
+            }
+        }
+        
+        return $tmpResults;
+*/
+    }
+    private function paginated_search($filter, $pageSize = 500)
     {
         $userdn = $this->useradn . $this->patch;
         $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
-        //die($ldap_dn);
-//        ldap_set_option()
+        $ldapconn = ldap_connect($this->ad_host);
+        $ldapdomain = $this->ad_domain;
+        
+        if (!$ldapconn)
+            throw new Exception('Brak połączenia z serwerem domeny!');
+                    
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 20000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldap_username = $this->securityContext->getToken()->getUsername();
+        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();    
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);        
+        $cookie = '';
+        $result = [];
+        $result['count'] = 0;
+        do {
+            ldap_control_paged_result($ldapconn, $pageSize, true, $cookie);
+            //var_dump($ldapconn, $ldap_dn_grupy, $filter);
+            $sr = ldap_search($ldapconn, $ldap_dn_grupy, $filter);
+            $entries = ldap_get_entries($ldapconn, $sr);
+            $entries['count'] += $result['count'];
+    
+            $result = array_merge($result, $entries);
+    
+            ldap_control_paged_result_response($ldapconn, $sr, $cookie);
+    
+        } while ($cookie !== null && $cookie != '');
+    
+        return $result;
+    }
+    public function getGroupsFromADint($group, $wilcardSearch = "")
+    {
+        $userdn = $this->useradn . $this->patch;
+        $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
         $ldapdomain = $this->ad_domain;
 
-        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 20000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
         $ldap_username = $this->securityContext->getToken()->getUsername();
@@ -267,11 +337,11 @@ class LdapService
 
         // Begin building query
      	$query = "(&"; 
-     
      	$query .= "(&(objectClass=group))";
-         $group2 = ldap_escape($group);
-         if($group)
-            $query .= "(CN=$group2)";
+        $group2 = ldap_escape($group);
+        if($group){
+            $query .= "(CN=$group2$wilcardSearch)";            
+        }
         
      
         // Close query
@@ -283,11 +353,7 @@ class LdapService
         }
         
         $results = ldap_get_entries($ldapconn, $search);
-        //print_r($query);
-        //echo "<pre>"; print_r($results); die();
         ldap_bind($ldapconn);
-
-        
         return $results;
     }
     public function  checkGroupExistsFromAD($group)

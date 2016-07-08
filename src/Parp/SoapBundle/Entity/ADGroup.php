@@ -11,7 +11,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="ad_group")
  * @ORM\Entity(repositoryClass="Parp\SoapBundle\Entity\ADGroupRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,member")
  * @UniqueEntity(
  *     fields={"cn"},
  *     errorPath="cn",
@@ -56,7 +56,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $member;
@@ -64,7 +64,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $distinguishedname;
@@ -72,7 +72,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $instancetype;
@@ -112,7 +112,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
@@ -136,7 +136,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
@@ -144,7 +144,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccounttype;
@@ -152,7 +152,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grouptype;
@@ -160,7 +160,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $objectcategory;
@@ -168,7 +168,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dscorepropagationdata;
@@ -176,7 +176,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dn;

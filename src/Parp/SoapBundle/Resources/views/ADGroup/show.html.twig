@@ -1,0 +1,97 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: ADGroup</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy ADGroup ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Objectclass</th>
+                <td>{{ entity.objectclass }}</td>
+            </tr>
+            <tr>
+                <th>Cn</th>
+                <td>{{ entity.cn }}</td>
+            </tr>
+            <tr>
+                <th>Member</th>
+                <td>{{ entity.member }}</td>
+            </tr>
+            <tr>
+                <th>Distinguishedname</th>
+                <td>{{ entity.distinguishedname }}</td>
+            </tr>
+            <tr>
+                <th>Instancetype</th>
+                <td>{{ entity.instancetype }}</td>
+            </tr>
+            <tr>
+                <th>Whencreated</th>
+                <td>{{ entity.whencreated }}</td>
+            </tr>
+            <tr>
+                <th>Whenchanged</th>
+                <td>{{ entity.whenchanged }}</td>
+            </tr>
+            <tr>
+                <th>Usncreated</th>
+                <td>{{ entity.usncreated }}</td>
+            </tr>
+            <tr>
+                <th>Usnchanged</th>
+                <td>{{ entity.usnchanged }}</td>
+            </tr>
+            <tr>
+                <th>Name</th>
+                <td>{{ entity.name }}</td>
+            </tr>
+            <tr>
+                <th>Objectguid</th>
+                <td>{{ entity.objectguid }}</td>
+            </tr>
+            <tr>
+                <th>Objectsid</th>
+                <td>{{ entity.objectsid }}</td>
+            </tr>
+            <tr>
+                <th>Samaccountname</th>
+                <td>{{ entity.samaccountname }}</td>
+            </tr>
+            <tr>
+                <th>Samaccounttype</th>
+                <td>{{ entity.samaccounttype }}</td>
+            </tr>
+            <tr>
+                <th>Grouptype</th>
+                <td>{{ entity.grouptype }}</td>
+            </tr>
+            <tr>
+                <th>Objectcategory</th>
+                <td>{{ entity.objectcategory }}</td>
+            </tr>
+            <tr>
+                <th>Dscorepropagationdata</th>
+                <td>{{ entity.dscorepropagationdata }}</td>
+            </tr>
+            <tr>
+                <th>Dn</th>
+                <td>{{ entity.dn }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}
