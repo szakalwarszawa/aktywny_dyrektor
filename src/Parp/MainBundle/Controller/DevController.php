@@ -37,6 +37,43 @@ class DevController extends Controller
 {
     
     /**
+     * @Route("/pokazAll", name="pokazAll")
+     * @Template()
+     */
+    public function pokazAllAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $sqls = [];
+        echo "<pre>"; print_r($ADUsers); die();
+        
+        die();
+    }
+    /**
+     * @Route("/przeniesWszystkich", name="przeniesWszystkich")
+     * @Template()
+     */
+    public function przeniesWszystkichAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $sqls = [];
+        //print_r($ADUsers); die();
+        $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski"];
+        foreach($ADUsers as $u){
+            $sam = str_replace("'", "", $u['samaccountname']);
+            if(!in_array($sam, $pomijaj)){
+                $sqls[] = "INSERT INTO `entry` (`department`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
+    ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
+            }
+        }
+        
+        
+        echo implode("\n\n<br><br>", $sqls);
+        die();
+        die('przeniesWszystkich');
+    }
+    /**
      * @Route("/zasobNazwa/{zid}", name="zasobNazwa")
      * @Template()
      */

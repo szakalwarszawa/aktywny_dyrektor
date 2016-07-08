@@ -591,4 +591,14 @@ class Entry
     public function setRoles(){
         return $this;
     }
+    
+    public function setGrupyAD($departament, $czyDodaj = "+"){
+        $grupy = explode(",",  $departament->getGrupyAD());
+        $gr = [];
+        foreach($grupy as $g){
+            if(strlen($g) > 0)
+                $gr[] = $czyDodaj.$g;
+        }
+        $this->setMemberOf(implode(",", $gr));
+    }
 }

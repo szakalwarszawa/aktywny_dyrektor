@@ -87,3 +87,7 @@ services:
         class : Parp\MainBundle\Services\RenameService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
+    samaccountname_generator:
+        class : Parp\MainBundle\Services\SamaccountnameGeneratorService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        tags: ~

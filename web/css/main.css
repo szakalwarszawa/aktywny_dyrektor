@@ -32,6 +32,8 @@
 td {
   word-wrap:break-word;
   word-break:break-word;
+  padding:5px;
+  min-width:50px;
 }
 form.dirty{
     border:3px solid rgba(26, 188, 156,1);;
@@ -55,4 +57,8 @@ body ul.tagit{
 }
 body ul.tagit li{
     width:100%;
+}
+body .JColResizer > tbody > tr > td, body .JColResizer > tbody > tr > th{
+    
+    padding:5px!important;
 }

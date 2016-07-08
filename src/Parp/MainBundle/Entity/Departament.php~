@@ -98,6 +98,7 @@ class Departament
      * @var string
      *
      * @ORM\Column(name="grupyAD", type="string", length=255)
+     * @Assert\NotBlank(message = "Nazwy grup w AD do ktoóych ma wpisać każdego użytkownika tego departamentu")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupyAD;
@@ -207,29 +208,5 @@ class Departament
     public function getNameInRekord()
     {
         return $this->nameInRekord;
-    }
-
-    /**
-     * Set grupyAD
-     *
-     * @param string $grupyAD
-     *
-     * @return Departament
-     */
-    public function setGrupyAD($grupyAD)
-    {
-        $this->grupyAD = $grupyAD;
-
-        return $this;
-    }
-
-    /**
-     * Get grupyAD
-     *
-     * @return string
-     */
-    public function getGrupyAD()
-    {
-        return $this->grupyAD;
     }
 }

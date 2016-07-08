@@ -1,0 +1,1 @@
+delete from dane_rekord;

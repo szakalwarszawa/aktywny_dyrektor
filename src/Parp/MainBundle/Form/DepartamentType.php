@@ -46,6 +46,16 @@ class DepartamentType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control',
             )))
+                ->add('grupyAD', null, array(
+                    'required' => false,
+                    'read_only' => false,
+                    'label' => 'Nazwy grup w AD do ktoóych ma wpisać każdego użytkownika tego departamentu',
+                    'label_attr' => array(
+                        'class' => 'col-sm-2 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control tagAjaxInput',
+            )))
 /*
             ->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',
             'attr' => array('class' => 'btn btn-primary'),

@@ -118,14 +118,15 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $sciecha = "";
         $sql = "SELECT
+            p.SYMBOL,
             COUNT(*) as ile,
             p.IMIE as imie, 
             p.NAZWISKO as nazwisko, 
             departament.OPIS  departament,
             stanowisko.OPIS stanowisko,
             rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as umowaOd,
-            MAX(umowa.DATA_DO) as umowaDo
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
             
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP)
@@ -137,7 +138,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             
             GROUP BY 
             
-                   
+            p.SYMBOL,       
             p.IMIE, 
             p.NAZWISKO, 
             departament.OPIS ,
@@ -159,7 +160,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $data[$in][] = $row;
         }
         $totalmsg = "";
-        //echo "<pre>"; print_r($data);
+        //echo "<pre>"; print_r($data); die();
         $ldap = $this->get('ldap_service');
         foreach($data as $in => $d){
             if(count($d) > 1){
@@ -177,7 +178,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }else{
                 $row = $d[0];
             }
-            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $this->parseValue($row['IMIE']), 'nazwisko' => $this->parseValue($row['NAZWISKO'])));
+            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
+            
+            //temp
+            $dr == null;
+            
             //print_r($dr); die();
             $nowy = false;
             if($dr === null){
@@ -190,17 +195,27 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
             $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
             $dr->setUmowa($this->parseValue($row['UMOWA'], false));
+            $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
+            $login = $this->get('samaccountname_generator')->generateSamaccountname($dr);
+            $dr->setLogin($login);
             
             $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
-            if(($dr->getUmowaOd() !== null && $d1 !== null) && (($dr->getUmowaOd() == null && $d1 != null) || ($dr->getUmowaOd() != null && $d1 == null) || ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d")))){
-                $dr->setUmowaOd($d1);    
+            if(
+                ($d1 !== null) && 
+                (
+                    ($dr->getUmowaOd() == null && $d1 != null) || 
+                    ($dr->getUmowaOd() != null && $d1 == null) || 
+                    ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d"))
+                )
+            ){
+                $dr->setUmowaOd($d1);  
             }
             $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
             
             //var_dump($dr->getUmowaDo());
             //var_dump($d2);
             if(
-            ($dr->getUmowaDo() != null && $d2 != null) && (
+            ($d2 != null) && (
             ($dr->getUmowaDo() == null && $d2 != null) || 
             ($dr->getUmowaDo() != null && $d2 == null) || 
             ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
@@ -221,13 +236,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
                 
                 $entry = new \Parp\MainBundle\Entity\Entry();
-                $entry->setSamAccountName(strtolower($dr->getImie())."_".strtolower($dr->getNazwisko()));
+                $entry->setSamAccountName($login);
                 
                 
                 
                 
                 if($nowy)
-                    $entry->setCn($dr->getImie()." ".$dr->getNazwisko());
+                    $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr));
                 if($nowy || $dr->getUmowaDo())
                     $entry->setAccountExpires($dr->getUmowaDo());
                 $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
@@ -236,8 +251,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     die('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
                 }
                 
-                if($nowy || isset($changeSet['departament']))
+                if($nowy || isset($changeSet['departament'])){
                     $entry->setDepartment($department->getName());
+                    $entry->setGrupyAD($department);                              
+                }
                 //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
                 $tab = explode(".", $this->container->getParameter('ad_domain'));
                 $ou = ($this->container->getParameter('ad_ou'));
@@ -270,8 +287,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         if($totalmsg != "")
             $this->addFlash('warning', $totalmsg);
         //echo "<pre>"; print_r($$imported); die();
-        $em->flush();
-        return $this->redirect($this->generateUrl('main'));
+        $em->flush(); 
+        return $this->redirect($this->generateUrl('danerekord'));
     }
     protected function my_mb_ucfirst($str) {
         $fc = mb_strtoupper(mb_substr($str, 0, 1, "UTF-8"), "UTF-8");

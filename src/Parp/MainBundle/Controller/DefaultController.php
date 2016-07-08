@@ -48,6 +48,7 @@ class DefaultController extends Controller
             $ADUsers = $ldap->getAllFromAD();
             //print_r($ADUsers);
         }
+        //die(".".count($ADUsers));
         if(count($ADUsers) == 0){
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }

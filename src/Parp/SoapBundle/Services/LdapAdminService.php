@@ -1,5 +1,4 @@
 <?php
-
 namespace Parp\SoapBundle\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -15,11 +14,13 @@ use Memcached;
 
 class LdapAdminService
 {
-
-    protected $debug = 1;
+    protected $protocol = ""; //"ldap://";
+    protected $port = 389;//636;
+    protected $debug = 0;
     protected $securityContext;
     protected $AdminUser = "aktywny_dyrektor";
     protected $AdminPass = "F4UCorsair";
+    protected $grupyOU = "PARP Grupy";
     protected $ad_host;
     protected $ad_domain;
     protected $container;
@@ -31,7 +32,14 @@ class LdapAdminService
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
         error_reporting(0);
-        //ini_set('error_reporting', E_ALL);
+        ini_set('error_reporting', E_ALL);
+ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+
+// Attempting fix from http://www.php.net/manual/en/ref.ldap.php#77553
+putenv('LDAPTLS_REQCERT=never');
+
+
+
         $this->doctrine = $OrmEntity;
         $this->securityContext = $securityContext;
         $this->container = $container;
@@ -60,8 +68,8 @@ class LdapAdminService
         if($this->hostId > 3){
             $this->hostId = 1;
         }
-        $this->ad_host = "ldaps://".$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : "")).":389";
-        $this->ad_host = "ldap://".$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ""))."";
+        
+        $this->ad_host = $this->protocol.$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : "")).":".$this->port;
         if($error != ""){
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
@@ -93,7 +101,7 @@ class LdapAdminService
     {
         //$ldapconn = ldap_connect('srv-adc01.parp.local');
         //$ldapdomain = "@parp.local";
-        $ldapconn = ldap_connect($this->ad_host);
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
 //        $memcached = new \Memcached;
@@ -195,7 +203,7 @@ class LdapAdminService
     public function saveEntity($ldapUser, $person)
     {
         $this->container->get('adcheck_service')->checkIfUserCanBeEdited($person->getSamaccountname());
-        $ldapconn = ldap_connect($this->ad_host);
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
         $ldapdomain = $this->ad_domain;
@@ -263,37 +271,29 @@ class LdapAdminService
         if ($person->getInitials()) {
             //hack by dalo sie puste inicjaly wprowadzic
             if($person->getInitials() == "puste" || $person->getInitials() == ""){
-                $entry['initials'] = array();
+                unset($entry['initials']);
+                //$entry['initials'] = array();
             }else{
                 $entry['initials'] = $person->getInitials();
             }
             //echo(".".$person->getInitials().".");
         }
 
+        $userAD = $this->getUserFromAD($person->getSamaccountname());
         $department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         if ($person->getDepartment()) {
             $entry['department'] = $person->getDepartment();
             if (!empty($department)) {
                 $entry['description'] = $department->getShortname();
             }
+            $departmentOld = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($userAD[0]['department']);
+            $person->setGrupyAD($departmentOld, "-");
+            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+            //jesli zmiana departamnentu dodajemy nowe grupy AD
+            $person->setGrupyAD($department);
+            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
         }
-        
-        $userAD = $this->getUserFromAD($person->getSamaccountname());
-        
-        if($person->getMemberOf() != ""){
-            $znak = substr($person->getMemberOf(), 0, 1);               
-            $g = substr($person->getMemberOf(), 1);
-            //print_r($userAD[0]['memberOf']);
-            if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){ 
-                $addtogroup = "CN=".$g.",OU=BA,".$userdn;            
-                ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn));
-            }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){
-                $addtogroup = "CN=".$g.",OU=BA,".$userdn; 
-                ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn));
-            }else{
-                echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");
-            }
-        }
+                
         if ($person->getIsDisabled() !== null) {
             //$ac = 544;//$tmpResults[0];
             //print_r($ac);
@@ -329,32 +329,31 @@ class LdapAdminService
                 
                 
                 $encoded_newPassword = "{SHA}" . base64_encode( pack( "H*", sha1( $newuser_plaintext_password ) ) );
-                //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
+                $entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
                 $entry["userPassword"] = "$encoded_newPassword";
                 unset($entry['initials']);
-                
-                //$entry = $this->pwd_encryption($newuser_plaintext_password);
+               //die('aaa'); 
+                $entry = $this->pwd_encryption($newuser_plaintext_password);
                 
                 
                 echo "<pre>";print_r($dn);
                 print_r($entry);echo "</pre>";
                 //die();
             }
-            
             $res = ldap_modify($ldapconn, $dn, $entry);
             
             
             $error = ldap_error($ldapconn);
             $errno = ldap_errno($ldapconn);
             
-            var_dump($res, $error, $errno); die();
+            //var_dump($res, $error, $errno); die("test zaminy hasla koniec");
             
             
             
             $ldapstatus = ldap_error($ldapconn);    
             if($ldapstatus != "Success"){
                 if($this->debug){
-                    die($ldapstatus);    
+                    die("bbb ".$ldapstatus);    
                 }
                 return $ldapstatus;
             }
@@ -394,7 +393,27 @@ class LdapAdminService
         //$this->doctrine->flush();
         return $ldapstatus;
     }
-
+    function addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn){
+        if($person->getMemberOf() != ""){
+            $grupy = explode(",", $person->getMemberOf());
+            foreach($grupy as $grupa){
+            
+                $znak = substr($grupa, 0, 1);               
+                $g = substr($grupa, 1);
+                //print_r($userAD[0]['memberOf']);
+                if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){ 
+                    $addtogroup = "CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                    //die($addtogroup);
+                    ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){
+                    $addtogroup = "CN=".$g.",OU=".$this->grupyOU."".$this->patch; 
+                    ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
+                }else{
+                    echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");
+                }
+            }
+        }
+    }
     function pwd_encryption( $newPassword ) {
     
         $newPassword = "\"" . $newPassword . "\"";
@@ -412,7 +431,7 @@ class LdapAdminService
     {
         $this->container->get('adcheck_service')->checkIfUserCanBeEdited($person->getSamaccountname());
         
-        $ldapconn = ldap_connect($this->ad_host);
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
         //$userdn = "OU=Test";
         $userdn = $this->useradn . $this->patch;
@@ -500,9 +519,13 @@ class LdapAdminService
         }
         ldap_add($ldapconn, $dn, $entry);
         $ldapstatus = ldap_error($ldapconn);
+        
+        
+        $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+        
         if($this->debug){
             
-            die($ldapstatus);
+            die("koniec bo debug ".$ldapstatus);
         }
         //print_r("\r\n".$errno."\r\n");
         //die();
@@ -541,7 +564,7 @@ class LdapAdminService
     
     public function syncDepartamentsOUs(){
         
-        $ldapconn = ldap_connect($this->ad_host);
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
         //$userdn = "OU=Test";
         $userdn = $this->useradn . $this->patch;

@@ -346,28 +346,4 @@ class DaneRekord
     {
         return $this->symbolRekordId;
     }
-
-    /**
-     * Set login
-     *
-     * @param string $login
-     *
-     * @return DaneRekord
-     */
-    public function setLogin($login)
-    {
-        $this->login = $login;
-
-        return $this;
-    }
-
-    /**
-     * Get login
-     *
-     * @return string
-     */
-    public function getLogin()
-    {
-        return $this->login;
-    }
 }

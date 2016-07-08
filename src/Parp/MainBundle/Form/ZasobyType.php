@@ -19,13 +19,13 @@ class ZasobyType extends AbstractType
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden')
             ->add('wlascicielZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
+                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
             ))
             ->add('administratorZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
+                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
             ))
             ->add('administratorTechnicznyZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
+                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
             ))
             ->add('uzytkownicy', 'choice', array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")

@@ -397,8 +397,8 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        //$ldap_username = $this->securityContext->getToken()->getUsername();
+        //$ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
         
 
         

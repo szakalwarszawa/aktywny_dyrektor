@@ -109,9 +109,9 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie stanowiska: ' . $zmiana->getTitle());
                             }
                         }
-                        if ($zmiana->getInitials()) {
+                        if ($zmiana->getInitials() && $zmiana->getInitials() != "puste") {
                             if ($userNow[0]['initials']) {
-                                $output->writeln('  - Zmiana imicjałów : ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
+                                $output->writeln('  - Zmiana inicjałów : ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
                             } else {
                                 $output->writeln('  - Nadanie inicjałów: ' . $zmiana->getInitials());
                             }
