@@ -116,9 +116,9 @@ class ImportController extends Controller
                 $em->persist($g);
                 
                 $proccessed[$g->getCn()] = $g->getCn();
+                $em->flush();
             }
         }
-        $em->flush();
         
         
         
