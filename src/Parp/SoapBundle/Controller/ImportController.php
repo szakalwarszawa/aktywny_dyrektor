@@ -29,6 +29,11 @@ class ImportController extends Controller
         $namesCols = array('memberOf', 'roles');
         $proccessed = array();
         foreach($ADUsers as $adu){
+            if($adu['samaccountname'] == 'marcin_lipinski'){
+                echo "<pre>"; print_r($adu); echo "</pre>"; die();
+            }
+        }
+        foreach($ADUsers as $adu){
             $u = $em->getRepository("ParpSoapBundle:ADUser")->findOneBySamaccountname($adu['samaccountname']);
             if(!$u){
                 $u = new \Parp\SoapBundle\Entity\ADUser();            
@@ -77,7 +82,7 @@ class ImportController extends Controller
         // Sięgamy do AD:
         $ADgroups = $this->get('ldap_service')->getGroupsFromAD(null);
         $proccessed = array();
-        //echo "<pre>"; print_r($ADgroups); echo "</pre>"; die();
+        //echo "<pre>"; print_r($ADgroups['count']); echo "</pre>"; die();
         foreach($ADgroups as $k1 => $adg){
                 //echo "<pre>"; print_r($k1); echo "</pre>";
                 //echo "<pre>"; print_r($k1 !== intval($k1)); echo "</pre>";

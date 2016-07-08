@@ -153,7 +153,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $useraccountcontrol;
@@ -161,7 +161,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $distinguishedname;
@@ -194,7 +194,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $memberOfNames;
@@ -203,7 +203,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $rolesNames;

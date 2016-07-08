@@ -11,7 +11,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="ad_ou")
  * @ORM\Entity(repositoryClass="Parp\SoapBundle\Entity\ADOrganizationalUnitRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,ou")
  * @UniqueEntity(
  *     fields={"dn"},
  *     errorPath="dn",
@@ -108,7 +108,7 @@ class ADOrganizationalUnit
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
@@ -149,7 +149,7 @@ class ADOrganizationalUnit
     /**
      * @var text
      *
-     * @ORM\Column(type="text", length=5000, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $member;

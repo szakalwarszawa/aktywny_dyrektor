@@ -252,6 +252,8 @@ class LdapService
         $group2 = ldap_escape($group);
         if($group){
             $query .= "(CN=$group2$wilcardSearch)";            
+        }else{
+            $query .= "(CN=*)";   
         }
         
      
