@@ -71,7 +71,7 @@
         var s = $('#form_nazwafiltr').val().toUpperCase();
         if(v || s){
             $('.uprawnienieRow').addClass('hidden');
-            console.log('.uprawnienieRow.grupaUprawnien'+v);                                
+            console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
             if(s){
                 $('.uprawnienieRow').each(function(){
                     var txt = $(this).text().toUpperCase();

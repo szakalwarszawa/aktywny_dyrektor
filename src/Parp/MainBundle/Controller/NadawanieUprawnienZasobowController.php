@@ -307,7 +307,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'read_only' => false,
                     'label' => $title,
                     'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left',
+                        'class' => 'col-sm-12 control-label text-left uprawnienieRow',
                     ),
                     'attr' => array(
                         'class' => '',
@@ -628,7 +628,7 @@ class NadawanieUprawnienZasobowController extends Controller
             'allow_add'    => true,
             'allow_delete'    => true,
             'by_reference' => false,
-            'label' => "Enrolments",
+            'label' => "Zasoby",
             'prototype' => true,
             'cascade_validation' => true,
             'data' => $userzasoby
