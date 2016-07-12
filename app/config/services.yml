@@ -91,3 +91,7 @@ services:
         class : Parp\MainBundle\Services\SamaccountnameGeneratorService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
+    ldap_import:
+        class : Parp\SoapBundle\Services\LdapImportService
+        arguments : ["@service_container"]
+        tags: ~

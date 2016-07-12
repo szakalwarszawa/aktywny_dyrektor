@@ -87,8 +87,9 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
@@ -134,8 +135,9 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
@@ -209,8 +211,8 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         
@@ -299,8 +301,9 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 20000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();    
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password'); 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);        
         $cookie = '';
         $result = [];
@@ -332,8 +335,9 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 20000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
@@ -358,6 +362,34 @@ class LdapService
         ldap_bind($ldapconn);
         return $results;
     }
+    
+    
+    
+    public function getAllUserGroupsRecursivlyFromAD($samaccountname)
+    {
+        $user = $this->getUserFromAD($samaccountname);
+        //echo "<pre>"; print_r($user); die();
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
+        $ldapdomain = $this->ad_domain;
+        $userDN = ldap_escape($user[0]['distinguishedname']);
+        $searchDN = "OU=".$this->_ouWithGroups.$this->patch; //"DC=parp,DC=local";
+        $ldapconn = ldap_connect($this->ad_host);
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+        $groupToFind = "SG-ZZP-Public-RO";//"INT_BI";
+        $filter = "(memberof:1.2.840.113556.1.4.1941:=".$groupToFind.")";
+        //$filter = "(samaccountname=".$groupToFind.")";
+        $filter = "(&(objectclass=*)(member:1.2.840.113556.1.4.1941:=".$userDN."))";
+        $search = ldap_search($ldapconn, $searchDN, $filter, array("dn"), 1);
+        $items = ldap_get_entries($ldapconn, $search);
+        //echo "<pre>"; print_r($items);print_r($userDN); die();
+        return $items;
+    }
+    
     public function  checkGroupExistsFromAD($group)
     {
         $result = $this->getGroupsFromAD($group);
@@ -648,7 +680,7 @@ class LdapService
 
     public function getUsersFromOU($OU)
     {
-        echo ".$OU";
+        //echo ".$OU";
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -668,8 +700,9 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldap_username = $this->securityContext->getToken()->getUsername();
-        $ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 

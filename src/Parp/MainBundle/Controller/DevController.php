@@ -35,6 +35,154 @@ use Symfony\Component\Finder\Finder;
  */
 class DevController extends Controller
 {
+    /**
+     * @Route("/testAdLib3", name="testAdLib3")
+     * @Template()
+     */
+    public function testAdLib3Action()
+    {
+        $samaccountname = "zbigniew_organisciak";
+        $ldap = $this->get('ldap_service');
+        $userGroups = $ldap->getAllUserGroupsRecursivlyFromAD($samaccountname);
+        echo "<pre>"; print_r($userGroups); die();
+        die();
+        
+    }
+    /**
+     * @Route("/testAdLib2", name="testAdLib2")
+     * @Template()
+     */
+    public function testAdLib2Action()
+    {
+        $configuration = array(
+            //'user_id_key' => 'samaccountname',
+            'account_suffix' => '@parp.local',
+            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
+            'base_dn' => 'dc=parp,dc=local',
+            'domain_controllers' => array('10.10.16.21'),
+            'admin_username' => 'aktywny_dyrektor',
+            'admin_password' => 'abcd@123',
+            //'real_primarygroup' => true,
+            //'use_ssl' => false,
+            //'use_tls' => false,
+            //'recursive_groups' => true,
+            'ad_port' => '389',
+            //'sso' => false,
+        );
+        $adldap = new \Adldap\Adldap($configuration);
+        
+        echo("<pre>\n");
+        
+        $gr = 'SGG-ZZP-PUBLIC-RO';
+        $gr = 'INT-BI';
+        
+        $gr = "marcin_lipinski";
+        
+        $result = $adldap->user()->find($gr);
+        print_r($result); die(); 
+        
+        
+        
+        $result = $adldap->search()->recursive(false)->where('cn', '=','Kamil Jakacki'/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
+        print_r($result); die();   
+/*
+            $collection = $ad->user()->find('kamil_jakacki');//infoCollection('kamil_jakacki');
+            print_r($collection->memberOf);
+            print_r($collection->displayName);
+        
+*/
+        
+        //$results = $ad->search()->all();
+        die('testAdLib2');
+    }
+    /**
+     * @Route("/testAdLib", name="testAdLib")
+     * @Template()
+     */
+    public function testAdLibAction()
+    {
+        // Create a configuration array.
+        $config = [
+          'account_suffix'        => '@parp.local',
+          'domain_controllers'    => ['10.10.16.21'],
+          'base_dn'               => 'dc=parp,dc=local',
+          'admin_username'        => 'aktywny_dyrektor',
+          'admin_password'        => 'abcd@123',
+        ];
+        
+        // Create a new connection provider.
+        $provider = new \Adldap\Connections\Provider($config);
+        
+        // Construct new Adldap instance.
+        $ad = new \Adldap\Adldap();
+        
+        // Add the provider to Adldap.
+        $ad->addProvider('default', $provider);
+        
+        // Try connecting to the provider.
+        try {
+            // Connect using the providers name.
+            $ad->connect('default');
+        
+            // Create a new search.
+            $search = $provider->search();
+        
+        
+/*
+        
+            $marcin = $search->where('samaccountname','=','marcin_lipinski')->get();
+            
+            echo "<br><pre>"; print_r($marcin); echo "</pre>";
+            die();
+*/
+
+            //"sgg-zzp-public-ro"
+            $grupa = $search->recursive(true)->where('CN', '=' , 'SGG-ZZP-PUBLIC-RO')->get();
+        
+            echo "<br><pre>"; print_r($grupa->all()); echo "</pre>"; die();
+            //echo "<br><pre>"; print_r($grupa); echo "</pre>";
+        
+        
+        
+        
+        
+        
+            // Retrieve all groups.
+            //$results = $search->groups()->get();
+            // This would retrieve all records from AD inside a new Adldap\Objects\Paginator instance.
+            $paginator = $search->groups()->paginate(200, 0);
+            
+            // Returns total number of pages, int
+            $paginator->getPages();
+            
+            // Returns current page number, int
+            $paginator->getCurrentPage();
+            
+            // Returns the amount of entries allowed per page, int
+            $paginator->getPerPage();
+            
+            // Returns all of the results in the entire paginated result
+            $results = $paginator->getResults();
+            
+            // Returns the total amount of retrieved entries, int
+            $paginator->count();
+
+
+            // Iterate over the results like normal
+            foreach($paginator as $result)
+            {
+                echo "<br><pre>"; print_r($result->getMemberNames()); echo "</pre>";
+            }
+            
+            //echo "<pre>"; print_r($results); 
+            die();
+            
+        } catch (\Adldap\Exceptions\Auth\BindException $e) {
+        
+            // There was an issue binding / connecting to the server.
+        
+        }
+    }
     
     /**
      * @Route("/pokazAll", name="pokazAll")
