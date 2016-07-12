@@ -137,7 +137,7 @@ class LdapImportService
     
     protected function saveToLogFile($msg, $file)
     {
-        $dir = __DIR__."/../../../../upload";
+        $dir = __DIR__."/../../../../app/logs";
         if(!file_exists($dir)){
             mkdir($dir);
         }
