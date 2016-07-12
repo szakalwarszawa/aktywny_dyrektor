@@ -501,12 +501,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus($wn, "02_EDYCJA_PRZELOZONY", false);
+                                    $this->setWniosekStatus($wn, ($wniosek->getOdebranie() ? "05_EDYCJA_ADMINISTRATOR" : "02_EDYCJA_PRZELOZONY"), false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             }else{
-                                $this->setWniosekStatus($wniosek, "02_EDYCJA_PRZELOZONY", false);
+                                $this->setWniosekStatus($wniosek, ($wniosek->getOdebranie() ? "05_EDYCJA_ADMINISTRATOR" : "02_EDYCJA_PRZELOZONY"), false);
                             }
                             //$em->remove($wniosek);
                             if ($this->debug) die('<br>wszystko poszlo ok');
@@ -521,7 +521,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     switch($isAccepted){
                         case "accept":
                             //przenosi do status 2
-                            $this->setWniosekStatus($wniosek, "02_EDYCJA_PRZELOZONY", false);
+                            $this->setWniosekStatus($wniosek, ($wniosek->getOdebranie() ? "05_EDYCJA_ADMINISTRATOR" : "02_EDYCJA_PRZELOZONY"), false);
                             break;
                         case "return":
                             //przenosi do status 1
@@ -576,7 +576,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             }
                             break;
                         case "return":
-                            $this->setWniosekStatus($wniosek, "01_EDYCJA_WNIOSKODAWCA", true);
+                            $this->setWniosekStatus($wniosek, ("01_EDYCJA_WNIOSKODAWCA"), true);
                             break;
                     }
                     break;

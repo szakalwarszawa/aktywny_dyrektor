@@ -79,13 +79,14 @@ class UserZasobyRepository extends EntityRepository
         }
         return $res;
     }
-    public function findByWniosekWithZasob($wniosekId){
+    public function findByWniosekWithZasob($wniosek){
+        $ktoryWniosekSzukam = $wniosek->getOdebranie() ? "wniosekOdebranie" : "wniosek";
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
-              AND uz.wniosek = :wniosekId
+              AND uz.'.$ktoryWniosekSzukam.' = :wniosekId
               ORDER BY uz.samaccountname ASC
-              ')->setParameter('wniosekId', $wniosekId);
+              ')->setParameter('wniosekId', $wniosek);
                
         $res = $query->getResult();
         foreach($res as $uz){

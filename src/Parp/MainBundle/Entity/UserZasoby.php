@@ -671,22 +671,26 @@ class UserZasoby
     {
         return $this->importedFromEcm;
     }
-    public function getOpisHtml(){
+    public function getOpisHtml($spacer = "<br>", $stripTags = false){
         $html = "";
         if($this->getLoginDoZasobu() != "")
-            $html .= "<b>Login:</b> ".$this->getLoginDoZasobu()."<br>";
+            $html .= "<b>Login:</b> ".$this->getLoginDoZasobu().$spacer;
         if($this->getModul() != "")
-            $html .= "<b>Moduł:</b> ".$this->getModul()."<br>";
+            $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
         if($this->getPoziomDostepu() != "")
-            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu()."<br>";
+            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
         if($this->getAktywneOd() != "")
-            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d")."<br>";
+            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
         if($this->getAktywneDo() != "")
-            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "")."<br>";
+            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
         if($this->getKanalDostepu() != "")
-            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu()."<br>";
+            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
         if($this->getUprawnieniaAdministracyjne() != "")
-            $html .= "<b>Uprawnienia Administracyjne:</b> TAK<br>";
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+            
+        $html = "<div>".$html."</div>";
+        if($stripTags)
+            $html = strip_tags($html);
         return $html;
     }
 

@@ -75,16 +75,20 @@ class NadawanieUprawnienZasobowController extends Controller
                 $title = "Odbierz zasoby";
                 $userzasoby = array();
                 $userzasobyOpisy = array();
+                $zasobyOpisy = array();
                 $ids = array();
                 $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
                 // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
                 foreach($uzs as $uu){
                     if(!in_array($uu->getZasobId(), $ids))
                         $ids[] = $uu->getZasobId();
-                    $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
-                    $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
+                    $userzasoby[$uu->getId()] = $uu;
+                    $userzasobyOpisy[$uu->getId()] = $uu->getOpisHtml();
                 }
                 $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($ids);
+                foreach($chs as $ch){
+                    $zasobyOpisy[$ch->getId()] = $ch;
+                }
                 //$chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findBySamaccountnames($sams);
                 break;
             case "editResources":
@@ -137,9 +141,14 @@ class NadawanieUprawnienZasobowController extends Controller
         
         $choices = array();
         $choicesDescription = array();
-        foreach($chs as $ch){
-            if($action == "addResources" || $action == "removeResources"){
-                $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
+        
+        
+        if($action == "removeResources"){
+            foreach($userzasoby as $uzid => $uz){
+                $choices[$uzid] = $zasobyOpisy[$uz->getZasobId()]. "@@@".$uz->getSamaccountname()."@@@".$uz->getOpisHtml(", ", true);
+                
+                
+/*
                 if(isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0){
                     $ret = array();
                     foreach($userzasoby[$ch->getId()] as $u){
@@ -150,39 +159,57 @@ class NadawanieUprawnienZasobowController extends Controller
                     //$uss = implode(",", $userzasoby[$ch->getId()]);
                     $info = (count($userzasoby[$ch->getId()]) > 1 ? "Posiadają : " : "Posiada : ").implode(" ", $ret);
                 }
-                
-                if($wniosekId == 0){
+*/
+                               
+            }
+        }else{        
+            foreach($chs as $ch){
+                if($action == "addResources"){
+                    $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
+                    if(isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0){
+                        $ret = array();
+                        foreach($userzasoby[$ch->getId()] as $u){
+                            $ret[] = $u;//"<span data-toggle='popover' data-content='".$userzasobyOpisy[$ch->getId()][$u]."'>".$u."</span>";
+                        }
+                        
+                        
+                        //$uss = implode(",", $userzasoby[$ch->getId()]);
+                        $info = (count($userzasoby[$ch->getId()]) > 1 ? "Posiadają : " : "Posiada : ").implode(" ", $ret);
+                    }
                     
-                    $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
-                }else{
-                    if($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
+                    if($wniosekId == 0){
+                        
                         $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
                     }else{
-                        //tylko jesli juz jest we wniosku
-                        $jest = false;
-                        foreach($wniosek->getUserZasoby() as $uz){
-                            if($uz->getZasobId() == $ch->getId())
-                                $jest = true;
-                        }
-                        if($jest || $wniosek->getZasobId() == $ch->getId())
+                        if($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
                             $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+                        }else{
+                            //tylko jesli juz jest we wniosku
+                            $jest = false;
+                            foreach($wniosek->getUserZasoby() as $uz){
+                                if($uz->getZasobId() == $ch->getId())
+                                    $jest = true;
+                            }
+                            if($jest || $wniosek->getZasobId() == $ch->getId())
+                                $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+                        }
                     }
+                    
+                }            
+                elseif($action == "addPrivileges" || $action == "removePrivileges"){
+                    //die(".".count($sams));
+                    $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
+                    if(isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0){
+                        $uss = implode(",", $useruprawnienia[$ch->getId()]);
+                        $info = count($sams) > 1 ? "Posiadają : " . (count($useruprawnienia[$ch->getId()]) == count($sams) ? "WSZYSCY" : $uss) : "Posiada";
+                    }
+                    $gids = array();
+                    foreach($ch->getGrupy() as $g){
+                        $gids[] = $g->getId();
+                    }
+                    //print_r($gids); die();
+                    $choices[$ch->getId()] = $ch->getOpis()."@@@".$info."@@@".implode(",", $gids);
                 }
-                
-            }
-            if($action == "addPrivileges" || $action == "removePrivileges"){
-                //die(".".count($sams));
-                $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
-                if(isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0){
-                    $uss = implode(",", $useruprawnienia[$ch->getId()]);
-                    $info = count($sams) > 1 ? "Posiadają : " . (count($useruprawnienia[$ch->getId()]) == count($sams) ? "WSZYSCY" : $uss) : "Posiada";
-                }
-                $gids = array();
-                foreach($ch->getGrupy() as $g){
-                    $gids[] = $g->getId();
-                }
-                //print_r($gids); die();
-                $choices[$ch->getId()] = $ch->getOpis()."@@@".$info."@@@".implode(",", $gids);
             }
         }
         return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId);    
@@ -362,29 +389,24 @@ class NadawanieUprawnienZasobowController extends Controller
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
                     foreach($ndata['access'] as $z){
+                        $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($z);
+                        $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($suz->getZasobId());
+                        if($wniosek)
+                            $suz->setWniosekOdebranie($wniosek);
+
+/*
                         
-                        foreach($sams as $currentsam){
-                            $zmianaupr = array();
-                            $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $z));
-                            $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($z);
-                            if($suz){
-                                $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
-                                $suz->setCzyAktywne(false);
-                                $suz->setPowodOdebrania($powod);
-                                $this->getDoctrine()->getManager()->persist($suz);
-                                $this->getDoctrine()->getManager()->remove($suz);
-                                $msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."' bo je ma";
-                                $this->addFlash('warning', $msg);
-                                $zmianaupr[] = $zasob->getOpis();
-                            }else{
-                                
-                                $msg = "NIE zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."' bo ich nie ma !";
-                                $this->addFlash('notice', $msg);
-                            }
-                            if(count($zmianaupr) > 0)
-                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $z, $zasob->getAdministratorZasobu());
-                            
-                        }
+                        $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
+                        $suz->setCzyAktywne(false);
+                        $suz->setPowodOdebrania($powod);
+                        $this->getDoctrine()->getManager()->persist($suz);
+                        
+*/
+                        
+                        //$this->getDoctrine()->getManager()->remove($suz);
+                        //$msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."'";
+                        //$this->addFlash('warning', $msg);
+                        $zmianaupr[] = $zasob->getOpis();                   
                     }
                     $this->getDoctrine()->getManager()->flush();
                     return $this->redirect($this->generateUrl('main'));
