@@ -50,13 +50,18 @@
     <div class="panel panel-default">
         <div class="panel-heading">
             <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
+            <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
             {{title}}
             </a>
             </h4>
         </div>
-        <div id="collapse1" class="panel-collapse collapse in">
+        <div id="collapse2" class="panel-collapse collapse in">
             <div class="panel-body">
+                {%if choicesDescription|length == 0 %}
+                <div class="alert alert-danger">
+                    Nie ma żadnych zasobów które możnaby odebrać
+                </div>
+                {%endif%}
                  {{form_start(form)}}
                  {{form_row(form.zapisz2)}} 
                  {{form_rest(form)}} 

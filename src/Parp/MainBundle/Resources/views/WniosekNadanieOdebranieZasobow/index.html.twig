@@ -13,6 +13,15 @@
     {% endfor %}
 
     <h1>Lista Wniosków o nadanie zasobów </h1>
+    
+    
+        <center>
+            <div class="btn-group">
+                <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                <a class="btn btn-danger btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie zasobów</a>
+            </div>
+        </center>
+    
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#wtoku">W toku</a></li>
         <li><a data-toggle="tab" href="#oczekujace">Oczekujące na Twoją akceptację</a></li>
@@ -24,7 +33,7 @@
             <center>
                 <div class="btn-group">
                     <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
                 </div>
             </center>
             
@@ -34,7 +43,7 @@
             <center>
                 <div class="btn-group">
                     <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
                 </div>
             </center>
             
@@ -44,7 +53,7 @@
             <center>
                 <div class="btn-group">
                     <a class="btn btn-primary btn-xs" href="?{{ grid3.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-primary btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
                 </div>
             </center>
             

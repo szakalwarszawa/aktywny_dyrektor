@@ -13,7 +13,7 @@
         
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Edycja wniosku o nadanie zasobów </h1>
+                <h1>Edycja wniosku o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów </h1>
                 <div class="tabContent">
 
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}

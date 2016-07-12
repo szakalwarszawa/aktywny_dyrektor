@@ -77,6 +77,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $userzasobyOpisy = array();
                 $ids = array();
                 $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
+                // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
                 foreach($uzs as $uu){
                     if(!in_array($uu->getZasobId(), $ids))
                         $ids[] = $uu->getZasobId();
@@ -216,6 +217,8 @@ class NadawanieUprawnienZasobowController extends Controller
             $grupy[$g->getId()] = $g->getOpis();
         }
         $now = new \Datetime();
+        
+        //echo "<pre>"; print_r($choices); die();
         
         $builder = $this->createFormBuilder();
         $form = $builder

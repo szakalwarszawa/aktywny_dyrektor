@@ -21,6 +21,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     {
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
+            ->add('odebranie', 'hidden')
             ->add('pracownikSpozaParp')
 
             ->add($builder->create('pracownicy', 'choice', array(

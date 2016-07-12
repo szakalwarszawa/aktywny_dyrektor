@@ -85,6 +85,13 @@ class WniosekNadanieOdebranieZasobow
      */
     private $zasobId;
     
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $odebranie = false;
     
     
     
@@ -297,5 +304,29 @@ class WniosekNadanieOdebranieZasobow
     public function __construct()
     {
         $this->setWniosek(new Wniosek());
+    }
+
+    /**
+     * Set odebranie
+     *
+     * @param boolean $odebranie
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setOdebranie($odebranie)
+    {
+        $this->odebranie = $odebranie;
+
+        return $this;
+    }
+
+    /**
+     * Get odebranie
+     *
+     * @return boolean
+     */
+    public function getOdebranie()
+    {
+        return $this->odebranie;
     }
 }

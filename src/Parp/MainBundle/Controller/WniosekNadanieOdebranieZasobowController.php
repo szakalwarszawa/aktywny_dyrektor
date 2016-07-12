@@ -150,11 +150,21 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function createAction(Request $request)
     {
+        $msg = "";
         $entity = new WniosekNadanieOdebranieZasobow();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-
-        if ($form->isValid()) {
+        $jestCoOdebrac = false;
+        if($entity->getOdebranie()){
+            //sprawdzamy czy w ogole jest co odebrac
+            $sams = explode(",", $entity->getPracownicy());
+            $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
+            
+            $jestCoOdebrac = count($uzs) > 0;
+            
+            //die(count($uzs).".");  
+        }
+        if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $em = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, "00_TWORZONY", false);
             $em->persist($entity);
@@ -174,14 +184,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 
                 return $this->redirect($this->generateUrl('addRemoveAccessToUsersAction', array(
                     'samaccountnames' => json_encode($pr),
-                    'action' => 'addResources',
+                    'action' => ($entity->getOdebranie() ? 'removeResources' : 'addResources'),
                     'wniosekId' => $entity->getId()
                 )));
         }
-
+        if($entity->getOdebranie() && !$jestCoOdebrac){
+            $msg = ("Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!");
+        }
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'message' => $msg
         );
     }
     private function getUsers(){
@@ -217,11 +230,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Displays a form to create a new WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/new", name="wnioseknadanieodebraniezasobow_new")
+     * @Route("/new/{odebranie}", name="wnioseknadanieodebraniezasobow_new", defaults={"odebranie" : 0})
      * @Method("GET")
      * @Template()
      */
-    public function newAction()
+    public function newAction($odebranie = 0)
     {
         //var_dump($this->getUser());
         
@@ -238,11 +251,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
         $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
         $entity->getWniosek()->setStatus($status);
+        $entity->setOdebranie($odebranie);
         $form   = $this->createCreateForm($entity);
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'message' => ''
         );
     }
     protected function addViewersEditors($wniosek, &$where, $who){
@@ -295,7 +310,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $grupa = explode(",", $zasob->getWlascicielZasobu());
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        $g = $this->get('renameService')->fixImieNazwisko($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
@@ -764,11 +779,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'wniosek' => $entity
             )
         );
-        if($entity->getLockedBy()){
-            $editor = $entity->getLockedBy() == $this->getUser()->getUsername();
+        if($entity->getWniosek()->getLockedBy()){
+            $editor = $entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername();
         }else{
-            $entity->setLockedBy($this->getUser()->getUsername());
-            $entity->setLockedAt(new \Datetime());
+            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+            $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(

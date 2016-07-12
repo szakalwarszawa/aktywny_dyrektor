@@ -187,6 +187,15 @@ class UserZasoby
      */
     private $wniosek;
     
+    
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasoby")
+     * @ORM\JoinColumn(name="wniosek_odebranie_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wniosekOdebranie;
+    
     private $_ADUser;
     /**
      * Set _ADUser
@@ -751,5 +760,29 @@ class UserZasoby
     public function getWniosek()
     {
         return $this->wniosek;
+    }
+
+    /**
+     * Set wniosekOdebranie
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie
+     *
+     * @return UserZasoby
+     */
+    public function setWniosekOdebranie(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
+    {
+        $this->wniosekOdebranie = $wniosekOdebranie;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekOdebranie
+     *
+     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     */
+    public function getWniosekOdebranie()
+    {
+        return $this->wniosekOdebranie;
     }
 }

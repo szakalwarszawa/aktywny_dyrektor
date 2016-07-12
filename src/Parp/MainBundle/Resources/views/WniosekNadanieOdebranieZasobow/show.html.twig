@@ -3,7 +3,7 @@
 {% block body -%}
     <div class="col-sm-12">
         <div class="alert alert-info">
-            <h1>Wniosek o nadanie zasobów numer : {{entity.id}}</h1>
+            <h1>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.id}}</h1>
             <ul>                
                 <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
                 <li><b>Zasoby: </b>
@@ -134,7 +134,7 @@
             <div id="zasoby" class="tab-pane fade">
         
             
-                {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'addResources', 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj zasoby</a>{%endif%}
+                {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj zasoby</a>{%endif%}
                 <table class="record_properties table table-striped">
                     <tbody>
                         <tr>
