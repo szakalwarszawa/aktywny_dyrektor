@@ -248,6 +248,14 @@ class Zasoby
 
 
     /**
+     *
+     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob")
+     * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
+     */
+    private $wniosekUtworzenieZasobu;
+
+
+    /**
      * Get id
      *
      * @return integer 
@@ -979,5 +987,29 @@ class Zasoby
         $ret = $this->getNazwa();
         $ret = preg_replace("/\([^)]+\)/", "", $ret);
         return trim($ret);
+    }
+
+    /**
+     * Set wniosekUtworzenieZasobu
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
+     *
+     * @return Zasoby
+     */
+    public function setWniosekUtworzenieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null)
+    {
+        $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekUtworzenieZasobu
+     *
+     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     */
+    public function getWniosekUtworzenieZasobu()
+    {
+        return $this->wniosekUtworzenieZasobu;
     }
 }
