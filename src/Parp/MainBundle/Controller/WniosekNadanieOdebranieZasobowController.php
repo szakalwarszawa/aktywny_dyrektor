@@ -292,7 +292,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }else{
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
-                    $ADUser = $ldap->getUserFromAD($uss[0]);  
+                    $ADUser = $ldap->getUserFromAD(trim($uss[0]));  
                     $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                     
                     
@@ -343,6 +343,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $grupa = explode(",", $zasob->getAdministratorZasobu());
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                        $g = trim($g);
                         $g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
@@ -363,6 +364,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     foreach($grupa as $g){
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = $this->get('renameService')->fixImieNazwisko($g);
+                        $g = trim($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
