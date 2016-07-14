@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Zastepstwo creation</h1>
+
+    {{ form(form) }}
+
+        <div class="btn-group">
+
+<a class="btn btn-primary" href="{{ path('zastepstwo') }}">
+    <i class="fa fa-list"></i> Lista Zastepstwo
+</a>
+</div>
+{% endblock %}

@@ -71,9 +71,16 @@ class DefaultController extends Controller
             //            'thumbnailphoto',
             'useraccountcontrol',
             //'samaccountname',
-            'initials'
+            'initials',
+            'accountExpires',
+            'accountexpires',
+            'email',
+            'lastlogon',
+            'cn',
+            'distinguishedname',
+            'memberOf',
+            'roles'
         ));
-
         // Konfiguracja nazw kolumn
 
 

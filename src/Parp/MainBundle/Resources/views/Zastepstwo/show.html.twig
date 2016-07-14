@@ -1,0 +1,45 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: Zastepstwo</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy Zastepstwo ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Opis</th>
+                <td>{{ entity.opis }}</td>
+            </tr>
+            <tr>
+                <th>Ktozastepuje</th>
+                <td>{{ entity.ktoZastepuje }}</td>
+            </tr>
+            <tr>
+                <th>Kogozastepuje</th>
+                <td>{{ entity.kogoZastepuje }}</td>
+            </tr>
+            <tr>
+                <th>Dataod</th>
+                <td>{{ entity.dataOd|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Datado</th>
+                <td>{{ entity.dataDo|date('Y-m-d H:i:s') }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}

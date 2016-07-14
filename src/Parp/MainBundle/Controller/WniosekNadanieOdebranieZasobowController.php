@@ -33,10 +33,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function indexAction()
     {
+        $em = $this->getDoctrine()->getManager();
         $grid = $this->generateGrid("wtoku");
         $grid2 = $this->generateGrid("oczekujace");
         $grid3 = $this->generateGrid("zamkniete");
-        
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
         
         if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
         {
@@ -60,26 +61,26 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         else
         {
-            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array('grid' => $grid, 'grid2' => $grid2, 'grid3' => $grid3));
+            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array('grid' => $grid, 'grid2' => $grid2, 'grid3' => $grid3, 'zastepstwa' => $zastepstwa));
         }
     }
     
     protected function generateGrid($ktore){
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
-    
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
         $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobow');
         $tableAlias = $source->getTableAlias();
         //die($co);
         $sam = $this->getUser()->getUsername();
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $sam, $ktore)
+            function ($query) use ($tableAlias, $zastepstwa, $ktore)
             {
                 $query->leftJoin($tableAlias . '.wniosek', 'w');
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
-                $query->andWhere('v.samaccountname = \''.$sam.'\'');
+                $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 
                 $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
                 switch($ktore){
@@ -89,7 +90,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $query->andWhere($w);
                         break;
                     case "oczekujace":
-                        $query->andWhere('e.samaccountname = \''.$sam.'\'');
+                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                         break;
                     case "zamkniete":
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
@@ -321,7 +322,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = trim($g);
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
+                        $g = $this->get('renameService')->fixImieNazwisko($g);
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
@@ -713,27 +714,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             )));
         }
     }
-    /**
-     * Finds and displays a WniosekNadanieOdebranieZasobow entity.
-     *
-     * @Route("/{id}/show", name="wnioseknadanieodebraniezasobow_show")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showAction($id)
-    {
+    
+    protected function checkAccess($entity, $onlyEditors = false){
+        
         $em = $this->getDoctrine()->getManager();
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
         //print_r($uzs); die();
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
         
         $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
-            'wniosek' => $entity
+            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'wniosek' => $entity->getWniosek()
             )
         );
         if($entity->getWniosek()->getLockedBy()){
@@ -745,19 +739,41 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
-            'wniosek' => $entity
+            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'wniosek' => $entity->getWniosek()
             )
         );
+        //|| $onlyEditors
+/*
+        if ((!$editor ) && (!$viewer)) {
+            
+            
+            return false;
+        }
+*/
         
-        if (!$editor && !$viewer) {
-            
-            
+        return ['viewer' => $viewer, 'editor' => $editor];
+    }
+    /**
+     * Finds and displays a WniosekNadanieOdebranieZasobow entity.
+     *
+     * @Route("/{id}/show", name="wnioseknadanieodebraniezasobow_show")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showAction($id)
+    {
+        
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        
+        $access = $this->checkAccess($entity);
+        if(!$access['viewer'] && !$access['editor']){
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
-        
-        
-        
+        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        $editor = $access['editor'];
         if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
@@ -830,36 +846,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     public function editAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-
-
-
         $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
         
-        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
-            'wniosek' => $entity
-            )
-        );
-        if($entity->getWniosek()->getLockedBy()){
-            $editor = $entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername();
-        }else{
-            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
-            $entity->getWniosek()->setLockedAt(new \Datetime());
-            $em->flush();
+        
+        $access = $this->checkAccess($entity);
+        if(!$access['editor']){
+            return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
-        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
-            'wniosek' => $entity
-            )
-        );
-        if (!$editor) {
-            
-            
-            return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => ($viewer ? 1 : 0)));
-        }
+        
+        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 

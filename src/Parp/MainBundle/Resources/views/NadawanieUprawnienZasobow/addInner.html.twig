@@ -63,7 +63,7 @@
                 </div>
                 {%endif%}
                  {{form_start(form)}}
-                 {{form_row(form.zapisz2)}} 
+                 {{form_row(form.zapisz2, {'attr' : {'onclick' : 'beforeSubmit(event)'}})}} 
                  {{form_rest(form)}} 
                  {{form_end(form)}} 
             </div>
@@ -114,6 +114,12 @@
     $('#form_buttonodznacz').click(function(){
         $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);    
     });
-
+    function beforeSubmit(e){
+        if($("input[name='form[access][]']").serialize() == ""){
+            event.preventDefault();
+            alert('Musisz wybrać co najmniej jeden zasób');
+            return false;
+        }
+    }
 </script>
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
