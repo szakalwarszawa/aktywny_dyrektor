@@ -16,6 +16,11 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use Symfony\Component\Console\Output\BufferedOutput;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Bundle\FrameworkBundle\Console\Application;
+use Symfony\Component\Console\Input\ArrayInput;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -188,6 +193,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     'action' => ($entity->getOdebranie() ? 'removeResources' : 'addResources'),
                     'wniosekId' => $entity->getId()
                 )));
+        }elseif((($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())){
+            die("Nie ma co odebrac !!!!");
         }
         if($entity->getOdebranie() && !$jestCoOdebrac){
             $msg = ("Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!");
@@ -195,7 +202,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'message' => $msg
+            'message' => $msg,
+            'userzasoby' => []
         );
     }
     private function getUsers(){
@@ -374,7 +382,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
         }
     }
-    protected function setWniosekStatus($wniosek, $statusName, $rejected){
+    protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
         if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
         
         
@@ -389,14 +397,28 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         foreach($vs as $v){
             $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
         }
-        //if(!$rejected){
-            $es = explode(",", $status->getEditors());
-            foreach($es as $e){
-                $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
-                print_r($editors);
-            }
-        //}
         
+        $czyMaGrupyAD = false;
+        foreach($wniosek->getUserZasoby() as $uz){
+            $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+            if($z->getGrupyAd()){
+                $czyMaGrupyAD = true;
+            }
+        } 
+        
+        
+        if($statusName == "07_ROZPATRZONY_POZYTYWNIE" && $oldStatus != null && $czyMaGrupyAD){
+            //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
+            $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
+            $es = explode(",", $os->getEditors());
+        }else{
+            $es = explode(",", $status->getEditors());
+        }
+        foreach($es as $e){
+            $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
+            print_r($editors);
+        }
+     
         
         
         //kasuje viewerow
@@ -450,11 +472,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}/{isAccepted}/accept_reject", name="wnioseknadanieodebraniezasobow_accept_reject")
+     * @Route("/{id}/{isAccepted}/accept_reject/{publishForReal}", name="wnioseknadanieodebraniezasobow_accept_reject", defaults={"publishForReal" : false})
      * @Method({"GET", "POST"})
      * @Template()
      */
-    public function acceptRejectAction(Request $request, $id, $isAccepted)
+    public function acceptRejectAction(Request $request, $id, $isAccepted, $publishForReal = false)
     {
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
@@ -481,6 +503,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }else{
             $wniosek->setPowodZwrotu("");
         }
+        
+        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
         if($isAccepted == "unblock"){
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
@@ -488,8 +512,50 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         elseif($isAccepted == "reject"){
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, "08_ROZPATRZONY_NEGATYWNIE", true);
+        }
+        elseif($isAccepted == "publish"){
+            //przenosi do status 11
+            $showonly = !$publishForReal;
+            $kernel = $this->get('kernel');
+            $application = new Application($kernel);
+            $application->setAutoExit(false);
+            
+            $ids = [];
+            foreach($wniosek->getWniosek()->getADEntries() as $e){
+                $ids[] = $e->getId();
+            }
+            
+            $input = new ArrayInput(array(
+               'command' => 'parp:ldapsave',
+               'showonly' => $showonly,
+               '--ids' => implode(",", $ids)
+            ));
+            
+            // You can use NullOutput() if you don't need the output
+            $output = new BufferedOutput(
+                OutputInterface::VERBOSITY_NORMAL,
+                true // true for decorated
+            );
+            $application->run($input, $output);
+    
+            // return the output, don't use if you used NullOutput()
+            $content = $output->fetch();
+            
+            $converter = new AnsiToHtmlConverter();
+            if($publishForReal){
+                foreach($wniosek->getUserZasoby() as $uz){
+                    $uz->setCzyAktywne(true);
+                    $uz->setCzyNadane(true);
+                }
+                //die('a');
+                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY", true);
+            }
+            $em->flush();
+            // return new Response(""), if you used NullOutput()
+            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
+            
         }else{
-            switch($wniosek->getWniosek()->getStatus()->getNazwaSystemowa()){
+            switch($status){
                 case "00_TWORZONY":
                     switch($isAccepted){
                         case "accept":
@@ -662,6 +728,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     break;
                 case "05_EDYCJA_ADMINISTRATOR":
                     switch($isAccepted){
+                        case "acceptAndPublish":
+                            $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE", false, $status);
+                            break;
                         case "accept":
                             $this->setWniosekStatus($wniosek, "06_EDYCJA_TECHNICZNY", false);
                             break;
@@ -673,8 +742,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 case "06_EDYCJA_TECHNICZNY":
                     switch($isAccepted){
                         case "accept":
+                        case "acceptAndPublish":
                             $isAccepted = "acceptAndPublish";
-                            $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE", false);
+                            $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE", false, $status);
                             break;
                         case "return":
                             $this->setWniosekStatus($wniosek, "05_EDYCJA_ADMINISTRATOR", true);
@@ -686,14 +756,38 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if($isAccepted == "acceptAndPublish"){
                 foreach($wniosek->getUserZasoby() as $uz){
                     $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
-                    $this->get('uprawnieniaservice')->wyslij(
-                        array(
-                            'cn' => '', 
-                            'samaccountname' => $uz->getSamaccountname(), 
-                            'fromWhen' => new \Datetime()
-                        ), array(), 
-                        array($z->getNazwa())
-                    );
+                    if($z->getGrupyAd()){
+                        $grupy = explode(";", $z->getGrupyAd());
+                        foreach($grupy as $grupa){
+                            $grupa = trim($grupa);
+                            if($grupa != ""){
+                                //jesli sa grupy ad to tworzy entry powiazane i daje przycisk opublikuj
+                                $aduser = $ldap->getUserFromAD($uz->getSamaccountname());
+                                $entry = new \Parp\MainBundle\Entity\Entry();
+                                $entry->setWniosek($wniosek->getWniosek());
+                                $entry->setFromWhen(new \Datetime());
+                                $entry->setSamaccountname($uz->getSamaccountname());
+                                $entry->setMemberOf("+".$grupa);
+                                $entry->setIsImplemented(0);
+                                $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
+                                $em->persist($entry);
+                            }
+                        }
+                    }else{
+                        //bez grup ad tworzymy zadanie i maila do admina
+                        $this->get('uprawnieniaservice')->wyslij(
+                            array(
+                                'cn' => '', 
+                                'samaccountname' => $uz->getSamaccountname(), 
+                                'fromWhen' => new \Datetime()
+                            ), array(), 
+                            array($z->getNazwa())
+                            , 'Zasoby', $uz->getZasobId(), ($status == "05_EDYCJA_ADMINISTRATOR" ? $z->getAdministratorZasobu() : $z->getAdministratorTechnicznyZasobu()),
+                            $wniosek
+                        );
+                    }
+                    
+                    
                 }
             }
         }
@@ -777,7 +871,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
-        
 
         $deleteForm = $this->createDeleteForm($id);
         return array(

@@ -325,6 +325,14 @@ class WniosekNadanieOdebranieZasobow
     
     
     /**
+     * Constructor
+     */
+    public function __construct2()
+    {
+        $this->setWniosek(new Wniosek());
+    }
+
+    /**
      * Set odebranie
      *
      * @param boolean $odebranie
@@ -419,13 +427,4 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->powodZwrotu;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->setWniosek(new Wniosek());
-    }
-
 }

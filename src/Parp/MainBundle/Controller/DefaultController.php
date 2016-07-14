@@ -505,8 +505,16 @@ class DefaultController extends Controller
         $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
         
         
-        //print_r($ADUser); die();
+        $userGroupsTemp = $ldap->getAllUserGroupsRecursivlyFromAD($ADUser[0]['samaccountname']);
+        $userGroups = [];
+        foreach($userGroupsTemp as $ug){
+            if(is_array($ug)){
+                $userGroups[] = $ug['dn'];
+            }
+        }
+        //echo "<pre>"; print_r($userGroups); die();
         return array(
+            'userGroups' => $userGroups,
             'user' => $ADUser[0],
             'form' => $form->createView(),
             'zasoby' => $zasoby,

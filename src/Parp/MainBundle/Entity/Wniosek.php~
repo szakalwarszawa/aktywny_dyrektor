@@ -809,16 +809,4 @@ class Wniosek
     {
         return $this->ADentries;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        $this->editors = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->viewers = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->statusy = new \Doctrine\Common\Collections\ArrayCollection();
-        $this->ADentries = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-
 }

@@ -13,11 +13,13 @@ use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
 
 class LdapCommand extends ContainerAwareCommand
 {
     protected $debug = true;
     protected $showonly = true;
+    protected $ids = "";
     
     protected function configure()
     {
@@ -26,13 +28,22 @@ class LdapCommand extends ContainerAwareCommand
                 'showonly',
                 InputArgument::OPTIONAL,
                 'Tylko pokazuje jakie zmiany by poszly do AD?'
-            );
+            )
+        ->addOption(
+                'ids',
+                null,
+                InputOption::VALUE_NONE,
+                'Entry ids to proccess'
+            )
+        ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
-            
+            if($input->getOption('ids')){
+                $this->ids = $input->getOption('ids');
+            }            
             $this->showonly = $input->getArgument('showonly');
             //die(".".$this->showonly);
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
@@ -51,7 +62,7 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<info> [  OK  ]</info>');
     
             $output->writeln('<comment>Szukam zmian w Aktywnym Dyrektorze...          </comment>', false);
-            $zmiany = $doctrine->getRepository('ParpMainBundle:Entry')->findByIsImplementedAndFromWhen();
+            $zmiany = $doctrine->getRepository('ParpMainBundle:Entry')->findByIsImplementedAndFromWhen($this->ids);
             $output->writeln('<info> [  OK  ]</info>');
     
             if ($zmiany) {

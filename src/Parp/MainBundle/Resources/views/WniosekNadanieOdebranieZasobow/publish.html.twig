@@ -1,0 +1,16 @@
+{% extends '::base.html.twig' %}
+
+{% block body %} 
+    <div class="col-sm-12 publishOutput">
+        {{content|raw}}
+    </div>
+    <div class="col-sm-12 ">
+        {% if showonly == 1 %}
+        <br><br>
+        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : wniosek.id, isAccepted: 'publish', 'publishForReal' : true})}}" class="btn btn-danger">Wypchnij powyższe zmiany do AD</a>
+        {%else%}
+        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id : wniosek.id})}}" class="btn btn-danger">Wróć do wniosku</a>
+        
+        {% endif %}
+    </div>
+{%endblock%}

@@ -403,7 +403,7 @@ class UprawnieniaService
         }
     }
 
-    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil')
+    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil', $wniosek = null)
     {
         //$zadanieDla = "Lipiński Marcin";
         $ldap = $this->container->get('ldap_admin_service');

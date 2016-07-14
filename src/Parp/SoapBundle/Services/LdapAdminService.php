@@ -324,22 +324,7 @@ putenv('LDAPTLS_REQCERT=never');
         die();
 */
         if(count($entry) > 0){
-            if($this->debug){
-                $newuser_plaintext_password = "Dupa456!";
-                
-                
-                $encoded_newPassword = "{SHA}" . base64_encode( pack( "H*", sha1( $newuser_plaintext_password ) ) );
-                $entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
-                $entry["userPassword"] = "$encoded_newPassword";
-                unset($entry['initials']);
-               //die('aaa'); 
-                $entry = $this->pwd_encryption($newuser_plaintext_password);
-                
-                
-                echo "<pre>";print_r($dn);
-                print_r($entry);echo "</pre>";
-                //die();
-            }
+            
             $res = ldap_modify($ldapconn, $dn, $entry);
             
             
@@ -385,7 +370,10 @@ putenv('LDAPTLS_REQCERT=never');
             
             $ldapstatus = ldap_error($ldapconn);
         }
-        
+        if($person->getMemberOf()){
+            
+            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+        }
         ldap_unbind($ldapconn);
 
         //$person->setIsImplemented(1);

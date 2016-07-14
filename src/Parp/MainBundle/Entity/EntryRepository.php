@@ -13,11 +13,16 @@ use Doctrine\ORM\EntityRepository;
 class EntryRepository extends EntityRepository
 {
 
-    public function findByIsImplementedAndFromWhen()
+    public function findByIsImplementedAndFromWhen($ids = "")
     {
+        $where = "1 = 1";
+        if($ids != ""){
+            $where = 'e.id IN ('.$ids.')';
+        }
         $query = $this->createQueryBuilder('e')
                 ->where('e.isImplemented = false')
                 ->andWhere('e.fromWhen <= :date')
+                ->andWhere($where)
                 ->setParameters(array('date' => new \DateTime()))
                 ->getQuery();
 

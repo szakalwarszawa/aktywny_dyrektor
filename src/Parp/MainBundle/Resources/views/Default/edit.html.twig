@@ -9,6 +9,9 @@
             <li><a data-toggle="tab" href="#uprawnienia">Uprawnienia użytkownika</a></li>
             <li><a data-toggle="tab" href="#historia">Historia zmian</a></li>
             <li><a data-toggle="tab" href="#oczekujace">Oczekujące zmiany</a></li>
+            {%if(userGroups|length > 0)%}
+            <li><a data-toggle="tab" href="#grupyAD">Grupy w AD</a></li>
+            {%endif%}
         </ul>
         
         <div class="tab-content">
@@ -478,6 +481,15 @@
                 
                 </div>
             </div>
+            {%if(userGroups|length > 0)%}
+            <div id="grupyAD" class="tab-pane fade">
+                <ul class="list-group">
+                    {% for g in userGroups %}
+                        <li class="list-group-item">{{g}}</li>
+                    {%endfor%}
+                </ul> 
+            </div>
+            {%endif%}  
         </div>
     
     </div>
