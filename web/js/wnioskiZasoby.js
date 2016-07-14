@@ -3,9 +3,11 @@ function wniosekPracownikSpozaParp(){
     if(v){
         $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicy').closest('.form-group').addClass('hidden');
         $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp').closest('.form-group').removeClass('hidden');
+        $('#parp_mainbundle_wnioseknadanieodebraniezasobow_managerSpozaParp').closest('.form-group').removeClass('hidden');
     }else{
         
         $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp').closest('.form-group').addClass('hidden');
+        $('#parp_mainbundle_wnioseknadanieodebraniezasobow_managerSpozaParp').closest('.form-group').addClass('hidden');
         $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicy').closest('.form-group').removeClass('hidden');
     }
 }

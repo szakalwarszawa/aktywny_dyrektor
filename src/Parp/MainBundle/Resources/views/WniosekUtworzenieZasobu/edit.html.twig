@@ -17,13 +17,50 @@
     <i class="fa fa-list"></i> Lista WniosekUtworzenieZasobu
 </a>
 </div>
-                    {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-                    {{ form(edit_form) }}
+                    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+                    {{ form_start(form) }}
+                    
+                    <table class="table bordered">
+                        <tr>
+                            <th rowspan="3" vertical-align="middle" >
+                                Typ wniosku
+                            </th>
+                            <th>Zgłoszenie nowego zasobu</th>
+                            <th>Zgłoszenie zmiany</th>
+                            <th>Wycofanie zasobu</th>
+                        </tr>
+                        <tr>
+                            <td>{{ form_row(form.typWnioskuDoRejestru) }}</td>
+                            <td>{{ form_row(form.typWnioskuZmianaInformacji) }}</td>
+                            <td>{{ form_row(form.typWnioskuWycofanie) }}</td>
+                        </tr>
+                        <tr>
+                            <td>{{ form_row(form.typWnioskuDoUruchomienia) }}</td>
+                            <td>{{ form_row(form.typWnioskuZmianaWistniejacym) }}</td>
+                            <td>{{ form_row(form.typWnioskuWycofanieZinfrastruktury) }}</td>
+                        </tr>
+                    </table>
+                    {{ form_row(form.wniosek) }}
+                    {{ form_row(form.imienazwisko) }}
+                    {{ form_row(form.login) }}
+                    {{ form_row(form.departament) }}
+                    {{ form_row(form.stanowisko) }}
+                    {{ form_row(form.telefon) }}
+                    {{ form_row(form.nrpokoju) }}
+                    {{ form_row(form.email) }}
+                    {{ form_row(form.proponowanaNazwa) }}
+                    
+                    
+                    
+                    {{ form_end(form) }}    
+                    
                 </div>
             </div>            
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekUtworzenieZasobu', id: edit_form.vars.value.id})) }}
+                    {%if(form.vars.value.id > 0)%}
+                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekUtworzenieZasobu', id: form.vars.value.id})) }}
+                    {%endif%}
                 </div>
             </div>
         </div>

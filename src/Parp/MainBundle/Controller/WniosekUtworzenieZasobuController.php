@@ -77,7 +77,7 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @Route("/", name="wniosekutworzeniezasobu_create")
      * @Method("POST")
-     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:new.html.twig")
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function createAction(Request $request)
     {
@@ -109,7 +109,7 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createCreateForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType(), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers()), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
             'method' => 'POST',
         ));
@@ -124,17 +124,41 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @Route("/new", name="wniosekutworzeniezasobu_new")
      * @Method("GET")
-     * @Template()
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function newAction()
     {
+        $ldap = $this->get('ldap_service');
+        $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        
+        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        
         $entity = new WniosekUtworzenieZasobu();
+        $entity->getWniosek()->setCreatedAt(new \Datetime());
+        $entity->getWniosek()->setLockedAt(new \Datetime());
+        $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
+        $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
+        $entity->getWniosek()->setStatus($status);
+        $entity->setImienazwisko($ADUser[0]['name']);
+        $entity->setLogin($ADUser[0]['samaccountname']);
+        $entity->setDepartament($ADUser[0]['department']);
+        $entity->setStanowisko($ADUser[0]['title']);
+        $departament = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
+        $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
         $form   = $this->createCreateForm($entity);
+
+        
+
+        //echo "<pre>"; print_r($ADUser); die();
 
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
+            'message' => ''
         );
+        
     }
 
     /**
@@ -167,7 +191,7 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @Route("/{id}/edit", name="wniosekutworzeniezasobu_edit")
      * @Method("GET")
-     * @Template()
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function editAction($id)
     {
@@ -198,7 +222,7 @@ class WniosekUtworzenieZasobuController extends Controller
     */
     private function createEditForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType(), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers()), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -281,5 +305,16 @@ class WniosekUtworzenieZasobuController extends Controller
             ->add('submit', 'submit', array('label' => 'Skasuj WniosekUtworzenieZasobu','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
+    }
+    
+    private function getUsers(){
+        
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $users = array();
+        foreach($ADUsers as $u){
+            $users[$u['samaccountname']] = $u['name'];
+        }
+        return $users;
     }
 }

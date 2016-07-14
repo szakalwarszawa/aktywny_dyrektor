@@ -33,6 +33,10 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
             
             ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
             
+            ->add('managerSpozaParp', 'choice',  array(
+                'choices' => $this->ADUsers,
+                'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2'))
+            )
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
                 'data_class' => 'Parp\MainBundle\Entity\Wniosek')
             )

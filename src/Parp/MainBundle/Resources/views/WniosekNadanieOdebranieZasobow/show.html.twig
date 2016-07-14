@@ -3,7 +3,7 @@
 {% block body -%}
     <div class="col-sm-12">
         <div class="alert alert-info">
-            <h1>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.id}}</h1>
+            <h1>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h1>
             <ul>                
                 <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
                 <li><b>Zasoby: </b>
@@ -19,21 +19,48 @@
                 {% for ss in entity.wniosek.statusy %}
                     <span class="btn btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  data-toggle="tooltip" title="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }}" data-placement="right"><i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> </span>
                 {%endfor%}
+            </div>
+            <div class="btn-group">  
                 {% if editor %}
+                    <h3>Akcje:</h3>
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                     {% if canReturn %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                    <a  data-toggle="collapse" data-target="#rejectDiv" class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                    
                     {%endif%}
                     {% if canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                     {%endif%}
-                    {% if(entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                    {% if(entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR") %}
                         <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Opublikuj <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    {%else%}
+                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                     {%endif%}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    
                     
                 {% endif %}
             </div>
+            <div class="collapse" id="rejectDiv">
+                <form action="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" method="POST">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód zwrotu wniosku</label>
+                        <div class="col-sm-10">
+                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod zwrotu wniosku"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group paddingTop20">
+                        <button type="submit" class="btn btn-info">Zwróć wniosek do poprawy <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </button>
+                    </div>
+                </form>
+                
+            </div>
+            {%if(entity.powodZwrotu != "")%}
+                <div class="alert alert-danger">
+                    <h3>Wniosek zwrócony, powód zwrotu:</h3>
+                    {{entity.powodZwrotu}}
+                </div>
+            {%endif%}
         </div>
     </div>
     
@@ -61,7 +88,7 @@
                                     
                                     {% if entity.wniosek.parent%}
                                         
-                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.id}}</a>
+                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.numer}}</a>
                                     {%endif%}
                                 </td>
                             </tr>
@@ -73,7 +100,7 @@
                                         Na wnioski:
                                         <ul class="list-group">
                                         {% for w in entity.wniosek.children %}
-                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.id})}}">Wniosek nr {{w.id}} - {{w.status.nazwa}}</a></li>
+                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
                                         {%endfor %}                           
                                         </ul>
                                     {%endif%}
@@ -90,6 +117,10 @@
                             <tr>
                                 <th>Pracownik spoza parp</th>
                                 <td>{{ entity.pracownikSpozaParp }}</td>
+                            </tr>
+                            <tr>
+                                <th>Manager Pracowników spoza parp</th>
+                                <td>{{ entity.managerSpozaParp }}</td>
                             </tr>
                             <tr>
                                 <th>Id</th>

@@ -8,8 +8,8 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
 /**
  * UserZasoby
  *
- * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
+ * @ORM\Table(name="wniosek_utworzenie_zasobu")
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekUtworzenieZasobuRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.status.nazwa,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.opis:group_concat,wniosek.editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
@@ -65,6 +65,124 @@ class WniosekUtworzenieZasobu
     private $zrealizowany = false;
     
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $imienazwisko;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $login;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $stanowisko;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $telefon;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $nrpokoju;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $email;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $departament;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $proponowanaNazwa;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuDoRejestru = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuDoUruchomienia = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuZmianaInformacji = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuZmianaWistniejacym = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuWycofanie = false;
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWnioskuWycofanieZinfrastruktury = false;
 
     /**
      * Get id
@@ -170,5 +288,352 @@ class WniosekUtworzenieZasobu
     public function getZasob()
     {
         return $this->zasob;
+    }
+
+    /**
+     * Set imienazwisko
+     *
+     * @param string $imienazwisko
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setImienazwisko($imienazwisko)
+    {
+        $this->imienazwisko = $imienazwisko;
+
+        return $this;
+    }
+
+    /**
+     * Get imienazwisko
+     *
+     * @return string
+     */
+    public function getImienazwisko()
+    {
+        return $this->imienazwisko;
+    }
+
+    /**
+     * Set login
+     *
+     * @param string $login
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setLogin($login)
+    {
+        $this->login = $login;
+
+        return $this;
+    }
+
+    /**
+     * Get login
+     *
+     * @return string
+     */
+    public function getLogin()
+    {
+        return $this->login;
+    }
+
+    /**
+     * Set stanowisko
+     *
+     * @param string $stanowisko
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setStanowisko($stanowisko)
+    {
+        $this->stanowisko = $stanowisko;
+
+        return $this;
+    }
+
+    /**
+     * Get stanowisko
+     *
+     * @return string
+     */
+    public function getStanowisko()
+    {
+        return $this->stanowisko;
+    }
+
+    /**
+     * Set telefon
+     *
+     * @param string $telefon
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTelefon($telefon)
+    {
+        $this->telefon = $telefon;
+
+        return $this;
+    }
+
+    /**
+     * Get telefon
+     *
+     * @return string
+     */
+    public function getTelefon()
+    {
+        return $this->telefon;
+    }
+
+    /**
+     * Set nrpokoju
+     *
+     * @param string $nrpokoju
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setNrpokoju($nrpokoju)
+    {
+        $this->nrpokoju = $nrpokoju;
+
+        return $this;
+    }
+
+    /**
+     * Get nrpokoju
+     *
+     * @return string
+     */
+    public function getNrpokoju()
+    {
+        return $this->nrpokoju;
+    }
+
+    /**
+     * Set email
+     *
+     * @param string $email
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setEmail($email)
+    {
+        $this->email = $email;
+
+        return $this;
+    }
+
+    /**
+     * Get email
+     *
+     * @return string
+     */
+    public function getEmail()
+    {
+        return $this->email;
+    }
+
+    /**
+     * Set departament
+     *
+     * @param string $departament
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setDepartament($departament)
+    {
+        $this->departament = $departament;
+
+        return $this;
+    }
+
+    /**
+     * Get departament
+     *
+     * @return string
+     */
+    public function getDepartament()
+    {
+        return $this->departament;
+    }
+
+    /**
+     * Set proponowanaNazwa
+     *
+     * @param string $proponowanaNazwa
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setProponowanaNazwa($proponowanaNazwa)
+    {
+        $this->proponowanaNazwa = $proponowanaNazwa;
+
+        return $this;
+    }
+
+    /**
+     * Get proponowanaNazwa
+     *
+     * @return string
+     */
+    public function getProponowanaNazwa()
+    {
+        return $this->proponowanaNazwa;
+    }
+
+    /**
+     * Set typWnioskuDoRejestru
+     *
+     * @param boolean $typWnioskuDoRejestru
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuDoRejestru($typWnioskuDoRejestru)
+    {
+        $this->typWnioskuDoRejestru = $typWnioskuDoRejestru;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuDoRejestru
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuDoRejestru()
+    {
+        return $this->typWnioskuDoRejestru;
+    }
+
+    /**
+     * Set typWnioskuDoUruchomienia
+     *
+     * @param boolean $typWnioskuDoUruchomienia
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuDoUruchomienia($typWnioskuDoUruchomienia)
+    {
+        $this->typWnioskuDoUruchomienia = $typWnioskuDoUruchomienia;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuDoUruchomienia
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuDoUruchomienia()
+    {
+        return $this->typWnioskuDoUruchomienia;
+    }
+
+    /**
+     * Set typWnioskuZmianaInformacji
+     *
+     * @param boolean $typWnioskuZmianaInformacji
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuZmianaInformacji($typWnioskuZmianaInformacji)
+    {
+        $this->typWnioskuZmianaInformacji = $typWnioskuZmianaInformacji;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuZmianaInformacji
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuZmianaInformacji()
+    {
+        return $this->typWnioskuZmianaInformacji;
+    }
+
+    /**
+     * Set typWnioskuZmianaWistniejacym
+     *
+     * @param boolean $typWnioskuZmianaWistniejacym
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuZmianaWistniejacym($typWnioskuZmianaWistniejacym)
+    {
+        $this->typWnioskuZmianaWistniejacym = $typWnioskuZmianaWistniejacym;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuZmianaWistniejacym
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuZmianaWistniejacym()
+    {
+        return $this->typWnioskuZmianaWistniejacym;
+    }
+
+    /**
+     * Set typWnioskuWycofanie
+     *
+     * @param boolean $typWnioskuWycofanie
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuWycofanie($typWnioskuWycofanie)
+    {
+        $this->typWnioskuWycofanie = $typWnioskuWycofanie;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuWycofanie
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuWycofanie()
+    {
+        return $this->typWnioskuWycofanie;
+    }
+
+    /**
+     * Set typWnioskuWycofanieZinfrastruktury
+     *
+     * @param boolean $typWnioskuWycofanieZinfrastruktury
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setTypWnioskuWycofanieZinfrastruktury($typWnioskuWycofanieZinfrastruktury)
+    {
+        $this->typWnioskuWycofanieZinfrastruktury = $typWnioskuWycofanieZinfrastruktury;
+
+        return $this;
+    }
+
+    /**
+     * Get typWnioskuWycofanieZinfrastruktury
+     *
+     * @return boolean
+     */
+    public function getTypWnioskuWycofanieZinfrastruktury()
+    {
+        return $this->typWnioskuWycofanieZinfrastruktury;
+    }
+    
+    
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->setWniosek(new Wniosek());
+        $this->setZasob(new Zasoby());
+        
     }
 }

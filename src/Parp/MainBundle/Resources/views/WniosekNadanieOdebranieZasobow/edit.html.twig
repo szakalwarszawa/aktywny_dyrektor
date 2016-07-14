@@ -16,8 +16,8 @@
                 <h1>Edycja wniosku o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów </h1>
                 <div class="tabContent">
 
-                    {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-                    {{ form(edit_form) }}
+                    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+                    {{ form(form) }}
                 </div>
             </div> 
             <div id="zasoby" class="tab-pane fade">
@@ -60,17 +60,29 @@
             </div>             
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: edit_form.vars.value.id})) }}
+                    {%if form.vars.value.id > 0 %}
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: form.vars.value.id})) }}
+                    {%else%}
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}
                 </div>
             </div>            
             <div id="komentarze" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: edit_form.vars.value.id})) }}
+                    {%if form.vars.value.id > 0 %}
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: form.vars.value.id})) }}
+                    {%else%}
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}
                 </div>
             </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: edit_form.vars.value.id})) }}
+                    {%if form.vars.value.id > 0 %}
+                    {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: form.vars.value.id})) }}
+                    {%else%}
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}
                 </div>
             </div>
             <div id="historiaAkceptacji" class="tab-pane fade">
@@ -80,9 +92,11 @@
             </div>
         </div>
 <div class="btn-group">
+{%if form.vars.value.id > 0 %}
 <a class="btn btn-success" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.id}) }}">
     <i class="fa fa-list"></i> Pokaż wniosek
 </a>
+{%endif%}
 <a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
     <i class="fa fa-list"></i> Lista Wniosków o nadanie zasobów
 </a>

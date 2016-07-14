@@ -95,3 +95,7 @@ services:
         class : Parp\SoapBundle\Services\LdapImportService
         arguments : ["@service_container"]
         tags: ~
+    wniosekNumer:
+        class : Parp\MainBundle\Services\WniosekNumerService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        tags: ~

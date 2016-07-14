@@ -23,23 +23,13 @@
         </center>
     
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#wtoku">W toku</a></li>
-        <li><a data-toggle="tab" href="#oczekujace">Oczekujące na Twoją akceptację</a></li>
+        <li class="active"><a data-toggle="tab" href="#oczekujace">Oczekujące na realizację</a></li>
+        <li><a data-toggle="tab" href="#wtoku">W toku</a></li>
         <li><a data-toggle="tab" href="#zakonczone">Zakończone</a></li>
     </ul>
     
     <div class="tab-content">
-        <div id="wtoku" class="tab-pane fade in active">
-            <center>
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
-                </div>
-            </center>
-            
-            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
-        </div>
-        <div id="oczekujace" class="tab-pane fade">
+        <div id="oczekujace" class="tab-pane fade in active">
             <center>
                 <div class="btn-group">
                     <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
@@ -48,6 +38,16 @@
             </center>
             
             {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="wtoku" class="tab-pane fade">
+            <center>
+                <div class="btn-group">
+                    <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
+                </div>
+            </center>
+            
+            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
         <div id="zakonczone" class="tab-pane fade">
             <center>

@@ -175,6 +175,15 @@ class Wniosek
      */
     private $wniosekUtworzenieZasobu;
 
+
+    
+    /**
+     *
+     * @ORM\OneToOne(targetEntity="WniosekNumer", inversedBy="wniosek")
+     * @ORM\JoinColumn(name="WniosekNumer_id", referencedColumnName="id")
+     */
+    private $wniosekNumer;
+
     /**
      * Get id
      *
@@ -324,9 +333,28 @@ class Wniosek
      *
      * @return string
      */
+    public function get_Numer()
+    {
+        return $this->numer;
+    }
+    /**
+     * Get numer
+     *
+     * @return string
+     */
     public function getNumer()
     {
-        return $this->id ? $this->id : "Wniosek w trakcie tworzenia";
+        $numer = $this->getWniosekNumer() ? $this->getWniosekNumer()->getNumer()."/".$this->getWniosekNumer()->getRok() : "Wniosek w trakcie tworzenia";
+        if($this->getParent()){
+            $p = $this->getParent();
+            $numer = $p->getWniosekNumer() ? $p->getWniosekNumer()->getNumer().".".$this->numer."/".$p->getWniosekNumer()->getRok() : "!!!!1!!!!";
+            if($this->getParent()->getParent()){                    
+                $p = $this->getParent()->getParent();
+                $numer = $p->getWniosekNumer() ? $p->getWniosekNumer()->getNumer().".".$this->getParent()->get_Numer().".".$this->numer."/".$p->getWniosekNumer()->getRok() : "!!!!2!!!!";
+            }
+        }
+        
+        return $numer;
     }
 
     /**
@@ -722,5 +750,29 @@ class Wniosek
     public function getWniosekUtworzenieZasobu()
     {
         return $this->wniosekUtworzenieZasobu;
+    }
+
+    /**
+     * Set wniosekNumer
+     *
+     * @param \Parp\MainBundle\Entity\WniosekNumer $wniosekNumer
+     *
+     * @return Wniosek
+     */
+    public function setWniosekNumer(\Parp\MainBundle\Entity\WniosekNumer $wniosekNumer = null)
+    {
+        $this->wniosekNumer = $wniosekNumer;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekNumer
+     *
+     * @return \Parp\MainBundle\Entity\WniosekNumer
+     */
+    public function getWniosekNumer()
+    {
+        return $this->wniosekNumer;
     }
 }

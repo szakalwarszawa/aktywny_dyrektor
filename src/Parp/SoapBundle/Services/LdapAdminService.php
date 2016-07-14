@@ -73,7 +73,7 @@ putenv('LDAPTLS_REQCERT=never');
         if($error != ""){
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
-            $this->output->writeln('<info>'.$msg.'</info>', false);
+            echo '<info>'.$msg.'</info>';
         }
     }
     public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)

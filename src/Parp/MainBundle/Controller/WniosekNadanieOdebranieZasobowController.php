@@ -146,7 +146,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @Route("/", name="wnioseknadanieodebraniezasobow_create")
      * @Method("POST")
-     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:new.html.twig")
+     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */
     public function createAction(Request $request)
     {
@@ -232,7 +232,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @Route("/new/{odebranie}", name="wnioseknadanieodebraniezasobow_new", defaults={"odebranie" : 0})
      * @Method("GET")
-     * @Template()
+     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */
     public function newAction($odebranie = 0)
     {
@@ -257,7 +257,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'message' => ''
+            'message' => '',
+            'userzasoby' => []
         );
     }
     protected function addViewersEditors($wniosek, &$where, $who){
@@ -281,14 +282,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case "przelozony":
                 //bierze managera tworzacego - jednak nie , ma byc po podmiotach
                 //$ADUser = $ldap->getUserFromAD($wniosek->getCreatedBy());  
-                //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
-                $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
-                $ADUser = $ldap->getUserFromAD($uss[0]);  
-                $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
-                
-                
-                $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                $ADManager = $ldap->getUserFromAD(null, $mgr);
+                if($wniosek->getWniosekNadanieOdebranieZasobow()->getPracownikSpozaParp()){
+                    //biore managera z pola managerSpoząParp
+                    $ADManager = $ldap->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                    if(count($ADManager) == 0){
+                        die("Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                    }
+                    //$przelozeni[$ADManager[0]['samaccountname']][] = $uz;
+                }else{
+                    //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
+                    $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
+                    $ADUser = $ldap->getUserFromAD($uss[0]);  
+                    $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
+                    
+                    
+                    $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+                    $ADManager = $ldap->getUserFromAD(null, $mgr);
+                }
                 print_r($ADManager[0]['samaccountname']);
                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                 if ($this->debug) echo "<br>added ".$ADManager[0]['samaccountname']."<br>";
@@ -428,10 +438,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      *
      * @Route("/{id}/{isAccepted}/accept_reject", name="wnioseknadanieodebraniezasobow_accept_reject")
-     * @Method("GET")
+     * @Method({"GET", "POST"})
      * @Template()
      */
-    public function acceptRejectAction($id, $isAccepted)
+    public function acceptRejectAction(Request $request, $id, $isAccepted)
     {
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
@@ -442,7 +452,22 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
-        
+        if($request->isMethod('POST')){
+            $txt = $request->get('powodZwrotu');
+            $wniosek->setPowodZwrotu($txt);
+            
+            $kom = new \Parp\MainBundle\Entity\Komentarz();
+            $kom->setObiekt('WniosekNadanieOdebranieZasobow');
+            $kom->setObiektId($id);
+            $kom->setTytul("Wniosek zwrócony z powodu:");
+            $kom->setOpis($txt);
+            $kom->setSamaccountname($this->getUser()->getUsername());
+            $kom->setCreatedAt(new \Datetime());
+            $em->persist($kom);
+            
+        }else{
+            $wniosek->setPowodZwrotu("");
+        }
         if($isAccepted == "unblock"){
             $wniosek->setLockedBy(null);
             $wniosek->setLockedAt(null);
@@ -455,23 +480,33 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 case "00_TWORZONY":
                     switch($isAccepted){
                         case "accept":
+                            $this->get('wniosekNumer')->nadajNumer($wniosek, "wniosekONadanieUprawnien");
                             //klonuje wniosek na male i ustawia im statusy:
                             $przelozeni = array();
                             foreach($wniosek->getUserZasoby() as $uz){
-                                $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());  
-                                $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
-                                
-                                
-                                $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                                $ADManager = $ldap->getUserFromAD(null, $mgr);
-                                if(count($ADManager) == 0){
-                                    die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
+                                if($wniosek->getPracownikSpozaParp()){
+                                    //biore managera z pola managerSpoząParp
+                                    $ADManager = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());
+                                    if(count($ADManager) == 0){
+                                        die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
+                                    }
+                                    $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
+                                }else{
+                                    $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());  
+                                    $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
+                                    
+                                    
+                                    $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+                                    $ADManager = $ldap->getUserFromAD(null, $mgr);
+                                    if(count($ADManager) == 0){
+                                        die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
+                                    }
+                                    $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }
-                                $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                             }
-                            
                             if ($this->debug) echo "<pre>"; \Doctrine\Common\Util\Debug::dump($przelozeni); echo "</pre>"; 
                             if(count($przelozeni) > 1){
+                                $numer = 1;
                                 //teraz dla kazdego przelozonego tworzy oddzielny wniosek
                                 $this->setWniosekStatus($wniosek, "10_PODZIELONY", false);
                                 foreach($przelozeni as $sam => $p){
@@ -484,7 +519,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $wn->getWniosek()->setParent($wniosek->getWniosek());
                                     $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
-                                    $wn->getWniosek()->setNumer('111');
+                                    $wn->getWniosek()->setNumer($numer++);
                                     $users = array();
                                     foreach($p as $uz){
                                         $nuz = clone $uz;
@@ -539,6 +574,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             }
                             if(count($zasoby) > 1){
                                 $this->setWniosekStatus($wniosek, "10_PODZIELONY", false);
+                                $numer = 1;
                                 //teraz dla kazdego zasobu tworzy oddzielny wniosek
                                 foreach($zasoby as $z){
                                     if ($this->debug) echo "<br><br>Tworzy nowy wniosek dla zasobu ".$z->getZasobId()."<br><br>";
@@ -550,7 +586,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $wn->getWniosek()->setParent($wniosek->getWniosek());
                                         $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                         $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
-                                        $wn->getWniosek()->setNumer('111');
+                                        $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
+                                        $wn->getWniosek()->setNumer($numer++);
                                         $users = array();
                                         foreach($z as $uz){
                                             $nuz = clone $uz;
@@ -623,6 +660,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 case "06_EDYCJA_TECHNICZNY":
                     switch($isAccepted){
                         case "accept":
+                            $isAccepted = "acceptAndPublish";
                             $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE", false);
                             break;
                         case "return":
@@ -630,6 +668,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             break;
                     }
                     break;
+            }
+            
+            if($isAccepted == "acceptAndPublish"){
+                foreach($wniosek->getUserZasoby() as $uz){
+                    $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    $this->get('uprawnieniaservice')->wyslij(
+                        array(
+                            'cn' => '', 
+                            'samaccountname' => $uz->getSamaccountname(), 
+                            'fromWhen' => new \Datetime()
+                        ), array(), 
+                        array($z->getNazwa())
+                    );
+                }
             }
         }
         //die('a');
@@ -761,7 +813,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @Route("/{id}/edit", name="wnioseknadanieodebraniezasobow_edit")
      * @Method("GET")
-     * @Template()
+     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */
     public function editAction($id)
     {

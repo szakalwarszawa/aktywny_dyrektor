@@ -95,6 +95,31 @@ class WniosekNadanieOdebranieZasobow
     
     
     
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $managerSpozaParp;
+    
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=5000, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $instytucjaSpozaParp;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=5000, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $powodZwrotu;
 
     /**
      * Get id
@@ -328,5 +353,77 @@ class WniosekNadanieOdebranieZasobow
     public function getOdebranie()
     {
         return $this->odebranie;
+    }
+
+    /**
+     * Set managerSpozaParp
+     *
+     * @param string $managerSpozaParp
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setManagerSpozaParp($managerSpozaParp)
+    {
+        $this->managerSpozaParp = $managerSpozaParp;
+
+        return $this;
+    }
+
+    /**
+     * Get managerSpozaParp
+     *
+     * @return string
+     */
+    public function getManagerSpozaParp()
+    {
+        return $this->managerSpozaParp;
+    }
+
+    /**
+     * Set instytucjaSpozaParp
+     *
+     * @param string $instytucjaSpozaParp
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setInstytucjaSpozaParp($instytucjaSpozaParp)
+    {
+        $this->instytucjaSpozaParp = $instytucjaSpozaParp;
+
+        return $this;
+    }
+
+    /**
+     * Get instytucjaSpozaParp
+     *
+     * @return string
+     */
+    public function getInstytucjaSpozaParp()
+    {
+        return $this->instytucjaSpozaParp;
+    }
+
+    /**
+     * Set powodZwrotu
+     *
+     * @param string $powodZwrotu
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setPowodZwrotu($powodZwrotu)
+    {
+        $this->powodZwrotu = $powodZwrotu;
+
+        return $this;
+    }
+
+    /**
+     * Get powodZwrotu
+     *
+     * @return string
+     */
+    public function getPowodZwrotu()
+    {
+        return $this->powodZwrotu;
     }
 }

@@ -145,7 +145,7 @@ class NadawanieUprawnienZasobowController extends Controller
         
         if($action == "removeResources"){
             foreach($userzasoby as $uzid => $uz){
-                $choices[$uzid] = $zasobyOpisy[$uz->getZasobId()]. "@@@".$uz->getSamaccountname()."@@@".$uz->getOpisHtml(", ", true);
+                $choices[$uzid] = $zasobyOpisy[$uz->getZasobId()];//. "@@@".$uz->getSamaccountname()."@@@".$uz->getOpisHtml(", ", true);
                 
                 
 /*
@@ -179,10 +179,10 @@ class NadawanieUprawnienZasobowController extends Controller
                     
                     if($wniosekId == 0){
                         
-                        $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+                        $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
                     }else{
                         if($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
-                            $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+                            $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
                         }else{
                             //tylko jesli juz jest we wniosku
                             $jest = false;
@@ -191,7 +191,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                     $jest = true;
                             }
                             if($jest || $wniosek->getZasobId() == $ch->getId())
-                                $choices[$ch->getId()] = $ch->getNazwa()."@@@".$info;
+                                $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
                         }
                     }
                     
@@ -208,7 +208,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         $gids[] = $g->getId();
                     }
                     //print_r($gids); die();
-                    $choices[$ch->getId()] = $ch->getOpis()."@@@".$info."@@@".implode(",", $gids);
+                    $choices[$ch->getId()] = $ch->getOpis();//."@@@".$info."@@@".implode(",", $gids);
                 }
             }
         }
@@ -454,8 +454,9 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $zmianaupr[] = $u->getOpis();
                             }
                             
-                            if(count($zmianaupr) > 0)
+                            if(count($zmianaupr) > 0){
                                 $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), array(), $zmianaupr);
+                            }
                         }
                     }
                     $this->getDoctrine()->getManager()->flush();
@@ -738,8 +739,10 @@ class NadawanieUprawnienZasobowController extends Controller
                             //$this->get('session')->getFlashBag()->set('warning', $msg);
                         }
 */
-                        if(count($zmianaupr) > 0 && $wniosekId == 0)
+                        if(count($zmianaupr) > 0 && $wniosekId == 0){
+                                var_dump($currentsam, $zmianaupr); die();
                             $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
+                        }
                     }
                 }
                 
