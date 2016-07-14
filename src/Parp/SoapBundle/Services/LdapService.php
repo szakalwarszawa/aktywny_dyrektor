@@ -186,10 +186,10 @@ class LdapService
         
         $results = ldap_get_entries($ldapconn, $search);
         //print_r($query);
-        //print_r($results); //die();
         ldap_bind($ldapconn);
 
-        
+        //echo "<pre>"; print_r($results); //die();
+        //die('a');
         $result = $this->parseResults($results);
 
 //        foreach(array_unique($tmp) as $unTmp){
@@ -537,11 +537,13 @@ class LdapService
     
     protected function parseResults($tmpResults){
         $result = array();
-        //print_r($userdn); die();
 
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
-            if ($tmpResult["samaccountname"]) {
+            if(is_array($tmpResult)){
+                //echo "<pre>"; print_r($tmpResult); die();
+            }
+            if (is_array($tmpResult) && isset($tmpResult["samaccountname"])) {
                 //$st = $this->getAccountControl($tmpResult["samaccountname"]);
                 $date = new \DateTime();
                 $time = $this->LDAPtoUnix($tmpResult["accountexpires"][0]);

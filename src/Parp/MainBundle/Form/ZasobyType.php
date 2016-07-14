@@ -34,7 +34,7 @@ class ZasobyType extends AbstractType
             ->add('komorkaOrgazniacyjna', 'entity', array(
                 'class' => 'Parp\MainBundle\Entity\Departament',
                 'choice_value' => function($dep){
-                    return $dep->getName();
+                    return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
                 },
                 'label' => 'Komórka organizacyjna'
             ))

@@ -320,6 +320,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $grupa = explode(",", $zasob->getWlascicielZasobu());
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                        $g = trim($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
@@ -327,7 +329,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }else{
                             //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
+                            die ("!!!!!!!!!!blad nie moge znalezc usera ".$g);
                         }
+                        //echo "<br>dodaje wlasciciela ".$g;
+                        print_r($where);
                     }
                 }
                 break;
@@ -385,8 +390,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $es = explode(",", $status->getEditors());
             foreach($es as $e){
                 $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
+                print_r($editors);
             }
         //}
+        
         
         
         //kasuje viewerow
@@ -410,6 +417,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         $wniosek->getWniosek()->setViewernamesSet();
         //dodaje editorow
+        
+        
+        
         foreach($editors as $v){
             $wv = new \Parp\MainBundle\Entity\WniosekEditor();
             $wv->setWniosek($wniosek->getWniosek());

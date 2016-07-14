@@ -43,6 +43,22 @@ class DevController extends Controller
     {
         $samaccountname = "zbigniew_organisciak";
         $ldap = $this->get('ldap_service');
+        
+        
+        $ADManager = $ldap->getUserFromAD(null, "Magdalena Warecka");
+        if(count($ADManager) > 0) echo "Magdalena Warecka jest ";
+        $ADManager = $ldap->getUserFromAD(null, "Warecka Magdalena");
+        if(count($ADManager) > 0) echo "Warecka Magdalena jest ";
+        
+        
+        $ADManager = $ldap->getUserFromAD(null, "Marszałek Artur");
+        if(count($ADManager) > 0) echo "Marszałek Artur jest ";
+        $ADManager = $ldap->getUserFromAD(null, "Artur Marszałek");
+        if(count($ADManager) > 0) echo "Artur Marszałek jest ";
+        //print_r($ADManager);
+        die();
+        
+        
         $userGroups = $ldap->getAllUserGroupsRecursivlyFromAD($samaccountname);
         echo "<pre>"; print_r($userGroups); die();
         die();
