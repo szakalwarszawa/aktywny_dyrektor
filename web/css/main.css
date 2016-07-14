@@ -74,3 +74,5 @@ body .JColResizer > tbody > tr > td, body .JColResizer > tbody > tr > th{
 .paddingTop20{
     padding-top:20px;
 }
+.red-tooltip + .tooltip > .tooltip-inner {background-color: #f00;}
+.red-tooltip + .tooltip > .tooltip-arrow { border-bottom-color:#f00; }

@@ -469,8 +469,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $wniosek->setPowodZwrotu("");
         }
         if($isAccepted == "unblock"){
-            $wniosek->setLockedBy(null);
-            $wniosek->setLockedAt(null);
+            $wniosek->getWniosek()->setLockedBy(null);
+            $wniosek->getWniosek()->setLockedAt(null);
         }
         elseif($isAccepted == "reject"){
             //przenosi do status 8

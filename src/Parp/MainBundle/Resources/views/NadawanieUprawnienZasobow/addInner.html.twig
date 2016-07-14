@@ -75,13 +75,13 @@
         var v = $('#form_grupy').val();
         var s = $('#form_nazwafiltr').val().toUpperCase();
         if(v || s){
-            $('.uprawnienieRow').addClass('hidden');
-            console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
+            $('.uprawnienieRow').closest('.checkbox').addClass('hidden');
+            //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
             if(s){
                 $('.uprawnienieRow').each(function(){
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
-                    console.log('sprawdzam txt '+txt+' i classes '+classes);
+                    //console.log('sprawdzam txt '+txt+' i classes '+classes);
                     var show = false;
                     if(v){
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien'+v) >= 0;
@@ -89,17 +89,17 @@
                         show = txt.indexOf(s) >= 0;
                     } 
                     if(show){
-                        $(this).removeClass('hidden');
+                        $(this).closest('.checkbox').removeClass('hidden');
                     }
                 });
             }else{
                 //pokazujemy szukane grupy
-                $('.uprawnienieRow.grupaUprawnien'+v+'').removeClass('hidden');
+                $('.uprawnienieRow.grupaUprawnien'+v+'').closest('.checkbox').removeClass('hidden');
             }
             //pokazujemy zaznaczone
-            $('.uprawnienieRow input:checked').closest('.uprawnienieRow').removeClass('hidden');
+            $('.uprawnienieRow input:checked').closest('.checkbox').removeClass('hidden');
         }else{                
-            $('.uprawnienieRow').removeClass('hidden');
+            $('.uprawnienieRow').closest('.checkbox').removeClass('hidden');
         }
     }
     $('#form_grupy').change(function(){

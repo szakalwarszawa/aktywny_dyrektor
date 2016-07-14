@@ -247,7 +247,7 @@ class LdapService
          ///////////////
         return $info;
     }
-    public function getGroupsFromAD($group){
+    public function getGroupsFromAD($group, $wilcardSearch = ""){
         // Begin building query
      	$query = "(&"; 
      	$query .= "(&(objectClass=group))";
