@@ -546,7 +546,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $uz->setCzyNadane(true);
                 }
                 //die('a');
-                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY", true);
+                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY", false);
             }
             //die('a');
             $em->flush();
@@ -857,7 +857,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function showAction($id)
     {
-        
+        $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
@@ -872,9 +872,48 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
+        
+        $tab = explode(".", $this->container->getParameter('ad_domain'));
+        $patch = 'OU='.$this->container->getParameter('grupy_ou').',DC=' . $tab[0] . ',DC=' . $tab[1];
+        
+        $grupyAD = [];
+        $userGroups = [];
+        foreach($entity->getWniosek()->getADentries() as $e){
+            if(!isset($userGroups[$e->getSamaccountname()])){                            
+                $userGroups[$e->getSamaccountname()] = $ldap->getAllUserGroupsRecursivlyFromAD($e->getSamaccountname());
+                
+                
+                
+                //echo "<pre>"; print_r($e->getMemberOf()); print_r( $userGroups[$e->getSamaccountname()]); die();
+            }
+            
+            $szukanaGrupa = "CN=".substr($e->getMemberOf(), 1, strlen($e->getMemberOf()) - 1).$patch;
+            $czyMaByc = substr($e->getMemberOf(), 0, 1) == "+";
+            
+            
+            
+            $czyJest = false;
+            
+            foreach($userGroups[$e->getSamaccountname()] as $ug){
+                if(is_array($ug)){
+                    if($ug['dn'] == $szukanaGrupa){
+                        $czyJest = true;
+                    }
+                }
+            }
+            
+            $grupyAD[] = [
+                'entry' => $e,
+                'nadanawAD' => $czyJest,
+                'maBycwAD' => $czyMaByc     
+            ];
+            
+        }
+        
 
         $deleteForm = $this->createDeleteForm($id);
         return array(
+            'grupyAD' => $grupyAD,
             'entity'      => $entity,
             'delete_form' => $deleteForm->createView(),
             'userzasoby' => $uzs,

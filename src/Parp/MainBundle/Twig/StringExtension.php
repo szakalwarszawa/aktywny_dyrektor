@@ -20,10 +20,19 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('objectTitles', array($this, 'objectTitles')),
             new \Twig_SimpleFilter('actionTitles', array($this, 'actionTitles')),
             new \Twig_SimpleFilter('zasobNazwa', array($this, 'zasobNazwa')),
+            new \Twig_SimpleFilter('zasobyNazwa', array($this, 'zasobyNazwa')),
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabel', array($this, 'getMultipleCheckboxLabel')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
         );
+    }
+    public function zasobyNazwa($zids){
+        $arr = explode(",", $zids);
+        $ret = "";
+        foreach($arr as $zid){
+            $ret[$zid] = $this->renameService->zasobNazwa($zid);
+        }
+        return implode(", ", $ret);
     }
     public function zasobNazwa($zid){
         //echo ".$zid.";

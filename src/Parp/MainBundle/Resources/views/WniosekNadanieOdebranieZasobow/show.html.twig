@@ -78,6 +78,10 @@
             <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
+            {%if(entity.wniosek.ADentries|length > 0)%}
+            
+            <li><a data-toggle="tab" href="#statusAD">Status w AD</a></li>
+            {%endif%}
         </ul>
         
         <div class="tab-content">
@@ -231,6 +235,42 @@
                     {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}                
                 </div>
             </div>
+            {%if(entity.wniosek.ADentries|length > 0)%}
+            <div id="statusAD" class="tab-pane fade">
+                <div  class="tabContent">
+                    <table class="table striped">
+                        <tr>
+                            <th>Username</th>
+                            <th>Nazwa grupy</th>
+                            <th>Opublikowano</th>
+                            <th>Ma byc w AD</th>
+                            <th>Nadana w AD</th>
+                        </tr>
+                        {%for e in grupyAD%}
+                            <tr>
+                                <td><a href="{{path('userEdit', {'samaccountname' : e.entry.samaccountname})}}">{{e.entry.samaccountname}}</a></td>
+                                <td>{{e.entry.memberOf}}</td>
+                                <td>{{e.entry.isImplemented}}</td>
+                                <td>
+                                {% if e.maBycwAD%}
+                                    <div class="alert alert-success">TAK</div>
+                                {%else%}
+                                    <div class="alert alert-danger">NIE</div>                                
+                                {%endif%}
+                                </td>
+                                <td>
+                                {% if e.nadanawAD%}
+                                    <div class="alert alert-success">TAK</div>
+                                {%else%}
+                                    <div class="alert alert-danger">NIE</div>                                
+                                {%endif%}
+                                </td>
+                            </tr>
+                        {%endfor%}
+                    </table>
+                </div>
+            </div>
+            {%endif%}
         </div>
     </div>
 

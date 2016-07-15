@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.status.nazwa,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.opis:group_concat,wniosek.editornames")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.zasobId:group_concat,wniosek.editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -72,7 +72,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
-     * @GRID\Column(field="userZasoby.opis", title="Uprawnienia", filter="select", selectMulti="true")
+     * @GRID\Column(field="userZasoby.zasobId:group_concat", title="Zasoby", filter="none", selectMulti="true")
      */
     private $userZasoby;
     
