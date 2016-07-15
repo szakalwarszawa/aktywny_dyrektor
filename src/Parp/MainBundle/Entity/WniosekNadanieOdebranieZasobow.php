@@ -78,6 +78,15 @@ class WniosekNadanieOdebranieZasobow
     
     
     /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosekOdebranie")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $userZasobyOdbierane;
+    
+    
+    /**
      * @var integer
      *
      * @ORM\Column(type="integer", nullable=true)
@@ -261,7 +270,10 @@ class WniosekNadanieOdebranieZasobow
      */
     public function getUserZasoby()
     {
-        return $this->userZasoby;
+        if($this->getOdebranie())
+            return $this->userZasobyOdbierane;
+        else
+            return $this->userZasoby;
     }
     
     public function getJsonSams(){
@@ -425,7 +437,42 @@ class WniosekNadanieOdebranieZasobow
     public function __construct()
     {
         $this->userZasoby = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->userZasobyOdbierane = new \Doctrine\Common\Collections\ArrayCollection();
         $this->setWniosek(new Wniosek());
     }
 
+
+    /**
+     * Add userZasobyOdbierane
+     *
+     * @param \Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function addUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
+    {
+        $this->userZasobyOdbierane[] = $userZasobyOdbierane;
+
+        return $this;
+    }
+
+    /**
+     * Remove userZasobyOdbierane
+     *
+     * @param \Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane
+     */
+    public function removeUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
+    {
+        $this->userZasobyOdbierane->removeElement($userZasobyOdbierane);
+    }
+
+    /**
+     * Get userZasobyOdbierane
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getUserZasobyOdbierane()
+    {
+        return $this->userZasobyOdbierane;
+    }
 }

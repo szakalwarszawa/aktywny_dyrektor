@@ -164,11 +164,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if($entity->getOdebranie()){
             //sprawdzamy czy w ogole jest co odebrac
             $sams = explode(",", $entity->getPracownicy());
-            $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
+            $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, /* 'czyNadane' => true */));
             
             $jestCoOdebrac = count($uzs) > 0;
             
-            //die(count($uzs).".");  
         }
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $em = $this->getDoctrine()->getManager();
@@ -193,7 +192,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     'action' => ($entity->getOdebranie() ? 'removeResources' : 'addResources'),
                     'wniosekId' => $entity->getId()
                 )));
-        }elseif((($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())){
+        }elseif(!(($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())){
             die("Nie ma co odebrac !!!!");
         }
         if($entity->getOdebranie() && !$jestCoOdebrac){
@@ -418,7 +417,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
             print_r($editors);
         }
-     
         
         
         //kasuje viewerow
@@ -550,6 +548,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //die('a');
                 $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY", true);
             }
+            //die('a');
             $em->flush();
             // return new Response(""), if you used NullOutput()
             return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
@@ -767,7 +766,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $entry->setWniosek($wniosek->getWniosek());
                                 $entry->setFromWhen(new \Datetime());
                                 $entry->setSamaccountname($uz->getSamaccountname());
-                                $entry->setMemberOf("+".$grupa);
+                                $symbol = $wniosek->getOdebranie() ? "-" : "+";
+                                $entry->setMemberOf($symbol.$grupa);
                                 $entry->setIsImplemented(0);
                                 $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
                                 $em->persist($entry);
@@ -867,6 +867,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        //die(count($uzs).">");
         $editor = $access['editor'];
         if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;

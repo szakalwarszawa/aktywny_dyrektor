@@ -190,7 +190,7 @@ class UserZasoby
     
     /**
      *
-     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasoby")
+     * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasobyOdbierane")
      * @ORM\JoinColumn(name="wniosek_odebranie_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */

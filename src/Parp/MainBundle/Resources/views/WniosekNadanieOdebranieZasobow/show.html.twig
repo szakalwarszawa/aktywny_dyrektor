@@ -3,7 +3,7 @@
 {% block body -%}
     <div class="col-sm-12">
         <div class="alert alert-info">
-            <h1>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h1>
+            <h3>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h3>
             <ul>                
                 <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
                 <li><b>Zasoby: </b>
@@ -24,7 +24,7 @@
             </div>
             <div class="btn-group container">  
                 {% if editor %}
-                    <h3>Akcje:</h3>
+                    <h4>Akcje:</h4>
                     {%if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
                         {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
                         <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
@@ -190,8 +190,8 @@
                         </tr>
                         {% for z in userzasoby %}
                             <tr>
-                                <td>{{z.zasobNazwa}}</td>
-                                <td>{{z.samaccountname}}</td>
+                                <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
+                                <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
                                 <td>{{z.modul}}</td>
                                 <td>{{z.poziomDostepu}}</td>
                                 <td>{{z.sumowanieUprawnien}}</td>

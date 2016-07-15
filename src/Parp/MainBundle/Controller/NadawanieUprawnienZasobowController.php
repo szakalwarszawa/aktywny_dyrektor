@@ -77,7 +77,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $userzasobyOpisy = array();
                 $zasobyOpisy = array();
                 $ids = array();
-                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
+                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true,/*  'czyNadane' => true */));
                 // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
                 foreach($uzs as $uu){
                     if(!in_array($uu->getZasobId(), $ids))
@@ -409,6 +409,13 @@ class NadawanieUprawnienZasobowController extends Controller
                         $zmianaupr[] = $zasob->getOpis();                   
                     }
                     $this->getDoctrine()->getManager()->flush();
+                    
+                    if($wniosekId != 0){
+                        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+                    }else{
+                        return $this->redirect($this->generateUrl('main'));
+                    }
+                    
                     return $this->redirect($this->generateUrl('main'));
                     break;
                 case "addPrivileges":
