@@ -27,16 +27,17 @@ class LdapAdminService
     protected $patch;
     protected $useradn ;
     protected $hostId = 3;
+    protected $adldap;
     public $output;
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
         error_reporting(0);
         ini_set('error_reporting', E_ALL);
-ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
-
-// Attempting fix from http://www.php.net/manual/en/ref.ldap.php#77553
-putenv('LDAPTLS_REQCERT=never');
+        ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+        
+        // Attempting fix from http://www.php.net/manual/en/ref.ldap.php#77553
+        putenv('LDAPTLS_REQCERT=never');
 
 
 
@@ -59,6 +60,26 @@ putenv('LDAPTLS_REQCERT=never');
             //$this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
             $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         }
+        
+        $configuration = array(
+            //'user_id_key' => 'samaccountname',
+            'account_suffix' => $this->ad_domain,
+            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
+            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
+            'domain_controllers' => array($this->container->getParameter('ad_host'),$this->container->getParameter('ad_host2'),$this->container->getParameter('ad_host3')),
+            'admin_username' => $this->AdminUser,
+            'admin_password' => $this->AdminPass,
+            //'real_primarygroup' => true,
+            //'use_ssl' => false,
+            //'use_tls' => false,
+            //'recursive_groups' => true,
+            'ad_port' => '389',
+            //'sso' => false,
+        );
+        $this->adldap = new \Adldap\Adldap($configuration);
+        
+        
+        
         //die('a');
     }
     
@@ -69,7 +90,7 @@ putenv('LDAPTLS_REQCERT=never');
             $this->hostId = 1;
         }
         
-        $this->ad_host = $this->protocol.$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : "")).":".$this->port;
+        $this->ad_host = $this->protocol.$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ""));//.":".$this->port;
         if($error != ""){
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
@@ -381,6 +402,9 @@ putenv('LDAPTLS_REQCERT=never');
         //$this->doctrine->flush();
         return $ldapstatus;
     }
+    function getGrupa($grupa){
+        return $this->adldap->group()->find($grupa);
+    }
     function addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn){
         if($person->getMemberOf() != ""){
             $grupy = explode(",", $person->getMemberOf());
@@ -388,13 +412,17 @@ putenv('LDAPTLS_REQCERT=never');
             
                 $znak = substr($grupa, 0, 1);               
                 $g = substr($grupa, 1);
-                //print_r($userAD[0]['memberOf']);
-                if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){ 
-                    $addtogroup = "CN=".$g.",OU=".$this->grupyOU."".$this->patch;
-                    //die($addtogroup);
+                
+                
+        
+                $grupa = $this->getGrupa($g);
+                
+                //echo "<pre>"; print_r($grupa); die();
+                $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
+                    //var_dump($addtogroup, $dn); //die($addtogroup);
                     ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
-                }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){
-                    $addtogroup = "CN=".$g.",OU=".$this->grupyOU."".$this->patch; 
+                }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
                     ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
                 }else{
                     echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");

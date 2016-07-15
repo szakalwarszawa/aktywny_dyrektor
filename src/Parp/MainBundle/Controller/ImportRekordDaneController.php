@@ -85,13 +85,16 @@ where rdb$view_blr is null
 and (rdb$system_flag is null or rdb$system_flag = 0);';
 */
         $sql = "SELECT
+            p.SYMBOL,
+            COUNT(*) as ile,
             p.IMIE as imie, 
             p.NAZWISKO as nazwisko, 
             departament.OPIS  departament,
             stanowisko.OPIS stanowisko,
             rodzaj.NAZWA umowa,
-            (umowa.DATA_OD) as umowaOd,
-            (umowa.DATA_DO) as umowaDo
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
+            
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP)
             join P_MPRACY departament on departament.KOD = mpr.KOD
@@ -99,7 +102,18 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
             join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > CURRENT_TIMESTAMP)
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            where p.NAZWISKO like '%WARCZUK%'
+            
+            GROUP BY 
+            
+            p.SYMBOL,       
+            p.IMIE, 
+            p.NAZWISKO, 
+            departament.OPIS ,
+            stanowisko.OPIS,
+            rodzaj.NAZWA,
+            umowa.DATA_OD,
+            umowa.DATA_DO
+            
             ORDER BY 
             p.NAZWISKO, p.IMIE
             ";
@@ -306,7 +320,9 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             \PDO::ATTR_ERRMODE       => \PDO::ERRMODE_EXCEPTION, //throws exceptions whenever a db error occurs
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES uft8'  //>= PHP 5.3.6
         );
-        $str_conn = "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
+        ////srv-rekorddb01.parp.local/bazy/PARP_KP.FDB
+        //$str_conn = "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
+        $str_conn = "firebird:dbname=/bazy/PARP_KP.FDB;host=srv-rekorddb01.parp.local";
         $userdb = 'SYSDBA';
         $passdb = 'masterkey';
         try {

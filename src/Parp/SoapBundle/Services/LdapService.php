@@ -22,6 +22,7 @@ class LdapService
     protected $patch;
     protected $useradn ;
     protected $_ouWithGroups = "PARP Grupy";
+    protected $adldap;
     
     protected $ADattributes = array(
         "name",
@@ -62,6 +63,23 @@ class LdapService
             $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
         //die($this->patch);
+        
+        $configuration = array(
+            //'user_id_key' => 'samaccountname',
+            'account_suffix' => $this->ad_domain,
+            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
+            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
+            'domain_controllers' => array($this->container->getParameter('ad_host'),$this->container->getParameter('ad_host2'),$this->container->getParameter('ad_host3')),
+            'admin_username' => $this->container->getParameter('ad_user'),
+            'admin_password' => $this->container->getParameter('ad_password'),
+            //'real_primarygroup' => true,
+            //'use_ssl' => false,
+            //'use_tls' => false,
+            //'recursive_groups' => true,
+            'ad_port' => '389',
+            //'sso' => false,
+        );
+        $this->adldap = new \Adldap\Adldap($configuration);
     }
 
     public function getAllFromAD()
@@ -742,5 +760,9 @@ class LdapService
     protected function UnixtoLDAP($unix_ts)
     {
         return sprintf("%.0f", ($unix_ts + 11644473600) * 10000000);
+    }
+    
+    function getGrupa($grupa){
+        return $this->adldap->group()->find($grupa);
     }
 }

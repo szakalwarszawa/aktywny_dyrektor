@@ -28,10 +28,12 @@ class ADSecurityCheckService
         
         $nazwisko = $this->container->getParameter('blokada_na_zapis_tylko_userow_o_tym_nawisku');
         if(count($ps) > 1){
-
-
-            $ret = $ps[1] == $nazwisko;
-            if(!$ret && $nazwisko != ""){
+            $nazwiska = explode(",", $nazwisko);
+            $ret = false;
+            foreach($nazwiska as $n){
+                $ret = $ret || $ps[1] == $n;
+            }
+            if(!$ret){
                 $msg = "Nie można edytować użytkowników których nazwisko nie jest '".$nazwisko."' , edycja użytkownika : '".$sam."' nie jest możliwa w środowisku testowym, zmiany nie zostały zapisane.";
                 $this->container->get('session')->getFlashBag()->set('notice', $msg);
                 //throw new RedirectResponse($this->container->get('router')->generate('main'));

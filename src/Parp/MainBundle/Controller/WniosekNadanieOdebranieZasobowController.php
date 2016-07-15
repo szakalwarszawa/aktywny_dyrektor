@@ -193,7 +193,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     'wniosekId' => $entity->getId()
                 )));
         }elseif(!(($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())){
-            die("Nie ma co odebrac !!!!");
+            die("Blad 67 Nie ma co odebrac !!!!");
         }
         if($entity->getOdebranie() && !$jestCoOdebrac){
             $msg = ("Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!");
@@ -294,7 +294,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //biore managera z pola managerSpoząParp
                     $ADManager = $ldap->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     if(count($ADManager) == 0){
-                        die("Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                        die("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     }
                     //$przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                 }else{
@@ -307,7 +307,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                     $ADManager = $ldap->getUserFromAD(null, $mgr);
                 }
-                print_r($ADManager[0]['samaccountname']);
+                //print_r($ADManager[0]['samaccountname']);
                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                 if ($this->debug) echo "<br>added ".$ADManager[0]['samaccountname']."<br>";
                 break;
@@ -329,7 +329,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = trim($g);
-                        $g = $this->get('renameService')->fixImieNazwisko($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
@@ -337,10 +337,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }else{
                             //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
-                            die ("!!!!!!!!!!blad nie moge znalezc usera ".$g);
+                            die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
                         }
                         //echo "<br>dodaje wlasciciela ".$g;
-                        print_r($where);
+                        //print_r($where);
                     }
                 }
                 break;
@@ -352,14 +352,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     foreach($grupa as $g){
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = trim($g);
-                        $g = $this->get('renameService')->fixImieNazwisko($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }
                         else{
-                            //throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
+                            throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
                         }
                     }
                 }
@@ -371,7 +371,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $grupa = explode(",", $zasob->getAdministratorTechnicznyZasobu());
                     foreach($grupa as $g){
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        $g = $this->get('renameService')->fixImieNazwisko($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $g = trim($g);
                         $ADManager = $ldap->getUserFromAD(null, $g);
                         $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
@@ -415,7 +415,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         foreach($es as $e){
             $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
-            print_r($editors);
+            //print_r($editors);
         }
         
         
@@ -566,7 +566,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     //biore managera z pola managerSpoząParp
                                     $ADManager = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());
                                     if(count($ADManager) == 0){
-                                        die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
+                                        die("Blad 453 Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }else{
@@ -577,7 +577,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                                     $ADManager = $ldap->getUserFromAD(null, $mgr);
                                     if(count($ADManager) == 0){
-                                        die("Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
+                                        die("Blad 657 Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }
@@ -626,7 +626,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             break;
                         case "return":
                             //nie powinno miec miejsca
-                            die('nie powinno miec miejsca');
+                            die('blad 5034 nie powinno miec miejsca');
                             break;
                     }
                     break;
@@ -638,7 +638,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             break;
                         case "return":
                             //przenosi do status 1
-                            die('nie powinno miec miejsca');
+                            die('blad 45 nie powinno miec miejsca');
                             break;
                     }
                     break;
@@ -886,14 +886,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 
                 //echo "<pre>"; print_r($e->getMemberOf()); print_r( $userGroups[$e->getSamaccountname()]); die();
             }
+            $szukanaGrupaDane = $ldap->getGrupa(substr($e->getMemberOf(), 1));
             
-            $szukanaGrupa = "CN=".substr($e->getMemberOf(), 1, strlen($e->getMemberOf()) - 1).$patch;
+            //echo "<pre>"; print_r($szukanaGrupaDane); die();
+            $szukanaGrupa = $szukanaGrupaDane['distinguishedname'];//"CN="..$patch;
             $czyMaByc = substr($e->getMemberOf(), 0, 1) == "+";
             
             
             
             $czyJest = false;
-            
             foreach($userGroups[$e->getSamaccountname()] as $ug){
                 if(is_array($ug)){
                     if($ug['dn'] == $szukanaGrupa){

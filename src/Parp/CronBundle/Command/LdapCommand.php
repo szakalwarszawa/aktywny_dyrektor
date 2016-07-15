@@ -171,12 +171,11 @@ class LdapCommand extends ContainerAwareCommand
                             //$ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
                             //}
                             //print_r($zmiana); die();
-                            if(!$this->showonly)
+                            if(!$this->showonly){
                                 $uprawnienia->zmianaUprawnien($zmiana);
-                            
-                            
-                            $zmiana->setIsImplemented(1);
-                            $em->persist($zmiana);
+                                $zmiana->setIsImplemented(1);
+                                $em->persist($zmiana);
+                            }
                         }else{
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getCn().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
@@ -191,10 +190,11 @@ class LdapCommand extends ContainerAwareCommand
                         if($ldapstatus == "Success"){
                             //$ldapstatus = $ldap->createEntity($zmiana);
                             // nadaj uprawnieznia poczatkowe
-                            if(!$this->showonly)
+                            if(!$this->showonly){
                                 $uprawnienia->ustawPoczatkowe($zmiana);
-                            $zmiana->setIsImplemented(1);
-                            $em->persist($zmiana);
+                                $zmiana->setIsImplemented(1);
+                                $em->persist($zmiana);
+                            }
                         }else{
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);

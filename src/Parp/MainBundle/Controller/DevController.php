@@ -94,12 +94,12 @@ class DevController extends Controller
         
         $gr = "marcin_lipinski";
         
-        $result = $adldap->user()->find($gr);
+        $result = $adldap->group()->find('INT Winadmin');
         print_r($result); die(); 
         
         
         
-        $result = $adldap->search()->recursive(false)->where('cn', '=','Kamil Jakacki'/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
+        $result = $adldap->search()->recursive(false)->where('cn', '=', 'INT Winadmin'/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
         print_r($result); die();   
 /*
             $collection = $ad->user()->find('kamil_jakacki');//infoCollection('kamil_jakacki');
@@ -153,7 +153,7 @@ class DevController extends Controller
 */
 
             //"sgg-zzp-public-ro"
-            $grupa = $search->recursive(true)->where('CN', '=' , 'SGG-ZZP-PUBLIC-RO')->get();
+            $grupa = $search->recursive(true)->where('CN', '=' , 'INT Winadmin')->get();
         
             echo "<br><pre>"; print_r($grupa->all()); echo "</pre>"; die();
             //echo "<br><pre>"; print_r($grupa); echo "</pre>";
