@@ -381,26 +381,11 @@ class DefaultController extends Controller
             unset($ndata['roles']);
             
             $rolesDiff = $roles1 != $roles2;
-/*
-            print_r($rolesDiff); 
-            print_r($odata);
-                print_r($ndata);
-                print_r($this->array_diff($ndata, $odata));
-            die();
-*/
-            //print_r($ndata);
-            //print_r($odata);
-            //print_r(array_diff($ndata, $odata));
-            //die();
-            //print_r($this->array_diff($ndata, $odata));
-            //print_r($ndata); die();
-            //$df = array_diff($form->getData(), $previousData);
-            //echo "<pre>"; print_r($previousData); print_r($form->getData()); die();
+
             if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $rolesDiff) {
                 
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
-                //print_r(array_diff($ndata, $odata)); die();
                 $newData = $this->array_diff($ndata, $odata);
                 if($rolesDiff){
                     $roles = $this->getDoctrine()->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($samaccountname);
@@ -416,14 +401,10 @@ class DefaultController extends Controller
                     }
                     $this->get('session')->getFlashBag()->set('warning', "Role zostały zmienione");
                     
-                    //print_r($roles2); die('mamy zmiane rol');
                 }
                 if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien){
                     //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
-                    //print_r($odata);
-                    //print_r($ndata);
                     
-                    //print_r($this->array_diff($ndata, $odata));
                     
                     $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
                     $this->get('session')->getFlashBag()->set('warning', "Zmiany do AD zostały wprowadzone");
@@ -434,7 +415,6 @@ class DefaultController extends Controller
                         $value = implode(",", $newrights);
                         $entry->setInitialrights($value);
                     }
-                    //print_r($newData); die();
                     foreach ($newData as $key => $value) {
                         switch ($key) {
                             case "isDisabled":
@@ -455,7 +435,6 @@ class DefaultController extends Controller
                                 }else{
                                     $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
                                 }
-                                //print_r($value); die();
                                 
                                 break;
                             case "title":
@@ -471,7 +450,6 @@ class DefaultController extends Controller
                                 $entry->setManager($value);
                                 break;
                             case "fromWhen":
-                                //die($value);
                                 $entry->setFromWhen(new \DateTime($value));
                                 break;
                             case "initialrights"://nieuzywane bo teraz jako array idzie
@@ -499,7 +477,6 @@ class DefaultController extends Controller
             if($up->getGrupaAd())
                 $up2grupaAd[$up->getId()] = $up->getGrupaAd();
         }
-        //print_r($ADUser[0]); die();
         $grupyAd = $ADUser[0]["memberOf"];
         $names = explode(' ', $ADUser[0]["name"]);
         $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
@@ -512,7 +489,6 @@ class DefaultController extends Controller
                 $userGroups[] = $ug['dn'];
             }
         }
-        //echo "<pre>"; print_r($userGroups); die();
         return array(
             'userGroups' => $userGroups,
             'user' => $ADUser[0],
@@ -560,12 +536,7 @@ class DefaultController extends Controller
             $roles[$tmp->getName()] = $tmp->getOpis();
         }
         $now = new \Datetime();
-        //$expires = @$defaultData['accountExpires'];
-        //print_r($expires);
-        //if($expires != "")
-            //$expires->format("d-m-Y");
-            
-        //print_r($defaultData); die();
+        
         $form = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
@@ -785,7 +756,6 @@ class DefaultController extends Controller
             
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
-            //echo ".".$oldSection.".";
             if($newSection != ""){
                 $ns = new \Parp\MainBundle\Entity\Section();
                 $ns->setName($newSection);
@@ -794,7 +764,6 @@ class DefaultController extends Controller
                 $entry->setInfo($newSection);
                 //unset($ndata['infoNew']);
             }
-            //die();
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
             $tab = explode(".", $this->container->getParameter('ad_domain'));
@@ -812,8 +781,7 @@ class DefaultController extends Controller
             $value = implode(",", $entry->getInitialrights());
             $entry->setInitialrights($value);
             
-            print_r($entry); 
-            //die();
+            //print_r($entry);
             $em->persist($entry);
             $em->flush();
             return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));

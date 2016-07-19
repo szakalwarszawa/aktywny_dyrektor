@@ -111,7 +111,6 @@ class LdapAdminService
             }catch(\Exception $e){
                 $ldapstatus = ($e->getMessage());
             }
-            //print_r("\n $ldapstatus \n");
             if($ldapstatus != "Success"){
                 $this->switchServer($ldapstatus);
             }
@@ -120,18 +119,9 @@ class LdapAdminService
     }
     public function getUserFromADInt($samaccountname = null, $cnname = null, $query = null)
     {
-        //$ldapconn = ldap_connect('srv-adc01.parp.local');
-        //$ldapdomain = "@parp.local";
         $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
-//        $memcached = new \Memcached;
-//        $memcached->addServer('localhost', 11211);
-//        $fromMemcached = $memcached->get('ldap-detail-'.$samaccountname);
-//        if($fromMemcached){
-//            return $fromMemcached;
-//
-//        }
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
@@ -144,15 +134,15 @@ class LdapAdminService
         if ($samaccountname) {
             $searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
         } elseif ($cnname) {
-//            $cnname = substr($cnname,3,stripos($cnname,',')-3);
+
             $searchString = $cnname;
-//            echo $searchString;
+
         } elseif($query) {
             $searchString = "(&(".$query.")(objectClass=person))";
         }else {
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
-//echo "$searchString";
+
         $search = ldap_search($ldapconn, $userdn, $searchString, array(
             "name",
             "mail",
@@ -173,9 +163,9 @@ class LdapAdminService
             'memberOf'
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
-        //print_r($userdn); die();
+
         $ldapstatus = ldap_error($ldapconn);
-        //print_r($ldapstatus); die();
+
         if($ldapstatus != "Success"){
             $e = new \Exception($ldapstatus);
             throw $e;
@@ -205,7 +195,6 @@ class LdapAdminService
             }
         }
         
-//        $memcached->set('ldap-detail-'.$samaccountname,$result);
         return $result;
     }
 
@@ -253,8 +242,6 @@ class LdapAdminService
             $entry['info'] = $person->getInfo();
             // obsłuz miane atrybuty division
             $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-            //print_r($person->getInfo());
-            //print_r($section);
             $entry['division'] =  $section->getName();//getShortname();
         }
         if ($person->getManager()) {
@@ -263,7 +250,6 @@ class LdapAdminService
                 // znajdz sciezke przelozonego
                 $cn = $manager;
                 $searchString = "(&(cn=" . $cn . ")(objectClass=person))";
-                //$searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
 
                 $search = ldap_search($ldapconn, $userdn, $searchString, array(
                     "name",
@@ -290,14 +276,14 @@ class LdapAdminService
         }
         $entry['initials'] = array();
         if ($person->getInitials()) {
-            //hack by dalo sie puste inicjaly wprowadzic
+            //hack by dalo sie puste inicjaly wprowadzic, 
+            //TODO: trzeba zmienic bo jednak beda generowane !!!!
             if($person->getInitials() == "puste" || $person->getInitials() == ""){
                 unset($entry['initials']);
                 //$entry['initials'] = array();
             }else{
                 $entry['initials'] = $person->getInitials();
             }
-            //echo(".".$person->getInitials().".");
         }
 
         $userAD = $this->getUserFromAD($person->getSamaccountname());
@@ -316,10 +302,6 @@ class LdapAdminService
         }
                 
         if ($person->getIsDisabled() !== null) {
-            //$ac = 544;//$tmpResults[0];
-            //print_r($ac);
-            //$enable =($ac & ~2);
-            //print_r($enable);die();
             $entry['useraccountcontrol'][0] = $person->getIsDisabled() ? 546 : 544;
             $sn = "Konto aktywowane";
             if (!empty($department)) {
@@ -332,18 +314,7 @@ class LdapAdminService
                 $entry['description'] = $sn;                
             }
         }
-        //print_r($entry);
-/*
 
-        print_r($entry);
-        die();
-        
-        print_r($userdn);
-        print_r($entry);
-        print_r($dn);
-
-        die();
-*/
         if(count($entry) > 0){
             
             $res = ldap_modify($ldapconn, $dn, $entry);
@@ -351,11 +322,7 @@ class LdapAdminService
             
             $error = ldap_error($ldapconn);
             $errno = ldap_errno($ldapconn);
-            
-            //var_dump($res, $error, $errno); die("test zaminy hasla koniec");
-            
-            
-            
+
             $ldapstatus = ldap_error($ldapconn);    
             if($ldapstatus != "Success"){
                 if($this->debug){
@@ -383,7 +350,6 @@ class LdapAdminService
             $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
             
             $ldapstatus = ldap_error($ldapconn);
-            //var_dump($b);
         }elseif($person->getCn()){
             //zmieniamy tylko cn
             $cn = $person->getCn();
@@ -397,6 +363,7 @@ class LdapAdminService
         }
         ldap_unbind($ldapconn);
 
+        //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
         //$this->doctrine->persist($person);
         //$this->doctrine->flush();
@@ -412,15 +379,9 @@ class LdapAdminService
             
                 $znak = substr($grupa, 0, 1);               
                 $g = substr($grupa, 1);
-                
-                
-        
                 $grupa = $this->getGrupa($g);
-                
-                //echo "<pre>"; print_r($grupa); die();
                 $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
                 if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
-                    //var_dump($addtogroup, $dn); //die($addtogroup);
                     ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
                 }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
                     ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
@@ -449,7 +410,6 @@ class LdapAdminService
         
         $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
-        //$userdn = "OU=Test";
         $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
@@ -476,7 +436,6 @@ class LdapAdminService
             // znajdz sciezke przelozonego
             $cn = $manager;
             $searchString = "(&(cn=" . $cn . ")(objectClass=person))";
-            //$searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
 
             $search = ldap_search($ldapconn, $userdn, $searchString, array(
                 "name",
@@ -543,25 +502,11 @@ class LdapAdminService
             
             die("koniec bo debug ".$ldapstatus);
         }
-        //print_r("\r\n".$errno."\r\n");
-        //die();
-        
-         /*
-          $dn = "CN=Tomasz Bolek,OU=BI,OU=Test,DC=boniek,DC=test";
-          $newuser["objectClass"]['0'] = "top";
-          $newuser["objectClass"]['1'] = "person";
-          $newuser["objectClass"]['2'] = "organizationalPerson";
-          $newuser["objectClass"]['3'] = "user";
-          $newuser["cn"] = "Tomasz Bolek";
-          //$newuser["uid"] = "nuser";
-          //$newuser["sn"] = "Bolek";
-          // add data to directory
-          $r = ldap_add($ldapconn, $dn, $newuser);
-        */
 
         ldap_unbind($ldapconn);
       
         
+        //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
         //$this->doctrine->persist($person);
         //$this->doctrine->flush();
@@ -582,7 +527,6 @@ class LdapAdminService
         
         $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
-        //$userdn = "OU=Test";
         $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
@@ -624,9 +568,6 @@ class LdapAdminService
             }
         }
         ldap_unbind($ldapconn);  
-        
-        //echo "Zrobilem swoje ";
-         ///////////////
          
     }
 

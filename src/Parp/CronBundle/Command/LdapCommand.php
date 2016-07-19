@@ -45,11 +45,9 @@ class LdapCommand extends ContainerAwareCommand
                 $this->ids = $input->getOption('ids');
             }            
             $this->showonly = $input->getArgument('showonly');
-            //die(".".$this->showonly);
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
             $output->writeln('<comment>'.$msg.'</comment>', false);
-            //die(".".$showonly);
-            
+
             $output->writeln('<comment>Wczytuję usługi ...                             </comment>', false);
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
@@ -66,21 +64,14 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<info> [  OK  ]</info>');
     
             if ($zmiany) {
-                //print_r($zmiany); 
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
     
                     $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-                    //print_r($zmiana->getSamaccountname()); var_dump($userNow); die();
                     if ($userNow) {
     
                         $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
-/*
-                        foreach ($zmiany as $zmiana) {
-                            $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
-                            $output->writeln($userNow[0]['name'] . ':');
-                        }
-*/
+                        
                         if ($zmiana->getAccountExpires()) {
                             // Wygasza się konto
                             $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
@@ -143,7 +134,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
-                            //print_r($userNow[0]);
+                            
                             if ($zmiana->getIsDisabled()) {
                                 $output->writeln('  - Wyłączenie konta w domenie');
                             }else{
@@ -168,9 +159,6 @@ class LdapCommand extends ContainerAwareCommand
                             //print_r($zmiana);
                         $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
                         if($ldapstatus == "Success"){
-                            //$ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
-                            //}
-                            //print_r($zmiana); die();
                             if(!$this->showonly){
                                 $uprawnienia->zmianaUprawnien($zmiana);
                                 $zmiana->setIsImplemented(1);
@@ -185,10 +173,9 @@ class LdapCommand extends ContainerAwareCommand
                     } else {
     
                         $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()."</info>");
-                        //print_r($zmiana); //die();
+                        
                         $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, true);
                         if($ldapstatus == "Success"){
-                            //$ldapstatus = $ldap->createEntity($zmiana);
                             // nadaj uprawnieznia poczatkowe
                             if(!$this->showonly){
                                 $uprawnienia->ustawPoczatkowe($zmiana);
@@ -202,7 +189,6 @@ class LdapCommand extends ContainerAwareCommand
                         }
                     }
                 }
-                //die("\n $ldapstatus \n");
                 if(!$this->showonly)
                     $em->flush();
             }
@@ -228,7 +214,6 @@ class LdapCommand extends ContainerAwareCommand
                 }
             }
             $i++;
-            //print_r("\n $ldapstatus $i \n");
             if($ldapstatus != "Success"){
                 $ldap->switchServer($ldapstatus);
             }

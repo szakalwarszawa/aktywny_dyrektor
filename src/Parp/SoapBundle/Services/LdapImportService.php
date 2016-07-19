@@ -35,8 +35,6 @@ class LdapImportService
         $ADUsers = [];
         foreach($ADUsers0 as $adu){
             if(strtolower(substr($adu['samaccountname'], 0, 1)) == $letter){
-                //echo "<pre>"; print_r($adu); echo "</pre>"; die();
-                
                 $ADUsers[] = $adu;
             }
         }
@@ -61,7 +59,6 @@ class LdapImportService
                 $u->removeADGroup($g);
                 $g->removeADUser($u);
             }
-            //foreach($adu['memberOf'] as $g){
             foreach($grupyRekrusywnie as $grupa){
                 $g = $grupa['dn'];
                 $gr = $em->getRepository("ParpSoapBundle:ADGroup")->findOneByCn($g);
@@ -76,7 +73,6 @@ class LdapImportService
             $em->flush();
         }
         
-        //echo "<pre>"; print_r($proccessed);
         
     }
     
@@ -91,17 +87,12 @@ class LdapImportService
         // Sięgamy do AD:
         $ADgroups = $this->container->get('ldap_service')->getGroupsFromAD(null);
         $proccessed = array();
-        //echo "<pre>"; print_r($ADgroups['count']); echo "</pre>"; die();
         foreach($ADgroups as $k1 => $adg){
-                //echo "<pre>"; print_r($k1); echo "</pre>";
-                //echo "<pre>"; print_r($k1 !== intval($k1)); echo "</pre>";
             if(is_array($adg)){
                 $g = $em->getRepository("ParpSoapBundle:ADGroup")->findOneByCn($adg['cn'][0]);
                 if(!$g){
                     $g = new \Parp\SoapBundle\Entity\ADGroup();            
                 }
-                //echo "<pre>"; print_r($k1); echo "</pre>";
-                //echo "<pre>"; print_r((int)$k1); echo "</pre>";
                 foreach($adg as $k => $valarr){
                     if(!in_array($k, $pomijajPola)){
                         $set = "set".ucfirst($k);
@@ -111,7 +102,6 @@ class LdapImportService
                             if(is_array($valarr)){
                                 for($i = 0; $i < $valarr['count']; $i++){
                                     $v2 = $valarr[$i];
-                                    //echo "<pre>0  "; print_r($k2); echo "</pre>";
                                     //if($k2 != "count"){
                                         $val[] = $v2;
                                     //}
@@ -119,10 +109,6 @@ class LdapImportService
                             }else{
                                 $val[] = $valarr;
                             }
-                            //echo "<pre>1"; print_r($set); echo "</pre>";
-                            //echo "<pre>2"; print_r($valarr); echo "</pre>";
-                            //echo "<pre>3"; print_r($val); echo "</pre>";
-                            //echo "<pre>4"; print_r(implode(";", $val)); echo "</pre>";
                             $g->{$set}(implode(";", $val));
                         }
                     }
@@ -158,15 +144,11 @@ class LdapImportService
         $proccessed = array();
         //echo "<pre>1 "; print_r($ADous); echo "</pre>";
         foreach($ADous as $k1 => $adou){
-                //echo "<pre>"; print_r($k1); echo "</pre>";
-                //echo "<pre>"; print_r($k1 !== intval($k1)); echo "</pre>";
             if(is_array($adou)){
                 $g = $em->getRepository("ParpSoapBundle:ADOrganizationalUnit")->findOneByDn($adou['dn']);
                 if(!$g){
                     $g = new \Parp\SoapBundle\Entity\ADOrganizationalUnit();            
                 }
-                //echo "<pre>"; print_r($k1); echo "</pre>";
-                //echo "<pre>"; print_r((int)$k1); echo "</pre>";
                 foreach($adou as $k => $valarr){
                     $set = "set".ucfirst($k);
                     
@@ -175,7 +157,6 @@ class LdapImportService
                         if(is_array($valarr)){
                             for($i = 0; $i < $valarr['count']; $i++){
                                 $v2 = $valarr[$i];
-                                //echo "<pre>0  "; print_r($k2); echo "</pre>";
                                 //if($k2 != "count"){
                                     $val[] = $v2;
                                 //}
@@ -183,10 +164,6 @@ class LdapImportService
                         }else{
                             $val[] = $valarr;
                         }
-                        //echo "<pre>1"; print_r($set); echo "</pre>";
-                        //echo "<pre>2"; print_r($valarr); echo "</pre>";
-                        //echo "<pre>3"; print_r($val); echo "</pre>";
-                        //echo "<pre>4"; print_r(implode(";", $val)); echo "</pre>";
                         $g->{$set}(implode(";", $val));
                     }
                 }
@@ -210,8 +187,7 @@ class LdapImportService
                             $u->addADOU($g);
                         }
                     }
-                }
-                //echo "<pre>1"; print_r($members); echo "</pre>";             
+                }          
                 $proccessed[$g->getDn()] = $g->getDn();
                 $this->saveToLogFile($g->getDn(), "ous.log");
             }

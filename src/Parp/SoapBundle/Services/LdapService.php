@@ -85,23 +85,11 @@ class LdapService
     public function getAllFromAD()
     {
         $userdn = $this->useradn . $this->patch;
-//        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
         $ldapdomain = $this->ad_domain;
 
-        //if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        //    $memcached = new \Memcache;
-        //} else {
-        //    $memcached = new \Memcached;
-        //}
-
-        //$memcached->addServer('localhost', 11211);
-        //$fromMemcached = $memcached->get('ldap-all-');
-        //if ($fromMemcached) {
-        //   return $fromMemcached;
-        //}
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
@@ -124,16 +112,6 @@ class LdapService
 
         
         $result = $this->parseResults($tmpResults);
-
-        //echo "<pre>";
-            //var_dump($result);
-            //die();
-//        foreach(array_unique($tmp) as $unTmp){
-//            echo "insert into section (`name`) values ('".$unTmp."');<br />";
-//        }
-//die();
-        //$memcached->set('ldap-all-', $result, time() + 600);
-
         return $result;
     }
     
@@ -143,8 +121,6 @@ class LdapService
          $group = $group ? ldap_escape($group) : $group;
         $userdn = $this->useradn . $this->patch;
         $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
-        //die($ldap_dn);
-//        ldap_set_option()
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -197,24 +173,11 @@ class LdapService
         }
 
         
-        
-/*
-        
-*/
-        
         $results = ldap_get_entries($ldapconn, $search);
-        //print_r($query);
         ldap_bind($ldapconn);
 
-        //echo "<pre>"; print_r($results); //die();
-        //die('a');
         $result = $this->parseResults($results);
 
-//        foreach(array_unique($tmp) as $unTmp){
-//            echo "insert into section (`name`) values ('".$unTmp."');<br />";
-//        }
-//die();
-        //$memcached->set('ldap-all-', $result, time() + 600);
         return $result;
     }
     
@@ -223,7 +186,6 @@ class LdapService
         
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        //$userdn = "OU=Test";
         $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
@@ -234,8 +196,6 @@ class LdapService
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         
-        
-        //$userdn = "OU=".$dep->getShortname().", ".$this->useradn . $this->patch;
         $userdn = $this->useradn . $this->patch;
         $filter="(objectClass=organizationalunit)"; 
         $justthese = array(
@@ -255,17 +215,13 @@ class LdapService
         ); 
         $sr=ldap_search($ldapconn, $userdn, $filter); 
         $info = ldap_get_entries($ldapconn, $sr); 
-        
-        //echo "<pre>"; print_r($info); echo "</pre>";
             
         ldap_free_result($sr); 
         ldap_unbind($ldapconn);  
-        
-        //echo "Zrobilem swoje ";
-         ///////////////
         return $info;
     }
     public function getGroupsFromAD($group, $wilcardSearch = ""){
+        //!!!!!!to nie dziala , uzywam do grup bundle AdLdap
         // Begin building query
      	$query = "(&"; 
      	$query .= "(&(objectClass=group))";
@@ -500,17 +456,6 @@ class LdapService
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
 
-        //if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        //    $memcached = new \Memcache;
-        //} else {
-        //    $memcached = new \Memcached;
-        //}
-        //$memcached->addServer('localhost', 11211);
-//        $fromMemcached = $memcached->get('ldap-detail-'.$samaccountname);
-//        if($fromMemcached){
-//            return $fromMemcached;
-//
-//        }
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
@@ -522,26 +467,21 @@ class LdapService
         
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
-        //echo "$ldap_username $ldap_password";        
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         if ($samaccountname) {
             $searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
         } elseif ($cnname) {
-//            $cnname = substr($cnname,3,stripos($cnname,',')-3);
-            //(cn=Joe User)
+
             $searchString = '(&(name=*' . $cnname . '*)(objectClass=person))';
-            //$xx = ldap_escape("\(Michalik\)");
-            //$searchString = '(&(sn=*Rucińska '.$xx.'*)(givenName=Marta*)(objectClass=person))';
-//            echo $searchString;
+
         } elseif($query) {
             $searchString = "(&(".$query.")(objectClass=person))";
         }else {
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
 
-//echo "!!!".$searchString."!!!";
 
         $search = ldap_search($ldapconn, $userdn, $searchString, $this->ADattributes);
         $tmpResults = ldap_get_entries($ldapconn, $search);
@@ -549,7 +489,6 @@ class LdapService
 
         $result = $this->parseResults($tmpResults);
 
-//        $memcached->set('ldap-detail-'.$samaccountname,$result);
         return $result;
     }
     
@@ -558,16 +497,11 @@ class LdapService
 
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
-            if(is_array($tmpResult)){
-                //echo "<pre>"; print_r($tmpResult); die();
-            }
+            
             if (is_array($tmpResult) && isset($tmpResult["samaccountname"])) {
-                //$st = $this->getAccountControl($tmpResult["samaccountname"]);
                 $date = new \DateTime();
                 $time = $this->LDAPtoUnix($tmpResult["accountexpires"][0]);
                 $date->setTimestamp($time);
-                //print_r($time); 
-                //print_r($date); 
                 $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546" ? 1 : 0;
                 $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
                 $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
@@ -602,84 +536,11 @@ class LdapService
                     $rs[] = $r->getRole()->getName();
                 }
                 
-                $result[$i]['roles'] = $rs;//TODO: wczytywac role !!!
-                //print_r($result); die();
+                $result[$i]['roles'] = $rs;
                 $i++;
             }
         }
-        
-        /*
-            
-        $result = array();
-        $index = 0;
-//$tmp = array();
-        foreach ($results as $tmpResult) {
-            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
-
-            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
-            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
-            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
-            if (isset($tmpResult["accountexpires"][0])) {
-                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
-                    $result[$index]["accountexpires"] = "";
-                } else {
-                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
-                }
-            }
-
-            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
-            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
-            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
-            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
-            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
-            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
-            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
-            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
-            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
-//            $tmp[]=$result[$index]["info"];
-            if (isset($tmpResult["samaccountname"]))
-                $index++;
-        }
-            
-            */
-        
-        
-        /*
-            
-            
-            
-        $result = array();
-        $index = 0;
-//$tmp = array();
-        foreach ($tmpResults as $tmpResult) {
-            $result[$index]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546";
-
-            $result[$index]["samaccountname"] = isset($tmpResult["samaccountname"][0]) ? $tmpResult["samaccountname"][0] : "";
-            $result[$index]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
-            $result[$index]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
-            if (isset($tmpResult["accountexpires"][0])) {
-                if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
-                    $result[$index]["accountexpires"] = "";
-                } else {
-                    $result[$index]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
-                }
-            }
-
-            $result[$index]["title"] = isset($tmpResult["title"][0]) ? $tmpResult["title"][0] : "";
-            $result[$index]["info"] = isset($tmpResult["info"][0]) ? $tmpResult["info"][0] : "";
-            $result[$index]["department"] = isset($tmpResult["department"][0]) ? $tmpResult["department"][0] : "";
-            $result[$index]["description"] = isset($tmpResult["description"][0]) ? $tmpResult["description"][0] : "";
-            $result[$index]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
-            $result[$index]["lastlogon"] = isset($tmpResult["lastlogon"]) ? date("Y-m-d H:i:s", $tmpResult["lastlogon"][0] / 10000000 - 11644473600) : "";
-            $result[$index]["manager"] = isset($tmpResult["manager"][0]) ? $tmpResult["manager"][0] : "";
-            $result[$index]["thumbnailphoto"] = isset($tmpResult["thumbnailphoto"][0]) ? $tmpResult["thumbnailphoto"][0] : "";
-            $result[$index]["useraccountcontrol"] = isset($tmpResult["useraccountcontrol"][0]) ? $this->getAccountControl($tmpResult["useraccountcontrol"][0]) : "";
-//            $tmp[]=$result[$index]["info"];
-            if (isset($tmpResult["samaccountname"]))
-                $index++;
-        }
-            
-            */
+     
         
         return $result;
     }
@@ -700,22 +561,10 @@ class LdapService
 
     public function getUsersFromOU($OU)
     {
-        //echo ".$OU";
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
         $ldapdomain = $this->ad_domain;
-
-        //if (strtoupper(substr(PHP_OS, 0, 3)) === 'WIN') {
-        //    $memcached = new \Memcache;
-        //} else {
-        //    $memcached = new \Memcached;
-        //}
-        /* $memcached->addServer('localhost', 11211);
-          $fromMemcached = $memcached->get('ldap-users-from-ou-');
-          if ($fromMemcached) {
-          return $fromMemcached;
-          } */
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');

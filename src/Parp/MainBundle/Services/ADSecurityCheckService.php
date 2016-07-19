@@ -27,6 +27,9 @@ class ADSecurityCheckService
         $ps = explode("_", $sam);
         
         $nazwisko = $this->container->getParameter('blokada_na_zapis_tylko_userow_o_tym_nawisku');
+        if($nazwisko == null || $nazwisko == ""){
+            return true;
+        }
         if(count($ps) > 1){
             $nazwiska = explode(",", $nazwisko);
             $ret = false;
