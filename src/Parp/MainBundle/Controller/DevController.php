@@ -293,6 +293,17 @@ class DevController extends Controller
         die('dev');
     }
     
+    /**
+     * @Route("/addMissingOUs", name="addMissingOUs")
+     * @Template()
+     */
+    public function addMissingOUsAction()
+    {
+        $ls = $this->get('ldap_admin_service');
+        
+        $ls->syncDepartamentsOUs();
+        die('testou');
+    }
     
     /**
      * @Route("/testou", name="testou")

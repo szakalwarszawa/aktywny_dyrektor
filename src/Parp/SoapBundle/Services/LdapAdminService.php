@@ -542,9 +542,12 @@ class LdapAdminService
         $deps = $em->getRepository('ParpMainBundle:Departament')->findAll();
         foreach($deps as $dep){
             if($dep->getShortname()){
-                $userdn = "OU=".$dep->getShortname().", ".$this->useradn . $this->patch;
+                $userdn = $dep->getOuAD().", ".$this->useradn . $this->patch;
                 $filter="(objectClass=organizationalunit)"; 
                 $justthese = array("dn", "ou"); 
+                
+                var_dump($userdn, $filter, $justthese);
+                
                 $sr=ldap_search($ldapconn, $userdn, $filter, $justthese); 
                 $info = ldap_get_entries($ldapconn, $sr); 
                 
@@ -555,7 +558,7 @@ class LdapAdminService
                     
                     ldap_free_result($sr);
                     $ldapstatus2 = ldap_error($ldapconn);
-                    $res = ldap_add($ldapconn, "OU=".$dep->getShortname().", ".$this->useradn . $this->patch, array(
+                    $res = ldap_add($ldapconn, $dep->getOuAD().", ".$this->useradn . $this->patch, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'

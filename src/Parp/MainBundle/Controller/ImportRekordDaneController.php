@@ -309,8 +309,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES uft8'  //>= PHP 5.3.6
         );
         ////srv-rekorddb01.parp.local/bazy/PARP_KP.FDB
-        //$str_conn = "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
-        $str_conn = "firebird:dbname=/bazy/PARP_KP.FDB;host=srv-rekorddb01.parp.local";
+        $str_conn = "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
+        //$str_conn = "firebird:dbname=/bazy/PARP_KP.FDB;host=srv-rekorddb01.parp.local";
         $userdb = 'SYSDBA';
         $passdb = 'masterkey';
         try {
