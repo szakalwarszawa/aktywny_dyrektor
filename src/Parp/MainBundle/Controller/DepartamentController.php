@@ -34,10 +34,46 @@ class DepartamentController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
+        $grid = $this->generateGrid("2016");
+        $grid2 = $this->generateGrid("stare");
+        
+        if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect()  )
+        {
+            if ($grid->isReadyForExport())
+            {
+                return $grid->getExportResponse();
+            }
+        
+            if ($grid2->isReadyForExport())
+            {
+                return $grid2->getExportResponse();
+            }
+            
+        
+            // Url is the same for the grids
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
+        }
+        else
+        {
+            return $this->render('ParpMainBundle:Departament:index.html.twig', array('grid' => $grid, 'grid2' => $grid2));
+        }
+        
+        
+        
+    }
+    
+    protected function generateGrid($ktore){
+        $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Departament')->findAll();
     
         $source = new Entity('ParpMainBundle:Departament');
-    
+        $tableAlias = $source->getTableAlias();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias, $ktore)
+            {
+                
+                $query->andWhere($tableAlias.'.nowaStruktura = '.($ktore == 'stare' ? '0' : '1'));
+            });
         $grid = $this->get('grid');
         $grid->setSource($source);
     
@@ -69,8 +105,10 @@ class DepartamentController extends Controller
     
 
 
-        $grid->isReadyForRedirect();
-        return $grid->getGridResponse();
+        //$grid->isReadyForRedirect();
+        //return $grid->getGridResponse();
+        return $grid;
+
     }
     /**
      * Creates a new Departament entity.

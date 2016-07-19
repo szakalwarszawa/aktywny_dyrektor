@@ -8,9 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ZastepstwoType extends AbstractType
 {
+    protected $ADUser;
     protected $ADUsers;
     
-    public function __construct($ADUsers){
+    public function __construct($ADUser, $ADUsers){
+        $this->ADUser = $ADUser;
         $this->ADUsers = $ADUsers;
     }
     /**
@@ -21,13 +23,19 @@ class ZastepstwoType extends AbstractType
     {
         $builder
             //->add('deletedAt')
-            ->add('opis')
-            
-            ->add('ktoZastepuje', 'choice',  array(
+            ->add('opis');
+        if(in_array("PARP_ADMIN", $this->ADUser->getRoles())){
+            $builder->add('ktoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2'))
-            )
-            ->add('kogoZastepuje', 'choice',  array(
+            );
+        }else{
+            $builder->add('ktoZastepuje', 'text',  array(
+                'required' => false, 'label' => 'Kto zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true))
+            );
+        } 
+            
+            $builder->add('kogoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2'))
             )

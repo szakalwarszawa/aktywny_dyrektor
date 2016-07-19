@@ -97,7 +97,7 @@ class Departament
     /**
      * @var string
      *
-     * @ORM\Column(name="grupyAD", type="string", length=255)
+     * @ORM\Column(name="grupyAD", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupyAD;
@@ -107,7 +107,7 @@ class Departament
     /**
      * @var string
      *
-     * @ORM\Column(name="ouAD", type="string", length=255)
+     * @ORM\Column(name="ouAD", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $ouAD;

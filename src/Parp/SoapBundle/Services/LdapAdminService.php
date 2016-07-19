@@ -534,7 +534,8 @@ class LdapAdminService
         $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
-
+        $userdn = str_replace("OU=Zespoly,", "", $userdn);
+//        die($userdn);
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
@@ -545,26 +546,30 @@ class LdapAdminService
         
         
         $em = $this->container->get('doctrine')->getManager();
-        $deps = $em->getRepository('ParpMainBundle:Departament')->findAll();
+        $deps = $em->getRepository('ParpMainBundle:Departament')->findByNowaStruktura(1);
         foreach($deps as $dep){
             if($dep->getShortname()){
-                $userdn = $dep->getOuAD().", ".$this->useradn . $this->patch;
                 $filter="(objectClass=organizationalunit)"; 
                 $justthese = array("dn", "ou"); 
                 
-                var_dump($userdn, $filter, $justthese);
+                //$ou = $this->adldap->folder()->find($dep->getOuAD().", ".$userdn);
                 
-                $sr=ldap_search($ldapconn, $userdn, $filter, $justthese); 
-                $info = ldap_get_entries($ldapconn, $sr); 
-                
+                //var_dump($ou, $dep->getOuAD().", ".$userdn, $userdn, $filter, $justthese);
+                $info = [];
+                try{
+                    $sr=ldap_search($ldapconn, $dep->getOuAD().", ".$userdn, $filter, $justthese); 
+                    $info = ldap_get_entries($ldapconn, $sr); 
+                    ldap_free_result($sr); 
+                }catch(\Exception $e){
+                    $info["count"] == 0;
+                    echo "dodaje biuro ".$dep->getOuAD().", ".$userdn."!!!!";
+                }
                 if($info["count"] > 0){
                     
-                    ldap_free_result($sr); 
                 }else{ 
-                    
-                    ldap_free_result($sr);
+                    echo "dodaje biuro !!!!";
                     $ldapstatus2 = ldap_error($ldapconn);
-                    $res = ldap_add($ldapconn, $dep->getOuAD().", ".$this->useradn . $this->patch, array(
+                    $res = ldap_add($ldapconn, $dep->getOuAD().", ".$userdn, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'

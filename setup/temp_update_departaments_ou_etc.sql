@@ -1,5 +1,7 @@
 update departament
-set ouAD = concat('OU=', shortname, ',OU=Zespoly');
+set ouAD = concat('OU=', shortname, ',OU=Zespoly') where nowaStruktura = 0;
+update departament
+set ouAD = concat('OU=', shortname, ',OU=Zespoly 2016') where nowaStruktura = 1;
 
 update wniosek_status
 set viewers = 'wnioskodawca,podmiot,przelozony,wlasciciel,administrator,techniczny';

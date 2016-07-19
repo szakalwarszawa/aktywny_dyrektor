@@ -109,7 +109,7 @@ class ZastepstwoController extends Controller
      */
     private function createCreateForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsers()), $entity, array(
             'action' => $this->generateUrl('zastepstwo_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class ZastepstwoController extends Controller
     */
     private function createEditForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsers()), $entity, array(
             'action' => $this->generateUrl('zastepstwo_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -285,12 +285,17 @@ class ZastepstwoController extends Controller
     
     
     private function getUsers(){
-        
         $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $widzi_wszystkich = in_array("PARP_ADMIN", $aduser[0]['roles']);
+        
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
         foreach($ADUsers as $u){
-            $users[$u['samaccountname']] = $u['name'];
+            //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
+            if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                $users[$u['samaccountname']] = $u['name'];
+            }
         }
         return $users;
     }

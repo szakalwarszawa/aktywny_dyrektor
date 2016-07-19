@@ -17,6 +17,21 @@
     </div>
 </center>
 
-{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#nowe">Nowa struktura 2016</a></li>
+        <li><a data-toggle="tab" href="#stare">Stara struktura</a></li>
+    </ul>
+    
+    <div class="tab-content">
+        <div id="nowe" class="tab-pane fade in active">
+            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="stare" class="tab-pane fade">
+            {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+    </div>
+
+
 
 {% endblock %}

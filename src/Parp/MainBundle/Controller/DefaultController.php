@@ -687,7 +687,7 @@ class DefaultController extends Controller
                 ->add('roles', 'choice', array(
                     'required' => false,
                     'read_only' => false,
-                    'label' => 'Role',
+                    'label' => 'Role w AkD',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
