@@ -33,8 +33,9 @@ class LdapAdminService
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
         error_reporting(0);
-        ini_set('error_reporting', E_ALL);
-        ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
+        error_reporting(E_ALL ^ E_NOTICE);
+//        ini_set('error_reporting', E_ALL);
+        //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
         
         // Attempting fix from http://www.php.net/manual/en/ref.ldap.php#77553
         putenv('LDAPTLS_REQCERT=never');
@@ -76,6 +77,7 @@ class LdapAdminService
             'ad_port' => '389',
             //'sso' => false,
         );
+        //var_dump($configuration);
         $this->adldap = new \Adldap\Adldap($configuration);
         
         
@@ -94,7 +96,7 @@ class LdapAdminService
         if($error != ""){
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
-            echo '<info>'.$msg.'</info>';
+            $this->output->writeln( '<error>'.$msg.'</error>');
         }
     }
     public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
@@ -316,7 +318,8 @@ class LdapAdminService
         }
 
         if(count($entry) > 0){
-            
+            unset($entry['initials']);
+            //var_dump($dn, $entry);
             $res = ldap_modify($ldapconn, $dn, $entry);
             
             
@@ -379,15 +382,18 @@ class LdapAdminService
             
                 $znak = substr($grupa, 0, 1);               
                 $g = substr($grupa, 1);
+                //var_dump($g);
                 $grupa = $this->getGrupa($g);
                 $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                //var_dump($g, $dn, $addtogroup); die();
                 if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
                     ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
                 }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
                     ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
                 }else{
-                    echo('Mialem '.($znak == "+" ? "dodawac" : "zdejmowac")." z grupy  ".$g." ale user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."\n");
+                    $this->output->writeln('<comment>           Mialem '.($znak == "+" ? "dodawac do" : "zdejmowac z")." grupy  ".$g." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
                 }
+                return ;
             }
         }
     }

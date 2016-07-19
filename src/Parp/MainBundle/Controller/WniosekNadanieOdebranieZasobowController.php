@@ -206,12 +206,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         );
     }
     private function getUsers(){
-        
         $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $aduser[0]['roles']);
+        
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
         foreach($ADUsers as $u){
-            $users[$u['samaccountname']] = $u['name'];
+            //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
+            if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                $users[$u['samaccountname']] = $u['name'];
+            }
         }
         return $users;
     }

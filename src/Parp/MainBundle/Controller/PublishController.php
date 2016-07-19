@@ -26,7 +26,8 @@ class PublishController extends Controller
 
         $input = new ArrayInput(array(
            'command' => 'parp:ldapsave',
-           'showonly' => $showonly
+           'showonly' => $showonly,
+           '--samaccountname' => $this->getUser()->getUsername(),
            //'--message-limit' => $messages,
         ));
         
@@ -41,6 +42,8 @@ class PublishController extends Controller
         $content = $output->fetch();
         
         $converter = new AnsiToHtmlConverter();
+        
+        
         
         // return new Response(""), if you used NullOutput()
         return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => $showonly, 'content' => $converter->convert($content)));

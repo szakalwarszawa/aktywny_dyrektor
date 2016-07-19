@@ -14,12 +14,16 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Filesystem\Filesystem;
+use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
+use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 
 class LdapCommand extends ContainerAwareCommand
 {
     protected $debug = true;
     protected $showonly = true;
     protected $ids = "";
+    protected $samaccountname = "console";
     
     protected function configure()
     {
@@ -35,15 +39,26 @@ class LdapCommand extends ContainerAwareCommand
                 InputOption::VALUE_NONE,
                 'Entry ids to proccess'
             )
+        ->addOption(
+                'samaccountname',
+                null,
+                InputOption::VALUE_NONE,
+                'Entry samaccountname who is publishing'
+            )
         ;
     }
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
+            $time = date("Y-m-d_H-i-s");
+            $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";
             if($input->getOption('ids')){
                 $this->ids = $input->getOption('ids');
-            }            
+            }
+            if($input->getOption('samaccountname')){
+                $this->samaccountname = $input->getOption('samaccountname');
+            }        
             $this->showonly = $input->getArgument('showonly');
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
             $output->writeln('<comment>'.$msg.'</comment>', false);
@@ -162,6 +177,9 @@ class LdapCommand extends ContainerAwareCommand
                             if(!$this->showonly){
                                 $uprawnienia->zmianaUprawnien($zmiana);
                                 $zmiana->setIsImplemented(1);
+                                $zmiana->setLogfile($logfile);
+                                $zmiana->setPublishedBy($this->samaccountname);
+                                $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
                             }
                         }else{
@@ -180,6 +198,9 @@ class LdapCommand extends ContainerAwareCommand
                             if(!$this->showonly){
                                 $uprawnienia->ustawPoczatkowe($zmiana);
                                 $zmiana->setIsImplemented(1);
+                                $zmiana->setLogfile($logfile);
+                                $zmiana->setPublishedBy($this->samaccountname);
+                                $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
                             }
                         }else{
@@ -189,13 +210,27 @@ class LdapCommand extends ContainerAwareCommand
                         }
                     }
                 }
-                if(!$this->showonly)
+                if(!$this->showonly){
                     $em->flush();
+                }
+            }
+            
+            if(!$this->showonly && count($zmiany) > 0){
+                //zapis loga 
+                $output2 = clone $output;
+                $converter = new AnsiToHtmlConverter();
+                $msg = $converter->convert($output2->fetch()); //"sdadsadsa";
+                
+                $fs = new Filesystem();
+                $fs->dumpFile($logfile, $msg);
+            }elseif(count($zmiany) == 0){
+                $output->writeln('<error>Nie ma nic do opublikowania!!!</error>', false);
+                
             }
         }catch(\Exception $e){
-                
-            $output->writeln('<error>Błąd...                             </error>', false);
+            $output->writeln('<error>Błąd1...                             </error>', false);
             $output->writeln('<error>'.$e->getMessage()."</error>", false);
+            $output->writeln('<error>'.$e->getTraceAsString()."</error>", false);
         }
     }
     

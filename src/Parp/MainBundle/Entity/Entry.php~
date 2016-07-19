@@ -195,6 +195,34 @@ class Entry
      */
     private $wniosek;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="publishedBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $publishedBy;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="publishedAt", type="datetime", nullable=true)
+     *  
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $publishedAt;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="logfile", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $logfile;
+    
+    
+    
     /**
      * Get id
      *
@@ -610,5 +638,29 @@ class Entry
             }
             $this->setMemberOf(implode(",", $gr));
         }
+    }
+
+    /**
+     * Set wniosek
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     *
+     * @return Entry
+     */
+    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    {
+        $this->wniosek = $wniosek;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosek
+     *
+     * @return \Parp\MainBundle\Entity\Wniosek
+     */
+    public function getWniosek()
+    {
+        return $this->wniosek;
     }
 }

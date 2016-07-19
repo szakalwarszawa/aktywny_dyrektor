@@ -195,6 +195,34 @@ class Entry
      */
     private $wniosek;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="publishedBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $publishedBy;
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="publishedAt", type="datetime", nullable=true)
+     *  
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $publishedAt;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="logfile", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $logfile;
+    
+    
+    
     /**
      * Get id
      *
@@ -634,5 +662,77 @@ class Entry
     public function getWniosek()
     {
         return $this->wniosek;
+    }
+
+    /**
+     * Set publishedBy
+     *
+     * @param string $publishedBy
+     *
+     * @return Entry
+     */
+    public function setPublishedBy($publishedBy)
+    {
+        $this->publishedBy = $publishedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get publishedBy
+     *
+     * @return string
+     */
+    public function getPublishedBy()
+    {
+        return $this->publishedBy;
+    }
+
+    /**
+     * Set publishedAt
+     *
+     * @param \DateTime $publishedAt
+     *
+     * @return Entry
+     */
+    public function setPublishedAt($publishedAt)
+    {
+        $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get publishedAt
+     *
+     * @return \DateTime
+     */
+    public function getPublishedAt()
+    {
+        return $this->publishedAt;
+    }
+
+    /**
+     * Set logfile
+     *
+     * @param string $logfile
+     *
+     * @return Entry
+     */
+    public function setLogfile($logfile)
+    {
+        $this->logfile = $logfile;
+
+        return $this;
+    }
+
+    /**
+     * Get logfile
+     *
+     * @return string
+     */
+    public function getLogfile()
+    {
+        return $this->logfile;
     }
 }
