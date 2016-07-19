@@ -94,6 +94,13 @@ class WniosekHistoriaStatusow
     private $opis;
 
     
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="Zastepstwo", inversedBy="wniosekHistoriaStatusu")
+     * @ORM\JoinColumn(name="zastepstwo_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zastepstwo;
 
     /**
      * Get id
@@ -296,5 +303,29 @@ class WniosekHistoriaStatusow
     public function getStatus()
     {
         return $this->status;
+    }
+
+    /**
+     * Set zastepstwo
+     *
+     * @param \Parp\MainBundle\Entity\Zastepstwo $zastepstwo
+     *
+     * @return WniosekHistoriaStatusow
+     */
+    public function setZastepstwo(\Parp\MainBundle\Entity\Zastepstwo $zastepstwo = null)
+    {
+        $this->zastepstwo = $zastepstwo;
+
+        return $this;
+    }
+
+    /**
+     * Get zastepstwo
+     *
+     * @return \Parp\MainBundle\Entity\Zastepstwo
+     */
+    public function getZastepstwo()
+    {
+        return $this->zastepstwo;
     }
 }

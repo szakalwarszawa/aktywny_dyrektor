@@ -381,7 +381,7 @@ class DevController extends Controller
             && strstr($file->getRelativePathname(), "DateEntityClass") === false
             && strstr($file->getRelativePathname(), "OrderItemDTO") === false
             ){
-                $f = str_replace("/var/www/parp/aktywny_dyrektor/src", "", $file->getRealpath());
+                $f = str_replace(__DIR__."/..../../src", "", $file->getRealpath());
                 $f = str_replace("/", "\\", $f);            
                 $f = str_replace(".php", "", $f);
                 if($f != '\Parp\MainBundle\Entity\HistoriaWersji'){

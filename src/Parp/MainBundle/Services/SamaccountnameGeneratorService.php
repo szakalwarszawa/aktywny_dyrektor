@@ -26,12 +26,12 @@ class SamaccountnameGeneratorService
         
     }
     
-    protected function generateNextSam($dr, $try){
+    protected function generateNextSam($imie, $nazwisko, $try){
         $ret = "";
         $find =    array("ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż", "Ą", "Ć", "Ę", "Ł", "Ń", "Ó", "Ś", "Ź", "Ż");
         $replace = array("a", "c", "e", "l", "n", "o", "s", "z", "z", "a", "c", "e", "l", "n", "o", "s", "z", "z");
-        $imie = strtolower(str_replace($find, $replace, $dr->getImie())); 
-        $nazwiskoCzesci = explode('-', $dr->getNazwisko());
+        $imie = strtolower(str_replace($find, $replace, $imie)); 
+        $nazwiskoCzesci = explode('-', $nazwisko);
         $nazwisko = strtolower(str_replace($find, $replace, $nazwiskoCzesci[0]));
         $ret = $imie."_".$nazwisko;
         if($try == 0){
@@ -43,21 +43,42 @@ class SamaccountnameGeneratorService
     }
     
     
-    public function generateSamaccountname($dr){
+    public function generateSamaccountname($imie, $nazwisko){
         $ldap = $this->container->get('ldap_service');
-        $ret = $this->generateNextSam($dr, 0);
+        $ret = $this->generateNextSam($imie, $nazwisko, 0);
         $user = $ldap->getUserFromAD($ret);
         $try = 0;
         while(count($user) > 0 && $try < 1000){            
-            $ret = $this->generateNextSam($dr, ++$try);
+            $ret = $this->generateNextSam($imie, $nazwisko, ++$try);
             $user = $ldap->getUserFromAD($ret);
         }
         return $ret;
     }   
     
-    public function generateFullname($dr){
-        $ret = $dr->getImie()." ".$dr->getNazwisko();
+    public function generateFullname($imie, $nazwisko){
+        $ret = $nazwisko." ".$imie; //$dr->getImie()." ".$dr->getNazwisko();
         return $ret;
     } 
     
+    public function rozbijFullname($name){
+        $cz = explode(" ", $name);
+        $imie = ucfirst(strtolower(trim($cz[1])));
+        $nazwiska = explode("-", trim($cz[0]));
+        $nazwisko = [];
+        foreach($nazwiska as $n){
+            $nazwisko[] = ucfirst(strtolower(trim($n)));
+        }
+        $ret = ['imie' => $imie, 'nazwisko' => implode("-", $nazwisko)];
+        return $ret;
+    }
+    
+    public function generateDN($imie, $nazwisko, $departament){        
+        //CN=Skubiszewska Aleksandra,OU=BZK,OU=Zespoly,OU=PARP Pracownicy,DC=parp,DC=local
+        $tab = explode(".", $this->container->getParameter('ad_domain'));        
+        $ou = $this->container->getParameter('ad_ou');
+        $patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
+        
+        $ret = "CN=".$nazwisko." ".$imie.",OU=".$departament.",".$ou.$patch;
+        return $ret;
+    }
 }

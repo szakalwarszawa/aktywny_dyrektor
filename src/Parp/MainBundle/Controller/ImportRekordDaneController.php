@@ -14,6 +14,64 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
  */
 class ImportRekordDaneController extends Controller
 {
+        
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/", name="importfirebird_test", defaults={})
+     * @Method("GET")
+     */
+    public function importfirebirdAction()
+    {
+        $sciecha = "";
+        
+        $sql = "SELECT
+        departament.KOD,
+        mpr.DATA_OD,
+mpr.DATA_DO,
+            p.SYMBOL,
+            COUNT(*) as ile,
+            p.IMIE as imie, 
+            p.NAZWISKO as nazwisko, 
+            departament.OPIS  departament,
+            stanowisko.OPIS stanowisko,
+            rodzaj.NAZWA umowa,
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
+            
+            from P_PRACOWNIK p
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP) AND (mpr.DATA_OD < CURRENT_TIMESTAMP)
+            join P_MPRACY departament on departament.KOD = mpr.KOD
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > CURRENT_TIMESTAMP)
+            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > CURRENT_TIMESTAMP)
+            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
+            
+            GROUP BY 
+           departament.KOD,
+mpr.DATA_OD,
+mpr.DATA_DO, 
+            p.SYMBOL,       
+            p.IMIE, 
+            p.NAZWISKO, 
+            departament.OPIS ,
+            stanowisko.OPIS,
+            rodzaj.NAZWA,
+            umowa.DATA_OD,
+            umowa.DATA_DO
+            
+            ORDER BY 
+            p.NAZWISKO, p.IMIE
+            ";
+
+        //$rows = $this->executeQueryIbase($sql);
+        $rows = $this->executeQuery($sql);
+        echo "<pre>"; print_r($rows);
+        die('testfirebird');
+    }
+    
+    
+    
     /**
      * Lists all Klaster entities.
      *
@@ -51,77 +109,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         echo "<pre>"; print_r($rows);
         die('testfirebird');
     }
-        
-    /**
-     * Lists all Klaster entities.
-     *
-     * @Route("/", name="importfirebird_test", defaults={})
-     * @Method("GET")
-     */
-    public function importfirebirdAction()
-    {
-/*
-        $em = $this->getDoctrine()->getManager();
-        $dr = $em->getRepository('ParpMainBundle:Plik')->find(5);
-            print_r($dr);
-            
-        $dr->setOpis('6565');
-        $uow = $em->getUnitOfWork();
-        $uow->computeChangeSets();
-        if ($uow->isEntityScheduled($dr)) {
-            // My entity has changed
-            echo "Zmiana!!!";
-        }else{
-            echo "brak zamiany!!!";
-        }
-            
-        die();
-*/
-        $sciecha = "";
-/*
-        $sql = 'select rdb$relation_name
-from rdb$relations
-where rdb$view_blr is null 
-and (rdb$system_flag is null or rdb$system_flag = 0);';
-*/
-        $sql = "SELECT
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.OPIS  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP)
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > CURRENT_TIMESTAMP)
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > CURRENT_TIMESTAMP)
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.OPIS ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            p.NAZWISKO, p.IMIE
-            ";
-
-        $rows = $this->executeQuery($sql);
-        echo "<pre>"; print_r($rows);
-        die('testfirebird');
-    }
+    
     /**
      * Lists all Klaster entities.
      *
@@ -210,7 +198,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
             $dr->setUmowa($this->parseValue($row['UMOWA'], false));
             $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
-            $login = $this->get('samaccountname_generator')->generateSamaccountname($dr);
+            $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
             $dr->setLogin($login);
             
             $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;

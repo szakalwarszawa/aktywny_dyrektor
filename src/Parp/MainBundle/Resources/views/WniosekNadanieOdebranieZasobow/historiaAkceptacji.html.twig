@@ -11,7 +11,17 @@
         {% for ss in entity.wniosek.statusy %}
             <tr>
                 <td>{{ ss.createdAt|date("Y-m-d H:i:s")}}</td>
-                <td>{{ ss.createdBy }}</td>
+                <td>
+                    {%if(ss.zastepstwo)%}
+                        <div class="alert alert-danger"
+                        data-toggle="popover" title="Zastepstwo"  data-placement="top"
+                        data-content="Zastępstwo za {{ss.zastepstwo.kogoZastepuje}} od  {{ss.zastepstwo.dataOd|date("Y-m-d")}} do {{ss.zastepstwo.dataDo|date("Y-m-d")}}">
+                            {{ ss.createdBy }} w zastepstwie za {{ss.zastepstwo.kogoZastepuje}}
+                        </div>
+                    {%else%}
+                        {{ ss.createdBy }}
+                    {%endif%}
+                </td>
                 <td>{{ ss.statusName }}</td>
                 <td>
                 {% if ss.rejected %}

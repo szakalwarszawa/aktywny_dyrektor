@@ -101,6 +101,25 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupyAD;
+    
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="ouAD", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ouAD;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="nowaStruktura", type="boolean", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $nowaStruktura;
 
     /**
      * Get id
@@ -231,5 +250,53 @@ class Departament
     public function getGrupyAD()
     {
         return $this->grupyAD;
+    }
+
+    /**
+     * Set ouAD
+     *
+     * @param string $ouAD
+     *
+     * @return Departament
+     */
+    public function setOuAD($ouAD)
+    {
+        $this->ouAD = $ouAD;
+
+        return $this;
+    }
+
+    /**
+     * Get ouAD
+     *
+     * @return string
+     */
+    public function getOuAD()
+    {
+        return $this->ouAD;
+    }
+
+    /**
+     * Set nowaStruktura
+     *
+     * @param boolean $nowaStruktura
+     *
+     * @return Departament
+     */
+    public function setNowaStruktura($nowaStruktura)
+    {
+        $this->nowaStruktura = $nowaStruktura;
+
+        return $this;
+    }
+
+    /**
+     * Get nowaStruktura
+     *
+     * @return boolean
+     */
+    public function getNowaStruktura()
+    {
+        return $this->nowaStruktura;
     }
 }

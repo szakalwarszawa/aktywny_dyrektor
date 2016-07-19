@@ -72,6 +72,13 @@ class Zastepstwo
     */
     private $dataDo;
     
+    /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="Wniosek", mappedBy="zastepstwo")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wniosekHistoriaStatusu; 
 
     /**
      * Get id
@@ -225,5 +232,60 @@ class Zastepstwo
     public function getDataDo()
     {
         return $this->dataDo;
+    }
+
+    /**
+     * Set wniosekHistoriaStatusu
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     *
+     * @return Zastepstwo
+     */
+    public function setWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu = null)
+    {
+        $this->wniosekHistoriaStatusu = $wniosekHistoriaStatusu;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekHistoriaStatusu
+     *
+     * @return \Parp\MainBundle\Entity\Wniosek
+     */
+    public function getWniosekHistoriaStatusu()
+    {
+        return $this->wniosekHistoriaStatusu;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->wniosekHistoriaStatusu = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add wniosekHistoriaStatusu
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     *
+     * @return Zastepstwo
+     */
+    public function addWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    {
+        $this->wniosekHistoriaStatusu[] = $wniosekHistoriaStatusu;
+
+        return $this;
+    }
+
+    /**
+     * Remove wniosekHistoriaStatusu
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     */
+    public function removeWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    {
+        $this->wniosekHistoriaStatusu->removeElement($wniosekHistoriaStatusu);
     }
 }

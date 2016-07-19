@@ -94,6 +94,13 @@ class WniosekHistoriaStatusow
     private $opis;
 
     
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="Zastepstwo", inversedBy="wniosekHistoriaStatusu")
+     * @ORM\JoinColumn(name="zastepstwo_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zastepstwo;
 
     /**
      * Get id
@@ -249,4 +256,76 @@ class WniosekHistoriaStatusow
         return $this->opis;
     }
 
+
+    /**
+     * Set wniosek
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     *
+     * @return WniosekHistoriaStatusow
+     */
+    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    {
+        $this->wniosek = $wniosek;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosek
+     *
+     * @return \Parp\MainBundle\Entity\Wniosek
+     */
+    public function getWniosek()
+    {
+        return $this->wniosek;
+    }
+
+    /**
+     * Set status
+     *
+     * @param \Parp\MainBundle\Entity\WniosekStatus $status
+     *
+     * @return WniosekHistoriaStatusow
+     */
+    public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    /**
+     * Get status
+     *
+     * @return \Parp\MainBundle\Entity\WniosekStatus
+     */
+    public function getStatus()
+    {
+        return $this->status;
+    }
+
+    /**
+     * Set zastepstwo
+     *
+     * @param \Parp\MainBundle\Entity\Zastepstwo $zastepstwo
+     *
+     * @return WniosekHistoriaStatusow
+     */
+    public function setZastepstwo(\Parp\MainBundle\Entity\Zastepstwo $zastepstwo = null)
+    {
+        $this->zastepstwo = $zastepstwo;
+
+        return $this;
+    }
+
+    /**
+     * Get zastepstwo
+     *
+     * @return \Parp\MainBundle\Entity\Zastepstwo
+     */
+    public function getZastepstwo()
+    {
+        return $this->zastepstwo;
+    }
 }
