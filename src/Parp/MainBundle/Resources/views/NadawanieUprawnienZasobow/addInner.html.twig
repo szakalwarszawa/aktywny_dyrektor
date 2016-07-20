@@ -109,10 +109,12 @@
          filtrujZasobUprawnienia();
     });
     $('#form_buttonzaznacz').click(function(){
-        $('.checkbox:not(.hidden) input[type=checkbox]').prop('checked', true);    
+        $('.checkbox:not(.hidden) input[type=checkbox]').prop('checked', true);
+        zmianaZaznaczenia(); 
     });
     $('#form_buttonodznacz').click(function(){
-        $('.checkbox input[type=checkbox]:checked').prop('checked', false);    
+        $('.checkbox input[type=checkbox]:checked').prop('checked', false);
+        zmianaZaznaczenia(); 
     });
     function beforeSubmit(e){
         if($("input[name='form[access][]']").serialize() == ""){
@@ -121,5 +123,14 @@
             return false;
         }
     }
+    function zmianaZaznaczenia(){
+        var ret = [];
+        $('#form_access input[type=checkbox]:checked').each(function(){
+            ret.push($(this).closest('label').text());
+        });
+        console.log('zmieniam zaznaczenie');
+        $('#form_wybraneZasoby').val(ret.join(', '));
+    }
+    $('#form_access input[type=checkbox]').click(zmianaZaznaczenia);
 </script>
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>

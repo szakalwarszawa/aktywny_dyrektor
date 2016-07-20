@@ -350,6 +350,8 @@ class DefaultController extends Controller
             $zasoby[$i]['powodOdebrania'] = $uz->getPowodOdebrania();
             $zasoby[$i]['powodNadania'] = $uz->getPowodNadania();
             $zasoby[$i]['czyAktywne'] = $uz->getCzyAktywne();
+            $zasoby[$i]['wniosekId'] = $uz->getWniosek() ? $uz->getWniosek()->getId() : 0;
+            $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
         }
         
         //print_r($defaultData); die();

@@ -522,7 +522,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $kom = new \Parp\MainBundle\Entity\Komentarz();
             $kom->setObiekt('WniosekNadanieOdebranieZasobow');
             $kom->setObiektId($id);
-            $kom->setTytul("Wniosek zwrócony z powodu:");
+            $kom->setTytul("Wniosek ".($isAccepted == "return" ? "zwrócenia" : "odrzucenia")." z powodu:");
             $kom->setOpis($txt);
             $kom->setSamaccountname($this->getUser()->getUsername());
             $kom->setCreatedAt(new \Datetime());
@@ -796,6 +796,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 foreach($wniosek->getUserZasoby() as $uz){
                     $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    $uz->setCzyAktywne(true);
                     if($z->getGrupyAd()){
                         $grupy = explode(";", $z->getGrupyAd());
                         foreach($grupy as $grupa){

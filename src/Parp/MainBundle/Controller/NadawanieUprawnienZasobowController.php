@@ -332,6 +332,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Odznacz wszystkie'
                 ))
+                ->add('wybraneZasoby', 'textarea', array('mapped' => false, 'attr' => ["readonly" => true]))
                 ->add('access', 'choice', array(
                     'required' => false,
                     'read_only' => false,

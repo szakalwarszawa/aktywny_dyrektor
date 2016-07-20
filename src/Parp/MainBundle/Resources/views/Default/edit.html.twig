@@ -187,6 +187,7 @@
                                         <th>Aktywne od</th>
                                         <th>Aktywne do</th>
                                         <th>Powód nadania/odebrania</th>
+                                        <th>Wniosek</th>
                                     </tr>
                                 </thead>
                                 {% set n = 1 %}
@@ -205,6 +206,13 @@
                                             <td>{{row.aktywneOd}}</td>
                                             <td>{{row.aktywneDo}}</td>
                                             <td>{{row.powodNadania}}</td>
+                                            <td>
+                                            {%if row.wniosekId != 0 %}
+                                                <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: row.wniosekId})}}">Wniosek nr {{row.wniosekNumer}}</a>
+                                            {%else%}
+                                                <div class="alert alert-danger">Bez wniosku</div>
+                                            {%endif%}
+                                            </td>
                                             
                                             
                                         </tr>

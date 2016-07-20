@@ -49,9 +49,11 @@
                         {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
                         <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
                     {%else%}
-                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}" class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
+                        class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                         {% if canReturn %}
-                        <a  data-toggle="collapse" data-target="#rejectDiv" class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
+                        class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
                         
                         {%endif%}
                         {% if canUnblock %}
@@ -68,22 +70,26 @@
                 {% endif %}
             </div>
             <div class="collapse" id="rejectDiv">
-                <form action="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}" method="POST">
+                <form action="" method="POST" id="subFormOdrzucenie">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód zwrotu wniosku</label>
+                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód zwrotu/odrzucenia wniosku</label>
                         <div class="col-sm-10">
-                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod zwrotu wniosku"></textarea>
+                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod zwrotu/odrzucenia wniosku"></textarea>
                         </div>
                     </div>
-                    <div class="form-group paddingTop20">
-                        <button type="submit" class="btn btn-info">Zwróć wniosek do poprawy <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </button>
+                    <div class="form-group paddingTop20 container">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                        <button type="submit" class="btn btn-danger">Wykonaj akcje </button>
+                        </div>
                     </div>
                 </form>
                 
             </div>
             {%if(entity.powodZwrotu != "")%}
                 <div class="alert alert-danger">
-                    <h3>Wniosek zwrócony, powód zwrotu:</h3>
+                    <h3>Powód odrzucenia wniosku:</h3>
                     {{entity.powodZwrotu}}
                 </div>
             {%endif%}
