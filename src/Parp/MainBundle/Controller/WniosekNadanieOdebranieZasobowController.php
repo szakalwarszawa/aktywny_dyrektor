@@ -208,7 +208,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function getUsers(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
-        $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $aduser[0]['roles']);
+        $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
@@ -629,7 +629,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $wn->getWniosek()->setParent($wniosek->getWniosek());
                                     $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
-                                    $wn->getWniosek()->setNumer($numer++);
+                                    $this->get('wniosekNumer')->nadajPodNumer($wn,$wniosek, $numer++);
                                     $users = array();
                                     foreach($p as $uz){
                                         $nuz = clone $uz;
@@ -697,7 +697,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $wn->getWniosek()->setJednostkaOrganizacyjna($wniosek->getWniosek()->getJednostkaOrganizacyjna());
                                         $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                         $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
-                                        $wn->getWniosek()->setNumer($numer++);
+                                        
+                                        $this->get('wniosekNumer')->nadajPodNumer($wn,$wniosek, $numer++);
                                         $users = array();
                                         foreach($z as $uz){
                                             $nuz = clone $uz;

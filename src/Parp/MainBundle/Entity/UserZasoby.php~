@@ -796,28 +796,4 @@ class UserZasoby
     {
         return $this->wniosekOdebranie;
     }
-
-    /**
-     * Set zasobOpis
-     *
-     * @param string $zasobOpis
-     *
-     * @return UserZasoby
-     */
-    public function setZasobOpis($zasobOpis)
-    {
-        $this->zasobOpis = $zasobOpis;
-
-        return $this;
-    }
-
-    /**
-     * Get zasobOpis
-     *
-     * @return string
-     */
-    public function getZasobOpis()
-    {
-        return $this->zasobOpis;
-    }
 }

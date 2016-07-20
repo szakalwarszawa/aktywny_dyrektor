@@ -33,7 +33,7 @@ td {
   word-wrap:break-word;
   word-break:break-word;
   padding:5px;
-  min-width:50px;
+/*   min-width:50px; */
 }
 form.dirty{
     border:3px solid rgba(26, 188, 156,1);;
@@ -82,4 +82,14 @@ body .JColResizer > tbody > tr > td, body .JColResizer > tbody > tr > th{
 }
 .btn:hover{
     border-color:#f00!important;
+}
+td .btn{
+    width:100%;
+}
+.well-sm li{
+    margin-top:10px;
+}
+.whiteLink, .whiteLink:hover{
+    color:white;
+    cursor: pointer;
 }

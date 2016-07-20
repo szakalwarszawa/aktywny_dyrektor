@@ -528,7 +528,7 @@ class DefaultController extends Controller
         }
 
         // Pobieramy listę Biur i Departamentów
-        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array(), array('name' => 'asc'));
+        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array('nowaStruktura' => 0), array('name' => 'asc'));
         $departments = array();
         foreach ($departmentsEntity as $tmp) {
             $departments[$tmp->getName()] = $tmp->getName();

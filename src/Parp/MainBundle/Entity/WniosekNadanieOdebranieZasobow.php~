@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.zasobOpis:group_concat,wniosek.editornames", groupBy={"id"})
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.zasobId:group_concat,wniosek.editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -72,7 +72,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
-     * @GRID\Column(field="userZasoby.zasobOpis:group_concat", title="Zasoby")
+     * @GRID\Column(field="userZasoby.zasobId:group_concat", title="Zasoby", filter="none", selectMulti="true")
      */
     private $userZasoby;
     
@@ -481,29 +481,5 @@ class WniosekNadanieOdebranieZasobow
     public function getUserZasobyOdbierane()
     {
         return $this->userZasobyOdbierane;
-    }
-
-    /**
-     * Set zasoby
-     *
-     * @param string $zasoby
-     *
-     * @return WniosekNadanieOdebranieZasobow
-     */
-    public function setZasoby($zasoby)
-    {
-        $this->zasoby = $zasoby;
-
-        return $this;
-    }
-
-    /**
-     * Get zasoby
-     *
-     * @return string
-     */
-    public function getZasoby()
-    {
-        return $this->zasoby;
     }
 }

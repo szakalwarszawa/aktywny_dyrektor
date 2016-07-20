@@ -24,22 +24,25 @@ class ZastepstwoType extends AbstractType
         $builder
             //->add('deletedAt')
             ->add('opis');
-        if(in_array("PARP_ADMIN", $this->ADUser->getRoles())){
-            $builder->add('ktoZastepuje', 'choice',  array(
+        $builder->add('ktoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2'))
-            );
-        }else{
-            $builder->add('ktoZastepuje', 'text',  array(
-                'required' => false, 'label' => 'Kto zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true))
-            );
-        } 
-            
+            );    
+        if(in_array("PARP_ADMIN", $this->ADUser->getRoles())){
             $builder->add('kogoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2'))
-            )
-            ->add('dataOd', 'datetime', array(
+            );
+        }else{
+            
+            
+            $builder->add('kogoZastepuje', 'text',  array(
+                'required' => false, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true))
+            );
+        } 
+            
+            
+        $builder->add('dataOd', 'datetime', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
                     ),

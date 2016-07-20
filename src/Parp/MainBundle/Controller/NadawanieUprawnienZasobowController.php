@@ -628,6 +628,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $datauz['poziomDostepu'] = $userzasob->getPoziomDostepu();
             }
             $uz->setZasobId($z->getId());
+            $uz->setZasobOpis($z->getNazwa());
             $uz->setPoziomDostepu($z->getPoziomDostepu());
             $uz->setModul($z->getModulFunkcja());
             $c1 = explode(",", $z->getPoziomDostepu());
@@ -723,7 +724,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $z->setAktywneDo(new \DateTime($z->getAktywneDo()));
                             }
                             //die(".".$oz->get_Idd());
-                            $z->setCzyAktywne(true);
+                            $z->setCzyAktywne($wniosekId == 0);
                             $z->setCzyNadane(false);
                             $z->setWniosek($wniosek);
                             

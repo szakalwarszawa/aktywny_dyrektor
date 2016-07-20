@@ -277,15 +277,17 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $em = $this->getDoctrine()->getManager();
         $data = array();
         $imported = array();
+        //var_dump($rows); //die();
         foreach($rows as $row){
-            if(in_array(trim($row['DEPARTAMENT']), $mapowanieDepartamentowPrezesow)){
+            if(isset($mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])])){
                 //podmieniamy id biur prezesow
-                die('podmieniamy id biur prezesow');
+                //die('podmieniamy id biur prezesow');
                 $row['DEPARTAMENT'] = $mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])];
             }
             $in = $this->parseValue($row['IMIE'])." ".$this->parseValue($row['NAZWISKO']);            
             $data[$in][] = $row;
         }
+        //die();
         $totalmsg = "";
         //echo "<pre>"; print_r($data); die();
         $ldap = $this->get('ldap_service');

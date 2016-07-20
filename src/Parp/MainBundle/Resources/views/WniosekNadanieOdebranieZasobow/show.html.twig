@@ -15,12 +15,32 @@
                 </li>
                 <li><b>Statusy:</b></li>
             </ul>
-            <div class="btn-group">            
-                {% for ss in entity.wniosek.statusy %}
-                    <span class="red-tooltip btn btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  
-                    data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }}"
-                    ><i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> </span>
-                {%endfor%}
+            <div class="well well-sm statusyWniosku">
+                {% set bylJuzPierwszyParent = false %}
+                {% set numerIteracji = 0 %}
+                <ul class="list-inline">
+                    {% for ss in entity.wniosek.statusy %}
+                        {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}
+                        {%set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent  ? entity.wniosek.parent.parent : entity.wniosek.parent)))%}
+                        {%endif%}
+                        <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }} {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}Podzielony wniosek nr {{wniosekDoLinku.numer}} {%endif%}"
+                        >
+                            {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}
+                            
+                            <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id})}}" class="whiteLink">
+                            {% set bylJuzPierwszyParent = true %}
+                            {%endif%}
+                            <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> 
+                            
+                            {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length - 1)%}
+                            
+                            </a>
+                            {%endif%}
+                            {% set numerIteracji = numerIteracji + 1 %}
+                        </li>
+                    {%endfor%}
+                </ul>
             </div>
             <div class="btn-group container">  
                 {% if editor %}

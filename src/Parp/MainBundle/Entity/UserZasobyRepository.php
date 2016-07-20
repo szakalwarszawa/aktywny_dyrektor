@@ -45,6 +45,7 @@ class UserZasobyRepository extends EntityRepository
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname
+              AND uz.czyNadane = true
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
                

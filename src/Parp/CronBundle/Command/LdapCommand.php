@@ -219,7 +219,7 @@ class LdapCommand extends ContainerAwareCommand
                         }
                     }
                 }
-                if(!$this->showonly){
+                if(!$this->showonly && $this->getContainer()->getParameter('pusz_to_ad')){
                     $em->flush();
                 }
             }

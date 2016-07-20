@@ -220,10 +220,12 @@ class DevController extends Controller
     public function przeniesWszystkichAction()
     {
         $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
         $ADUsers = $ldap->getAllFromAD();
         $sqls = [];
         //print_r($ADUsers); die();
-        $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski"];
+        $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski",
+        "agnieszka_radomska", "agnieszka_promianows"];
         foreach($ADUsers as $u){
             $sam = str_replace("'", "", $u['samaccountname']);
             if(!in_array($sam, $pomijaj)){
@@ -231,11 +233,81 @@ class DevController extends Controller
     ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
             }
         }
-        
+        $sql = implode(" ", $sqls);
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->getConnection()->exec( $sql );
+/*
+        $connection = $em->getConnection();
+        $statement = $connection->prepare();
+        //$statement->bindValue('id', 123);
+        $statement->execute();
+        $results = $statement->fetchAll();
+*/
         
         echo implode("\n\n<br><br>", $sqls);
         die();
         die('przeniesWszystkich');
+    }
+    /**
+     * @Route("/usunWszystkich", name="usunWszystkich")
+     * @Template()
+     */
+    public function usunWszystkichAction()
+    {
+        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+            $ldap = $this->get('ldap_service');
+            $ldapAdmin = $this->get('ldap_admin_service');
+            $ADUsers = $ldap->getAllFromAD();
+            $dns = [];
+            //print_r($ADUsers); die();
+            $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", 
+            //"marcin_lipinski",
+            ];
+            foreach($ADUsers as $u){
+                $sam = str_replace("'", "", $u['samaccountname']);
+                if(!in_array($sam, $pomijaj)){
+                    /*$sqls[] = "INSERT INTO `entry` (`department`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
+        ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
+        */
+                    $dn = "CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST";
+                    $dns[] = $dn;
+                    $ldapAdmin->deleteEntity($dn);
+            
+                }
+            }
+            
+            
+            echo implode("\n\n<br><br>", $dns);
+            
+        }
+        die('usunWszystkichAction');
+    }
+    
+    /**
+     * @Route("/ustawManagera", name="ustawManagera")
+     * @Template()
+     */
+    public function ustawManageraAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $sqls = [];
+        //print_r($ADUsers); die();
+        $pomijaj = ["ndes-user"];//["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski", "agnieszka_radomska", "agnieszka_promianows"];
+        foreach($ADUsers as $u){
+            $sam = str_replace("'", "", $u['samaccountname']);
+            if(!in_array($sam, $pomijaj)){
+                $sqls[] = "INSERT INTO `entry` (`manager`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
+    ('Aleksjew Martyna', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
+            }
+        }
+        $sql = implode(" ", $sqls);
+        $em = $this->getDoctrine()->getEntityManager();
+        $em->getConnection()->exec( $sql );
+        
+        echo implode("\n\n<br><br>", $sqls);
+        die();
+        die('ustawManagera');
     }
     /**
      * @Route("/zasobNazwa/{zid}", name="zasobNazwa")

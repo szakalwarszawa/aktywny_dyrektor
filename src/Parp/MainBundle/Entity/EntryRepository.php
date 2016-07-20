@@ -23,6 +23,7 @@ class EntryRepository extends EntityRepository
                 ->where('e.isImplemented = false')
                 ->andWhere('e.fromWhen <= :date')
                 ->andWhere($where)
+                ->addOrderBy('e.id',  'ASC')
                 ->setParameters(array('date' => new \DateTime()))
                 ->getQuery();
 

@@ -666,6 +666,33 @@ class LdapAdminService
             $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
         }
     }
-    
+    //kasuje usera z AD
+    protected function ldap_delete($link_identifier,  $dn)
+    {
+        if($this->pushChanges){
+            ldap_delete($link_identifier, $dn);
+        }else{
+            $data = [];
+            foreach($entry as $k => $v){
+                $data[] = "'$k' = '$v'";
+            }
+            $this->output->writeln('<error>wykonuje funkcje ldap_delete</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+        }
+    }
+    public function deleteEntity($dn){
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
+        $ldapdomain = $this->ad_domain;
+        $userdn = $this->useradn . $this->patch;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldap_username = $this->AdminUser;
+        $ldap_password = $this->AdminPass;
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+        $this->ldap_delete($ldapconn, $dn);
+    }
     
 }

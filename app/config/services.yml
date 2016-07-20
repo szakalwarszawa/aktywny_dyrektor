@@ -12,6 +12,18 @@ services:
             class: Parp\SoapBundle\Services\LdapAdminService
             arguments: ["@security.context","@service_container","@doctrine.orm.entity_manager"]
             tags: ~
+    gedmo.listener.loggable:
+        class: Gedmo\Loggable\LoggableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
+    gedmo.listener.softdeleteable:
+        class: Gedmo\SoftDeleteable\SoftDeleteableListener
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+        calls:
+            - [ setAnnotationReader, [ @annotation_reader ] ]
     uprawnienia_service:
         class : Parp\MainBundle\Services\UprawnieniaService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
@@ -41,28 +53,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
             # translatable sets locale such as default application locale before command execute
             - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
-            #- { name: doctrine.event_listener, event: preUpdate, connection: default }
-    
-    gedmo.listener.loggable:
-        class: Gedmo\Loggable\LoggableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ "@annotation_reader" ] ]
-    
-    gedmo.listener.softdeleteable:
-        class: Gedmo\SoftDeleteable\SoftDeleteableListener
-        tags:
-            - { name: doctrine.event_subscriber, connection: default }
-        calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
-    app.twig_extension:
-        class: Parp\MainBundle\Twig\StringExtension
-        arguments: ["@rename_service"]
-        public: false
-        tags:
-            - { name: twig.extension }
-    
+            #- { name: doctrine.event_listener, event: preUpdate, connection: default }    
     parp.redmine:
         class: Parp\MainBundle\Services\RedmineConnectService
         arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
@@ -72,7 +63,6 @@ services:
             logger: "@logger"
         tags:
             - { name: kernel.event_listener, event: console.exception }
-            
     adcheck_service:
         class: Parp\MainBundle\Services\ADSecurityCheckService
         arguments: ["@service_container" ]
@@ -82,11 +72,16 @@ services:
         arguments: ["@kernel","@templating"]
         tags:
             - { name: kernel.event_subscriber }
-    
     rename_service:
         class : Parp\MainBundle\Services\RenameService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
+    app.twig_extension:
+        class: Parp\MainBundle\Twig\StringExtension
+        arguments: ["@rename_service"]
+        public: false
+        tags:
+            - { name: twig.extension }
     samaccountname_generator:
         class : Parp\MainBundle\Services\SamaccountnameGeneratorService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]

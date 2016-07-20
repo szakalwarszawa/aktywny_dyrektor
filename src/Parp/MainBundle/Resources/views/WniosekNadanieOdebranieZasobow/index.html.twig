@@ -17,9 +17,9 @@
     
         <center>
             <div class="btn-group">
-                <a class="btn btn-success btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
-                <a class="btn btn-danger btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
-                    <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+                <a class="btn btn-success btn" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
+                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
+                    <a class="btn btn-primary btn" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
             </div>
         </center>
     {%if(zastepstwa|length > 0)%}
@@ -28,7 +28,7 @@
             <strong>Uwaga, obecnie masz aktywne zastępstw{{zastepstwa|length > 1 ? "a" : "o"}} za :</strong>            
             <div class="btn-group">  
                 {% for z in zastepstwa %}
-                      <div class="btn btn-success" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</div>   
+                      <a href="{{path('userEdit', {samaccountname: z.kogoZastepuje})}}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</a>   
                 {% endfor %}
             </div>    
             
