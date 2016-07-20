@@ -191,7 +191,7 @@
         <input type="hidden" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]" value="0">
         
         <select  class="ays-ignore " id="{{ grid.hash }}_selectMassAction" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_MASS_ACTION') }}]">
-                    <option value="-1">Select action</option>
+                    <option value="-1">Wybierz akcje</option>
                     {% for key, massAction in grid.massActions %}
                         <option value="{{ key }}">{{ massAction.title|trans }}</option>
                     {% endfor %}
