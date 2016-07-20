@@ -102,7 +102,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'samaccountnames' => $uz->getSamaccountnames(),
                     'wniosekId' => $wniosekId,
                     'action' => 'editResources',
-                    'fromWhen' => $uz->getAktywneOd()->format('d-m-Y'),
+                    'fromWhen' => $uz->getAktywneOd()->format('Y-m-d'),
                     'powod' => $uz->getPowodNadania(),
                     'nazwafiltr' => '',
                     'grupy' => '',
@@ -272,17 +272,17 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('fromWhen', 'text', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zmiany',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'col-sm-4 control-label ',
                     ),
                     'required' => false,
-                    'data' => $now->format("d-m-Y")
+                    'data' => $now->format("Y-m-d")
                 ))
                 ->add('powod', 'textarea', array(
                     'attr' => array(
@@ -586,7 +586,7 @@ class NadawanieUprawnienZasobowController extends Controller
             foreach($_POST['form']['userzasoby'] as $v){
                 $zids[] = $v['zasobId'];
             }
-            $fromWhenPars['data'] = $now->format("d-m-Y");
+            $fromWhenPars['data'] = $now->format("Y-m-d");
         }else{
             $samaccountnames = json_decode($ndata['samaccountnames']);
             $ldap = $this->get('ldap_service');

@@ -90,7 +90,10 @@
                 <div class="tabContent">
                     <table class="record_properties table table-striped">
                         <tbody>
-                            
+                             <tr>
+                                <th>Id</th>
+                                <td>{{ entity.id }}</td>
+                            </tr>
                             <tr>
                                 <th>Numer</th>
                                 <td>
@@ -117,53 +120,45 @@
                                 </td>
                             </tr>
                             <tr>
+                                <th>Osoby których dotyczy wniosek</th>
+                                <td>{{ entity.pracownicy }}</td>
+                            </tr>
+                            <tr>
+                                <th>Czy pracownik/pracownicy spoza PARP</th>
+                                <td>{{ entity.pracownikSpozaParp ? "TAK" : "NIE" }}</td>
+                            </tr>
+                            <tr>
                                 <th>Jednostka organizacyjna</th>
                                 <td>{{ entity.wniosek.jednostkaOrganizacyjna }}</td>
                             </tr>
                             <tr>
-                                <th>Pracownicy</th>
-                                <td>{{ entity.pracownicy }}</td>
-                            </tr>
-                            <tr>
-                                <th>Pracownik spoza parp</th>
-                                <td>{{ entity.pracownikSpozaParp }}</td>
-                            </tr>
-                            <tr>
-                                <th>Manager Pracowników spoza parp</th>
-                                <td>{{ entity.managerSpozaParp }}</td>
-                            </tr>
-                            <tr>
-                                <th>Id</th>
-                                <td>{{ entity.id }}</td>
-                            </tr>
-                            <tr>
-                                <th>Deleted at</th>
-                                <td>{{ entity.deletedAt|datetime }}</td>
-                            </tr>
-                            <tr>
-                                <th>Created by</th>
+                                <th>Utworzony przez</th>
                                 <td>{{ entity.wniosek.createdBy }}</td>
                             </tr>
                             <tr>
-                                <th>Created at</th>
-                                <td>{{ entity.wniosek.createdAt|datetime }}</td>
+                                <th>Utworzony dnia</th>
+                                <td>{{ entity.wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
                             <tr>
-                                <th>Locked by</th>
+                                <th>Edytowany (zablokowany) przez</th>
                                 <td>{{ entity.wniosek.lockedBy }}</td>
                             </tr>
                             <tr>
-                                <th>Locked at</th>
-                                <td>{{ entity.wniosek.lockedAt|datetime }}</td>
+                                <th>Edytowany (zablokowany) dnia</th>
+                                <td>{{ entity.wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
+                            </tr>
+                            
+                            <tr>
+                                <th>Osoby które widzą wniosek</th>
+                                <td>{{ entity.wniosek.viewernames }}</td>
                             </tr>
                             <tr>
-                                <th>Viewers</th>
-                                <td>{{ entity.wniosek.viewersnames }}</td>
+                                <th>Osoby które mogą edytować wniosek</th>
+                                <td>{{ entity.wniosek.editornames }}</td>
                             </tr>
-                            <tr>
-                                <th>Editors</th>
-                                <td>{{ entity.wniosek.editorsnames }}</td>
-                            </tr>
+                            
+                            
+                            
                         </tbody>
                     </table>
                     {%if editor%}
@@ -198,13 +193,13 @@
                                 <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
                                 <td>{{z.modul}}</td>
                                 <td>{{z.poziomDostepu}}</td>
-                                <td>{{z.sumowanieUprawnien}}</td>
-                                <td>{{z.aktywneOd|date}}</td>
-                                <td>{{z.bezterminowo}}</td>
-                                <td>{{z.aktywneDo|date}}</td>
+                                <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
+                                <td>{{z.aktywneOd|date("Y-m-d")}}</td>
+                                <td>{{z.bezterminowo ? "TAK" : "NIE"}}</td>
+                                <td>{{z.aktywneDo|date("Y-m-d")}}</td>
                                 <td>{{z.kanalDostepu}}</td>
-                                <td>{{z.uprawnieniaAdministracyjne}}</td>
-                                <td>{{z.odstepstwoOdProcedury}}</td>
+                                <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
+                                <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
                                 <td>{%if editor%}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
                                     <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>

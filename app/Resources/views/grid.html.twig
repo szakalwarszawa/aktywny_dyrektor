@@ -178,10 +178,10 @@
         
 {% block grid_actions %}
     <div class="btn-group btn-group-xs">
-        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(true);">{{ 'Select visible'|trans }}</span>
-        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(false);">{{ 'Deselect visible'|trans }}</span>
-        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(true);">{{ 'Select all'|trans }}</span>
-        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(false);">{{ 'Deselect all'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(true);">{{ 'Zaznacz widoczne'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(false);">{{ 'Odznacz widoczne'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(true);">{{ 'Zaznacz wszystko'|trans }}</span>
+        <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(false);">{{ 'Odznacz wszystko'|trans }}</span>
     </div>
     <span class="mass-actions-selected" id="{{ grid.hash }}_mass_action_selected"></span>
 <div class="mass-actions">

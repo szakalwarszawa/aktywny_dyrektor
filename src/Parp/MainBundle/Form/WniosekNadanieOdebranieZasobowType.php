@@ -22,7 +22,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('odebranie', 'hidden')
-            ->add('pracownikSpozaParp')
+            ->add('pracownikSpozaParp', 'checkbox', array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
 
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,
@@ -38,7 +38,8 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2'))
             )
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
-                'data_class' => 'Parp\MainBundle\Entity\Wniosek')
+                'data_class' => 'Parp\MainBundle\Entity\Wniosek',
+                'label' => false)
             )
         ;
     }

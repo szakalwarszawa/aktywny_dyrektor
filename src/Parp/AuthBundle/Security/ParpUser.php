@@ -21,6 +21,7 @@ class ParpUser implements UserInterface
 
     public function getRoles()
     {
+        //$this->roles = ["PARP_ADMIN"];//hack by dalo sie nadac uprawnienia jak nikt nie ma
         return $this->roles;
     }
 
@@ -41,6 +42,11 @@ class ParpUser implements UserInterface
 
     public function eraseCredentials()
     {
+    }
+    
+    public function getRolesHtml(){
+        $ret = implode("</li><li class='list-group-item'>", $this->getRoles());
+        return "<ul class='list-group'><li class='list-group-item'>".$ret."</li></ul>";
     }
 
 }

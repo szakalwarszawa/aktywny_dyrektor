@@ -64,33 +64,33 @@
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> użytkownicy <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('main') }}"><i class="fa fa-user"></i> użytkownicy</a></li>
+                                    <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy</a></li>
                                     <li><a href="{{ path('main', {'onlyTemporary' : 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi</a></li>
                                 </ul>
                             </li>
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('departament') }}">Biura / Departamenty</a></li>
-                                    <li><a href="{{ path('section') }}">Sekcje</a></li>
-                                    <li><a href="{{ path('position') }}">Stanowiska</a></li>
-                                    <li><a href="{{ path('engagement') }}">Zaangażowania</a></li>
-                                    <li><a href="{{ path('zasoby') }}">Zasoby</a></li>
-                                    <li><a href="{{ path('uprawnienia') }}">Uprawnienia</a></li>
-                                    <li><a href="{{ path('grupyuprawnien') }}">Grupy uprawnień</a></li>
-                                    <li><a href="{{ path('aclrole') }}">Role w systemie</a></li>
-                                    <li><a href="{{ path('aclaction') }}">Akcje w systemie</a></li>
-                                    <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-list"></i> Statusy wniosków</a></li>
+                                    <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
+                                    <li><a href="{{ path('section') }}"><i class="fa fa-archive"></i> Sekcje</a></li>
+                                    <li><a href="{{ path('position') }}"><i class="fa fa-user-md"></i> Stanowiska</a></li>
+                                    <li><a href="{{ path('engagement') }}"><i class="fa fa-calendar"></i> Zaangażowania</a></li>
+                                    <li><a href="{{ path('uprawnienia') }}"><i class="fa fa-pencil-square-o"></i> Uprawnienia</a></li>
+                                    <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li>
+                                    <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
+                                    <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
+                                    <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
                                     
                                 </ul>
                             </li>
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-gear"></i> Czynności <b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
+                                    <li><a href="{{ path('zasoby') }}"><i class="fa fa-database"></i> Zasoby</a></li>
                                     <li><a href="{{ path('zadanie') }}"><i class="fa fa-gear"></i> Zadania</a></li>
-                                    <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fa fa-list"></i> Wnioski o uprawnienia</a></li>
+                                    <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fa fa-file-text-o"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o zasoby</a></li>
-                                    <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zatsepstwa</a></li>
+                                    <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
                                 </ul>
                             </li>
 {#
@@ -107,19 +107,22 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Import <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane z ECM</a></li>
-                                    <li><a href="{{ path('importfirebird') }}"><i class="fa fa-floppy-o"></i> Import rekord</a></li>
-                                    <li><a href="{{ path('danerekord') }}"><i class="fa fa-user"></i> Dane rekord</a></li>
+                                    <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
+                                    <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
                                     <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
-                                    <li><a href="{{ path('adgroup') }}"><i class="fa fa-user"></i> Groups AD</a></li>
-                                    <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-user"></i> OUs AD</a></li>
+                                    <li><a href="{{ path('adgroup') }}"><i class="fa fa-group"></i> Groups AD</a></li>
+                                    <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
                                 </ul>
                             </li>
                             
                             
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
+                            <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{app.user.getRolesHtml}}"
+                             data-placement="left">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"
+                                
+                                >{{ app.user.username }} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
                                 </ul>

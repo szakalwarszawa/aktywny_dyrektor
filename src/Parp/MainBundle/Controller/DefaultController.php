@@ -45,7 +45,23 @@ class DefaultController extends Controller
         if($onlyTemporary != "usersFromAd"){
             $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);
         }else{
-            $ADUsers = $ldap->getAllFromAD();
+            $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+            $widzi_wszystkich = 
+                in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
+                in_array("PARP_BZK_2", $this->getUser()->getRoles()) ||
+                in_array("PARP_ADMIN", $this->getUser()->getRoles())            
+            ;
+            $ADUsersTemp = $ldap->getAllFromAD();
+            $ADUsers = array();
+            foreach($ADUsersTemp as $u){
+                //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
+                if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                    $ADUsers[] = $u;//['name'];
+                }
+            }
+            //$ADUsers;
+    
+            
             //print_r($ADUsers);
         }
         //die(".".count($ADUsers));
@@ -63,7 +79,7 @@ class DefaultController extends Controller
         $source->setId('samaccountname');
         $grid->setSource($source);
         $grid->hideColumns(array(
-            //'manager',
+            'manager',
             //'accountDisabled',
             //'info',
             'description',
@@ -537,6 +553,12 @@ class DefaultController extends Controller
         }
         $now = new \Datetime();
         
+        $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
+        $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
+        $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
+        
         $form = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
@@ -547,6 +569,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => (!$admin)
                     ),
                 ))
                 ->add('cn', 'text', array(
@@ -558,6 +581,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => (!$admin)
                     ),
                 ))
                 ->add('initials', 'text', array(
@@ -569,6 +593,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => (!$admin)
                     ),
                 ))
                 ->add('title', 'choice', array(
@@ -581,6 +606,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
+                        'disabled' => (!$admin)
                     ),
                     //'data' => @$defaultData["title"],
                     'choices' => $titles,
@@ -594,6 +620,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => (!$admin)
                     ),
                     
                 ))
@@ -606,6 +633,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
+                        'disabled' => (!$admin)
                     ),
                     'choices' => $sections,
                     //'data' => @$defaultData['info'],
@@ -619,6 +647,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
+                        'disabled' => (!$admin)
                     ),
                     'choices' => $departments,
                     //'data' => @$defaultData["department"],
@@ -626,6 +655,7 @@ class DefaultController extends Controller
                 ->add('zapisz', 'submit', array(
                     'attr' => array(
                         'class' => 'btn btn-success col-sm-12',
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
                     ),
                 ))
                 ->add('manager', 'text', array(
@@ -637,6 +667,8 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => (!$admin && !$kadry1 && !$kadry2)
+
                     ),
                     //'data' => @$defaultData['manager']
                 ))
@@ -650,6 +682,7 @@ class DefaultController extends Controller
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
+                        'readonly' => (!$admin && !$kadry1 && !$kadry2)
                     ),
                     'required' => false,
                     //'data' => @$expires
@@ -677,6 +710,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
+                        'disabled' => (!$admin)
                     ),
                     'choices' => $rights,
                     //'data' => (@$defaultData["initialrights"]),
@@ -693,6 +727,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
+                        'readonly' => (!$admin)
                     ),
                     'choices' => $roles,
                     //'data' => (@$defaultData["initialrights"]),
@@ -709,6 +744,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select21',
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
                     ),
                     'choices' => array(
                         '0' => 'NIE',
@@ -723,7 +759,10 @@ class DefaultController extends Controller
                         "Bo tak" => "Bo tak",
                         "Kadry kazały" => "Kadry kazały",
                     ),
-                    'required' => false
+                    'required' => false,
+                    'attr' => array(                        
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
+                    )
                 ))                                
                 ->setMethod('POST')
                 ->getForm();

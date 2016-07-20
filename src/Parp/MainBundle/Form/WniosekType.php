@@ -40,7 +40,8 @@ class WniosekType extends AbstractType
             ->add('createdAt', 'datetime', array(
                 'attr' => array('readonly' => true),
                 'label' => 'Utworzony dnia',
-                'widget' => 'single_text'
+                'widget' => 'single_text',
+                'format' => 'Y-MM-d H:mm:s'
             ))
             ->add('lockedBy', 'text', array(
                 'attr' => array('readonly' => true),
@@ -49,7 +50,8 @@ class WniosekType extends AbstractType
             ->add('lockedAt', 'datetime', array(
                 'attr' => array('readonly' => true),
                 'label' => 'Edytowany (zablokowany) dnia',
-                'widget' => 'single_text'
+                'widget' => 'single_text',
+                'format' => 'Y-MM-d H:mm:s'
             ))
         ;
     }

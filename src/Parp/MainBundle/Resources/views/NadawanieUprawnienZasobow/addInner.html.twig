@@ -109,10 +109,10 @@
          filtrujZasobUprawnienia();
     });
     $('#form_buttonzaznacz').click(function(){
-        $('.uprawnienieRow:not(.hidden) input[type=checkbox]').prop('checked', true);    
+        $('.checkbox:not(.hidden) input[type=checkbox]').prop('checked', true);    
     });
     $('#form_buttonodznacz').click(function(){
-        $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);    
+        $('.checkbox input[type=checkbox]:checked').prop('checked', false);    
     });
     function beforeSubmit(e){
         if($("input[name='form[access][]']").serialize() == ""){

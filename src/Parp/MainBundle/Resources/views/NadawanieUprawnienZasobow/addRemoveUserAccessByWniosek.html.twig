@@ -19,36 +19,66 @@
                         <td>{{ wniosek.id }}</td>
                     </tr>
                     <tr>
-                        <th>Deletedat</th>
-                        <td>{{ wniosek.deletedAt|date('Y-m-d H:i:s') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Createdby</th>
-                        <td>{{ wniosek.wniosek.createdBy }}</td>
-                    </tr>
-                    <tr>
-                        <th>Createdat</th>
-                        <td>{{ wniosek.wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lockedby</th>
-                        <td>{{ wniosek.wniosek.lockedBy }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lockedat</th>
-                        <td>{{ wniosek.wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
-                    </tr>
-                    <tr>
                         <th>Numer</th>
-                        <td>{{ wniosek.wniosek.numer }}</td>
+                        <td>
+                            <div class="alert alert-success">{{ wniosek.wniosek.numer }}</div>
+                            
+                            {% if wniosek.wniosek.parent%}
+                                
+                                <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: wniosek.wniosek.parent.wniosekNadanieOdebranieZasobow.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.numer}}</a>
+                            {%endif%}
+                        </td>
                     </tr>
                     <tr>
-                        <th>Jednostkaorganizacyjna</th>
+                        <th>Status</th>
+                        <td>
+                            {{ wniosek.wniosek.status }}
+                            {% if wniosek.wniosek.status.nazwaSystemowa == "10_PODZIELONY" %}
+                                Na wnioski:
+                                <ul class="list-group">
+                                {% for w in entity.wniosek.children %}
+                                    <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
+                                {%endfor %}                           
+                                </ul>
+                            {%endif%}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Osoby których dotyczy wniosek</th>
+                        <td>{{ wniosek.pracownicy }}</td>
+                    </tr>
+                    <tr>
+                        <th>Czy pracownik/pracownicy spoza PARP</th>
+                        <td>{{ wniosek.pracownikSpozaParp ? "TAK" : "NIE" }}</td>
+                    </tr>
+                    <tr>
+                        <th>Jednostka organizacyjna</th>
                         <td>{{ wniosek.wniosek.jednostkaOrganizacyjna }}</td>
                     </tr>
                     <tr>
-                        <th>Pracownikspozaparp</th>
-                        <td>{{ wniosek.pracownikSpozaParp }}</td>
+                        <th>Utworzony przez</th>
+                        <td>{{ wniosek.wniosek.createdBy }}</td>
+                    </tr>
+                    <tr>
+                        <th>Utworzony dnia</th>
+                        <td>{{ wniosek.wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Edytowany (zablokowany) przez</th>
+                        <td>{{ wniosek.wniosek.lockedBy }}</td>
+                    </tr>
+                    <tr>
+                        <th>Edytowany (zablokowany) dnia</th>
+                        <td>{{ wniosek.wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    
+                    <tr>
+                        <th>Osoby które widzą wniosek</th>
+                        <td>{{ wniosek.wniosek.viewernames }}</td>
+                    </tr>
+                    <tr>
+                        <th>Osoby które mogą edytować wniosek</th>
+                        <td>{{ wniosek.wniosek.editornames }}</td>
                     </tr>
                 </tbody>
             </table>

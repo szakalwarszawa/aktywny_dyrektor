@@ -55,7 +55,7 @@ class UserZasobyType extends AbstractType
             )
             ->add('aktywneOd', 'text', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Aktywne od',
@@ -65,13 +65,14 @@ class UserZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'data' => $d1
+                    'data' => $d1,
+                    //'format' => 'Y-m-d'
                 ))
             ->add('bezterminowo')
             //->add('aktywneOdPomijac')
             ->add('aktywneDo', 'text', array(
                     'attr' => array(
-                        'class' => 'form-control',
+                        'class' => 'form-control datepicker',
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Aktywne do',
@@ -81,7 +82,8 @@ class UserZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("d-m-Y") : $now->format("d-m-Y"))
+                    'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
+                    //'format' => 'Y-m-d'
                 ))
             ->add('kanalDostepu')
             ->add('uprawnieniaAdministracyjne')

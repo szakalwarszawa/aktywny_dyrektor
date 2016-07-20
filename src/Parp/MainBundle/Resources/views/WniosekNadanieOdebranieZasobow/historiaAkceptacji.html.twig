@@ -5,7 +5,6 @@
             <th>Data</th>
             <th>Kto</th>
             <th>Nowy status</th>
-            <th>Zaakceptowano</th>
         </tr>
 
         {% for ss in entity.wniosek.statusy %}
@@ -22,16 +21,10 @@
                         {{ ss.createdBy }}
                     {%endif%}
                 </td>
-                <td>{{ ss.statusName }}</td>
-                <td>
+                <td>{{ ss.statusName }}
                 {% if ss.rejected %}
                     <div class="alert alert-danger">
-                    NIE <br>
-                    {{ss.opis}}
-                    </br>
-                {%else%}
-                    <div class="alert alert-success">
-                    TAK
+                    (Cofnięty)
                     </div>
                 {%endif%}
                 </td>

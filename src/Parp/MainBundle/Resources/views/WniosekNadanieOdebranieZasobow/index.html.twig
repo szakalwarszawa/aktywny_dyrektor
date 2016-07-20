@@ -17,17 +17,18 @@
     
         <center>
             <div class="btn-group">
-                <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
-                <a class="btn btn-danger btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie zasobów</a>
+                <a class="btn btn-success btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
+                <a class="btn btn-danger btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
+                    <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
             </div>
         </center>
     {%if(zastepstwa|length > 0)%}
-        <div class="alert alert-success">
+        <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
             <strong>Uwaga, obecnie masz aktywne zastępstw{{zastepstwa|length > 1 ? "a" : "o"}} za :</strong>            
             <div class="btn-group">  
                 {% for z in zastepstwa %}
-                      <div class="btn" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</div>   
+                      <div class="btn btn-success" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</div>   
                 {% endfor %}
             </div>    
             
@@ -41,32 +42,16 @@
     
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
-            <center>
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-xs" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
-                </div>
-            </center>
             
             {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
         <div id="wtoku" class="tab-pane fade">
-            <center>
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
-                </div>
-            </center>
+
             
             {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
         <div id="zakonczone" class="tab-pane fade">
-            <center>
-                <div class="btn-group">
-                    <a class="btn btn-primary btn-xs" href="?{{ grid3.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-                    <a class="btn btn-parp btn-xs" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie zasobów</a>
-                </div>
-            </center>
+
             
             {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
