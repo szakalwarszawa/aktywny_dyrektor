@@ -14,6 +14,7 @@ use Memcached;
 
 class LdapAdminService
 {
+    public $pushChanges = false;
     protected $protocol = ""; //"ldap://";
     protected $port = 389;//636;
     protected $debug = 0;
@@ -34,6 +35,7 @@ class LdapAdminService
     {
         error_reporting(0);
         error_reporting(E_ALL ^ E_NOTICE);
+        $this->pushChanges = $container->getParameter('pusz_to_ad');
 //        ini_set('error_reporting', E_ALL);
         //ldap_set_option(NULL, LDAP_OPT_DEBUG_LEVEL, 7);
         
@@ -320,7 +322,7 @@ class LdapAdminService
         if(count($entry) > 0){
             unset($entry['initials']);
             //var_dump($dn, $entry);
-            $res = ldap_modify($ldapconn, $dn, $entry);
+            $res = $this->ldap_modify($ldapconn, $dn, $entry);
             
             
             $error = ldap_error($ldapconn);
@@ -350,13 +352,13 @@ class LdapAdminService
             if ($person->getCn()) {
                 $cn = $person->getCn();
             }
-            $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
+            $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
             
             $ldapstatus = ldap_error($ldapconn);
         }elseif($person->getCn()){
             //zmieniamy tylko cn
             $cn = $person->getCn();
-            $b = ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
+            $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
             
             $ldapstatus = ldap_error($ldapconn);
         }
@@ -387,9 +389,9 @@ class LdapAdminService
                 $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
                 //var_dump($g, $dn, $addtogroup); die();
                 if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
-                    ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                    $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
                 }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
-                    ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
+                    $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
                 }else{
                     $this->output->writeln('<comment>           Mialem '.($znak == "+" ? "dodawac do" : "zdejmowac z")." grupy  ".$g." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
                 }
@@ -498,7 +500,7 @@ class LdapAdminService
             echo "<pre>";print_r($dn);
             print_r($entry);echo "</pre>";
         }
-        ldap_add($ldapconn, $dn, $entry);
+        $this->ldap_add($ldapconn, $dn, $entry);
         $ldapstatus = ldap_error($ldapconn);
         
         
@@ -569,7 +571,7 @@ class LdapAdminService
                 }else{ 
                     echo "dodaje biuro !!!!";
                     $ldapstatus2 = ldap_error($ldapconn);
-                    $res = ldap_add($ldapconn, $dep->getOuAD().", ".$userdn, array(
+                    $res = $this->ldap_add($ldapconn, $dep->getOuAD().", ".$userdn, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'
@@ -584,5 +586,86 @@ class LdapAdminService
         ldap_unbind($ldapconn);  
          
     }
+    
+    /////////tutaj funkcje opakowajace wypychanie do AD
 
+    //zmienia atrybuty usera poza departamentem i grupami dostepu
+    protected function ldap_modify($link_identifier,  $dn,  $entry)
+    {
+        if($this->pushChanges){
+            ldap_modify($link_identifier, $dn, $entry);
+        }else{
+            $data = [];
+            foreach($entry as $k => $v){
+                $data[] = "'$k' = '$v'";
+            }
+            $this->output->writeln('<error>wykonuje funkcje ldap_modify</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+        }
+    }
+    
+    //zmienia DN userowi , czyli departament
+    protected function ldap_rename($link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn )
+    {
+        if($this->pushChanges){
+            ldap_rename( $link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn );
+        }else{
+            $this->output->writeln('<error>wykonuje funkcje ldap_rename</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>newrdn: '.$newrdn.'</error>)');
+            $this->output->writeln('<error>newparent: '.$newparent.'</error>)');
+            $this->output->writeln('<error>deleteoldrdn: '.$deleteoldrdn.'</error>)');
+        }
+    }
+    
+    //usuwa usera z grupy w AD
+    protected function ldap_mod_add($link_identifier,  $dn,  $entry)
+    {
+        if($this->pushChanges){
+            ldap_mod_add($link_identifier, $dn, $entry);
+        }else{
+            $data = [];
+            foreach($entry as $k => $v){
+                $data[] = "'$k' = '$v'";
+            }
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+        }
+    }
+    
+    //dodaje usera do grupy w AD
+    protected function ldap_mod_del($link_identifier,  $dn,  $entry)
+    {
+        if($this->pushChanges){
+            ldap_mod_del($link_identifier, $dn, $entry);
+        }else{
+            $data = [];
+            foreach($entry as $k => $v){
+                $data[] = "'$k' = '$v'";
+            }
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_del</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+        }
+    }
+    
+    //dodaje usera do AD
+    protected function ldap_add($link_identifier,  $dn,  $entry)
+    {
+        if($this->pushChanges){
+            ldap_add($link_identifier, $dn, $entry);
+        }else{
+            $data = [];
+            foreach($entry as $k => $v){
+                $data[] = "'$k' = '$v'";
+            }
+            $this->output->writeln('<error>wykonuje funkcje ldap_add</error>)');
+            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+        }
+    }
+    
+    
 }

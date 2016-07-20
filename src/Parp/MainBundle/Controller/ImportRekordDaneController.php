@@ -304,6 +304,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
                 if($teSameDaty && 1 == 11){
                     //znaczy ze zmiana departamentu w ramach nowej reorganizacji
+                    //poprawilem sql, kadry poprawily dane w rekordzie  i juz to i duble nie maja miejsca
                     $maxDep = null;
                     $teSameDaty = true;
                     foreach($d as $r){

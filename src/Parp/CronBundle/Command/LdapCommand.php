@@ -51,8 +51,6 @@ class LdapCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
-            $time = date("Y-m-d_H-i-s");
-            $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";
             if($input->getOption('ids')){
                 $this->ids = $input->getOption('ids');
             }
@@ -68,6 +66,17 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
             $ldap = $this->getContainer()->get('ldap_admin_service');
             $ldap->output = $output;
+            
+            $time = date("Y-m-d_H-i-s");
+            if($ldap->pushChanges){
+                $output->writeln('<error>                             PUBLIKUJE zmiany do AD...</error>', false);
+                $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";    
+            }else{
+                $output->writeln('<error>                             NIE publikuje zmiany do AD...</error>', false);
+                $logfile = __DIR__."/../../../../work/logs/"."tylko_test_publish_".$time.".html";
+            }
+            
+            
             $output->writeln('<comment>Wczytano usługe ldap_admin_service...                             </comment>', false);
             $uprawnienia = $this->getContainer()->get('uprawnienia_service');
             $output->writeln('<comment>Wczytano usługe uprawnienia_service ...                             </comment>', false);
