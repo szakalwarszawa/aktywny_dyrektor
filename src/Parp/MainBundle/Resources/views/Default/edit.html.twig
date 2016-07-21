@@ -136,7 +136,7 @@
             </div>
             <div id="daneRekord" class="tab-pane fade">
                 {% if dane_rekord != null %}
-                <table class="table striped">
+                <table class="table striped" id="daneRekordTable">
                     <tr>
                         <th>Departament</th>
                         <td>{{ dane_rekord.departament}}</td>
@@ -175,7 +175,7 @@
                             <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removeResources' })}}" class="btn btn-danger">Odbierz zasoby</a>
                                 
                             {% if zasoby|length > 0 %}
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="userZasobyTable">
                                 <thead>
                                     <tr>
                                         <th>Lp.</th>
@@ -232,7 +232,7 @@
                     <div id="zasobyNotActive" class="tab-pane fade">
                         <div class="tabContent">
                             {% if zasoby|length > 0 %}
-                            <table class="table table-hover">
+                            <table class="table table-hover" id="zasobyTable2">
                                 <thead>
                                     <tr>
                                         <th>Lp.</th>
@@ -293,7 +293,7 @@
                             <a href="{{path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removePrivileges' })}}" class="btn btn-danger">Odbierz uprawnienia</a>
                                 
                             {% if uprawnienia|length > 0 %}
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="uprawnieniaTable">
                                     <thead>
                                         <tr>
                                             <th>Lp.</th>
@@ -344,7 +344,7 @@
                     <div id="uprawnieniaNotActive" class="tab-pane fade">
                         <div class="tabContent">
                             {% if uprawnienia|length > 0 %}
-                                <table class="table table-hover">
+                                <table class="table table-hover" id="uprawnienia2Table">
                                     <thead>
                                         <tr>
                                             <th>Lp.</th>
@@ -397,7 +397,7 @@
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {% if historyEntries|length > 0 %}
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="historiaTable">
                             <thead>
                                 <tr>
                                     <th>Lp. (id)</th>
@@ -444,7 +444,7 @@
             <div id="oczekujace" class="tab-pane fade">
                 <div  class="tabContent">
                     {% if pendingEntries|length > 0 %}
-                        <table class="table table-hover">
+                        <table class="table table-hover" id="oczekujaceTable">
                             <thead>
                                 <tr>
                                     <th>Lp.</th>

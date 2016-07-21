@@ -1,6 +1,35 @@
 <script>
+function guid() {
+  function s4() {
+    return Math.floor((1 + Math.random()) * 0x10000)
+      .toString(16)
+      .substring(1);
+  }
+  return s4() + s4() + '_' + s4() + '_' + s4() + '_' +
+    s4() + '_' + s4() + s4() + s4();
+}
 $("[data-toggle=tooltip").tooltip();
-$("table").colResizable();
+//$("table").colResizable();
+$(document).ready(function(){
+    $("table").each(function(){
+        if($(this).closest('.tab-pane').length == 0){
+            var id = $(this).attr('id');
+            if (typeof myVar == 'undefined'){
+                id = "tableId"+guid();
+                $(this).attr('id', id);
+            }
+            console.log("Tabelka z id "+id);
+            $('#'+id).colResizable();      
+        }
+    });
+    
+    $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+        console.log('adjusting tables');
+        console.log($(this).attr('href'));
+        $('table', $($(this).attr('href'))).colResizable(); 
+    } );
+});
+
 $('.tagAjaxInputUsers').tagit({
     autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'},
     allowSpaces: true
