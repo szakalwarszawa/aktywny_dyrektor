@@ -7,3 +7,8 @@ update wniosek_nadanie_odebranie_zasobow set wniosek_id = null;
 delete from entry;
 delete from wniosek;
 delete from wniosek_nadanie_odebranie_zasobow;
+delete from wniosekNumer;
+delete from userzasoby;
+ALTER TABLE wniosek_nadanie_odebranie_zasobow AUTO_INCREMENT = 1;
+ALTER TABLE wniosek AUTO_INCREMENT = 1;
+DELETE FROM `historia_wersji` WHERE 1;
