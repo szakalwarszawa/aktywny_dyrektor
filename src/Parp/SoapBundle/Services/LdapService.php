@@ -344,24 +344,26 @@ class LdapService
     {
         $user = $this->getUserFromAD($samaccountname);
         //echo "<pre>"; print_r($user); die();
-        
-        $ldap_username = $this->container->getParameter('ad_user');
-        $ldap_password = $this->container->getParameter('ad_password');
-        $ldapdomain = $this->ad_domain;
-        $userDN = ldap_escape($user[0]['distinguishedname']);
-        $searchDN = "OU=".$this->_ouWithGroups.$this->patch; //"DC=parp,DC=local";
-        $ldapconn = ldap_connect($this->ad_host);
-        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
-        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
-        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
-        $groupToFind = "SG-ZZP-Public-RO";//"INT_BI";
-        $filter = "(memberof:1.2.840.113556.1.4.1941:=".$groupToFind.")";
-        //$filter = "(samaccountname=".$groupToFind.")";
-        $filter = "(&(objectclass=*)(member:1.2.840.113556.1.4.1941:=".$userDN."))";
-        $search = ldap_search($ldapconn, $searchDN, $filter, array("dn"), 1);
-        $items = ldap_get_entries($ldapconn, $search);
-        //echo "<pre>"; print_r($items);print_r($userDN); die();
+        $items = [];
+        if(count($user) > 0){
+            $ldap_username = $this->container->getParameter('ad_user');
+            $ldap_password = $this->container->getParameter('ad_password');
+            $ldapdomain = $this->ad_domain;
+            $userDN = ldap_escape($user[0]['distinguishedname']);
+            $searchDN = "OU=".$this->_ouWithGroups.$this->patch; //"DC=parp,DC=local";
+            $ldapconn = ldap_connect($this->ad_host);
+            ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+            ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+            ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+            $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+            $groupToFind = "SG-ZZP-Public-RO";//"INT_BI";
+            $filter = "(memberof:1.2.840.113556.1.4.1941:=".$groupToFind.")";
+            //$filter = "(samaccountname=".$groupToFind.")";
+            $filter = "(&(objectclass=*)(member:1.2.840.113556.1.4.1941:=".$userDN."))";
+            $search = ldap_search($ldapconn, $searchDN, $filter, array("dn"), 1);
+            $items = ldap_get_entries($ldapconn, $search);
+            //echo "<pre>"; print_r($items);print_r($userDN); die();
+        }
         return $items;
     }
     

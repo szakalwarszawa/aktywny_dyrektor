@@ -27,7 +27,10 @@ $(document).ready(function(){
         console.log('adjusting tables');
         console.log($(this).attr('href'));
         $('table', $($(this).attr('href'))).colResizable(); 
+        $("table.tablesorter").tablesorter(); 
     } );
+    $("table.tablesorter").tablesorter(); 
+    
 });
 
 $('.tagAjaxInputUsers').tagit({

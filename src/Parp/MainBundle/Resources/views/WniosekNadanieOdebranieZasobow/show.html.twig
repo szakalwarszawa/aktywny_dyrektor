@@ -197,22 +197,24 @@
         
             
                 {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj zasoby</a>{%endif%}
-                <table class="record_properties table table-striped">
-                    <tbody>
+                <table class="record_properties table table-striped tablesorter">
+                    <thead>
                         <tr>
-                            <th>Nazwa</th>
-                            <th>Osoba</th>
-                            <th>Moduł</th>
-                            <th>Poziom dostępu</th>
-                            <th>Sumowanie uprawnień</th>
-                            <th>Aktywne od</th>
-                            <th>Bezterminowo</th>
-                            <th>Aktywne do</th>
-                            <th>Kanał dostępu</th>
-                            <th>Uprawnienia administracyjne</th>
-                            <th>Odstepstwo od procedury</th>   
-                            <th>Akcje</th>                            
+                            <th class="header">Nazwa</th>
+                            <th class="header">Osoba</th>
+                            <th class="header">Moduł</th>
+                            <th class="header">Poziom dostępu</th>
+                            <th class="header">Sumowanie uprawnień</th>
+                            <th class="header">Aktywne od</th>
+                            <th class="header">Bezterminowo</th>
+                            <th class="header">Aktywne do</th>
+                            <th class="header">Kanał dostępu</th>
+                            <th class="header">Uprawnienia administracyjne</th>
+                            <th class="header">Odstepstwo od procedury</th>   
+                            <th class="header">Akcje</th>                            
                         </tr>
+                    </thead>
+                        <tbody>
                         {% for z in userzasoby %}
                             <tr>
                                 <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>

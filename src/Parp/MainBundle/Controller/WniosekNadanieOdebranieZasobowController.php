@@ -806,12 +806,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $aduser = $ldap->getUserFromAD($uz->getSamaccountname());
                                 if($wniosek->getPracownikSpozaParp()){
                                     $imieNazwisko = $this->get('samaccountname_generator')->rozbijFullname($uz->getSamaccountname());
-                                    $aduser = [
+                                    $aduser[] = [
                                         'samaccountname' => $this->get('samaccountname_generator')->generateSamaccountname($imieNazwisko['imie'], $imieNazwisko['nazwisko']),
                                         'name' => $this->get('samaccountname_generator')->generateFullname($imieNazwisko['imie'], $imieNazwisko['nazwisko']),
                                         'distinguishedname' => $this->get('samaccountname_generator')->generateDN($imieNazwisko['imie'], $imieNazwisko['nazwisko'], $biuro),
                                     ];
-                                    print_r($aduser); die();
+                                    //print_r($aduser); die();
                                 }
                                 $entry = new \Parp\MainBundle\Entity\Entry();
                                 $entry->setWniosek($wniosek->getWniosek());

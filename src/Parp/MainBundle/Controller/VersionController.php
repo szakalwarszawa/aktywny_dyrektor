@@ -105,7 +105,7 @@ class VersionController extends Controller
             $entities = array_merge($entities, $entities2); 
         }
         usort($entities, function($a, $b){
-            return $a['log']->getLoggedAt() <  $b['log']->getLoggedAt();
+            return $a['log']->getLoggedAt() >  $b['log']->getLoggedAt();
         });
         
         $result = array();

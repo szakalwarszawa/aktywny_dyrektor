@@ -86,7 +86,7 @@ class UserZasobyRepository extends EntityRepository
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
               AND uz.'.$ktoryWniosekSzukam.' = :wniosekId
-              ORDER BY uz.samaccountname ASC
+              ORDER BY uz.samaccountname ASC, z.nazwa ASC
               ')->setParameter('wniosekId', $wniosek);
                
         $res = $query->getResult();
