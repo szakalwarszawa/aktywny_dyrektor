@@ -31,16 +31,52 @@
             </div>
             <div id="userzasoby" class="tab-pane fade">
                 <div  class="tabContent">
-                    <table class="table table-striped table-bordered">
-                        <tr>
-                            <th>Imię Nazwisko</th>
-                        </tr>
-                        {% for uz in users %}
+                    <table class="table table-hover">
+                        <thead>
                             <tr>
-                                <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname})}}">{{ uz.ADUser.name }}</a></td>
+                                <th>Lp.</th>
+                                <th>Nazwa użytkownika</th>
+                                <th>Login do zasobu</th>
+                                <th>Moduł</th>
+                                <th>Poziom dostępu</th>
+                                <th>Kanał dostępu</th>
+                                <th>Aktywne od</th>
+                                <th>Aktywne do</th>
+                                <th>Powód nadania/odebrania</th>
+                                <th>Wniosek</th>
                             </tr>
-                        {% endfor %}
+                        </thead>
+                        {% set n = 1 %}
+                        <tbody>
+                            {% for row in users %}
+                            {% if row.czyAktywne %}
+                                <tr>
+                                    <td><a href="{{ path('userzasoby_edit', {id: row.id})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" 
+                                   
+                                    >{{ row.samaccountname  }}</a></td>
+                                    <td>{{row.loginDoZasobu}}</td>
+                                    <td>{{row.modul}}</td>
+                                    <td>{{row.kanalDostepu}}</td>
+                                    <td>{{row.poziomDostepu}}</td>
+                                    <td>{{row.aktywneOd|date("Y-m-d")}}</td>
+                                    <td>{{row.aktywneDo|date("Y-m-d")}}</td>
+                                    <td>{{row.powodNadania}}</td>
+                                    <td>
+                                    {%if row.wniosek %}
+                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: row.wniosek.id})}}">Wniosek nr {{row.wniosek.wniosek.numer}}</a>
+                                    {%else%}
+                                        <div class="alert alert-danger">Bez wniosku</div>
+                                    {%endif%}
+                                    </td>
+                                    
+                                    
+                                </tr>
+                                {% set n = n + 1 %}
+                            {%endif%}
+                            {% endfor %}
                         </tbody>
+                        
                     </table>
                 </div>
             </div>    
