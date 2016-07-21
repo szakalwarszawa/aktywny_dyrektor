@@ -39,6 +39,7 @@ class ZgloszenieController extends Controller
     {
         $user = $this->get('security.context')->getToken()->getUser();
         $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
+        //echo "<pre>"; print_r($ad); die();
         $dane_wstepne = array("uri" => urldecode($uri));
         $form = $this->createFormBuilder($dane_wstepne)
             ->setAction($this->generateUrl('nowa_pomoc_techniczna_submit'))
@@ -63,7 +64,7 @@ class ZgloszenieController extends Controller
             ))
         ->add('email', 'email', array(
                  'label' => 'Proszę podać email kontaktowy',
-                 'data' => trim(@$ad[0]['email']),
+                 'data' => trim(@$ad[0]['samaccountname'])."@parp.gov.pl",//trim(@$ad[0]['email']),
                  'attr' => array(
                     'class' => 'form-control col-xs-5',
                  ),
@@ -130,7 +131,7 @@ class ZgloszenieController extends Controller
     public function noweZgloszenieSubmitAction(Request $request)
     {
         $formularz = $request->get('form');
-        $userId = $this->getUser()->getId();
+        $userId = $this->getUser()->getUsername();
         $temat = $formularz['temat'];
         $imie_nazwisko = $formularz['imie_nazwisko'];
         $email = $formularz['email'];
@@ -169,11 +170,16 @@ class ZgloszenieController extends Controller
      */
     public function zgloszeniaAction()
     {
+//var_dump($this->getUser()); die();
+    
+        $ad = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
 
-        $userId = $this->getUser()->getId();
+        $userId = $ad[0]['samaccountname']; //$this->getUser()->getName();
         $odpowiedz = $this->get('parp.redmine')->getZgloszeniaBeneficjenta($userId);
 
         $zgloszenia = json_decode($odpowiedz, true);
+
+        //echo "<pre>"; print_r($zgloszenia['issues']); die();
 
         return array(
             'zgloszenia' => $zgloszenia['issues'],

@@ -95,7 +95,7 @@ class RedmineConnectService
     {
         $id_srodowiska = $this->container->getParameter('id_srodowiska');
         $adres = $this->redmine_protokol . '://' . $this->redmine_serwer . '/issues.json?cf_2=' . $id_beneficjenta."_".$id_srodowiska."&status_id=*";
-
+//die($adres);
         $curl = curl_init();
 
         curl_setopt($curl, CURLOPT_URL, $adres);
