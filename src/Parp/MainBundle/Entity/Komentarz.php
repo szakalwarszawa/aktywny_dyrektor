@@ -52,7 +52,7 @@ class Komentarz
     /**
      * @var string
      *
-     * @ORM\Column(name="tytul", type="string", length=255)
+     * @ORM\Column(name="tytul", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $tytul;
@@ -60,7 +60,7 @@ class Komentarz
     /**
      * @var string
      *
-     * @ORM\Column(name="opis", type="string", length=5000)
+     * @ORM\Column(name="opis", type="string", length=5000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;

@@ -126,7 +126,7 @@
     function zmianaZaznaczenia(){
         var ret = [];
         $('#form_access input[type=checkbox]:checked').each(function(){
-            ret.push($(this).closest('label').text());
+            ret.push($('label', $(this).closest('.checkbox')).text());
         });
         console.log('zmieniam zaznaczenie');
         $('#form_wybraneZasoby').val(ret.join(', '));

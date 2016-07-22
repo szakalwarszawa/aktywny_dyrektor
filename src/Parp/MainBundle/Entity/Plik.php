@@ -34,7 +34,7 @@ class Plik
     /**
      * @var string
      *
-     * @ORM\Column(name="nazwa", type="string", length=255)
+     * @ORM\Column(name="nazwa", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nazwa;
@@ -42,7 +42,7 @@ class Plik
     /**
      * @var string
      *
-     * @ORM\Column(name="typ", type="string", length=255)
+     * @ORM\Column(name="typ", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typ;

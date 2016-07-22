@@ -87,7 +87,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $query->leftJoin('w.status', 's');
                 $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 
-                $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
+                $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY', '00_TWORZONY'];
                 switch($ktore){
                     case "wtoku":
                         $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\')';
@@ -132,7 +132,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
+        $rowAction3->manipulateRender(
+            function ($action, $row)
+            {
+                if ($row->getField('wniosek.numer') == "wniosek w trakcie tworzenia") {
+                    
+                    return $action;
+                }else{
+                    return null;
+                }
+        
+            }
+        );
+        //die('a');
        
     
         //$grid->addRowAction($rowAction1);
@@ -1062,7 +1074,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
         return array(
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'userzasoby' => $uzs
         );
@@ -1137,7 +1149,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
             }
-
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został skasowany.');
             $em->remove($entity);
             $em->flush();
         }

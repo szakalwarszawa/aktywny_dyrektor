@@ -278,7 +278,7 @@ class ZastepstwoController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zastepstwo_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zastepstwo','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Skasuj Zastępstwo','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
