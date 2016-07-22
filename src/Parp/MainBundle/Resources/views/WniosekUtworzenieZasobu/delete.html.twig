@@ -1,0 +1,85 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: WniosekUtworzenieZasobu</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy WniosekUtworzenieZasobu ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Zrealizowany</th>
+                <td>{{ entity.zrealizowany }}</td>
+            </tr>
+            <tr>
+                <th>Imienazwisko</th>
+                <td>{{ entity.imienazwisko }}</td>
+            </tr>
+            <tr>
+                <th>Login</th>
+                <td>{{ entity.login }}</td>
+            </tr>
+            <tr>
+                <th>Stanowisko</th>
+                <td>{{ entity.stanowisko }}</td>
+            </tr>
+            <tr>
+                <th>Telefon</th>
+                <td>{{ entity.telefon }}</td>
+            </tr>
+            <tr>
+                <th>Nrpokoju</th>
+                <td>{{ entity.nrpokoju }}</td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>{{ entity.email }}</td>
+            </tr>
+            <tr>
+                <th>Departament</th>
+                <td>{{ entity.departament }}</td>
+            </tr>
+            <tr>
+                <th>Proponowananazwa</th>
+                <td>{{ entity.proponowanaNazwa }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskudorejestru</th>
+                <td>{{ entity.typWnioskuDoRejestru }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskudouruchomienia</th>
+                <td>{{ entity.typWnioskuDoUruchomienia }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskuzmianainformacji</th>
+                <td>{{ entity.typWnioskuZmianaInformacji }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskuzmianawistniejacym</th>
+                <td>{{ entity.typWnioskuZmianaWistniejacym }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskuwycofanie</th>
+                <td>{{ entity.typWnioskuWycofanie }}</td>
+            </tr>
+            <tr>
+                <th>Typwnioskuwycofaniezinfrastruktury</th>
+                <td>{{ entity.typWnioskuWycofanieZinfrastruktury }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+    {{ form(delete_form) }}
+</div>
+{% endblock %}

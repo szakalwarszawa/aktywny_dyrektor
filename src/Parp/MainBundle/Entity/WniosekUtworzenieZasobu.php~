@@ -703,29 +703,4 @@ class WniosekUtworzenieZasobu
     {
         return $this->zasobDoSkasowania;
     }
-    /**
-     * Constructor
-     */
-    public function __construct()
-    {
-        
-        $this->setWniosek(new Wniosek());
-        $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
-        $this->getWniosek()->setWniosekUtworzenieZasobu($this);
-        $this->zasobDoSkasowania = new \Doctrine\Common\Collections\ArrayCollection();
-    }
-    
-    public function getTyp(){
-        if($this->getTypWnioskuDoRejestru()){
-            return "nowy";
-        }
-        if($this->getTypWnioskuZmianaInformacji()){
-            return "zmiana";
-        }
-        if($this->getTypWnioskuWycofanie()){
-            return "kasowanie";
-        }
-        return "";
-    }
-
 }

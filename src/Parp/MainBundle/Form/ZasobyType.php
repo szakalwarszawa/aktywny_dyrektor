@@ -8,6 +8,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class ZasobyType extends AbstractType
 {
+    protected $nazwaLabel;
+    
+    public function __construct($nazwaLabel = "Nazwa"){
+        $this->nazwaLabel = $nazwaLabel;
+    }
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -15,7 +20,7 @@ class ZasobyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('nazwa')
+            ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden')
             ->add('wlascicielZasobu', 'text', array(

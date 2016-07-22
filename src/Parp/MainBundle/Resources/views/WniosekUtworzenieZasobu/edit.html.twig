@@ -1,25 +1,104 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
+
+    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+
     <div class="col-sm-12">
-        <ul class="nav nav-tabs">
+        <div class="alert alert-info">
+            <h3>Wniosek o utworzenie zasobu numer : {{entity.wniosek.numer}}</h3>
+            <ul>                
+                <li><b>Zasób :</b> {{ entity.zasob.nazwa }}</li>
+                <li><b>Statusy:</b></li>
+            </ul>
+            <div class="well well-sm statusyWniosku">
+                {% set bylJuzPierwszyParent = false %}
+                {% set numerIteracji = 0 %}
+                <ul class="list-inline">
+                    {% for ss in entity.wniosek.statusy %}
+                        <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" ? "success" : "danger") : "default"}}"  
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }} {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}Podzielony wniosek nr {{wniosekDoLinku.numer}} {%endif%}"
+                        >
+                            <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY_O_ZASOB" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> 
+                            
+                            
+                        </li>
+                    {%endfor%}
+                </ul>
+            </div>
+            <div class="btn-group container">  
+                {% if editor %}
+                    <h4>Akcje:</h4>
+                    {%if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" %}
+                        {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
+                    {%else%}
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
+                        class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
+                        {% if canReturn %}
+                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
+                        class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                        
+                        {%endif%}
+                        {% if canUnblock %}
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                        {%endif%}
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        
+                    {%endif%}
+                    
+                {% endif %}
+            </div>
+            <div class="collapse" id="rejectDiv">
+                <form action="" method="POST" id="subFormOdrzucenie">
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód zwrotu/odrzucenia wniosku</label>
+                        <div class="col-sm-10">
+                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod zwrotu/odrzucenia wniosku"></textarea>
+                        </div>
+                    </div>
+                    <div class="form-group paddingTop20 container">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                        <button type="submit" class="btn btn-danger">Wykonaj akcje </button>
+                        </div>
+                    </div>
+                </form>
+                
+            </div>
+            {%if(entity.powodZwrotu != "")%}
+                <div class="alert alert-danger">
+                    <h3>Powód odrzucenia wniosku:</h3>
+                    {{entity.powodZwrotu}}
+                </div>
+            {%endif%}
+        </div>
+    </div>
+    {{ form_start(form) }}  
+    <div class="col-sm-12">
+        <ul class="nav nav-tabs" id="navTabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#zasob">Dane o zasobie</a></li>
+            <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
+            <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
+            <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
+            {%if(entity.wniosek.ADentries|length > 0)%}
+            
+            <li><a data-toggle="tab" href="#statusAD">Status w AD</a></li>
+            {%endif%}
         </ul>
         
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Edycja WniosekUtworzenieZasobu </h1>
+                
                 <div class="tabContent">
-                                        <div class="btn-group">
-
-<a class="btn btn-primary" href="{{ path('wniosekutworzeniezasobu') }}">
-    <i class="fa fa-list"></i> Lista WniosekUtworzenieZasobu
-</a>
-</div>
-                    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
-                    {{ form_start(form) }}
                     
+                    <div class="form-group">
+                        <label class="col-sm-2  control-label"></label>
+                        <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr' : {'onclick' : 'submitFirstForm(event)'}}) }}  </div>
+                    </div> 
                     <table class="table bordered">
                         <tr>
                             <th rowspan="3" vertical-align="middle" >
@@ -30,17 +109,59 @@
                             <th>Wycofanie zasobu</th>
                         </tr>
                         <tr>
-                            <td>{{ form_row(form.typWnioskuDoRejestru) }}</td>
-                            <td>{{ form_row(form.typWnioskuZmianaInformacji) }}</td>
-                            <td>{{ form_row(form.typWnioskuWycofanie) }}</td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2 ">{{ form.vars.value.typWnioskuDoRejestru ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        do Rejestru
+                                    </div> 
+                                </div> 
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuZmianaInformacji ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        informacji o zarejestrowanym zasobie
+                                    </div>
+                                </div> 
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuWycofanie ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        z Rejestru
+                                    </div>
+                                </div> 
+                            </td>
                         </tr>
                         <tr>
-                            <td>{{ form_row(form.typWnioskuDoUruchomienia) }}</td>
-                            <td>{{ form_row(form.typWnioskuZmianaWistniejacym) }}</td>
-                            <td>{{ form_row(form.typWnioskuWycofanieZinfrastruktury) }}</td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuDoUruchomienia ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        do utworzenia (uruchomienia) w infrastrukturze PARP
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuZmianaWistniejacym ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        w istniejącym zasobie
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuWycofanieZinfrastruktury ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>"}} </div>
+                                    <div class="col-sm-10">
+                                        z infrastruktury PARP
+                                    </div>
+                                </div>
+                            </td>
                         </tr>
                     </table>
-                    {{ form_row(form.wniosek) }}
+                    {{ form_widget(form.wniosek) }}                     
                     {{ form_row(form.imienazwisko) }}
                     {{ form_row(form.login) }}
                     {{ form_row(form.departament) }}
@@ -48,25 +169,144 @@
                     {{ form_row(form.telefon) }}
                     {{ form_row(form.nrpokoju) }}
                     {{ form_row(form.email) }}
-                    {{ form_row(form.proponowanaNazwa) }}
+                    <div class="form-group">
+                        <label class="col-sm-2  control-label">Osoby które widzą wniosek</label >
+                        <div class="col-sm-10">{{ entity.wniosek.viewernames }}</div>
+                    </div>
                     
+                    <div class="form-group">
+                        <label class="col-sm-2  control-label">Osoby które mogą edytować wniosek</label>
+                        <div class="col-sm-10">{{ entity.wniosek.editornames }}</div>
+                    </div> 
+                    <div class="form-group">
+                        <label class="col-sm-2  control-label"></label>
+                        <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr' : {'onclick' : 'submitFirstForm(event)'}}) }}  </div>
+                    </div> 
+                </div>
+            </div>
+        
+            <div id="zasob" class="tab-pane fade">
+                <div class="tabContent">
+                    <div class="form-group">
+                        <label class="col-sm-10  control-label"></label>
+                        <div class="col-sm-2 pull-right">{{ form_widget(form.submit2) }}  </div>
+                    </div> 
+                    {%if(form.vars.value.typ == "nowy" or form.vars.value.typ == "zmiana" )%}
+                        
+                        {{ form_row(form.zasobDoSkasowania, {attr: {'class' : 'hidden'}, label_attr: {'class' : 'hidden'}}) }}
+                    {%else%}
+                        
+                        {{ form_row(form.zasobDoSkasowania) }}
+                    {%endif%}
                     
+                    {%if(form.vars.value.typ == "zmiana" and form.zasobDoWyboru is defined )%}
+                        <div class="form-group">
+                            <label class="col-sm-2  control-label">Wybierz zasób </label>
+                            <div class="col-sm-10">{{ form_widget(form.zasobDoWyboru) }}  </div>
+                        </div> 
+                        
+                    {%endif%}
                     
-                    {{ form_end(form) }}    
+                    {%if(form.vars.value.typ == "kasowanie" )%}
+                    <div class="hidden">                    
+                    {%endif%}
+                    {{ form_widget(form.zasob) }}
                     
+                    {%if(form.vars.value.typ == "kasowanie" )%}
+                    </div>
+                    {%endif%}
+                    
+                    <div class="form-group">
+                        <label class="col-sm-10  control-label"></label>
+                        <div class="col-sm-2 pull-right">{{ form_widget(form.submit) }}  </div>
+                    </div>  
+                </div>
+            </div>
+            <div id="pliki" class="tab-pane fade">
+                <div  class="tabContent">
+                    {%if(entity.id > 0) %}
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {%else%}
+                    
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}
                 </div>
             </div>            
+            <div id="komentarze" class="tab-pane fade">
+                <div  class="tabContent">
+                    {%if(entity.id > 0) %}
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {%else%}
+                    
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}
+                </div>
+            </div>    
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {%if(form.vars.value.id > 0)%}
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'WniosekUtworzenieZasobu', id: form.vars.value.id})) }}
+                    {%else%}
+                    
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
                     {%endif%}
                 </div>
             </div>
-        </div>
+            <div id="historiaAkceptacji" class="tab-pane fade">
+                <div  class="tabContent">
+                    {%if(entity.id > 0) %}
+                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}  
+                    {%else%}
+                    
+                    Ta zakładka będzie dostępna po zapisaniu wniosku
+                    {%endif%}              
+                </div>
+            </div>  
+        </div>  
     </div>
+    
 
-    
-    
+{{ form_end(form) }}    
+
+
+<div class="btn-group">
+
+<a class="btn btn-primary" href="{{ path('wniosekutworzeniezasobu') }}">
+    <i class="fa fa-list"></i> Lista WniosekUtworzenieZasobu
+</a>
+</div>
+
+<script type="text/javascript"src="{{ asset('js/wnioskiZasob.js') }}"></script>
+
+
+<script>
+$('#parp_mainbundle_wniosekutworzeniezasobu_zasobDoWyboru').select2().on('change', function(){
+    var val = $(this).val();
+    console.log(val);
+    var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id' : val});
+    console.log(href);
+    $.get(href, function(data){
+        console.log(data);
+        for(k in data){ 
+            var v = data[k];
+            var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_"+k;
+            if($(sel).hasClass('tagit-hidden-field')){
+                $(sel).tagit('removeAll');
+                var vs = v.split(",");
+                for(var i = 0; i < vs.length; i++){
+                    
+                    $(sel).tagit("createTag", vs[i]);
+                }
+            }else{
+                $(sel).val(v);
+            }
+        }
+    });
+})
+
+$('#parp_mainbundle_wniosekutworzeniezasobu_zasobDoSkasowania').select2().on('change', function(){
+    $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_nazwa').val('kasowanie zasobow');
+});
+</script>
     
 {% endblock %}

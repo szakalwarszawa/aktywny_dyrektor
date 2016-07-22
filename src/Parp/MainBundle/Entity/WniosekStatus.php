@@ -14,7 +14,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"nazwaSystemowa"},
  *     errorPath="nazwaSystemowa",
  *     message="Nazwa systemowa musi być unikalna")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,nazwaSystemowa,viewers,editors")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,typWniosku,nazwaSystemowa,viewers,editors")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -97,6 +97,16 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $finished = false;
+    
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWniosku;
     
     /**
      * Constructor
@@ -288,5 +298,63 @@ class WniosekStatus
     
     public function __toString(){
         return $this->getNazwa();
+    }
+
+    /**
+     * Set typWniosku
+     *
+     * @param string $typWniosku
+     *
+     * @return WniosekStatus
+     */
+    public function setTypWniosku($typWniosku)
+    {
+        $this->typWniosku = $typWniosku;
+
+        return $this;
+    }
+
+    /**
+     * Get typWniosku
+     *
+     * @return string
+     */
+    public function getTypWniosku()
+    {
+        return $this->typWniosku;
+    }
+
+    /**
+     * Add wnioski
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wnioski
+     *
+     * @return WniosekStatus
+     */
+    public function addWnioski(\Parp\MainBundle\Entity\Wniosek $wnioski)
+    {
+        $this->wnioski[] = $wnioski;
+
+        return $this;
+    }
+
+    /**
+     * Remove wnioski
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wnioski
+     */
+    public function removeWnioski(\Parp\MainBundle\Entity\Wniosek $wnioski)
+    {
+        $this->wnioski->removeElement($wnioski);
+    }
+
+    /**
+     * Get wnioski
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getWnioski()
+    {
+        return $this->wnioski;
     }
 }

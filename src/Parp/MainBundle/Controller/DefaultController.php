@@ -1824,7 +1824,7 @@ class DefaultController extends Controller
 
             if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== FALSE) {
                 //$dane[$i] = $user['name'];
-                $dane[$i] = $this->get('renameService')->fixImieNazwisko($user['name']);
+                $dane[$i] = $user['name'];//$this->get('renameService')->fixImieNazwisko($user['name']);
                 $i++;
             }
         }

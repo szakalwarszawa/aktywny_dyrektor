@@ -16,7 +16,10 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\WniosekUtworzenieZasobu;
 use Parp\MainBundle\Form\WniosekUtworzenieZasobuType;
-
+use Symfony\Component\Serializer\Serializer;
+use Symfony\Component\Serializer\Encoder\XmlEncoder;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
+use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 /**
  * WniosekUtworzenieZasobu controller.
  *
@@ -24,6 +27,7 @@ use Parp\MainBundle\Form\WniosekUtworzenieZasobuType;
  */
 class WniosekUtworzenieZasobuController extends Controller
 {
+    protected $debug = false;
 
     /**
      * Lists all WniosekUtworzenieZasobu entities.
@@ -75,26 +79,61 @@ class WniosekUtworzenieZasobuController extends Controller
     /**
      * Creates a new WniosekUtworzenieZasobu entity.
      *
-     * @Route("/", name="wniosekutworzeniezasobu_create")
+     * @Route("/create", name="wniosekutworzeniezasobu_create")
      * @Method("POST")
      * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function createAction(Request $request)
     {
+        //echo "<pre>";        \Doctrine\Common\Util\Debug::dump($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuZmianaInformacji'],10); die();
         $entity = new WniosekUtworzenieZasobu();
-        $form = $this->createCreateForm($entity);
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuDoRejestru']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoRejestru');
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuDoUruchomienia']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoUruchomienia');
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuZmianaInformacji']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaInformacji');
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuZmianaWistniejacym']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaWistniejacym');
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuWycofanie']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanie');
+        
+        if(isset($request->request->get('parp_mainbundle_wniosekutworzeniezasobu')['typWnioskuWycofanieZinfrastruktury']))
+            $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanieZinfrastruktury');
+        
+        
+                //die(".".$entity->getTyp());
+        
+        $form = $this->createCreateForm($entity, $entity->getTyp());
         $form->handleRequest($request);
+            ///die('d');
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
+            //echo "<pre>";        \Doctrine\Common\Util\Debug::dump($entity,10); die();
             $em->persist($entity);
+            $em->persist($entity->getWniosek());
+            if($entity->getZasob()){
+                $em->persist($entity->getZasob());
+            }
+            $this->setWniosekStatus($entity, "00_TWORZONY_O_ZASOB", false);
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'WniosekUtworzenieZasobu został utworzony.');
-                return $this->redirect($this->generateUrl('wniosekutworzeniezasobu'));
+                return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', ['id' => $entity->getId()]));
+        }else{
+            
+            $er = $form->getErrorsAsString();
+            die($er);
         }
 
         return array(
+            'editor' => false,
             'entity' => $entity,
             'form'   => $form->createView(),
         );
@@ -107,14 +146,17 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(WniosekUtworzenieZasobu $entity)
+    private function createCreateForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $entity->getTyp(), $entity), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz WniosekUtworzenieZasobu', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit2', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -124,16 +166,58 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @Route("/new", name="wniosekutworzeniezasobu_new")
      * @Method("GET")
-     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:wybierz_typ_wniosku.html.twig")
      */
     public function newAction()
+    {
+        $entity = new WniosekUtworzenieZasobu();
+        $form   = $this->createCreateForm($entity, $entity->getTyp());
+        return ['form' => $form->createView(),
+            'editor' => false,];
+    }
+    protected function ustawTyp($entity, $typ){
+        switch($typ){
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoRejestru":
+                $entity->setTypWnioskuDoRejestru(true);
+                break;
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoUruchomienia":
+                $entity->setTypWnioskuDoUruchomienia(true);
+                break;
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaInformacji":
+                $entity->setTypWnioskuZmianaInformacji(true);
+                break;
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaWistniejacym":
+                $entity->setTypWnioskuZmianaWistniejacym(true);
+                break;
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanie":
+                $entity->setTypWnioskuWycofanie(true);
+                break;
+            case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanieZinfrastruktury":
+                $entity->setTypWnioskuWycofanieZinfrastruktury(true);
+                break;
+        }
+    }
+    /**
+     * Displays a form to create a new WniosekUtworzenieZasobu entity.
+     *
+     * @Route("/new_z_typem/{typ1}/{typ2}", name="wniosekutworzeniezasobu_new_z_type", options={"expose"=true}, defaults={"typ2"=""})
+     * @Method("GET")
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
+     */
+    public function newWithTypeAction($typ1, $typ2="")
     {
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
         
-        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
         
         $entity = new WniosekUtworzenieZasobu();
+        //var_dump($typ1, $typ2); die();
+        $this->ustawTyp($entity, $typ1);
+        if($typ2 != ""){
+            $this->ustawTyp($entity, $typ2);    
+        }
+        
         $entity->getWniosek()->setCreatedAt(new \Datetime());
         $entity->getWniosek()->setLockedAt(new \Datetime());
         $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
@@ -154,6 +238,7 @@ class WniosekUtworzenieZasobuController extends Controller
         //echo "<pre>"; print_r($ADUser); die();
 
         return array(
+            'editor' => false,
             'entity' => $entity,
             'form'   => $form->createView(),
             'message' => ''
@@ -202,13 +287,25 @@ class WniosekUtworzenieZasobuController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
-
+        $access = $this->checkAccess($entity);
+        if(!$access['viewer'] && !$access['editor']){
+            return $this->render("ParpMainBundle:WniosekUtworzenieZasobu:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
+        }
+        //die(count($uzs).">");
+        $editor = $access['editor'];
+        if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
+            $editor = false;
+        }
+        
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
+            'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB"),
+            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'editor' => $editor,
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -220,22 +317,53 @@ class WniosekUtworzenieZasobuController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(WniosekUtworzenieZasobu $entity)
+    private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $entity->getTyp(), $entity), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
-            'method' => 'PUT',
+            'method' => 'POST',
         ));
 
         $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit2', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
+    
+    
     /**
      * Edits an existing WniosekUtworzenieZasobu entity.
      *
-     * @Route("/{id}", name="wniosekutworzeniezasobu_update")
-     * @Method("PUT")
+     * @Route("/wczytaj_dane_zasobu/{id}", name="wniosekutworzeniezasobu_wczytaj_dane_zasobu", options={"expose"=true})
+     * @Method("GET")
+     * @Template()
+     */
+    public function wczytajDaneZasobuAction(Request $request, $id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+        }
+        $encoders = array(new XmlEncoder(), new JsonEncoder());
+        $normalizers = array(new ObjectNormalizer());
+        
+        $serializer = new Serializer($normalizers, $encoders);
+        $jsonContent = $serializer->serialize($entity, 'json');
+        $response = new \Symfony\Component\HttpFoundation\Response($jsonContent);
+        $response->headers->set('Content-Type', 'application/json');
+        return $response;
+    }
+    
+    /**
+     * Edits an existing WniosekUtworzenieZasobu entity.
+     *
+     * @Route("/update/{id}", name="wniosekutworzeniezasobu_update")
+     * @Method("POST")
      * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -249,18 +377,35 @@ class WniosekUtworzenieZasobuController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $editForm = $this->createEditForm($entity);
+        //die($entity->getTyp());
+        //$entity = new WniosekUtworzenieZasobu();
+        $editForm = $this->createEditForm($entity, $entity->getTyp());
+        
+        
         $editForm->handleRequest($request);
-
         if ($editForm->isValid()) {
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', array('id' => $id)));
         }
+        
+        $access = $this->checkAccess($entity);
+        if(!$access['viewer'] && !$access['editor']){
+            return $this->render("ParpMainBundle:WniosekUtworzenieZasobu:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
+        }
+        //die(count($uzs).">");
+        $editor = $access['editor'];
+        if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
+            $editor = false;
+        }
+        
 
         return array(
+            'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB"),
+            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'editor' => $editor,
             'entity'      => $entity,
-            'edit_form'   => $editForm->createView(),
+            'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
         );
     }
@@ -317,4 +462,367 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         return $users;
     }
+    
+    protected function checkAccess($entity, $onlyEditors = false){
+        
+        $em = $this->getDoctrine()->getManager();
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+
+        //print_r($uzs); die();
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
+        }
+        
+        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'wniosek' => $entity->getWniosek()
+            )
+        );
+        //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
+        $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+            'samaccountname' => $this->getUser()->getUsername(),
+            'wniosek' => $entity->getWniosek()
+            )
+        );
+        if($entity->getWniosek()->getLockedBy()){
+            if($entity->getWniosek()->getLockedBy() != $this->getUser()->getUsername()){
+                $editor = null;
+            }
+        }elseif($editor){
+            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+            $entity->getWniosek()->setLockedAt(new \Datetime());
+            $em->flush();
+        }
+        //die(($editor->getId()).".");
+        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
+            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'wniosek' => $entity->getWniosek()
+            )
+        );
+        //|| $onlyEditors
+/*
+        if ((!$editor ) && (!$viewer)) {
+            
+            
+            return false;
+        }
+*/
+        
+        return ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
+    }
+    
+    protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
+        if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
+        
+        $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
+        if($zastepstwo != null){
+            //var_dump($zastepstwo); 
+            //die('Mam zastepstwo');        
+        }
+        
+        $em = $this->getDoctrine()->getManager();
+        $status = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($statusName);
+        $wniosek->getWniosek()->setStatus($status);
+        $wniosek->getWniosek()->setLockedBy(null);
+        $wniosek->getWniosek()->setLockedAt(null);
+        $viewers = array();
+        $editors = array();
+        $vs = explode(",",$status->getViewers());
+        foreach($vs as $v){
+            $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
+        }
+        
+        $czyMaGrupyAD = false;
+                
+        
+        if($statusName == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" && $oldStatus != null && $czyMaGrupyAD){
+            //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
+            $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
+            $es = explode(",", $os->getEditors());
+        }else{
+            $es = explode(",", $status->getEditors());
+        }
+        foreach($es as $e){
+            $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
+            //print_r($editors);
+        }
+        
+        
+        //kasuje viewerow
+        foreach($wniosek->getWniosek()->getViewers() as $v){
+            $wniosek->getWniosek()->removeViewer($v);
+            $em->remove($v);
+        }
+        //kasuje editorow
+        foreach($wniosek->getWniosek()->getEditors() as $v){
+            $wniosek->getWniosek()->removeEditor($v);
+            $em->remove($v);
+        }
+        //dodaje viewerow 
+        foreach($viewers as $v){
+            $wv = new \Parp\MainBundle\Entity\WniosekViewer();
+            $wv->setWniosek($wniosek->getWniosek());
+            $wniosek->getWniosek()->addViewer($wv);
+            $wv->setSamaccountname($v);
+            if ($this->debug) echo "<br>dodaje usera viewra ".$v;
+            $em->persist($wv);
+        }
+        $wniosek->getWniosek()->setViewernamesSet();
+        //dodaje editorow
+        foreach($editors as $v){
+            $wv = new \Parp\MainBundle\Entity\WniosekEditor();
+            $wv->setWniosek($wniosek->getWniosek());
+            $wniosek->getWniosek()->addEditor($wv);
+            $wv->setSamaccountname($v);
+            if ($this->debug) echo "<br>dodaje usera editora ".$v;
+            $em->persist($wv);
+        }
+        
+        $wniosek->getWniosek()->setEditornamesSet();
+        
+        //wstawia historie statusow
+        $sh = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
+        $sh->setZastepstwo($zastepstwo);
+        $sh->setWniosek($wniosek->getWniosek());
+        $wniosek->getWniosek()->addStatusy($sh);
+        $sh->setCreatedAt(new \Datetime());
+        $sh->setRejected($rejected);
+        $sh->setCreatedBy($this->getUser()->getUsername());
+        $sh->setStatus($status);
+        $sh->setStatusName($status->getNazwa());
+        $sh->setOpis($status->getNazwa());
+        $em->persist($sh);
+    }
+    
+    protected function sprawdzCzyDzialaZastepstwo($wniosek)
+    {        
+        $ret = $this->checkAccess($wniosek);
+        //var_dump($wniosek, $ret);
+        if($wniosek->getId() && $ret['editorsBezZastepstw'] == null){
+            //dziala zastepstwo, szukamy ktore
+            $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+            foreach($zastepstwa as $z){
+                if($z->getKogoZastepuje() == $ret['editor']->getSamaccountname()){
+                    //var_dump($z); die();
+                    return $z;
+                }
+            }
+        }else{
+            return null;
+        }
+    }
+    
+    /**
+     * Finds and displays a WniosekUtworzenieZasobu entity.
+     *
+     * @Route("/{id}/{isAccepted}/accept_reject/{publishForReal}", name="wniosekutworzeniezasobu_accept_reject", defaults={"publishForReal" : false})
+     * @Method({"GET", "POST"})
+     * @Template()
+     */
+    public function acceptRejectAction(Request $request, $id, $isAccepted, $publishForReal = false)
+    {
+        $ldap = $this->get('ldap_service');
+        $em = $this->getDoctrine()->getManager();
+
+        $wniosek = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        //print_r($uzs); die();
+        if (!$wniosek) {
+            throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
+        }
+        if($request->isMethod('POST')){
+            $txt = $request->get('powodZwrotu');
+            $wniosek->setPowodZwrotu($txt);
+            
+            $kom = new \Parp\MainBundle\Entity\Komentarz();
+            $kom->setObiekt('WniosekUtworzenieZasobu');
+            $kom->setObiektId($id);
+            $kom->setTytul("Wniosek ".($isAccepted == "return" ? "zwrócenia" : "odrzucenia")." z powodu:");
+            $kom->setOpis($txt);
+            $kom->setSamaccountname($this->getUser()->getUsername());
+            $kom->setCreatedAt(new \Datetime());
+            $em->persist($kom);
+            
+        }else{
+            $wniosek->setPowodZwrotu("");
+        }
+        
+        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+        if($isAccepted == "unblock"){
+            $wniosek->getWniosek()->setLockedBy(null);
+            $wniosek->getWniosek()->setLockedAt(null);
+        }
+        elseif($isAccepted == "reject"){
+            //przenosi do status 8
+            $this->setWniosekStatus($wniosek, "08_ROZPATRZONY_NEGATYWNIE_O_ZASOB", true);
+        }
+        elseif($isAccepted == "publish"){
+            //przenosi do status 11
+            $showonly = !$publishForReal;
+            $kernel = $this->get('kernel');
+            $application = new Application($kernel);
+            $application->setAutoExit(false);
+            
+            $ids = [];
+            foreach($wniosek->getWniosek()->getADEntries() as $e){
+                $ids[] = $e->getId();
+            }
+            
+            $input = new ArrayInput(array(
+               'command' => 'parp:ldapsave',
+               'showonly' => $showonly,
+               '--ids' => implode(",", $ids)
+            ));
+            
+            // You can use NullOutput() if you don't need the output
+            $output = new BufferedOutput(
+                OutputInterface::VERBOSITY_NORMAL,
+                true // true for decorated
+            );
+            $application->run($input, $output);
+    
+            // return the output, don't use if you used NullOutput()
+            $content = $output->fetch();
+            
+            $converter = new AnsiToHtmlConverter();
+            if($publishForReal){
+                                //die('a');
+                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY_O_ZASOB", false);
+            }
+            //die('a');
+            $em->flush();
+            // return new Response(""), if you used NullOutput()
+            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
+            
+        }else{
+            switch($status){
+                case "00_TWORZONY_O_ZASOB":
+                    switch($isAccepted){
+                        case "accept":
+                            $this->get('wniosekNumer')->nadajNumer($wniosek, "wniosekOUtworzenieZasobu");
+                            //klonuje wniosek na male i ustawia im statusy:
+                            
+                            $this->setWniosekStatus($wniosek, "02_EDYCJA_WLASCICIEL_O_ZASOB", false);
+                            
+                            //$em->remove($wniosek);
+                            if ($this->debug) die('<br>wszystko poszlo ok');
+                            break;
+                        case "return":
+                            //nie powinno miec miejsca
+                            die('blad 5034 nie powinno miec miejsca');
+                            break;
+                    }
+                    break;
+                case "01_EDYCJA_WNIOSKODAWCA_O_ZASOB":
+                    switch($isAccepted){
+                        case "accept":
+                            //przenosi do status 2
+                            $this->setWniosekStatus($wniosek, "02_EDYCJA_WLASCICIEL_O_ZASOB", false);
+                            break;
+                        case "return":
+                            //przenosi do status 1
+                            die('blad 45 nie powinno miec miejsca');
+                            break;
+                    }
+                    break;
+                case "02_EDYCJA_WLASCICIEL_O_ZASOB":
+                    switch($isAccepted){
+                        case "accept":
+                            
+                            $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);
+                            
+                            break;
+                        case "return":
+                            $this->setWniosekStatus($wniosek, ("01_EDYCJA_WNIOSKODAWCA_O_ZASOB"), true);
+                            break;
+                    }
+                    break;
+                case "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW":
+                    switch($isAccepted){
+                        case "acceptAndPublish":
+                            $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB", false, $status);
+                            break;
+                        case "accept":
+                            $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB", false);
+                            break;
+                        case "return":
+                            $this->setWniosekStatus($wniosek, "02_EDYCJA_WLASCICIEL_O_ZASOB", true);
+                            break;
+                    }
+                    break;
+            }
+            
+            if($isAccepted == "acceptAndPublish"){
+                
+                die('tu publikowac choc nie bardzo wiem co ?? moze jednak zadanie 1!!!');
+            }
+        }
+        //die('a');
+        $em->flush();
+
+        
+        if($isAccepted == "unblock"){
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array(
+            )));
+        }elseif($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY_O_ZASOB"){
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array(
+            )));
+            
+        }else{
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', array(
+                'id' => $id
+            )));
+        }
+    }
+    
+    protected function addViewersEditors($wniosek, &$where, $who){
+        if ($this->debug) echo "<br>addViewersEditors ".$who."<br>";
+        
+        $ldap = $this->get('ldap_service');
+        $em = $this->getDoctrine()->getManager();
+        switch($who){
+            case "wnioskodawca":
+                //
+                $where[$wniosek->getCreatedBy()] = $wniosek->getCreatedBy();
+                if ($this->debug) echo "<br>added ".$wniosek->getCreatedBy()."<br>";
+                break;
+            case "wlasciciel":
+                //
+                if($wniosek->getTyp() == "kasowanie"){
+                    
+                }else{
+                    $grupa = explode(",", $wniosek->getWniosekUtworzenieZasobu()->getZasob()->getWlascicielZasobu());
+                    
+                }
+                foreach($grupa as $g){
+                    $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                    $g = trim($g);
+                    //$g = $this->get('renameService')->fixImieNazwisko($g);
+                    //$g = $this->get('renameService')->fixImieNazwisko($g);
+                    $ADManager = $ldap->getUserFromAD(null, $g);
+                    if ($this->debug) echo "<br>szuka wlasciciela  ".$g."<br>";
+                    if(count($ADManager) > 0){
+                        if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                        $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                        break;
+                    }else{
+                        //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
+                        die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
+                    }
+                    //echo "<br>dodaje wlasciciela ".$g;
+                    //print_r($where);
+                }
+                break;
+            case "administratorZasobow":
+                //
+                $em = $this->getDoctrine()->getManager();
+                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName("PARP_ADMIN_REJESTRU_ZASOBOW");
+                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                foreach($users as $u){
+                    $where[$u->getSamaccountname()] = $u->getSamaccountname(); 
+                    if ($this->debug) echo "<br>added ".$u->getSamaccountname()."<br>";
+                }
+                break;
+        }
+    }
+    
 }

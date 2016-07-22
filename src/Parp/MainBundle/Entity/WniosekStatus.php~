@@ -98,6 +98,16 @@ class WniosekStatus
      */
     private $finished = false;
     
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typWniosku;
+    
     /**
      * Constructor
      */
@@ -284,5 +294,9 @@ class WniosekStatus
     public function getFinished()
     {
         return $this->finished;
+    }
+    
+    public function __toString(){
+        return $this->getNazwa();
     }
 }

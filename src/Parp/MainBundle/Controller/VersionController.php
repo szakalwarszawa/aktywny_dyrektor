@@ -58,7 +58,7 @@ class VersionController extends Controller
     public function versionsHistoryAction($repository, $id)
     {
         //nowe
-        $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','WniosekNadanieOdebranieZasobow','WniosekHistoriaStatusow');
+        $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','WniosekNadanieOdebranieZasobow','WniosekHistoriaStatusow', 'Zasob');
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
         $className = "Parp\\MainBundle\\Entity\\".$repository;

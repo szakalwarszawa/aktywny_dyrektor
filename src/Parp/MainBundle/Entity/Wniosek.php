@@ -401,8 +401,10 @@ class Wniosek
      */
     public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
     {
-        $this->status = $status;
-        $this->setStatusname($status->__toString());
+        if($status){
+            $this->status = $status;
+            $this->setStatusname($status->__toString());
+        }
         return $this;
     }
 
@@ -811,6 +813,7 @@ class Wniosek
     {
         return $this->ADentries;
     }
+
     /**
      * Constructor
      */

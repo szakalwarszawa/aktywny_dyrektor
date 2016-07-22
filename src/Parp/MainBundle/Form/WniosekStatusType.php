@@ -17,6 +17,7 @@ class WniosekStatusType extends AbstractType
                     'wlasciciel' => 'właściciel zasobu',
                     'administrator' => 'administrator zasobu',
                     'techniczny' => 'administrator techniczny zasobu (wylacznie pracownicy BI)',
+                    'administratorZasobow' => 'administrator rejestru zasobów (PARP_ADMIN_REJESTRU_ZASOBOW)',
                 );
     /**
      * @param FormBuilderInterface $builder
@@ -28,6 +29,7 @@ class WniosekStatusType extends AbstractType
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa')
+            ->add('typWniosku', 'choice', ['choices' => ['wniosekONadanieUprawnien' => 'wniosek o Nadanie Uprawnień', 'wniosekOUtworzenieZasobu' => 'wniosek o utworzenie zasobu']])
             ->add('nazwaSystemowa')
             ->add('finished')
             ->add('opis')

@@ -10,9 +10,17 @@ class WniosekUtworzenieZasobuType extends AbstractType
 {
     
     protected $ADUsers;
+    protected $hideCheckboxes;
+    protected $typ;
+    protected $entity;
+    protected $nazwaLabel;
     
-    public function __construct($ADUsers){
+    public function __construct($ADUsers, $typ, $entity){
         $this->ADUsers = $ADUsers;
+        $this->hideCheckboxes = $typ != "";
+        $this->typ = $typ;
+        $this->entity = $entity;
+        $this->nazwaLabel = $typ == "nowy" ? "Proponowana nazwa" : "Nazwa";
     }
     
     /**
@@ -23,29 +31,93 @@ class WniosekUtworzenieZasobuType extends AbstractType
     {
         $builder
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
-                'data_class' => 'Parp\MainBundle\Entity\Wniosek')
+                'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Wniosek')
             )
             //->add('deletedAt')
-            ->add('imienazwisko', 'text', ['attr' => ['readonly' => true]])
+            ->add('imienazwisko', 'text', ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
             ->add('login', 'text', ['attr' => ['readonly' => true]])
             ->add('departament', 'text', ['attr' => ['readonly' => true]])
             ->add('stanowisko', 'text', ['attr' => ['readonly' => true]])
             ->add('telefon')
-            ->add('nrpokoju')
+            ->add('nrpokoju', 'text', ['required' => false, 'label' => 'Numer pokoju'])
             ->add('email')
-            ->add('proponowanaNazwa')
-            ->add('typWnioskuDoRejestru', 'checkbox', ['label' => 'do Rejestru'])
-            ->add('typWnioskuDoUruchomienia', 'checkbox', ['label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP'])
-            ->add('typWnioskuZmianaInformacji', 'checkbox', ['label' => 'informacji o zarejestrowanym zasobie'])
-            ->add('typWnioskuZmianaWistniejacym', 'checkbox', ['label' => 'w istniejącym zasobie'])
-            ->add('typWnioskuWycofanie', 'checkbox', ['label' => 'z Rejestru'])
-            ->add('typWnioskuWycofanieZinfrastruktury', 'checkbox', ['label' => 'z infrastruktury PARP'])            
+            //->add('proponowanaNazwa')
+                      
             //->add('zasob')
-            ->add('zrealizowany')
-            ->add('zasob', new \Parp\MainBundle\Form\ZasobyType(), array(
-                'data_class' => 'Parp\MainBundle\Entity\Zasoby')
-            )
-        ;
+            ->add('zrealizowany', 'hidden');
+           
+           
+            if($this->hideCheckboxes){
+                //die('chowam czeki');
+                $entity = $this->entity;
+                if($entity->getTypWnioskuDoRejestru())
+                    $builder->add('typWnioskuDoRejestru', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'do Rejestru']);
+                if($entity->getTypWnioskuDoUruchomienia())
+                    $builder->add('typWnioskuDoUruchomienia', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']);
+                if($entity->getTypWnioskuZmianaInformacji())
+                    $builder->add('typWnioskuZmianaInformacji', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']);
+                if($entity->getTypWnioskuZmianaWistniejacym())
+                    $builder->add('typWnioskuZmianaWistniejacym', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'w istniejącym zasobie']);
+                if($entity->getTypWnioskuWycofanie())
+                    $builder->add('typWnioskuWycofanie', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'z Rejestru']);
+                if($entity->getTypWnioskuWycofanieZinfrastruktury())
+                    $builder->add('typWnioskuWycofanieZinfrastruktury', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'z infrastruktury PARP']) ;
+            }else{
+                
+                $builder->add('typWnioskuDoRejestru', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'do Rejestru']);
+
+                $builder->add('typWnioskuDoUruchomienia', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']);
+
+                $builder->add('typWnioskuZmianaInformacji', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']);
+
+                $builder->add('typWnioskuZmianaWistniejacym', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'w istniejącym zasobie']);
+
+                $builder->add('typWnioskuWycofanie', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'z Rejestru']);
+
+                $builder->add('typWnioskuWycofanieZinfrastruktury', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'z infrastruktury PARP']) ;
+            }
+           
+            
+            
+            $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->nazwaLabel), array(
+               'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
+            );
+            $builder->add('zasobDoSkasowania', null, ['label' => 'Zasoby do skasowania', 'attr' => ['class' => 'select2', 'style' => 'width:100%;']])
+                ;
+            //die(".".$this->typ); 
+            if($this->typ == "zmiana"){
+                $builder->add('zasobDoWyboru', 'entity', array(
+                    'mapped' => false,
+                   'label'=>false, 'class' => 'Parp\MainBundle\Entity\Zasoby',
+                   'attr' => ['class' => 'select2', 'style' => "width:100%"])
+                );
+            }    
+                
+
+/*
+        switch($this->typ){
+            case "nowy":
+                $builder->add('zasobDoSkasowania', 'hidden');
+                
+                break;
+            case "zmiana":
+                $builder->add('zasobDoSkasowania', 'hidden');
+                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType("Proponowana nazwa"), array(
+                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
+                );
+                break;
+            case "kasowanie":
+                $builder->add('zasob', 'hidden');
+                $builder->add('zasobDoSkasowania', null, ['label' => 'Zasoby do skasowania', 'attr' => ['class' => 'select2', 'style' => 'width:100%;']])
+                ;
+            case "":
+                $builder->add('zasob', 'hidden');
+                $builder->add('zasobDoSkasowania', null, ['label' => 'Zasoby do skasowania', 'attr' => ['class' => 'select2', 'style' => 'width:100%;']])
+                ;
+                
+                break;
+        }
+*/
     }
     
     /**

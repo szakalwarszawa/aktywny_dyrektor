@@ -1,0 +1,39 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+<script type="text/javascript"src="{{ asset('js/wnioskiZasob.js') }}"></script>
+    {{ form_start(form) }}  
+    <div class="col-sm-12">
+        <div class="form-group">
+            <label class="col-sm-2  control-label"></label>
+            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr' : {'onclick' : 'submitWniosekType(event)'}}) }}  </div>
+        </div> 
+        <table class="table bordered">
+            <tr>
+                <th rowspan="3" vertical-align="middle" >
+                    Typ wniosku
+                </th>
+                <th>Zgłoszenie nowego zasobu</th>
+                <th>Zgłoszenie zmiany</th>
+                <th>Wycofanie zasobu</th>
+            </tr>
+            <tr>
+                <td>{{ form_row(form.typWnioskuDoRejestru) }}</td>
+                <td>{{ form_row(form.typWnioskuZmianaInformacji) }}</td>
+                <td>{{ form_row(form.typWnioskuWycofanie) }}</td>
+            </tr>
+            <tr>
+                <td>{{ form_row(form.typWnioskuDoUruchomienia) }}</td>
+                <td>{{ form_row(form.typWnioskuZmianaWistniejacym) }}</td>
+                <td>{{ form_row(form.typWnioskuWycofanieZinfrastruktury) }}</td>
+            </tr>
+        </table>
+        <div class="form-group">
+            <label class="col-sm-2  control-label"></label>
+            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr' : {'onclick' : 'submitWniosekType(event)'}}) }}  </div>
+        </div> 
+    </div>
+    
+    </form> 
+
+{% endblock %}
