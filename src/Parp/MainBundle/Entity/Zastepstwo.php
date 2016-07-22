@@ -60,7 +60,7 @@ class Zastepstwo
     /**
      * @var \DateTime
      * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
     */
     private $dataOd;
     
@@ -68,7 +68,7 @@ class Zastepstwo
     /**
      * @var \DateTime
      * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
     */
     private $dataDo;
     

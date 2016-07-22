@@ -253,6 +253,16 @@ class Zasoby
      * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
      */
     private $wniosekUtworzenieZasobu;
+    
+    
+    /**
+     *
+     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zmienianyZasob")
+     * @ORM\JoinColumn(name="wniosekUtworzenieZasobuZmieniajacy_id", referencedColumnName="id")
+     */
+    private $wniosekUtworzenieZasobuZmieniajacy;
+    
+    
 
 
     /**
@@ -1020,5 +1030,53 @@ class Zasoby
     public function getWniosekUtworzenieZasobu()
     {
         return $this->wniosekUtworzenieZasobu;
+    }
+
+    /**
+     * Set wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @return Zasoby
+     */
+    public function setWniosekUtworzenieZasobuZmieniajacy(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy = null)
+    {
+        $this->wniosekUtworzenieZasobuZmieniajacy = $wniosekUtworzenieZasobuZmieniajacy;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     */
+    public function getWniosekUtworzenieZasobuZmieniajacy()
+    {
+        return $this->wniosekUtworzenieZasobuZmieniajacy;
+    }
+
+    /**
+     * Set wniosekSkasowanieZasobu
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu
+     *
+     * @return Zasoby
+     */
+    public function setWniosekSkasowanieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null)
+    {
+        $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekSkasowanieZasobu
+     *
+     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     */
+    public function getWniosekSkasowanieZasobu()
+    {
+        return $this->wniosekSkasowanieZasobu;
     }
 }

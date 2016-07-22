@@ -58,12 +58,12 @@ class WniosekUtworzenieZasobu
     
     
     /**
-     * @var string
      *
-     * @ORM\OneToMany(targetEntity="Zasoby", mappedBy="wniosekSkasowanieZasobu")
-     * @@Gedmo\Mapping\Annotation\Versioned
+     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobuZmieniajacy")
+     * @ORM\JoinColumn(name="zmieniany_zasob_id", referencedColumnName="id")
      */
-    private $zasobDoSkasowania;
+    private $zmienianyZasob; 
+    
     
     /**
      * @var boolean
@@ -201,6 +201,16 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodZwrotu;
+    
+    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=5000, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zmienionePola;
     
     /**
      * Get id
@@ -670,37 +680,29 @@ class WniosekUtworzenieZasobu
         return $this->powodZwrotu;
     }
 
+    
     /**
-     * Add zasobDoSkasowanium
-     *
-     * @param \Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium
-     *
-     * @return WniosekUtworzenieZasobu
+     * Constructor
      */
-    public function addZasobDoSkasowanium(\Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium)
+    public function __construct()
     {
-        $this->zasobDoSkasowania[] = $zasobDoSkasowanium;
-
-        return $this;
+        
+        $this->setWniosek(new Wniosek());
+        $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+        $this->getWniosek()->setWniosekUtworzenieZasobu($this);
+    }
+    
+    public function getTyp(){
+        if($this->getTypWnioskuDoRejestru()){
+            return "nowy";
+        }
+        if($this->getTypWnioskuZmianaInformacji()){
+            return "zmiana";
+        }
+        if($this->getTypWnioskuWycofanie()){
+            return "kasowanie";
+        }
+        return "";
     }
 
-    /**
-     * Remove zasobDoSkasowanium
-     *
-     * @param \Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium
-     */
-    public function removeZasobDoSkasowanium(\Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium)
-    {
-        $this->zasobDoSkasowania->removeElement($zasobDoSkasowanium);
-    }
-
-    /**
-     * Get zasobDoSkasowania
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getZasobDoSkasowania()
-    {
-        return $this->zasobDoSkasowania;
-    }
 }

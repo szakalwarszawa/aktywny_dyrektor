@@ -58,12 +58,12 @@ class WniosekUtworzenieZasobu
     
     
     /**
-     * @var string
      *
-     * @ORM\OneToMany(targetEntity="Zasoby", mappedBy="wniosekSkasowanieZasobu")
-     * @@Gedmo\Mapping\Annotation\Versioned
+     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobuZmieniajacy")
+     * @ORM\JoinColumn(name="zmieniany_zasob_id", referencedColumnName="id")
      */
-    private $zasobDoSkasowania;
+    private $zmienianyZasob; 
+    
     
     /**
      * @var boolean
@@ -201,6 +201,16 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodZwrotu;
+    
+    
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=5000, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zmienionePola;
     
     /**
      * Get id
@@ -670,39 +680,7 @@ class WniosekUtworzenieZasobu
         return $this->powodZwrotu;
     }
 
-    /**
-     * Add zasobDoSkasowanium
-     *
-     * @param \Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium
-     *
-     * @return WniosekUtworzenieZasobu
-     */
-    public function addZasobDoSkasowanium(\Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium)
-    {
-        $this->zasobDoSkasowania[] = $zasobDoSkasowanium;
-
-        return $this;
-    }
-
-    /**
-     * Remove zasobDoSkasowanium
-     *
-     * @param \Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium
-     */
-    public function removeZasobDoSkasowanium(\Parp\MainBundle\Entity\Zasoby $zasobDoSkasowanium)
-    {
-        $this->zasobDoSkasowania->removeElement($zasobDoSkasowanium);
-    }
-
-    /**
-     * Get zasobDoSkasowania
-     *
-     * @return \Doctrine\Common\Collections\Collection
-     */
-    public function getZasobDoSkasowania()
-    {
-        return $this->zasobDoSkasowania;
-    }
+    
     /**
      * Constructor
      */
@@ -712,7 +690,6 @@ class WniosekUtworzenieZasobu
         $this->setWniosek(new Wniosek());
         $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
         $this->getWniosek()->setWniosekUtworzenieZasobu($this);
-        $this->zasobDoSkasowania = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
     public function getTyp(){
@@ -728,4 +705,52 @@ class WniosekUtworzenieZasobu
         return "";
     }
 
+
+    /**
+     * Set zmienionePola
+     *
+     * @param string $zmienionePola
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setZmienionePola($zmienionePola)
+    {
+        $this->zmienionePola = $zmienionePola;
+
+        return $this;
+    }
+
+    /**
+     * Get zmienionePola
+     *
+     * @return string
+     */
+    public function getZmienionePola()
+    {
+        return $this->zmienionePola;
+    }
+
+    /**
+     * Set zmienianyZasob
+     *
+     * @param \Parp\MainBundle\Entity\Zasoby $zmienianyZasob
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setZmienianyZasob(\Parp\MainBundle\Entity\Zasoby $zmienianyZasob = null)
+    {
+        $this->zmienianyZasob = $zmienianyZasob;
+
+        return $this;
+    }
+
+    /**
+     * Get zmienianyZasob
+     *
+     * @return \Parp\MainBundle\Entity\Zasoby
+     */
+    public function getZmienianyZasob()
+    {
+        return $this->zmienianyZasob;
+    }
 }

@@ -79,20 +79,26 @@ class WniosekUtworzenieZasobuType extends AbstractType
            
             
             
-            $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->nazwaLabel), array(
-               'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
-            );
-            $builder->add('zasobDoSkasowania', null, ['label' => 'Zasoby do skasowania', 'attr' => ['class' => 'select2', 'style' => 'width:100%;']])
-                ;
+            
             //die(".".$this->typ); 
             if($this->typ == "zmiana"){
-                $builder->add('zasobDoWyboru', 'entity', array(
+                $builder->add('zmienianyZasob', 'entity', array(
                     'mapped' => false,
-                   'label'=>false, 'class' => 'Parp\MainBundle\Entity\Zasoby',
+                   'label'=>"Wybierz zasób", 'class' => 'Parp\MainBundle\Entity\Zasoby',
                    'attr' => ['class' => 'select2', 'style' => "width:100%"])
                 );
-            }    
-                
+            }else{
+                $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
+            }   
+            if($this->typ == "kasowanie"){
+                $builder->add('zasob', 'entity', array(
+                   'label'=>"Wybierz zasób do skasowania", 'class' => 'Parp\MainBundle\Entity\Zasoby', 'attr' => ['class' => 'select2', 'style' => "width:100%"])
+                );
+            }else{
+                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->nazwaLabel), array(
+                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
+                );
+            }             
 
 /*
         switch($this->typ){

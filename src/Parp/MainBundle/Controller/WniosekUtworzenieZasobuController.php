@@ -191,6 +191,8 @@ class WniosekUtworzenieZasobuController extends Controller
                 break;
             case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanie":
                 $entity->setTypWnioskuWycofanie(true);
+                
+                $entity->setZasob(null);
                 break;
             case "parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanieZinfrastruktury":
                 $entity->setTypWnioskuWycofanieZinfrastruktury(true);
@@ -230,9 +232,10 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity->setDepartament($ADUser[0]['department']);
         $entity->setStanowisko($ADUser[0]['title']);
         $departament = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
-        $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
+        if($entity->getZasob())
+            $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
         $form   = $this->createCreateForm($entity);
-
+        $this->getDoctrine()->getManager()->persist($entity->getWniosek());
         
 
         //echo "<pre>"; print_r($ADUser); die();
@@ -527,6 +530,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $wniosek->getWniosek()->setLockedAt(null);
         $viewers = array();
         $editors = array();
+        //die($statusName);
         $vs = explode(",",$status->getViewers());
         foreach($vs as $v){
             $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
@@ -787,10 +791,10 @@ class WniosekUtworzenieZasobuController extends Controller
                 break;
             case "wlasciciel":
                 //
-                if($wniosek->getTyp() == "kasowanie"){
+                $grupa = explode(",", $wniosek->getWniosekUtworzenieZasobu()->getZasob()->getWlascicielZasobu());
+                if($wniosek->getWniosekUtworzenieZasobu()->getTyp() == "kasowanie"){
                     
                 }else{
-                    $grupa = explode(",", $wniosek->getWniosekUtworzenieZasobu()->getZasob()->getWlascicielZasobu());
                     
                 }
                 foreach($grupa as $g){
