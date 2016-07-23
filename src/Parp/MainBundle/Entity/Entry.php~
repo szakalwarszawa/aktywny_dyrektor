@@ -9,12 +9,20 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Entry
  *
  * @ORM\Table(name="entry")
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Entry
 {
 
+    /**
+     */
+    public function preUpdate(){
+        $d = new \Datetime();
+        if(!$this->getId())
+            $this->setCreatedAt($d);
+    }
     /**
      * @var integer
      *
@@ -221,7 +229,20 @@ class Entry
      */
     private $logfile;
     
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="DaneRekord", inversedBy="entries")
+     * @ORM\JoinColumn(name="daneRekord_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $daneRekord;
     
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+    */
+    private $createdAt;
     
     /**
      * Get id
@@ -440,7 +461,7 @@ class Entry
         return $this->fromWhen;
     }
 
-    public function __construct()
+    public function __construct2()
     {
         $this->isImplemented = false;
     }
@@ -662,5 +683,101 @@ class Entry
     public function getWniosek()
     {
         return $this->wniosek;
+    }
+
+    /**
+     * Set publishedBy
+     *
+     * @param string $publishedBy
+     *
+     * @return Entry
+     */
+    public function setPublishedBy($publishedBy)
+    {
+        $this->publishedBy = $publishedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get publishedBy
+     *
+     * @return string
+     */
+    public function getPublishedBy()
+    {
+        return $this->publishedBy;
+    }
+
+    /**
+     * Set publishedAt
+     *
+     * @param \DateTime $publishedAt
+     *
+     * @return Entry
+     */
+    public function setPublishedAt($publishedAt)
+    {
+        $this->publishedAt = $publishedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get publishedAt
+     *
+     * @return \DateTime
+     */
+    public function getPublishedAt()
+    {
+        return $this->publishedAt;
+    }
+
+    /**
+     * Set logfile
+     *
+     * @param string $logfile
+     *
+     * @return Entry
+     */
+    public function setLogfile($logfile)
+    {
+        $this->logfile = $logfile;
+
+        return $this;
+    }
+
+    /**
+     * Get logfile
+     *
+     * @return string
+     */
+    public function getLogfile()
+    {
+        return $this->logfile;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Entry
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

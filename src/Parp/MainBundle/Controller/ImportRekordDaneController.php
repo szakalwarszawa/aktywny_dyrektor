@@ -14,6 +14,344 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
  */
 class ImportRekordDaneController extends Controller
 {
+    
+    
+    protected function getSqlDoImportu(){
+        
+        $dataGraniczna = '2011-08-01';//'2016-08-01'; //'2016-07-31'
+        //$dataGraniczna = date("Y-m-d");
+        $sql = "SELECT
+            p.SYMBOL,
+            COUNT(*) as ile,
+            p.IMIE as imie, 
+            p.NAZWISKO as nazwisko, 
+            departament.KOD  departament,
+            stanowisko.OPIS stanowisko,
+            rodzaj.NAZWA umowa,
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
+            
+            from P_PRACOWNIK p
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '$dataGraniczna') AND mpr.DATA_OD <=  '$dataGraniczna'
+            join P_MPRACY departament on departament.KOD = mpr.KOD
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '$dataGraniczna') AND stjoin.DATA_OD <=  '$dataGraniczna'
+            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '$dataGraniczna') AND umowa.DATA_OD <=  '$dataGraniczna'
+            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
+            
+            GROUP BY 
+            
+            p.SYMBOL,       
+            p.IMIE, 
+            p.NAZWISKO, 
+            departament.KOD ,
+            stanowisko.OPIS,
+            rodzaj.NAZWA,
+            umowa.DATA_OD,
+            umowa.DATA_DO
+            
+            ORDER BY 
+            p.NAZWISKO, p.IMIE
+            ";
+        return $sql;
+    }
+    
+     
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/importfirebird", name="importfirebird", defaults={})
+     * @Method("GET")
+     */
+    public function importfirebirdWrzucDoBazyAction()
+    {
+        $mapowanieDepartamentowPrezesow = [
+            '15' => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
+            '216' => '400', //WicePrezes - stary uklad, 3 szt.
+            '326' => '416', //Biuro Prezesa - stary uklad, 6 szt.
+            '215' => '400',
+            '9999' => '400'
+        ];
+        $sciecha = "";
+        $sql = $this->getSqlDoImportu();
+        $rows = $this->executeQuery($sql);
+        $em = $this->getDoctrine()->getManager();
+        $data = array();
+        $imported = array();
+        //var_dump($rows); //die();
+        foreach($rows as $row){
+            if(isset($mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])])){
+                //podmieniamy id biur prezesow
+                //die('podmieniamy id biur prezesow');
+                $row['DEPARTAMENT'] = $mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])];
+            }
+            $in = $this->parseValue($row['IMIE'])." ".$this->parseValue($row['NAZWISKO']);            
+            $data[$in][] = $row;
+        }
+        //die();
+        $totalmsg = "";
+        //echo "<pre>"; print_r($data); die();
+        $ldap = $this->get('ldap_service');
+        foreach($data as $in => $d){
+            if(count($d) > 1){
+                //mamy dubla szukamy najpozniejszej umowy
+                $maxDate = null;
+                $teSameDaty = true;
+                foreach($d as $r){
+                    $uod = $r['UMOWAOD'] ? new \Datetime($r['UMOWAOD']) : null;
+                    $teSameDaty = $maxDate == null ? true : $teSameDaty && ($maxDate->format("Y-m-d") == $uod->format("Y-m-d"));
+                    if($uod != null && ($maxDate == null || $uod > $maxDate)){
+                        $maxDate = $uod;
+                        $row = $r;
+                    }
+                }
+                if($teSameDaty && 1 == 11){
+                    //znaczy ze zmiana departamentu w ramach nowej reorganizacji
+                    //poprawilem sql, kadry poprawily dane w rekordzie  i juz to i duble nie maja miejsca
+                    $maxDep = null;
+                    $teSameDaty = true;
+                    foreach($d as $r){
+                        $uod = $r['DEPARTAMENT'] ;
+                        if($uod != null && ($maxDep == null || $uod > $maxDep)){
+                            $maxDep = $uod;
+                            $row = $r;
+                        }
+                    }
+                }
+                $msg = "Są duplikaty umów dla  ".$in." wybrano najpóźniej podpisaną umowę z dnia ".$maxDate->format("Y-m-d")." te same daty: " .($teSameDaty ? "tak" : "nie").".";
+                $this->addFlash('warning', $msg);
+            }else{
+                $row = $d[0];
+            }
+            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
+            
+            //temp
+            $dr == null;
+            $d = new \Datetime();
+            //print_r($dr); die();
+            $nowy = false;
+            if($dr === null){
+                $nowy = true;
+                $dr = new \Parp\MainBundle\Entity\DaneRekord();
+                $dr->setCreatedBy($this->getUser()->getUsername());
+                $dr->setCreatedAt($d);
+                $em->persist($dr);
+            }
+            $dr->setImie($this->parseValue($row['IMIE']));
+            $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
+            if($nowy){
+                
+                $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
+                $dr->setLogin($login);
+            }
+            $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
+            $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
+            $dr->setUmowa($this->parseValue($row['UMOWA'], false));
+            $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
+            
+            $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
+            if(
+                ($d1 !== null) && 
+                (
+                    ($dr->getUmowaOd() == null && $d1 != null) || 
+                    ($dr->getUmowaOd() != null && $d1 == null) || 
+                    ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d"))
+                )
+            ){
+                $dr->setUmowaOd($d1);  
+            }
+            $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
+            
+            //var_dump($dr->getUmowaDo());
+            //var_dump($d2);
+            if(
+            ($d2 != null) && (
+            ($dr->getUmowaDo() == null && $d2 != null) || 
+            ($dr->getUmowaDo() != null && $d2 == null) || 
+            ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
+                $dr->setUmowaDo($d2);    
+            }
+            
+            
+            $dr->setLastModifiedAt($d);
+            
+            $uow = $em->getUnitOfWork();
+            $uow->computeChangeSets();
+            if (1 == 1 && ($uow->isEntityScheduled($dr) || $nowy)) {
+                $changeSet = $uow->getEntityChangeSet($dr);
+                unset($changeSet['lastModifiedAt']);
+                if($nowy){
+                    
+                }else{
+                    
+                }
+                if(count($changeSet) > 0){
+                    //echo "<pre>"; print_r($changeSet); //die();
+                    $entry = new \Parp\MainBundle\Entity\Entry();
+                    $em->persist($entry);
+                    $entry->setDaneRekord($dr);
+                    $dr->addEntry($entry);
+                    $entry->setSamAccountName($dr->getLogin());
+                    
+                    
+                    
+                    
+                    if($nowy){
+                        $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
+                            
+                    }
+                    if($nowy || $dr->getUmowaDo())
+                        $entry->setAccountExpires($dr->getUmowaDo());
+                    $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
+                    
+                    if($department == null){
+                        echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
+                        }else{
+                        
+                        if($nowy || isset($changeSet['departament'])){
+                            $entry->setDepartment($department->getName());
+                            $entry->setGrupyAD($department);                              
+                        }
+                    
+                        //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
+                        $tab = explode(".", $this->container->getParameter('ad_domain'));
+                        $ou = ($this->container->getParameter('ad_ou'));
+                        if($nowy){
+                            $dn = "CN=".$entry->getCn().", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
+                        }
+                        else{
+                            $aduser = $ldap->getUserFromAD($dr->getLogin());
+                            $dn = $aduser[0]['distinguishedname'];
+                        }
+                        //var_dump($entry->getCn(),  $dr->getImie(), $dr->getNazwisko(), $dn);
+                        $entry->setDistinguishedname($dn);
+                        
+                    }
+                    //$entry->setDivision();//TODO:
+                    if($nowy || isset($changeSet['stanowisko']))
+                        $entry->setTitle($dr->getStanowisko());
+                    $entry->setFromWhen(new \Datetime());
+                    if($nowy){
+                        $in = mb_substr($dr->getImie(), 0, 1, "UTF-8").mb_substr($dr->getNazwisko(), 0, 1, "UTF-8");
+                        if($in == "")
+                            $in = null;
+                        $entry->setInitials($in);                    
+        /*
+                        if($dr->getNazwisko() == "Turlej")
+                            die(".".$dr->getImie().".");
+        */
+                    }
+                    $entry->setIsImplemented(0);
+                    $entry->setInitialRights('');
+                    $entry->setIsDisabled(0);
+                    $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$in." .";
+                    $imported[] = $dr;
+                }
+            }
+            
+            
+        }
+        if($totalmsg != "")
+            $this->addFlash('warning', $totalmsg);
+        //echo "<pre>"; print_r($imported); 
+        //die();
+        $em->flush(); 
+        return $this->redirect($this->generateUrl('danerekord'));
+    }
+    
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/", name="importfirebird_test", defaults={})
+     * @Method("GET")
+     */
+    public function importfirebirdTestIndexAction()
+    {
+        $sciecha = "";
+        
+        $dataGraniczna = '2016-07-01';//'2016-08-01'; //'2016-07-31'
+            $sql = "SELECT
+            p.SYMBOL,
+            COUNT(*) as ile,
+            p.IMIE as imie, 
+            p.NAZWISKO as nazwisko, 
+            departament.KOD  departament,
+            stanowisko.OPIS stanowisko,
+            rodzaj.NAZWA umowa,
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
+            from P_PRACOWNIK p
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '$dataGraniczna') AND mpr.DATA_OD <=  '$dataGraniczna'
+            join P_MPRACY departament on departament.KOD = mpr.KOD
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '$dataGraniczna') AND stjoin.DATA_OD <=  '$dataGraniczna'
+            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '$dataGraniczna') AND umowa.DATA_OD <=  '$dataGraniczna'
+            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
+            join P_STAWKA stawka on stawka.SYMBOL = p.SYMBOL
+            
+            GROUP BY 
+            
+            p.SYMBOL,       
+            p.IMIE, 
+            p.NAZWISKO, 
+            departament.KOD ,
+            stanowisko.OPIS,
+            rodzaj.NAZWA,
+            umowa.DATA_OD,
+            umowa.DATA_DO
+            
+            ORDER BY 
+            stawka.STAWKA,
+            p.NAZWISKO, p.IMIE
+            ";
+            
+        $sql = $this->getSqlDoImportu();
+        //$rows = $this->executeQueryIbase($sql);
+        $rows = $this->executeQuery($sql);
+        echo "<pre>"; print_r($rows);
+        die('testfirebird');
+    }
+
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/importfirebird_test1", name="importfirebird_test1", defaults={})
+     * @Method("GET")
+     */
+    public function importfirebirdTest1Action()
+    {
+/*
+        $em = $this->getDoctrine()->getManager();
+        $dr = $em->getRepository('ParpMainBundle:Plik')->find(5);
+            print_r($dr);
+            
+        $dr->setOpis('6565');
+        $uow = $em->getUnitOfWork();
+        $uow->computeChangeSets();
+        if ($uow->isEntityScheduled($dr)) {
+            // My entity has changed
+            echo "Zmiana!!!";
+        }else{
+            echo "brak zamiany!!!";
+        }
+            
+        die();
+*/
+        $sciecha = "";
+
+        $sql = 'select rdb$relation_name
+from rdb$relations
+where rdb$view_blr is null 
+and (rdb$system_flag is null or rdb$system_flag = 0);';
+
+
+        $rows = $this->executeQuery($sql);
+        echo "<pre>"; print_r($rows);
+        die('testfirebird');
+    }
+    
     protected function parseName($n){
         $cz = explode(" ", $n);
         $ret = [];
@@ -89,353 +427,10 @@ class ImportRekordDaneController extends Controller
         echo "<pre>"; print_r($rows);
         die('testfirebird');
     }    
-    /**
-     * Lists all Klaster entities.
-     *
-     * @Route("/", name="importfirebird_test", defaults={})
-     * @Method("GET")
-     */
-    public function importfirebirdAction()
-    {
-        $sciecha = "";
         
-        $sql = "SELECT
-        departament.KOD,
-        mpr.DATA_OD,
-mpr.DATA_DO,
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.OPIS  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP) AND (mpr.DATA_OD < CURRENT_TIMESTAMP)
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > CURRENT_TIMESTAMP)
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > CURRENT_TIMESTAMP)
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            
-            GROUP BY 
-           departament.KOD,
-mpr.DATA_OD,
-mpr.DATA_DO, 
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.OPIS ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            p.NAZWISKO, p.IMIE
-            ";
-            $sql = "SELECT
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.KOD  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO > CURRENT_TIMESTAMP)
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > CURRENT_TIMESTAMP)
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > CURRENT_TIMESTAMP)
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.KOD ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            p.NAZWISKO, p.IMIE
-            ";
-            
-        $sql = $this->getSqlDoImportu();
-        //$rows = $this->executeQueryIbase($sql);
-        $rows = $this->executeQuery($sql);
-        echo "<pre>"; print_r($rows);
-        die('testfirebird');
-    }
     
     
-    
-    /**
-     * Lists all Klaster entities.
-     *
-     * @Route("/importfirebird_test1", name="importfirebird_test1", defaults={})
-     * @Method("GET")
-     */
-    public function importfirebird1Action()
-    {
-/*
-        $em = $this->getDoctrine()->getManager();
-        $dr = $em->getRepository('ParpMainBundle:Plik')->find(5);
-            print_r($dr);
-            
-        $dr->setOpis('6565');
-        $uow = $em->getUnitOfWork();
-        $uow->computeChangeSets();
-        if ($uow->isEntityScheduled($dr)) {
-            // My entity has changed
-            echo "Zmiana!!!";
-        }else{
-            echo "brak zamiany!!!";
-        }
-            
-        die();
-*/
-        $sciecha = "";
-
-        $sql = 'select rdb$relation_name
-from rdb$relations
-where rdb$view_blr is null 
-and (rdb$system_flag is null or rdb$system_flag = 0);';
-
-
-        $rows = $this->executeQuery($sql);
-        echo "<pre>"; print_r($rows);
-        die('testfirebird');
-    }
-    
-    protected function getSqlDoImportu(){
-        
-        $dataGraniczna = '2016-08-01';//'2016-08-01'; //'2016-07-31'
-        //$dataGraniczna = date("Y-m-d");
-        $sql = "SELECT
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.KOD  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '$dataGraniczna') AND mpr.DATA_OD <=  '$dataGraniczna'
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '$dataGraniczna') AND stjoin.DATA_OD <=  '$dataGraniczna'
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '$dataGraniczna') AND umowa.DATA_OD <=  '$dataGraniczna'
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.KOD ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            p.NAZWISKO, p.IMIE
-            ";
-        return $sql;
-    }
-    
-    /**
-     * Lists all Klaster entities.
-     *
-     * @Route("/importfirebird", name="importfirebird", defaults={})
-     * @Method("GET")
-     */
-    public function importfirebird2Action()
-    {
-        $mapowanieDepartamentowPrezesow = [
-            '15' => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
-            '216' => '400', //WicePrezes - stary uklad, 3 szt.
-            '326' => '416', //Biuro Prezesa - stary uklad, 6 szt.
-        ];
-        $sciecha = "";
-        $sql = $this->getSqlDoImportu();
-        $rows = $this->executeQuery($sql);
-        $em = $this->getDoctrine()->getManager();
-        $data = array();
-        $imported = array();
-        //var_dump($rows); //die();
-        foreach($rows as $row){
-            if(isset($mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])])){
-                //podmieniamy id biur prezesow
-                //die('podmieniamy id biur prezesow');
-                $row['DEPARTAMENT'] = $mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])];
-            }
-            $in = $this->parseValue($row['IMIE'])." ".$this->parseValue($row['NAZWISKO']);            
-            $data[$in][] = $row;
-        }
-        //die();
-        $totalmsg = "";
-        //echo "<pre>"; print_r($data); die();
-        $ldap = $this->get('ldap_service');
-        foreach($data as $in => $d){
-            if(count($d) > 1){
-                //mamy dubla szukamy najpozniejszej umowy
-                $maxDate = null;
-                $teSameDaty = true;
-                foreach($d as $r){
-                    $uod = $r['UMOWAOD'] ? new \Datetime($r['UMOWAOD']) : null;
-                    $teSameDaty = $maxDate == null ? true : $teSameDaty && ($maxDate->format("Y-m-d") == $uod->format("Y-m-d"));
-                    if($uod != null && ($maxDate == null || $uod > $maxDate)){
-                        $maxDate = $uod;
-                        $row = $r;
-                    }
-                }
-                if($teSameDaty && 1 == 11){
-                    //znaczy ze zmiana departamentu w ramach nowej reorganizacji
-                    //poprawilem sql, kadry poprawily dane w rekordzie  i juz to i duble nie maja miejsca
-                    $maxDep = null;
-                    $teSameDaty = true;
-                    foreach($d as $r){
-                        $uod = $r['DEPARTAMENT'] ;
-                        if($uod != null && ($maxDep == null || $uod > $maxDep)){
-                            $maxDep = $uod;
-                            $row = $r;
-                        }
-                    }
-                }
-                $msg = "Są duplikaty umów dla  ".$in." wybrano najpóźniej podpisaną umowę z dnia ".$maxDate->format("Y-m-d")." te same daty: " .($teSameDaty ? "tak" : "nie").".";
-                $this->addFlash('warning', $msg);
-            }else{
-                $row = $d[0];
-            }
-            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
-            
-            //temp
-            $dr == null;
-            
-            //print_r($dr); die();
-            $nowy = false;
-            if($dr === null){
-                $nowy = true;
-                $dr = new \Parp\MainBundle\Entity\DaneRekord();
-                $em->persist($dr);
-            }
-            $dr->setImie($this->parseValue($row['IMIE']));
-            $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
-            $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
-            $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
-            $dr->setUmowa($this->parseValue($row['UMOWA'], false));
-            $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
-            $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
-            $dr->setLogin($login);
-            
-            $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
-            if(
-                ($d1 !== null) && 
-                (
-                    ($dr->getUmowaOd() == null && $d1 != null) || 
-                    ($dr->getUmowaOd() != null && $d1 == null) || 
-                    ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d"))
-                )
-            ){
-                $dr->setUmowaOd($d1);  
-            }
-            $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
-            
-            //var_dump($dr->getUmowaDo());
-            //var_dump($d2);
-            if(
-            ($d2 != null) && (
-            ($dr->getUmowaDo() == null && $d2 != null) || 
-            ($dr->getUmowaDo() != null && $d2 == null) || 
-            ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
-                $dr->setUmowaDo($d2);    
-            }
-            
-            
-            
-            $uow = $em->getUnitOfWork();
-            $uow->computeChangeSets();
-            if ($uow->isEntityScheduled($dr) || $nowy) {
-                $changeSet = $uow->getEntityChangeSet($dr);
-                //echo "<pre>"; print_r($changeSet); die();
-                if($nowy){
-                    
-                }else{
-                    
-                }
-                
-                $entry = new \Parp\MainBundle\Entity\Entry();
-                $entry->setSamAccountName($login);
-                
-                
-                
-                
-                if($nowy)
-                    $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
-                if($nowy || $dr->getUmowaDo())
-                    $entry->setAccountExpires($dr->getUmowaDo());
-                $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
-                
-                if($department == null){
-                    echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
-                    }else{
-                    
-                    if($nowy || isset($changeSet['departament'])){
-                        $entry->setDepartment($department->getName());
-                        $entry->setGrupyAD($department);                              
-                    }
-                
-                    //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
-                    $tab = explode(".", $this->container->getParameter('ad_domain'));
-                    $ou = ($this->container->getParameter('ad_ou'));
-                    $entry->setDistinguishedname("CN=".$entry->getCn().", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1]);
-                    
-                }
-                //$entry->setDivision();//TODO:
-                if($nowy || isset($changeSet['stanowisko']))
-                    $entry->setTitle($dr->getStanowisko());
-                $entry->setFromWhen(new \Datetime());
-                if($nowy){
-                    $in = mb_substr($dr->getImie(), 0, 1, "UTF-8").mb_substr($dr->getNazwisko(), 0, 1, "UTF-8");
-                    if($in == "")
-                        $in = null;
-                    $entry->setInitials($in);                    
-    /*
-                    if($dr->getNazwisko() == "Turlej")
-                        die(".".$dr->getImie().".");
-    */
-                }
-                $entry->setIsImplemented(0);
-                $entry->setInitialRights('');
-                $entry->setIsDisabled(0);
-                $em->persist($entry);
-                $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$in." .";
-                $imported[] = $dr;
-            }
-            
-            
-        }
-        if($totalmsg != "")
-            $this->addFlash('warning', $totalmsg);
-        //echo "<pre>"; print_r($$imported); die();
-        $em->flush(); 
-        return $this->redirect($this->generateUrl('danerekord'));
-    }
+   
     protected function my_mb_ucfirst($str) {
         $fc = mb_strtoupper(mb_substr($str, 0, 1, "UTF-8"), "UTF-8");
         return $fc.mb_substr($str, 1, mb_strlen($str, "UTF-8"), "UTF-8");

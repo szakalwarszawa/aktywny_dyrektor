@@ -12,12 +12,23 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko"})})
  * a@Gedmo\Loggable
  * @ORM\Entity
+ * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, symbolRekordId, login, imie, nazwisko, departament, stanowisko, umowa, umowaOd, umowaDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class DaneRekord
 {
+    
+    /**
+     */
+    public function preUpdate(){
+        $d = new \Datetime();
+        if(!$this->getId())
+            $this->setCreatedAt($d);
+        
+        $this->setLastModifiedAt($d);
+    }
     /**
      * @var integer
      *
@@ -119,6 +130,34 @@ class DaneRekord
     */
     private $umowaDo;
     
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+    */
+    private $createdAt;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+    */
+    private $lastModifiedAt;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="createdBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $createdBy;
+    
+     /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="Entry", mappedBy="daneRekord")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $entries; 
     
 
     /**
@@ -369,5 +408,119 @@ class DaneRekord
     public function getLogin()
     {
         return $this->login;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return DaneRekord
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param string $createdBy
+     *
+     * @return DaneRekord
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return string
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
+    }
+
+
+    /**
+     * Set lastModifiedAt
+     *
+     * @param \DateTime $lastModifiedAt
+     *
+     * @return DaneRekord
+     */
+    public function setLastModifiedAt($lastModifiedAt)
+    {
+        $this->lastModifiedAt = $lastModifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastModifiedAt
+     *
+     * @return \DateTime
+     */
+    public function getLastModifiedAt()
+    {
+        return $this->lastModifiedAt;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add entry
+     *
+     * @param \Parp\MainBundle\Entity\Entry $entry
+     *
+     * @return DaneRekord
+     */
+    public function addEntry(\Parp\MainBundle\Entity\Entry $entry)
+    {
+        $this->entries[] = $entry;
+
+        return $this;
+    }
+
+    /**
+     * Remove entry
+     *
+     * @param \Parp\MainBundle\Entity\Entry $entry
+     */
+    public function removeEntry(\Parp\MainBundle\Entity\Entry $entry)
+    {
+        $this->entries->removeElement($entry);
+    }
+
+    /**
+     * Get entries
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntries()
+    {
+        return $this->entries;
     }
 }

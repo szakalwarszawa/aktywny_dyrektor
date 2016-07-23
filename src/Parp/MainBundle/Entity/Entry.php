@@ -9,12 +9,20 @@ use Symfony\Component\Validator\Constraints as Assert;
  * Entry
  *
  * @ORM\Table(name="entry")
+ * @ORM\HasLifecycleCallbacks
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class Entry
 {
 
+    /**
+     */
+    public function preUpdate(){
+        $d = new \Datetime();
+        if(!$this->getId())
+            $this->setCreatedAt($d);
+    }
     /**
      * @var integer
      *
@@ -221,7 +229,20 @@ class Entry
      */
     private $logfile;
     
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="DaneRekord", inversedBy="entries")
+     * @ORM\JoinColumn(name="daneRekord_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $daneRekord;
     
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+    */
+    private $createdAt;
     
     /**
      * Get id
@@ -734,5 +755,53 @@ class Entry
     public function getLogfile()
     {
         return $this->logfile;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Entry
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set daneRekord
+     *
+     * @param \Parp\MainBundle\Entity\DaneRekord $daneRekord
+     *
+     * @return Entry
+     */
+    public function setDaneRekord(\Parp\MainBundle\Entity\DaneRekord $daneRekord = null)
+    {
+        $this->daneRekord = $daneRekord;
+
+        return $this;
+    }
+
+    /**
+     * Get daneRekord
+     *
+     * @return \Parp\MainBundle\Entity\DaneRekord
+     */
+    public function getDaneRekord()
+    {
+        return $this->daneRekord;
     }
 }

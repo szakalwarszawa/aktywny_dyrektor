@@ -28,12 +28,23 @@ class SamaccountnameGeneratorService
     
     protected function generateNextSam($imie, $nazwisko, $try){
         $ret = "";
+        $letters = "abcdefghijklmnopqrstuvwxyz_";
+        $letters_array = str_split($letters);
         $find =    array("ą", "ć", "ę", "ł", "ń", "ó", "ś", "ź", "ż", "Ą", "Ć", "Ę", "Ł", "Ń", "Ó", "Ś", "Ź", "Ż");
         $replace = array("a", "c", "e", "l", "n", "o", "s", "z", "z", "a", "c", "e", "l", "n", "o", "s", "z", "z");
         $imie = strtolower(str_replace($find, $replace, $imie)); 
         $nazwiskoCzesci = explode('-', $nazwisko);
         $nazwisko = strtolower(str_replace($find, $replace, $nazwiskoCzesci[0]));
-        $ret = $imie."_".$nazwisko;
+        $ret2 = $imie."_".$nazwisko;
+        $ret2_array = str_split($ret2);
+        $ret = "";
+        //wyrzucam niedozwolone znaki
+        foreach($ret2_array as $ch){
+            if(in_array($ch, $letters_array)){
+                $ret .= $ch;
+            }
+        }
+        //var_dump($imie, $nazwisko,$ret2, $ret);die();
         if($try == 0){
             $ret = substr($ret, 0, 20);
         }else{
