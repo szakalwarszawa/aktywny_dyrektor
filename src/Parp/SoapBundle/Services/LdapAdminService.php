@@ -670,12 +670,9 @@ class LdapAdminService
     protected function ldap_delete($link_identifier,  $dn)
     {
         if($this->pushChanges){
+            echo "kasuje dn ".$dn;
             ldap_delete($link_identifier, $dn);
         }else{
-            $data = [];
-            foreach($entry as $k => $v){
-                $data[] = "'$k' = '$v'";
-            }
             $this->output->writeln('<error>wykonuje funkcje ldap_delete</error>)');
             $this->output->writeln('<error>dn: '.$dn.'</error>)');
         }

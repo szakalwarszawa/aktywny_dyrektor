@@ -28,7 +28,7 @@ class PublishController extends Controller
            'command' => 'parp:ldapsave',
            'showonly' => $showonly,
            '--samaccountname' => $this->getUser()->getUsername(),
-           //'--ids' => '22936',
+           //'--ids' => '25800',
            //'--message-limit' => $messages,
         ));
         

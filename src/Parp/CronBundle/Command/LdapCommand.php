@@ -51,6 +51,7 @@ class LdapCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
+            $t1 = microtime(true) ;
             if($input->getOption('ids')){
                 $this->ids = $input->getOption('ids');
             }
@@ -130,7 +131,7 @@ class LdapCommand extends ContainerAwareCommand
                         }
                         if ($zmiana->getTitle()) {
                             if ($userNow[0]['title']) {
-                                $output->writeln('  - Zmiana przełożonego : ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
+                                $output->writeln('  - Zmiana stanowiska : ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
                             } else {
                                 $output->writeln('  - Nadanie stanowiska: ' . $zmiana->getTitle());
                             }
@@ -223,6 +224,11 @@ class LdapCommand extends ContainerAwareCommand
                     $em->flush();
                 }
             }
+            
+            $t2 = microtime(true) ;
+            $td = ($t2 - $t1);
+                $output->writeln('<error>Opublikowano, czas : '.$td.' sekund!!!</error>', false);
+            
             
             if(!$this->showonly && count($zmiany) > 0){
                 //zapis loga 

@@ -260,7 +260,7 @@ class DevController extends Controller
             $ADUsers = $ldap->getAllFromAD();
             $dns = [];
             //print_r($ADUsers); die();
-            $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", 
+            $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "aktywny_dyrektor", 
             //"marcin_lipinski",
             ];
             foreach($ADUsers as $u){
@@ -269,14 +269,17 @@ class DevController extends Controller
                     /*$sqls[] = "INSERT INTO `entry` (`department`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
         ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
         */
-                    $dn = "CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST";
+                    $dn = $u['distinguishedname'];//"CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST";
                     $dns[] = $dn;
                     $ldapAdmin->deleteEntity($dn);
             
                 }
             }
+            $sql = "update entry set daneRekord_id = null;delete from entry; delete from dane_rekord;";
             
-            
+            $em = $this->getDoctrine()->getEntityManager();
+            $em->getConnection()->exec( $sql );
+            echo "wykonal sql";
             echo implode("\n\n<br><br>", $dns);
             
         }

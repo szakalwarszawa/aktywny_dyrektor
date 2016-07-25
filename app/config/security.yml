@@ -21,8 +21,8 @@ security:
         zgloszenie_bledu:
                 pattern:  ^/zgloszenie
                 security: false
-        import_rekord:
-                pattern:  ^/import_rekord
+        import_rekord2:
+                pattern:  ^/import_rekord2
                 security: false
         secured_area:
             pattern:    ^/
