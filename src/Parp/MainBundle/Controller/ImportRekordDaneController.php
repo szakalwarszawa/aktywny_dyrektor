@@ -15,10 +15,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ImportRekordDaneController extends Controller
 {
     
+    protected $dataGraniczna = '2013-10-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
     
     protected function getSqlDoImportu(){
         
-        $dataGraniczna = '2011-08-01';//'2016-08-01'; //'2016-07-31'
         //$dataGraniczna = date("Y-m-d");
         $sql = "SELECT
             p.SYMBOL,
@@ -32,11 +32,11 @@ class ImportRekordDaneController extends Controller
             MAX(umowa.DATA_DO) as UMOWADO
             
             from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '$dataGraniczna') AND mpr.DATA_OD <=  '$dataGraniczna'
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."') AND mpr.DATA_OD <=  '".$this->dataGraniczna."'
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '$dataGraniczna') AND stjoin.DATA_OD <=  '$dataGraniczna'
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$this->dataGraniczna."') AND stjoin.DATA_OD <=  '".$this->dataGraniczna."'
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '$dataGraniczna') AND umowa.DATA_OD <=  '$dataGraniczna'
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
             
             GROUP BY 
@@ -46,6 +46,38 @@ class ImportRekordDaneController extends Controller
             p.NAZWISKO, 
             departament.KOD ,
             stanowisko.OPIS,
+            rodzaj.NAZWA,
+            umowa.DATA_OD,
+            umowa.DATA_DO
+            
+            ORDER BY 
+            p.NAZWISKO, p.IMIE
+            ";
+        return $sql;
+    }
+    
+    protected function getSqlDoUzupelnienieDanychOZwolnionych($ids){
+        
+        //AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
+        //$dataGraniczna = date("Y-m-d");
+        $sql = "SELECT
+            p.SYMBOL,
+            COUNT(*) as ile,
+            p.IMIE as imie, 
+            p.NAZWISKO as nazwisko, 
+            rodzaj.NAZWA umowa,
+            MIN(umowa.DATA_OD) as UMOWAOD,
+            MAX(umowa.DATA_DO) as UMOWADO
+            
+            from P_PRACOWNIK p
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL 
+            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
+            where p.SYMBOL IN (".implode(", ", $ids).")
+            GROUP BY 
+            
+            p.SYMBOL,       
+            p.IMIE, 
+            p.NAZWISKO,
             rodzaj.NAZWA,
             umowa.DATA_OD,
             umowa.DATA_DO
@@ -92,6 +124,10 @@ class ImportRekordDaneController extends Controller
         $totalmsg = "";
         //echo "<pre>"; print_r($data); die();
         $ldap = $this->get('ldap_service');
+        
+        $rekordIds = [];
+        
+        
         foreach($data as $in => $d){
             if(count($d) > 1){
                 //mamy dubla szukamy najpozniejszej umowy
@@ -124,7 +160,7 @@ class ImportRekordDaneController extends Controller
                 $row = $d[0];
             }
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
-            
+            $rekordIds[$this->parseValue($row['SYMBOL'])] = $this->parseValue($row['SYMBOL']);
             //temp
             $dr == null;
             $d = new \Datetime();
@@ -144,6 +180,7 @@ class ImportRekordDaneController extends Controller
                 $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
                 $dr->setLogin($login);
             }
+            
             $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
             $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
             $dr->setUmowa($this->parseValue($row['UMOWA'], false));
@@ -255,6 +292,23 @@ class ImportRekordDaneController extends Controller
             $this->addFlash('warning', $totalmsg);
         //echo "<pre>"; print_r($imported); 
         //die();
+        
+        
+        //teraz powinien sprawdzac czy ktos mi nie zniknal
+        $drs = $em->getRepository('ParpMainBundle:DaneRekord')->findByNotHavingRekordIds($rekordIds);
+        if(count($drs) > 0){
+            $ids = [];
+            foreach($drs as $d){
+                $ids[$d->getSymbolRekordId()] = $d->getSymbolRekordId();
+            }
+            $sql = $this->getSqlDoUzupelnienieDanychOZwolnionych($ids);
+            
+            $rowsZwolnieni = $this->executeQuery($sql);
+            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ids);echo "</pre>";
+            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($drs);echo "</pre>";
+            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($rowsZwolnieni);echo "</pre>";
+            die("mam zwolnienie pracownika!!!");
+        }
         $em->flush(); 
         return $this->redirect($this->generateUrl('danerekord'));
     }
@@ -270,7 +324,6 @@ class ImportRekordDaneController extends Controller
     {
         $sciecha = "";
         
-        $dataGraniczna = '2016-07-01';//'2016-08-01'; //'2016-07-31'
             $sql = "SELECT
             p.SYMBOL,
             COUNT(*) as ile,
@@ -282,11 +335,11 @@ class ImportRekordDaneController extends Controller
             MIN(umowa.DATA_OD) as UMOWAOD,
             MAX(umowa.DATA_DO) as UMOWADO
             from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '$dataGraniczna') AND mpr.DATA_OD <=  '$dataGraniczna'
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."') AND mpr.DATA_OD <=  '".$this->dataGraniczna."'
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '$dataGraniczna') AND stjoin.DATA_OD <=  '$dataGraniczna'
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$this->dataGraniczna."') AND stjoin.DATA_OD <=  '".$this->dataGraniczna."'
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '$dataGraniczna') AND umowa.DATA_OD <=  '$dataGraniczna'
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
             join P_STAWKA stawka on stawka.SYMBOL = p.SYMBOL
             

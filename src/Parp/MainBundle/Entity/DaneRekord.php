@@ -11,7 +11,7 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  *
  * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko"})})
  * a@Gedmo\Loggable
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DaneRekordRepository")
  * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, symbolRekordId, login, imie, nazwisko, departament, stanowisko, umowa, umowaOd, umowaDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
