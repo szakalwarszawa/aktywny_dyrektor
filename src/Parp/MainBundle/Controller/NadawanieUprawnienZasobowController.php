@@ -46,7 +46,11 @@ class NadawanieUprawnienZasobowController extends Controller
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
-        //print_r($sams); die();
+        if($samt == ""){
+            $this->get('session')->getFlashBag()->set('warning', 'Nie można znaleźć wybranych użytkowników!');
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));    
+        }
+        //print_r($samt); die();
         $sams = array();
         foreach($samt as $k=>$v){
             if($v == 1){

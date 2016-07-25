@@ -171,7 +171,7 @@ class PlikController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Plik został utworzony.');
+            $this->get('session')->getFlashBag()->set('warning', 'Plik został załączony.');
                 return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
         }
 
@@ -195,7 +195,7 @@ class PlikController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Plik', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', 'submit', array('label' => 'Załącz Plik', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }

@@ -21,7 +21,7 @@ class ParpUser implements UserInterface
 
     public function getRoles()
     {
-        $this->roles = ["PARP_ADMIN"];//hack by dalo sie nadac uprawnienia jak nikt nie ma
+        //$this->roles = ["PARP_ADMIN"];//hack by dalo sie nadac uprawnienia jak nikt nie ma
         return $this->roles;
     }
 

@@ -23,7 +23,7 @@ class ZastepstwoType extends AbstractType
     {
         $builder
             //->add('deletedAt')
-            ->add('opis');
+            ->add('opis', 'textarea', ['required' => true]);
         $builder->add('ktoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2'))

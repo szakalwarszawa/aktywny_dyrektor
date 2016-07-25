@@ -178,6 +178,14 @@ class ZastepstwoController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
         }
+        
+        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles()) || $entity->getKogoZastepuje() != $this->getUser()->getUsername()){
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Nie masz uprwanień do edycji nie swoich zastępstw.');
+            return $this->redirect($this->generateUrl('zastepstwo'));
+        }
+        
+        
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);

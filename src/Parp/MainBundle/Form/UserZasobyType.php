@@ -68,11 +68,11 @@ class UserZasobyType extends AbstractType
                     'data' => $d1,
                     //'format' => 'Y-m-d'
                 ))
-            ->add('bezterminowo')
+            ->add('bezterminowo', 'checkbox', ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             //->add('aktywneOdPomijac')
             ->add('aktywneDo', 'text', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker inputAktywneDo',
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Aktywne do',

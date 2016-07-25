@@ -8,9 +8,13 @@
                 <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
                 <li><b>Zasoby: </b>
                 {% set i = 0 %}
+                {% set przetworzoneZasoby = {} %}
                 {% for z in entity.userZasoby %}                
                     {% set i = i + 1%}
-                    {{z.zasobId|zasobNazwa}} {% if i != entity.userZasoby|length %},{%endif%}
+                    {% if z.zasobId not in przetworzoneZasoby %}
+                        {% set przetworzoneZasoby = przetworzoneZasoby|merge([z.zasobId]) %}
+                        {{z.zasobId|zasobNazwa}} {% if i != entity.userZasoby|length %},{%endif%}
+                    {% endif %}
                 {% endfor%}
                 </li>
                 <li><b>Statusy:</b></li>

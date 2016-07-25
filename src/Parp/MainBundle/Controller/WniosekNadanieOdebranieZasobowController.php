@@ -62,7 +62,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         
             // Url is the same for the grids
-            return new RedirectResponse($grid->getRouteUrl());
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         }
         else
         {
@@ -205,7 +205,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     'wniosekId' => $entity->getId()
                 )));
         }elseif(!(($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())){
-            die("Blad 67 Nie ma co odebrac !!!!");
+            
+            //die("Blad 67 Nie ma co odebrac !!!!");
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Ten użytkownik nie ma żadnych przypisanych w systemie zasobów, nie ma zatem co odebrać za pomocą wniosku!');
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));
         }
         if($entity->getOdebranie() && !$jestCoOdebrac){
             $msg = ("Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!");
