@@ -15,7 +15,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ImportRekordDaneController extends Controller
 {
     
-    protected $dataGraniczna = '2013-10-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
+    protected $dataGraniczna = '2016-07-31';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
     
     protected function getSqlDoImportu(){
         
