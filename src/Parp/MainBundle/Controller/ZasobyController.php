@@ -37,7 +37,13 @@ class ZasobyController extends Controller
         //$entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
     
         $source = new Entity('ParpMainBundle:Zasoby');
-    
+        $tableAlias = $source->getTableAlias();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias)
+            {
+                
+                $query->andWhere($tableAlias.'.published = 1');
+            });
         $grid = $this->get('grid');
         $grid->setSource($source);
     

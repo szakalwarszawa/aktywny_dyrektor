@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="zasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZasobyRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -251,6 +251,8 @@ class Zasoby
      *
      * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob")
      * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
+     * @GRID\Column(field="wniosekUtworzenieZasobu.wniosek.numer", title="Numer")
+     * @GRID\Column(field="wniosekUtworzenieZasobu.id", visible=false)
      */
     private $wniosekUtworzenieZasobu;
     

@@ -117,13 +117,24 @@ class WniosekUtworzenieZasobuController extends Controller
             //echo "<pre>";        \Doctrine\Common\Util\Debug::dump($entity,10); die();
             $em->persist($entity);
             $em->persist($entity->getWniosek());
+            switch($entity->getTyp()){
+                case "nowy":
+                    $entity->getZasob()->setWniosekUtworzenieZasobu($entity);
+                    break;
+                case "kasowanie":
+                    $entity->getZasob()->setWniosekSkasowanieZasobu($entity);
+                    break;
+                case "zmiana":
+                    $entity->getZasob()->setWniosekUtworzenieZasobuZmieniajacy($entity);
+                    break;
+            }
             if($entity->getZasob()){
                 $em->persist($entity->getZasob());
             }
             $this->setWniosekStatus($entity, "00_TWORZONY_O_ZASOB", false);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'WniosekUtworzenieZasobu został utworzony.');
+            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
                 return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', ['id' => $entity->getId()]));
         }else{
             
@@ -357,7 +368,9 @@ class WniosekUtworzenieZasobuController extends Controller
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
         $encoders = array(new XmlEncoder(), new JsonEncoder());
-        $normalizers = array(new ObjectNormalizer());
+        $normalizer = new ObjectNormalizer();
+        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu'));
+        $normalizers = array($normalizer);
         
         $serializer = new Serializer($normalizers, $encoders);
         $jsonContent = $serializer->serialize($entity, 'json');

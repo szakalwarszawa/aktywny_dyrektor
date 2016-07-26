@@ -86,11 +86,21 @@ class WniosekUtworzenieZasobuType extends AbstractType
             
             //die(".".$this->typ); 
             if($this->typ == "zmiana"){
-                $builder->add('zmienianyZasob', 'entity', array(
-                    'mapped' => false,
-                   'label'=>"Wybierz zasób", 'class' => 'Parp\MainBundle\Entity\Zasoby',
-                   'attr' => ['class' => 'select2', 'style' => "width:100%"])
-                );
+                if($this->entity->getId()){
+                    $builder->add('zmienianyZasob', 'text', ['mapped' => false, 'attr' => ['readonly' => true], 'data' => $this->entity->getZmienianyZasob()->getNazwa()]);
+                }else{
+                    $builder->add('zmienianyZasob', 'entity', array(
+                        'mapped' => true,
+                       'label'=>"Wybierz zasób", 'class' => 'Parp\MainBundle\Entity\Zasoby',
+                       'attr' => ['class' => 'select2', 'style' => "width:100%"],
+                       'query_builder' => function( $er) {
+                                return $er->createQueryBuilder('u')
+                                    ->andWhere('u.published = 1');
+                                    //->orderBy('u.name', 'ASC');//->findByPublished(1);
+                             }
+                        )
+                    );
+                }
             }else{
                 $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
             }   

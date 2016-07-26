@@ -202,6 +202,16 @@
     {% endspaceless %}
 </div>
 {% endblock grid_actions %}
+
+
+{% block grid_column_wniosekUtworzenieZasobu_wniosek_numer_cell %}
+{% if row.getField('wniosekUtworzenieZasobu.id') %}
+<a href="{{path('wniosekutworzeniezasobu_edit', {id: row.getField('wniosekUtworzenieZasobu.id')})}}" class="btn btn-primary">{{value}}</a>
+{%else%}
+Bez wniosku
+{%endif%}
+{% endblock %}
+
 {#{% block grid_column_actions_cell %}
     {% for action in column.rowActions %}
         {% if (action.attributes.alt == 'Evaluation' 
