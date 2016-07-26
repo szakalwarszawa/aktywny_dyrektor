@@ -168,7 +168,7 @@ class LdapAdminService
         ));
         $tmpResults = ldap_get_entries($ldapconn, $search);
 
-        $ldapstatus = ldap_error($ldapconn);
+        $ldapstatus = $this->ldap_error($ldapconn);
 
         if($ldapstatus != "Success"){
             $e = new \Exception($ldapstatus);
@@ -291,13 +291,17 @@ class LdapAdminService
         }
 
         $userAD = $this->getUserFromAD($person->getSamaccountname());
-        $department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
+        //$department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
+        $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $person->getDepartment(), 'nowaStruktura' => true]);
+            
         if ($person->getDepartment()) {
             $entry['department'] = $person->getDepartment();
             if (!empty($department)) {
                 $entry['description'] = $department->getShortname();
             }
-            $departmentOld = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($userAD[0]['department']);
+            //$departmentOld = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($userAD[0]['department']);
+            $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $userAD[0]['department'], 'nowaStruktura' => true]);
+                
             $person->setGrupyAD($departmentOld, "-");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             //jesli zmiana departamnentu dodajemy nowe grupy AD
@@ -325,10 +329,10 @@ class LdapAdminService
             $res = $this->ldap_modify($ldapconn, $dn, $entry);
             
             
-            $error = ldap_error($ldapconn);
-            $errno = ldap_errno($ldapconn);
+            $error = $this->ldap_error($ldapconn);
+            $errno = $this->ldap_errno($ldapconn);
 
-            $ldapstatus = ldap_error($ldapconn);    
+            $ldapstatus = $this->ldap_error($ldapconn);    
             if($ldapstatus != "Success"){
                 if($this->debug){
                     die("bbb ".$ldapstatus);    
@@ -354,13 +358,13 @@ class LdapAdminService
             }
             $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, $parent, TRUE);
             
-            $ldapstatus = ldap_error($ldapconn);
+            $ldapstatus = $this->ldap_error($ldapconn);
         }elseif($person->getCn()){
             //zmieniamy tylko cn
             $cn = $person->getCn();
             $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
             
-            $ldapstatus = ldap_error($ldapconn);
+            $ldapstatus = $this->ldap_error($ldapconn);
         }
         if($person->getMemberOf()){
             
@@ -501,7 +505,7 @@ class LdapAdminService
             print_r($entry);echo "</pre>";
         }
         $this->ldap_add($ldapconn, $dn, $entry);
-        $ldapstatus = ldap_error($ldapconn);
+        $ldapstatus = $this->ldap_error($ldapconn);
         
         
         $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
@@ -570,13 +574,13 @@ class LdapAdminService
                     
                 }else{ 
                     echo "dodaje biuro !!!!";
-                    $ldapstatus2 = ldap_error($ldapconn);
+                    $ldapstatus2 = $this->ldap_error($ldapconn);
                     $res = $this->ldap_add($ldapconn, $dep->getOuAD().", ".$userdn, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'
                     )); 
-                    $ldapstatus = ldap_error($ldapconn);
+                    $ldapstatus = $this->ldap_error($ldapconn);
                     //var_dump("Nie ma OU", $userdn."<br>", $info["count"]."<br>".$ldapstatus2."<br>".$ldapstatus."<br>".$res."<br>"."<br>");  
                     
                 }
@@ -590,7 +594,7 @@ class LdapAdminService
     /////////tutaj funkcje opakowajace wypychanie do AD
 
     //zmienia atrybuty usera poza departamentem i grupami dostepu
-    protected function ldap_modify($link_identifier,  $dn,  $entry)
+    public function ldap_modify($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
             ldap_modify($link_identifier, $dn, $entry);
@@ -606,7 +610,7 @@ class LdapAdminService
     }
     
     //zmienia DN userowi , czyli departament
-    protected function ldap_rename($link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn )
+    public function ldap_rename($link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn )
     {
         if($this->pushChanges){
             ldap_rename( $link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn );
@@ -620,7 +624,7 @@ class LdapAdminService
     }
     
     //usuwa usera z grupy w AD
-    protected function ldap_mod_add($link_identifier,  $dn,  $entry)
+    public function ldap_mod_add($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
             ldap_mod_add($link_identifier, $dn, $entry);
@@ -636,7 +640,7 @@ class LdapAdminService
     }
     
     //dodaje usera do grupy w AD
-    protected function ldap_mod_del($link_identifier,  $dn,  $entry)
+    public function ldap_mod_del($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
             ldap_mod_del($link_identifier, $dn, $entry);
@@ -652,7 +656,7 @@ class LdapAdminService
     }
     
     //dodaje usera do AD
-    protected function ldap_add($link_identifier,  $dn,  $entry)
+    public function ldap_add($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
             ldap_add($link_identifier, $dn, $entry);
@@ -667,7 +671,7 @@ class LdapAdminService
         }
     }
     //kasuje usera z AD
-    protected function ldap_delete($link_identifier,  $dn)
+    public function ldap_delete($link_identifier,  $dn)
     {
         if($this->pushChanges){
             echo "kasuje dn ".$dn;
@@ -677,6 +681,13 @@ class LdapAdminService
             $this->output->writeln('<error>dn: '.$dn.'</error>)');
         }
     }
+    public function ldap_error($ldapconn){
+        return ldap_error($ldapconn);
+    }
+    public function ldap_errno($ldapconn){
+        return ldap_errno($ldapconn);
+    }
+
     public function deleteEntity($dn){
         $ldapconn = ldap_connect($this->ad_host, $this->port);
         $ldapdomain = $this->ad_domain;
@@ -690,6 +701,23 @@ class LdapAdminService
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         $this->ldap_delete($ldapconn, $dn);
+    }
+    
+    public function prepareConnection(){
+        $ldapconn = ldap_connect($this->ad_host, $this->port);
+        if (!$ldapconn)
+            throw new Exception('Brak połączenia z serwerem domeny!');
+        $ldapdomain = $this->ad_domain;
+        $userdn = $this->useradn . $this->patch;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        $ldap_username = $this->AdminUser;
+        $ldap_password = $this->AdminPass;
+
+        $ldapbind = ldap_bind($ldapconn, $this->AdminUser . $ldapdomain, $this->AdminPass);
+        return $ldapconn;
     }
     
 }
