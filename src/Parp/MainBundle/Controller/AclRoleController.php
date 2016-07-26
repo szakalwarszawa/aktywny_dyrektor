@@ -109,7 +109,7 @@ class AclRoleController extends Controller
      */
     private function createCreateForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType(), $entity, array(
+        $form = $this->createForm(new AclRoleType($this->getUsers()), $entity, array(
             'action' => $this->generateUrl('aclrole_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class AclRoleController extends Controller
     */
     private function createEditForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType(), $entity, array(
+        $form = $this->createForm(new AclRoleType($this->getUsers()), $entity, array(
             'action' => $this->generateUrl('aclrole_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -281,5 +281,21 @@ class AclRoleController extends Controller
             ->add('submit', 'submit', array('label' => 'Skasuj AclRole','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
+    }
+    
+    private function getUsers(){
+        $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $widzi_wszystkich = true;//in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
+        
+        $ADUsers = $ldap->getAllFromAD();
+        $users = array();
+        foreach($ADUsers as $u){
+            //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
+            if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                $users[$u['samaccountname']] = $u['name'];
+            }
+        }
+        return $users;
     }
 }

@@ -73,8 +73,8 @@ class ZasobyType extends AbstractType
             ))
             ->add('miejsceInstalacji')
             ->add('opisZasobu')
-            ->add('modulFunkcja', 'text', ['attr' => ['class' => 'tagAjaxInputNoAjax']])
-            ->add('poziomDostepu', 'text', ['attr' => ['class' => 'tagAjaxInputNoAjax']])
+            ->add('modulFunkcja', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
+            ->add('poziomDostepu', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
             ->add('grupyAD', 'text', array(
                 'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))

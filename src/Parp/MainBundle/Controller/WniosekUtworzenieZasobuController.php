@@ -303,7 +303,12 @@ class WniosekUtworzenieZasobuController extends Controller
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
-            'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB"),
+            'canReturn' => (
+                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && 
+                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB" && 
+                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "04_EDYCJA_ADMINISTRATOR_O_ZASOB" && 
+                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "05_EDYCJA_TECHNICZNY_O_ZASOB"
+            ),
             'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
             'editor' => $editor,
             'entity'      => $entity,
@@ -649,7 +654,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $kom = new \Parp\MainBundle\Entity\Komentarz();
             $kom->setObiekt('WniosekUtworzenieZasobu');
             $kom->setObiektId($id);
-            $kom->setTytul("Wniosek ".($isAccepted == "return" ? "zwrócenia" : "odrzucenia")." z powodu:");
+            $kom->setTytul("Wniosek odbito z powodu:");
             $kom->setOpis($txt);
             $kom->setSamaccountname($this->getUser()->getUsername());
             $kom->setCreatedAt(new \Datetime());
@@ -757,16 +762,42 @@ class WniosekUtworzenieZasobuController extends Controller
                         case "accept":
                             $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB", false);
                             break;
+                        case "moveToAdmin":
+                            $this->setWniosekStatus($wniosek, "04_EDYCJA_ADMINISTRATOR_O_ZASOB", false);
+                            break;
+                        case "moveToAdminTechniczny":
+                            $this->setWniosekStatus($wniosek, "05_EDYCJA_TECHNICZNY_O_ZASOB", false);
+                            break;
                         case "return":
                             $this->setWniosekStatus($wniosek, "02_EDYCJA_WLASCICIEL_O_ZASOB", true);
+                            break;
+                    }
+                case "04_EDYCJA_ADMINISTRATOR_O_ZASOB":
+                    switch($isAccepted){
+                        case "moveToAdminRejestru":
+                            $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);
+                            break;
+                        case "moveToAdminTechniczny":
+                            $this->setWniosekStatus($wniosek, "05_EDYCJA_TECHNICZNY_O_ZASOB", false);
+                            break;
+                    }
+                    break;
+                case "05_EDYCJA_TECHNICZNY_O_ZASOB":
+                    switch($isAccepted){
+                        case "moveToAdminRejestru":
+                            $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);
+                            break;
+                        case "moveToAdmin":
+                            $this->setWniosekStatus($wniosek, "04_EDYCJA_ADMINISTRATOR_O_ZASOB", false);
                             break;
                     }
                     break;
             }
             
             if($isAccepted == "acceptAndPublish"){
-                
-                die('tu publikowac choc nie bardzo wiem co ?? moze jednak zadanie 1!!!');
+                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY_O_ZASOB", false);
+                $wniosek->getZasob()->setPublished(true);
+                //die('tu publikowac choc nie bardzo wiem co ?? moze jednak zadanie 1!!!');
             }
         }
         //die('a');
@@ -811,7 +842,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     $g = trim($g);
                     //$g = $this->get('renameService')->fixImieNazwisko($g);
                     //$g = $this->get('renameService')->fixImieNazwisko($g);
-                    $ADManager = $ldap->getUserFromAD(null, $g);
+                    $ADManager = $ldap->getUserFromAD($g);
                     if ($this->debug) echo "<br>szuka wlasciciela  ".$g."<br>";
                     if(count($ADManager) > 0){
                         if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
@@ -834,6 +865,41 @@ class WniosekUtworzenieZasobuController extends Controller
                     $where[$u->getSamaccountname()] = $u->getSamaccountname(); 
                     if ($this->debug) echo "<br>added ".$u->getSamaccountname()."<br>";
                 }
+                break;
+            case "administrator":
+                //
+                //foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
+                    $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
+                    $grupa = explode(",", $zasob->getAdministratorZasobu());
+                    foreach($grupa as $g){
+                        $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                        $g = trim($g);
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
+                        $ADManager = $ldap->getUserFromAD($g);
+                        if(count($ADManager) > 0){
+                            if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                        }
+                        else{
+                            throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
+                        }
+                    }
+                //}
+                break;
+            case "techniczny":
+                //
+                //foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
+                    $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
+                    $grupa = explode(",", $zasob->getAdministratorTechnicznyZasobu());
+                    foreach($grupa as $g){
+                        //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                        //$g = $this->get('renameService')->fixImieNazwisko($g);
+                        $g = trim($g);
+                        $ADManager = $ldap->getUserFromAD($g);
+                        $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                        if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                    }
+                //}
                 break;
         }
     }

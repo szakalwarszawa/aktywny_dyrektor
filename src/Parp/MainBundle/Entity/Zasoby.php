@@ -294,6 +294,15 @@ class Zasoby
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $dataUsunieciaZasobu;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="published", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $published = false;
 
     /**
      * Get id
@@ -1171,5 +1180,29 @@ class Zasoby
     public function getDataUsunieciaZasobu()
     {
         return $this->dataUsunieciaZasobu;
+    }
+
+    /**
+     * Set published
+     *
+     * @param boolean $published
+     *
+     * @return Zasoby
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * Get published
+     *
+     * @return boolean
+     */
+    public function getPublished()
+    {
+        return $this->published;
     }
 }

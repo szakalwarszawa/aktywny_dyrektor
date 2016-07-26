@@ -13,7 +13,7 @@ class StringToArrayTransformer implements DataTransformerInterface
      */
     public function transform($array)
     {
-        
+        echo "<pre>"; print_r($array);
         return $array ? explode(",", $array) : array();
     }
 
