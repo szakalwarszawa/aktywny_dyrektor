@@ -789,4 +789,45 @@ class DevController extends Controller
     protected function parseZasobGroupName(){
         
     }
+    
+    
+    /**
+     * @Route("/fixZasobyWlascicieliAdminow", name="fixZasobyWlascicieliAdminow")
+     * @Template()
+     */
+    public function fixZasobyWlascicieliAdminowAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        foreach($zasoby as $z){
+            $z->getWlascicielZasobu($this->fixLudzi($z->getWlascicielZasobu()));
+            $z->getAdministratorZasobu($this->fixLudzi($z->getAdministratorZasobu()));
+            $z->getAdministratorTechnicznyZasobu($this->fixLudzi($z->getAdministratorTechnicznyZasobu()));
+        }
+        //$em->flush();
+                
+    }
+    protected function fixLudzi($ludzie){
+        $pomijaj = ["Aktywny Dyrektor"];
+        $ret = [];
+        $ldap = $this->get('ldap_service');
+        //przerobic ich na samaccountnames
+        $larr = explode(",", $ludzie);
+        foreach($larr as $l){
+            $l = trim($l);
+            //na razie pomija ytych z nazwiskami w nawiasach
+            //TODO: poprawich tych z nazwiskami w nawiasach 
+            if($l != "" && !in_array($l, $pomijaj) && strstr($l, "(") === false){
+                echo ("Szukam osoby ".$l."<br>");
+                $ADuser = $ldap->getUserFromAD(null, $l);
+                if(count($ADuser) > 0){
+                    $ret[] = $ADuser[0]['samaccountname'];
+                }else{
+                    echo ("Blad 54367 nie moge znalezc osoby ".$l."<br>");
+                }
+            }
+        }
+        $exists = $ldap->checkGroupExistsFromAD(null);
+        return implode(",", $ret);
+    }
 }    

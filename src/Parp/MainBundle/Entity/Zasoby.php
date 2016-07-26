@@ -258,11 +258,12 @@ class Zasoby
     
     
     /**
+     * @var string
      *
-     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zmienianyZasob")
-     * @ORM\JoinColumn(name="wniosekUtworzenieZasobuZmieniajacy_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity="WniosekUtworzenieZasobu", mappedBy="zmienianyZasob")
+     * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosekUtworzenieZasobuZmieniajacy;
+    private $wnioskiZmieniajaceZasob;
     
     
 
@@ -1064,29 +1065,6 @@ class Zasoby
         return $this->wniosekUtworzenieZasobu;
     }
 
-    /**
-     * Set wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @return Zasoby
-     */
-    public function setWniosekUtworzenieZasobuZmieniajacy(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy = null)
-    {
-        $this->wniosekUtworzenieZasobuZmieniajacy = $wniosekUtworzenieZasobuZmieniajacy;
-
-        return $this;
-    }
-
-    /**
-     * Get wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
-     */
-    public function getWniosekUtworzenieZasobuZmieniajacy()
-    {
-        return $this->wniosekUtworzenieZasobuZmieniajacy;
-    }
 
     /**
      * Set wniosekSkasowanieZasobu
@@ -1206,5 +1184,46 @@ class Zasoby
     public function getPublished()
     {
         return $this->published;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->wnioskiZmieniajaceZasob = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add wnioskiZmieniajaceZasob
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     *
+     * @return Zasoby
+     */
+    public function addWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    {
+        $this->wnioskiZmieniajaceZasob[] = $wnioskiZmieniajaceZasob;
+
+        return $this;
+    }
+
+    /**
+     * Remove wnioskiZmieniajaceZasob
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     */
+    public function removeWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    {
+        $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);
+    }
+
+    /**
+     * Get wnioskiZmieniajaceZasob
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getWnioskiZmieniajaceZasob()
+    {
+        return $this->wnioskiZmieniajaceZasob;
     }
 }

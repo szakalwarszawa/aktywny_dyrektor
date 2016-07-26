@@ -226,7 +226,10 @@
                             <label class="col-sm-2  control-label">Wybierz zasób do zmiany</label>
                             <div class="col-sm-10">{{ form_widget(form.zmienianyZasob) }}  </div>
                         </div> 
+                        {{ form_row(form.zmienionePola) }}
+                    {%else%}
                         
+                        {{ form_row(form.zmienionePola, {'attr' : {'class' : 'hidden'}}) }}
                     {%endif%}
                     
                     {%if(entity.typ == "kasowanie" )%}
@@ -292,7 +295,7 @@
 <div class="btn-group">
 
 <a class="btn btn-primary" href="{{ path('wniosekutworzeniezasobu') }}">
-    <i class="fa fa-list"></i> Lista WniosekUtworzenieZasobu
+    <i class="fa fa-list"></i> Lista Wniosków
 </a>
 </div>
 
@@ -339,6 +342,13 @@ if($('#parp_mainbundle_wniosekutworzeniezasobu_zasob').hasClass('select2')){
     $('#parp_mainbundle_wniosekutworzeniezasobu_zasob').select2().on('change', function(){
         $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_nazwa').val('kasowanie zasobow');
     });
+}
+var z = $('#parp_mainbundle_wniosekutworzeniezasobu_zmienionePola').val();
+var zs = z.split(',');
+for(var i = 0; i < zs.length; i++){
+    var sel = '#parp_mainbundle_wniosekutworzeniezasobu_zasob_'+zs[i];
+    console.log(sel);
+    $(sel).closest('.form-group').addClass('has-error');
 }
 </script>
     

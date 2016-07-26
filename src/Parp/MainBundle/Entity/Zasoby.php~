@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="zasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZasobyRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -251,16 +251,19 @@ class Zasoby
      *
      * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob")
      * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
+     * @GRID\Column(field="wniosekUtworzenieZasobu.wniosek.numer", title="Numer")
+     * @GRID\Column(field="wniosekUtworzenieZasobu.id", visible=false)
      */
     private $wniosekUtworzenieZasobu;
     
     
     /**
+     * @var string
      *
-     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zmienianyZasob")
-     * @ORM\JoinColumn(name="wniosekUtworzenieZasobuZmieniajacy_id", referencedColumnName="id")
+     * @ORM\OneToMany(targetEntity="WniosekUtworzenieZasobu", mappedBy="zmienianyZasob")
+     * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosekUtworzenieZasobuZmieniajacy;
+    private $wnioskiZmieniajaceZasob;
     
     
 
@@ -1062,29 +1065,6 @@ class Zasoby
         return $this->wniosekUtworzenieZasobu;
     }
 
-    /**
-     * Set wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @return Zasoby
-     */
-    public function setWniosekUtworzenieZasobuZmieniajacy(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy = null)
-    {
-        $this->wniosekUtworzenieZasobuZmieniajacy = $wniosekUtworzenieZasobuZmieniajacy;
-
-        return $this;
-    }
-
-    /**
-     * Get wniosekUtworzenieZasobuZmieniajacy
-     *
-     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
-     */
-    public function getWniosekUtworzenieZasobuZmieniajacy()
-    {
-        return $this->wniosekUtworzenieZasobuZmieniajacy;
-    }
 
     /**
      * Set wniosekSkasowanieZasobu
@@ -1180,5 +1160,29 @@ class Zasoby
     public function getDataUsunieciaZasobu()
     {
         return $this->dataUsunieciaZasobu;
+    }
+
+    /**
+     * Set published
+     *
+     * @param boolean $published
+     *
+     * @return Zasoby
+     */
+    public function setPublished($published)
+    {
+        $this->published = $published;
+
+        return $this;
+    }
+
+    /**
+     * Get published
+     *
+     * @return boolean
+     */
+    public function getPublished()
+    {
+        return $this->published;
     }
 }

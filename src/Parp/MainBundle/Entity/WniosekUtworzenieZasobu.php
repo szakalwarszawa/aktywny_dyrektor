@@ -59,8 +59,9 @@ class WniosekUtworzenieZasobu
     
     /**
      *
-     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobuZmieniajacy")
-     * @ORM\JoinColumn(name="zmieniany_zasob_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Zasoby", inversedBy="wnioskiZmieniajaceZasob")
+     * @ORM\JoinColumn(name="zmienianyZasob_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zmienianyZasob; 
     

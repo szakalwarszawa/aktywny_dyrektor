@@ -48,6 +48,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
             //->add('proponowanaNazwa')
                       
             //->add('zasob')
+            ->add('zmienionePola', 'text', ['attr' => ['readonly' => true]])
             ->add('zrealizowany', 'hidden');
            
            
@@ -105,9 +106,15 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
             }   
             if($this->typ == "kasowanie"){
-                $builder->add('zasob', 'entity', array(
+                $builder->add('zmienianyZasob', 'entity', array(
+                    'query_builder' => function( $er) {
+                        return $er->createQueryBuilder('u')
+                            ->andWhere('u.published = 1');
+                            //->orderBy('u.name', 'ASC');//->findByPublished(1);
+                    },
                    'label'=>"Wybierz zasób do skasowania", 'class' => 'Parp\MainBundle\Entity\Zasoby', 'attr' => ['class' => 'select2', 'style' => "width:100%"])
                 );
+                $builder->add('zasob', 'hidden', ['attr' => ['class' => 'form-item']]);
             }else{
                 $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->container, $this->nazwaLabel), array(
                    'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')

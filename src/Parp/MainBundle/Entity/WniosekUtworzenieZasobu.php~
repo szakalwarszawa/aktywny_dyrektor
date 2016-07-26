@@ -59,8 +59,9 @@ class WniosekUtworzenieZasobu
     
     /**
      *
-     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobuZmieniajacy")
-     * @ORM\JoinColumn(name="zmieniany_zasob_id", referencedColumnName="id")
+     * @ORM\ManyToOne(targetEntity="Zasoby", inversedBy="wnioskiZmieniajaceZasob")
+     * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zmienianyZasob; 
     
@@ -705,4 +706,52 @@ class WniosekUtworzenieZasobu
         return "";
     }
 
+
+    /**
+     * Set zmienionePola
+     *
+     * @param string $zmienionePola
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setZmienionePola($zmienionePola)
+    {
+        $this->zmienionePola = $zmienionePola;
+
+        return $this;
+    }
+
+    /**
+     * Get zmienionePola
+     *
+     * @return string
+     */
+    public function getZmienionePola()
+    {
+        return $this->zmienionePola;
+    }
+
+    /**
+     * Set zmienianyZasob
+     *
+     * @param \Parp\MainBundle\Entity\Zasoby $zmienianyZasob
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setZmienianyZasob(\Parp\MainBundle\Entity\Zasoby $zmienianyZasob = null)
+    {
+        $this->zmienianyZasob = $zmienianyZasob;
+
+        return $this;
+    }
+
+    /**
+     * Get zmienianyZasob
+     *
+     * @return \Parp\MainBundle\Entity\Zasoby
+     */
+    public function getZmienianyZasob()
+    {
+        return $this->zmienianyZasob;
+    }
 }

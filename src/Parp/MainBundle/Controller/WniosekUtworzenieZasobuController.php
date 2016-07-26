@@ -122,10 +122,10 @@ class WniosekUtworzenieZasobuController extends Controller
                     $entity->getZasob()->setWniosekUtworzenieZasobu($entity);
                     break;
                 case "kasowanie":
-                    $entity->getZasob()->setWniosekSkasowanieZasobu($entity);
+                    $entity->getZmienianyZasob()->setWniosekSkasowanieZasobu($entity);
                     break;
                 case "zmiana":
-                    $entity->getZasob()->setWniosekUtworzenieZasobuZmieniajacy($entity);
+                    $entity->getZmienianyZasob()->addWnioskiZmieniajaceZasob($entity);
                     break;
             }
             if($entity->getZasob()){
@@ -183,7 +183,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity = new WniosekUtworzenieZasobu();
         $form   = $this->createCreateForm($entity, $entity->getTyp());
         return ['form' => $form->createView(),
-            'editor' => false,];
+            'editor' => false,'delta' => []];
     }
     protected function ustawTyp($entity, $typ){
         switch($typ){
@@ -309,7 +309,11 @@ class WniosekUtworzenieZasobuController extends Controller
         if(substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
             $editor = false;
         }
-        
+        $delta = [];
+        if($entity->getTyp() == "zmiana"){
+            $delta = $this->obliczZmienionePola($entity);
+            $entity->setZmienionePola(implode(",", array_keys($delta)));
+        }
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
@@ -325,9 +329,25 @@ class WniosekUtworzenieZasobuController extends Controller
             'entity'      => $entity,
             'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'delta' => $delta
         );
     }
-
+    protected function obliczZmienionePola($entity){
+        $em = $this->getDoctrine()->getManager();
+        $metadata = $em->getClassMetadata("Parp\\MainBundle\\Entity\\Zasoby");
+        $z1 = array();
+        $z2 = array();
+        foreach($metadata->getFieldNames() as $fm){
+            $getter = "get".ucfirst($fm);
+            $z1[$fm] = $entity->getZasob()->{$getter}();
+            $z2[$fm] = $entity->getZmienianyZasob()->{$getter}();
+        }
+        $delta = array_diff($z1, $z2);
+        
+        
+        unset($delta['id']);
+        return $delta;
+    }
     /**
     * Creates a form to edit a WniosekUtworzenieZasobu entity.
     *
@@ -369,7 +389,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu'));
+        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu', 'wnioskiZmieniajaceZasob'));
         $normalizers = array($normalizer);
         
         $serializer = new Serializer($normalizers, $encoders);
@@ -628,12 +648,12 @@ class WniosekUtworzenieZasobuController extends Controller
     protected function sprawdzCzyDzialaZastepstwo($wniosek)
     {        
         $ret = $this->checkAccess($wniosek);
-        //var_dump($wniosek, $ret);
+        //var_dump($ret);die();
         if($wniosek->getId() && $ret['editorsBezZastepstw'] == null){
             //dziala zastepstwo, szukamy ktore
             $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
             foreach($zastepstwa as $z){
-                if($z->getKogoZastepuje() == $ret['editor']->getSamaccountname()){
+                if($z->getKogoZastepuje() == ($ret['editor'] ? $ret['editor']->getSamaccountname() : "______NIE ZADZIALA______")){
                     //var_dump($z); die();
                     return $z;
                 }
@@ -688,6 +708,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         elseif($isAccepted == "publish"){
             //przenosi do status 11
+/*
             $showonly = !$publishForReal;
             $kernel = $this->get('kernel');
             $application = new Application($kernel);
@@ -719,7 +740,8 @@ class WniosekUtworzenieZasobuController extends Controller
                                 //die('a');
                 $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY_O_ZASOB", false);
             }
-            //die('a');
+*/
+            die('Blad 564654 . To nie powinno miec miejsca');
             $em->flush();
             // return new Response(""), if you used NullOutput()
             return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
@@ -809,11 +831,37 @@ class WniosekUtworzenieZasobuController extends Controller
             
             if($isAccepted == "acceptAndPublish"){
                 $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY_O_ZASOB", false);
-                $wniosek->getZasob()->setPublished(true);
+                switch($wniosek->getTyp()){
+                    case "nowy":
+                        $wniosek->getZasob()->setPublished(true);
+                        break;
+                    case "zmiana":
+                        //powinien wprowadzic zmiany!!!
+                        
+                        $delta = $this->obliczZmienionePola($wniosek);
+                        //var_dump($delta);
+                        foreach($delta as $k => $v){
+                            $getter = "set".ucfirst($k);
+                            $wniosek->getZmienianyZasob()->{$getter}($v);
+                        }
+                        
+                        $wniosek->getZmienianyZasob()->setPublished(true);
+                        $wniosek->getZasob()->setPublished(false);
+                
+                        //die('a');
+                        break;
+                    case "kasowanie":
+                        $wniosek->getZmienianyZasob()->setPublished(false);
+                        //$wniosek->getZasob()->setPublished(false);
+                        break;        
+                }
+                
+                
+                
+                
                 //die('tu publikowac choc nie bardzo wiem co ?? moze jednak zadanie 1!!!');
             }
         }
-        //die('a');
         $em->flush();
 
         
@@ -833,7 +881,12 @@ class WniosekUtworzenieZasobuController extends Controller
     
     protected function addViewersEditors($wniosek, &$where, $who){
         if ($this->debug) echo "<br>addViewersEditors ".$who."<br>";
-        
+        if($wniosek->getWniosekUtworzenieZasobu()->getTyp() == "nowy"){
+            $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
+        }else{
+            $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZmienianyZasob();
+            //print_r($zasob); die();
+        }
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
         switch($who){
@@ -844,7 +897,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 break;
             case "wlasciciel":
                 //
-                $grupa = explode(",", $wniosek->getWniosekUtworzenieZasobu()->getZasob()->getWlascicielZasobu());
+                $grupa = explode(",", $zasob->getWlascicielZasobu());
                 if($wniosek->getWniosekUtworzenieZasobu()->getTyp() == "kasowanie"){
                     
                 }else{
@@ -881,38 +934,32 @@ class WniosekUtworzenieZasobuController extends Controller
                 break;
             case "administrator":
                 //
-                //foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
-                    $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
-                    $grupa = explode(",", $zasob->getAdministratorZasobu());
-                    foreach($grupa as $g){
-                        $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        $g = trim($g);
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $ADManager = $ldap->getUserFromAD($g);
-                        if(count($ADManager) > 0){
-                            if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
-                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                        }
-                        else{
-                            throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
-                        }
+                $grupa = explode(",", $zasob->getAdministratorZasobu());
+                foreach($grupa as $g){
+                    $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                    $g = trim($g);
+                    //$g = $this->get('renameService')->fixImieNazwisko($g);
+                    $ADManager = $ldap->getUserFromAD($g);
+                    if(count($ADManager) > 0){
+                        if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                        $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                     }
-                //}
+                    else{
+                        throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
+                    }
+                }
                 break;
             case "techniczny":
                 //
-                //foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
-                    $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
-                    $grupa = explode(",", $zasob->getAdministratorTechnicznyZasobu());
-                    foreach($grupa as $g){
-                        //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $g = trim($g);
-                        $ADManager = $ldap->getUserFromAD($g);
-                        $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                        if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
-                    }
-                //}
+                $grupa = explode(",", $zasob->getAdministratorTechnicznyZasobu());
+                foreach($grupa as $g){
+                    //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                    //$g = $this->get('renameService')->fixImieNazwisko($g);
+                    $g = trim($g);
+                    $ADManager = $ldap->getUserFromAD($g);
+                    $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                    if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                }
                 break;
         }
     }
