@@ -87,10 +87,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $query->leftJoin('w.status', 's');
                 $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 
-                $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY', '00_TWORZONY'];
+                $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
                 switch($ktore){
                     case "wtoku":
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\')';
+                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
                         //rdie($w);
                         $query->andWhere($w);
                         break;
@@ -347,21 +347,24 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
                     $grupa = explode(",", $zasob->getWlascicielZasobu());
+                    
                     foreach($grupa as $g){
-                        $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        $g = trim($g);
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $ADManager = $ldap->getUserFromAD(null, $g);
-                        if(count($ADManager) > 0){
-                            if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
-                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                        }else{
-                            //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
-                            die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
+                        if($g != ""){
+                            $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
+                            $g = trim($g);
+                            //$g = $this->get('renameService')->fixImieNazwisko($g);
+                            //$g = $this->get('renameService')->fixImieNazwisko($g);
+                            $ADManager = $ldap->getUserFromAD(null, $g);
+                            if(count($ADManager) > 0){
+                                if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                                $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                            }else{
+                                //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
+                                die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
+                            }
+                            //echo "<br>dodaje wlasciciela ".$g;
+                            //print_r($where);
                         }
-                        //echo "<br>dodaje wlasciciela ".$g;
-                        //print_r($where);
                     }
                 }
                 break;

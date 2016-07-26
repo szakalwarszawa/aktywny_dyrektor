@@ -147,7 +147,7 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createCreateForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $entity->getTyp(), $entity), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $this->getManagers(), $entity->getTyp(), $entity), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
             'method' => 'POST',
         ));
@@ -321,7 +321,7 @@ class WniosekUtworzenieZasobuController extends Controller
     */
     private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $entity->getTyp(), $entity), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $this->getManagers(), $entity->getTyp(), $entity), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
             'method' => 'POST',
         ));
@@ -454,6 +454,16 @@ class WniosekUtworzenieZasobuController extends Controller
         ;
     }
     
+    private function getManagers(){
+        
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllManagersFromAD();
+        $users = array();
+        foreach($ADUsers as $u){
+            $users[$u['samaccountname']] = $u['name'];
+        }
+        return $users;
+    }
     private function getUsers(){
         
         $ldap = $this->get('ldap_service');

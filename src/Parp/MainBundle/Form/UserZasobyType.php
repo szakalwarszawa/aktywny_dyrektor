@@ -85,7 +85,16 @@ class UserZasobyType extends AbstractType
                     'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
                     //'format' => 'Y-m-d'
                 ))
-            ->add('kanalDostepu')
+            ->add('kanalDostepu', 'choice', [
+                'choices' => [
+                    'DZ_O' => 'DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP',
+                    'DZ_P' => 'DZ_P - Zdalny, za pomocą komputera będącego własnością PARP',
+                    'WK' => 'WK - Wewnętrzny kablowy',
+                    'WR' => 'WR - Wewnętrzny radiowy',
+                    'WRK' => 'WRK - Wewnętrzny radiowy i kablowy'
+                    
+                ]
+            ])
             ->add('uprawnieniaAdministracyjne')
             ->add('odstepstwoOdProcedury')
         ;

@@ -275,6 +275,27 @@ class Zasoby
 
 
     /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataUtworzeniaZasobu;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataZmianyZasobu;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataUsunieciaZasobu;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -1078,5 +1099,77 @@ class Zasoby
     public function getWniosekSkasowanieZasobu()
     {
         return $this->wniosekSkasowanieZasobu;
+    }
+
+    /**
+     * Set dataUtworzeniaZasobu
+     *
+     * @param \DateTime $dataUtworzeniaZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataUtworzeniaZasobu($dataUtworzeniaZasobu)
+    {
+        $this->dataUtworzeniaZasobu = $dataUtworzeniaZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataUtworzeniaZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataUtworzeniaZasobu()
+    {
+        return $this->dataUtworzeniaZasobu;
+    }
+
+    /**
+     * Set dataZmianyZasobu
+     *
+     * @param \DateTime $dataZmianyZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataZmianyZasobu($dataZmianyZasobu)
+    {
+        $this->dataZmianyZasobu = $dataZmianyZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataZmianyZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataZmianyZasobu()
+    {
+        return $this->dataZmianyZasobu;
+    }
+
+    /**
+     * Set dataUsunieciaZasobu
+     *
+     * @param \DateTime $dataUsunieciaZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataUsunieciaZasobu($dataUsunieciaZasobu)
+    {
+        $this->dataUsunieciaZasobu = $dataUsunieciaZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataUsunieciaZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataUsunieciaZasobu()
+    {
+        return $this->dataUsunieciaZasobu;
     }
 }
