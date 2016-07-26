@@ -15,9 +15,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ImportRekordDaneController extends Controller
 {
     
-    protected $dataGraniczna = '2016-07-31';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
-    
-    protected function getSqlDoImportu(){
+    protected $dataGraniczna = '2016-08-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
+
+    public function getSqlDoImportu(){
         
         //$dataGraniczna = date("Y-m-d");
         $sql = "SELECT
@@ -56,7 +56,7 @@ class ImportRekordDaneController extends Controller
         return $sql;
     }
     
-    protected function getSqlDoUzupelnienieDanychOZwolnionych($ids){
+    public function getSqlDoUzupelnienieDanychOZwolnionych($ids){
         
         //AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
         //$dataGraniczna = date("Y-m-d");
@@ -488,13 +488,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $fc = mb_strtoupper(mb_substr($str, 0, 1, "UTF-8"), "UTF-8");
         return $fc.mb_substr($str, 1, mb_strlen($str, "UTF-8"), "UTF-8");
     }
-    protected function parseValue($v, $fupper = true){
+    public function parseValue($v, $fupper = true){
         $v = iconv("WINDOWS-1250", "UTF-8", $v);
         $v = $fupper ? $this->my_mb_ucfirst(mb_strtolower($v, "UTF-8")) : mb_strtolower($v, "UTF-8");
         return trim($v);
     }
     
-    protected function executeQuery($sql){
+    public function executeQuery($sql){
         $options = array(
             \PDO::ATTR_PERSISTENT    => true,//can help to improve performance
             \PDO::ATTR_ERRMODE       => \PDO::ERRMODE_EXCEPTION, //throws exceptions whenever a db error occurs
