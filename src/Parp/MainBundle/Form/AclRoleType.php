@@ -11,9 +11,11 @@ class AclRoleType extends AbstractType
     
     
     protected $ADUsers;
+    protected $em;
     
-    public function __construct($ADUsers){
+    public function __construct($ADUsers, $em){
         $this->ADUsers = $ADUsers;
+        $this->em = $em;
     }
     /**
      * @param FormBuilderInterface $builder
@@ -21,7 +23,7 @@ class AclRoleType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new \Parp\MainBundle\Form\DataTransformer\RoleTransformer($this->em, $builder->getData());
         $builder
             //->add('deletedAt')
             ->add('name')
@@ -33,8 +35,8 @@ class AclRoleType extends AbstractType
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))
-            )
-            //->addModelTransformer($transformer))
+            
+            ->addModelTransformer($transformer))
             //->add('users')
         ;
     }

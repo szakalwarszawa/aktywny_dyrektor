@@ -628,4 +628,30 @@ class LdapService
     function getGrupa($grupa){
         return $this->adldap->group()->find($grupa);
     }
+    
+    protected $_userCache = null;
+    
+    public function getUsersWithRole($role){
+        if($this->_userCache === null){
+            $this->_userCache = $this->getAllFromAD();
+        }
+        $ret = [];
+        foreach($this->_userCache as $u){
+            if(in_array($role, $u['roles']))
+                $ret[$u['samaccountname']] = $u['name'];
+        }
+        return $ret;
+    }
+    public function getWlascicieleZasobow(){
+        return $this->getUsersWithRole('PARP_WLASCICIEL_ZASOBOW');
+    }
+    public function getAdministratorzyZasobow(){
+        return $this->getUsersWithRole('PARP_ADMIN_ZASOBOW');
+        
+    }
+    public function getAdministratorzyTechniczniZasobow(){
+        return $this->getUsersWithRole('PARP_ADMIN_TECHNICZNY_ZASOBOW');
+        
+    }
+    
 }

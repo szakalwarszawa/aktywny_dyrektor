@@ -109,7 +109,7 @@ class ZasobyController extends Controller
      */
     private function createCreateForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this->getUsers(), $this->getManagers()), $entity, array(
+        $form = $this->createForm(new ZasobyType($this), $entity, array(
             'action' => $this->generateUrl('zasoby_create'),
             'method' => 'POST',
         ));
@@ -226,7 +226,7 @@ class ZasobyController extends Controller
     */
     private function createEditForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this->getUsers(), $this->getManagers()), $entity, array(
+        $form = $this->createForm(new ZasobyType($this), $entity, array(
             'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

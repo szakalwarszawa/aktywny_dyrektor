@@ -109,7 +109,7 @@ class AclRoleController extends Controller
      */
     private function createCreateForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new AclRoleType($this->getUsers(), $this->getDoctrine()->getManager()), $entity, array(
             'action' => $this->generateUrl('aclrole_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class AclRoleController extends Controller
     */
     private function createEditForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new AclRoleType($this->getUsers(), $this->getDoctrine()->getManager()), $entity, array(
             'action' => $this->generateUrl('aclrole_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

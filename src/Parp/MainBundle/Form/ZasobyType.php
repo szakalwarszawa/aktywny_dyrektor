@@ -10,12 +10,10 @@ class ZasobyType extends AbstractType
 {
     protected $nazwaLabel;
     
-    protected $ADUsers;
-    protected $AdManagers;
+    protected $container;
     
-    public function __construct($ADUsers, $ADManagers, $nazwaLabel = "Nazwa"){
-        $this->ADUsers = $ADUsers;
-        $this->ADManagers = $ADManagers;
+    public function __construct($container, $nazwaLabel = "Nazwa"){
+        $this->container = $container;
         $this->nazwaLabel = $nazwaLabel;
     }
         /**
@@ -24,25 +22,26 @@ class ZasobyType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $ldap = $this->container->get('ldap_service');
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden')
             ->add($builder->create('wlascicielZasobu', 'choice', array(
-                'choices' => $this->ADManagers,
+                'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', 'choice', array(
-                'choices' => $this->ADUsers,
+                'choices' => $ldap->getAdministratorzyZasobow(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorTechnicznyZasobu', 'choice', array(
-                'choices' => $this->ADUsers,
+                'choices' => $ldap->getAdministratorzyTechniczniZasobow(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
