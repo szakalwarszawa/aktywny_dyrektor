@@ -36,3 +36,4 @@ parameters:
     grupy_ou : "PARP Grupy"   
     session_max_idle_time: 3600 
     pusz_to_ad: true
+    rekord_db: "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost"

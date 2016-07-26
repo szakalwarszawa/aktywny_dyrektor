@@ -36,6 +36,12 @@ $(document).ready(function(){
             $('#parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaInformacji, #parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoRejestru, #parp_mainbundle_wniosekutworzeniezasobu_typWnioskuZmianaWistniejacym, #parp_mainbundle_wniosekutworzeniezasobu_typWnioskuDoUruchomienia').prop('checked', false);  
         }
     });
+    
+    $('.tagAjaxInputNoAjax').tagit({
+        'allowSpaces' : true,
+        'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną'
+        //autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
+    });
 });
 function submitWniosekType(e){
     console.log('submitWniosekType');

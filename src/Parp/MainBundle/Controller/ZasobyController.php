@@ -109,7 +109,7 @@ class ZasobyController extends Controller
      */
     private function createCreateForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType(), $entity, array(
+        $form = $this->createForm(new ZasobyType($this->getUsers(), $this->getManagers()), $entity, array(
             'action' => $this->generateUrl('zasoby_create'),
             'method' => 'POST',
         ));
@@ -181,10 +181,12 @@ class ZasobyController extends Controller
         $grupy = explode(",", $entity->getGrupyAD());
         $grupyAd = array();
         foreach($grupy as $g){
-            $grupyAd[$g] = array(
-                'exists' => $this->get('ldap_service')->checkGroupExistsFromAD($g),
-                'members' => $this->get('ldap_service')->getMembersOfGroupFromAD($g)
-            );
+            if($g != ""){
+                $grupyAd[$g] = array(
+                    'exists' => $this->get('ldap_service')->checkGroupExistsFromAD($g),
+                    'members' => $this->get('ldap_service')->getMembersOfGroupFromAD($g)
+                );
+            }
         }
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
@@ -200,6 +202,21 @@ class ZasobyController extends Controller
         );
     }
 
+    private function getUsers(){
+        $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
+        
+        $ADUsers = $ldap->getAllFromAD();
+        $users = array();
+        foreach($ADUsers as $u){
+            //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
+            if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                $users[$u['samaccountname']] = $u['name'];
+            }
+        }
+        return $users;
+    }
     /**
     * Creates a form to edit a Zasoby entity.
     *
@@ -209,7 +226,7 @@ class ZasobyController extends Controller
     */
     private function createEditForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType(), $entity, array(
+        $form = $this->createForm(new ZasobyType($this->getUsers(), $this->getManagers()), $entity, array(
             'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -218,6 +235,7 @@ class ZasobyController extends Controller
 
         return $form;
     }
+    
     /**
      * Edits an existing Zasoby entity.
      *
@@ -292,5 +310,17 @@ class ZasobyController extends Controller
             ->add('submit', 'submit', array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
+    }
+    
+    
+    private function getManagers(){
+        
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllManagersFromAD();
+        $users = array();
+        foreach($ADUsers as $u){
+            $users[$u['samaccountname']] = $u['name'];
+        }
+        return $users;
     }
 }

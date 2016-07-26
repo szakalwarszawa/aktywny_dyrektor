@@ -1,9 +1,9 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Usuwanie: WniosekNadanieOdebranieZasobow</h1>
+    <h1>Usuwanie wniosku nr: {{entity.wniosek.numer}}</h1>
     <div class="alert alert-danger">
-        Czy na pewno chcesz skasować poniższy WniosekNadanieOdebranieZasobow ?
+        Czy na pewno chcesz skasować poniższy wniosek ?
     </div>
     <ul>                
         <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>

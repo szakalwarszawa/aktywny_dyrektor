@@ -275,6 +275,36 @@ class Zasoby
 
 
     /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataUtworzeniaZasobu;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataZmianyZasobu;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataUsunieciaZasobu;
+    
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="published", type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $published = false;
+
+    /**
      * Get id
      *
      * @return integer 
@@ -1030,5 +1060,125 @@ class Zasoby
     public function getWniosekUtworzenieZasobu()
     {
         return $this->wniosekUtworzenieZasobu;
+    }
+
+    /**
+     * Set wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @return Zasoby
+     */
+    public function setWniosekUtworzenieZasobuZmieniajacy(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobuZmieniajacy = null)
+    {
+        $this->wniosekUtworzenieZasobuZmieniajacy = $wniosekUtworzenieZasobuZmieniajacy;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekUtworzenieZasobuZmieniajacy
+     *
+     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     */
+    public function getWniosekUtworzenieZasobuZmieniajacy()
+    {
+        return $this->wniosekUtworzenieZasobuZmieniajacy;
+    }
+
+    /**
+     * Set wniosekSkasowanieZasobu
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu
+     *
+     * @return Zasoby
+     */
+    public function setWniosekSkasowanieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null)
+    {
+        $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekSkasowanieZasobu
+     *
+     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     */
+    public function getWniosekSkasowanieZasobu()
+    {
+        return $this->wniosekSkasowanieZasobu;
+    }
+
+    /**
+     * Set dataUtworzeniaZasobu
+     *
+     * @param \DateTime $dataUtworzeniaZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataUtworzeniaZasobu($dataUtworzeniaZasobu)
+    {
+        $this->dataUtworzeniaZasobu = $dataUtworzeniaZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataUtworzeniaZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataUtworzeniaZasobu()
+    {
+        return $this->dataUtworzeniaZasobu;
+    }
+
+    /**
+     * Set dataZmianyZasobu
+     *
+     * @param \DateTime $dataZmianyZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataZmianyZasobu($dataZmianyZasobu)
+    {
+        $this->dataZmianyZasobu = $dataZmianyZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataZmianyZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataZmianyZasobu()
+    {
+        return $this->dataZmianyZasobu;
+    }
+
+    /**
+     * Set dataUsunieciaZasobu
+     *
+     * @param \DateTime $dataUsunieciaZasobu
+     *
+     * @return Zasoby
+     */
+    public function setDataUsunieciaZasobu($dataUsunieciaZasobu)
+    {
+        $this->dataUsunieciaZasobu = $dataUsunieciaZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get dataUsunieciaZasobu
+     *
+     * @return \DateTime
+     */
+    public function getDataUsunieciaZasobu()
+    {
+        return $this->dataUsunieciaZasobu;
     }
 }

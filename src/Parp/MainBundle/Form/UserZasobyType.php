@@ -68,11 +68,11 @@ class UserZasobyType extends AbstractType
                     'data' => $d1,
                     //'format' => 'Y-m-d'
                 ))
-            ->add('bezterminowo')
+            ->add('bezterminowo', 'checkbox', ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             //->add('aktywneOdPomijac')
             ->add('aktywneDo', 'text', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker inputAktywneDo',
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Aktywne do',
@@ -85,7 +85,16 @@ class UserZasobyType extends AbstractType
                     'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
                     //'format' => 'Y-m-d'
                 ))
-            ->add('kanalDostepu')
+            ->add('kanalDostepu', 'choice', [
+                'choices' => [
+                    'DZ_O' => 'DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP',
+                    'DZ_P' => 'DZ_P - Zdalny, za pomocą komputera będącego własnością PARP',
+                    'WK' => 'WK - Wewnętrzny kablowy',
+                    'WR' => 'WR - Wewnętrzny radiowy',
+                    'WRK' => 'WRK - Wewnętrzny radiowy i kablowy'
+                    
+                ]
+            ])
             ->add('uprawnieniaAdministracyjne')
             ->add('odstepstwoOdProcedury')
         ;

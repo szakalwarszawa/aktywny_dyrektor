@@ -17,10 +17,10 @@
                 {% set numerIteracji = 0 %}
                 <ul class="list-inline">
                     {% for ss in entity.wniosek.statusy %}
-                        <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" ? "success" : "danger") : "default"}}"  
+                        <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" or ss.status.nazwaSystemowa == "11_OPUBLIKOWANY_O_ZASOB" ? "success" : "danger") : "default"}}"  
                         data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }} {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}Podzielony wniosek nr {{wniosekDoLinku.numer}} {%endif%}"
                         >
-                            <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY_O_ZASOB" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> 
+                            <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "11_OPUBLIKOWANY_O_ZASOB" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY_O_ZASOB" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> 
                             
                             
                         </li>
@@ -30,21 +30,49 @@
             <div class="btn-group container">  
                 {% if editor %}
                     <h4>Akcje:</h4>
-                    {%if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" %}
-                        {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
-                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
+                    {% if 
+                        entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW"  or
+                        entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB"  
+                    %}
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'moveToAdmin'})}}');" class="btn btn-info">Odbij do administratora zasobu<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                    {%endif%}
+                    {% if 
+                        entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW"  or
+                        entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB"  
+                    %}
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'moveToAdminTechniczny'})}}');"  class="btn btn-info">Odbij do administratora technicznego zasobu<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                    {%endif%}
+                    {% if 
+                        entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB"  or
+                        entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB"  
+                    %}
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'moveToAdminRejestru'})}}');"  class="btn btn-success">Odbij do administratora rejestru zasobów<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                    {%endif%}
+                    {%if entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" %}
+                        {#jesli tu jestesmy znaczy ze jest adminem rehestru zasobow #}
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                                                                   
                     {%else%}
                         <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
                         class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
+                        
                         {% if canReturn %}
                         <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
                         class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
                         
                         {%endif%}
+                        
+                        
                         {% if canUnblock %}
                         <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                         {%endif%}
+                        
+                        {% if not(
+                            entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB"  or
+                            entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB" 
+                        ) %}
                         <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        {% endif %}
                         
                     {%endif%}
                     
@@ -53,9 +81,9 @@
             <div class="collapse" id="rejectDiv">
                 <form action="" method="POST" id="subFormOdrzucenie">
                     <div class="form-group">
-                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód zwrotu/odrzucenia wniosku</label>
+                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Powód odbicia wniosku</label>
                         <div class="col-sm-10">
-                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod zwrotu/odrzucenia wniosku"></textarea>
+                            <textarea id="powodZwrotu" name="powodZwrotu" class="form-control"  placeholder="Wpisz powod odbicia wniosku"></textarea>
                         </div>
                     </div>
                     <div class="form-group paddingTop20 container">
@@ -70,7 +98,7 @@
             </div>
             {%if(entity.powodZwrotu != "")%}
                 <div class="alert alert-danger">
-                    <h3>Powód odrzucenia wniosku:</h3>
+                    <h3>Powód odbicia wniosku:</h3>
                     {{entity.powodZwrotu}}
                 </div>
             {%endif%}

@@ -10,7 +10,12 @@ class ZasobyType extends AbstractType
 {
     protected $nazwaLabel;
     
-    public function __construct($nazwaLabel = "Nazwa"){
+    protected $ADUsers;
+    protected $AdManagers;
+    
+    public function __construct($ADUsers, $ADManagers, $nazwaLabel = "Nazwa"){
+        $this->ADUsers = $ADUsers;
+        $this->ADManagers = $ADManagers;
         $this->nazwaLabel = $nazwaLabel;
     }
         /**
@@ -19,10 +24,30 @@ class ZasobyType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden')
+            ->add($builder->create('wlascicielZasobu', 'choice', array(
+                'choices' => $this->ADManagers,
+                'multiple' => true,
+                'required' => false,
+                'attr' => array('class' => 'select2')
+            ))->addModelTransformer($transformer))
+            ->add($builder->create('administratorZasobu', 'choice', array(
+                'choices' => $this->ADUsers,
+                'multiple' => true,
+                'required' => false,
+                'attr' => array('class' => 'select2')
+            ))->addModelTransformer($transformer))
+            ->add($builder->create('administratorTechnicznyZasobu', 'choice', array(
+                'choices' => $this->ADUsers,
+                'multiple' => true,
+                'required' => false,
+                'attr' => array('class' => 'select2')
+            ))->addModelTransformer($transformer))
+/*
             ->add('wlascicielZasobu', 'text', array(
                 'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
             ))
@@ -32,6 +57,9 @@ class ZasobyType extends AbstractType
             ->add('administratorTechnicznyZasobu', 'text', array(
                 'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
             ))
+*/
+            
+            
             ->add('uzytkownicy', 'choice', array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")
             ))
@@ -45,8 +73,8 @@ class ZasobyType extends AbstractType
             ))
             ->add('miejsceInstalacji')
             ->add('opisZasobu')
-            ->add('modulFunkcja')
-            ->add('poziomDostepu')
+            ->add('modulFunkcja', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
+            ->add('poziomDostepu', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
             ->add('grupyAD', 'text', array(
                 'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))
@@ -73,16 +101,12 @@ class ZasobyType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control datepicker',
                     ),
-//                'widget' => 'single_text',
                     'label' => 'Data wygaśnięcia asysty technicznej',
-//                'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
                 ))
 
             ->add('dokumentacjaFormalna', 'choice', array(
@@ -142,6 +166,39 @@ class ZasobyType extends AbstractType
                     
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych')
+            ->add('dataUtworzeniaZasobu', 'datetime', array(
+                    'attr' => array(
+                        'class' => 'form-control datepicker',
+                    ),
+                    'label' => 'Data utworzenia zasobu',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'widget' => 'single_text'
+                ))
+            ->add('dataZmianyZasobu', 'datetime', array(
+                    'attr' => array(
+                        'class' => 'form-control datepicker',
+                    ),
+                    'label' => 'Data ostatniej zmiany zasobu',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'widget' => 'single_text'
+                ))
+            ->add('dataUsunieciaZasobu', 'datetime', array(
+                    'attr' => array(
+                        'class' => 'form-control datepicker',
+                    ),
+                    'label' => 'Data usunięcia zasobu',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'widget' => 'single_text'
+                ))
         ;
     }
     

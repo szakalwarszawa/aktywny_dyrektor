@@ -44,4 +44,28 @@ $(document).ready(function(){
         'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną'
         //autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
     });
+    
+    $('.inputAktywneDo').change(function(){
+        var v = $(this).val();
+        var row = $(this).closest('tr');
+        console.log('.inputAktywneDo');
+        console.log(v);
+        console.log(row);
+        if(v != ""){
+            $('.inputBezterminowo', $(row)).prop('checked', false);
+        }
+    });
+    $('.inputBezterminowo').change(function(){
+        var v = $(this).prop('checked');
+        var row = $(this).closest('tr');
+        console.log('.inputBezterminowo');
+        console.log(v);
+        console.log(row);
+        
+        if(v){
+            $('.inputAktywneDo', $(row)).val("");
+        }
+    });
+    //form[userzasoby][0][bezterminowo]
+    
 });

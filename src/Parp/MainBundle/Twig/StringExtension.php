@@ -63,17 +63,20 @@ class StringExtension extends \Twig_Extension
     }
     public function gridTitles($var)
     {
+        $ret = $var;
+/*
         $ret = "";
         $last = "";
-        for($i = 0; $i < strlen($var); $i++){
+        for($i = 0; $i < mb_strlen($var); $i++){
             $c = $var[$i];
-            $duza = $c == strtoupper($c);
+            $duza = $c == mb_strtoupper($c);
             if($last == "mala" && $duza){
                 $ret .= " ";
             }
-            $ret .= $last == "" ? strtoupper($c) : $c;            
+            $ret .= $last == "" ? mb_strtoupper($c) : $c;            
             $last = $duza ? "duza" : "mala";
         }
+*/
         
         return $ret;
     }

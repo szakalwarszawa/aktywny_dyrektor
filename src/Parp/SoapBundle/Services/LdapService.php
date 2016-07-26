@@ -81,7 +81,18 @@ class LdapService
         );
         $this->adldap = new \Adldap\Adldap($configuration);
     }
-
+    public function  getAllManagersFromAD(){
+        $res = $this->getAllFromAD();
+        $ret = [];
+        $managerTitles = ["Dyrektor", "Dyrektor (p.o.)", "Zastępca Dyrektora", "Zastępca Dyrektora (p.o.)"];
+        foreach($res as $r){
+            if(in_array($r['title'], $managerTitles)){
+                $ret[] = $r;
+            }
+        }
+        //echo "<pre>"; print_r($ret); die();
+        return $ret;
+    }
     public function getAllFromAD()
     {
         $userdn = $this->useradn . $this->patch;
@@ -119,7 +130,7 @@ class LdapService
     public function getMembersOfGroupFromAD($group=FALSE,$inclusive=FALSE)
     {
         
-         $group = $group ? ldap_escape($group) : $group;
+        $group = $group ? ldap_escape($group) : $group;
         $userdn = $this->useradn . $this->patch;
         $ldap_dn_grupy = "OU=".$this->_ouWithGroups.$this->patch;
         $ldapconn = ldap_connect($this->ad_host);

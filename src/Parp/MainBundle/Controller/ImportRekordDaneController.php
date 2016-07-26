@@ -15,7 +15,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ImportRekordDaneController extends Controller
 {
     
+<<<<<<< HEAD
     protected $dataGraniczna = '2016-08-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
+=======
+    protected $dataGraniczna = '2016-07-31';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
+>>>>>>> ca7855edd5e699cfa1adbc7e679a30edf9ae1b49
     
     public function getSqlDoImportu(){
         
@@ -501,7 +505,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES uft8'  //>= PHP 5.3.6
         );
         ////srv-rekorddb01.parp.local/bazy/PARP_KP.FDB
-        $str_conn = "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
+        $str_conn = $this->container->getParameter('rekord_db'); //"firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
         //$str_conn = "firebird:dbname=/bazy/PARP_KP.FDB;host=srv-rekorddb01.parp.local";
         $userdb = 'SYSDBA';
         $passdb = 'masterkey';

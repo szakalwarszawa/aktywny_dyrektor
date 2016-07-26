@@ -14,9 +14,11 @@ class WniosekUtworzenieZasobuType extends AbstractType
     protected $typ;
     protected $entity;
     protected $nazwaLabel;
+    protected $ADManagers;
     
-    public function __construct($ADUsers, $typ, $entity){
+    public function __construct($ADUsers, $ADManagers, $typ, $entity){
         $this->ADUsers = $ADUsers;
+        $this->ADManagers = $ADManagers;
         $this->hideCheckboxes = $typ != "";
         $this->typ = $typ;
         $this->entity = $entity;
@@ -95,7 +97,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                    'label'=>"Wybierz zasób do skasowania", 'class' => 'Parp\MainBundle\Entity\Zasoby', 'attr' => ['class' => 'select2', 'style' => "width:100%"])
                 );
             }else{
-                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->nazwaLabel), array(
+                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->ADUsers, $this->ADManagers, $this->nazwaLabel), array(
                    'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
                 );
             }             

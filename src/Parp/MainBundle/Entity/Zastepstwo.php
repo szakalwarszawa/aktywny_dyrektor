@@ -34,7 +34,7 @@ class Zastepstwo
     /**
      * @var string
      *
-     * @ORM\Column(type="text", length=2000)
+     * @ORM\Column(type="text", length=5000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;

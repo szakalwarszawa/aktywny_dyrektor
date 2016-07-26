@@ -129,4 +129,7 @@ class AclUserRole
     {
         return $this->role;
     }
+    public function __toString(){
+        return $this->getSamaccountname();
+    }
 }

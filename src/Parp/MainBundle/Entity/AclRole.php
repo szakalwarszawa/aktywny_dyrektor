@@ -71,7 +71,7 @@ class AclRole
     /**
      * @var string
      *
-     * @ORM\OneToMany(targetEntity="AclUserRole", mappedBy="roles")
+     * @ORM\OneToMany(targetEntity="AclUserRole", mappedBy="role")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $users;
