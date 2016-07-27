@@ -22,9 +22,11 @@
             <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
             <a class="btn btn-primary btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
         </div>
+        {% if app.user.hasRole('PARP_ADMIN') %}
         <div>
             <a class="btn btn-danger" href="{{path('publish')}}">Opublikuj zmiany do AD</a>
         </div>
+        {%endif%}
     </center>
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}

@@ -16,8 +16,9 @@ class WniosekUtworzenieZasobuType extends AbstractType
     protected $nazwaLabel;
     protected $ADManagers;
     protected $container;
+    protected $readonly;
     
-    public function __construct($ADUsers, $ADManagers, $typ, $entity, $container){
+    public function __construct($ADUsers, $ADManagers, $typ, $entity, $container, $readonly = false){
         $this->ADUsers = $ADUsers;
         $this->ADManagers = $ADManagers;
         $this->hideCheckboxes = $typ != "";
@@ -25,6 +26,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
         $this->entity = $entity;
         $this->nazwaLabel = $typ == "nowy" ? "Proponowana nazwa" : "Nazwa";
         $this->container = $container;
+        $this->readonly = $readonly;
     }
     
     /**
@@ -153,10 +155,19 @@ class WniosekUtworzenieZasobuType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\WniosekUtworzenieZasobu'
+            'data_class' => 'Parp\MainBundle\Entity\WniosekUtworzenieZasobu',
+            'disabled' => $this->readonly,
+            'attr' => ['readonly' => $this->readonly]
         ));
     }
-
+/*
+    public function configureOptions(OptionsResolverInterface $resolver)
+    {
+        $resolver->setDefaults([
+            'attr' => ['readonly' => $this->readonly],  
+        ]);
+    }
+*/
     /**
      * @return string
      */

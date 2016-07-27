@@ -1,22 +1,67 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-<h1>Lista Wniosków o Utworzenie Zasobu</h1>
-{% for flashMessage in app.session.flashbag.get('warning') %}
-    <div class="alert alert-info">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>Uwaga!</strong> 
-        {{ flashMessage }}
-    </div>       
-{% endfor %}
 
-<center>
-    <div class="btn-group">
-        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-        <a class="btn btn-success btn-xs" href="{{ path('wniosekutworzeniezasobu_new') }}">Dodaj Wniosek o Utworzenie Zasobu</a>
+<div class="col-sm-12">
+        
+    {% for flashMessage in app.session.flashbag.get('warning') %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
+
+    <h1>Lista Wniosków o Utworzenie/Zmianę/Usunięcie zasobów </h1>
+    
+    
+        <center>
+            <div class="btn-group">
+                <a class="btn btn-success btn" href="{{ path('wniosekutworzeniezasobu_new') }}">Dodaj Wniosek o utworzenie/zmianę/usunięcie zasobu</a>
+                
+                <a class="btn btn-primary btn" href="?{{ grid2.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+            </div>
+        </center>
+    {%if(zastepstwa|length > 0)%}
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga, obecnie masz aktywne zastępstw{{zastepstwa|length > 1 ? "a" : "o"}} za :</strong>            
+            <div class="btn-group">  
+                {% for z in zastepstwa %}
+                      <a href="{{path('userEdit', {samaccountname: z.kogoZastepuje})}}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</a>   
+                {% endfor %}
+            </div>    
+            
+        </div>   
+    {%endif%}
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#oczekujace">Oczekujące na realizację</a></li>
+        <li><a data-toggle="tab" href="#wtoku">W toku</a></li>
+        <li><a data-toggle="tab" href="#zakonczone">Zakończone</a></li>
+    </ul>
+    
+    <div class="tab-content">
+        <div id="oczekujace" class="tab-pane fade in active">
+            
+            {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="wtoku" class="tab-pane fade">
+
+            
+            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
+        <div id="zakonczone" class="tab-pane fade">
+
+            
+            {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
+        </div>
     </div>
-</center>
+</div>
 
-{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+
+
+
+
 
 {% endblock %}

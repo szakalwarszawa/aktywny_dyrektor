@@ -156,8 +156,19 @@
                                 </td>
                             </tr>
                             <tr>
-                                <th>Osoby których dotyczy wniosek</th>
-                                <td>{{ entity.pracownicy }}</td>
+                                <th>Osoby, których dotyczy wniosek</th>
+                                <td>
+{#                                     {{ entity.pracownicy }} #}
+                                    {% set i = 0 %}
+                                    {% set przetworzoneOsoby = {} %}
+                                    {% for z in entity.userZasoby %}                
+                                        {% set i = i + 1%}
+                                        {% if z.samaccountname not in przetworzoneOsoby %}
+                                            {% set przetworzoneOsoby = przetworzoneOsoby|merge([z.samaccountname]) %}
+                                            {{z.samaccountname}} {% if i != entity.userZasoby|length %}<br>{%endif%}
+                                        {% endif %}
+                                    {% endfor%}
+                                </td>
                             </tr>
                             <tr>
                                 <th>Czy pracownik/pracownicy spoza PARP</th>
@@ -206,7 +217,7 @@
             <div id="zasoby" class="tab-pane fade">
         
             
-                {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj zasoby</a>{%endif%}
+                {%if editor%}<a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames' : entity.jsonSams})}}" class="btn btn-success">Dodaj uprawnienia</a>{%endif%}
                 <table class="record_properties table table-striped tablesorter">
                     <thead>
                         <tr>

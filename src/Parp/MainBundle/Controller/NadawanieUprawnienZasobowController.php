@@ -73,7 +73,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
                     $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
                 }
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findAll();
+                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
                 break;
             case "removeResources":
                 $title = "Odbierz zasoby";

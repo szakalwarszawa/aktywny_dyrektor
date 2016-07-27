@@ -8,7 +8,14 @@
         <div class="alert alert-info">
             <h3>Wniosek o {{entity.typ == "zmiana" ? "zmianę" : (entity.typ == "nowy" ? "utworzenie" : "usunięcie")}} zasobu numer : {{entity.wniosek.numer}}</h3>
             <ul>                
-                <li><b>Zasób :</b> {{ entity.typ == 'nowy ? (entity.zasob ? entity.zasob.nazwa : "") : (entity.zmienianyZasob ? entity.zmienianyZasob.nazwa : "")}}</li>
+                <li><b>Zasób :</b> 
+                {% if entity.typ == 'nowy' %}
+                {{  entity.zasob ? entity.zasob.nazwa : ""}}
+                {%else%}
+                {{entity.zmienianyZasob ? entity.zmienianyZasob.nazwa : ""}}
+                {%endif%}
+                
+                </li>
                 <li><b>Typ wniosku :</b> {{ entity.typ }}</li>
                 <li><b>Statusy:</b></li>
             </ul>
@@ -27,9 +34,12 @@
                     {%endfor%}
                 </ul>
             </div>
+            <h4>Akcje:</h4>
             <div class="btn-group container">  
-                {% if editor %}
-                    <h4>Akcje:</h4>
+                {% if readonly %} 
+                    <a href="{{path('wniosekutworzeniezasobu_edit', {'id' : entity.id})}}" class="btn btn-primary">Edytuj wniosek</a>
+                {%endif%}
+                {% if editor and readonly %}
                     {% if 
                         entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW"  or
                         entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB"  
@@ -123,11 +133,12 @@
             <div id="general" class="tab-pane fade in active">
                 
                 <div class="tabContent">
-                    
+                    {%if not readonly %}
                     <div class="form-group">
                         <label class="col-sm-2  control-label"></label>
                         <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr' : {'onclick' : 'submitFirstForm(event)'}}) }}  </div>
                     </div> 
+                    {%endif%}
                     <table class="table bordered">
                         <tr>
                             <th rowspan="3" vertical-align="middle" >
@@ -207,20 +218,23 @@
                         <label class="col-sm-2  control-label">Osoby które mogą edytować wniosek</label>
                         <div class="col-sm-10">{{ entity.wniosek.editornames }}</div>
                     </div> 
+                    {%if not readonly %}
                     <div class="form-group">
                         <label class="col-sm-2  control-label"></label>
                         <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr' : {'onclick' : 'submitFirstForm(event)'}}) }}  </div>
                     </div> 
+                    {%endif%}
                 </div>
             </div>
         
             <div id="zasob" class="tab-pane fade">
                 <div class="tabContent">
+                    {%if not readonly %}
                     <div class="form-group">
                         <label class="col-sm-10  control-label"></label>
                         <div class="col-sm-2 pull-right">{{ form_widget(form.submit2) }}  </div>
                     </div> 
-                    
+                    {%endif%}
                     {%if(entity.typ == "zmiana" )%}
                         <div class="form-group">
                             <label class="col-sm-2  control-label">Wybierz zasób do zmiany</label>
@@ -229,7 +243,7 @@
                         {{ form_row(form.zmienionePola) }}
                     {%else%}
                         
-                        {{ form_row(form.zmienionePola, {'attr' : {'class' : 'hidden'}}) }}
+                        {{ form_row(form.zmienionePola, {'label' : false, 'attr' : {'class' : 'hidden'}}) }}
                     {%endif%}
                     
                     {%if(entity.typ == "kasowanie" )%}
@@ -239,10 +253,12 @@
                     {%endif%}
                     
                     
+                    {%if not readonly %}
                     <div class="form-group">
                         <label class="col-sm-10  control-label"></label>
                         <div class="col-sm-2 pull-right">{{ form_widget(form.submit) }}  </div>
                     </div>  
+                    {%endif%}
                 </div>
             </div>
             <div id="pliki" class="tab-pane fade">

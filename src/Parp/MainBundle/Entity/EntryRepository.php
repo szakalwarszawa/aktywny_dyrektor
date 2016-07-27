@@ -67,9 +67,16 @@ accountexpires: ""
                 $ret['manager'] = $e->getManager(); // CN=Lipiński Marcin,OU=BA,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST
                 $ret['thumbnailphoto'] = "";
                 $ret['useraccountcontrol'] = "";//$e->getUseraccountcontrol(); // INTERDOMAIN_TRUST_ACCOUNT,NOT_DELEGATED,
+                
                 $ret['accountexpires'] = "";//$e->getAccountexpires(); //""
                 $ret['isDisabled'] = $e->getIsDisabled(); // fdsfd
                 $ret['disableDescription'] = $e->getDisableDescription(); // fdsfd
+                $ret['accountExpires'] = "";
+                $ret['email'] = "";
+                $ret['cn'] = "";
+                $ret['distinguishedname'] = "";
+                $ret['memberOf'] = "";
+                $ret['roles'] = "";
                 $rets[] = $ret;
             }
         }

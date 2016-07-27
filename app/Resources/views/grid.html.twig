@@ -205,11 +205,35 @@
 
 
 {% block grid_column_wniosekUtworzenieZasobu_wniosek_numer_cell %}
-{% if row.getField('wniosekUtworzenieZasobu.id') %}
-<a href="{{path('wniosekutworzeniezasobu_edit', {id: row.getField('wniosekUtworzenieZasobu.id')})}}" class="btn btn-primary">{{value}}</a>
-{%else%}
-Bez wniosku
-{%endif%}
+    {% if row.getField('wniosekUtworzenieZasobu.id') %}
+    <a href="{{path('wniosekutworzeniezasobu_edit', {id: row.getField('wniosekUtworzenieZasobu.id')})}}" class="btn btn-primary">{{value}}</a>
+    {%else%}
+    Bez wniosku
+    {%endif%}
+{% endblock %}
+
+{% block grid_column_typWnioskuDoRejestru_cell %}
+
+    {% if row.getField('typWnioskuDoRejestru') %}
+        Nowy zasób
+    {%endif%}
+    {% if row.getField('typWnioskuZmianaInformacji') %}
+        Zmiana zasobu
+    {%endif%}
+    {% if row.getField('typWnioskuWycofanie') %}
+        Usunięcie zasób
+    {%endif%}
+{% endblock %}
+
+
+{% block grid_column_zasob_nazwa_cell %}
+
+    {% if row.getField('typWnioskuDoRejestru') %}
+        {{ row.getField('zasob.nazwa') }}
+    {%else%}
+        
+        {{ row.getField('zmienianyZasob.nazwa') }}
+    {%endif%}
 {% endblock %}
 
 {#{% block grid_column_actions_cell %}

@@ -38,11 +38,80 @@ class WniosekUtworzenieZasobuController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->findAll();
-    
+        $grid = $this->generateGrid("wtoku");
+        $grid2 = $this->generateGrid("oczekujace");
+        $grid3 = $this->generateGrid("zamkniete");
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+        
+        if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        {
+            if ($grid->isReadyForExport())
+            {
+                return $grid->getExportResponse();
+            }
+        
+            if ($grid2->isReadyForExport())
+            {
+                return $grid2->getExportResponse();
+            }
+            
+            if ($grid3->isReadyForExport())
+            {
+                return $grid3->getExportResponse();
+            }
+        
+            // Url is the same for the grids
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
+        }
+        else
+        {
+            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:index.html.twig', array('grid' => $grid, 'grid2' => $grid2, 'grid3' => $grid3, 'zastepstwa' => $zastepstwa));
+        }
+    }
+
+    protected function generateGrid($ktore){
+        $em = $this->getDoctrine()->getManager();
+        
+        
+        
+        
+        
+        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
         $source = new Entity('ParpMainBundle:WniosekUtworzenieZasobu');
-    
+        $tableAlias = $source->getTableAlias();
+        //die($co);
+        $sam = $this->getUser()->getUsername();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias, $zastepstwa, $ktore)
+            {
+                $query->leftJoin($tableAlias . '.wniosek', 'w');
+                $query->leftJoin('w.viewers', 'v');
+                $query->leftJoin('w.editors', 'e');
+                $query->leftJoin('w.status', 's');
+                $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                
+                $statusy = ['08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB'];
+                switch($ktore){
+                    case "wtoku":
+                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY_O_ZASOB\')';
+                        //rdie($w);
+                        $query->andWhere($w);
+                        break;
+                    case "oczekujace":
+                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        break;
+                    case "zamkniete":
+                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        break;
+                }
+                //$query->andWhere('w.samaccountname = \''.$sam.'\'');
+                $query->addGroupBy($tableAlias . '.id');   
+            }
+        );
         $grid = $this->get('grid');
+        
+        
         $grid->setSource($source);
     
         // Dodajemy kolumnę na akcje
@@ -55,16 +124,34 @@ class WniosekUtworzenieZasobuController extends Controller
                 ->setSafe(true);
     
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosekutworzeniezasobu_edit');
+        $rowAction1 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosekutworzeniezasobu_edit');
+        $rowAction1->setColumn('akcje');
+        $rowAction1->addAttribute('class', 'btn btn-success btn-xs');
+        
+        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Pokaż', 'wniosekutworzeniezasobu_show');
         $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+        $rowAction2->addAttribute('class', 'btn btn-info btn-xs');
     
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosekutworzeniezasobu_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+        $rowAction3->manipulateRender(
+            function ($action, $row)
+            {
+                if ($row->getField('wniosek.numer') == "wniosek w trakcie tworzenia") {
+                    
+                    return $action;
+                }else{
+                    return null;
+                }
         
+            }
+        );
+        //die('a');
+       
     
+        //$grid->addRowAction($rowAction1);
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
     
@@ -72,9 +159,15 @@ class WniosekUtworzenieZasobuController extends Controller
     
 
 
-        $grid->isReadyForRedirect();
-        return $grid->getGridResponse();
+        //$grid->isReadyForRedirect();
+        return $grid;
+
     }
+    
+    
+    
+    
+    
     /**
      * Creates a new WniosekUtworzenieZasobu entity.
      *
@@ -135,7 +228,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
-                return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', ['id' => $entity->getId()]));
+                return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', ['id' => $entity->getId()]));
         }else{
             
             $er = $form->getErrorsAsString();
@@ -183,7 +276,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity = new WniosekUtworzenieZasobu();
         $form   = $this->createCreateForm($entity, $entity->getTyp());
         return ['form' => $form->createView(),
-            'editor' => false,'delta' => []];
+            'editor' => false,'delta' => [], 'readonly' => false];
     }
     protected function ustawTyp($entity, $typ){
         switch($typ){
@@ -254,34 +347,23 @@ class WniosekUtworzenieZasobuController extends Controller
             'editor' => false,
             'entity' => $entity,
             'form'   => $form->createView(),
-            'message' => ''
+            'message' => '',
+            'readonly' => false
         );
         
     }
 
+    
     /**
      * Finds and displays a WniosekUtworzenieZasobu entity.
      *
-     * @Route("/{id}", name="wniosekutworzeniezasobu_show")
+     * @Route("/{id}/show", name="wniosekutworzeniezasobu_show")
      * @Method("GET")
-     * @Template()
+     * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function showAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
+        return $this->editAction($id, true);
     }
 
     /**
@@ -291,7 +373,7 @@ class WniosekUtworzenieZasobuController extends Controller
      * @Method("GET")
      * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
-    public function editAction($id)
+    public function editAction($id, $readonly = false)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -314,7 +396,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $delta = $this->obliczZmienionePola($entity);
             $entity->setZmienionePola(implode(",", array_keys($delta)));
         }
-        $editForm = $this->createEditForm($entity);
+        $editForm = $this->createEditForm($entity, true, $readonly);
         $deleteForm = $this->createDeleteForm($id);
 
         return array(
@@ -329,7 +411,8 @@ class WniosekUtworzenieZasobuController extends Controller
             'entity'      => $entity,
             'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'delta' => $delta
+            'delta' => $delta,
+            'readonly' => $readonly
         );
     }
     protected function obliczZmienionePola($entity){
@@ -355,17 +438,24 @@ class WniosekUtworzenieZasobuController extends Controller
     *
     * @return \Symfony\Component\Form\Form The form
     */
-    private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
+    private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true, $readonly = true)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $this->getManagers(), $entity->getTyp(), $entity, $this), $entity, array(
+        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsers(), $this->getManagers(), $entity->getTyp(), $entity, $this, $readonly), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
             'method' => 'POST',
         ));
-
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('submit2', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        
+        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
+        $form->add('submit2', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
+        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
+        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
+        
+        foreach($form->all() as $ff){            
+            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ff); die();
+        }
+        
+        
+        
 
         return $form;
     }
@@ -426,7 +516,7 @@ class WniosekUtworzenieZasobuController extends Controller
         if ($editForm->isValid()) {
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
-            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', array('id' => $id)));
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         }
         
         $access = $this->checkAccess($entity);
@@ -873,7 +963,7 @@ class WniosekUtworzenieZasobuController extends Controller
             )));
             
         }else{
-            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_edit', array(
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array(
                 'id' => $id
             )));
         }

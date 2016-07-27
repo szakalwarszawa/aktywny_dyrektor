@@ -791,6 +791,8 @@ class DevController extends Controller
     }
     
     
+    
+    
     /**
      * @Route("/fixZasobyWlascicieliAdminow", name="fixZasobyWlascicieliAdminow")
      * @Template()
@@ -856,5 +858,44 @@ class DevController extends Controller
             }
         }
         return ['ludzie' => implode(",", $ret), 'zgubieni' => implode(",", $zgubieni) ];
+    }
+    
+    /**
+     * @Route("/fixZasobyWlascicieliAdminowNadajMultiRole", name="fixZasobyWlascicieliAdminowNadajMultiRole")
+     * @Template()
+     */
+    public function fixZasobyWlascicieliAdminowNadajMultiRoleAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        
+        $rolaWlasciciel = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_WLASCICIEL_ZASOBOW');
+        $rolaAdministrator = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_ZASOBOW');
+        $rolaAdministratorTechniczny = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_TECHNICZNY_ZASOBOW');
+        
+        $i = 0;
+        foreach($zasoby as $z){
+            $this->dodajRole($z->getWlascicielZasobu(), $rolaWlasciciel);
+            $this->dodajRole($z->getAdministratorZasobu(), $rolaAdministrator);
+            $this->dodajRole($z->getAdministratorTechnicznyZasobu(), $rolaAdministratorTechniczny);            
+        }
+        $em->flush();
+    }
+    
+    protected function dodajRole($ludzie, $rola){
+        
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        $arr = explode(",", $ludzie);
+        foreach($arr as $l){
+            $l = trim($l);
+            if($l != ""){
+                $ur = new \Parp\MainBundle\Entity\AclUserRole();
+                $ur->setRole($rola);
+                $ur->setSamaccountname($l);
+                $em->persist($ur);
+            }
+        }
+        
     }
 }    

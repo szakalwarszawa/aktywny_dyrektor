@@ -322,6 +322,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
                     $ADUser = $ldap->getUserFromAD(trim($uss[0]));  
+                    //print_r($ADUser); die();
                     $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                     
                     
@@ -354,13 +355,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $g = trim($g);
                             //$g = $this->get('renameService')->fixImieNazwisko($g);
                             //$g = $this->get('renameService')->fixImieNazwisko($g);
-                            $ADManager = $ldap->getUserFromAD(null, $g);
+                            $ADManager = $ldap->getUserFromAD($g);
                             if(count($ADManager) > 0){
                                 if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
                                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                             }else{
                                 //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
-                                die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
+                                $message = "Nie udało się znaleźć właściciela '".$g."' dla zasobu '".$zasob->getNazwa()."', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
+                                $this->get('session')->getFlashBag()->add('warning', $message);
+                                
+                                $this->sendMailToAdminRejestru($message);
+                                
+                                //die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
                             }
                             //echo "<br>dodaje wlasciciela ".$g;
                             //print_r($where);
@@ -377,13 +383,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = trim($g);
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $ADManager = $ldap->getUserFromAD(null, $g);
+                        $ADManager = $ldap->getUserFromAD($g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         }
                         else{
-                            throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
+                            $message = "Nie udało się znaleźć administratora '".$g."' dla zasobu '".$zasob->getNazwa()."', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
+                            $this->get('session')->getFlashBag()->add('warning', $message);
+                            
+                            $this->sendMailToAdminRejestru($message);
+                            //throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
                         }
                     }
                 }
@@ -397,13 +407,42 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $g = trim($g);
-                        $ADManager = $ldap->getUserFromAD(null, $g);
-                        $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                        if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                        $ADManager = $ldap->getUserFromAD($g);
+                        if(count($ADManager) > 0){
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                            if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
+                        }else{
+                            $message = "Nie udało się znaleźć administratora technicznego '".$g."' dla zasobu '".$zasob->getNazwa()."', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
+                            $this->get('session')->getFlashBag()->add('warning', $message);
+                            
+                            $this->sendMailToAdminRejestru($message);
+                        }
                     }
                 }
                 break;
         }
+    }
+    protected function sendMailToAdminRejestru($msg){
+        $mails = ["kamil_jakacki@parp.gov.pl"];
+        
+        $em = $this->getDoctrine()->getManager();
+        $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName("PARP_ADMIN_REJESTRU_ZASOBOW");
+        $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+        foreach($users as $u){
+            $mails[] = $u->getSamaccountname()."@parp.gov.pl";
+        }
+        
+        
+        $message = \Swift_Message::newInstance()
+                ->setSubject('Nie znaleziono użytkownika przy wniosku o nadanie/odebranie uprawnień')
+                ->setFrom('intranet@parp.gov.pl')
+                //->setFrom("kamikacy@gmail.com")
+                ->setTo($mails)
+                ->setBody($msg)
+                ->setContentType("text/html");
+
+        //var_dump($view);
+        $this->container->get('mailer')->send($message);
     }
     protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
         if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
@@ -1127,6 +1166,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+            $osoby = explode(",", $entity->getPracownicy());
+            foreach($entity->getUserZasoby() as $uz){
+                if(!in_array($uz->getSamaccountname(), $osoby)){
+                    //die("kasuje uz bo nie ma osoby ".$uz->getSamaccountname());
+                    $em->remove($uz);
+                }
+            }
+            
+            
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));

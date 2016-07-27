@@ -78,70 +78,74 @@ class DefaultController extends Controller
 
         $source->setId('samaccountname');
         $grid->setSource($source);
-        $grid->hideColumns(array(
-            'manager',
-            //'accountDisabled',
-            //'info',
-            'description',
-            'division',
-            //            'thumbnailphoto',
-            'useraccountcontrol',
-            //'samaccountname',
-            'initials',
-            'accountExpires',
-            'accountexpires',
-            'email',
-            'lastlogon',
-            'cn',
-            'distinguishedname',
-            'memberOf',
-            'roles'
-        ));
-        // Konfiguracja nazw kolumn
-
-
-        $grid->getColumn('samaccountname')
-                ->setTitle('Nazwa użytkownika')
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false)
-                ->setPrimary(true);
-
-        $grid->getColumn('name')
-                ->setTitle("Nazwisko imię")
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('initials')
-                ->setTitle("Inicjały")
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('title')
-                ->setTitle("Stanowisko")
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('department')
-                ->setTitle("Jednostka")
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('info')
-                ->setTitle("Sekcja")
-                ->setFilterType('select')
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('lastlogon')
-                ->setTitle('Ostatnie logowanie')
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('accountexpires')
-                ->setTitle('Umowa wygasa')
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
-        $grid->getColumn('thumbnailphoto')
-                ->setTitle('Zdj.')
-                ->setFilterable(false);
-        $grid->getColumn('isDisabled')
-                ->setTitle("Konto wyłączone")
-                ->setOperators(array("like"))
-                ->setOperatorsVisible(false);
+        
+        if(count($ADUsers) > 0){
+            //echo "<pre>"; print_r($ADUsers); die();
+            $grid->hideColumns(array(
+                'manager',
+                //'accountDisabled',
+                //'info',
+                'description',
+                'division',
+                //            'thumbnailphoto',
+                'useraccountcontrol',
+                //'samaccountname',
+                'initials',
+                'accountExpires',
+                'accountexpires',
+                'email',
+                'lastlogon',
+                'cn',
+                'distinguishedname',
+                'memberOf',
+                'roles'
+            ));
+            // Konfiguracja nazw kolumn
+    
+    
+            $grid->getColumn('samaccountname')
+                    ->setTitle('Nazwa użytkownika')
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false)
+                    ->setPrimary(true);
+    
+            $grid->getColumn('name')
+                    ->setTitle("Nazwisko imię")
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('initials')
+                    ->setTitle("Inicjały")
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('title')
+                    ->setTitle("Stanowisko")
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('department')
+                    ->setTitle("Jednostka")
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('info')
+                    ->setTitle("Sekcja")
+                    ->setFilterType('select')
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('lastlogon')
+                    ->setTitle('Ostatnie logowanie')
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('accountexpires')
+                    ->setTitle('Umowa wygasa')
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+            $grid->getColumn('thumbnailphoto')
+                    ->setTitle('Zdj.')
+                    ->setFilterable(false);
+            $grid->getColumn('isDisabled')
+                    ->setTitle("Konto wyłączone")
+                    ->setOperators(array("like"))
+                    ->setOperatorsVisible(false);
+        }
 
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');

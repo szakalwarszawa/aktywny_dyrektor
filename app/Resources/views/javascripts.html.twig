@@ -33,27 +33,27 @@ $(document).ready(function(){
     
 });
 
-$('.tagAjaxInputUsers').tagit({
+$('.tagAjaxInputUsers:not([disabled])').tagit({
     autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'},
     allowSpaces: true
 });
-$('.tagAjaxInput').tagit({
+$('.tagAjaxInput:not([disabled])').tagit({
     allowSpaces: true
 });
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true}); 
 });
-$('.select2').select2({  
+$('.select2:not([disabled2])').select2({  
     dropdownAutoWidth : true,
     width: '100%'
 });
 
-$('.datepicker').datetimepicker({
+$('.datepicker:not([disabled])').datetimepicker({
     pickTime: false,
     language: 'pl',
     format: 'YYYY-MM-DD',
 });
-$('.datetimepicker').datetimepicker({
+$('.datetimepicker:not([disabled])').datetimepicker({
     pickTime: false,
     language: 'pl',
     format: 'YYYY-MM-DD HH:mm:ss',
