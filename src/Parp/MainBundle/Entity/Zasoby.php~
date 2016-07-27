@@ -76,6 +76,55 @@ class Zasoby
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $administratorTechnicznyZasobu;
+    
+    
+    
+    
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wlascicielZasobuEcm;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorZasobuEcm;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorTechnicznyZasobuEcm;
+    
+    
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wlascicielZasobuZgubieni;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorZasobuZgubieni;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorTechnicznyZasobuZgubieni;
+    
     /**
     * @var string
      *
@@ -1184,5 +1233,46 @@ class Zasoby
     public function getPublished()
     {
         return $this->published;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->wnioskiZmieniajaceZasob = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add wnioskiZmieniajaceZasob
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     *
+     * @return Zasoby
+     */
+    public function addWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    {
+        $this->wnioskiZmieniajaceZasob[] = $wnioskiZmieniajaceZasob;
+
+        return $this;
+    }
+
+    /**
+     * Remove wnioskiZmieniajaceZasob
+     *
+     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     */
+    public function removeWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    {
+        $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);
+    }
+
+    /**
+     * Get wnioskiZmieniajaceZasob
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getWnioskiZmieniajaceZasob()
+    {
+        return $this->wnioskiZmieniajaceZasob;
     }
 }

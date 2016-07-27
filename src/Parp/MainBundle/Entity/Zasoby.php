@@ -76,6 +76,55 @@ class Zasoby
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $administratorTechnicznyZasobu;
+    
+    
+    
+    
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wlascicielZasobuEcm;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorZasobuEcm;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorTechnicznyZasobuEcm;
+    
+    
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wlascicielZasobuZgubieni;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorZasobuZgubieni;
+    /**
+    * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $administratorTechnicznyZasobuZgubieni;
+    
     /**
     * @var string
      *
@@ -1225,5 +1274,149 @@ class Zasoby
     public function getWnioskiZmieniajaceZasob()
     {
         return $this->wnioskiZmieniajaceZasob;
+    }
+
+    /**
+     * Set wlascicielZasobuEcm
+     *
+     * @param string $wlascicielZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setWlascicielZasobuEcm($wlascicielZasobuEcm)
+    {
+        $this->wlascicielZasobuEcm = $wlascicielZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get wlascicielZasobuEcm
+     *
+     * @return string
+     */
+    public function getWlascicielZasobuEcm()
+    {
+        return $this->wlascicielZasobuEcm;
+    }
+
+    /**
+     * Set administratorZasobuEcm
+     *
+     * @param string $administratorZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorZasobuEcm($administratorZasobuEcm)
+    {
+        $this->administratorZasobuEcm = $administratorZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorZasobuEcm
+     *
+     * @return string
+     */
+    public function getAdministratorZasobuEcm()
+    {
+        return $this->administratorZasobuEcm;
+    }
+
+    /**
+     * Set administratorTechnicznyZasobuEcm
+     *
+     * @param string $administratorTechnicznyZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorTechnicznyZasobuEcm($administratorTechnicznyZasobuEcm)
+    {
+        $this->administratorTechnicznyZasobuEcm = $administratorTechnicznyZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorTechnicznyZasobuEcm
+     *
+     * @return string
+     */
+    public function getAdministratorTechnicznyZasobuEcm()
+    {
+        return $this->administratorTechnicznyZasobuEcm;
+    }
+
+    /**
+     * Set wlascicielZasobuZgubieni
+     *
+     * @param string $wlascicielZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setWlascicielZasobuZgubieni($wlascicielZasobuZgubieni)
+    {
+        $this->wlascicielZasobuZgubieni = $wlascicielZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get wlascicielZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getWlascicielZasobuZgubieni()
+    {
+        return $this->wlascicielZasobuZgubieni;
+    }
+
+    /**
+     * Set administratorZasobuZgubieni
+     *
+     * @param string $administratorZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorZasobuZgubieni($administratorZasobuZgubieni)
+    {
+        $this->administratorZasobuZgubieni = $administratorZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getAdministratorZasobuZgubieni()
+    {
+        return $this->administratorZasobuZgubieni;
+    }
+
+    /**
+     * Set administratorTechnicznyZasobuZgubieni
+     *
+     * @param string $administratorTechnicznyZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorTechnicznyZasobuZgubieni($administratorTechnicznyZasobuZgubieni)
+    {
+        $this->administratorTechnicznyZasobuZgubieni = $administratorTechnicznyZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorTechnicznyZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getAdministratorTechnicznyZasobuZgubieni()
+    {
+        return $this->administratorTechnicznyZasobuZgubieni;
     }
 }

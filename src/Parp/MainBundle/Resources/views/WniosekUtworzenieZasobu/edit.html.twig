@@ -8,7 +8,7 @@
         <div class="alert alert-info">
             <h3>Wniosek o {{entity.typ == "zmiana" ? "zmianę" : (entity.typ == "nowy" ? "utworzenie" : "usunięcie")}} zasobu numer : {{entity.wniosek.numer}}</h3>
             <ul>                
-                <li><b>Zasób :</b> {{ entity.zasob ? entity.zasob.nazwa : ""}}</li>
+                <li><b>Zasób :</b> {{ entity.typ == 'nowy ? (entity.zasob ? entity.zasob.nazwa : "") : (entity.zmienianyZasob ? entity.zmienianyZasob.nazwa : "")}}</li>
                 <li><b>Typ wniosku :</b> {{ entity.typ }}</li>
                 <li><b>Statusy:</b></li>
             </ul>

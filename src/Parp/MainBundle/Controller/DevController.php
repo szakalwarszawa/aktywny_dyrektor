@@ -799,17 +799,34 @@ class DevController extends Controller
     {
         $em = $this->getDoctrine()->getEntityManager();
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
+        $i = 0;
         foreach($zasoby as $z){
-            $z->getWlascicielZasobu($this->fixLudzi($z->getWlascicielZasobu()));
-            $z->getAdministratorZasobu($this->fixLudzi($z->getAdministratorZasobu()));
-            $z->getAdministratorTechnicznyZasobu($this->fixLudzi($z->getAdministratorTechnicznyZasobu()));
+            $r = $this->fixLudzi($z->getWlascicielZasobu());
+            $z->setWlascicielZasobuEcm($z->getWlascicielZasobu());
+            $z->setWlascicielZasobuZgubieni($r['zgubieni']);
+            $z->setWlascicielZasobu($r['ludzie']);
+            
+            $r = $this->fixLudzi($z->getAdministratorZasobu());
+            $z->setAdministratorZasobuEcm($z->getAdministratorZasobu());
+            $z->setAdministratorZasobuZgubieni($r['zgubieni']);
+            $z->setAdministratorZasobu($r['ludzie']);
+            
+            $r = $this->fixLudzi($z->getAdministratorTechnicznyZasobu());
+            $z->setAdministratorTechnicznyZasobuEcm($z->getAdministratorTechnicznyZasobu());
+            $z->setAdministratorTechnicznyZasobuZgubieni($r['zgubieni']);
+            $z->setAdministratorTechnicznyZasobu($r['ludzie']);
+            
+            $i++;
+            if($i > 15000)
+                die('nie doszedl do konca 15000');
         }
-        //$em->flush();
+        $em->flush();
                 
     }
     protected function fixLudzi($ludzie){
         $pomijaj = ["Aktywny Dyrektor"];
         $ret = [];
+        $zgubieni = [];
         $ldap = $this->get('ldap_service');
         //przerobic ich na samaccountnames
         $larr = explode(",", $ludzie);
@@ -817,17 +834,27 @@ class DevController extends Controller
             $l = trim($l);
             //na razie pomija ytych z nazwiskami w nawiasach
             //TODO: poprawich tych z nazwiskami w nawiasach 
-            if($l != "" && !in_array($l, $pomijaj) && strstr($l, "(") === false){
+            if(
+                //pomijam puste
+                $l != "" && 
+                //pomijam ustalone wyzej
+                !in_array($l, $pomijaj) && 
+                //pomijam te z nazwiskiem w nawiasie
+                //strstr($l, "(") === false && 
+                //pomijam loginy (czyli to co juz jest ok)
+                strstr($l, "_") === false
+            ){
                 echo ("Szukam osoby ".$l."<br>");
-                $ADuser = $ldap->getUserFromAD(null, $l);
+                $ADuser = $ldap->getUserFromAD(null, $l); 
                 if(count($ADuser) > 0){
                     $ret[] = $ADuser[0]['samaccountname'];
                 }else{
+                    $zgubieni[] = $l;
                     echo ("Blad 54367 nie moge znalezc osoby ".$l."<br>");
                 }
+                
             }
         }
-        $exists = $ldap->checkGroupExistsFromAD(null);
-        return implode(",", $ret);
+        return ['ludzie' => implode(",", $ret), 'zgubieni' => implode(",", $zgubieni) ];
     }
 }    
