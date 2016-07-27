@@ -623,7 +623,7 @@ class LdapAdminService
         }
     }
     
-    //usuwa usera z grupy w AD
+    //dodaje usera do grupy w AD
     public function ldap_mod_add($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
@@ -639,7 +639,7 @@ class LdapAdminService
         }
     }
     
-    //dodaje usera do grupy w AD
+    //usuwa usera z grupy w AD
     public function ldap_mod_del($link_identifier,  $dn,  $entry)
     {
         if($this->pushChanges){
@@ -675,7 +675,7 @@ class LdapAdminService
     {
         if($this->pushChanges){
             echo "kasuje dn ".$dn;
-            ldap_delete($link_identifier, $dn);
+            //ldap_delete($link_identifier, $dn);
         }else{
             $this->output->writeln('<error>wykonuje funkcje ldap_delete</error>)');
             $this->output->writeln('<error>dn: '.$dn.'</error>)');

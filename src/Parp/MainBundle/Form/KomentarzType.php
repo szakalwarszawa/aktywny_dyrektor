@@ -26,7 +26,7 @@ class KomentarzType extends AbstractType
                 'label' => 'Kiedy utworzono komentarz'
             ))
             ->add('tytul', 'text', ['label' => 'Tytuł komentarza'])
-            ->add('opis','textarea', ['label' => 'Treść komentarza'])
+            ->add('opis','textarea', ['label' => 'Treść komentarza', 'attr' => ['maxlength' => 5000]])
             ->add('obiekt','hidden')
             ->add('obiektId','hidden')
         ;

@@ -39,6 +39,10 @@ class ReorganizacjaParpController extends Controller
      */
     public function testffAction()
     {
+        $zmieniajOU = false;
+        $zmieniajGrupy = true;
+        
+        
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_admin_service');
         $ldap->output = $this;
@@ -83,7 +87,7 @@ class ReorganizacjaParpController extends Controller
                 $parent = 'OU=' . $departament->getShortname() . ',OU=Zespoly 2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1];
                             
                 $cn = $aduser[0]['name'];
-                if( 1 == 11){
+                if($zmieniajOU){
                     //zmieniam OU !!!!!
                     $b = $ldap->ldap_rename($ldapconn, $aduser[0]['distinguishedname'], "CN=" . $cn, $parent, TRUE);                
                     $ldapstatus = $ldap->ldap_error($ldapconn);
@@ -91,7 +95,7 @@ class ReorganizacjaParpController extends Controller
                     echo "$ldapstatus \r\n<br>";
                 }
                 
-                if(1 == 1){
+                if($zmieniajGrupy){
                     foreach($grupy as $g){
                         $dn = $aduser[0]['distinguishedname'];
                         $grupa = $ldap->getGrupa($g);
