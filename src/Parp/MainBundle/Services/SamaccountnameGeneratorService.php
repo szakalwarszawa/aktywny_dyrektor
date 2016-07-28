@@ -44,24 +44,26 @@ class SamaccountnameGeneratorService
                 $ret .= $ch;
             }
         }
-        //var_dump($imie, $nazwisko,$ret2, $ret);die();
         if($try == 0){
             $ret = substr($ret, 0, 20);
         }else{
             $ret = substr($ret, 0, (20 - strlen($try))).$try;
         }
+        //var_dump($imie, $nazwisko,$ret2, $try, $ret); //die();
         return $ret;        
     }
     
     
-    public function generateSamaccountname($imie, $nazwisko){
+    public function generateSamaccountname($imie, $nazwisko, $sprawdzajCzyJuzJest = true){
         $ldap = $this->container->get('ldap_service');
         $ret = $this->generateNextSam($imie, $nazwisko, 0);
-        $user = $ldap->getUserFromAD($ret);
-        $try = 0;
-        while(count($user) > 0 && $try < 1000){            
-            $ret = $this->generateNextSam($imie, $nazwisko, ++$try);
+        if($sprawdzajCzyJuzJest){
             $user = $ldap->getUserFromAD($ret);
+            $try = 0;
+            while(count($user) > 0 && $try < 1000){            
+                $ret = $this->generateNextSam($imie, $nazwisko, ++$try);
+                $user = $ldap->getUserFromAD($ret);
+            }
         }
         return $ret;
     }   

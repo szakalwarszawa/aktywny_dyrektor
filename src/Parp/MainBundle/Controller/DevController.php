@@ -898,4 +898,121 @@ class DevController extends Controller
         }
         
     }
+    
+    
+    /**
+     * @Route("/fixLogins", name="fixLogins")
+     * @Template()
+     */
+    public function fixLoginsAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findAll();
+        foreach($dr as $d){
+            $login = $this->get('samaccountname_generator')->generateSamaccountname($d->getImie(), $d->getNazwisko(), false);
+            $d->setLogin($login);
+        }
+        $em->flush();
+        
+    }
+    
+    
+    /**
+     * @Route("/findNamesChangedAndFix", name="findNamesChangedAndFix")
+     * @Template()
+     */
+    public function findNamesChangedAndFixAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        //$name = "Boceńska (Burakowska) Iwona";
+        //die("tylko_nowe_nazwisko");
+        
+        $users = $this->get('ldap_service')->getAllFromAD(true);
+        $i = 0;
+        $errors = [];
+        $zmienilem = [];
+        for($i = 0; $i < count($users); $i++){
+            unset($users[$i]['thumbnailphoto']);
+            $u = $users[$i];
+            if(strstr($u['name'], "(") !== false){
+                $name = $u['name'];
+                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, "("));
+                $imie = substr($name, strpos($name, ")")+1);
+                $u['tylko_nowe_nazwisko'] = $tylko_nowe_nazwisko;
+                $u['imie'] = $imie;
+            }else{
+                
+                $name = $u['name'];
+                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, " "));
+                $imie = substr($name, strpos($name, " ")+1);
+                $u['tylko_nowe_nazwisko'] = $tylko_nowe_nazwisko;
+                $u['imie'] = $imie;
+            }
+            
+            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['nazwisko' => trim($u['tylko_nowe_nazwisko']), 'imie' => trim($u['imie'])]);
+            if(!$dr){
+                //echo "<pre>"; print_r($z);
+                $errors[] = ("Nie mam danych rekord dla osoby ".$u['name']);
+            }else{
+                //echo "<br>zmieniam login dla ".$z['name']." na ".$z['samaccountname'];
+                $zmienilem[$dr->getLogin()] = $u['samaccountname'];
+                $dr->setLogin($u['samaccountname']);
+            }
+            //echo "<pre>"; print_r($u); die();
+        }
+        //echo "<pre>"; print_r($zmienione); die();
+        echo "<pre>"; print_r($errors); echo "</pre>";
+        echo "<pre>"; print_r($zmienilem); echo "</pre>";
+        //echo "<pre>"; print_r($zmienione); echo "</pre>"; 
+        //die();
+        $em->flush();
+    }
+    
+    
+    
+    /**
+     * @Route("/checkKrakowiak", name="checkKrakowiak")
+     * @Template()
+     */
+    public function checkKrakowiakAction()
+    {
+        $users = $this->get('ldap_service')->getAllFromAD(true);
+        foreach($users as &$u){
+            unset($u['thumbnailphoto']);
+        }
+        echo "<pre>"; print_r($users); die();
+    }
+    
+    /**
+     * @Route("/getAllUsers", name="getAllUsers")
+     * @Template()
+     */
+    public function getAllUsersAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        
+        //$name = "Boceńska (Burakowska) Iwona";
+        //die("tylko_nowe_nazwisko");
+        
+        $users = $this->get('ldap_service')->getAllFromAD(false);
+        $zostaliBezRekorda = [];
+        $zostaliZRekorda = [];
+        foreach($users as $u){
+            $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['login' => trim($u['samaccountname'])]);
+            if($dr){
+                $zostaliZRekorda[$u['samaccountname']] = $u['name'];
+            }else{
+                
+                $zostaliBezRekorda[$u['samaccountname']] = $u['name'];
+            }
+            
+        }
+        
+        echo "<pre>"; print_r($zostaliZRekorda); echo "<pre>"; 
+        echo "<pre>"; print_r($zostaliBezRekorda); echo "<pre>"; 
+        die();
+        
+    }
+    
 }    

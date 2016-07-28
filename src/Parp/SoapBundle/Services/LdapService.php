@@ -93,9 +93,15 @@ class LdapService
         //echo "<pre>"; print_r($ret); die();
         return $ret;
     }
-    public function getAllFromAD()
+    public function getAllFromAD($tezNieobecni = false)
     {
         $userdn = $this->useradn . $this->patch;
+        
+        if($tezNieobecni){
+            
+            $userdn = str_replace("OU=Zespoly,", "", $userdn);
+        }
+        
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -123,7 +129,7 @@ class LdapService
 
         
         $result = $this->parseResults($tmpResults);
-        //var_dump($result); die();
+        //echo "<pre>"; var_dump($result); die();
         return $result;
     }
     
@@ -471,6 +477,47 @@ class LdapService
         $userdn = $this->useradn . $this->patch;
 
 
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        //$ldap_username = $this->securityContext->getToken()->getUsername();
+        //$ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
+        
+
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+
+        if ($samaccountname) {
+            $searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
+        } elseif ($cnname) {
+            $cnname = ldap_escape($cnname);
+            $searchString = '(&(name=*' . $cnname . '*)(objectClass=person))';
+
+        } elseif($query) {
+            $searchString = "(&(".$query.")(objectClass=person))";
+        }else {
+            $searchString = "(&(samaccountname=)(objectClass=person))";
+        }
+
+
+        $search = ldap_search($ldapconn, $userdn, $searchString, $this->ADattributes);
+        $tmpResults = ldap_get_entries($ldapconn, $search);
+        ldap_unbind($ldapconn);
+
+        $result = $this->parseResults($tmpResults);
+
+        return $result;
+    }
+    public function getNieobecnyUserFromAD($samaccountname = null, $cnname = null, $query = null){
+        $ldapconn = ldap_connect($this->ad_host);
+        $ldapdomain = $this->ad_domain;
+        $userdn = $this->useradn . $this->patch;
+
+        $userdn = str_replace("OU=Zespoly,", "", $userdn);
+        //die($userdn);
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.

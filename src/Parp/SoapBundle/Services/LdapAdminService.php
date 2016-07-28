@@ -596,25 +596,41 @@ class LdapAdminService
     //zmienia atrybuty usera poza departamentem i grupami dostepu
     public function ldap_modify($link_identifier,  $dn,  $entry)
     {
+        $poszlo = false;
         if($this->pushChanges){
-            ldap_modify($link_identifier, $dn, $entry);
-        }else{
+            try{
+                //throw new \Exception('a');
+                ldap_modify($link_identifier, $dn, $entry);
+                $poszlo = true;
+            }catch(\Exception $e){
+                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+            }
+        }
+        if(!$this->pushChanges || !$poszlo){
             $data = [];
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_modify</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
-            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_modify</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
     }
     
     //zmienia DN userowi , czyli departament
     public function ldap_rename($link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn )
     {
+        $poszlo = false;
         if($this->pushChanges){
-            ldap_rename( $link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn );
-        }else{
+            try{
+                ldap_rename( $link_identifier ,  $dn ,  $newrdn ,  $newparent ,  $deleteoldrdn );
+                $poszlo = true;
+            }
+            catch(\Exception $e){
+                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+            }
+        }
+        if(!$this->pushChanges || !$poszlo){
             $this->output->writeln('<error>wykonuje funkcje ldap_rename</error>)');
             $this->output->writeln('<error>dn: '.$dn.'</error>)');
             $this->output->writeln('<error>newrdn: '.$newrdn.'</error>)');
@@ -626,9 +642,17 @@ class LdapAdminService
     //dodaje usera do grupy w AD
     public function ldap_mod_add($link_identifier,  $dn,  $entry)
     {
+        $poszlo = false;
         if($this->pushChanges){
-            ldap_mod_add($link_identifier, $dn, $entry);
-        }else{
+            try{
+                ldap_mod_add($link_identifier, $dn, $entry);
+                $poszlo = true;
+            }
+            catch(\Exception $e){
+                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+            }
+        }
+        if(!$this->pushChanges || !$poszlo){
             $data = [];
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
@@ -642,9 +666,17 @@ class LdapAdminService
     //usuwa usera z grupy w AD
     public function ldap_mod_del($link_identifier,  $dn,  $entry)
     {
+        $poszlo = false;
         if($this->pushChanges){
-            ldap_mod_del($link_identifier, $dn, $entry);
-        }else{
+            try{
+                ldap_mod_del($link_identifier, $dn, $entry);
+                $poszlo = true;
+            }
+            catch(\Exception $e){
+                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+            }
+        }
+        if(!$this->pushChanges || !$poszlo){
             $data = [];
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
@@ -658,9 +690,17 @@ class LdapAdminService
     //dodaje usera do AD
     public function ldap_add($link_identifier,  $dn,  $entry)
     {
+        $poszlo = false;
         if($this->pushChanges){
-            ldap_add($link_identifier, $dn, $entry);
-        }else{
+            try{
+                ldap_add($link_identifier, $dn, $entry);
+                $poszlo = true;
+            }
+            catch(\Exception $e){
+                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+            }
+        }
+        if(!$this->pushChanges || !$poszlo){
             $data = [];
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";

@@ -19,12 +19,21 @@ class ReorganizacjaParpController extends Controller
 {
     
     protected function getGrupyUsera($user, $depshortname, $sekcja){
-        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW', 'SGG-(skrót D/B)-Public-RO', 'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW'];
+        $pomijajSekcje = ["ND", "", "n/d", ""];
+        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW'
+            //, 'SGG-(skrót D/B)-Public-RO'
+        ];
+        if(!in_array($sekcja, $pomijajSekcje)){
+            $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
+        }
         switch($user['title']){
             case "Dyrektor":
             case "Dyrektor (p.o.)":
             case "Zastępca Dyrektora":
             case "Zastępca Dyrektora (p.o.)":
+            case "Prezes":
+            case "Zastępca Prezesa":
+            case "Zastępca Prezesa (p.o.)":
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 break;
@@ -42,8 +51,25 @@ class ReorganizacjaParpController extends Controller
      */
     public function nadajUprawnieniaPoczatkoweIzmienOUAction()
     {
-        $zmieniajOU = false;
+        $zmieniajOU = true;
         $zmieniajGrupy = true;
+        $zmieniajSekcjewIDescriptionAD = true;
+        
+        $nieMialemWExeluSekcji = [];
+        $mapowanieDep = [
+            '522' => '523'
+        ];
+        
+        $tylkoTychUserow = [
+            //'piotr_zerhau',
+            //'artur_marszalek',
+            //'tomasz_swiercz',
+            'kamil_jakacki',
+            //'martyna_aleksjew'
+        ];
+        
+        $tylkoTychUserow = [];//teraz jedzie wszystkich
+        $tylkoTeBD = 0;//519;//tylko ten db , chyba ze 0 
         
         
         $em = $this->getDoctrine()->getManager();
@@ -51,6 +77,7 @@ class ReorganizacjaParpController extends Controller
         $ldap->output = $this;
         $ldapconn = $ldap->prepareConnection();
         $c = new ImportRekordDaneController();
+        $c->setContainer($this->container);
         $sql = $c->getSqlDoImportu();
         $rows = $c->executeQuery($sql);
         
@@ -58,71 +85,113 @@ class ReorganizacjaParpController extends Controller
         $tab = explode(".", $this->container->getParameter('ad_domain'));
         
         foreach($rows as $row){
-            if($row['DEPARTAMENT'] > 500){
+            if(isset($mapowanieDep[$row['DEPARTAMENT']])){
+                $row['DEPARTAMENT'] = $mapowanieDep[$row['DEPARTAMENT']];
+            }
+            if($row['DEPARTAMENT'] > 500 && ($tylkoTeBD == "" || $tylkoTeBD == $row['DEPARTAMENT'])){
                 //$login = $this->get('samaccountname_generator')->generateSamaccountname($c->parseValue($row['IMIE']), $c->parseValue($row['NAZWISKO']));
                 $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($c->parseValue($row['SYMBOL']));
+                if(!$danerekord){
+                    die("Nie moge znalezc osoby !!! ".trim($row['NAZWISKO'])." ".trim($row['IMIE'])." - ".$row['SYMBOL']);
+                }
                 $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $c->parseValue($row['DEPARTAMENT']), 'nowaStruktura' => true]);
-                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy(['pracownik' => trim($row['NAZWISKO'])." ".trim($row['IMIE'])]);
+                $prac = mb_strtoupper($danerekord->getNazwisko()." ".$danerekord->getImie());//$c->parseValue($row['NAZWISKO'], false)." ".trim($c->parseValue['IMIE'], false);
+                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy(['pracownik' => $prac]);
                 $login = $danerekord->getLogin();
-                $aduser = $ldap->getUserFromAD($login);
-                if(!$sekcja){
-                    die("Nie mam sekcji dla usera $login '".trim($row['NAZWISKO'])." ".trim($row['IMIE'])."'");
-                }else{
-                    //TODO: Nadawac sekcje w polu division !!!
-                }
-                $grupy = $this->getGrupyUsera($aduser[0], $departament->getShortname(), "SEKCJA_NA_SZTYWNO");
-                $noweDepartamenty[] = [
-                    'row' => $row,
-                    'login' => $login,
-                    'aduser' => count($aduser) > 0 ? $aduser[0] : [],
-                    'entry' => [
-                        'departament' => $departament->getName(), //'', //nowy departament nazwa
-                        'distinguishedname' => $aduser[0]['distinguishedname'],
-                        'fromWhen' => new \Datetime(),
-                        'samaccountname' => $login,
-                        'grupy' => $grupy
-                    ]
-                ];
-                $e = new \Parp\MainBundle\Entity\Entry();
-                $e->setFromWhen(new \Datetime());
-                $e->setSamaccountname($login);
-                $e->setDistinguishedname($aduser[0]['distinguishedname']);
-                $e->setDepartment($departament->getName());
-                $em->persist($e);
-                
-                //CN=Dyrektor Aktywny,OU=BI,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST
-                
-                
-                $parent = 'OU=' . $departament->getShortname() . ',OU=Zespoly 2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1];
+                    if(count($tylkoTychUserow) == 0 || in_array($login, $tylkoTychUserow)){
+                    $aduser = $ldap->getUserFromAD($login);
+                    $sekcjaName = "ND";
+                    if(!$sekcja){
+                        $nieMialemWExeluSekcji[$login] = $prac;
+                        //die("Nie mam sekcji dla usera $login '".$prac."'");
+                    }else{
+                        //TODO: Nadawac sekcje w polu division !!!
+                        //oraz dorzucac w uprawnieniach
+                        $sekcjaName = $sekcja->getSekcjaSkrot();
+                        
+                        if($zmieniajSekcjewIDescriptionAD){
+                            $zmiana = [
+                                //'info' => $sekcja->getSekcja(),
+                                //'division' => $sekcja->getSekcjaSkrot(),
+                                'description' => $departament->getShortname(),
+                                'department' => $departament->getName(),
+                                'extensionAttribute14' => $departament->getShortname(),
+                                //'extensionAttribute15' => ''//stanowisko //$departament->getShortname(),
+                            ];
                             
-                $cn = $aduser[0]['name'];
-                if($zmieniajOU){
-                    //zmieniam OU !!!!!
-                    $b = $ldap->ldap_rename($ldapconn, $aduser[0]['distinguishedname'], "CN=" . $cn, $parent, TRUE);                
-                    $ldapstatus = $ldap->ldap_error($ldapconn);
-                    var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                    echo "$ldapstatus \r\n<br>";
-                }
-                
-                if($zmieniajGrupy){
-                    foreach($grupy as $g){
-                        $dn = $aduser[0]['distinguishedname'];
-                        $grupa = $ldap->getGrupa($g);
-                        $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
-                        var_dump($g, $addtogroup, array('member' => $dn ));
-                        $ldap->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                            if($sekcjaName != ""){
+                                $zmiana['info'] =  $sekcja->getSekcja();
+                                $zmiana['division'] =  $sekcja->getSekcjaSkrot();
+                            }
+                            //$zmiana['info'] = '';
+                            
+                            //die($aduser[0]['distinguishedname']);
+                            $res = $ldap->ldap_modify($ldapconn, $aduser[0]['distinguishedname'], $zmiana);
+                            $ldapstatus = $ldap->ldap_error($ldapconn);
+                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_modify $ldapstatus dla osoby ".$aduser[0]['distinguishedname']."</span> \r\n<br>";
+                        }
+                    }
+                    if(!$departament){
+                        echo "<pre>"; print_r($aduser[0]); die("Nie mam departamentu dla osoby !!!");
+                    }
+                    $grupy = $this->getGrupyUsera($aduser[0], $departament->getShortname(), $sekcjaName);
+                    if(count($aduser) > 0)
+                        unset($aduser[0]['thumbnailphoto']);
+                    $noweDepartamenty[] = [
+                        'row' => $row,
+                        'login' => $login,
+                        'aduser' => count($aduser) > 0 ? $aduser[0] : [],
+                        'sekcja' => ($sekcja ? $sekcja->getSekcjaSkrot() : "ND"),
+                        'entry' => [
+                            'departament' => $departament->getName(), //'', //nowy departament nazwa
+                            'distinguishedname' => $aduser[0]['distinguishedname'],
+                            'fromWhen' => new \Datetime(),
+                            'samaccountname' => $login,
+                            'grupy' => $grupy
+                        ]
+                    ];
+                    $e = new \Parp\MainBundle\Entity\Entry();
+                    $e->setFromWhen(new \Datetime());
+                    $e->setSamaccountname($login);
+                    $e->setDistinguishedname($aduser[0]['distinguishedname']);
+                    $e->setDepartment($departament->getName());
+                    $em->persist($e);
+                    
+                    //CN=Dyrektor Aktywny,OU=BI,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST
+                    
+                    
+                    
+                    
+                    if($zmieniajGrupy){
+                        foreach($grupy as $g){
+                            $dn = $aduser[0]['distinguishedname'];
+                            $grupa = $ldap->getGrupa($g);
+                            $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                            //var_dump($g, $addtogroup, array('member' => $dn ));
+                            $ldap->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                            $ldapstatus = $ldap->ldap_error($ldapconn);
+                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                        }
+                    }
+                    
+                    $parent = 'OU=' . $departament->getShortname() . ',OU=Zespoly_2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1];
+                                
+                    $cn = $aduser[0]['name'];
+                    if($zmieniajOU){
+                        //zmieniam OU !!!!!
+                        $b = $ldap->ldap_rename($ldapconn, $aduser[0]['distinguishedname'], "CN=" . $cn, $parent, TRUE);                
                         $ldapstatus = $ldap->ldap_error($ldapconn);
-                        echo "$ldapstatus \r\n<br>";
+                        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_rename $ldapstatus ".$aduser[0]['distinguishedname']."</span> \r\n<br>";
                     }
                 }
-                
             }
         }
-        var_dump($noweDepartamenty); die();
+        echo "<pre>"; print_r($noweDepartamenty); die();
         //$em->flush();//nie zapisuje tego
     }
     public function writeln($txt){
-        echo $txt;
+        echo "<br>".$txt."<br>";
     }
     
     /**

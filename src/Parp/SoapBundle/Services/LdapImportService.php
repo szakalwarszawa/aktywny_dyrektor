@@ -29,7 +29,7 @@ class LdapImportService
         $em = $this->container->get('doctrine')->getManager();
         $ldap = $this->container->get('ldap_service');
         // Sięgamy do AD:
-        $ADUsers0 = $ldap->getAllFromAD();
+        $ADUsers0 = $ldap->getAllFromAD(true);
         $namesCols = array('memberOf', 'roles');
         $proccessed = array();
         $ADUsers = [];

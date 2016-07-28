@@ -17,6 +17,15 @@ class ImportRekordDaneController extends Controller
     
     protected $dataGraniczna = '2016-08-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
 
+/*
+    protected $container;
+
+    public function setContainer(Symfony\Component\DependencyInjection\ContainerInterface $container = NULL)
+    {
+        $this->container = $container;
+    }
+*/
+
     public function getSqlDoImportu(){
         
         //$dataGraniczna = date("Y-m-d");
@@ -88,7 +97,40 @@ class ImportRekordDaneController extends Controller
         return $sql;
     }
     
-     
+    protected function getUserFromAD($ldap, $dr){
+         $aduser = $ldap->getUserFromAD($dr->getLogin());
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         $aduser = $ldap->getNieobecnyUserFromAD($dr->getLogin());
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         $fullname = $dr->getNazwisko()." ".$dr->getImie();
+         echo "<br> szuka ".$fullname;
+         $aduser = $ldap->getUserFromAD(null, $fullname);
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         $aduser = $ldap->getNieobecnyUserFromAD(null, $fullname);
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         $fullname = $dr->getNazwisko()." (*) ".$dr->getImie();
+         echo "<br> szuka ".$fullname;
+         $aduser = $ldap->getUserFromAD(null, $fullname);
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         $fullname = $dr->getNazwisko()." (*) ".$dr->getImie();
+         echo "<br> szuka ".$fullname;
+         $aduser = $ldap->getNieobecnyUserFromAD(null, $fullname);
+         if(count($aduser) > 0){
+             return $aduser;
+         }
+         return [];
+         
+    }
     /**
      * Lists all Klaster entities.
      *
@@ -102,8 +144,12 @@ class ImportRekordDaneController extends Controller
             '216' => '400', //WicePrezes - stary uklad, 3 szt.
             '326' => '416', //Biuro Prezesa - stary uklad, 6 szt.
             '215' => '400',
+            '522' => '523',
             '9999' => '400'
         ];
+        $pomijajDaneRekord = ['2942'/*krakowiak*/, '3753'/*pocztowska*/, '3126' /*Sługocka-morawska*/, '3798' /*Stasińska*/];
+        
+        
         $sciecha = "";
         $sql = $this->getSqlDoImportu();
         $rows = $this->executeQuery($sql);
@@ -160,132 +206,137 @@ class ImportRekordDaneController extends Controller
                 $row = $d[0];
             }
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
-            $rekordIds[$this->parseValue($row['SYMBOL'])] = $this->parseValue($row['SYMBOL']);
-            //temp
-            $dr == null;
-            $d = new \Datetime();
-            //print_r($dr); die();
-            $nowy = false;
-            if($dr === null){
-                $nowy = true;
-                $dr = new \Parp\MainBundle\Entity\DaneRekord();
-                $dr->setCreatedBy($this->getUser()->getUsername());
-                $dr->setCreatedAt($d);
-                $em->persist($dr);
-            }
-            $dr->setImie($this->parseValue($row['IMIE']));
-            $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
-            if($nowy){
-                
-                $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
-                $dr->setLogin($login);
-            }
-            
-            $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
-            $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
-            $dr->setUmowa($this->parseValue($row['UMOWA'], false));
-            $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
-            
-            $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
-            if(
-                ($d1 !== null) && 
-                (
-                    ($dr->getUmowaOd() == null && $d1 != null) || 
-                    ($dr->getUmowaOd() != null && $d1 == null) || 
-                    ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d"))
-                )
-            ){
-                $dr->setUmowaOd($d1);  
-            }
-            $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
-            
-            //var_dump($dr->getUmowaDo());
-            //var_dump($d2);
-            if(
-            ($d2 != null) && (
-            ($dr->getUmowaDo() == null && $d2 != null) || 
-            ($dr->getUmowaDo() != null && $d2 == null) || 
-            ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
-                $dr->setUmowaDo($d2);    
-            }
-            
-            
-            $dr->setLastModifiedAt($d);
-            
-            $uow = $em->getUnitOfWork();
-            $uow->computeChangeSets();
-            if (1 == 1 && ($uow->isEntityScheduled($dr) || $nowy)) {
-                $changeSet = $uow->getEntityChangeSet($dr);
-                unset($changeSet['lastModifiedAt']);
+            if($dr == null || !in_array($dr->getSymbolRekordId(), $pomijajDaneRekord)){
+                $rekordIds[$this->parseValue($row['SYMBOL'])] = $this->parseValue($row['SYMBOL']);
+                //temp
+                //$dr == null;
+                $d = new \Datetime();
+                //print_r($dr); die();
+                $nowy = false;
+                if($dr === null){
+                    $nowy = true;
+                    $dr = new \Parp\MainBundle\Entity\DaneRekord();
+                    $dr->setCreatedBy($this->getUser()->getUsername());
+                    $dr->setCreatedAt($d);
+                    $em->persist($dr);
+                }
+                $dr->setImie($this->parseValue($row['IMIE']));
+                $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
                 if($nowy){
                     
-                }else{
-                    
+                    $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
+                    $dr->setLogin($login);
                 }
-                if(count($changeSet) > 0){
-                    //echo "<pre>"; print_r($changeSet); //die();
-                    $entry = new \Parp\MainBundle\Entity\Entry();
-                    $em->persist($entry);
-                    $entry->setDaneRekord($dr);
-                    $dr->addEntry($entry);
-                    $entry->setSamAccountName($dr->getLogin());
-                    
-                    
-                    
-                    
+                
+                $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
+                $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
+                $dr->setUmowa($this->parseValue($row['UMOWA'], false));
+                $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
+                
+                $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
+                if(
+                    ($d1 !== null) && 
+                    (
+                        ($dr->getUmowaOd() == null && $d1 != null) || 
+                        ($dr->getUmowaOd() != null && $d1 == null) || 
+                        ($dr->getUmowaOd()->format("Y-m-d") != $d1->format("Y-m-d"))
+                    )
+                ){
+                    $dr->setUmowaOd($d1);  
+                }
+                $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
+                
+                //var_dump($dr->getUmowaDo());
+                //var_dump($d2);
+                if(
+                ($d2 != null) && (
+                ($dr->getUmowaDo() == null && $d2 != null) || 
+                ($dr->getUmowaDo() != null && $d2 == null) || 
+                ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
+                    $dr->setUmowaDo($d2);    
+                }
+                
+                
+                $dr->setLastModifiedAt($d);
+                
+                $uow = $em->getUnitOfWork();
+                $uow->computeChangeSets();
+                if (1 == 1 && ($uow->isEntityScheduled($dr) || $nowy)) {
+                    $changeSet = $uow->getEntityChangeSet($dr);
+                    unset($changeSet['lastModifiedAt']);
                     if($nowy){
-                        $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
-                            
-                    }
-                    if($nowy || $dr->getUmowaDo())
-                        $entry->setAccountExpires($dr->getUmowaDo());
-                    $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
-                    
-                    if($department == null){
-                        echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
-                        }else{
                         
-                        if($nowy || isset($changeSet['departament'])){
-                            $entry->setDepartment($department->getName());
-                            $entry->setGrupyAD($department);                              
-                        }
-                    
-                        //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
-                        $tab = explode(".", $this->container->getParameter('ad_domain'));
-                        $ou = ($this->container->getParameter('ad_ou'));
+                    }else{
+                        
+                    }
+                    if(count($changeSet) > 0){
+                        //echo "<pre>"; print_r($changeSet); //die();
+                        $entry = new \Parp\MainBundle\Entity\Entry();
+                        $em->persist($entry);
+                        $entry->setDaneRekord($dr);
+                        $dr->addEntry($entry);
+                        $entry->setSamAccountName($dr->getLogin());
+                        
+                        
+                        
+                        
                         if($nowy){
-                            $dn = "CN=".$entry->getCn().", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
+                            $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
+                                
                         }
-                        else{
-                            $aduser = $ldap->getUserFromAD($dr->getLogin());
-                            $dn = $aduser[0]['distinguishedname'];
-                        }
-                        //var_dump($entry->getCn(),  $dr->getImie(), $dr->getNazwisko(), $dn);
-                        $entry->setDistinguishedname($dn);
+                        if($nowy || $dr->getUmowaDo())
+                            $entry->setAccountExpires($dr->getUmowaDo());
+                        $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
                         
+                        if($department == null){
+                            echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
+                            }else{
+                            
+                            if($nowy || isset($changeSet['departament'])){
+                                $entry->setDepartment($department->getName());
+                                $entry->setGrupyAD($department);                              
+                            }
+                        
+                            //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
+                            $tab = explode(".", $this->container->getParameter('ad_domain'));
+                            $ou = ($this->container->getParameter('ad_ou'));
+                            if($nowy){
+                                $dn = "CN=".$entry->getCn().", OU=" . $department->getShortname() . ",".$ou.", DC=" . $tab[0] . ",DC=" . $tab[1];
+                            }
+                            else{
+                                $aduser = $this->getUserFromAD($ldap, $dr);//$ldap->getUserFromAD($dr->getLogin());
+                                if(count($aduser) == 0){
+                                    die("Nie moge znalezc osoby  !!!: ".$dr->getLogin());
+                                }else{                                
+                                    $dn = $aduser[0]['distinguishedname'];
+                                }
+                            }
+                            //var_dump($entry->getCn(),  $dr->getImie(), $dr->getNazwisko(), $dn);
+                            $entry->setDistinguishedname($dn);
+                            
+                        }
+                        //$entry->setDivision();//TODO:
+                        if($nowy || isset($changeSet['stanowisko']))
+                            $entry->setTitle($dr->getStanowisko());
+                        $entry->setFromWhen(new \Datetime());
+                        if($nowy){
+                            $in = mb_substr($dr->getImie(), 0, 1, "UTF-8").mb_substr($dr->getNazwisko(), 0, 1, "UTF-8");
+                            if($in == "")
+                                $in = null;
+                            $entry->setInitials($in);                    
+            /*
+                            if($dr->getNazwisko() == "Turlej")
+                                die(".".$dr->getImie().".");
+            */
+                        }
+                        $entry->setIsImplemented(0);
+                        $entry->setInitialRights('');
+                        $entry->setIsDisabled(0);
+                        $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$in." .";
+                        $imported[] = $dr;
                     }
-                    //$entry->setDivision();//TODO:
-                    if($nowy || isset($changeSet['stanowisko']))
-                        $entry->setTitle($dr->getStanowisko());
-                    $entry->setFromWhen(new \Datetime());
-                    if($nowy){
-                        $in = mb_substr($dr->getImie(), 0, 1, "UTF-8").mb_substr($dr->getNazwisko(), 0, 1, "UTF-8");
-                        if($in == "")
-                            $in = null;
-                        $entry->setInitials($in);                    
-        /*
-                        if($dr->getNazwisko() == "Turlej")
-                            die(".".$dr->getImie().".");
-        */
-                    }
-                    $entry->setIsImplemented(0);
-                    $entry->setInitialRights('');
-                    $entry->setIsDisabled(0);
-                    $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$in." .";
-                    $imported[] = $dr;
                 }
             }
-            
             
         }
         if($totalmsg != "")
@@ -304,10 +355,10 @@ class ImportRekordDaneController extends Controller
             $sql = $this->getSqlDoUzupelnienieDanychOZwolnionych($ids);
             
             $rowsZwolnieni = $this->executeQuery($sql);
-            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ids);echo "</pre>";
-            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($drs);echo "</pre>";
-            echo "<pre>"; \Doctrine\Common\Util\Debug::dump($rowsZwolnieni);echo "</pre>";
-            die("mam zwolnienie pracownika!!!");
+            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ids);echo "</pre>";
+            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($drs);echo "</pre>";
+            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($rowsZwolnieni);echo "</pre>";
+            //die("mam zwolnienie pracownika!!!");
         }
         $em->flush(); 
         return $this->redirect($this->generateUrl('danerekord'));
