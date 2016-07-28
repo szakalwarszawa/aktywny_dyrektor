@@ -1,0 +1,51 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+    <h1>Usuwanie: ImportSekcjeUser</h1>
+    <div class="alert alert-danger">
+        Czy na pewno chcesz skasować poniższy ImportSekcjeUser ?
+    </div>
+    <table class="record_properties table table-striped">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ entity.id }}</td>
+            </tr>
+            <tr>
+                <th>Deletedat</th>
+                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
+            </tr>
+            <tr>
+                <th>Login</th>
+                <td>{{ entity.login }}</td>
+            </tr>
+            <tr>
+                <th>Pracownik</th>
+                <td>{{ entity.pracownik }}</td>
+            </tr>
+            <tr>
+                <th>Sekcja</th>
+                <td>{{ entity.sekcja }}</td>
+            </tr>
+            <tr>
+                <th>Sekcjaskrot</th>
+                <td>{{ entity.sekcjaSkrot }}</td>
+            </tr>
+            <tr>
+                <th>Departament</th>
+                <td>{{ entity.departament }}</td>
+            </tr>
+            <tr>
+                <th>Departamentskrot</th>
+                <td>{{ entity.departamentSkrot }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+        <div class="btn-group">
+
+<a class="btn btn-primary" href="{{ path('importsekcjeuser') }}">
+    <i class="fa fa-list"></i> Lista ImportSekcjeUser
+</a>
+</div>
+{% endblock %}

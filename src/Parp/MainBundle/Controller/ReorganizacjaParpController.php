@@ -2,7 +2,10 @@
 
 namespace Parp\MainBundle\Controller;
 
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Validator\Constraints\File;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -34,10 +37,10 @@ class ReorganizacjaParpController extends Controller
     /**
      * Lists all Klaster entities.
      *
-     * @Route("/testff", name="testff", defaults={})
+     * @Route("/nadajUprawnieniaPoczatkoweIzmienOU", name="nadajUprawnieniaPoczatkoweIzmienOU", defaults={})
      * @Method("GET")
      */
-    public function testffAction()
+    public function nadajUprawnieniaPoczatkoweIzmienOUAction()
     {
         $zmieniajOU = false;
         $zmieniajGrupy = true;
@@ -59,8 +62,14 @@ class ReorganizacjaParpController extends Controller
                 //$login = $this->get('samaccountname_generator')->generateSamaccountname($c->parseValue($row['IMIE']), $c->parseValue($row['NAZWISKO']));
                 $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($c->parseValue($row['SYMBOL']));
                 $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $c->parseValue($row['DEPARTAMENT']), 'nowaStruktura' => true]);
+                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy(['pracownik' => trim($row['NAZWISKO'])." ".trim($row['IMIE'])]);
                 $login = $danerekord->getLogin();
                 $aduser = $ldap->getUserFromAD($login);
+                if(!$sekcja){
+                    die("Nie mam sekcji dla usera $login '".trim($row['NAZWISKO'])." ".trim($row['IMIE'])."'");
+                }else{
+                    //TODO: Nadawac sekcje w polu division !!!
+                }
                 $grupy = $this->getGrupyUsera($aduser[0], $departament->getShortname(), "SEKCJA_NA_SZTYWNO");
                 $noweDepartamenty[] = [
                     'row' => $row,
@@ -110,10 +119,116 @@ class ReorganizacjaParpController extends Controller
             }
         }
         var_dump($noweDepartamenty); die();
-        //$em->flush();
+        //$em->flush();//nie zapisuje tego
     }
     public function writeln($txt){
         echo $txt;
+    }
+    
+    /**
+     * @Route("/importujSekcje", name="importujSekcje")
+     */
+    public function importujSekcjeAction(Request $request)
+    {
+
+        $form = $this->createFormBuilder()->add('plik', 'file', array(
+                    'required' => false,
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array('class' => 'filestyle',
+                        'data-buttonBefore' => 'false',
+                        'data-buttonText' => 'Wybierz plik',
+                        'data-iconName' => 'fa fa-file-excel-o',
+                    ),
+                    'constraints' => array(
+                        new NotBlank(array('message' => 'Nie wybrano pliku')),
+                        new File(array(
+                            'maxSize' => 1024 * 1024 * 10,
+                            'maxSizeMessage' => 'Przekroczono rozmiar wczytywanego pliku',
+                            'mimeTypes' => array('text/csv', 'text/plain', 'application/vnd.ms-excel', 'application/msexcel', 'application/xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
+                            'mimeTypesMessage' => 'Niewłaściwy typ plku. Proszę wczytac plik z rozszerzeniem csv'
+                                )),
+                    ),
+                    'mapped' => false,
+                ))
+                ->add('wczytaj', 'submit', array('attr' => array(
+                        'class' => 'btn btn-success col-sm-12',
+            )))
+                ->getForm();
+
+        $form->handleRequest($request);
+        if ($request->getMethod() == 'POST') {
+            if ($form->isValid()) {
+
+                $file = $form->get('plik')->getData();
+                $name = $file->getClientOriginalName();
+
+                //$path = $file->getClientPathName();
+                //var_dump($file->getPathname());
+                // var_dump($name);
+                $ret = $this->wczytajPlik($file);
+                if ($ret) {
+                    
+                    $msg = 'Plik został wczytany poprawnie.';
+                    $this->get('session')->getFlashBag()->set('warning', $msg);
+                    return $this->redirect($this->generateUrl('importujSekcje'));
+                }
+            }
+        }
+
+        return $this->render('ParpMainBundle:ImportSekcjeUser:importujSekcje.html.twig', array('form' => $form->createView()));
+    }
+    
+    protected function wczytajPlik($fileObject)
+    {
+        $mapowanie = [
+            'A' => '',
+            'B' => '',
+            'C' => 'departament',
+            'D' => 'departamentSkrot',
+            'E' => 'pracownik',
+            'F' => 'sekcja',
+            'G' => 'sekcjaSkrot',
+        ];
+        
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('DELETE ParpMainBundle:ImportSekcjeUser ');
+        $query->execute(); 
+        $file = $fileObject->getPathname();
+        $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
+        //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
+        if (!file_exists($file)) {
+            //exit("Please run 05featuredemo.php first." );
+            die('nie ma pliku');
+        }
+        $objPHPExcel = \PHPExcel_IOFactory::load($file);
+        //$EOL = "\r\n";
+        //echo date('H:i:s') , " Iterate worksheets" , $EOL;
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        
+        $userdane = array();
+        
+        //var_dump($sheetData); die();
+        $i = 0;
+        foreach($sheetData as $row){
+            //pomijamy pierwszy rzad
+            if($i > 2){
+                $importSekcje = new \Parp\MainBundle\Entity\ImportSekcjeUser();
+                foreach($mapowanie as $k => $v){
+                    if($v != ""){
+                        $setter = "set".ucfirst($v);
+                        $importSekcje->{$setter}($row[$k]);
+                        $em->persist($importSekcje);
+                    }
+                }
+                
+                
+            }
+            $i++;
+        }
+        $em->flush();
+        return true;
     }
     
 }

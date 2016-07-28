@@ -1317,7 +1317,7 @@ class DefaultController extends Controller
             
             $pierwszyWiersz = explode(";", $list[0]);
             $komorka = $pierwszyWiersz[0];
-            print_r($komorka); die();
+            //print_r($komorka); die();
             if($komorka == "Nazwa zasobu"){
                 $ret = $this->wczytajPlikZasoby($file);
             }else{
