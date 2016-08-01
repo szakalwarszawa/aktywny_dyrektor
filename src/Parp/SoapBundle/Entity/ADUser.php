@@ -224,6 +224,14 @@ class ADUser
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADOUs;
+    
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $createdAt;
 
     /**
      * Get id
@@ -723,6 +731,7 @@ class ADUser
     {
         $this->ADGroups = new \Doctrine\Common\Collections\ArrayCollection();
         $this->ADOUs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedAt(new \Datetime());
     }
 
     /**
@@ -791,5 +800,29 @@ class ADUser
     public function getADOUs()
     {
         return $this->ADOUs;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ADUser
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

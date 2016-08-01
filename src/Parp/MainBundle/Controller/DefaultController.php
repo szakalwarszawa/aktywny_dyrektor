@@ -565,7 +565,7 @@ class DefaultController extends Controller
         $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
         
-        $form = $this->createFormBuilder(@$defaultData)
+        $builder = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
                     'read_only' => true,
@@ -658,12 +658,7 @@ class DefaultController extends Controller
                     'choices' => $departments,
                     //'data' => @$defaultData["department"],
                 ))
-                ->add('zapisz', 'submit', array(
-                    'attr' => array(
-                        'class' => 'btn btn-success col-sm-12',
-                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
-                    ),
-                ))
+                
                 ->add('manager', 'text', array(
                     'required' => false,
                     'read_only' => true,
@@ -673,7 +668,9 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin && !$kadry1 && !$kadry2)
+                        'readonly' => (!$admin && !$kadry1 && !$kadry2),
+                        
+                        //'disabled' => (!$admin && !$kadry1 && !$kadry2)
 
                     ),
                     //'data' => @$defaultData['manager']
@@ -769,8 +766,17 @@ class DefaultController extends Controller
                     'attr' => array(                        
                         'disabled' => (!$admin && !$kadry1 && !$kadry2)
                     )
-                ))                                
-                ->setMethod('POST')
+                ));
+                               
+                if($admin){
+                    $builder->add('zapisz', 'submit', array(
+                        'attr' => array(
+                            'class' => 'btn btn-success col-sm-12',
+                            'disabled' => (!$admin && !$kadry1 && !$kadry2)
+                        ),
+                    ));
+                }         
+                $form = $builder->setMethod('POST')
                 ->getForm();
         return $form;
     }

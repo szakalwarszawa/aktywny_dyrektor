@@ -33,6 +33,9 @@ class LdapAdminService
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
+        if(!in_array("PARP_ADMIN", $securityContext->getToken()->getRoles())){
+            throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");    
+        }
         error_reporting(0);
         error_reporting(E_ALL ^ E_NOTICE);
         $this->pushChanges = $container->getParameter('pusz_to_ad');
@@ -631,11 +634,11 @@ class LdapAdminService
             }
         }
         if(!$this->pushChanges || !$poszlo){
-            $this->output->writeln('<error>wykonuje funkcje ldap_rename</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
-            $this->output->writeln('<error>newrdn: '.$newrdn.'</error>)');
-            $this->output->writeln('<error>newparent: '.$newparent.'</error>)');
-            $this->output->writeln('<error>deleteoldrdn: '.$deleteoldrdn.'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_rename</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>newrdn: '.$newrdn.'</error>');
+            $this->output->writeln('<error>newparent: '.$newparent.'</error>');
+            $this->output->writeln('<error>deleteoldrdn: '.$deleteoldrdn.'</error>');
         }
     }
     
@@ -657,9 +660,9 @@ class LdapAdminService
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
-            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
     }
     
@@ -681,9 +684,9 @@ class LdapAdminService
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_mod_del</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
-            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_del</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
     }
     
@@ -705,9 +708,9 @@ class LdapAdminService
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_add</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
-            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_add</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
     }
     //kasuje usera z AD
@@ -717,8 +720,8 @@ class LdapAdminService
             echo "kasuje dn ".$dn;
             //ldap_delete($link_identifier, $dn);
         }else{
-            $this->output->writeln('<error>wykonuje funkcje ldap_delete</error>)');
-            $this->output->writeln('<error>dn: '.$dn.'</error>)');
+            $this->output->writeln('<error>wykonuje funkcje ldap_delete</error>');
+            $this->output->writeln('<error>dn: '.$dn.'</error>');
         }
     }
     public function ldap_error($ldapconn){

@@ -11,7 +11,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="ad_group")
  * @ORM\Entity(repositoryClass="Parp\SoapBundle\Entity\ADGroupRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,member")
  * @UniqueEntity(
  *     fields={"cn"},
  *     errorPath="cn",
@@ -56,7 +56,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $member;
@@ -64,7 +64,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $distinguishedname;
@@ -72,7 +72,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $instancetype;
@@ -112,7 +112,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
@@ -136,7 +136,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
@@ -144,7 +144,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccounttype;
@@ -152,7 +152,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grouptype;
@@ -160,7 +160,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $objectcategory;
@@ -168,7 +168,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dscorepropagationdata;
@@ -176,7 +176,7 @@ class ADGroup
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dn;
@@ -190,6 +190,14 @@ class ADGroup
      */
     private $ADUsers;
 
+
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $createdAt;
 
     /**
      * Get id
@@ -655,5 +663,47 @@ class ADGroup
     public function getDn()
     {
         return $this->dn;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ADUsers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedAt(new \Datetime());
+    }
+
+    /**
+     * Add aDUser
+     *
+     * @param \Parp\SoapBundle\Entity\ADUser $aDUser
+     *
+     * @return ADGroup
+     */
+    public function addADUser(\Parp\SoapBundle\Entity\ADUser $aDUser)
+    {
+        $this->ADUsers[] = $aDUser;
+
+        return $this;
+    }
+
+    /**
+     * Remove aDUser
+     *
+     * @param \Parp\SoapBundle\Entity\ADUser $aDUser
+     */
+    public function removeADUser(\Parp\SoapBundle\Entity\ADUser $aDUser)
+    {
+        $this->ADUsers->removeElement($aDUser);
+    }
+
+    /**
+     * Get aDUsers
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getADUsers()
+    {
+        return $this->ADUsers;
     }
 }

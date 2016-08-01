@@ -79,6 +79,8 @@ class Zastepstwo
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosekHistoriaStatusu; 
+    
+    
 
     /**
      * Get id

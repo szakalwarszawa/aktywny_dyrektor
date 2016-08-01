@@ -1275,4 +1275,148 @@ class Zasoby
     {
         return $this->wnioskiZmieniajaceZasob;
     }
+
+    /**
+     * Set wlascicielZasobuEcm
+     *
+     * @param string $wlascicielZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setWlascicielZasobuEcm($wlascicielZasobuEcm)
+    {
+        $this->wlascicielZasobuEcm = $wlascicielZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get wlascicielZasobuEcm
+     *
+     * @return string
+     */
+    public function getWlascicielZasobuEcm()
+    {
+        return $this->wlascicielZasobuEcm;
+    }
+
+    /**
+     * Set administratorZasobuEcm
+     *
+     * @param string $administratorZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorZasobuEcm($administratorZasobuEcm)
+    {
+        $this->administratorZasobuEcm = $administratorZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorZasobuEcm
+     *
+     * @return string
+     */
+    public function getAdministratorZasobuEcm()
+    {
+        return $this->administratorZasobuEcm;
+    }
+
+    /**
+     * Set administratorTechnicznyZasobuEcm
+     *
+     * @param string $administratorTechnicznyZasobuEcm
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorTechnicznyZasobuEcm($administratorTechnicznyZasobuEcm)
+    {
+        $this->administratorTechnicznyZasobuEcm = $administratorTechnicznyZasobuEcm;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorTechnicznyZasobuEcm
+     *
+     * @return string
+     */
+    public function getAdministratorTechnicznyZasobuEcm()
+    {
+        return $this->administratorTechnicznyZasobuEcm;
+    }
+
+    /**
+     * Set wlascicielZasobuZgubieni
+     *
+     * @param string $wlascicielZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setWlascicielZasobuZgubieni($wlascicielZasobuZgubieni)
+    {
+        $this->wlascicielZasobuZgubieni = $wlascicielZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get wlascicielZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getWlascicielZasobuZgubieni()
+    {
+        return $this->wlascicielZasobuZgubieni;
+    }
+
+    /**
+     * Set administratorZasobuZgubieni
+     *
+     * @param string $administratorZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorZasobuZgubieni($administratorZasobuZgubieni)
+    {
+        $this->administratorZasobuZgubieni = $administratorZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getAdministratorZasobuZgubieni()
+    {
+        return $this->administratorZasobuZgubieni;
+    }
+
+    /**
+     * Set administratorTechnicznyZasobuZgubieni
+     *
+     * @param string $administratorTechnicznyZasobuZgubieni
+     *
+     * @return Zasoby
+     */
+    public function setAdministratorTechnicznyZasobuZgubieni($administratorTechnicznyZasobuZgubieni)
+    {
+        $this->administratorTechnicznyZasobuZgubieni = $administratorTechnicznyZasobuZgubieni;
+
+        return $this;
+    }
+
+    /**
+     * Get administratorTechnicznyZasobuZgubieni
+     *
+     * @return string
+     */
+    public function getAdministratorTechnicznyZasobuZgubieni()
+    {
+        return $this->administratorTechnicznyZasobuZgubieni;
+    }
 }

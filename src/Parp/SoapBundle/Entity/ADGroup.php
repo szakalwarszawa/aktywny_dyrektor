@@ -191,6 +191,14 @@ class ADGroup
     private $ADUsers;
 
 
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $createdAt;
+
     /**
      * Get id
      *
@@ -662,6 +670,7 @@ class ADGroup
     public function __construct()
     {
         $this->ADUsers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedAt(new \Datetime());
     }
 
     /**
@@ -696,5 +705,29 @@ class ADGroup
     public function getADUsers()
     {
         return $this->ADUsers;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ADGroup
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

@@ -162,6 +162,15 @@ class ADOrganizationalUnit
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADUsers;
+    
+    
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $createdAt;
 
     /**
      * Get id
@@ -567,6 +576,7 @@ class ADOrganizationalUnit
     public function __construct()
     {
         $this->ADUsers = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedAt(new \Datetime());
     }
 
     /**
@@ -601,5 +611,29 @@ class ADOrganizationalUnit
     public function getADUsers()
     {
         return $this->ADUsers;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ADOrganizationalUnit
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
     }
 }

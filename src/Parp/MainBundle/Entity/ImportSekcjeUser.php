@@ -97,6 +97,49 @@ class ImportSekcjeUser
      * @APY\DataGridBundle\Grid\Mapping\Column(field="departamentSkrot", title="Departament skrót")
      */
     private $departamentSkrot;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="stanowisko", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(field="stanowisko", title="Stanowisko")
+     */
+    private $stanowisko;
+
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $createdAt;
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $lastModifiedAt;
+
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $typPracownika;
+    
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="text", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dataZakonczenia;
 
     /**
      * Get id
@@ -274,5 +317,134 @@ class ImportSekcjeUser
     public function getDepartamentSkrot()
     {
         return $this->departamentSkrot;
+    }
+    
+    public function __construct(){
+        
+        $d = new \Datetime();
+        if(!$this->getId())
+            $this->setCreatedAt($d);
+        
+        $this->setLastModifiedAt($d);
+    }
+
+    /**
+     * Set stanowisko
+     *
+     * @param string $stanowisko
+     *
+     * @return ImportSekcjeUser
+     */
+    public function setStanowisko($stanowisko)
+    {
+        $this->stanowisko = $stanowisko;
+
+        return $this;
+    }
+
+    /**
+     * Get stanowisko
+     *
+     * @return string
+     */
+    public function getStanowisko()
+    {
+        return $this->stanowisko;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return ImportSekcjeUser
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set lastModifiedAt
+     *
+     * @param \DateTime $lastModifiedAt
+     *
+     * @return ImportSekcjeUser
+     */
+    public function setLastModifiedAt($lastModifiedAt)
+    {
+        $this->lastModifiedAt = $lastModifiedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastModifiedAt
+     *
+     * @return \DateTime
+     */
+    public function getLastModifiedAt()
+    {
+        return $this->lastModifiedAt;
+    }
+
+    /**
+     * Set typPracownika
+     *
+     * @param string $typPracownika
+     *
+     * @return ImportSekcjeUser
+     */
+    public function setTypPracownika($typPracownika)
+    {
+        $this->typPracownika = $typPracownika;
+
+        return $this;
+    }
+
+    /**
+     * Get typPracownika
+     *
+     * @return string
+     */
+    public function getTypPracownika()
+    {
+        return $this->typPracownika;
+    }
+
+    /**
+     * Set dataZakonczenia
+     *
+     * @param string $dataZakonczenia
+     *
+     * @return ImportSekcjeUser
+     */
+    public function setDataZakonczenia($dataZakonczenia)
+    {
+        $this->dataZakonczenia = $dataZakonczenia;
+
+        return $this;
+    }
+
+    /**
+     * Get dataZakonczenia
+     *
+     * @return string
+     */
+    public function getDataZakonczenia()
+    {
+        return $this->dataZakonczenia;
     }
 }

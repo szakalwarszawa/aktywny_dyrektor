@@ -68,7 +68,33 @@ class Section
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
+    
+    
+    
+    /**
+     *
+     * @ORM\ManyToOne(targetEntity="Departament", inversedBy="section")
+     * @ORM\JoinColumn(name="departament_id", referencedColumnName="id")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $departament;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="kierownikName", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $kierownikName;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="kierownikDN", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $kierownikDN;
 
     /**
      * Get id
@@ -148,5 +174,77 @@ class Section
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Set kierownikName
+     *
+     * @param string $kierownikName
+     *
+     * @return Section
+     */
+    public function setKierownikName($kierownikName)
+    {
+        $this->kierownikName = $kierownikName;
+
+        return $this;
+    }
+
+    /**
+     * Get kierownikName
+     *
+     * @return string
+     */
+    public function getKierownikName()
+    {
+        return $this->kierownikName;
+    }
+
+    /**
+     * Set kierownikDN
+     *
+     * @param string $kierownikDN
+     *
+     * @return Section
+     */
+    public function setKierownikDN($kierownikDN)
+    {
+        $this->kierownikDN = $kierownikDN;
+
+        return $this;
+    }
+
+    /**
+     * Get kierownikDN
+     *
+     * @return string
+     */
+    public function getKierownikDN()
+    {
+        return $this->kierownikDN;
+    }
+
+    /**
+     * Set departament
+     *
+     * @param \Parp\MainBundle\Entity\Departament $departament
+     *
+     * @return Section
+     */
+    public function setDepartament(\Parp\MainBundle\Entity\Departament $departament = null)
+    {
+        $this->departament = $departament;
+
+        return $this;
+    }
+
+    /**
+     * Get departament
+     *
+     * @return \Parp\MainBundle\Entity\Departament
+     */
+    public function getDepartament()
+    {
+        return $this->departament;
     }
 }

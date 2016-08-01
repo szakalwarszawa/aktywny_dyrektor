@@ -94,4 +94,65 @@ class SamaccountnameGeneratorService
         $ret = "CN=".$nazwisko." ".$imie.",OU=".$departament.",".$ou.$patch;
         return $ret;
     }
+    
+    public function ADnameToRekordName($name){
+        
+        return $this->standarizeString(mb_strtoupper(implode(" ", $this->ADnameToRekordNameAsArray($name))));
+    }
+    public function ADnameToRekordNameAsArray($name){
+        $name = str_replace("(", " (", $name);
+        $name = str_replace(")", ") ", $name);
+        $name = $this->standarizeString($name);
+        $parts = explode(" ", $name);
+        $ret = [];
+        foreach($parts as $p){
+            
+            if(mb_strstr($p, "(") !== false){
+                //pomijamy stare nazwisko
+            }elseif(strstr($p, "-") !== false){
+                //tu normalnie                
+                $ret[] = $p;
+            }else{
+                //tu tez
+                $ret[] = $p;
+            }
+        }
+        return $ret;
+    }
+    public function rekordNameToADname($rekordName){
+        $rekordName = $this->standarizeString($rekordName);
+        $parts = explode(" ", $rekordName);
+        $ret = [];
+        foreach($parts as $p){
+            if(mb_strstr($p, "(") !== false){
+                $p2 = str_replace(["(", ")"], ["", ""], $p);
+                $p2 = "(".$this->mb_ucfirst(mb_strtolower($p2)).")";
+                $ret[] = $p2;
+            }elseif(strstr($p, "-") !== false){
+                $p2 = explode("-", $p);
+                $ret2 = [];
+                foreach($p2 as $p3){
+                    $ret2[] = $this->mb_ucfirst(mb_strtolower($p));
+                }
+                $ret[] = implode("-", $ret2);
+            }else{
+                $ret[] = $this->mb_ucfirst(mb_strtolower($p));
+            }
+        }
+        return $this->standarizeString(implode(" ", $ret));
+    }
+    protected function mb_ucfirst($string, $encoding = "UTF8")
+    {
+        $strlen = mb_strlen($string, $encoding);
+        $firstChar = mb_substr($string, 0, 1, $encoding);
+        $then = mb_substr($string, 1, $strlen - 1, $encoding);
+        return mb_strtoupper($firstChar, $encoding) . $then;
+    }
+    public function standarizeString($str){
+        for($i = 0; $i < 5; $i++){
+            $str = str_replace("  ", " ", $str);
+        }
+        $str = trim($str);
+        return $str;
+    }
 }

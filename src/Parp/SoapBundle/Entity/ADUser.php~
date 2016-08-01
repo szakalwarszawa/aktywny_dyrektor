@@ -153,7 +153,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $useraccountcontrol;
@@ -161,7 +161,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $distinguishedname;
@@ -194,7 +194,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $memberOfNames;
@@ -203,7 +203,7 @@ class ADUser
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $rolesNames;
@@ -224,6 +224,14 @@ class ADUser
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADOUs;
+    
+    
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $createdAt;
 
     /**
      * Get id
@@ -715,5 +723,82 @@ class ADUser
     public function getRolesNames()
     {
         return $this->rolesNames;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->ADGroups = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->ADOUs = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->setCreatedAt(new \Datetime());
+    }
+
+    /**
+     * Add aDGroup
+     *
+     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     *
+     * @return ADUser
+     */
+    public function addADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    {
+        $this->ADGroups[] = $aDGroup;
+
+        return $this;
+    }
+
+    /**
+     * Remove aDGroup
+     *
+     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     */
+    public function removeADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    {
+        $this->ADGroups->removeElement($aDGroup);
+    }
+
+    /**
+     * Get aDGroups
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getADGroups()
+    {
+        return $this->ADGroups;
+    }
+
+    /**
+     * Add aDOU
+     *
+     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     *
+     * @return ADUser
+     */
+    public function addADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    {
+        $this->ADOUs[] = $aDOU;
+
+        return $this;
+    }
+
+    /**
+     * Remove aDOU
+     *
+     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     */
+    public function removeADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    {
+        $this->ADOUs->removeElement($aDOU);
+    }
+
+    /**
+     * Get aDOUs
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getADOUs()
+    {
+        return $this->ADOUs;
     }
 }

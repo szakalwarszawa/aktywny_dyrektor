@@ -42,6 +42,7 @@ class LdapService
         "distinguishedName",
         "cn",
         'memberOf',
+        //"extensionAttribute14"
     );
 
     public function __construct(SecurityContextInterface $securityContext, Container $container)
@@ -93,10 +94,17 @@ class LdapService
         //echo "<pre>"; print_r($ret); die();
         return $ret;
     }
-    public function getAllFromAD($tezNieobecni = false)
+    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
     {
         $userdn = $this->useradn . $this->patch;
         
+        if($struktura == "2016"){
+            $userdn = str_replace("OU=Zespoly,", "OU=Zespoly_2016,", $userdn);
+        }
+        else if($struktura == "stara"){
+            
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Zespoly,", $userdn);
+        }
         if($tezNieobecni){
             
             $userdn = str_replace("OU=Zespoly,", "", $userdn);
@@ -129,7 +137,13 @@ class LdapService
 
         
         $result = $this->parseResults($tmpResults);
-        //echo "<pre>"; var_dump($result); die();
+        if($justDump){
+            foreach($result as &$r){
+                unset($r['thumbnailphoto']);
+            }
+            echo "<pre>"; print_r($result); die();    
+        }
+        
         return $result;
     }
     
@@ -590,6 +604,7 @@ class LdapService
                 $result[$i]["distinguishedname"] = $tmpResult["distinguishedname"][0];
                 $result[$i]["cn"] = $tmpResult["cn"][0];
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
+                //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
                 
                 $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
                 $rs = array();

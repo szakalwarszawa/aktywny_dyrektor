@@ -92,6 +92,15 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nameInRekord;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="skrocona_nazwa_rekord", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $skroconaNazwaRekord;
 
     
     /**
@@ -120,6 +129,52 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nowaStruktura;
+    
+    
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\OneToMany(targetEntity="Section", mappedBy="departament")
+     * @@Gedmo\Mapping\Annotation\Versioned
+     */
+    private $sections;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dyrektor;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dyrektorDN;
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $viceDyrektor;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $viceDyrektorDN;
 
     /**
      * Get id
@@ -298,5 +353,166 @@ class Departament
     public function getNowaStruktura()
     {
         return $this->nowaStruktura;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->sections = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add section
+     *
+     * @param \Parp\MainBundle\Entity\Section $section
+     *
+     * @return Departament
+     */
+    public function addSection(\Parp\MainBundle\Entity\Section $section)
+    {
+        $this->sections[] = $section;
+
+        return $this;
+    }
+
+    /**
+     * Remove section
+     *
+     * @param \Parp\MainBundle\Entity\Section $section
+     */
+    public function removeSection(\Parp\MainBundle\Entity\Section $section)
+    {
+        $this->sections->removeElement($section);
+    }
+
+    /**
+     * Get sections
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getSections()
+    {
+        return $this->sections;
+    }
+
+    /**
+     * Set skroconaNazwaRekord
+     *
+     * @param string $skroconaNazwaRekord
+     *
+     * @return Departament
+     */
+    public function setSkroconaNazwaRekord($skroconaNazwaRekord)
+    {
+        $this->skroconaNazwaRekord = $skroconaNazwaRekord;
+
+        return $this;
+    }
+
+    /**
+     * Get skroconaNazwaRekord
+     *
+     * @return string
+     */
+    public function getSkroconaNazwaRekord()
+    {
+        return $this->skroconaNazwaRekord;
+    }
+
+    /**
+     * Set dyrektor
+     *
+     * @param string $dyrektor
+     *
+     * @return Departament
+     */
+    public function setDyrektor($dyrektor)
+    {
+        $this->dyrektor = $dyrektor;
+
+        return $this;
+    }
+
+    /**
+     * Get dyrektor
+     *
+     * @return string
+     */
+    public function getDyrektor()
+    {
+        return $this->dyrektor;
+    }
+
+    /**
+     * Set dyrektorDN
+     *
+     * @param string $dyrektorDN
+     *
+     * @return Departament
+     */
+    public function setDyrektorDN($dyrektorDN)
+    {
+        $this->dyrektorDN = $dyrektorDN;
+
+        return $this;
+    }
+
+    /**
+     * Get dyrektorDN
+     *
+     * @return string
+     */
+    public function getDyrektorDN()
+    {
+        return $this->dyrektorDN;
+    }
+
+    /**
+     * Set viceDyrektor
+     *
+     * @param string $viceDyrektor
+     *
+     * @return Departament
+     */
+    public function setViceDyrektor($viceDyrektor)
+    {
+        $this->viceDyrektor = $viceDyrektor;
+
+        return $this;
+    }
+
+    /**
+     * Get viceDyrektor
+     *
+     * @return string
+     */
+    public function getViceDyrektor()
+    {
+        return $this->viceDyrektor;
+    }
+
+    /**
+     * Set viceDyrektorDN
+     *
+     * @param string $viceDyrektorDN
+     *
+     * @return Departament
+     */
+    public function setViceDyrektorDN($viceDyrektorDN)
+    {
+        $this->viceDyrektorDN = $viceDyrektorDN;
+
+        return $this;
+    }
+
+    /**
+     * Get viceDyrektorDN
+     *
+     * @return string
+     */
+    public function getViceDyrektorDN()
+    {
+        return $this->viceDyrektorDN;
     }
 }

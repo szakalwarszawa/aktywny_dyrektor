@@ -995,7 +995,7 @@ class DevController extends Controller
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
         
-        $users = $this->get('ldap_service')->getAllFromAD(false);
+        $users = $this->get('ldap_service')->getAllFromAD(false, true);
         $zostaliBezRekorda = [];
         $zostaliZRekorda = [];
         foreach($users as $u){
@@ -1013,6 +1013,85 @@ class DevController extends Controller
         echo "<pre>"; print_r($zostaliBezRekorda); echo "<pre>"; 
         die();
         
+    }
+    
+    
+    /**
+     * @Route("/getAllUsersBySection", name="getAllUsersBySection")
+     * @Template()
+     */
+    public function getAllUsersBySectionAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+        $pomijac = ["n/d","ND"];
+        //$name = "Boceńska (Burakowska) Iwona";
+        //die("tylko_nowe_nazwisko");
+        $podzialNaDepISekcje = [];
+        $pominieci = [];
+        $sekcje = [];
+        $users = $this->get('ldap_service')->getAllFromAD(false, false);
+        foreach($users as &$u){
+            unset($u['thumbnailphoto']);
+            $dep = $this->getOUfromDN($u);
+            if($dep != "" && $u['division'] != "" && !in_array($u['division'], $pomijac)){
+                $podzialNaDepISekcje[$dep][$u['division']] = $u;
+                $sekcje[$u['division']] = $u['division'];
+            }else{
+                $pominieci[] = $u;
+            }
+        }
+        print_r($sekcje);
+        print_r($podzialNaDepISekcje);
+        print_r($pominieci);
+        die();
+    }
+    
+    
+    /**
+     * @Route("/fixKierownikowSekcji", name="fixKierownikowSekcji")
+     * @Template()
+     */
+    public function fixKierownikowSekcjiAction()
+    {
+        $em = $this->getDoctrine()->getEntityManager();
+            
+        $dr = $em->getRepository('ParpMainBundle:Section')->findAll();
+        foreach($dr as $d){
+            $kieroDn = $d->getKierownikDN();
+            $ndn = $this->fixKierownikOU($kieroDn, $d->getDepartament()->getShortname());
+            echo ("<br>".$kieroDn."<br>".$ndn);
+            $d->setKierownikDN($ndn);
+        }
+        $em->flush();
+    }
+    
+    protected function fixKierownikOU($dn, $depOu){
+        $p = explode(",", $dn);
+        $ret = [];
+        for($i = 0; $i < count($p); $i++){
+            if($i == 1){
+                $ret[] = "OU=".$depOu;
+            }else{
+                $ret[] = $p[$i];
+            }
+        }
+        return implode(",", $ret);
+    }
+    
+    
+    /**
+     * @Route("/getAllUsersTable", name="getAllUsersTable")
+     * @Template()
+     */
+    public function getAllUsersTableAction()
+    {
+        $users = $this->get('ldap_service')->getAllFromAD(false, true);
+        foreach($users as &$u){
+            unset($u['thumbnailphoto']);
+        }
+        //print_r($users); die();
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $users]);
     }
     
 }    

@@ -26,14 +26,14 @@ class ReorganizacjaParpController extends Controller
         if(!in_array($sekcja, $pomijajSekcje)){
             $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
-        switch($user['title']){
-            case "Dyrektor":
-            case "Dyrektor (p.o.)":
-            case "Zastępca Dyrektora":
-            case "Zastępca Dyrektora (p.o.)":
-            case "Prezes":
-            case "Zastępca Prezesa":
-            case "Zastępca Prezesa (p.o.)":
+        switch(strtolower($user['title'])){
+            case "dyrektor":
+            case "dyrektor (p.o.)":
+            case "zastępca dyrektora":
+            case "zastępca dyrektora (p.o.)":
+            case "prezes":
+            case "zastępca prezesa":
+            case "zastępca prezesa (p.o.)":
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 break;
@@ -42,6 +42,175 @@ class ReorganizacjaParpController extends Controller
             $grupy[$i] = str_replace("(skrót sekcji)", $sekcja, str_replace("(skrót D/B)", $depshortname, $grupy[$i]));
         }
         return $grupy;
+    }
+    
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieAD", name="nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieAD", defaults={})
+     * @Method("GET")
+     */
+    public function nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieADAction()
+    { 
+        $zmieniajOU = false;
+        $zmieniajGrupy = false;
+        $zmieniajSekcjewIDescriptionAD = false;
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $users = $ldap->getAllFromAD(false, false, "2016");
+        $tab = explode(".", $this->container->getParameter('ad_domain'));
+        $bledy = [];
+        $ok = 0;
+        $brakImport = 0;
+        $brakRekord = 0;
+        $okad = 0;
+        foreach($users as $u){
+            $name1 = trim(mb_strtoupper($u['name']));
+            $name2 = $this->get('samaccountname_generator')->ADnameToRekordName($u['name']);
+            $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name1]);
+            if(count($import) == 0){
+                $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name2]);
+            }
+            $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
+            $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
+            if(!$danerekord){
+                
+                $bledy[] = [
+                    'blad' => 'Nie znalazl danych w systemie rekord!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => $imieNazwisko[0].", ".$imieNazwisko[1],
+                    'szukal2' => $imieNazwisko,
+                    'info' => '',
+                ];
+                $brakRekord++;
+            }    
+            if(count($import) == 0){
+                $bledy[] = [
+                    'blad' => 'nie znalazl usera w imporcie!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => "'".$name1."'",
+                    'szukal2' => "'".$name2."'",
+                    'info' => '',
+                ];
+                $brakImport++;
+            }elseif(count($import) > 1){
+                
+                $bledy[] = [
+                    'blad' => 'Znalazl za duzo wpisow: '.count($import).'!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => $name1,
+                    'szukal2' => $name2,
+                    'info' => '',
+                ];
+            }else{
+                //jest ok znalazl
+                $ok++;
+                $coMa = [
+                    'dn' => $this->get('samaccountname_generator')->standarizeString($this->getOUDNfromUserDN($u)),
+                    'description' => $u['description'],//departament skrot
+                    'department' => $u['department'],//pelna nazwa dep
+                    'extensionAttribute14' => $u['extensionAttribute14'],//skrot db
+                    'info' => $u['info'],//sekcja pelna nazwa
+                    'division' => $u['division']//skrot sekcji
+                ];
+                $newDepartamentSkrot = $import[0]->getDepartamentSkrot();
+                $newDepartamentNazwa = $import[0]->getDepartament();
+                if($danerekord){
+                    //wtedy bierzemy jednak z rekorda!!!
+                    $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
+                    if(!$departament && $danerekord->getDepartament() > 500){
+                        die("Nie mam departamentu ".$danerekord->getDepartament());
+                    }
+                    if($departament){
+                        $newDepartamentSkrot = $departament->getShortname();
+                        $newDepartamentNazwa = $departament->getName();
+                    }
+                }
+                $coPowinienMiec = [
+                    'dn' => $this->get('samaccountname_generator')->standarizeString('OU=' . $newDepartamentSkrot . ',OU=Zespoly_2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1]),
+                    'description' => $newDepartamentSkrot,//departament skrot
+                    'department' => $newDepartamentNazwa,//pelna nazwa dep
+                    'extensionAttribute14' => $newDepartamentSkrot,//skrot db
+                    'info' => $import[0]->getSekcja(),//sekcja pelna nazwa
+                    'division' => $import[0]->getSekcjaSkrot()//skrot sekcji
+                ];
+                $roznica = array_diff_assoc($coPowinienMiec, $coMa);
+                //czasem to wylaczam bo za duzo bledow
+                if(count($roznica) > 0){
+                    //var_dump($coPowinienMiec, $coMa, $roznica); die();
+                    $bledy[] = [
+                        'blad' => 'Nie wszystko sie zgadza w AD!!!',
+                        'user' => $u['samaccountname'],
+                        'name' => $u['name'],
+                        'szukal1' => $coMa,
+                        'szukal2' => $coPowinienMiec,
+                        'info' => $roznica,
+                    ];
+                    $roznicaDn = isset($roznica['dn']) ? $roznica['dn'] : false;
+                    if(isset($roznica['dn']))
+                        unset($roznica['dn']);
+                        
+                    if($roznicaDn && $zmieniajOU){
+                        //zmiana ou
+                        $b = $ldapAdmin->ldap_rename($ldapconn, $u['distinguishedname'], "CN=" . $u['name'], $roznicaDn, TRUE);                
+                        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_rename $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                    
+                        
+                        
+                    }
+                    if(count($roznica) > 0 && $zmieniajSekcjewIDescriptionAD){
+                        foreach($roznica as $k => $v){
+                            if($v == ""){
+                                unset($roznica[$k]);
+                            }
+                        }
+                        //zmiana danych
+                        //unset($roznica['dn']);
+                        $res = $ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $roznica);
+                        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_modify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                    }
+                    if($zmieniajGrupy){
+                        
+                        $grupy = $this->getGrupyUsera($u, $newDepartamentSkrot, $import[0]->getSekcjaSkrot());
+                        foreach($grupy as $g){
+                            $dn = $u['distinguishedname'];
+                            $grupa = $ldapAdmin->getGrupa($g);
+                            $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                            //var_dump($g, $addtogroup, array('member' => $dn ));
+                            $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                            $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                        }
+                    }
+                    
+                    
+                }else{
+                    $okad++;
+                }
+                
+                
+            }
+        }
+        $bledy[] = [
+            'blad' => 'Przetworzone rekordy '.count($users),
+            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji '.$ok,
+            'name' => 'Wpisow ktore nie maja rekordu w imporcie '.$brakImport,
+            'szukal1' => 'Wpisow z bledami '.count($bledy),
+            'szukal2' => 'Zgadza sie w AD '.$okad,
+            'info' => 'Braki w rekord '.$brakRekord,
+        ];
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $bledy]);
     }
     /**
      * Lists all Klaster entities.
@@ -259,11 +428,15 @@ class ReorganizacjaParpController extends Controller
             'E' => 'pracownik',
             'F' => 'sekcja',
             'G' => 'sekcjaSkrot',
+            'H' => 'stanowisko',
+            'I' => 'typPracownika',
+            'J' => 'dataZakonczenia',
         ];
         
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery('DELETE ParpMainBundle:ImportSekcjeUser ');
-        $query->execute(); 
+        //$query = $em->createQuery('DELETE ParpMainBundle:ImportSekcjeUser ');
+        //$query->execute(); 
+        //$em->flush();
         $file = $fileObject->getPathname();
         $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
         //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
@@ -282,8 +455,13 @@ class ReorganizacjaParpController extends Controller
         $i = 0;
         foreach($sheetData as $row){
             //pomijamy pierwszy rzad
-            if($i > 2){
-                $importSekcje = new \Parp\MainBundle\Entity\ImportSekcjeUser();
+            if($i > 1 && $row['D'] != "" && $row['E'] != ""){
+                $importSekcjeArr = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $row['E'], 'departament' =>$row['C']]);
+                if(count($importSekcjeArr) == 0){
+                    $importSekcje = new \Parp\MainBundle\Entity\ImportSekcjeUser();
+                }else{
+                    $importSekcje = $importSekcjeArr[0];
+                }
                 foreach($mapowanie as $k => $v){
                     if($v != ""){
                         $setter = "set".ucfirst($v);
@@ -300,4 +478,169 @@ class ReorganizacjaParpController extends Controller
         return true;
     }
     
+    
+    
+    
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/audytUprawnienPoczatkowych", name="audytUprawnienPoczatkowych", defaults={})
+     * @Method("GET")
+     */
+    public function audytUprawnienPoczatkowychAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $nadawaj = true;
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $userowBierz = "ldap";
+        $ret = [];
+        
+        if($userowBierz == "ldap"){                    
+            $users = $this->get('ldap_service')->getAllFromAD(false, false);
+            //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
+            foreach($users as $u){
+                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy([
+                    'pracownik' => strtoupper($u['name'])
+                ]);
+                $section = $u['division'];
+                if(count($sekcja) > 0){
+                    $section = $sekcja[0]->getSekcjaSkrot();
+                }
+                $gr = $this->getGrupyUsera($u, $this->getOUfromDN($u), $section);
+                
+                $diff = array_diff($gr, $u['memberOf']);
+                
+                $msg = "";
+                if(count($diff) > 0 && $nadawaj){
+                    //die();
+                    foreach($diff as $g){
+                        $dn = $u['distinguishedname'];
+                        $grupa = $ldapAdmin->getGrupa($g);
+                        $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                        //echo "<pre>"; var_dump($g, $addtogroup); echo "</pre>";
+                        //var_dump($g, $addtogroup, array('member' => $dn ));
+                        $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                        
+                        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                        $msg = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn." ".$g."</span>\r\n<br>";
+                    }
+                }
+                
+                $ret[] = [
+                    'samaccountname' => $u['samaccountname'],
+                    'memberOf' => $u['memberOf'],
+                    'powinienMiec' => $gr,
+                    'roznica' => $diff,
+                    'sekcjaNaPodstawieAD' => (count($sekcja) == 0 ? "TAK" : "NIE"),
+                    'title' => $u['title'],
+                    'msg' => $msg
+                ];
+            }
+        }else{
+            //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
+            $isu = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findAll();
+            $ret = [];
+            foreach($isu as $u){
+                $ret[] = [
+                    'samaccountname' => $u['samaccountname'],
+                    '' => $this->get('samaccountname_generator')->rekordNameToADname($i->getPracownik())
+                ];
+            }
+        }
+        
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
+    
+    /**
+     * @Route("/updateManagersAndTitles", name="updateManagersAndTitles")
+     */
+    public function updateManagersAndTitlesAction()
+    {
+        //ustawia managera, stanowisko na podstawie sekcji z division, departamentu z OU oraz wpisanego kierownika sekcji w tabeli section
+        $ldap = $this->get('ldap_admin_service');
+        $ldap->output = $this;
+        $ldapconn = $ldap->prepareConnection();
+        
+        $em = $this->getDoctrine()->getEntityManager();
+        $pomijac = ["n/d","ND"];
+        //$name = "Boceńska (Burakowska) Iwona";
+        //die("tylko_nowe_nazwisko");
+        $zrobieni = [];
+        $pominieci = [];
+        $users = $this->get('ldap_service')->getAllFromAD(false, false);
+        foreach($users as &$u){
+            unset($u['thumbnailphoto']);
+            if($this->getOUfromDN($u) != "BZK" ){
+                $pominal = true;
+                $manager = "";
+                $title = "";
+                if($u['description'] != "" && $u['division'] != "" && !in_array($u['division'], $pomijac)){
+                    $departament = $em->getRepository('ParpMainBundle:Departament')->findBy(['shortname' => $this->getOUfromDN($u), 'nowaStruktura' => 1]);
+                    
+                    if(count($departament) == 0){
+                        die("Nie mam departaMENTU ".$this->getOUfromDN($u)." ".$u['description']);
+                    }
+                                    
+                    $section = $em->getRepository('ParpMainBundle:Section')->findBy(['departament' => $departament[0], 'shortname' => $u['division']]);
+                    if(count($section) > 0){
+                        $manager = $section[0]->getKierownikDN();
+                        $pominal = false;
+                    }else{
+                        echo ( "<br> szuka ".$u['distinguishedname']." ".$u['samaccountname']." ".$u['description']." ".$u['division']." ".count($section)." ".($departament[0] ? $departament[0]->getName() : "brak"));    
+                    }
+                    
+                }
+                //szukam tytulu osoby
+                $tytul = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneByPracownik(strtoupper($u['name']));
+                if($tytul){
+                    $title = strtolower($tytul->getStanowisko());
+                    $pominal = false;
+                }
+                if($pominal){
+                    $pominieci[] = $u;
+                }else{
+                    $entry = [];
+                    if($tytul != ""){
+                        $entry['title'] = $title;
+                        if(strstr($title, "kierownik") !== false){
+                            $manager = $departament[0]->getDyrektorDN();
+                        }
+                    }
+                    if($manager != ""){
+                        $entry['manager'] = $manager;
+                    }
+                    $res = $ldap->ldap_modify($ldapconn, $u['distinguishedname'], $entry);
+                    $ldapstatus = $ldap->ldap_error($ldapconn);
+                    echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_modify $ldapstatus dla osoby ".$u[0]['distinguishedname']."</span> \r\n<br>";
+                            
+                    $zrobieni[$u['samaccountname']] = $entry;
+                }
+            }
+        }
+        print_r($zrobieni);
+        print_r($pominieci);
+        die();
+    }
+    protected function getOUfromDN($u){
+        $cz = explode(",", $u['distinguishedname']);
+        $ou = str_replace("OU=", "", $cz[1]);
+        return $ou;
+        
+    }
+    protected function getOUDNfromUserDN($u){
+        $cz = explode(",", $u['distinguishedname']);
+        $ret = [];
+        for($i = 0; $i < count($cz); $i++){
+            if($i > 0){
+                $ret[] = $cz[$i];
+            }
+        }
+        return implode(",", $ret);
+        
+    }
 }
