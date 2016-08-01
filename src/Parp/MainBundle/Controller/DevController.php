@@ -447,7 +447,7 @@ class DevController extends Controller
             $entities[] = array('name' => $m->getName(), 'count' => count($all));
         }
         $em->flush();
-        print_r($entities);
+        echo "<pre>"; print_r($entities);
         die('generujCreateHistoriaWersji');
     }
     /**
