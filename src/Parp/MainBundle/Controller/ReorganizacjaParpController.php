@@ -393,6 +393,7 @@ class ReorganizacjaParpController extends Controller
                 ->add('wczytaj', 'submit', array('attr' => array(
                         'class' => 'btn btn-success col-sm-12',
             )))
+                ->add('typPliku', 'choice' , ['choices' => ['sekcje' => 'sekcje', 'zasoby' => 'zasoby']])
                 ->getForm();
 
         $form->handleRequest($request);
@@ -405,7 +406,17 @@ class ReorganizacjaParpController extends Controller
                 //$path = $file->getClientPathName();
                 //var_dump($file->getPathname());
                 // var_dump($name);
-                $ret = $this->wczytajPlik($file);
+                switch($form->get('typPliku')->getData()){
+                    case "sekcje":
+                        $ret = $this->wczytajPlikSekcje($file);
+                        break;
+                    case "zasoby":
+                        $ret = $this->wczytajPlikZasoby($file);
+                        break;
+                }
+                if($form->get('typPliku')->getData() == "zasoby"){
+                    return $ret;
+                }
                 if ($ret) {
                     
                     $msg = 'Plik został wczytany poprawnie.';
@@ -418,7 +429,112 @@ class ReorganizacjaParpController extends Controller
         return $this->render('ParpMainBundle:ImportSekcjeUser:importujSekcje.html.twig', array('form' => $form->createView()));
     }
     
-    protected function wczytajPlik($fileObject)
+    protected function wczytajPlikZasoby($fileObject)
+    {
+        $pomijajZasoby = ["INT-PIN"];
+        //die('wczytajPlikZasoby');
+        $zrobione = [];
+        $mapowanie = [
+            //'B' => 'staraNazwa',
+            'C' => 'nazwa',
+            'D' => 'wlascicielZasobu',
+            'E' => 'administratorZasobu',
+            'F' => 'administratorTechnicznyZasobu',
+            'G' => 'uzytkownicy',
+            'H' => 'daneOsobowe',
+            'I' => 'komorkaOrgazniacyjna',
+            'J' => 'miejsceInstalacji',
+            'K' => 'opisZasobu',
+            'L' => 'dataZakonczeniaWdrozenia',
+            'M' => 'wykonawca',
+            'N' => 'nazwaWykonawcy',
+            'O' => 'asystaTechniczna',
+            'P' => 'dataWygasnieciaAsystyTechnicznej',
+            'Q' => 'dokumentacjaFormalna',
+            'R' => 'dokumentacjaProjektowoTechniczna',
+            'S' => 'technologia',
+            'T' => 'testyBezpieczenstwa',
+            'U' => 'testyWydajnosciowe',
+        ];
+        
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery('DELETE ParpMainBundle:ImportSekcjeUser');
+        $query->execute(); 
+        $file = $fileObject->getPathname();
+        $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
+        //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
+        if (!file_exists($file)) {
+            //exit("Please run 05featuredemo.php first." );
+            die('nie ma pliku');
+        }
+        $objPHPExcel = \PHPExcel_IOFactory::load($file);
+        //$EOL = "\r\n";
+        //echo date('H:i:s') , " Iterate worksheets" , $EOL;
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        
+        $userdane = array();
+        
+        //var_dump($sheetData); die();
+        $i = 0;
+        foreach($sheetData as $row){
+            //pomijamy pierwszy rzad
+            if($i > 2){
+                if(!in_array($row['B'], $pomijajZasoby) && trim($row['C']) != ""){
+                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa($row['B']);
+                    if(!$zasob){
+                        $zrobione[] = [
+                            'rzad' => $i,
+                            'staraNazwa' => $row['B'],
+                            'nowaNazwa' => $row['C'],
+                            'zmiany' => '',
+                            'info' => 'NIE ZNALAZL ZASOBU!!!!'
+                        ];
+                        $zasob = new \Parp\MainBundle\Entity\Zasoby();
+                        $em->persist($zasob);
+                    }
+                    
+                    {
+                        $zmiany = [];
+                        foreach($mapowanie as $k => $v){
+                            $getter = "get".ucfirst($v);
+                            $setter = "set".ucfirst($v);
+                            $vold = $zasob->{$getter}();
+                            $value = $row[$k];
+                            if(strstr($setter, "Data") !== false){
+                                //echo " <br>.".$value['dane'][1]." ".$value['dane'][2]." ".$v.".";
+                                $value = \DateTime::createFromFormat('D M d H:i:s e Y', $v);
+                                //print_r($v);
+                                //die();
+                            }
+                            
+                            
+                            if($v != "" && $value != $vold){
+                                $zasob->{$setter}($value);
+                                $zmiany[$v] = $value;
+                            }
+                        }
+                        $zrobione[] = [
+                            'rzad' => $i,
+                            'staraNazwa' => $row['B'],
+                            'nowaNazwa' => $row['C'],
+                            'zmiany' => $zmiany,
+                            'info' => 'Wszystko OK!'
+                        ];
+                        $zasob->setPublished(1);
+                    }
+                }
+                
+            }
+            $i++;
+        }
+        //echo "<pre>"; print_r($zrobione); echo "</pre>"; die();
+        $em->flush();
+        //return true;
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $zrobione]);
+        
+    }
+    
+    protected function wczytajPlikSekcje($fileObject)
     {
         $mapowanie = [
             'A' => '',
