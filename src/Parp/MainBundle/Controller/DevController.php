@@ -1085,7 +1085,7 @@ class DevController extends Controller
      */
     public function getAllUsersTableAction()
     {
-        $users = $this->get('ldap_service')->getAllFromAD(false, true);
+        $users = $this->get('ldap_service')->getAllFromAD(false, false);
         foreach($users as &$u){
             unset($u['thumbnailphoto']);
             unset($u['manager']);
