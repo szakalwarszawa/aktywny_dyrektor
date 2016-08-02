@@ -22,7 +22,7 @@ class ZasobyType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $adminiMulti = in_array("PARP_ADMIN2", $this->container->getUser()->getRoles());
+        $adminiMulti = false; //in_array("PARP_ADMIN2", $this->container->getUser()->getRoles());
         
         $ldap = $this->container->get('ldap_service');
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();

@@ -725,4 +725,27 @@ class LdapService
         
     }
     
+    public function getDyrektorow(){
+        $users = $this->getAllFromAD();
+        $ret = [];
+        foreach($users as $u){
+            if(trim($u['title']) == "dyrektor"){
+                unset($u['thumbnailphoto']);
+                unset($u['memberOf']);
+                unset($u['roles']);
+                $ret[] = $u;
+            }
+        }
+        return $ret;
+    }
+    
+    public function getDyrektoraDepartamentu($skrot){
+        $dyrs = $this->getDyrektorow();
+        foreach($dyrs as $d){
+            if($d['department'] == $skrot){
+                return $d;
+            }
+        }    
+    }
+    
 }

@@ -413,8 +413,12 @@ class ImportRekordDaneController extends Controller
         $sql = $this->getSqlDoImportu();
         //$rows = $this->executeQueryIbase($sql);
         $rows = $this->executeQuery($sql);
-        echo "<pre>"; print_r($rows);
-        die('testfirebird');
+        
+        
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $rows]);
+        //echo "<pre>"; print_r($rows);
+        //die('testfirebird');
     }
 
     

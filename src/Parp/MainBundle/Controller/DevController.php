@@ -1096,4 +1096,118 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $users]);
     }
     
+    
+    /**
+     * @Route("/testMerge", name="testMerge")
+     * @Template()
+     */
+    public function testMergeAction()
+    {
+        $wlasciciel1 = "kamil_jakacki,robertt_muchacki";
+        $wlasciciel2 = "artur_marszalek,andrzej_trocewicz";
+        
+        $a1 = explode(",", $wlasciciel1);
+        $a2 = explode(",", $wlasciciel2);
+        
+        $a3 = array_merge($a1, $a2);
+        
+        echo "<pre>"; print_r($a3); die();
+    }
+    
+    /**
+     * @Route("/fixWlasciciele", name="fixWlasciciele")
+     * @Template()
+     */
+    public function fixWlascicieleAction()
+    {
+        $ldap = $this->get('ldap_service');
+        
+        $em = $this->getDoctrine()->getManager();
+        $wynik = [];
+        
+        $zass = $em->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
+        //die(".".count($zass));
+        foreach($zass as $z){
+            $w1 = $z->getWlascicielZasobu();
+            $ws1 = explode(",", $w1);
+            $w2 = $z->getPowiernicyWlascicielaZasobu();
+            $ws2 = explode(",", $w2);
+            $blad = [];
+            
+            if(count($ws1) == 0){
+                $blad[] = "Nie mam wlascicieli zasobu !!!!!";
+            }
+            //wlasciciel jest brany jako pierwszy , chyba ze znajdzie dyra ponizej
+            $wlascicielI = 0;
+            //szuka dyrektora
+            for($i = 0; $i < count($ws1); $i++){                
+                $w = $ws1[$i];
+                $u = $ldap->getUserFromAD($w);
+                if($u){
+                    $stanowisko = $u[0]['title'];
+                    if(strstr($stanowisko, "yrektor") !== false){
+                        if($wlascicielI != 0){
+                            //mam drugiego dyra!!!
+                            $blad[] = "Mam kilku dyrektorow!!!";
+                        }
+                        $wlascicielI = $i;
+                    }
+                }else{
+                    $blad[] = "Nie moge znalezc usera w AD ".$w."!!!";
+                }
+            }
+            if($wlascicielI == 0){                
+                $blad[] = "Nie znalazlem dyrektora , biore pierwsza osobe!!!";
+            }
+            
+            
+            
+            $wlasciciel = $ws1[$wlascicielI];
+            $powiernicy = [];
+            for($i = 0; $i < count($ws1); $i++){
+                if($ws1[$i] != "" && $i == $wlascicielI)
+                    $powiernicy[] = $ws1[$i];
+            }
+            for($i = 0; $i < count($ws2); $i++){
+                if($ws2[$i] != "")
+                    $powiernicy[] = $ws2[$i];
+            }
+            
+            $wynik[] = [
+                'zasobId' => $z->getId(),
+                'nazwa' => $z->getNazwa(),
+                'wlascicielOrg' => $z->getWlascicielZasobu(),
+                'powiernicyOrg' => $z->getPowiernicyWlascicielaZasobu(),
+                'wlasciciel' => $wlasciciel,
+                'powiernicy' => implode(",", $powiernicy),
+                'blad' => implode(",", $blad)
+            ];
+            $z->setWlascicielZasobu($wlasciciel);
+            $z->setPowiernicyWlascicielaZasobu(implode(",", $powiernicy));
+            //echo "<pre>"; $z->getId(); echo "</pre>";
+            //echo "<pre>"; print_r($ws1); echo "</pre>";
+            //echo "<pre>"; print_r($ws2); echo "</pre>";
+        }
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
+        //die();
+    }
+    /**
+     * @Route("/getDyrektors", name="getDyrektors")
+     * @Template()
+     */
+    public function getDyrektorsAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $dyrs = $ldap->getDyrektorow();
+        $ret = [];
+        foreach($dyrs as $d){
+            $ret[] = [
+                'departament' => $d['department'],
+                'dyrektor' => $d['name'],
+                'login' => $d['samaccountname']
+            ];
+        }
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
 }    

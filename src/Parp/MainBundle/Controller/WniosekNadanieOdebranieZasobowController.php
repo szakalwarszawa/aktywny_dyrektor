@@ -322,12 +322,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
                     $ADUser = $ldap->getUserFromAD(trim($uss[0]));  
+                    /*
                     //print_r($ADUser); die();
                     $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                     
                     
                     $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                     $ADManager = $ldap->getUserFromAD(null, $mgr);
+                    */
+                    //zmieniamy ze bierze dyrektora departamentu
+                    $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser[0]['department'])];
+                    if(count($ADManager) == 0){
+                        die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                    }
                 }
                 //print_r($ADManager[0]['samaccountname']);
                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
@@ -347,7 +354,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //
                 foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
-                    $grupa = explode(",", $zasob->getWlascicielZasobu());
+                    $grupa1 = explode(",", $zasob->getWlascicielZasobu());
+                    $grupa2 = explode(",", $zasob->getPowiernicyWlascicielaZasobu());
+                    $grupa = array_merge($grupa1, $grupa2);
                     
                     foreach($grupa as $g){
                         if($g != ""){
