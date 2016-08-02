@@ -22,14 +22,32 @@ class ZasobyType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $adminiMulti = in_array("PARP_ADMIN2", $this->container->getUser()->getRoles());
+        
         $ldap = $this->container->get('ldap_service');
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
-            ->add('biuro', 'hidden')
-            ->add($builder->create('wlascicielZasobu', 'choice', array(
+            ->add('biuro', 'hidden');
+        if($adminiMulti){
+            $builder->add($builder->create('wlascicielZasobu', 'choice', array(
                 'choices' => $ldap->getWlascicieleZasobow(),
+                'multiple' => true,
+                'required' => false,
+                'attr' => array('class' => 'select2')
+            ))->addModelTransformer($transformer));
+        }else{
+            $builder->add('wlascicielZasobu', 'choice', array(
+                'choices' => $ldap->getWlascicieleZasobow(),
+                'multiple' => false,
+                'required' => false,
+                'attr' => array('class' => 'select2')
+            ));
+        }
+            
+        $builder->add($builder->create('powiernicyWlascicielaZasobu', 'choice', array(
+                'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')

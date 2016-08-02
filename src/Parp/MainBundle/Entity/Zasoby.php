@@ -62,6 +62,17 @@ class Zasoby
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $wlascicielZasobu;
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $powiernicyWlascicielaZasobu;
+    
+    
     /**
     * @var string
      *
@@ -1418,5 +1429,29 @@ class Zasoby
     public function getAdministratorTechnicznyZasobuZgubieni()
     {
         return $this->administratorTechnicznyZasobuZgubieni;
+    }
+
+    /**
+     * Set powiernicyWlascicielaZasobu
+     *
+     * @param string $powiernicyWlascicielaZasobu
+     *
+     * @return Zasoby
+     */
+    public function setPowiernicyWlascicielaZasobu($powiernicyWlascicielaZasobu)
+    {
+        $this->powiernicyWlascicielaZasobu = $powiernicyWlascicielaZasobu;
+
+        return $this;
+    }
+
+    /**
+     * Get powiernicyWlascicielaZasobu
+     *
+     * @return string
+     */
+    public function getPowiernicyWlascicielaZasobu()
+    {
+        return $this->powiernicyWlascicielaZasobu;
     }
 }

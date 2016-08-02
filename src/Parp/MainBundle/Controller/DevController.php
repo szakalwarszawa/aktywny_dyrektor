@@ -1088,6 +1088,8 @@ class DevController extends Controller
         $users = $this->get('ldap_service')->getAllFromAD(false, true);
         foreach($users as &$u){
             unset($u['thumbnailphoto']);
+            unset($u['manager']);
+            unset($u['memberOf']);
         }
         //print_r($users); die();
         

@@ -94,6 +94,15 @@ class LdapService
         //echo "<pre>"; print_r($ret); die();
         return $ret;
     }
+    public function getAllFromADforCombo($tezNieobecni = false, $justDump = false, $struktura = null)
+    {
+        $us = $this->getAllFromAD($tezNieobecni, $justDump, $struktura);
+        $ret = [];
+        foreach($us as $u){
+            $ret[$u['samaccountname']] = $u['name'];
+        }
+        return $ret;
+    }
     public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
     {
         $userdn = $this->useradn . $this->patch;
