@@ -30,9 +30,9 @@
             {% if grid.tweaks|length > 0 %}
                 {{ grid_tweaks(grid) }}
             {% endif %}
-            {#{% if grid.exports|length > 0 %}
+            {% if grid.exports|length > 0 %}
                 {{ grid_exports(grid) }}
-            {% endif %}#}
+            {% endif %}
             </div>
             {% if withjs %}
                 {{ grid_scripts(grid) }}
@@ -80,8 +80,15 @@
 
 {% block grid_exports %}
 <div class="pull-right">
-    <input id="valueexport" type="hidden" name="{{grid.hash}}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_EXPORT') }}]" value="-1" />
-{#     <button id="submitexport" type="submit" class="btn btn-default"><i class="fa fa-download"></i>{{ 'Export'|trans }}</button> #}
+    
+    <select name="{{grid.hash}}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_EXPORT') }}]">
+        {% for key, value in grid.exports%}
+        <option value="{{key}}">{{ value.title|trans }}</option>
+        {% endfor %}
+    </select>
+    
+    
+    <button id="submitexport" type="submit" class="btn btn-default"><i class="fa fa-download"></i>{{ 'Export'|trans }}</button> 
 </div>
 {% endblock grid_exports %}
     

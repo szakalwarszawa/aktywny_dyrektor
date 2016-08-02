@@ -2,6 +2,12 @@
 
 {% block body %}
 <h1>Lista Zasoby</h1>
+<ul class="nav nav-tabs">
+  <li role="presentation" class="{{aktywne ? "active" : ""}}"><a href="{{path('zasoby', {'aktywne' : 1})}}">Zasoby aktywne</a></li>
+  <li role="presentation" class="{{aktywne ? "" : "active"}}"><a href="{{path('zasoby', {'aktywne' : 0})}}">Zasoby nieaktywne</a></li>
+</ul>
+
+
 {% for flashMessage in app.session.flashbag.get('warning') %}
     <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>

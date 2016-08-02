@@ -28,10 +28,10 @@ class ZasobyController extends Controller
     /**
      * Lists all Zasoby entities.
      *
-     * @Route("/index", name="zasoby")
+     * @Route("/index/{aktywne}", name="zasoby", defaults={"aktywne" : true})
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($aktywne = true)
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
@@ -39,10 +39,9 @@ class ZasobyController extends Controller
         $source = new Entity('ParpMainBundle:Zasoby');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
-            function ($query) use ($tableAlias)
+            function ($query) use ($tableAlias, $aktywne)
             {
-                
-                $query->andWhere($tableAlias.'.published = 1');
+                $query->andWhere($tableAlias.'.published = '.($aktywne ? "1" : "0"));
             });
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -76,7 +75,7 @@ class ZasobyController extends Controller
 
 
         $grid->isReadyForRedirect();
-        return $grid->getGridResponse();
+        return $grid->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array('aktywne' => $aktywne));
     }
     /**
      * Creates a new Zasoby entity.
