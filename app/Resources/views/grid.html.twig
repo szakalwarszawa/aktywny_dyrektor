@@ -7,7 +7,7 @@
     {% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is sameas(false) %}
         <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
             <div class="grid_header">
-            {% if grid.massActions|length > 0 %}
+            {% if grid.massActions|length > 0 or true %}
                 {{ grid_actions(grid) }}
             {% endif %}
             
@@ -183,12 +183,16 @@
         
 {% block grid_actions %}
     <div class="btn-group btn-group-xs">
+        {% if grid.massActions|length > 0%}
         <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(true);">{{ 'Zaznacz widoczne'|trans }}</span>
         <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markVisible(false);">{{ 'Odznacz widoczne'|trans }}</span>
         <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(true);">{{ 'Zaznacz wszystko'|trans }}</span>
         <span href="#" class="btn btn-primary" onclick="return {{ grid.hash }}_markAll(false);">{{ 'Odznacz wszystko'|trans }}</span>
-        <input type="submit" id="submitMassAction" class="ays-ignore btn-xs btn-info massAction" value="{{ 'Szukaj'|trans }}"/>
+        {%endif%}
+        <a class="btn btn-primary btn" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+        <input type="submit" id="submitMassAction" class="ays-ignore btn btn-info massAction" value="{{ 'Szukaj'|trans }}"/>
     </div>
+    {% if grid.massActions|length > 0%}
     <span class="mass-actions-selected" id="{{ grid.hash }}_mass_action_selected"></span>
 <div class="mass-actions">
     {% spaceless %}
@@ -207,6 +211,7 @@
     </div>
     {% endspaceless %}
 </div>
+    {%endif%}
 {% endblock grid_actions %}
 
 

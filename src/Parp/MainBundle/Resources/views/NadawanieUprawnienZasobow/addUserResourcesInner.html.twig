@@ -79,6 +79,7 @@
                                 <th>Nazwa</th>
                                 <th>Moduł</th>
                                 <th>Poziom dostępu</th>
+                                <th>Sumowanie uprawnień</th>
                                 <th>Aktywne od</th>
                                 <th>Bezterminowo</th>
                                 <th>Aktywne do</th>
@@ -103,6 +104,9 @@
                                     </td>
                                     <td>
                                         {{form_widget(userzasoby.poziomDostepu)}}
+                                    </td>
+                                    <td>
+                                        {{form_widget(userzasoby.sumowanieUprawnien)}}
                                     </td>
                                     <td>
                                         {{form_widget(userzasoby.aktywneOd)}}

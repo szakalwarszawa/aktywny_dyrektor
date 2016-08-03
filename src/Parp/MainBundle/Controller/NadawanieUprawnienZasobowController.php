@@ -719,6 +719,12 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $z->setPoziomDostepu($oz->getPoziomDostepu());
                                 $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
                                 $z->setBezterminowo($oz->getBezterminowo());
+                                $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
+                                if($oz->getAktywneDo() == "" || $oz->getBezterminowo()){
+                                    $z->setAktywneDo(null);
+                                }else{
+                                    $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                                }
                                 $z->setKanalDostepu($oz->getKanalDostepu());
                                 $z->setUprawnieniaAdministracyjne($oz->getUprawnieniaAdministracyjne());
                                 $z->setOdstepstwoOdProcedury($oz->getOdstepstwoOdProcedury());

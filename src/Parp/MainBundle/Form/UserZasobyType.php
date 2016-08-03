@@ -69,6 +69,7 @@ class UserZasobyType extends AbstractType
                     //'format' => 'Y-m-d'
                 ))
             ->add('bezterminowo', 'checkbox', ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
+            ->add('sumowanieUprawnien', 'checkbox', ['required' => false])
             //->add('aktywneOdPomijac')
             ->add('aktywneDo', 'text', array(
                     'attr' => array(

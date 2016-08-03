@@ -245,7 +245,7 @@
                                 <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
                                 <td>{{z.aktywneOd|date("Y-m-d")}}</td>
                                 <td>{{z.bezterminowo ? "TAK" : "NIE"}}</td>
-                                <td>{{z.aktywneDo|date("Y-m-d")}}</td>
+                                <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}</td>
                                 <td>{{z.kanalDostepu}}</td>
                                 <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
                                 <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
