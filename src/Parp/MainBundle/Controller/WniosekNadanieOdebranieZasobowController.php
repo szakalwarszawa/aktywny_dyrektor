@@ -992,9 +992,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
-        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
-            $zastepstwa[] = $this->getUser()->getUsername();
-        }
         //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
             'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
@@ -1028,7 +1025,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
         
         $access = $this->checkAccess($entity);
-        if(!$access['viewer'] && !$access['editor']){
+        
+        if(!$access['viewer'] && !$access['editor'] && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
