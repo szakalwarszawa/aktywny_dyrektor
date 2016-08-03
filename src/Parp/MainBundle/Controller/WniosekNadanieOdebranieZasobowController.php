@@ -232,16 +232,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function getUsers(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
-        $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
+        $widzi_wszystkich = false; //in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
-        foreach($ADUsers as $u){
+        foreach($ADUsers as &$u){
+            //unset($u['thumbnailphoto']);
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-            if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+            //echo ".".strtolower($aduser[0]['department']).".";
+            if($widzi_wszystkich || strtolower($u['department']) == strtolower($aduser[0]['department']) ){
                 $users[$u['samaccountname']] = $u['name'];
             }
         }
+        //echo "<pre>"; var_dump($users); die();
         return $users;
     }
     /**
