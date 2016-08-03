@@ -36,6 +36,9 @@ class SectionType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control',
             )))
+                ->add('departament', null, ['attr' => ['class' => 'select2']])
+                ->add('kierownikName', null, ['attr' => ['readonly' => true]])
+                ->add('kierownikDN', null, ['attr' => ['readonly' => true]])
         ;
     }
 

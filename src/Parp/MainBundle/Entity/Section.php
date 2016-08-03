@@ -5,6 +5,7 @@ namespace Parp\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 /**
  * Section
@@ -19,7 +20,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"shortname"},
  *     errorPath="shortname",
  *     message="Skrót sekcji musi być unikalny")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname, departament.name, departament.shortname, kierownikName")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -75,6 +76,8 @@ class Section
      *
      * @ORM\ManyToOne(targetEntity="Departament", inversedBy="section")
      * @ORM\JoinColumn(name="departament_id", referencedColumnName="id")
+     * @GRID\Column(field="departament.name", title="Departament", visible=true)
+     * @GRID\Column(field="departament.shortname", title="Departamen skrót", visible=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $departament;

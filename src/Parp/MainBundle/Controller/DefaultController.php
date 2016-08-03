@@ -543,7 +543,7 @@ class DefaultController extends Controller
         $sectionsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
-            $sections[$tmp->getName()] = $tmp->getName();
+            $sections[$tmp->getDepartament()->getShortname()][$tmp->getName()] = $tmp->getName();
         }
 
         // Pobieramy listę Uprawnien
