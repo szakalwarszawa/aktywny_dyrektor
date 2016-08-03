@@ -69,9 +69,12 @@ doctrine:
         mappings:
             loggable:
                 type: annotation
-                alias: Gedmo
-                prefix: Parp\MainBundle\Entity #Gedmo\Loggable\Entity
-                dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
+                alias: GedmoLoggable
+                is_bundle: false
+                #prefix: Parp\MainBundle\Entity #Gedmo\Loggable\Entity
+                prefix: Gedmo\Loggable\Entity
+                #dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
+                dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
         filters:
             softdeleteable:
                 class: Gedmo\SoftDeleteable\Filter\SoftDeleteableFilter

@@ -79,7 +79,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //die($co);
         $sam = $this->getUser()->getUsername();
         
-        $czyWidziWszystkieWnioski = in_array(["PARP_ADMIN", "PARP_WNIOSEK_WIDZI_WSZYSTKIE_WNIOSKI"], $this->getUser()->getRoles());
+        $czyWidziWszystkieWnioski = in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $zastepstwa, $ktore, $czyWidziWszystkieWnioski)
@@ -329,20 +329,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }else{
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
-                    $ADUser = $ldap->getUserFromAD(trim($uss[0]));  
-                    switch($ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser[0])){
-                        case "dyrektor":
-                            $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser[0]['department'])];
-                            break;
-                        case "manager":
-                            $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));                                        
-                            $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                            $ADManager = $ldap->getUserFromAD(null, $mgr);
-                            break;
-                        case "prezes":
-                            $ADManager = $ldap->getPrezes();
-                            break;
-                    }
+                    $ADUser = $ldap->getUserFromAD(trim($uss[0]));
+                    $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
                     
                     if(count($ADManager) == 0){
                         die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
@@ -442,6 +430,29 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 break;
         }
+    }
+    protected function getManagerUseraDoWniosku($ADUser){
+        $ldap = $this->get('ldap_service');
+        $kogoSzukac = $ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser);
+        //var_dump($ADUser); die($kogoSzukac);
+        switch($kogoSzukac){
+            case "dyrektor":
+                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['department'])];
+                break;
+            case "manager":
+                $in1 = mb_stripos($ADUser['manager'], '=') + 1;
+                $in2 = mb_stripos($ADUser['manager'], ',OU');
+                $in3 = (mb_stripos($ADUser['manager'], '=') + 1);
+                var_dump($in1, $in2, $in3);
+                $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
+                $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+                $ADManager = $ldap->getUserFromAD(null, $mgr);
+                break;
+            case "prezes":
+                $ADManager = [$ldap->getPrezes()];
+                break;
+        }
+        return $ADManager;
     }
     protected function sendMailToAdminRejestru($msg){
         $mails = ["kamil_jakacki@parp.gov.pl"];
@@ -682,11 +693,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }else{
                                     $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());  
+/*
                                     $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                                     
                                     
                                     $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                                     $ADManager = $ldap->getUserFromAD(null, $mgr);
+*/
+                                    
+                                    $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
+                                    
                                     if(count($ADManager) == 0){
                                         die("Blad 657 Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
                                     }
@@ -973,6 +989,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
+        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+            $zastepstwa[] = $this->getUser()->getUsername();
+        }
         //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
             'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
@@ -987,6 +1006,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             return false;
         }
 */
+        
         
         return ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
     }

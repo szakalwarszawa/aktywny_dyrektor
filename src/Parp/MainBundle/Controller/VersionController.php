@@ -34,6 +34,8 @@ class VersionController extends Controller
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
         $entity = $em->find($className, $id);
+        //var_dump($entity, $repository, $id);
+        
         $logs = $repo->getLogEntries($entity);
         //$logs = array_reverse($logs);
         $metadata = $em->getClassMetadata($className);
@@ -64,7 +66,7 @@ class VersionController extends Controller
         $className = "Parp\\MainBundle\\Entity\\".$repository;
         $entity = $em->getRepository($className)->find($id);
         $entities = $this->getObjectHistory($repository, $id);
-        $pid = $entity->getWniosek()->getParent() ? $entity->getWniosek()->getParent()->getId() : 0;
+        $pid = $entity->getWniosek()->getParent() ? $entity->getWniosek()->getParent()->getWniosekNadanieOdebranieZasobow()->getId() : 0;
         if($pid > 0){
             $entities2 = $this->getObjectHistory($repository, $pid);
             $entities = array_merge($entities, $entities2);   
