@@ -759,4 +759,21 @@ class LdapService
         }    
     }
     
+    public function kogoBracJakoManageraDlaUseraDoWniosku($user){
+        $ret = 'dyrektor';
+        switch(mb_strtolower($user['title'])){
+            case "dyrektor":
+            case "p.o. dyrektora":
+            case "dyrektor (p.o.)":
+            case "zastępca prezesa":
+            case "zastępca prezesa (p.o.)":
+                $ret = 'manager';
+                break;
+            case "prezes":
+                $ret = 'prezes';
+                break;
+        }
+        return $ret;
+    } 
+    
 }
