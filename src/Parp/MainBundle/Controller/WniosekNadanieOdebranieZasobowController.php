@@ -240,7 +240,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //unset($u['thumbnailphoto']);
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
             //echo ".".strtolower($aduser[0]['department']).".";
-            if($widzi_wszystkich || strtolower(trim($u['department'])) == strtolower(trim($aduser[0]['department'])) ){
+            if($widzi_wszystkich || mb_strtolower(trim($u['department'])) == mb_strtolower(trim($aduser[0]['department'])) ){
                 $users[$u['samaccountname']] = $u['name'];
             }
         }

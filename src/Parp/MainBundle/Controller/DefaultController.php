@@ -55,7 +55,7 @@ class DefaultController extends Controller
             $ADUsers = array();
             foreach($ADUsersTemp as $u){
                 //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-                if($widzi_wszystkich || $aduser[0]['department'] == $u['department']){
+                if($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))){
                     $ADUsers[] = $u;//['name'];
                 }
             }
