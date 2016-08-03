@@ -759,8 +759,8 @@ class DefaultController extends Controller
                     'label' => 'Podaj powód wyłączenia konta',
                     'choices' => array(
                         "" => "",
-                        "Bo tak" => "Bo tak",
-                        "Kadry kazały" => "Kadry kazały",
+                        "Konto wyłączono z powodu nieobecności dłuższej niż 21 dni" => "Konto wyłączono z powodu nieobecności dłuższej niż 21 dni",
+                        "Konto wyłączono z powodu rozwiązania stosunku pracy" => "Konto wyłączono z powodu rozwiązania stosunku pracy",
                     ),
                     'required' => false,
                     'attr' => array(                        

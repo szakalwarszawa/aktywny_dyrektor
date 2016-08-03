@@ -78,15 +78,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $tableAlias = $source->getTableAlias();
         //die($co);
         $sam = $this->getUser()->getUsername();
+        
+        $czyWidziWszystkieWnioski = in_array(["PARP_ADMIN", "PARP_WNIOSEK_WIDZI_WSZYSTKIE_WNIOSKI"], $this->getUser()->getRoles());
+        
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $zastepstwa, $ktore)
+            function ($query) use ($tableAlias, $zastepstwa, $ktore, $czyWidziWszystkieWnioski)
             {
                 $query->leftJoin($tableAlias . '.wniosek', 'w');
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
-                $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-                
+                if(!$czyWidziWszystkieWnioski){
+                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                }
                 $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
                 switch($ktore){
                     case "wtoku":
@@ -95,10 +99,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $query->andWhere($w);
                         break;
                     case "oczekujace":
-                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        if(!$czyWidziWszystkieWnioski){
+                            $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        }
                         break;
                     case "zamkniete":
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        if(!$czyWidziWszystkieWnioski){
+                            $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        }
                         break;
                 }
                 //$query->andWhere('w.samaccountname = \''.$sam.'\'');
@@ -322,16 +330,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
                     $ADUser = $ldap->getUserFromAD(trim($uss[0]));  
-                    /*
-                    //print_r($ADUser); die();
-                    $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
+                    switch($ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser[0])){
+                        case "dyrektor":
+                            $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser[0]['department'])];
+                            break;
+                        case "manager":
+                            $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));                                        
+                            $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+                            $ADManager = $ldap->getUserFromAD(null, $mgr);
+                            break;
+                        case "prezes":
+                            $ADManager = $ldap->getPrezes();
+                            break;
+                    }
                     
-                    
-                    $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                    $ADManager = $ldap->getUserFromAD(null, $mgr);
-                    */
-                    //zmieniamy ze bierze dyrektora departamentu
-                    $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser[0]['department'])];
                     if(count($ADManager) == 0){
                         die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     }

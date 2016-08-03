@@ -33,7 +33,8 @@ class LdapAdminService
 
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
-        if(!in_array("PARP_ADMIN", $securityContext->getToken()->getRoles())){
+        //var_dump($securityContext->isGranted('PARP_ADMIN')); //->getToken()->getRoles()); die();
+        if(!in_array("PARP_ADMIN", $securityContext->getToken()->getUser()->getRoles())){
             throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");    
         }
         error_reporting(0);

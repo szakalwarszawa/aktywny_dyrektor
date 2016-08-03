@@ -1210,4 +1210,46 @@ class DevController extends Controller
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
+    
+    /**
+     * @Route("/getGrupyDepartamentu/{departament}", name="getGrupyDepartamentu")
+     * @Template()
+     */
+    public function getGrupyDepartamentuAction($departament)
+    {
+        $tab = explode(".", $this->container->getParameter('ad_domain'));
+        $configuration = array(
+            //'user_id_key' => 'samaccountname',
+            'account_suffix' => '@' . $this->container->getParameter('ad_domain'),
+            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
+            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
+            'domain_controllers' => array($this->container->getParameter('ad_host'),$this->container->getParameter('ad_host2'),$this->container->getParameter('ad_host3')),
+            'admin_username' => $this->container->getParameter('ad_user'),
+            'admin_password' => $this->container->getParameter('ad_password'),
+            //'real_primarygroup' => true,
+            //'use_ssl' => false,
+            //'use_tls' => false,
+            //'recursive_groups' => true,
+            'ad_port' => '389',
+            //'sso' => false,
+        );
+        //var_dump($configuration);
+        $adldap = new \Adldap\Adldap($configuration);
+        $grupa = "SGG-".$departament;
+        //$g = $adldap->group()->find($grupa);
+        //$g = $adldap->group()->search(null, false, "INT-BI");
+        $g = $this->get('ldap_service')->getGroupsFromAD($grupa, "*");
+        
+        $ret = [];
+        foreach($g as $k => $r){
+            //var_dump(substr($r['name'][0], strlen($r['name'][0]) - 3, 3));
+            if(substr($r['name'][0], strlen($r['name'][0]) - 3, 3) == "-RW")
+                $ret[] = $r['name'];
+        }
+        
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+        
+        //var_dump(($g));
+    }
 }    

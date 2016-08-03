@@ -220,9 +220,9 @@ class ReorganizacjaParpController extends Controller
      */
     public function nadajUprawnieniaPoczatkoweIzmienOUAction()
     {
-        $zmieniajOU = true;
-        $zmieniajGrupy = true;
-        $zmieniajSekcjewIDescriptionAD = true;
+        $zmieniajOU = false;
+        $zmieniajGrupy = false;
+        $zmieniajSekcjewIDescriptionAD = false;
         
         $nieMialemWExeluSekcji = [];
         $mapowanieDep = [
@@ -607,7 +607,7 @@ class ReorganizacjaParpController extends Controller
     public function audytUprawnienPoczatkowychAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $nadawaj = true;
+        $nadawaj = false;
         $ldap = $this->get('ldap_service');
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
@@ -758,5 +758,60 @@ class ReorganizacjaParpController extends Controller
         }
         return implode(",", $ret);
         
+    }
+    
+    
+    /**
+     * @Route("/nadajUprawnieniaDyrektoromDoSekcji", name="nadajUprawnieniaDyrektoromDoSekcji")
+     */
+    public function nadajUprawnieniaDyrektoromDoSekcjiAction()
+    {
+        
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $ret = [];
+        $ldap = $this->get('ldap_service');
+        $dyrs = $ldap->getDyrektorow();
+        foreach($dyrs as $d){
+            $gs = $this->getGrupyDepartamentu($d['description']);
+            $errors = [];
+            
+            foreach($gs as $g){
+                $dn = $d['distinguishedname'];
+                $grupa = $ldapAdmin->getGrupa($g);
+                $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                //var_dump($g, $addtogroup, array('member' => $dn ));
+                $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                $errors[] = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+            }
+            
+            
+            //var_dump($gs); 
+            $ret[] = [
+                'departament' => $d['department'],
+                'skrot' => $d['description'],
+                'user' => $d['name'],
+                'user' => $d['samaccountname'],
+                'grupy' => $gs,
+                'errors' => $errors
+            ];
+        }
+         
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
+    
+    protected function getGrupyDepartamentu($dep){
+        $g = $this->get('ldap_service')->getGroupsFromAD("SGG-".$dep, "*");
+        
+        $ret = [];
+        foreach($g as $k => $r){
+            //var_dump(substr($r['name'][0], strlen($r['name'][0]) - 3, 3));
+            if(substr($r['name'][0], strlen($r['name'][0]) - 3, 3) == "-RW")
+                $ret[] = $r['name'][0];
+        }
+        return $ret;
     }
 }

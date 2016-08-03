@@ -17,10 +17,10 @@
                         <td>
                             {% if value is iterable %}
                                 {% for k, v in value %}
-                                    {{k}} : {{ v }}<br>
+                                    {{k}} : {{ v|raw }}<br>
                                 {% endfor %}
                             {% else %}                                
-                                {{ value }}
+                                {{ value|raw }}
                             {% endif %}
                         
                         </td>

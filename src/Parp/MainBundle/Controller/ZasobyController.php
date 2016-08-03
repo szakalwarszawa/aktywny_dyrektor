@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Parp\MainBundle\Grid\ParpExcelExport;
 use Parp\MainBundle\Entity\Zasoby;
 use Parp\MainBundle\Form\ZasobyType;
 

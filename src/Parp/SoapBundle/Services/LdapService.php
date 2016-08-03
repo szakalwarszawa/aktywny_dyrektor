@@ -739,6 +739,17 @@ class LdapService
         return $ret;
     }
     
+    public function getPrezes(){
+        $users = $this->getAllFromAD();
+        $ret = [];
+        foreach($users as $u){
+            if(mb_strtolower(trim($u['title'])) == "prezes"){
+                $ret = $u;
+            }
+        }
+        return $ret;
+    }
+    
     public function getDyrektoraDepartamentu($skrot){
         $dyrs = $this->getDyrektorow();
         foreach($dyrs as $d){
