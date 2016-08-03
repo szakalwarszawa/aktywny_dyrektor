@@ -40,8 +40,9 @@
         $(".popoverElement").popover(
                 );
         $('#submitexport').on('click', function (e) {
+            $('#export-grid').val('0');
             e.preventDefault();
-            $("#{{ grid.hash }}}").submit();
+            $("#{{ grid.hash }}").submit();
             $('#export-grid').val('-1');
         })
     </script>
