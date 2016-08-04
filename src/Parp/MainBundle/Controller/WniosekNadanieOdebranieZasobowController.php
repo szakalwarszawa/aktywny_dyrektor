@@ -956,9 +956,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         }
         //temp badam sqle przy akceptacji wniosku Grzesia
-        //$em->flush();
-        die('a');
-
+        $em->flush();
+        //die('a');
+        ///return new Response("<html><head></head><body>aaa</body></html>");
         
         if($isAccepted == "unblock"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
