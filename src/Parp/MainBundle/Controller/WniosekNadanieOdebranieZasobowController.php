@@ -955,7 +955,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
             }
         }
-        $em->flush();
+        //temp badam sqle przy akceptacji wniosku Grzesia
+        //$em->flush();
+        die('a');
 
         
         if($isAccepted == "unblock"){
