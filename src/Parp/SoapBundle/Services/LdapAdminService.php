@@ -650,7 +650,7 @@ class LdapAdminService
         if($this->pushChanges){
             try{
                 //ldap_mod_add($link_identifier, $dn, $entry);
-                ldap_modify($link_identifier, $dn, $entry);
+                ldap_modify($link_identifier, $entry['member'], ['member' => $dn]);
                 $poszlo = true;
             }
             catch(\Exception $e){
@@ -662,7 +662,7 @@ class LdapAdminService
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add</error>');
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add (ldap_modify)</error>');
             $this->output->writeln('<error>dn: '.$dn.'</error>');
             $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
