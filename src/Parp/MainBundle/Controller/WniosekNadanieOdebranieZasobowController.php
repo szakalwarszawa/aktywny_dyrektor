@@ -33,24 +33,25 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
-     * @Route("/index", name="wnioseknadanieodebraniezasobow")
+     * @Route("/index/{ktore}", name="wnioseknadanieodebraniezasobow", defaults={"ktore" : "oczekujace"})
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($ktore = "oczekujace")
     {
         $em = $this->getDoctrine()->getManager();
-        $grid = $this->generateGrid("wtoku");
-        $grid2 = $this->generateGrid("oczekujace");
-        $grid3 = $this->generateGrid("zamkniete");
+        $grid = $this->generateGrid($ktore); //"wtoku");
+        //$grid2 = $this->generateGrid("oczekujace");
+        //$grid3 = $this->generateGrid("zamkniete");
         $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
         
-        if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        if ($grid->isReadyForRedirect()) // || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
         {
             if ($grid->isReadyForExport())
             {
                 return $grid->getExportResponse();
             }
         
+/*
             if ($grid2->isReadyForExport())
             {
                 return $grid2->getExportResponse();
@@ -60,13 +61,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             {
                 return $grid3->getExportResponse();
             }
+*/
         
             // Url is the same for the grids
             return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         }
         else
         {
-            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array('grid' => $grid, 'grid2' => $grid2, 'grid3' => $grid3, 'zastepstwa' => $zastepstwa));
+            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array('ktore' => $ktore, 'grid' => $grid/* , 'grid2' => $grid2, 'grid3' => $grid3 */, 'zastepstwa' => $zastepstwa));
         }
     }
     

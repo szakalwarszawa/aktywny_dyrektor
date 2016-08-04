@@ -35,16 +35,17 @@
         </div>   
     {%endif%}
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#oczekujace">Oczekujące na realizację</a></li>
-        <li><a data-toggle="tab" href="#wtoku">W toku</a></li>
-        <li><a data-toggle="tab" href="#zakonczone">Zakończone</a></li>
+        <li class="{{ ktore == "oczekujace" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'oczekujace'})}}">Oczekujące na realizację</a></li>
+        <li class="{{ ktore == "wtoku" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'wtoku'})}}">W toku</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>
     </ul>
     
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
             
-            {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
+            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
+{#
         <div id="wtoku" class="tab-pane fade">
 
             
@@ -55,6 +56,7 @@
             
             {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
+#}
     </div>
 </div>
 
