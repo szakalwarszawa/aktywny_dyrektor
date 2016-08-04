@@ -37,7 +37,10 @@
     <ul class="nav nav-tabs">
         <li class="{{ ktore == "oczekujace" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'oczekujace'})}}">Oczekujące na realizację</a></li>
         <li class="{{ ktore == "wtoku" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'wtoku'})}}">W toku</a></li>
-        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>        
+        {% if app.user.hasRole('PARP_ADMIN') %}
+            <li class="{{ ktore == "wszystkie" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'wszystkie'})}}">Wszystkie</a></li>
+        {%endif%}
     </ul>
     
     <div class="tab-content">

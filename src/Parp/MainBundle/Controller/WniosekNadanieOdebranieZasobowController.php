@@ -82,16 +82,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //die($co);
         $sam = $this->getUser()->getUsername();
         
-        $czyWidziWszystkieWnioski = in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $zastepstwa, $ktore, $czyWidziWszystkieWnioski)
+            function ($query) use ($tableAlias, $zastepstwa, $ktore)
             {
                 $query->leftJoin($tableAlias . '.wniosek', 'w');
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
-                if(!$czyWidziWszystkieWnioski){
+                if($ktore != "wszystkie"){
                     $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 }
                 $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
@@ -102,14 +101,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $query->andWhere($w);
                         break;
                     case "oczekujace":
-                        if(!$czyWidziWszystkieWnioski){
-                            $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        }
+                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        
                         break;
                     case "zamkniete":
-                        if(!$czyWidziWszystkieWnioski){
-                            $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
-                        }
+                        
+                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        
+                        break;
+                    case "wtoku":
+                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
+                        //rdie($w);
+                        $query->andWhere($w);
+                        break;
+                    case "wszystkie":
+                        //$w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
+                        //rdie($w);
+                        //$query->andWhere($w);
                         break;
                 }
                 //$query->andWhere('w.samaccountname = \''.$sam.'\'');
