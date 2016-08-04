@@ -649,7 +649,8 @@ class LdapAdminService
         $poszlo = false;
         if($this->pushChanges){
             try{
-                ldap_mod_add($link_identifier, $dn, $entry);
+                //ldap_mod_add($link_identifier, $dn, $entry);
+                ldap_modify($link_identifier, $dn, $entry);
                 $poszlo = true;
             }
             catch(\Exception $e){
