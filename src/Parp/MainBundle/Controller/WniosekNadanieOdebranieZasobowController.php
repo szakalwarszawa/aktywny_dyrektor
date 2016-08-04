@@ -908,9 +908,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $uz->setCzyAktywne(true);
                     if($z->getGrupyAd()){
                         $grupy = explode(";", $z->getGrupyAd());
-                        foreach($grupy as $grupa){
-                            $grupa = trim($grupa);
-                            if($grupa != ""){
+                        
+                        $poziomy = str_replace(", ", ",", $z->getPoziomDostepu());
+                        
+                        $dostepnePoziomy = explode(",", $poziomy);
+                        if(!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)){
+                            die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".$uz->getPoziomDostepu()."', dostepne poziomy : ".$z->getPoziomDostepu()."!!!");
+                        }
+                        $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
+                        
+                        //foreach($grupy as $grupa){
+                            $grupa = trim($grupy[$indexGrupy]);
+                            if($grupa != "" ){
                                 //jesli sa grupy ad to tworzy entry powiazane i daje przycisk opublikuj
                                 $aduser = $ldap->getUserFromAD($uz->getSamaccountname());
                                 if($wniosek->getPracownikSpozaParp()){
@@ -932,7 +941,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
                                 $em->persist($entry);
                             }
-                        }
+                        //}
                     }else{
                         //bez grup ad tworzymy zadanie i maila do admina
                         $this->get('uprawnieniaservice')->wyslij(

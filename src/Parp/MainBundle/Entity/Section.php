@@ -63,7 +63,7 @@ class Section
      * @Assert\NotBlank(message = "Skrót sekcji nie jest wypełniony.")
      * @Assert\Length(
      *      min = 2,
-     *      max = 5,
+     *      max = 8,
      *      minMessage = "Skrót sekcji zawierać od {{ limit }} znaków.",
      *      maxMessage = "Skrót sekcji musi zawierać maxymalnie do {{ limit }} znaków.")* 
      * @Gedmo\Mapping\Annotation\Versioned
