@@ -232,7 +232,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'userzasoby' => []
         );
     }
-    private function getUsers(){
+    private function getUsersFromAD(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
@@ -260,7 +260,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
             'method' => 'POST',
         ));
@@ -966,9 +966,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         }
         //temp badam sqle przy akceptacji wniosku Grzesia
-        //$em->flush();
+        $em->flush();
         //die('a');
-        return new Response("<html><head></head><body>aaa</body></html>");
+        //return new Response("<html><head></head><body>aaa</body></html>");
         
         if($isAccepted == "unblock"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
@@ -1199,7 +1199,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsers()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

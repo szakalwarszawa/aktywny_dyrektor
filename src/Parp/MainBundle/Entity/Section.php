@@ -12,14 +12,6 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="section")
  * @ORM\Entity
- * @UniqueEntity(
- *     fields={"name"},
- *     errorPath="name",
- *     message="Nazwa sekcji musi być unikalna")
- * @UniqueEntity(
- *     fields={"shortname"},
- *     errorPath="shortname",
- *     message="Skrót sekcji musi być unikalny")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname, departament.name, departament.shortname, kierownikName")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")

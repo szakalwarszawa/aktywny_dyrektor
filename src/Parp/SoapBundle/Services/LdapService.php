@@ -615,8 +615,10 @@ class LdapService
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
                 //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
                 $roles = [];
+                
+                //temp Grzesia wniosek
                 //wylaczam na chwile role by sprawdziuc ile sqlek bedzie mniej
-                $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
+                //$roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
                 $rs = array();
                 foreach($roles as $r){
                     $rs[] = $r->getRole()->getName();

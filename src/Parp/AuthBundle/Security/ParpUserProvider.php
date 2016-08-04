@@ -71,7 +71,11 @@ class ParpUserProvider implements UserProviderInterface
                 //echo ".12.";
                 $salt = null;
                 
+                $rolesEntities = [];
+                //temp Grzesia wniosek
+                //echo "!!!!pobieram role $username !!!";
                 $rolesEntities = $kernel->getContainer()->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($username);
+                
                 $roles = [];
                 foreach($rolesEntities as $r){
                     $roles[] = $r->getRole()->getName();

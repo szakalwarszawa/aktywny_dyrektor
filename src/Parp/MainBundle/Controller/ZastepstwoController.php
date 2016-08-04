@@ -109,7 +109,7 @@ class ZastepstwoController extends Controller
      */
     private function createCreateForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsers()), $entity, array(
+        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsersFromAD()), $entity, array(
             'action' => $this->generateUrl('zastepstwo_create'),
             'method' => 'POST',
         ));
@@ -206,7 +206,7 @@ class ZastepstwoController extends Controller
     */
     private function createEditForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsers()), $entity, array(
+        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsersFromAD()), $entity, array(
             'action' => $this->generateUrl('zastepstwo_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -292,7 +292,7 @@ class ZastepstwoController extends Controller
     }
     
     
-    private function getUsers(){
+    private function getUsersFromAD(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_ADMIN", $this->getUser()->getRoles());
