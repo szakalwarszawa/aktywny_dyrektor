@@ -585,6 +585,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //dziala zastepstwo, szukamy ktore
             $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
             foreach($zastepstwa as $z){
+                //var_dump($ret); 
                 if($z->getKogoZastepuje() == $ret['editor']->getSamaccountname()){
                     //var_dump($z); die();
                     return $z;

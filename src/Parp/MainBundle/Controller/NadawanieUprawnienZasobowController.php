@@ -732,7 +732,11 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $z = clone $oz;
                                 $this->getDoctrine()->getManager()->persist($z);
                                 $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
-                                $z->setAktywneDo(new \DateTime($z->getAktywneDo()));
+                                if($oz->getAktywneDo() == "" || $oz->getBezterminowo()){
+                                    $z->setAktywneDo(null);
+                                }else{
+                                    $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                                }
                             }
                             //die(".".$oz->get_Idd());
                             $z->setCzyAktywne($wniosekId == 0);

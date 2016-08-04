@@ -1089,7 +1089,7 @@ class DevController extends Controller
         foreach($users as &$u){
             unset($u['thumbnailphoto']);
             //unset($u['manager']);
-            unset($u['memberOf']);
+            //unset($u['memberOf']);
         }
         //print_r($users); die();
         

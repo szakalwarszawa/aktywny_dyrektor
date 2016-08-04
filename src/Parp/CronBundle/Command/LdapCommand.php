@@ -200,7 +200,7 @@ class LdapCommand extends ContainerAwareCommand
                         // nie znaleziono w ldap tzn ze mamy nowego usera do wstawienia
                     } else {
     
-                        $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()."</info>");
+                        $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()." ".$zmiana->getSamaccountname()."</info>");
                         
                         $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, true);
                         if($ldapstatus == "Success"){

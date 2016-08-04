@@ -326,9 +326,10 @@ class LdapAdminService
                 $entry['description'] = $sn;                
             }
         }
+        unset($entry['initials']);
 
+        //print_r($entry); die();
         if(count($entry) > 0){
-            unset($entry['initials']);
             //var_dump($dn, $entry);
             $res = $this->ldap_modify($ldapconn, $dn, $entry);
             
@@ -401,7 +402,7 @@ class LdapAdminService
                 }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
                     $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
                 }else{
-                    $this->output->writeln('<comment>           Mialem '.($znak == "+" ? "dodawac do" : "zdejmowac z")." grupy  ".$g." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
+                    $this->output->writeln('<comment>           Mialem '.($znak == "+" ? "dodawac do" : "zdejmowac z")." grupy  ".$g); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
                 }
                 return ;
             }
@@ -649,8 +650,9 @@ class LdapAdminService
         $poszlo = false;
         if($this->pushChanges){
             try{
-                //ldap_mod_add($link_identifier, $dn, $entry);
-                ldap_modify($link_identifier, $entry['member'], ['member' => $dn]);
+                ldap_mod_add($link_identifier, $dn, $entry);
+                //$dn = $entry['member'], ['member' => $dn]);
+                //ldap_modify($link_identifier, $dn, $entry); 
                 $poszlo = true;
             }
             catch(\Exception $e){
