@@ -3,6 +3,7 @@
 namespace Parp\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -965,9 +966,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         }
         //temp badam sqle przy akceptacji wniosku Grzesia
-        $em->flush();
+        //$em->flush();
         //die('a');
-        ///return new Response("<html><head></head><body>aaa</body></html>");
+        return new Response("<html><head></head><body>aaa</body></html>");
         
         if($isAccepted == "unblock"){
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array(
