@@ -614,7 +614,8 @@ class LdapService
                 $result[$i]["cn"] = $tmpResult["cn"][0];
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
                 //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
-                
+                $roles = [];
+                //wylaczam na chwile role by sprawdziuc ile sqlek bedzie mniej
                 $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
                 $rs = array();
                 foreach($roles as $r){
@@ -740,6 +741,7 @@ class LdapService
     }
     
     public function getPrezes(){
+/*
         $users = $this->getAllFromAD();
         $ret = [];
         foreach($users as $u){
@@ -747,13 +749,17 @@ class LdapService
                 $ret = $u;
             }
         }
+*/
+        $user = $this->getUserFromAD("patrycja_klarecka");
+        $ret = $user[0];
         return $ret;
     }
     
     public function getDyrektoraDepartamentu($skrot){
         $dyrs = $this->getDyrektorow();
+        //print_r($dyrs); die();
         foreach($dyrs as $d){
-            if($d['department'] == $skrot){
+            if(mb_strtoupper(trim($d['description'])) == mb_strtoupper(trim($skrot))){
                 return $d;
             }
         }    
@@ -761,7 +767,7 @@ class LdapService
     
     public function kogoBracJakoManageraDlaUseraDoWniosku($user){
         $ret = 'dyrektor';
-        switch(mb_strtolower($user['title'])){
+        switch(mb_strtolower(trim($user['title']))){
             case "dyrektor":
             case "p.o. dyrektora":
             case "dyrektor (p.o.)":

@@ -13,7 +13,21 @@
                     {% set i = i + 1%}
                     {% if z.zasobId not in przetworzoneZasoby %}
                         {% set przetworzoneZasoby = przetworzoneZasoby|merge([z.zasobId]) %}
-                        {{z.zasobId|zasobNazwa}} {% if i != entity.userZasoby|length %},{%endif%}
+                        <a class="btn" href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobId|zasobNazwa}} </a>
+{#                         {% if i != entity.userZasoby|length %},{%endif%} #}
+                    {% endif %}
+                {% endfor%}
+                </li>
+                <li><b>Cel nadania/odebrania: </b>
+                {% set i = 0 %}
+                {% set przetworzonePowody = {} %}
+                {% for z in entity.userZasoby %}                
+                    {% set i = i + 1%}
+                    {% if z.powodNadania not in przetworzonePowody %}
+                        {% set przetworzonePowody = przetworzonePowody|merge([z.powodNadania]) %}
+                        <span class="btn">{{z.powodNadania}}</span>
+                        
+{#                         {% if i != entity.userZasoby|length %},{%endif%} #}
                     {% endif %}
                 {% endfor%}
                 </li>
@@ -232,6 +246,7 @@
                             <th class="header">Kanał dostępu</th>
                             <th class="header">Uprawnienia administracyjne</th>
                             <th class="header">Odstepstwo od procedury</th>   
+                            <th class="header">Cel nadania/odebrania</th>   
                             <th class="header">Akcje</th>                            
                         </tr>
                     </thead>
@@ -249,6 +264,7 @@
                                 <td>{{z.kanalDostepu}}</td>
                                 <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
                                 <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
+                                <td>{{z.powodNadania}}</td>
                                 <td>{%if editor%}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
                                     <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>

@@ -1088,7 +1088,7 @@ class DevController extends Controller
         $users = $this->get('ldap_service')->getAllFromAD(false, false);
         foreach($users as &$u){
             unset($u['thumbnailphoto']);
-            unset($u['manager']);
+            //unset($u['manager']);
             unset($u['memberOf']);
         }
         //print_r($users); die();
@@ -1251,5 +1251,28 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
         
         //var_dump(($g));
+    }
+    /**
+     * @Route("/martynaMiszczyk", name="martynaMiszczyk")
+     * @Template()
+     */
+    public function martynaMiszczykAction()
+    {
+        $ldap = $this->get('ldap_service');
+        
+        $ADManager = [$ldap->getDyrektoraDepartamentu("BP")];
+        print_r($ADManager); die();
+        
+        
+        $us = $ldap->getUserFromAD('martyna_miszczyk');
+        $ADUser = $us[0];
+         $in1 = mb_stripos($ADUser['manager'], '=') + 1;
+        $in2 = mb_stripos($ADUser['manager'], ',OU');
+        $in3 = (mb_stripos($ADUser['manager'], '=') + 1);
+        var_dump($in1, $in2, $in3);
+        $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
+        $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+        $ADManager = $ldap->getUserFromAD(null, $mgr);
+        echo "<pre>"; print_r($ADManager); die();
     }
 }    

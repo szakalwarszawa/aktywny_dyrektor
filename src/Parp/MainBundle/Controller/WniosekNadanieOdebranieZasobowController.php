@@ -335,9 +335,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $ADUser = $ldap->getUserFromAD(trim($uss[0]));
                     $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
                     
-                    if(count($ADManager) == 0){
-                        die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
-                    }
+                }
+                
+                if(count($ADManager) == 0 || $ADManager[0]['samaccountname'] == ''){
+                    print_r($ADManager);
+                    print_r($uss);
+                    die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
                 }
                 //print_r($ADManager[0]['samaccountname']);
                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
@@ -433,6 +436,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 break;
         }
+        foreach($where as $k => $v){
+            if($k == ""){
+                die($who.' mam pustego usera !!!!!');
+            }
+        }
     }
     protected function getManagerUseraDoWniosku($ADUser){
         $ldap = $this->get('ldap_service');
@@ -440,13 +448,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //var_dump($ADUser); die($kogoSzukac);
         switch($kogoSzukac){
             case "dyrektor":
-                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['department'])];
+                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
                 break;
             case "manager":
                 $in1 = mb_stripos($ADUser['manager'], '=') + 1;
                 $in2 = mb_stripos($ADUser['manager'], ',OU');
                 $in3 = (mb_stripos($ADUser['manager'], '=') + 1);
-                var_dump($in1, $in2, $in3);
+                var_dump($ADUser['manager'], $in1, $in2, $in3);
                 $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
                 $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
                 $ADManager = $ldap->getUserFromAD(null, $mgr);
@@ -455,6 +463,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $ADManager = [$ldap->getPrezes()];
                 break;
         }
+        
         return $ADManager;
     }
     protected function sendMailToAdminRejestru($msg){
@@ -670,7 +679,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         
                     $uz->setCzyNadane(true);
                 }
-                //die('a');
                 $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY", false);
             }
             //die('a');
@@ -944,7 +952,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
             }
         }
-        //die('a');
         $em->flush();
 
         
