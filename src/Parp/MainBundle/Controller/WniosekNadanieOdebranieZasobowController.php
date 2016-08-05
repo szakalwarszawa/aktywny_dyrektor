@@ -916,7 +916,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         
                         $poziomy = str_replace("; ", ";", $z->getPoziomDostepu());
                         
-                        $dostepnePoziomy = explode(",", $poziomy);
+                        $dostepnePoziomy = explode(";", $poziomy);
                         if(!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)){
                             die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".$uz->getPoziomDostepu()."', dostepne poziomy : ".$z->getPoziomDostepu()."!!!");
                         }
