@@ -10,7 +10,7 @@ update wniosek_viewer set deletedAt = null where wniosek_id = 102 and deletedAt 
     
     
 update wniosek_historia_statusow set deletedAt = current_timestamp where id in (select id from (select max(id) as id from wniosek_historia_statusow where wniosek_id = 102) as s);
-update wniosek set status_id = (select status_id from wniosek_historia_statusow where id = (select max(id) from wniosek_historia_statusow where wniosek_id = 102));
+update wniosek set status_id = (select status_id from wniosek_historia_statusow where id = (select max(id) from wniosek_historia_statusow where wniosek_id = 102 and deletedAt is null));
     
 update wniosek set 
 editornames = (select group_concat(samaccountname) from wniosek_editor where wniosek_id = 102 and deletedAt is null),
