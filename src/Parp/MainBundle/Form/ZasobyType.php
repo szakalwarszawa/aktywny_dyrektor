@@ -25,6 +25,9 @@ class ZasobyType extends AbstractType
         $adminiMulti = false; //in_array("PARP_ADMIN2", $this->container->getUser()->getRoles());
         
         $ldap = $this->container->get('ldap_service');
+        
+        $admini = $ldap->getAdministratorzyZasobow();
+        
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
@@ -53,7 +56,7 @@ class ZasobyType extends AbstractType
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', 'choice', array(
-                'choices' => $ldap->getAdministratorzyZasobow(),
+                'choices' => $admini,
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')

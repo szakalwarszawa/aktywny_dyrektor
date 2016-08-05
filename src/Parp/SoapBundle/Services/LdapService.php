@@ -23,6 +23,7 @@ class LdapService
     protected $useradn ;
     protected $_ouWithGroups = "PARP Grupy";
     protected $adldap;
+    protected $_userCache = null;
     
     protected $ADattributes = array(
         "name",
@@ -624,7 +625,7 @@ class LdapService
                 
                 //temp Grzesia wniosek
                 //wylaczam na chwile role by sprawdziuc ile sqlek bedzie mniej
-                //$roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
+                $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
                 $rs = array();
                 foreach($roles as $r){
                     $rs[] = $r->getRole()->getName();
@@ -709,12 +710,12 @@ class LdapService
         return $this->adldap->group()->find($grupa);
     }
     
-    protected $_userCache = null;
     
     public function getUsersWithRole($role){
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromAD();
         }
+        //echo "<pre>"; print_r($this->_userCache); die();
         $ret = [];
         foreach($this->_userCache as $u){
             if(in_array($role, $u['roles']))
