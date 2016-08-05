@@ -763,7 +763,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         }
 */
                         if(count($zmianaupr) > 0 && $wniosekId == 0){
-                                var_dump($currentsam, $zmianaupr); die();
+                            //var_dump($currentsam, $zmianaupr); die();
                             $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                         }
                     }

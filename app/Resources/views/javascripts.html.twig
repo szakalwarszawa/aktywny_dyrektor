@@ -35,10 +35,14 @@ $(document).ready(function(){
 
 $('.tagAjaxInputUsers:not([disabled])').tagit({
     autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'},
-    allowSpaces: true
+    allowSpaces: true,
+    'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
+    'singleFieldDelimiter': ";"
 });
 $('.tagAjaxInput:not([disabled])').tagit({
-    allowSpaces: true
+    allowSpaces: true,
+    'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
+    'singleFieldDelimiter': ";"
 });
 $(document).ready(function(){
     $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true}); 

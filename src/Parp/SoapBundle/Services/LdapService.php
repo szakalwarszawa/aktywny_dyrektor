@@ -784,4 +784,38 @@ class LdapService
         return $ret;
     } 
     
+    public function getGrupyUsera($user, $depshortname, $sekcja){
+        $pomijajSekcje = ["ND", "", "n/d", ""];
+        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW'
+            //, 'SGG-(skrót D/B)-Public-RO'
+        ];
+        if(!in_array($sekcja, $pomijajSekcje)){
+            $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
+        }
+        switch(strtolower($user['title'])){
+            case "dyrektor":
+            case "dyrektor (p.o.)":
+            case "zastępca dyrektora":
+            case "zastępca dyrektora (p.o.)":
+            case "prezes":
+            case "zastępca prezesa":
+            case "zastępca prezesa (p.o.)":
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                break;
+        }
+        for($i = 0; $i < count($grupy); $i++){
+            $grupy[$i] = str_replace("(skrót sekcji)", $sekcja, str_replace("(skrót D/B)", $depshortname, $grupy[$i]));
+        }
+        return $grupy;
+    }
+    
+    
+    public function getOUfromDN($u){
+        $cz = explode(",", $u['distinguishedname']);
+        $ou = str_replace("OU=", "", $cz[1]);
+        return $ou;
+        
+    }
+    
 }

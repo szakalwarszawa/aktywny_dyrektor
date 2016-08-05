@@ -246,12 +246,6 @@ class LdapAdminService
             }
             $entry['accountExpires'] = $d;
         }
-        if ($person->getInfo()) {
-            $entry['info'] = $person->getInfo();
-            // obsłuz miane atrybuty division
-            $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-            $entry['division'] =  $section->getName();//getShortname();
-        }
         if ($person->getManager()) {
             $manager = $person->getManager();
             if (!empty($manager)) {
@@ -307,10 +301,34 @@ class LdapAdminService
             $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $userAD[0]['department'], 'nowaStruktura' => true]);
                 
             $person->setGrupyAD($departmentOld, "-");
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
+            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             //jesli zmiana departamnentu dodajemy nowe grupy AD
             $person->setGrupyAD($department);
+            if($person->getTitle()){
+                //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
+                $userAD[0]['title'] = $person->getTitle();
+            }
+            
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->getGrupyUsera($userAD[0], $department->getShortname(), "");
+            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
+            $person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+        }
+        if ($person->getInfo()) {
+            if($person->getInfo() == "BRAK"){
+                $entry['info'] = "n/d";
+                $entry['division'] = "";
+            }elseif($person->getInfo() == "BRAK" || $person->getInfo() == "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY"){
+                $entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
+                $entry['division'] = "";
+            }else{$entry['info'] = $person->getInfo();
+                // obsłuz miane atrybuty division
+                $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
+                $entry['division'] =  $section->getName();//getShortname();
+                
+            }
         }
                 
         if ($person->getIsDisabled() !== null) {

@@ -93,12 +93,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 if($ktore != "wszystkie"){
                     $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 }
-                $statusy = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
+                $statusyZakmniete = ['00_TWORZONY', '08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
                 switch($ktore){
                     case "wtoku":
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
+                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';
                         //rdie($w);
                         $query->andWhere($w);
+                        $query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
                         break;
                     case "oczekujace":
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
@@ -106,13 +107,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         break;
                     case "zamkniete":
                         
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZakmniete).'\')');
                         
-                        break;
-                    case "wtoku":
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
-                        //rdie($w);
-                        $query->andWhere($w);
                         break;
                     case "wszystkie":
                         //$w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';

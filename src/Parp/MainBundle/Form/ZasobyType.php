@@ -64,17 +64,6 @@ class ZasobyType extends AbstractType
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
-/*
-            ->add('wlascicielZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
-            ))
-            ->add('administratorZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
-            ))
-            ->add('administratorTechnicznyZasobu', 'text', array(
-                'attr' => array('class' => 'tagAjaxInputUsers'), 'required' => false
-            ))
-*/
             
             
             ->add('uzytkownicy', 'choice', array(
@@ -90,8 +79,8 @@ class ZasobyType extends AbstractType
             ))
             ->add('miejsceInstalacji')
             ->add('opisZasobu')
-            ->add('modulFunkcja', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
-            ->add('poziomDostepu', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInputNoAjax']])
+            ->add('modulFunkcja', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInput']])
+            ->add('poziomDostepu', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInput']])
             ->add('grupyAD', 'text', array(
                 'attr' => array('class' => 'tagAjaxInput'), 'required' => false
             ))

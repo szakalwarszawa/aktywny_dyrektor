@@ -18,31 +18,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ReorganizacjaParpController extends Controller
 {
     
-    protected function getGrupyUsera($user, $depshortname, $sekcja){
-        $pomijajSekcje = ["ND", "", "n/d", ""];
-        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW'
-            //, 'SGG-(skrót D/B)-Public-RO'
-        ];
-        if(!in_array($sekcja, $pomijajSekcje)){
-            $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
-        }
-        switch(strtolower($user['title'])){
-            case "dyrektor":
-            case "dyrektor (p.o.)":
-            case "zastępca dyrektora":
-            case "zastępca dyrektora (p.o.)":
-            case "prezes":
-            case "zastępca prezesa":
-            case "zastępca prezesa (p.o.)":
-                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
-                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                break;
-        }
-        for($i = 0; $i < count($grupy); $i++){
-            $grupy[$i] = str_replace("(skrót sekcji)", $sekcja, str_replace("(skrót D/B)", $depshortname, $grupy[$i]));
-        }
-        return $grupy;
-    }
+    
     
     
     /**
@@ -182,7 +158,7 @@ class ReorganizacjaParpController extends Controller
                     }
                     if($zmieniajGrupy){
                         
-                        $grupy = $this->getGrupyUsera($u, $newDepartamentSkrot, $import[0]->getSekcjaSkrot());
+                        $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $import[0]->getSekcjaSkrot());
                         foreach($grupy as $g){
                             $dn = $u['distinguishedname'];
                             $grupa = $ldapAdmin->getGrupa($g);
@@ -303,7 +279,7 @@ class ReorganizacjaParpController extends Controller
                     if(!$departament){
                         echo "<pre>"; print_r($aduser[0]); die("Nie mam departamentu dla osoby !!!");
                     }
-                    $grupy = $this->getGrupyUsera($aduser[0], $departament->getShortname(), $sekcjaName);
+                    $grupy = $this->get('ldap_service')->getGrupyUsera($aduser[0], $departament->getShortname(), $sekcjaName);
                     if(count($aduser) > 0)
                         unset($aduser[0]['thumbnailphoto']);
                     $noweDepartamenty[] = [
@@ -626,7 +602,7 @@ class ReorganizacjaParpController extends Controller
                 if(count($sekcja) > 0){
                     $section = $sekcja[0]->getSekcjaSkrot();
                 }
-                $gr = $this->getGrupyUsera($u, $this->getOUfromDN($u), $section);
+                $gr = $this->get('ldap_service')->getGrupyUsera($u, $this->get('ldap_service')->getOUfromDN($u), $section);
                 
                 $diff = array_diff($gr, $u['memberOf']);
                 
@@ -691,15 +667,15 @@ class ReorganizacjaParpController extends Controller
         $users = $this->get('ldap_service')->getAllFromAD(false, false);
         foreach($users as &$u){
             unset($u['thumbnailphoto']);
-            if($this->getOUfromDN($u) != "BZK" ){
+            if($this->get('ldap_service')->getOUfromDN($u) != "BZK" ){
                 $pominal = true;
                 $manager = "";
                 $title = "";
                 if($u['description'] != "" && $u['division'] != "" && !in_array($u['division'], $pomijac)){
-                    $departament = $em->getRepository('ParpMainBundle:Departament')->findBy(['shortname' => $this->getOUfromDN($u), 'nowaStruktura' => 1]);
+                    $departament = $em->getRepository('ParpMainBundle:Departament')->findBy(['shortname' => $this->get('ldap_service')->getOUfromDN($u), 'nowaStruktura' => 1]);
                     
                     if(count($departament) == 0){
-                        die("Nie mam departaMENTU ".$this->getOUfromDN($u)." ".$u['description']);
+                        die("Nie mam departaMENTU ".$this->get('ldap_service')->getOUfromDN($u)." ".$u['description']);
                     }
                                     
                     $section = $em->getRepository('ParpMainBundle:Section')->findBy(['departament' => $departament[0], 'shortname' => $u['division']]);
@@ -741,12 +717,6 @@ class ReorganizacjaParpController extends Controller
         print_r($zrobieni);
         print_r($pominieci);
         die();
-    }
-    protected function getOUfromDN($u){
-        $cz = explode(",", $u['distinguishedname']);
-        $ou = str_replace("OU=", "", $cz[1]);
-        return $ou;
-        
     }
     protected function getOUDNfromUserDN($u){
         $cz = explode(",", $u['distinguishedname']);

@@ -265,10 +265,12 @@
                                 <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
                                 <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
                                 <td>{{z.powodNadania}}</td>
-                                <td>{%if editor%}
+                                <td>
+                                {%if editor and not wniosek.wniosek.status.finished%}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
                                     <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
-                                    {%endif%}</td>
+                                {%endif%}
+                                </td>
                             </tr>
                         {% endfor %}
                     </tbody>
