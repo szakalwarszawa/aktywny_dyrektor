@@ -40,7 +40,8 @@ $(document).ready(function(){
     $('.tagAjaxInputNoAjax:not([disabled])').tagit({
         'allowSpaces' : true,
         'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
-        'singleFieldDelimiter': ";"
+        'singleFieldDelimiter': ";",
+        'allowDuplicates' : true
         //autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
     });
 });
