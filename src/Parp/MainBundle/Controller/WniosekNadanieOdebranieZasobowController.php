@@ -914,7 +914,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     if($z->getGrupyAd()){
                         $grupy = explode(";", $z->getGrupyAd());
                         
-                        $poziomy = str_replace(", ", ",", $z->getPoziomDostepu());
+                        $poziomy = str_replace("; ", ";", $z->getPoziomDostepu());
                         
                         $dostepnePoziomy = explode(",", $poziomy);
                         if(!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)){

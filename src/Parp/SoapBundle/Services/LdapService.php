@@ -103,7 +103,13 @@ class LdapService
         }
         return $ret;
     }
-    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
+    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null){
+        if($this->_userCache === null){
+            $this->_userCache = $this->getAllFromAD($tezNieobecni, $justDump, $struktura);
+        }
+        return $this->_userCache;
+    }
+    public function getAllFromADInt($tezNieobecni = false, $justDump = false, $struktura = null)
     {
         $userdn = $this->useradn . $this->patch;
         
