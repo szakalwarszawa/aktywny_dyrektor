@@ -413,6 +413,10 @@ class ImportRekordDaneController extends Controller
             ";
             
         $sql = $this->getSqlDoImportu();
+        $miesiac = 1;
+        $rok = 2012;
+        $sql = 'SELECT PR.NAZWISKO, PR.IMIE, M.KOD SYMBOL,P.RODZ||S.OPIS RODZ,SUM(KWOTA) KWOTA, SUM(GODZ)/80 GODZ FROM P_LP_PLA P,P_LISTAPL L,P_SKLADNIK S, P_LP_PRAC M,P_PRA_GRGUS G, P_PRACOWNIK PR WHERE L.ID=P.ID AND P.RODZ=S.RODZ  AND P.SYMBOL=M.SYMBOL  AND L.ROK_O = '.$rok.' AND L.MIESIAC_O = '.$miesiac.'   AND P.SYMBOL=G.SYMBOL  AND M.ID=L.ID AND M.TYP=0 AND 1=1 AND 1=1  AND 1=1    AND PR.SYMBOL = P.SYMBOL GROUP BY M.KOD,P.RODZ,S.OPIS, PR.IMIE, PR.NAZWISKO UNION SELECT  PR.NAZWISKO, PR.IMIE, M.KOD SYMBOL,P.RODZ||S.OPIS RODZ,SUM(-KWOTA),SUM(M.ID-M.ID)/80 GODZ FROM P_LP_POT P,P_LISTAPL L,P_SKLADNIK S, P_LP_PRAC M,P_PRA_GRGUS G, P_PRACOWNIK PR WHERE L.ID=P.ID AND P.RODZ=S.RODZ  AND P.SYMBOL=M.SYMBOL  AND L.ROK_O = '.$rok.' AND L.MIESIAC_O = '.$miesiac.'  AND P.SYMBOL=G.SYMBOL  AND M.ID=L.ID AND M.TYP=0 AND 1=1 AND 1=1  AND 1=1    AND PR.SYMBOL = P.SYMBOL GROUP BY M.KOD,P.RODZ,S.OPIS, PR.IMIE, PR.NAZWISKO;';
+        //die($sql);
         //$rows = $this->executeQueryIbase($sql);
         $rows = $this->executeQuery($sql);
         
@@ -564,6 +568,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $passdb = 'masterkey';
         try {
           $conn = new \PDO($str_conn, $userdb, $passdb);//, $options);
+          $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
           //echo 'Connected to database';
           
           $statement = $conn->query($sql);
