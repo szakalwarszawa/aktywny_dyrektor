@@ -452,7 +452,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 if($u->getGrupaAd() != ""){
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
                                     $msg .= "I dodaje do grupy AD : ".$u->getGrupaAd();
-                                    $entry = new Entry();
+                                    $entry = new Entry($this->getUser()->getUsername());
                                     $entry->setFromWhen(new \Datetime());
                                     $entry->setSamaccountname($currentsam);
                                     $entry->setMemberOf("+".$u->getGrupaAd());
@@ -495,7 +495,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 if($u->getGrupaAd() != ""){
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
                                     $msg .= "I wyjmuje z grupy AD : ".$u->getGrupaAd();
-                                    $entry = new Entry();
+                                    $entry = new Entry($this->getUser()->getUsername());
                                     $entry->setFromWhen(new \Datetime());
                                     $entry->setSamaccountname($currentsam);
                                     $entry->setMemberOf("-".$u->getGrupaAd());

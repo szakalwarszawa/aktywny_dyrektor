@@ -309,7 +309,7 @@ class Zasoby
 
     /**
      *
-     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob")
+     * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob", cascade={"persist"})
      * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
      * @GRID\Column(field="wniosekUtworzenieZasobu.wniosek.numer", title="Numer")
      * @GRID\Column(field="wniosekUtworzenieZasobu.id", visible=false)

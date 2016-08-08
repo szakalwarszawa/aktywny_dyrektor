@@ -295,7 +295,7 @@ class ReorganizacjaParpController extends Controller
                             'grupy' => $grupy
                         ]
                     ];
-                    $e = new \Parp\MainBundle\Entity\Entry();
+                    $e = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
                     $e->setFromWhen(new \Datetime());
                     $e->setSamaccountname($login);
                     $e->setDistinguishedname($aduser[0]['distinguishedname']);

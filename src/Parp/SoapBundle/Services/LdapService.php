@@ -595,7 +595,7 @@ class LdapService
                 $date->setTimestamp($time);
                 $result[$i]["isDisabled"] =  $tmpResult["useraccountcontrol"][0] == "546" ? 1 : 0;
                 $result[$i]["samaccountname"] =  $tmpResult["samaccountname"][0];
-                $result[$i]["accountExpires"] = $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
+                $result[$i]["accountExpires"] = $date->format("Y") > 2000 && $date->format("Y") < 3000 ? $date->format("Y-m-d") : "";
                 if (isset($tmpResult["accountexpires"][0])) {
                     if ($tmpResult["accountexpires"][0] == 9223372036854775807 || $tmpResult["accountexpires"][0] == 0) {
                         $result[$i]["accountexpires"] = "";
@@ -603,6 +603,7 @@ class LdapService
                         $result[$i]["accountexpires"] = date("Y-m-d H:i:s", $tmpResult["accountexpires"][0] / 10000000 - 11644473600);
                     }
                 }
+                
                 $result[$i]["name"] = isset($tmpResult["name"][0]) ? $tmpResult["name"][0] : "";
                 $result[$i]["email"] = isset($tmpResult["mail"][0]) ? $tmpResult["mail"][0] : "";
                 $result[$i]["initials"] = isset($tmpResult["initials"][0]) ? $tmpResult["initials"][0] : "";
@@ -636,7 +637,9 @@ class LdapService
             }
         }
      
-        
+        usort($result, function ($item1, $item2) {
+            return $item1['name'] >= $item2['name'];
+        });
         return $result;
     }
     

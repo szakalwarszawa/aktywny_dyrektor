@@ -511,12 +511,19 @@ class WniosekUtworzenieZasobuController extends Controller
         //$entity = new WniosekUtworzenieZasobu();
         $editForm = $this->createEditForm($entity, $entity->getTyp());
         
-        
+        var_dump($editForm);
         $editForm->handleRequest($request);
+        var_dump($editForm);
+        die();
         if ($editForm->isValid()) {
+            
+            
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
+        }else{
+            
+            //die('a');
         }
         
         $access = $this->checkAccess($entity);

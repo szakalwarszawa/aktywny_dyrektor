@@ -244,6 +244,15 @@ class Entry
     */
     private $createdAt;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="createdBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $createdBy;
+    
     /**
      * Get id
      *
@@ -461,7 +470,7 @@ class Entry
         return $this->fromWhen;
     }
 
-    public function __construct2()
+    public function __construct()
     {
         $this->isImplemented = false;
     }
@@ -779,5 +788,29 @@ class Entry
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Set daneRekord
+     *
+     * @param \Parp\MainBundle\Entity\DaneRekord $daneRekord
+     *
+     * @return Entry
+     */
+    public function setDaneRekord(\Parp\MainBundle\Entity\DaneRekord $daneRekord = null)
+    {
+        $this->daneRekord = $daneRekord;
+
+        return $this;
+    }
+
+    /**
+     * Get daneRekord
+     *
+     * @return \Parp\MainBundle\Entity\DaneRekord
+     */
+    public function getDaneRekord()
+    {
+        return $this->daneRekord;
     }
 }

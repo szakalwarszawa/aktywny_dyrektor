@@ -316,6 +316,10 @@ class DefaultController extends Controller
      */
     function editAction($samaccountname, Request $request)
     {
+        
+        $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
+        $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
+        $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
@@ -367,6 +371,11 @@ class DefaultController extends Controller
 
         if ($form->isValid()) {
             $ndata = $form->getData();
+            if($kadry1 || $kadry2){
+                return $this->parseUserKadry($samaccountname, $ndata, $previousData);
+            }elseif(!$admin){
+                die("Nie masz uprawnien by edytowac uzytkownikow!!!");
+            }
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
             //echo ".".$oldSection.".";
@@ -430,7 +439,7 @@ class DefaultController extends Controller
                     
                     $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
                     $this->get('session')->getFlashBag()->set('warning', "Zmiany do AD zostały wprowadzone");
-                    $entry = new Entry();
+                    $entry = new Entry($this->getUser()->getUsername());
                     $entry->setSamaccountname($samaccountname);
                     $entry->setDistinguishedName($previousData["distinguishedname"]);
                     if(($roznicauprawnien)){
@@ -511,7 +520,10 @@ class DefaultController extends Controller
                 $userGroups[] = $ug['dn'];
             }
         }
-        return array(
+        
+        $tmpl = $kadry1 || $kadry2 ?  "ParpMainBundle:Default:editKadry.html.twig" : 'ParpMainBundle:Default:edit.html.twig';
+        //die($tmpl);
+        return $this->render($tmpl, array(
             'userGroups' => $userGroups,
             'user' => $ADUser[0],
             'form' => $form->createView(),
@@ -523,7 +535,57 @@ class DefaultController extends Controller
             'historyEntries' => $historyEntries,
             'dane_rekord' => $dane_rekord
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
-        );
+        ));
+    }
+    protected function parseUserKadry($samaccountname, $ndata, $odata){
+        
+        $diff = $this->array_diff($ndata, $odata);
+        unset($diff['samaccountname']);
+        unset($diff['initials']);
+        unset($diff['title']);
+        unset($diff['department']);
+        unset($diff['cn']);
+        unset($diff['roles']);
+        unset($diff['samaccountname']);
+        unset($diff['initialrights']);
+        unset($diff['fromWhen']);
+        
+        
+        //var_dump($ndata, $odata, $diff); die();
+        if(count($diff) > 0){
+            $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+            //zmiana sekcji
+            if(isset($diff['info'])){
+                $entry->setInfo($ndata['info']);
+            }
+            //zmiana przelozonego
+            if(isset($diff['manager'])){
+                $entry->setManager($ndata['manager']);
+                
+            }
+            //data wygasniecia
+            if(isset($diff['accountExpires'])){
+                $entry->setAccountExpires(new \Datetime($ndata['accountExpires']));
+                
+            }
+            //konto wylaczone
+            if(isset($diff['isDisabled'])){
+                $entry->setIsDisabled($ndata['isDisabled']);
+                $entry->setDisableDescription($ndata['disableDescription']);                
+            }
+            $this->getDoctrine()->getManager()->persist($entry);
+            $this->getDoctrine()->getManager()->flush();
+            //powod wylaczenia
+            $msg = "Zmiany wprowadzono.";
+        }else{
+            
+            $msg = "Nie było zmian do wprowadzenia.";
+        }
+        
+        $this->get('session')->getFlashBag()->set('warning', $msg);
+        
+        return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
+        
     }
     protected function createUserEditForm($defaultData){
         // Pobieramy listę stanowisk
@@ -534,7 +596,7 @@ class DefaultController extends Controller
         }
 
         // Pobieramy listę Biur i Departamentów
-        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array('nowaStruktura' => 0), array('name' => 'asc'));
+        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
         $departments = array();
         foreach ($departmentsEntity as $tmp) {
             $departments[$tmp->getName()] = $tmp->getName();
@@ -564,6 +626,7 @@ class DefaultController extends Controller
         $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
         $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
+        
         
         $builder = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
@@ -639,7 +702,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin)
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
                     ),
                     'choices' => $sections,
                     //'data' => @$defaultData['info'],
@@ -723,14 +786,15 @@ class DefaultController extends Controller
                 
                 ->add('roles', 'choice', array(
                     'required' => false,
-                    'read_only' => false,
+                    'read_only' => (!$admin),
                     'label' => 'Role w AkD',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'readonly' => (!$admin)
+                        'readonly' => (!$admin),
+                        'disabled' => (!$admin)
                     ),
                     'choices' => $roles,
                     //'data' => (@$defaultData["initialrights"]),
@@ -768,7 +832,7 @@ class DefaultController extends Controller
                     )
                 ));
                                
-                if($admin){
+                if(!(!$admin && !$kadry1 && !$kadry2)){
                     $builder->add('zapisz', 'submit', array(
                         'attr' => array(
                             'class' => 'btn btn-success col-sm-12',
@@ -796,7 +860,7 @@ class DefaultController extends Controller
 
         
 
-        $entry = new Entry();
+        $entry = new Entry($this->getUser()->getUsername());
         $form = $this->createUserEditForm($entry);
         
         $form->handleRequest($request);
@@ -1066,7 +1130,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/suggestinitials", name="suggest_initials")
+     * @Route("/suggestinitials", name="suggest_initials", options={"expose"=true})
      * 
      */
     public function ajaxSuggestInitials(Request $request)
@@ -1163,7 +1227,7 @@ class DefaultController extends Controller
     }
 
     /**
-     * @Route("/findmanager", name="find_manager")
+     * @Route("/findmanager", name="find_manager", options={"expose"=true})
      * 
      */
     public function ajaxFindManager(Request $request)

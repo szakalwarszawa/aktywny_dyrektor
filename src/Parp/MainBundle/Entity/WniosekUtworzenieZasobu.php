@@ -51,7 +51,7 @@ class WniosekUtworzenieZasobu
 
     /**
      *
-     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobu")
+     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobu", cascade={"persist"})
      * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
      * @GRID\Column(field="zasob.nazwa", title="Zasób")
      */

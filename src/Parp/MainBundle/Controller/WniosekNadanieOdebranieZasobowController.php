@@ -936,7 +936,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     ];
                                     //print_r($aduser); die();
                                 }
-                                $entry = new \Parp\MainBundle\Entity\Entry();
+                                $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
                                 $entry->setWniosek($wniosek->getWniosek());
                                 $entry->setFromWhen(new \Datetime());
                                 $entry->setSamaccountname($aduser[0]["samaccountname"]);

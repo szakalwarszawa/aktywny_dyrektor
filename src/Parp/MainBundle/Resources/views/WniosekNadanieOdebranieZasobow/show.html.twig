@@ -142,7 +142,7 @@
                         <tbody>
                              <tr>
                                 <th>Id</th>
-                                <td>{{ entity.id }}</td>
+                                <td>{{ entity.id }} {{entity.wniosek is defined ? "("~entity.wniosek.id~")" : ""}}</td>
                             </tr>
                             <tr>
                                 <th>Numer</th>
@@ -266,7 +266,7 @@
                                 <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
                                 <td>{{z.powodNadania}}</td>
                                 <td>
-                                {%if editor and not wniosek.wniosek.status.finished%}
+                                {%if editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
                                     <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
                                 {%endif%}

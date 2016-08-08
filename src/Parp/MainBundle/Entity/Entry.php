@@ -244,6 +244,15 @@ class Entry
     */
     private $createdAt;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="createdBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $createdBy;
+    
     /**
      * Get id
      *
@@ -461,8 +470,9 @@ class Entry
         return $this->fromWhen;
     }
 
-    public function __construct()
+    public function __construct($samaccountname = "undefined")
     {
+        $this->createdBy = $samaccountname;
         $this->isImplemented = false;
     }
 
@@ -803,5 +813,29 @@ class Entry
     public function getDaneRekord()
     {
         return $this->daneRekord;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param string $createdBy
+     *
+     * @return Entry
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return string
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
     }
 }

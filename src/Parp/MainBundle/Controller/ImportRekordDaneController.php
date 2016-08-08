@@ -273,7 +273,7 @@ class ImportRekordDaneController extends Controller
                     }
                     if(count($changeSet) > 0){
                         //echo "<pre>"; print_r($changeSet); //die();
-                        $entry = new \Parp\MainBundle\Entity\Entry();
+                        $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
                         $em->persist($entry);
                         $entry->setDaneRekord($dr);
                         $dr->addEntry($entry);
