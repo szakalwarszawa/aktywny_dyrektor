@@ -129,6 +129,16 @@
                             {% endif %}
                             
                             
+                            {% if "PARP_BZK_RAPORTY" in app.user.roles %}
+                            <li class="dropdown">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Raporty <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
+                                </ul>
+                            </li>
+                            {% endif %}
+                            
+                            
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{app.user.getRolesHtml}}"
