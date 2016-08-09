@@ -377,45 +377,9 @@ class ImportRekordDaneController extends Controller
     {
         $sciecha = "";
         
-            $sql = "SELECT
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.KOD  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."') AND mpr.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$this->dataGraniczna."') AND stjoin.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            join P_STAWKA stawka on stawka.SYMBOL = p.SYMBOL
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.KOD ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            stawka.STAWKA,
-            p.NAZWISKO, p.IMIE
-            ";
-            
         $sql = $this->getSqlDoImportu();
         $miesiac = 1;
         $rok = 2012;
-        $sql = 'SELECT PR.NAZWISKO, PR.IMIE, M.KOD SYMBOL,P.RODZ||S.OPIS RODZ,SUM(KWOTA) KWOTA, SUM(GODZ)/80 GODZ FROM P_LP_PLA P,P_LISTAPL L,P_SKLADNIK S, P_LP_PRAC M,P_PRA_GRGUS G, P_PRACOWNIK PR WHERE L.ID=P.ID AND P.RODZ=S.RODZ  AND P.SYMBOL=M.SYMBOL  AND L.ROK_O = '.$rok.' AND L.MIESIAC_O = '.$miesiac.'   AND P.SYMBOL=G.SYMBOL  AND M.ID=L.ID AND M.TYP=0 AND 1=1 AND 1=1  AND 1=1    AND PR.SYMBOL = P.SYMBOL GROUP BY M.KOD,P.RODZ,S.OPIS, PR.IMIE, PR.NAZWISKO UNION SELECT  PR.NAZWISKO, PR.IMIE, M.KOD SYMBOL,P.RODZ||S.OPIS RODZ,SUM(-KWOTA),SUM(M.ID-M.ID)/80 GODZ FROM P_LP_POT P,P_LISTAPL L,P_SKLADNIK S, P_LP_PRAC M,P_PRA_GRGUS G, P_PRACOWNIK PR WHERE L.ID=P.ID AND P.RODZ=S.RODZ  AND P.SYMBOL=M.SYMBOL  AND L.ROK_O = '.$rok.' AND L.MIESIAC_O = '.$miesiac.'  AND P.SYMBOL=G.SYMBOL  AND M.ID=L.ID AND M.TYP=0 AND 1=1 AND 1=1  AND 1=1    AND PR.SYMBOL = P.SYMBOL GROUP BY M.KOD,P.RODZ,S.OPIS, PR.IMIE, PR.NAZWISKO;';
         //die($sql);
         //$rows = $this->executeQueryIbase($sql);
         $rows = $this->executeQuery($sql);

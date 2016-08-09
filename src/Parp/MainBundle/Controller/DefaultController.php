@@ -553,7 +553,12 @@ class DefaultController extends Controller
         
         //var_dump($ndata, $odata, $diff); die();
         if(count($diff) > 0){
+            $aduser = $ldap->getUserFromAD($samaccountname);
             $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+            $entry->setFromWhen(new \Datetime());
+            $entry->setSamaccountname($samaccountname);
+            //$entry->setSamaccountname($samaccountname);
+            
             //zmiana sekcji
             if(isset($diff['info'])){
                 $entry->setInfo($ndata['info']);
