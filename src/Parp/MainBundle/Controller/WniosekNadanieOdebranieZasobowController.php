@@ -93,13 +93,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 if($ktore != "wszystkie"){
                     $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 }
-                $statusyZakmniete = ['00_TWORZONY', '08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '10_PODZIELONY'];
+                //'00_TWORZONY', '10_PODZIELONY'
+                $statusyZakmniete = ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
                 switch($ktore){
                     case "wtoku":
                         $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';
                         //rdie($w);
                         $query->andWhere($w);
-                        $query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        $query->andWhere($tableAlias.'.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\'))');
                         break;
                     case "oczekujace":
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
