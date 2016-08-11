@@ -116,6 +116,18 @@ poziomDostepu = "Odbieranie + wysyłanie jako grupa"
 	<array/>
 	<key>queryHistory</key>
 	<array>
+		<string>update  userzasoby set
+poziomDostepu = "Odbieranie wiadomości"
+ where poziomDostepu = "Odbieranie wiadomosci";
+update  userzasoby set
+poziomDostepu = "Odbieranie + wysyłanie w imieniu grupy"
+ where poziomDostepu = "Odbieranie + wysylanie w imieniu grupy";
+update  userzasoby set
+poziomDostepu = "Odbieranie + wysyłanie jako grupa"
+ where poziomDostepu = "Odbieranie + wysylanie jako grupa"</string>
+		<string>update  userzasoby
+poziomDostepu = "Odbieranie wiadomości"
+ where poziomDostepu = "Odbieranie wiadomosci"</string>
 		<string>select * from userzasoby where poziomDostepu = "Odbieranie wiadomosci"</string>
 		<string>select * from userzasoby where poziomDostepu = "Odbieranie wiadomości"</string>
 		<string>update zasoby set
@@ -185,8 +197,6 @@ set status_id = whs.status_id</string>
 		<string>select wniosek_id, max(id) from wniosek_historia_statusow where deletedAt is null group by wniosek_id</string>
 		<string>select wniosek_id, max(id) from wniosek_historia_statusow group by wniosek_id</string>
 		<string>select wniosek_id, max(createdAt), id from wniosek_historia_statusow group by wniosek_id</string>
-		<string>select wniosek_id, max(createdAt) from wniosek_historia_statusow group by wniosek_id</string>
-		<string>select wniosek_id, max(createdAt), status_id from wniosek_historia_statusow group by status_id, wniosek_id</string>
 	</array>
 	<key>rdbms_type</key>
 	<string>mysql</string>

@@ -377,42 +377,10 @@ class ImportRekordDaneController extends Controller
     {
         $sciecha = "";
         
-            $sql = "SELECT
-            p.SYMBOL,
-            COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
-            departament.KOD  departament,
-            stanowisko.OPIS stanowisko,
-            rodzaj.NAZWA umowa,
-            MIN(umowa.DATA_OD) as UMOWAOD,
-            MAX(umowa.DATA_DO) as UMOWADO
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."') AND mpr.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$this->dataGraniczna."') AND stjoin.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
-            join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            join P_STAWKA stawka on stawka.SYMBOL = p.SYMBOL
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
-            departament.KOD ,
-            stanowisko.OPIS,
-            rodzaj.NAZWA,
-            umowa.DATA_OD,
-            umowa.DATA_DO
-            
-            ORDER BY 
-            stawka.STAWKA,
-            p.NAZWISKO, p.IMIE
-            ";
-            
         $sql = $this->getSqlDoImportu();
+        $miesiac = 1;
+        $rok = 2012;
+        //die($sql);
         //$rows = $this->executeQueryIbase($sql);
         $rows = $this->executeQuery($sql);
         
@@ -564,6 +532,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $passdb = 'masterkey';
         try {
           $conn = new \PDO($str_conn, $userdb, $passdb);//, $options);
+          $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
           //echo 'Connected to database';
           
           $statement = $conn->query($sql);

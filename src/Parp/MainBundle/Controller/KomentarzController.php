@@ -192,12 +192,12 @@ class KomentarzController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-
+        $pt = strtolower($entity->getObiekt())."_edit";
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
-            'returnUrl' => $request->headers->get('referer')
+            'returnUrl' => $this->generateUrl($pt, ['id' => $entity->getObiektId()]) //$request->headers->get('referer')
         );
     }
 
@@ -235,6 +235,11 @@ class KomentarzController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
         }
+        if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
+            return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
+        }
 
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
@@ -266,11 +271,16 @@ class KomentarzController extends Controller
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
-
+            
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');
             }
-
+            
+            if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
+                
+                $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
+                return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
+            }
             $em->remove($entity);
             $em->flush();
         }

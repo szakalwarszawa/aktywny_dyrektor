@@ -311,7 +311,8 @@ class DefaultController extends Controller
         return $ret;
     }
     /**
-     * @Route("/user/{samaccountname}/edit", name="userEdit");
+     * @Route("/user/{samaccountname}/edit", name="userEdit")
+     * @Route("/user/{id}/edit", name="user_edit")
      * @Template();
      */
     function editAction($samaccountname, Request $request)
@@ -353,7 +354,7 @@ class DefaultController extends Controller
             $zasoby[$i]['loginDoZasobu'] = $uz->getLoginDoZasobu();
             $zasoby[$i]['poziomDostepu'] = $uz->getPoziomDostepu();
             $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd()->format("Y-m-d");
-            $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo()->format("Y-m-d");
+            $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "";
             $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
             $zasoby[$i]['powodOdebrania'] = $uz->getPowodOdebrania();
             $zasoby[$i]['powodNadania'] = $uz->getPowodNadania();
@@ -539,6 +540,7 @@ class DefaultController extends Controller
     }
     protected function parseUserKadry($samaccountname, $ndata, $odata){
         
+        $ldap = $this->get('ldap_service');
         $diff = $this->array_diff($ndata, $odata);
         unset($diff['samaccountname']);
         unset($diff['initials']);
@@ -553,7 +555,12 @@ class DefaultController extends Controller
         
         //var_dump($ndata, $odata, $diff); die();
         if(count($diff) > 0){
+            $aduser = $ldap->getUserFromAD($samaccountname);
             $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+            $entry->setFromWhen(new \Datetime());
+            $entry->setSamaccountname($samaccountname);
+            $entry->setDistinguishedname($aduser[0]['distinguishedname']);
+            
             //zmiana sekcji
             if(isset($diff['info'])){
                 $entry->setInfo($ndata['info']);
@@ -605,7 +612,8 @@ class DefaultController extends Controller
         $sectionsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
-            $sections[$tmp->getDepartament()->getShortname()][$tmp->getName()] = $tmp->getName();
+            $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : "bez departamentu";
+            $sections[$dep][$tmp->getName()] = $tmp->getName();
         }
 
         // Pobieramy listę Uprawnien
@@ -731,7 +739,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin && !$kadry1 && !$kadry2),
+                        'readonly' => (!$admin && !$kadry1 && !$kadry2) || 1,
                         
                         //'disabled' => (!$admin && !$kadry1 && !$kadry2)
 

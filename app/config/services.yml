@@ -94,3 +94,7 @@ services:
         class : Parp\MainBundle\Services\WniosekNumerService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
+    excel_service:
+        class: Parp\MainBundle\Services\ExcelService
+        arguments: ["@service_container" ]
+        tags: ~

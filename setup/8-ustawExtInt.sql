@@ -14,3 +14,4 @@ poziomDostepu = "Odbieranie + wysyłanie w imieniu grupy"
  update  userzasoby set
 poziomDostepu = "Odbieranie + wysyłanie jako grupa"
  where poziomDostepu = "Odbieranie + wysylanie jako grupa";
+ 

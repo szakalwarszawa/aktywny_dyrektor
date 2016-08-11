@@ -25,7 +25,7 @@
                     {% set i = i + 1%}
                     {% if z.powodNadania not in przetworzonePowody %}
                         {% set przetworzonePowody = przetworzonePowody|merge([z.powodNadania]) %}
-                        <span class="btn">{{z.powodNadania}}</span>
+                        <span class="btn celWniosku">{{z.powodNadania}}</span>
                         
 {#                         {% if i != entity.userZasoby|length %},{%endif%} #}
                     {% endif %}

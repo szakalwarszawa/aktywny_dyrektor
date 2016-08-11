@@ -784,4 +784,79 @@ class ReorganizacjaParpController extends Controller
         }
         return $ret;
     }
+    
+    
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/audytDepartamentowSekcjiStanowisko", name="audytDepartamentowSekcjiStanowisko", defaults={})
+     * @Method("GET")
+     */
+    public function audytDepartamentowSekcjiStanowiskoAction()
+    {
+        $pomijaj = ["ndes-user"];
+        $em = $this->getDoctrine()->getManager();
+        
+        
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD();
+        
+        $ret = [];
+        
+        foreach($users as $u){
+            if(!in_array($u['samaccountname'], $pomijaj)){
+                $rname = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
+                //$rname[0] = mb_strtoupper($rname[0]);
+                //$rname[1] = mb_strtoupper($rname[1]);
+                $dane = [
+                    'name' => $u['name'],
+                    'login' => $u['samaccountname'],
+                    'ADdepartament' => $u['department'],
+                    'ADdepartamentSkrot' => $u['description'],
+                    'ADstanowisko' => $u['title'],
+                    'ADsekcja' => $u['info'],
+                    'ADsekcjaSkrot' => $u['division'],
+                    'REKORDdepartament' => '----brak danych-----',
+                    'REKORDstanowisko' => '----brak danych-----',
+                    'EXCELsekcja' => '----brak danych-----',
+                    'EXCELsekcjaSkrot' => '----brak danych-----',
+                    'jestWrekordzie' => 'NIE',
+                    'jestWimporcieSekcji' => 'NIE',
+                    'imieDoSzukaniaWrekord' => $rname[1],
+                    'nazwiskoDoSzukaniaWrekord' => $rname[0],   
+                ];
+                //var_dump($u, $rname);
+                $daneRekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy([
+                    'imie' => trim($rname[1]),
+                    'nazwisko' => trim($rname[0]),
+                ]);
+                if($daneRekord){
+                    $dane['jestWrekordzie'] = 'TAK';
+                    $dane['REKORDstanowisko'] = $daneRekord->getStanowisko();
+                    
+                    $departament = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($daneRekord->getDepartament());
+                    if($departament){
+                        $dane['REKORDdepartament'] = $departament->getSkroconaNazwaRekord();    
+                    }else{
+                        //nie mam departmentu
+                        $dane['REKORDdepartament'] = "!!!nie ma departamentu w bazie!!!";   
+                    }
+                }
+                $daneImportSekcje = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy([
+                    'pracownik' => $rname[0]." ".$rname[1],
+                ]);
+                if($daneImportSekcje){
+                    $dane['jestWimporcieSekcji'] = 'TAK';
+                    $dane['EXCELsekcja'] = $daneImportSekcje->getSekcja();
+                    $dane['EXCELsekcjaSkrot'] = $daneImportSekcje->getSekcjaSkrot();
+                }
+                $ret[] = $dane;
+            }
+        }
+        
+        //return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+        return $this->get('excel_service')->generateExcel($ret);
+    }
+    
 }

@@ -1275,4 +1275,15 @@ class DevController extends Controller
         $ADManager = $ldap->getUserFromAD(null, $mgr);
         echo "<pre>"; print_r($ADManager); die();
     }
+    /**
+     * @Route("/testUprawnien", name="testUprawnien")
+     * @Template()
+     */
+    public function testUprawnienAction()
+    {
+        $ldap = $this->get('ldap_admin_service');
+        
+        die('a');    
+        
+    }
 }    

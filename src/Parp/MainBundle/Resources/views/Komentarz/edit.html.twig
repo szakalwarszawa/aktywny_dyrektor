@@ -1,6 +1,14 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
+    
+    {% for flashMessage in app.session.flashbag.get('warning') %}
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>

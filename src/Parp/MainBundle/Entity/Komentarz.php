@@ -7,7 +7,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * UserZasoby
  *
- * @ORM\Table(name="komentarz")
+ * @ORM\Table(name="komentarz", indexes={@ORM\Index(name="obiekt_id_idx", columns={"obiektId"})})
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\KomentarzRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,createdAt,tytul,opis")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -76,7 +76,7 @@ class Komentarz
     /**
      * @var string
      *
-     * @ORM\Column(name="obiektId", type="integer")
+     * @ORM\Column(name="obiektId", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $obiektId;
@@ -237,10 +237,11 @@ class Komentarz
         return $this->obiekt;
     }
 
+
     /**
      * Set obiektId
      *
-     * @param integer $obiektId
+     * @param string $obiektId
      *
      * @return Komentarz
      */
@@ -254,7 +255,7 @@ class Komentarz
     /**
      * Get obiektId
      *
-     * @return integer
+     * @return string
      */
     public function getObiektId()
     {
