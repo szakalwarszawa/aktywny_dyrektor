@@ -9,6 +9,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
+use Parp\MainBundle\Exception\SecurityTestException;
 //use Memcached;
 use Memcached;
 
@@ -35,7 +36,9 @@ class LdapAdminService
     {
         //var_dump($securityContext->isGranted('PARP_ADMIN')); //->getToken()->getRoles()); die();
         if(!in_array("PARP_ADMIN", $securityContext->getToken()->getUser()->getRoles())){
-            throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");    
+            //throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");    
+            throw new SecurityTestException("Tylko administrator AkD może aktualizować zmiany w AD");
+            
         }
         error_reporting(0);
         error_reporting(E_ALL ^ E_NOTICE);
