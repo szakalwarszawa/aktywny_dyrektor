@@ -1,0 +1,214 @@
+{% extends '::base.html.twig' %}
+
+{% block body %} 
+    <div class="col-sm-12">
+<<<<<<< HEAD
+        <h3>Imie  i nazwisko</h3>
+        <div class="form-horizontal">
+            <div class="form-group">
+                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                    Nazwa konta
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" readonly value="{{user.samaccountname}}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                    Imię i nazwisko
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" readonly value="{{user.name}}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                    Inicjały
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" readonly value="{{user.initials}}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                    Biuro / Departament
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" readonly value="{{user.department}}"/>
+                </div>
+            </div>
+            <div class="form-group">
+                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                    Stanowisko
+                </label>
+                <div class="col-sm-8">
+                    <input type="text" class="form-control" readonly value="{{user.title}}"/>
+                </div>
+            </div>
+            {{  form_start(form) }}
+                <div class="form-group">
+                    {{ form_label(form.info) }}
+                    <div class="col-sm-8">
+                        <div class="input-group">
+                            <div id="formRowInfo">
+                            {{ form_widget(form.info) }}
+                            {{user.info}} {{user.division}}
+                            </div>
+                            {{ form_widget(form.infoNew)}}
+                            <span class="input-group-addon' hidden">
+                                <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
+                                Nowa Sekcja
+                                </button>
+                            </span>
+=======
+        <ul class="nav nav-tabs">
+            <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
+            <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
+        </ul>
+        
+        <div class="tab-content">
+            <div id="general" class="tab-pane fade in active">
+                <h3>Imie  i nazwisko: {{user.name}}</h3>
+                <div class="form-horizontal">
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                            Nazwa konta
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="{{user.samaccountname}}"/>
+>>>>>>> 125c6a04876a6234b512d4a0ca282aa674190c57
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                            Imię i nazwisko
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="{{user.name}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                            Inicjały
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="{{user.initials}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                            Biuro / Departament
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="{{user.department}}"/>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
+                            Stanowisko
+                        </label>
+                        <div class="col-sm-8">
+                            <input type="text" class="form-control" readonly value="{{user.title}}"/>
+                        </div>
+                    </div>
+                    {{  form_start(form) }}
+                        <div class="form-group">
+                            {{ form_label(form.info) }}
+                            <div class="col-sm-8">
+                                    <div id="formRowInfo">
+                                    {{ form_widget(form.info) }}
+                                    <div class="well">Sekcja w AD: {{user.info}}</div>
+                                    </div>
+                                    {{ form_widget(form.infoNew)}}
+                                    <span class="input-group-addon' hidden">
+                                        <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
+                                        Nowa Sekcja
+                                        </button>
+                                    </span>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.manager) }}
+                            <div class="col-sm-4">
+                                {{ form_widget(form.manager) }}
+                            </div>
+                            <div class="col-sm-4 btn-group">
+                                <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
+                                <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
+                            </div>
+                        </div>
+                                    
+                        <div class="form-group">
+                            {{ form_label(form.accountExpires) }}
+                            <div class='col-sm-8'>
+                                <div class="input-group datepicker"  id="datepicker1">
+                                    {{ form_widget(form.accountExpires) }}
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            {{ form_label(form.isDisabled) }}
+                            <div class='col-sm-8'>
+                                <div class="input-group">
+                                    {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}'}}) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden'}}" id="disableDescriptionDiv" >
+                            {{ form_label(form.disableDescription) }}
+                            <div class='col-sm-8'>
+                                <div class="input-group">
+                                    {{ form_widget(form.disableDescription) }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group ">
+                            <button type="submit" id="form_zapisz" name="form[zapisz]" class="btn btn-success col-sm-12 btn">Zapisz</button>
+                        </div>
+                        {{ form_widget(form._token) }}
+                    </form>
+        {#             {{ form_end(form) }} #}
+                </div>
+            </div>
+            <div id="komentarze" class="tab-pane fade">
+                {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'User', obiektId: user.samaccountname})) }}
+            </div>
+        </div>
+    </div>
+    <div id="myModal" class="modal fade">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                    <h4 class="modal-title">Wybierz przełożonego</h4>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label for="imienazwisko">Wpisz imie i nazwisko</label>
+                            <input type="text" class="form-control" id="imienazwisko" placeholder="imie i nazwisko">
+                        </div>
+                        <div class="form-group" id="lista" name="lista">
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                    <button type="button" class="btn btn-primary" id="zapisz" name="zapisz">Zapisz</button>
+                </div>
+            </div>
+        </div>
+    </div>  
+    
+    <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
+    
+    <script>
+        console.log('{{user.description}}');
+        $('#form_info option').attr('disabled', true);
+        $('#form_info optgroup[label={{user.description}}] option').attr('disabled', false);
+    </script>
+    
+{%endblock%}
