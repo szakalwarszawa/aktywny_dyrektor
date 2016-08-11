@@ -2,65 +2,6 @@
 
 {% block body %} 
     <div class="col-sm-12">
-<<<<<<< HEAD
-        <h3>Imie  i nazwisko</h3>
-        <div class="form-horizontal">
-            <div class="form-group">
-                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
-                    Nazwa konta
-                </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" readonly value="{{user.samaccountname}}"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
-                    Imię i nazwisko
-                </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" readonly value="{{user.name}}"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
-                    Inicjały
-                </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" readonly value="{{user.initials}}"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
-                    Biuro / Departament
-                </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" readonly value="{{user.department}}"/>
-                </div>
-            </div>
-            <div class="form-group">
-                <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
-                    Stanowisko
-                </label>
-                <div class="col-sm-8">
-                    <input type="text" class="form-control" readonly value="{{user.title}}"/>
-                </div>
-            </div>
-            {{  form_start(form) }}
-                <div class="form-group">
-                    {{ form_label(form.info) }}
-                    <div class="col-sm-8">
-                        <div class="input-group">
-                            <div id="formRowInfo">
-                            {{ form_widget(form.info) }}
-                            {{user.info}} {{user.division}}
-                            </div>
-                            {{ form_widget(form.infoNew)}}
-                            <span class="input-group-addon' hidden">
-                                <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
-                                Nowa Sekcja
-                                </button>
-                            </span>
-=======
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
@@ -76,7 +17,6 @@
                         </label>
                         <div class="col-sm-8">
                             <input type="text" class="form-control" readonly value="{{user.samaccountname}}"/>
->>>>>>> 125c6a04876a6234b512d4a0ca282aa674190c57
                         </div>
                     </div>
                     <div class="form-group">

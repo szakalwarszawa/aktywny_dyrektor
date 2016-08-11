@@ -7,20 +7,20 @@
         <br>
         Status wniosku : {{wniosek.wniosek.status}}
         
-        {% if viewer %}
+        {% if viewer or 1 == 1%}
             <h3>Osoby które mogą obecnie edytować wniosek</h3>
             <ul>
-                {%if wniosek.lockedBy is null%}
-                    {% for e in wniosek.editors %}
+                {%if wniosek.wniosek.lockedBy is null%}
+                    {% for e in wniosek.wniosek.editors %}
                         <li>{{e.samaccountname}}</li>                    
                     {%endfor%}
                 {%else%}
-                    <li>{{wniosek.lockedBy}}</li>
+                    <li>{{wniosek.wniosek.lockedBy}}</li>
                 {%endif%}
             </ul>
             <h3>Osoby które mogą obecnie oglądać wniosek</h3>
             <ul>
-                {% for e in wniosek.viewers %}
+                {% for e in wniosek.wniosek.viewers %}
                     <li>{{e.samaccountname}}</li>                    
                 {%endfor%}
             

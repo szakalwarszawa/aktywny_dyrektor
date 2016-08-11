@@ -37,6 +37,7 @@ class LdapAdminService
         //var_dump($securityContext->isGranted('PARP_ADMIN')); //->getToken()->getRoles()); die();
         if(!in_array("PARP_ADMIN", $securityContext->getToken()->getUser()->getRoles())){
             //throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");    
+            //echo ""; var_dump(debug_backtrace());
             throw new SecurityTestException("Tylko administrator AkD może aktualizować zmiany w AD");
             
         }

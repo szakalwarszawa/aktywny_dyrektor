@@ -200,7 +200,7 @@ class UprawnieniaService
 
                 if ($upr->getCzyEdycja()) {
 
-                    $ldap = $this->container->get('ldap_admin_service');
+                    $ldap = $this->container->get('ldap_service');
                     $userAD = $ldap->getUserFromAD($person->getSamaccountname());
 
                     $shortname = $userAD[0]['division'];
@@ -306,7 +306,7 @@ class UprawnieniaService
                 $shortname = $section->getShortname();
             }// jezeli nie zmieniona sekcja pobierz z ldap-a
             else {
-                $ldap = $this->container->get('ldap_admin_service');
+                $ldap = $this->container->get('ldap_service');
                 $userAD = $ldap->getUserFromAD($person->getSamaccountname());
                 $shortname = $userAD[0]['division'];
             }
@@ -388,7 +388,7 @@ class UprawnieniaService
                 $opis = $uprawnienie->getOpis();
 
                 //Przydaøoby sie info o biurze 
-                $ldap = $this->container->get('ldap_admin_service');
+                $ldap = $this->container->get('ldap_service');
                 $userAD = $ldap->getUserFromAD($person->getSamaccountname());
                 $opis = str_replace('[sekcja]', $userAD[0]['division'], $opis);
                 $opis = str_replace('[D/B]', $userAD[0]['description'], $opis);
@@ -406,7 +406,7 @@ class UprawnieniaService
     public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil', $wniosek = null)
     {
         //$zadanieDla = "Lipiński Marcin";
-        $ldap = $this->container->get('ldap_admin_service');
+        $ldap = $this->container->get('ldap_service');
         $dlaKogo = explode(",", $zadanieDla);
         $mails = array();
         foreach($dlaKogo as $user){
