@@ -377,6 +377,7 @@ class ImportRekordDaneController extends Controller
     {
         $sciecha = "";
         
+        $this->dataGraniczna = date("Y-m-d");
         $sql = $this->getSqlDoImportu();
         $miesiac = 1;
         $rok = 2012;
