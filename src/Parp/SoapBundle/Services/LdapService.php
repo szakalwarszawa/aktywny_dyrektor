@@ -742,7 +742,12 @@ class LdapService
         $users = $this->getAllFromAD();
         $ret = [];
         foreach($users as $u){
-            if(mb_strtolower(trim($u['title'])) == "dyrektor" || mb_strtolower(trim($u['title'])) == "p.o. dyrektora"){
+            if(
+                mb_strtolower(trim($u['title'])) == "dyrektor" || 
+                mb_strtolower(trim($u['title'])) == "p.o. dyrektora" || 
+                mb_strtolower(trim($u['title'])) == "po dyrektora"
+                
+            ){
                 unset($u['thumbnailphoto']);
                 unset($u['memberOf']);
                 unset($u['roles']);

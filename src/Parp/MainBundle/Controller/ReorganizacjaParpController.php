@@ -1061,7 +1061,7 @@ class ReorganizacjaParpController extends Controller
      * @Route("/audytDepartamentowSekcjiStanowisko", name="audytDepartamentowSekcjiStanowisko", defaults={})
      * @Method("GET")
      */
-        public function audytDepartamentowSekcjiStanowiskoAction()
+    public function audytDepartamentowSekcjiStanowiskoAction()
     {
         $pomijaj = ["ndes-user"];
         $em = $this->getDoctrine()->getManager();
@@ -1127,4 +1127,30 @@ class ReorganizacjaParpController extends Controller
         return $this->get('excel_service')->generateExcel($ret);
     }
     
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/bierzSlownikSekcji", name="bierzSlownikSekcji", defaults={})
+     * @Method("GET")
+     */
+    public function bierzSlownikSekcjiAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD();
+        $data = [];
+        $sekcje = [];
+        
+        foreach($users as $u){
+            if(!isset($sekcje[$u['info']])){
+                
+                $sekcje[$u['info']] = [
+                    'info' => $u['info'],
+                    'division' => $u['division']    
+                ];
+            }
+            
+        }
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
+    }
 }
