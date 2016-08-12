@@ -12,6 +12,16 @@ use Doctrine\ORM\EntityRepository;
  */
 class EntryRepository extends EntityRepository
 {
+    public function findNowaSekcjaTYLKOuzywaneWreorganizacji2016($sam){
+        $query = $this->createQueryBuilder('e')
+                ->where('e.isImplemented = false')
+                ->andWhere('e.samaccountname like :sam')
+                ->andWhere("(e.info not like '' and e.info is not null)")
+                ->setParameters(array('sam' => $sam))
+                ->getQuery();
+        $ret = $query->getResult();
+        return $ret;
+    }
 
     public function findByIsImplementedAndFromWhen($ids = "")
     {

@@ -19,15 +19,197 @@ class ReorganizacjaParpController extends Controller
 {
     
     
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/nadajUprawnieniaPoczatkoweIzmienOU2naPodstawieRekordIAkD", name="nadajUprawnieniaPoczatkoweIzmienOU2naPodstawieRekordIAkD", defaults={})
+     * @Method("GET")
+     */
+    public function nadajUprawnieniaPoczatkoweIzmienOU2naPodstawieRekordIAkDAction()
+    { 
+        $zmieniajOU = false;
+        $zmieniajGrupy = false;
+        $zmieniajSekcjewIDescriptionAD = false;
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $users = $ldap->getAllFromAD(false, false, "2016");
+        $tab = explode(".", $this->container->getParameter('ad_domain'));
+        $bledy = [];
+        $ok = 0;
+        $brakImport = 0;
+        $brakRekord = 0;
+        $okad = 0;
+        foreach($users as $u){
+            $name1 = trim(mb_strtoupper($u['name']));
+            $name2 = $this->get('samaccountname_generator')->ADnameToRekordName($u['name']);
+            
+            $import = $em->getRepository('ParpMainBundle:Entry')->findNowaSekcjaTYLKOuzywaneWreorganizacji2016($u['samaccountname']);
+            //die(".".count($import).".".$u['samaccountname'].".");
+            $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
+            $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
+            if(!$danerekord){
+                
+                $bledy[] = [
+                    'blad' => 'Nie znalazl danych w systemie rekord!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => $imieNazwisko[0].", ".$imieNazwisko[1],
+                    'szukal2' => $imieNazwisko,
+                    'info' => '',
+                ];
+                $brakRekord++;
+            }    
+            if(count($import) == 0){
+                $bledy[] = [
+                    'blad' => 'nie znalazl nowej sekcji w AkD!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => "'".$name1."'",
+                    'szukal2' => "'".$name2."'",
+                    'info' => '',
+                ];
+                $brakImport++;
+            }/*
+elseif(count($import) > 1){
+                
+                $bledy[] = [
+                    'blad' => 'Znalazl za duzo wpisow: '.count($import).' nowych sekcji w AkD!!!',
+                    'user' => $u['samaccountname'],
+                    'name' => $u['name'],
+                    'szukal1' => $name1,
+                    'szukal2' => $name2,
+                    'info' => '',
+                ];
+            }
+*/else{
+                if(count($import) > 1){
+                    $sekcje = [];
+                    foreach($import as $s){
+                        $sekcje [] = $s->getInfo();
+                    }
+                    $bledy[] = [
+                        'blad' => 'Znalazl za duzo wpisow: '.count($import).' nowych sekcji w AkD!!!',
+                        'user' => $u['samaccountname'],
+                        'name' => $u['name'],
+                        'szukal1' => $name1,
+                        'szukal2' => $name2,
+                        'info' => 'sekcje: "'.implode(",", $sekcje).'"!!!',
+                    ];
+                }
+                //jest ok znalazl
+                $ok++;
+                $coMa = [
+                    'dn' => $this->get('samaccountname_generator')->standarizeString($this->getOUDNfromUserDN($u)),
+                    'description' => $u['description'],//departament skrot
+                    'department' => $u['department'],//pelna nazwa dep
+                    'extensionAttribute14' => $u['extensionAttribute14'],//skrot db
+                    'info' => $u['info'],//sekcja pelna nazwa
+                    'division' => $u['division']//skrot sekcji
+                ];
+                $newDepartamentSkrot = "___NIE_ZNALAZL___"; //$import[0]->getDepartamentSkrot();
+                $newDepartamentNazwa = "___NIE_ZNALAZL___"; //$import[0]->getDepartament();
+                if($danerekord){
+                    //wtedy bierzemy jednak z rekorda!!!
+                    $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
+                    if(!$departament && $danerekord->getDepartament() > 500){
+                        die("Nie mam departamentu ".$danerekord->getDepartament());
+                    }
+                    if($departament){
+                        $newDepartamentSkrot = $departament->getShortname();
+                        $newDepartamentNazwa = $departament->getName();
+                    }
+                }
+                $coPowinienMiec = [
+                    'dn' => $this->get('samaccountname_generator')->standarizeString('OU=' . $newDepartamentSkrot . ',OU=Zespoly_2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1]),
+                    'description' => $newDepartamentSkrot,//departament skrot
+                    'department' => $newDepartamentNazwa,//pelna nazwa dep
+                    'extensionAttribute14' => $newDepartamentSkrot,//skrot db
+                    'info' => $import[0]->getInfo(),//sekcja pelna nazwa
+                    'division' => $import[0]->getInfo()//skrot sekcji
+                ];
+                $roznica = array_diff_assoc($coPowinienMiec, $coMa);
+                //czasem to wylaczam bo za duzo bledow
+                if(count($roznica) > 0){
+                    //var_dump($coPowinienMiec, $coMa, $roznica); die();
+                    $bledy[] = [
+                        'blad' => 'Nie wszystko sie zgadza w AD!!!',
+                        'user' => $u['samaccountname'],
+                        'name' => $u['name'],
+                        'szukal1' => $coMa,
+                        'szukal2' => $coPowinienMiec,
+                        'info' => $roznica,
+                    ];
+                    $roznicaDn = isset($roznica['dn']) ? $roznica['dn'] : false;
+                    if(isset($roznica['dn']))
+                        unset($roznica['dn']);
+                        
+                    if($roznicaDn && $zmieniajOU){
+                        //zmiana ou
+                        $b = $ldapAdmin->ldap_rename($ldapconn, $u['distinguishedname'], "CN=" . $u['name'], $roznicaDn, TRUE);                
+                        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_rename $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                    
+                        
+                        
+                    }
+                    if(count($roznica) > 0 && $zmieniajSekcjewIDescriptionAD){
+                        foreach($roznica as $k => $v){
+                            if($v == ""){
+                                unset($roznica[$k]);
+                            }
+                        }
+                        //zmiana danych
+                        //unset($roznica['dn']);
+                        $res = $ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $roznica);
+                        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_modify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                    }
+                    if($zmieniajGrupy){
+                        
+                        $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $import[0]->getSekcjaSkrot());
+                        foreach($grupy as $g){
+                            $dn = $u['distinguishedname'];
+                            $grupa = $ldapAdmin->getGrupa($g);
+                            $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                            //var_dump($g, $addtogroup, array('member' => $dn ));
+                            $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                            $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                        }
+                    }
+                    
+                    
+                }else{
+                    $okad++;
+                }
+                
+                
+            }
+        }
+        $bledy[] = [
+            'blad' => 'Przetworzone rekordy '.count($users),
+            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji '.$ok,
+            'name' => 'Wpisow ktore nie maja rekordu w imporcie '.$brakImport,
+            'szukal1' => 'Wpisow z bledami '.count($bledy),
+            'szukal2' => 'Zgadza sie w AD '.$okad,
+            'info' => 'Braki w rekord '.$brakRekord,
+        ];
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $bledy]);
+    }
     
     
     /**
      * Lists all Klaster entities.
      *
-     * @Route("/nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieAD", name="nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieAD", defaults={})
+     * @Route("/nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieRekordIExcel", name="nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieRekordIExcel", defaults={})
      * @Method("GET")
      */
-    public function nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieADAction()
+    public function nadajUprawnieniaPoczatkoweIzmienOUnaPodstawieRekordIExcelAction()
     { 
         $zmieniajOU = false;
         $zmieniajGrupy = false;

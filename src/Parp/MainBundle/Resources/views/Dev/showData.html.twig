@@ -1,6 +1,11 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
+{% if msg is defined %}
+    <div class="alert alert-danger">
+        {{msg}}
+    </div>
+{%endif%}
 {%if data|length > 0 %}
 <table class="record_properties table table-striped tablesorter">
     <thead>

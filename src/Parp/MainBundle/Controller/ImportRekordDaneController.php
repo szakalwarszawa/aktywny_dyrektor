@@ -141,6 +141,9 @@ class ImportRekordDaneController extends Controller
      */
     public function importfirebirdWrzucDoBazyAction()
     {
+        $errors = [];
+        
+        $this->dataGraniczna = date("Y-m-d");
         $mapowanieDepartamentowPrezesow = [
             '15' => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
             '216' => '400', //WicePrezes - stary uklad, 3 szt.
@@ -308,7 +311,7 @@ class ImportRekordDaneController extends Controller
                             else{
                                 $aduser = $this->getUserFromAD($ldap, $dr);//$ldap->getUserFromAD($dr->getLogin());
                                 if(count($aduser) == 0){
-                                    die("Nie moge znalezc osoby  !!!: ".$dr->getLogin());
+                                    $errors[]  = ("Nie moge znalezc osoby  !!!: ".$dr->getLogin());
                                 }else{                                
                                     $dn = $aduser[0]['distinguishedname'];
                                 }
@@ -363,7 +366,9 @@ class ImportRekordDaneController extends Controller
             //die("mam zwolnienie pracownika!!!");
         }
         $em->flush(); 
-        return $this->redirect($this->generateUrl('danerekord'));
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $errors, 'msg' => $totalmsg]);
+        //return $this->redirect($this->generateUrl('danerekord'));
     }
     
     

@@ -1286,4 +1286,16 @@ class DevController extends Controller
         die('a');    
         
     }
+    
+    /**
+     * @Route("/testSekcjiNowych", name="testSekcjiNowych")
+     * @Template()
+     */
+    public function testSekcjiNowychAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $import = $em->getRepository('ParpMainBundle:Entry')->findNowaSekcjaTYLKOuzywaneWreorganizacji2016("jakub_adamczyk");
+        return new Response("<html><head></head><body>.".print_r($import, true).".".".</body></html>");
+            
+    }
 }    
