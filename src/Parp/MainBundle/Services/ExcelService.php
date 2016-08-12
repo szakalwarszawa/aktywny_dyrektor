@@ -27,7 +27,7 @@ class ExcelService
     public function generateExcel($data){
         $phpExcelObject = $this->container->get('phpexcel')->createPHPExcelObject();
         
-        $title = "Jakis excel";
+        $title = "Raport uprawnien";
         $phpExcelObject->getProperties()->setCreator("Kamil Jakacki")
            ->setLastModifiedBy("Kamil Jakacki")
            ->setTitle($title)

@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Parp\MainBundle\Grid\ParpExcelExport;
 use Parp\MainBundle\Entity\Zasoby;
 use Parp\MainBundle\Form\ZasobyType;
+use Parp\MainBundle\Exception\SecurityTestException;
 
 /**
  * Zasoby controller.
@@ -77,6 +78,14 @@ class ZasobyController extends Controller
         $grid->isReadyForRedirect();
         return $grid->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array('aktywne' => $aktywne));
     }
+    
+    protected function sprawdzDostep(){
+        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+            $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
+            throw new SecurityTestException("Tylko administrator AkD może aktualizować zmiany w zasoback AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
+        }
+        
+    }
     /**
      * Creates a new Zasoby entity.
      *
@@ -86,9 +95,12 @@ class ZasobyController extends Controller
      */
     public function createAction(Request $request)
     {
+        $this->sprawdzDostep();
         $entity = new Zasoby();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
+        
+        
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -250,6 +262,7 @@ class ZasobyController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
+        $this->sprawdzDostep();
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
@@ -282,6 +295,7 @@ class ZasobyController extends Controller
      */
     public function deleteAction(Request $request, $id)
     {
+        $this->sprawdzDostep();
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
 

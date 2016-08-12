@@ -1294,8 +1294,15 @@ class DevController extends Controller
     public function testSekcjiNowychAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $import = $em->getRepository('ParpMainBundle:Entry')->findNowaSekcjaTYLKOuzywaneWreorganizacji2016("jakub_adamczyk");
-        return new Response("<html><head></head><body>.".print_r($import, true).".".".</body></html>");
-            
+        $ldap = $this->get('ldap_service');
+        $u = $ldap->getUserFromAD('wioletta_skrzypczyns');
+        
+        $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u[0]['name']);
+        $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findBy(
+        ['imie' => $imieNazwisko[1], 
+        //'nazwisko' => $imieNazwisko[0]
+        ]);
+                
+        var_dump($imieNazwisko, $danerekord); die();
     }
 }    

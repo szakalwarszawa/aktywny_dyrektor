@@ -2,7 +2,7 @@
 
 {% block body %}
     <h1>Wykryto błąd {{ wyjatek.code }}!</h1>
-    <div class="alert alert-danger">Treść błędu: <br>{{ wyjatek.getMessage }} w pliku {{ wyjatek.file }}, linia {{ wyjatek.line }}.</div>
+    <div class="alert alert-danger">Treść błędu: <br>{{ wyjatek.getMessage|raw }} w pliku {{ wyjatek.file }}, linia {{ wyjatek.line }}.</div>
     <p>Błąd ten należy zgłosić przy pomocy formularza błędów znajdującego się na stronie <a href="{{ path('nowe_zgloszenie') }}">zgłaszania błędów</a>.</p>
 
 {% endblock %}

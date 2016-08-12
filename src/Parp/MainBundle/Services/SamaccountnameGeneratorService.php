@@ -155,4 +155,20 @@ class SamaccountnameGeneratorService
         $str = trim($str);
         return $str;
     }
+    
+    public function parseStanowisko($title){
+        return $title;
+        
+        
+        $ps = explode(" ", trim($title));
+        $ret = [];
+        foreach($ps as $p){
+            if(in_array(mb_strtolower($p), ["po", "p.o."])){
+                $ret[] = "p.o.";
+            }else{
+                $ret[] = $this->mb_ucfirst(mb_strtolower($p));
+            }
+        }
+        return implode(" ", $ret);
+    }
 }

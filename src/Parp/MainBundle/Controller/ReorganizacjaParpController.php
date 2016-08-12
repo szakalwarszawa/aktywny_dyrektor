@@ -18,7 +18,6 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 class ReorganizacjaParpController extends Controller
 {
     
-    
     /**
      * Lists all Klaster entities.
      *
@@ -27,15 +26,41 @@ class ReorganizacjaParpController extends Controller
      */
     public function nadajUprawnieniaPoczatkoweIzmienOU2naPodstawieRekordIAkDAction()
     { 
+        $titles = [];
         $mapowanieNazwisk = [
             'Skubiszewska Aleksandra' => 'Skubiszewska-Nietz Aleksandra'
         ];
         $pomijajOsoby = [
-            'anita_szczykutowicz'
+            'anita_szczykutowicz',
+            'beata_bartnicka',
+            'katarzyna_czuprynska',
+            'marlena_plochocka',
+            'Beata_Machowiak',
+            'katarzyna_stasinska',
+            'karolina_gromulska',
+            'ewa_plaskota',
+            'Edyta_Dominiak',
+            'Katarzyna_Pytel',
+            'katarzyna_sosnowska',
+            'milena_zeber',
+            'monika_dylag'
+            
+            
         ];
-        $zmieniajOU = false;
-        $zmieniajGrupy = false;
-        $zmieniajSekcjewIDescriptionAD = false;
+/*
+        
+            
+        ];
+*/
+        $nadajAll = false;
+        
+        $zmieniajOU = false || $nadajAll;
+        $zmieniajGrupy = false || $nadajAll;
+        $zmieniajSekcjewIDescriptionAD = false || $nadajAll;
+        
+        $poprawNieZnaleziono = true;
+        
+        
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $ldapAdmin = $this->get('ldap_admin_service');
@@ -61,23 +86,31 @@ class ReorganizacjaParpController extends Controller
                 //die(".".count($entry).".".$u['samaccountname'].".");
                 $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
                 $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
+                $rekordDepartament = "_Nie_ma_departamentu_rekord_";
+                $rekordTitle = $u['title'];
                 if(!$danerekord){
                     
                     $bledy[] = [
                         'blad' => 'Nie znalazl danych w systemie rekord!!!',
                         'user' => $u['samaccountname'],
                         'name' => $u['name'],
+                        'rekordDepartament' => $rekordDepartament,
                         'coMa' => $imieNazwisko[0].", ".$imieNazwisko[1],
                         'coPowinienMiec' => $imieNazwisko,
                         'info' => '',
                     ];
                     $brakRekord++;
-                }    
+                }else{
+                    $rekordDepartament = $danerekord->getDepartament();
+                    $rekordTitle = $this->get('samaccountname_generator')->parseStanowisko($danerekord->getStanowisko());
+                    $titles[$rekordTitle] = $rekordTitle;
+                }
                 if(count($entry) == 0){
                     $bledy[] = [
                         'blad' => 'nie znalazl nowej sekcji w AkD!!!',
                         'user' => $u['samaccountname'],
                         'name' => $u['name'],
+                        'rekordDepartament' => $rekordDepartament,
                         'coMa' => "'".$name1."'",
                         'coPowinienMiec' => "'".$name2."'",
                         'info' => '',
@@ -106,6 +139,7 @@ class ReorganizacjaParpController extends Controller
                             'blad' => 'Znalazl za duzo wpisow: '.count($entry).' nowych sekcji w AkD!!!',
                             'user' => $u['samaccountname'],
                             'name' => $u['name'],
+                            'rekordDepartament' => $rekordDepartament,
                             'coMa' => $name1,
                             'coPowinienMiec' => $name2,
                             'info' => 'sekcje: "'.implode(",", $sekcje).'"!!!',
@@ -119,10 +153,16 @@ class ReorganizacjaParpController extends Controller
                         'department' => $u['department'],//pelna nazwa dep
                         'extensionAttribute14' => $u['extensionAttribute14'],//skrot db
                         'info' => $u['info'],//sekcja pelna nazwa
-                        'division' => $u['division']//skrot sekcji
+                        'division' => $u['division'], //skrot sekcji
+                        'title' => $u['title']
                     ];
-                    $newDepartamentSkrot = "___NIE_ZNALAZL___"; //$entry[0]->getDepartamentSkrot();
-                    $newDepartamentNazwa = "___NIE_ZNALAZL___"; //$entry[0]->getDepartament();
+                    $typPracownika = "nieznanyTyp";
+                    if(count($import) == 1){
+                        $typPracownika = $import[0]->getTypPracownika();
+                    }
+                    $nieZnaleziony = true;
+                    $newDepartamentSkrot = "___NIE_ZNALAZL (typPracownika: ".$typPracownika.")___"; //$entry[0]->getDepartamentSkrot();
+                    $newDepartamentNazwa = "___NIE_ZNALAZL (typPracownika: ".$typPracownika.")___"; //$entry[0]->getDepartament();
                     if($u['samaccountname'] == 'kamila_sek'){
                         //echo "<pre>"; var_dump($danerekord); die();
                     }
@@ -135,23 +175,29 @@ class ReorganizacjaParpController extends Controller
                         if($departament){
                             $newDepartamentSkrot = $departament->getShortname();
                             $newDepartamentNazwa = $departament->getName();
+                            $nieZnaleziony = false;
                         }else{
-                            
-                            $newDepartamentSkrot = "___NIE_ZNALAZL na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartamentSkrot();
-                            $newDepartamentNazwa = "___NIE_ZNALAZL na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartament();
+                            $nieZnaleziony = true;
+                            $newDepartamentSkrot .= "na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartamentSkrot();
+                            $newDepartamentNazwa .= "na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartament();
                         }
                     }else{
+                            $nieZnaleziony = true;
                             
-                            $newDepartamentSkrot = "___NIE_ZNALAZL w rekordzie  ___"; //$entry[0]->getDepartamentSkrot();
-                            $newDepartamentNazwa = "___NIE_ZNALAZL w rekordzie  ___"; //$entry[0]->getDepartament();
+                            $newDepartamentSkrot .= " w rekordzie  ___"; //$entry[0]->getDepartamentSkrot();
+                            $newDepartamentNazwa .= " w rekordzie  ___"; //$entry[0]->getDepartament();
                         }
+                    $sekcja = count($entry) > 0 ? $entry[0]->getInfo() : $u['info'];
+                    $section = $em->getRepository('ParpMainBundle:Section')->findOneBy(['name' => $sekcja]);
+                    $sekcjaSkrot = $section ? $section->getShortname() : "";
                     $coPowinienMiec = [
                         'dn' => $this->get('samaccountname_generator')->standarizeString('OU=' . $newDepartamentSkrot . ',OU=Zespoly_2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1]),
                         'description' => $newDepartamentSkrot,//departament skrot
                         'department' => $newDepartamentNazwa,//pelna nazwa dep
                         'extensionAttribute14' => $newDepartamentSkrot,//skrot db
-                        'info' => count($entry) > 0 ? $entry[0]->getInfo() : $u['info'],//sekcja pelna nazwa
-                        'division' => count($entry) > 0 ? $entry[0]->getInfo() : $u['division']//skrot sekcji
+                        'info' => $sekcja,//sekcja pelna nazwa
+                        'division' => $sekcjaSkrot, //skrot sekcji
+                        'title' => $rekordTitle
                     ];
                     $roznica = array_diff_assoc($coPowinienMiec, $coMa);
                     //czasem to wylaczam bo za duzo bledow
@@ -161,6 +207,7 @@ class ReorganizacjaParpController extends Controller
                             'blad' => 'Nie wszystko sie zgadza w AD!!!',
                             'user' => $u['samaccountname'],
                             'name' => $u['name'],
+                            'rekordDepartament' => $rekordDepartament,
                             'coMa' => $coMa,
                             'coPowinienMiec' => $coPowinienMiec,
                             'info' => $roznica,
@@ -194,7 +241,7 @@ class ReorganizacjaParpController extends Controller
                         }
                         if($zmieniajGrupy){
                             
-                            $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $entry[0]->getSekcjaSkrot());
+                            $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $sekcjaSkrot);
                             foreach($grupy as $g){
                                 $dn = $u['distinguishedname'];
                                 $grupa = $ldapAdmin->getGrupa($g);
@@ -206,7 +253,21 @@ class ReorganizacjaParpController extends Controller
                             }
                         }
                         
-                        
+                        if($poprawNieZnaleziono && $nieZnaleziony){
+                            $ou = $this->get('ldap_service')->getOUfromDN($u);
+                            $dep = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['shortname' => $ou, 'nowaStruktura' => true]);
+                            $zmiany = [
+                                'description' => $ou,
+                                'department' => $dep->getName(),
+                                'extensionAttribute14' => $ou,
+                                //'division' => ''
+                            ];
+                            
+                            $res = $ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $zmiany);
+                            $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                            //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_modify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                        }
                     }else{
                         $okad++;
                     }
@@ -215,6 +276,7 @@ class ReorganizacjaParpController extends Controller
                 }
             }
         }
+        //echo "<pre>"; print_r($titles); die();
         $bledy[] = [
             'blad' => 'Przetworzone rekordy '.count($users),
             'user' => 'Wpisow ktore maja rekordy w imporcie sekcji '.$ok,
@@ -999,7 +1061,7 @@ class ReorganizacjaParpController extends Controller
      * @Route("/audytDepartamentowSekcjiStanowisko", name="audytDepartamentowSekcjiStanowisko", defaults={})
      * @Method("GET")
      */
-    public function audytDepartamentowSekcjiStanowiskoAction()
+        public function audytDepartamentowSekcjiStanowiskoAction()
     {
         $pomijaj = ["ndes-user"];
         $em = $this->getDoctrine()->getManager();

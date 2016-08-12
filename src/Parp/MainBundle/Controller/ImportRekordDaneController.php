@@ -144,6 +144,7 @@ class ImportRekordDaneController extends Controller
         $errors = [];
         
         $this->dataGraniczna = date("Y-m-d");
+        //$this->dataGraniczna = "2016-08-20";//temp
         $mapowanieDepartamentowPrezesow = [
             '15' => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
             '216' => '400', //WicePrezes - stary uklad, 3 szt.
