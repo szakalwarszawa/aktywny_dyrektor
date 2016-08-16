@@ -739,7 +739,16 @@ class LdapService
     }
     
     public function getDyrektorow(){
-        $users = $this->getAllFromAD();
+        //$users = $this->getAllFromAD();
+        $deps = $this->container->get('doctrine')->getManager()->getRepository("ParpMainBundle:Departament")->findByNowaStruktura(1);
+        $ret = [];
+        foreach($deps as $d){
+            $dyr = $this->getUserFromAD($d->getDyrektor());
+            if(count($dyr) > 0){
+                $ret[] = $dyr[0];
+            }
+        }
+/*
         $ret = [];
         foreach($users as $u){
             if(
@@ -754,6 +763,7 @@ class LdapService
                 $ret[] = $u;
             }
         }
+*/
         return $ret;
     }
     

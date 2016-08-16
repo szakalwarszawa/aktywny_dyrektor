@@ -1305,4 +1305,24 @@ class DevController extends Controller
                 
         var_dump($imieNazwisko, $danerekord); die();
     }
+    
+    /**
+     * @Route("/updateDyrektorow", name="updateDyrektorow")
+     * @Template()
+     */
+    public function updateDyrektorowAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $deps = $em->getRepository("ParpMainBundle:Departament")->findByNowaStruktura(1);
+        foreach($deps as $d){
+            $dyr = $ldap->getDyrektoraDepartamentu($d->getShortname());
+            if($dyr){
+                $d->setDyrektor($dyr['samaccountname']);
+                $d->setDyrektorDN($dyr['distinguishedname']);
+            }
+        }
+        $em->flush();
+        
+    }
 }    

@@ -692,7 +692,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $sams = array();
                 $s1 = json_decode($ndata['samaccountnames']);
                 foreach($s1 as $k => $v){
-                    if($v)
+                    if($v && $v != "" && $v != "_empty_")
                         $sams[] = $k;
                 }
                 $msg = "";

@@ -72,7 +72,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
-     * @GRID\Column(field="userZasoby.zasobOpis:group_concat", title="Zasoby")
+     * @GRID\Column(field="userZasoby.zasobOpis:group_concat", title="Zasoby", filter=false)
      */
     private $userZasoby;
     

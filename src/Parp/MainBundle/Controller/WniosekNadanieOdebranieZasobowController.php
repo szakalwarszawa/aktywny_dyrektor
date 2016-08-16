@@ -457,9 +457,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $kogoSzukac = $ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser);
         //var_dump($ADUser); die($kogoSzukac);
         switch($kogoSzukac){
-            case "dyrektor":
-                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
-                break;
             case "manager":
                 $in1 = mb_stripos($ADUser['manager'], '=') + 1;
                 $in2 = mb_stripos($ADUser['manager'], ',OU');
@@ -471,6 +468,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "prezes":
                 $ADManager = [$ldap->getPrezes()];
+                break;
+            case "dyrektor":
+            default:
+                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
                 break;
         }
         
