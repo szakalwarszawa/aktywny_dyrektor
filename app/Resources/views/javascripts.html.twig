@@ -60,9 +60,10 @@ $('.datepicker:not([disabled])').datetimepicker({
     format: 'YYYY-MM-DD',
 });
 $('.datetimepicker:not([disabled])').datetimepicker({
-    pickTime: false,
+    inline: true,
+    pickTime: true,
     language: 'pl',
-    format: 'YYYY-MM-DD HH:mm:ss',
+    format: 'YYYY-MM-DD HH:mm',
 });
 $('form').areYouSure();
 

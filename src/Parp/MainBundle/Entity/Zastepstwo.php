@@ -59,16 +59,16 @@ class Zastepstwo
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
     */
     private $dataOd;
     
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
     */
     private $dataDo;
     
@@ -189,54 +189,6 @@ class Zastepstwo
     }
 
     /**
-     * Set dataOd
-     *
-     * @param \DateTime $dataOd
-     *
-     * @return Zastepstwo
-     */
-    public function setDataOd($dataOd)
-    {
-        $this->dataOd = $dataOd;
-
-        return $this;
-    }
-
-    /**
-     * Get dataOd
-     *
-     * @return \DateTime
-     */
-    public function getDataOd()
-    {
-        return $this->dataOd;
-    }
-
-    /**
-     * Set dataDo
-     *
-     * @param \DateTime $dataDo
-     *
-     * @return Zastepstwo
-     */
-    public function setDataDo($dataDo)
-    {
-        $this->dataDo = $dataDo;
-
-        return $this;
-    }
-
-    /**
-     * Get dataDo
-     *
-     * @return \DateTime
-     */
-    public function getDataDo()
-    {
-        return $this->dataDo;
-    }
-
-    /**
      * Set wniosekHistoriaStatusu
      *
      * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
@@ -289,5 +241,53 @@ class Zastepstwo
     public function removeWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
     {
         $this->wniosekHistoriaStatusu->removeElement($wniosekHistoriaStatusu);
+    }
+
+    /**
+     * Set dataOd
+     *
+     * @param \DateTime $dataOd
+     *
+     * @return Zastepstwo
+     */
+    public function setDataOd($dataOd)
+    {
+        $this->dataOd = $dataOd;
+
+        return $this;
+    }
+
+    /**
+     * Get dataOd
+     *
+     * @return \DateTime
+     */
+    public function getDataOd()
+    {
+        return $this->dataOd;
+    }
+
+    /**
+     * Set dataDo
+     *
+     * @param \DateTime $dataDo
+     *
+     * @return Zastepstwo
+     */
+    public function setDataDo($dataDo)
+    {
+        $this->dataDo = $dataDo;
+
+        return $this;
+    }
+
+    /**
+     * Get dataDo
+     *
+     * @return \DateTime
+     */
+    public function getDataDo()
+    {
+        return $this->dataDo;
     }
 }

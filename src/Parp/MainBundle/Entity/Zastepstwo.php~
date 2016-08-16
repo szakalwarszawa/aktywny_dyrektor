@@ -34,7 +34,7 @@ class Zastepstwo
     /**
      * @var string
      *
-     * @ORM\Column(type="text", length=2000)
+     * @ORM\Column(type="text", length=5000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
@@ -59,16 +59,16 @@ class Zastepstwo
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
     */
     private $dataOd;
     
     
     /**
      * @var \DateTime
-     * @ORM\Column(type="date", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @ORM\Column(type="datetime", nullable=false)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="date")
     */
     private $dataDo;
     
@@ -79,6 +79,8 @@ class Zastepstwo
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosekHistoriaStatusu; 
+    
+    
 
     /**
      * Get id
@@ -187,54 +189,6 @@ class Zastepstwo
     }
 
     /**
-     * Set dataOd
-     *
-     * @param \DateTime $dataOd
-     *
-     * @return Zastepstwo
-     */
-    public function setDataOd($dataOd)
-    {
-        $this->dataOd = $dataOd;
-
-        return $this;
-    }
-
-    /**
-     * Get dataOd
-     *
-     * @return \DateTime
-     */
-    public function getDataOd()
-    {
-        return $this->dataOd;
-    }
-
-    /**
-     * Set dataDo
-     *
-     * @param \DateTime $dataDo
-     *
-     * @return Zastepstwo
-     */
-    public function setDataDo($dataDo)
-    {
-        $this->dataDo = $dataDo;
-
-        return $this;
-    }
-
-    /**
-     * Get dataDo
-     *
-     * @return \DateTime
-     */
-    public function getDataDo()
-    {
-        return $this->dataDo;
-    }
-
-    /**
      * Set wniosekHistoriaStatusu
      *
      * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
@@ -256,5 +210,36 @@ class Zastepstwo
     public function getWniosekHistoriaStatusu()
     {
         return $this->wniosekHistoriaStatusu;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->wniosekHistoriaStatusu = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add wniosekHistoriaStatusu
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     *
+     * @return Zastepstwo
+     */
+    public function addWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    {
+        $this->wniosekHistoriaStatusu[] = $wniosekHistoriaStatusu;
+
+        return $this;
+    }
+
+    /**
+     * Remove wniosekHistoriaStatusu
+     *
+     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     */
+    public function removeWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    {
+        $this->wniosekHistoriaStatusu->removeElement($wniosekHistoriaStatusu);
     }
 }

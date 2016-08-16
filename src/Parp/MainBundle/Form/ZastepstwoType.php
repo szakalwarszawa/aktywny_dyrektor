@@ -44,7 +44,7 @@ class ZastepstwoType extends AbstractType
             
         $builder->add('dataOd', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datetimepicker',
                     ),
                     'label' => 'Data od',
                     'label_attr' => array(
@@ -52,12 +52,12 @@ class ZastepstwoType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text',
-                    'format' => 'Y-MM-d'
+                    'format' => 'yyyy-MM-dd HH:mm'
                     
                 ))
             ->add('dataDo', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datetimepicker',
                     ),
                     'label' => 'Data do',
                     'label_attr' => array(
@@ -65,7 +65,7 @@ class ZastepstwoType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text',
-                    'format' => 'Y-MM-d'
+                    'format' => 'yyyy-MM-dd HH:mm'
                     
                 ))
         ;

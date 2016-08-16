@@ -1135,18 +1135,24 @@ class ReorganizacjaParpController extends Controller
      */
     public function bierzSlownikSekcjiAction()
     {
+        $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $users = $ldap->getAllFromAD();
         $data = [];
         $sekcje = [];
-        
+        $i = 0;
         foreach($users as $u){
             if(!isset($sekcje[$u['info']])){
-                
-                $sekcje[$u['info']] = [
+                $sekcje[$u['info']] = $i;
+                $section = $em->getRepository('ParpMainBundle:Section')->findOneBy(['name' => $u['info']]);
+                $data[$i++] = [
                     'info' => $u['info'],
-                    'division' => $u['division']    
+                    'division' => $u['division'],
+                    'istniejeWbazie' => ($section ? "TAK" : "NIE"),
+                    'users' => [$u['samaccountname']]
                 ];
+            }else{
+                $data[$sekcje[$u['info']]]['users'][] = $u['samaccountname']; 
             }
             
         }
