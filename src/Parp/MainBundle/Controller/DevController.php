@@ -28,6 +28,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Parp\MainBundle\Entity\HistoriaWersji;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 /**
  * Zasoby controller.
  *
@@ -1325,4 +1327,36 @@ class DevController extends Controller
         $em->flush();
         
     }
+    
+    
+    /**
+     * @Route("/listLogs/{file}", name="listLogs", defaults={"file" : ""})
+     * @Template()
+     */
+    public function listLogsAction($file = "")
+    {
+        if($file == ""){
+            //show list
+            $finder = new Finder();
+            $finder->files()->in(__DIR__."/../../../../work/logs/");
+            
+            $links = [];
+            
+            foreach ($finder as $file) {
+                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl("listLogs", ["file" => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
+                
+            }
+            return new Response('<html><body><ul class="list-group">'.implode("", $links).'</li></body>');
+        }else{
+            
+            //download file
+            $file = __DIR__."/../../../../work/logs/".$file;
+            $response = new BinaryFileResponse($file);
+            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            
+            return $response;
+
+        } 
+    }
+    
 }    

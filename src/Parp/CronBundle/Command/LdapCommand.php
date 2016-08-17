@@ -234,7 +234,7 @@ class LdapCommand extends ContainerAwareCommand
                 //zapis loga 
                 $output2 = clone $output;
                 $converter = new AnsiToHtmlConverter();
-                $msg = $converter->convert($output2->fetch()); //"sdadsadsa";
+                $msg = ' <link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.$converter->convert($output2->fetch())."</div>"; //"sdadsadsa";
                 
                 $fs = new Filesystem();
                 $fs->dumpFile($logfile, $msg);

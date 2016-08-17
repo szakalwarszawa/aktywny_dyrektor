@@ -511,10 +511,10 @@ class WniosekUtworzenieZasobuController extends Controller
         //$entity = new WniosekUtworzenieZasobu();
         $editForm = $this->createEditForm($entity, $entity->getTyp());
         
-        var_dump($editForm);
+        //var_dump($editForm);
         $editForm->handleRequest($request);
-        var_dump($editForm);
-        die();
+        //var_dump($editForm);
+        //die();
         if ($editForm->isValid()) {
             
             
