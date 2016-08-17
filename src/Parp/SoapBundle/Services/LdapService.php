@@ -24,6 +24,7 @@ class LdapService
     protected $_ouWithGroups = "PARP Grupy";
     protected $adldap;
     protected $_userCache = null;
+    protected $zmianyDoWypchniecia = null;
     
     protected $ADattributes = array(
         "name",
@@ -104,14 +105,56 @@ class LdapService
         }
         return $ret;
     }
+    
+    protected function parseZmianyUsera($u, $zmiany){
+        $noweAttr = [];
+        foreach($zmiany[$u['samaccountname']] as $z){
+            if($z->getAccountExpires()){
+                $noweAttr['accountExpires'] = $z->getAccountExpires();
+            }
+            if($z->getDivision()){
+                $noweAttr['division'] = $z->getDivision();
+            }
+            if($z->getManager()){
+                $noweAttr['manager'] = $z->getManager();
+            }
+            if($z->getTitle()){
+                $noweAttr['title'] = $z->getTitle();
+            }
+            if($z->getInfo()){
+                $noweAttr['info'] = $z->getInfo();
+            }
+            if($z->getDisableDescription()){
+                $noweAttr['description'] = $z->getDisableDescription();
+            }
+        }
+        return $noweAttr;
+    }
     public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null){
+        
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
+        }else{
+            $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
+        }
+        $zmiany = [];
+        foreach($this->zmianyDoWypchniecia as $z){
+            $zmiany[$z->getSamaccountname()][] = $z;
+        }
+        foreach($this->_userCache as &$u){
+            if(isset($zmiany[$u['samaccountname']])){
+                //mamy zmiany
+                $noweAttr = $this->parseZmianyUsera($u, $zmiany);
+                foreach($noweAttr as $k => $v){
+                    $u[$k] = $v." (".$u[$k].")";
+                }
+            }
         }
         return $this->_userCache;
     }
     public function getAllFromADIntW($tezNieobecni = false, $justDump = false, $struktura = null)
     {
+        $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
         $userdn = $this->useradn . $this->patch;
         
         if($struktura == "2016"){
@@ -538,7 +581,29 @@ class LdapService
         ldap_unbind($ldapconn);
 
         $result = $this->parseResults($tmpResults);
-
+        if(count($result) > 0){
+            //dodaje zmiany do wypchniecia
+            $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findBy(
+                ['isImplemented' => 0, 'samaccountname' => $result[0]['samaccountname']], ['samaccountname' => 'ASC', 'id' => 'ASC']
+            );
+            
+            $zmiany = [];
+            foreach($this->zmianyDoWypchniecia as $z){
+                $zmiany[$z->getSamaccountname()][] = $z;
+            }
+            $u = &$result[0];
+            if(isset($zmiany[$u['samaccountname']])){
+                //mamy zmiany
+                $noweAttr = $this->parseZmianyUsera($u, $zmiany);
+                //print_r($noweAttr);
+                foreach($noweAttr as $k => $v){
+                    $u[$k."inAD"] = $u[$k];
+                    $u[$k] = $v;
+                }
+            }
+        }
+        //unset($result[0]['thumbnailphoto']);
+        //print_r($result);
         return $result;
     }
     public function getNieobecnyUserFromAD($samaccountname = null, $cnname = null, $query = null){

@@ -398,7 +398,6 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
         $deleteForm = $this->createDeleteForm($id);
-
         return array(
             'canReturn' => (
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && 

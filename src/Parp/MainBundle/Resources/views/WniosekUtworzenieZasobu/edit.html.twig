@@ -39,6 +39,10 @@
                 {% if readonly %} 
                     <a href="{{path('wniosekutworzeniezasobu_edit', {'id' : entity.id})}}" class="btn btn-primary">Edytuj wniosek</a>
                 {%endif%}
+                
+                    {% if canUnblock %}
+                    <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                    {%endif%}
                 {% if editor and readonly %}
                     {% if 
                         entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW"  or

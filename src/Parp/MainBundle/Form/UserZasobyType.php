@@ -118,7 +118,7 @@ class UserZasobyType extends AbstractType
     }
     protected function addChoicesFromDictionary($o, $form, $getter, $fieldName){
         $ch = explode(";", $o->{$getter}());            
-        $choices = array("do wypełnienia przez administratora zasobu" => "do wypełnienia przez administratora zasobu");
+        $choices = array("do wypełnienia przez administratora zasobu" => "do wypełnienia przez właściciela zasobu");
         foreach($ch as $c){
             $c = trim($c);
             if($c != "")

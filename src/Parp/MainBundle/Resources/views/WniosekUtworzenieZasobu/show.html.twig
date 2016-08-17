@@ -1,5 +1,5 @@
 {% extends '::base.html.twig' %}
-
+TO  NIEUZYWANE !!!!!!!!!!!
 {% block body -%}
     <div class="col-sm-12">
         <div class="alert alert-info">
@@ -28,7 +28,7 @@
                         >
                             {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}
                             
-                            <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id})}}" class="whiteLink">
+                            <a href="{{path('wniosekutworzeniezasobu_show', {id: wniosekDoLinku.id})}}" class="whiteLink">
                             {% set bylJuzPierwszyParent = true %}
                             {%endif%}
                             <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right"}}">&nbsp;</i> 
@@ -47,23 +47,23 @@
                     <h4>Akcje:</h4>
                     {%if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
                         {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
-                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>                    
                     {%else%}
-                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
                         class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                         {% if canReturn %}
-                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
+                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
                         class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
                         
                         {%endif%}
                         {% if canUnblock %}
-                        <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                         {%endif%}
                         {% if(entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR") %}
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                         {%else%}
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                         {%endif%}
                     {%endif%}
                     
@@ -127,7 +127,7 @@
                                     
                                     {% if entity.wniosek.parent%}
                                         
-                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.wniosekNadanieOdebranieZasobow.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.numer}}</a>
+                                        <a href="{{path('wniosekutworzeniezasobu_show', {id: entity.wniosek.parent.wniosekutworzeniezasobu.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{entity.wniosek.parent.numer}}</a>
                                     {%endif%}
                                 </td>
                             </tr>
@@ -139,7 +139,7 @@
                                         Na wnioski:
                                         <ul class="list-group">
                                         {% for w in entity.wniosek.children %}
-                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
+                                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wniosekutworzeniezasobu_show', {id: w.wniosekutworzeniezasobu.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
                                         {%endfor %}                           
                                         </ul>
                                     {%endif%}
@@ -189,7 +189,7 @@
                     </table>
                     {%if editor%}
                     
-                    <a href="{{path('wnioseknadanieodebraniezasobow_edit', {id: entity.id})}}" class="btn btn-success">Dodaj / usuń użytkowników do wniosku</a>
+                    <a href="{{path('wniosekutworzeniezasobu_edit', {id: entity.id})}}" class="btn btn-success">Dodaj / usuń użytkowników do wniosku</a>
                     {%endif%}
                 </div>
             </div>            
@@ -230,7 +230,7 @@
                                 <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
                                 <td>{%if editor%}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
-                                    <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
+                                    <a href="{{path('wniosekutworzeniezasobu_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
                                     {%endif%}</td>
                             </tr>
                         {% endfor %}
@@ -240,22 +240,22 @@
             </div>         
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'wniosekutworzeniezasobu', obiektId: entity.id})) }}
                 </div>
             </div>            
             <div id="komentarze" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'wniosekutworzeniezasobu', obiektId: entity.id})) }}
                 </div>
             </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'wniosekutworzeniezasobu', id: entity.id})) }}
                 </div>
             </div>
             <div id="historiaAkceptacji" class="tab-pane fade">
                 <div  class="tabContent">
-                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}                
+                    {% include 'ParpMainBundle:wniosekutworzeniezasobu:historiaAkceptacji.html.twig' %}                
                 </div>
             </div>
             {%if(entity.wniosek.ADentries|length > 0)%}

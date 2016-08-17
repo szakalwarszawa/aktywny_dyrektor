@@ -58,7 +58,7 @@
                             <div class="col-sm-8">
                                     <div id="formRowInfo">
                                     {{ form_widget(form.info) }}
-                                    <div class="well">Sekcja w AD: {{user.info}}</div>
+                                    <div class="well">Sekcja w AD: {{user.infoinAD is defined ? user.infoinAD : user.info}}</div>
                                     </div>
                                     {{ form_widget(form.infoNew)}}
                                     <span class="input-group-addon' hidden">
