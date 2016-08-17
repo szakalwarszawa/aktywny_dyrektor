@@ -376,7 +376,7 @@ class ImportRekordDaneController extends Controller
     /**
      * Lists all Klaster entities.
      *
-     * @Route("/", name="importfirebird_test", defaults={})
+     * @Route("/", name="importfirebird_index", defaults={})
      * @Method("GET")
      */
     public function importfirebirdTestIndexAction()
