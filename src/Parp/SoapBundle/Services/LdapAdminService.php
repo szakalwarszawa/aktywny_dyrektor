@@ -305,7 +305,7 @@ class LdapAdminService
             $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $userAD[0]['department'], 'nowaStruktura' => true]);
                 
             $person->setGrupyAD($departmentOld, "-");
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             //jesli zmiana departamnentu dodajemy nowe grupy AD
@@ -315,7 +315,7 @@ class LdapAdminService
                 $userAD[0]['title'] = $person->getTitle();
             }
             
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->getGrupyUsera($userAD[0], $department->getShortname(), "");
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->get('ldap_service')->container->getGrupyUsera($userAD[0], $department->getShortname(), "");
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
             $person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
