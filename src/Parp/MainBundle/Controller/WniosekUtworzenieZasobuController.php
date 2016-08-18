@@ -20,6 +20,9 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+
+use Symfony\Component\HttpFoundation\Response;
+
 /**
  * WniosekUtworzenieZasobu controller.
  *
@@ -400,6 +403,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $entity->setZmienionePola(implode(",", array_keys($delta)));
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
+//        var_dump($entity->getZasob()->getName()); die();
         $deleteForm = $this->createDeleteForm($id);
         return array(
             'canReturn' => (
@@ -442,9 +446,10 @@ class WniosekUtworzenieZasobuController extends Controller
     */
     private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true, $readonly = true)
     {
+        //var_dump($entity); die();
         $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsersFromAD(), $this->getManagers(), $entity->getTyp(), $entity, $this, $readonly), $entity, array(
             'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
-            'method' => 'POST',
+            'method' => 'PUT',
         ));
         
         $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
@@ -452,9 +457,11 @@ class WniosekUtworzenieZasobuController extends Controller
         $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
         $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? " hidden" : "") )));
         
+/*
         foreach($form->all() as $ff){            
             //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ff); die();
         }
+*/
         
         
         
@@ -495,7 +502,7 @@ class WniosekUtworzenieZasobuController extends Controller
      * Edits an existing WniosekUtworzenieZasobu entity.
      *
      * @Route("/update/{id}", name="wniosekutworzeniezasobu_update")
-     * @Method("POST")
+     * @Method("PUT")
      * @Template("ParpMainBundle:WniosekUtworzenieZasobu:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -504,25 +511,19 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
 
+
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
-
-        $deleteForm = $this->createDeleteForm($id);
-        //die($entity->getTyp());
-        //$entity = new WniosekUtworzenieZasobu();
-        $editForm = $this->createEditForm($entity, $entity->getTyp());
-        
+        $editForm = $this->createEditForm($entity, true, false);
         //var_dump($editForm);
         $editForm->handleRequest($request);
-        //var_dump($editForm);
-        //die();
-        if ($editForm->isValid()) {
-            //var_dump($entity->getZasob());
-            
-            //die('zapis '.$entity->getId());
+
+        if ($editForm->isValid() && $editForm->isSubmitted()) {
+
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         }else{
             

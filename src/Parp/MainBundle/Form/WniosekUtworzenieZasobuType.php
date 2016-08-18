@@ -83,17 +83,30 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
                 $builder->add('typWnioskuWycofanieZinfrastruktury', ($this->hideCheckboxes ? 'hidden' : 'checkbox'), ['required' => false, 'label' => 'z infrastruktury PARP']) ;
             }
-           
+            
             
             
             
             //die(".".$this->typ); 
-            if($this->typ == "zmiana"){
+            if($this->typ == "nowy" || $this->typ == ""){
+                
+
+                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->container, $this->nazwaLabel), array(
+                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true,
+                   
+                   'cascade_validation' => true,
+                   )
+                   
+                );
+
+                $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
+            }
+            else if($this->typ == "zmiana"){
                 if($this->entity->getId()){
                     $builder->add('zmienianyZasob', 'text', ['mapped' => false, 'attr' => ['readonly' => true], 'data' => $this->entity->getZmienianyZasob()->getNazwa()]);
                 }else{
                     $builder->add('zmienianyZasob', 'entity', array(
-                        'mapped' => true,
+                       'mapped' => true,
                        'label'=>"Wybierz zasób", 'class' => 'Parp\MainBundle\Entity\Zasoby',
                        'attr' => ['class' => 'select2', 'style' => "width:100%"],
                        'query_builder' => function( $er) {
@@ -104,10 +117,15 @@ class WniosekUtworzenieZasobuType extends AbstractType
                         )
                     );
                 }
-            }else{
-                $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
-            }   
-            if($this->typ == "kasowanie"){
+                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->container, $this->nazwaLabel), array(
+                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true,
+                   
+                   )
+                   
+                );
+                
+            }
+            else if($this->typ == "kasowanie"){
                 $builder->add('zmienianyZasob', 'entity', array(
                     'query_builder' => function( $er) {
                         return $er->createQueryBuilder('u')
@@ -117,12 +135,10 @@ class WniosekUtworzenieZasobuType extends AbstractType
                    'label'=>"Wybierz zasób do skasowania", 'class' => 'Parp\MainBundle\Entity\Zasoby', 'attr' => ['class' => 'select2', 'style' => "width:100%"])
                 );
                 $builder->add('zasob', 'hidden', ['attr' => ['class' => 'form-item']]);
+                
             }else{
-                $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->container, $this->nazwaLabel), array(
-                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true)
-                   
-                );
-            }             
+                die("Nie znam typa ".$this->typ);
+            }            
 
 /*
         switch($this->typ){
@@ -155,11 +171,14 @@ class WniosekUtworzenieZasobuType extends AbstractType
      */
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
-        $resolver->setDefaults(array(
+        $attr = [
             'data_class' => 'Parp\MainBundle\Entity\WniosekUtworzenieZasobu',
-            'disabled' => $this->readonly,
-            'attr' => ['readonly' => $this->readonly]
-        ));
+        ];
+        if($this->readonly){
+            $attr['attr'] = ['readonly' => $this->readonly];
+            $attr['disabled'] = $this->readonly;
+        }
+        $resolver->setDefaults($attr);
     }
 /*
     public function configureOptions(OptionsResolverInterface $resolver)

@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_utworzenie_zasobu")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekUtworzenieZasobuRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.status.nazwa,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,userZasoby.opis:group_concat,wniosek.editornames")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,typWnioskuZmianaInformacji,typWnioskuWycofanie,wniosek.status.nazwa,typWnioskuDoRejestru,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,zasob.nazwa,zmienianyZasob.nazwa,wniosek.editornames", groupBy={"id"})
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -22,7 +22,7 @@ class WniosekUtworzenieZasobu
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * @GRID\Column(field="id", title="Numer")
+     * @GRID\Column(field="id", title="Id")
      */
     private $id;
     
@@ -40,6 +40,7 @@ class WniosekUtworzenieZasobu
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @GRID\Column(field="wniosek.status.nazwa", title="Status")
      * @GRID\Column(field="wniosek.createdBy", title="Utworzony przez")
+     * @GRID\Column(field="wniosek.numer", title="Numer")
      * @GRID\Column(field="wniosek.createdAt", type="date", title="Utworzono")
      * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez")
      * @GRID\Column(field="wniosek.lockedAt", type="date", title="Zablokowano")
@@ -50,9 +51,9 @@ class WniosekUtworzenieZasobu
 
     /**
      *
-     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobu")
+     * @ORM\OneToOne(targetEntity="Zasoby")
      * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
-     * @GRID\Column(field="wniosek.zasob.nazwa", title="Zasob")
+     * @GRID\Column(field="zasob.nazwa", title="Zasób")
      */
     private $zasob; 
     
@@ -60,7 +61,8 @@ class WniosekUtworzenieZasobu
     /**
      *
      * @ORM\ManyToOne(targetEntity="Zasoby", inversedBy="wnioskiZmieniajaceZasob")
-     * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
+     * @ORM\JoinColumn(name="zmienianyZasob_id", referencedColumnName="id")
+     * @GRID\Column(field="zmienianyZasob.nazwa", title="Zmieniany zasób", visible=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zmienianyZasob; 
@@ -150,6 +152,7 @@ class WniosekUtworzenieZasobu
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=false)
+     * @GRID\Column(field="typWnioskuDoRejestru", type="text", title="Typ", visible=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuDoRejestru = false;
@@ -166,6 +169,7 @@ class WniosekUtworzenieZasobu
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=false)
+     * @GRID\Column(field="typWnioskuZmianaInformacji", type="text", title="Typ", visible=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuZmianaInformacji = false;
@@ -182,6 +186,7 @@ class WniosekUtworzenieZasobu
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=false)
+     * @GRID\Column(field="typWnioskuWycofanie", type="text", title="Typ", visible=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuWycofanie = false;
@@ -305,6 +310,7 @@ class WniosekUtworzenieZasobu
     public function setZasob(\Parp\MainBundle\Entity\Zasoby $zasob = null)
     {
         $this->zasob = $zasob;
+        //$zasob->setWniosekUtworzenieZasobu($this);
 
         return $this;
     }
@@ -685,12 +691,15 @@ class WniosekUtworzenieZasobu
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct2()
     {
-        
-        $this->setWniosek(new Wniosek());
-        $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+        if(!$this->getId()){
+            $this->setWniosek(new Wniosek());
+            $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+        }
         $this->getWniosek()->setWniosekUtworzenieZasobu($this);
+        $this->getZasob()->setWniosekUtworzenieZasobu($this);
+        
     }
     
     public function getTyp(){

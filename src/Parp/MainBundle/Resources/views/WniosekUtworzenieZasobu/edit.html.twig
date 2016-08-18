@@ -253,7 +253,9 @@
                     {%if(entity.typ == "kasowanie" )%}
                         {{ form_row(form.zasob) }}
                     {%else%}
+                        {%if form.zasob is defined %}
                         {{ form_widget(form.zasob) }}
+                        {%endif%}
                     {%endif%}
                     
                     

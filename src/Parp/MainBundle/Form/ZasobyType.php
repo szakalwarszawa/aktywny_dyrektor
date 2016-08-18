@@ -30,6 +30,7 @@ class ZasobyType extends AbstractType
         
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
+            //->add('id')
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden');
@@ -217,7 +218,8 @@ class ZasobyType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\Zasoby'
+            'data_class' => 'Parp\MainBundle\Entity\Zasoby',            
+            //'inherit_data' => true,
         ));
     }
 
@@ -226,6 +228,6 @@ class ZasobyType extends AbstractType
      */
     public function getName()
     {
-        return 'parp_mainbundle_zasoby';
+        return 'parp_mainbundle_zasob';
     }
 }

@@ -51,7 +51,7 @@ class WniosekUtworzenieZasobu
 
     /**
      *
-     * @ORM\OneToOne(targetEntity="Zasoby", inversedBy="wniosekUtworzenieZasobu", cascade={"persist"})
+     * @ORM\OneToOne(targetEntity="Zasoby", mappedBy="wniosekUtworzenieZasobu")
      * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
      * @GRID\Column(field="zasob.nazwa", title="Zasób")
      */
@@ -310,6 +310,7 @@ class WniosekUtworzenieZasobu
     public function setZasob(\Parp\MainBundle\Entity\Zasoby $zasob = null)
     {
         $this->zasob = $zasob;
+        //$zasob->setWniosekUtworzenieZasobu($this);
 
         return $this;
     }
@@ -692,10 +693,13 @@ class WniosekUtworzenieZasobu
      */
     public function __construct()
     {
-        
-        $this->setWniosek(new Wniosek());
-        $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+        if(!$this->getId()){
+            $this->setWniosek(new Wniosek());
+            $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+        }
         $this->getWniosek()->setWniosekUtworzenieZasobu($this);
+        $this->getZasob()->setWniosekUtworzenieZasobu($this);
+        
     }
     
     public function getTyp(){

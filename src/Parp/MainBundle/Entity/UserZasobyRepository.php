@@ -76,7 +76,9 @@ class UserZasobyRepository extends EntityRepository
             
             $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
             //echo "<pre>";print_r($ADUser); echo "</pre>";
-            $uz->setADUser($ADUser[0]);
+            if(count($ADUser) > 0){
+                $uz->setADUser($ADUser[0]);
+            }else{}
         }
         return $res;
     }
