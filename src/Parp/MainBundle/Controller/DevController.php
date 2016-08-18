@@ -1343,9 +1343,9 @@ class DevController extends Controller
             $links = [];
             
             foreach ($finder as $file) {
-                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl("listLogs", ["file" => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
-                
+                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl("listLogs", ["file" => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';                
             }
+            sort($links);
             return new Response('<html><body><ul class="list-group">'.implode("", $links).'</li></body>');
         }else{
             
