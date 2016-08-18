@@ -1361,7 +1361,7 @@ class DevController extends Controller
     
     
     /**
-     * @Route("/getAllZablokowaniFromAD", name="listLogs", defaults={})
+     * @Route("/getAllZablokowaniFromAD", name="getAllZablokowaniFromAD", defaults={})
      * @Template()
      */
     public function getAllZablokowaniFromADAction(){
