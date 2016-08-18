@@ -315,7 +315,7 @@ class LdapAdminService
                 $userAD[0]['title'] = $person->getTitle();
             }
             
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->get('ldap_service')->container->getGrupyUsera($userAD[0], $department->getShortname(), "");
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $department->getShortname(), "");
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
             //$person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
