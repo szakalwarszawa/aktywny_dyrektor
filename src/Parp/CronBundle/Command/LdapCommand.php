@@ -51,6 +51,18 @@ class LdapCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try{
+            if(!$this->getContainer()->get('security.context')->getToken()){
+                $user = new \Parp\AuthBundle\Security\ParpUser("kamil_jakacki", "", "salt", ["PARP_ADMIN"]);
+                // create the authentication token
+                $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
+                    $user,
+                    null,
+                    'main',
+                    $user->getRoles());
+                // give it to the security context
+                $this->getContainer()->get('security.context')->setToken($token);
+            }
+            
             $t1 = microtime(true) ;
             if($input->getOption('ids')){
                 $this->ids = $input->getOption('ids');

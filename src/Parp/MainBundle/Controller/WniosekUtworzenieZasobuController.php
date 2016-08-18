@@ -276,7 +276,9 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity = new WniosekUtworzenieZasobu();
         $form   = $this->createCreateForm($entity, $entity->getTyp());
         return ['form' => $form->createView(),
-            'editor' => false,'delta' => [], 'readonly' => false];
+            'editor' => false,'delta' => [], 'readonly' => false,
+            'canUnblock' => false
+            ];
     }
     protected function ustawTyp($entity, $typ){
         switch($typ){
@@ -348,7 +350,8 @@ class WniosekUtworzenieZasobuController extends Controller
             'entity' => $entity,
             'form'   => $form->createView(),
             'message' => '',
-            'readonly' => false
+            'readonly' => false,
+            'canUnblock' => false
         );
         
     }
@@ -515,14 +518,15 @@ class WniosekUtworzenieZasobuController extends Controller
         //var_dump($editForm);
         //die();
         if ($editForm->isValid()) {
+            //var_dump($entity->getZasob());
             
-            
+            //die('zapis '.$entity->getId());
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         }else{
             
-            //die('a');
+            die('Blad formularza');
         }
         
         $access = $this->checkAccess($entity);

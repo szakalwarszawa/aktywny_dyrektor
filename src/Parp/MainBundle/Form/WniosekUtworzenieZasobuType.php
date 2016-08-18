@@ -119,7 +119,8 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 $builder->add('zasob', 'hidden', ['attr' => ['class' => 'form-item']]);
             }else{
                 $builder->add('zasob', new \Parp\MainBundle\Form\ZasobyType($this->container, $this->nazwaLabel), array(
-                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby')
+                   'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true)
+                   
                 );
             }             
 

@@ -146,6 +146,8 @@ class LdapService
                 //mamy zmiany
                 $noweAttr = $this->parseZmianyUsera($u, $zmiany);
                 foreach($noweAttr as $k => $v){
+                    if($v instanceof \Datetime)
+                        $v = $v->format("Y-m-d h:I");
                     $u[$k] = $v." (".$u[$k].")";
                 }
             }

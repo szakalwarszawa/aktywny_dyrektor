@@ -294,7 +294,7 @@ class LdapAdminService
 
         $userAD = $this->getUserFromAD($person->getSamaccountname());
         //$department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
-        $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $person->getDepartment(), 'nowaStruktura' => true]);
+        $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($person->getDepartment()), 'nowaStruktura' => true]);
             
         if ($person->getDepartment()) {
             $entry['department'] = $person->getDepartment();
@@ -302,13 +302,20 @@ class LdapAdminService
                 $entry['description'] = $department->getShortname();
             }
             //$departmentOld = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($userAD[0]['department']);
-            $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $userAD[0]['department'], 'nowaStruktura' => true]);
-                
+            $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department']), 'nowaStruktura' => true]);
+            if(!$departmentOld){
+                //szuka z nazwa stara struktura
+                $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department'])." - stara struktura", 'nowaStruktura' => false]);    
+            }
+            if(!$departmentOld)
+                die("Nie znalazl starego departamentu '".$userAD[0]['department']."'");
             $person->setGrupyAD($departmentOld, "-");
             $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             //jesli zmiana departamnentu dodajemy nowe grupy AD
+            if(!$departmentOld)
+                die("Nie znalazl nowego departamentu '".$userAD[0]['department']."'");
             $person->setGrupyAD($department);
             if($person->getTitle()){
                 //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
