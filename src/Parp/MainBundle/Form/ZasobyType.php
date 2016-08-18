@@ -56,7 +56,7 @@ class ZasobyType extends AbstractType
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', 'choice', array(
-                'choices' => $admini,
+                'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')

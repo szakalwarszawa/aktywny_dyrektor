@@ -39,7 +39,7 @@ class LdapImportService
             }
         }
         foreach($ADUsers as $adu){
-            $u = $em->getRepository("ParpSoapBundle:ADUser")->findOneBySamaccountname($adu['samaccountname']);
+            $u = null; //$em->getRepository("ParpSoapBundle:ADUser")->findOneBySamaccountname($adu['samaccountname']);
             if(!$u){
                 $u = new \Parp\SoapBundle\Entity\ADUser();            
             }
@@ -89,7 +89,7 @@ class LdapImportService
         $proccessed = array();
         foreach($ADgroups as $k1 => $adg){
             if(is_array($adg)){
-                $g = $em->getRepository("ParpSoapBundle:ADGroup")->findOneByCn($adg['cn'][0]);
+                $g = $u = null; //$em->getRepository("ParpSoapBundle:ADGroup")->findOneByCn($adg['cn'][0]);
                 if(!$g){
                     $g = new \Parp\SoapBundle\Entity\ADGroup();            
                 }
@@ -145,7 +145,7 @@ class LdapImportService
         //echo "<pre>1 "; print_r($ADous); echo "</pre>";
         foreach($ADous as $k1 => $adou){
             if(is_array($adou)){
-                $g = $em->getRepository("ParpSoapBundle:ADOrganizationalUnit")->findOneByDn($adou['dn']);
+                $g = $u = null; //$em->getRepository("ParpSoapBundle:ADOrganizationalUnit")->findOneByDn($adou['dn']);
                 if(!$g){
                     $g = new \Parp\SoapBundle\Entity\ADOrganizationalUnit();            
                 }

@@ -152,7 +152,7 @@ class LdapService
         }
         return $this->_userCache;
     }
-    public function getAllFromADIntW($tezNieobecni = false, $justDump = false, $struktura = null)
+    public function getAllFromADIntW($ktorych = "aktywni", $justDump = false, $struktura = null)
     {
         $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
         $userdn = $this->useradn . $this->patch;
@@ -164,10 +164,15 @@ class LdapService
             
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zespoly,", $userdn);
         }
-        if($tezNieobecni){
+        if($ktorych == "wszyscy"){
             
-            $userdn = str_replace("OU=Zespoly,", "", $userdn);
+            $userdn = str_replace("OU=Zespoly_2016,", "", $userdn);
+        }elseif($ktorych == "zablokowane"){
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);            
+        }elseif($ktorych == "nieobecni"){
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Nieobecni,", $userdn);            
         }
+        
         
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn)
@@ -288,6 +293,9 @@ class LdapService
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         
         $userdn = $this->useradn . $this->patch;
+        $userdn = str_replace("OU=Zespoly_2016,", "", $userdn);
+        
+        
         $filter="(objectClass=organizationalunit)"; 
         $justthese = array(
             "objectclass", 
@@ -299,16 +307,22 @@ class LdapService
             "usncreated", 
             "usnchanged", 
             "name", 
-            "objectguid", 
+            //"objectguid", 
             "objectcategory", 
+            //"gplink",
             "dscorepropagationdata", 
             "dn", 
         ); 
-        $sr=ldap_search($ldapconn, $userdn, $filter); 
+        
+        
+        
+        $sr=ldap_search($ldapconn, $userdn, $filter, $justthese); 
         $info = ldap_get_entries($ldapconn, $sr); 
             
         ldap_free_result($sr); 
         ldap_unbind($ldapconn);  
+        
+        //print_r($info); die();
         return $info;
     }
     public function getGroupsFromAD($group, $wilcardSearch = ""){

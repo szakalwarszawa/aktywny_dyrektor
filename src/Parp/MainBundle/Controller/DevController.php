@@ -1359,4 +1359,16 @@ class DevController extends Controller
         } 
     }
     
+    
+    /**
+     * @Route("/getAllZablokowaniFromAD", name="listLogs", defaults={})
+     * @Template()
+     */
+    public function getAllZablokowaniFromADAction(){
+        $ldap = $this->get('ldap_service');
+        //$us = $ldap->getAllFromADIntW("zablokowane", true);
+        $us = $ldap->getAllFromADIntW("nieobecni", true);
+        die();
+    }
+    
 }    
