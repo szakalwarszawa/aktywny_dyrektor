@@ -317,7 +317,7 @@ class LdapAdminService
             
             $grupyNaPodstawieSekcjiOrazStanowiska = $this->get('ldap_service')->container->getGrupyUsera($userAD[0], $department->getShortname(), "");
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
-            $person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
+            //$person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
         }
         if ($person->getInfo()) {
@@ -325,7 +325,7 @@ class LdapAdminService
                 $entry['info'] = "n/d";
                 $entry['division'] = "";
             }elseif($person->getInfo() == "BRAK" || $person->getInfo() == "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY"){
-                $entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
+                //$entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
                 $entry['division'] = "";
             }else{$entry['info'] = $person->getInfo();
                 // obsłuz miane atrybuty division

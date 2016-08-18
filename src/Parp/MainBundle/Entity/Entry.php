@@ -670,6 +670,13 @@ class Entry
             $this->setMemberOf(implode(",", $gr));
         }
     }
+    public function addGrupyAD($grupy, $znak){
+        $grupyJuzSa = explode(",", $this->getMemberOf());
+        foreach($grupy as $g){
+            $grupyJuzSa[] = $znak.$g;
+        }
+        $this->setMemberOf(implode(",", $grupyJuzSa));
+    }
 
     /**
      * Set wniosek
