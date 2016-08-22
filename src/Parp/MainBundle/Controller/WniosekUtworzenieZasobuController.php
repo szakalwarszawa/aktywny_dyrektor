@@ -35,24 +35,25 @@ class WniosekUtworzenieZasobuController extends Controller
     /**
      * Lists all WniosekUtworzenieZasobu entities.
      *
-     * @Route("/index", name="wniosekutworzeniezasobu")
+     * @Route("/index/{ktore}", name="wniosekutworzeniezasobu", defaults={"ktore" : "oczekujace"})
      * @Template()
      */
-    public function indexAction()
+    public function indexAction($ktore = "oczekujace")
     {
         $em = $this->getDoctrine()->getManager();
-        $grid = $this->generateGrid("wtoku");
-        $grid2 = $this->generateGrid("oczekujace");
-        $grid3 = $this->generateGrid("zamkniete");
+        $grid = $this->generateGrid($ktore);
+        //$grid2 = $this->generateGrid("oczekujace");
+        //$grid3 = $this->generateGrid("zamkniete");
         $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
         
-        if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        if ($grid->isReadyForRedirect() /* || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() */ )
         {
             if ($grid->isReadyForExport())
             {
                 return $grid->getExportResponse();
             }
         
+/*
             if ($grid2->isReadyForExport())
             {
                 return $grid2->getExportResponse();
@@ -62,13 +63,14 @@ class WniosekUtworzenieZasobuController extends Controller
             {
                 return $grid3->getExportResponse();
             }
+*/
         
             // Url is the same for the grids
             return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         }
         else
         {
-            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:index.html.twig', array('grid' => $grid, 'grid2' => $grid2, 'grid3' => $grid3, 'zastepstwa' => $zastepstwa));
+            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:index.html.twig', array('ktore' => $ktore, 'grid' => $grid, 'zastepstwa' => $zastepstwa));
         }
     }
 
@@ -92,14 +94,17 @@ class WniosekUtworzenieZasobuController extends Controller
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
-                $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                if($ktore != "wszystkie"){
+                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                }
                 
-                $statusy = ['08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB'];
+                $statusy = ['08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', '00_TWORZONY_O_ZASOB'];
                 switch($ktore){
                     case "wtoku":
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY_O_ZASOB\')';
+                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\')';
                         //rdie($w);
                         $query->andWhere($w);
+                        $query->andWhere($tableAlias.'.id NOT in (select wn.id from ParpMainBundle:WniosekUtworzenieZasobu wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\'))');
                         break;
                     case "oczekujace":
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
@@ -107,7 +112,8 @@ class WniosekUtworzenieZasobuController extends Controller
                     case "zamkniete":
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
                         break;
-                }
+                }                
+                
                 //$query->andWhere('w.samaccountname = \''.$sam.'\'');
                 $query->addGroupBy($tableAlias . '.id');   
             }
@@ -390,7 +396,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $access = $this->checkAccess($entity);
         if(!$access['viewer'] && !$access['editor']){
-            return $this->render("ParpMainBundle:WniosekUtworzenieZasobu:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
+            return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
         //die(count($uzs).">");
         $editor = $access['editor'];
@@ -404,6 +410,8 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
 //        var_dump($entity->getZasob()->getName()); die();
+        $comments = $em->getRepository("ParpMainBundle:Komentarz")->getCommentCount("WniosekUtworzenieZasobu", $entity->getId());
+
         $deleteForm = $this->createDeleteForm($id);
         return array(
             'canReturn' => (
@@ -418,7 +426,8 @@ class WniosekUtworzenieZasobuController extends Controller
             'form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'delta' => $delta,
-            'readonly' => $readonly
+            'readonly' => $readonly,
+            'comments' => $comments
         );
     }
     protected function obliczZmienionePola($entity){
@@ -532,7 +541,7 @@ class WniosekUtworzenieZasobuController extends Controller
         
         $access = $this->checkAccess($entity);
         if(!$access['viewer'] && !$access['editor']){
-            return $this->render("ParpMainBundle:WniosekUtworzenieZasobu:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
+            return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
         //die(count($uzs).">");
         $editor = $access['editor'];
@@ -809,39 +818,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         elseif($isAccepted == "publish"){
             //przenosi do status 11
-/*
-            $showonly = !$publishForReal;
-            $kernel = $this->get('kernel');
-            $application = new Application($kernel);
-            $application->setAutoExit(false);
-            
-            $ids = [];
-            foreach($wniosek->getWniosek()->getADEntries() as $e){
-                $ids[] = $e->getId();
-            }
-            
-            $input = new ArrayInput(array(
-               'command' => 'parp:ldapsave',
-               'showonly' => $showonly,
-               '--ids' => implode(",", $ids)
-            ));
-            
-            // You can use NullOutput() if you don't need the output
-            $output = new BufferedOutput(
-                OutputInterface::VERBOSITY_NORMAL,
-                true // true for decorated
-            );
-            $application->run($input, $output);
-    
-            // return the output, don't use if you used NullOutput()
-            $content = $output->fetch();
-            
-            $converter = new AnsiToHtmlConverter();
-            if($publishForReal){
-                                //die('a');
-                $this->setWniosekStatus($wniosek, "11_OPUBLIKOWANY_O_ZASOB", false);
-            }
-*/
+
             die('Blad 564654 . To nie powinno miec miejsca');
             $em->flush();
             // return new Response(""), if you used NullOutput()
@@ -871,6 +848,7 @@ class WniosekUtworzenieZasobuController extends Controller
                         case "accept":
                             //przenosi do status 2
                             $this->setWniosekStatus($wniosek, "02_EDYCJA_WLASCICIEL_O_ZASOB", false);
+                        
                             break;
                         case "return":
                             //przenosi do status 1
@@ -881,12 +859,28 @@ class WniosekUtworzenieZasobuController extends Controller
                 case "02_EDYCJA_WLASCICIEL_O_ZASOB":
                     switch($isAccepted){
                         case "accept":
+                            if($wniosek->getWniosekDomenowy()){
+                                //przenosi do status 021
+                                $this->setWniosekStatus($wniosek, "021_EDYCJA_NADZORCA_DOMEN", false);
+                            }else{
+                                //przenosi do status 3
+                                $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);
+                            }
                             
-                            $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);
                             
                             break;
                         case "return":
                             $this->setWniosekStatus($wniosek, ("01_EDYCJA_WNIOSKODAWCA_O_ZASOB"), true);
+                            break;
+                    }
+                    break;
+                case "021_EDYCJA_NADZORCA_DOMEN":
+                    switch($isAccepted){
+                        case "accept":                            
+                            $this->setWniosekStatus($wniosek, "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW", false);                            
+                            break;
+                        case "return":
+                            $this->setWniosekStatus($wniosek, ("02_EDYCJA_WLASCICIEL_O_ZASOB"), true);
                             break;
                     }
                     break;
@@ -1021,6 +1015,16 @@ class WniosekUtworzenieZasobuController extends Controller
                     }
                     //echo "<br>dodaje wlasciciela ".$g;
                     //print_r($where);
+                }
+                break;
+            case "nadzorcaDomen":
+                //
+                $em = $this->getDoctrine()->getManager();
+                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName("PARP_NADZORCA_DOMEN");
+                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                foreach($users as $u){
+                    $where[$u->getSamaccountname()] = $u->getSamaccountname(); 
+                    if ($this->debug) echo "<br>added ".$u->getSamaccountname()."<br>";
                 }
                 break;
             case "administratorZasobow":

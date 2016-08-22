@@ -35,7 +35,12 @@ class WniosekUtworzenieZasobuType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $atrs = ['required' => false, 'attr' => []];
+        if(!$this->entity->getWniosek()->czyWtrakcieTworzenia()){
+            $atrs['attr'] =  ['readonly' => true, 'disabled' => true];
+        }
         $builder
+            ->add('wniosekDomenowy', 'checkbox', $atrs)
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
                 'label'=>false, 'data_class' => 'Parp\MainBundle\Entity\Wniosek')
             )

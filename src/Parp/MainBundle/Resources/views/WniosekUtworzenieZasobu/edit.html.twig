@@ -124,7 +124,7 @@
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#zasob">Dane o zasobie</a></li>
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
-            <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
+            <li><a data-toggle="tab" href="#komentarze">Komentarze {% if(entity.id > 0 and comments > 0) %}<span class="badge">{{comments}}</span>{%endif%}</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
             {%if(entity.wniosek.ADentries|length > 0)%}
@@ -205,6 +205,7 @@
                             </td>
                         </tr>
                     </table>
+                    {{ form_row(form.wniosekDomenowy) }} 
                     {{ form_widget(form.wniosek) }}                     
                     {{ form_row(form.imienazwisko) }}
                     {{ form_row(form.login) }}
@@ -270,7 +271,7 @@
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
                     {%if(entity.id > 0) %}
-                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekUtworzenieZasobu', obiektId: entity.id})) }}
                     {%else%}
                     
                     Ta zakładka będzie dostępna po zapisaniu wniosku
@@ -280,7 +281,7 @@
             <div id="komentarze" class="tab-pane fade">
                 <div  class="tabContent">
                     {%if(entity.id > 0) %}
-                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: entity.id})) }}
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekUtworzenieZasobu', obiektId: entity.id})) }}
                     {%else%}
                     
                     Ta zakładka będzie dostępna po zapisaniu wniosku

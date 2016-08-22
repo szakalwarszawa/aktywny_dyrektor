@@ -34,26 +34,19 @@
         </div>   
     {%endif%}
     <ul class="nav nav-tabs">
-        <li class="active"><a data-toggle="tab" href="#oczekujace">Oczekujące na realizację</a></li>
-        <li><a data-toggle="tab" href="#wtoku">W toku</a></li>
-        <li><a data-toggle="tab" href="#zakonczone">Zakończone</a></li>
+        <li class="{{ ktore == "oczekujace" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'oczekujace'})}}">Oczekujące na realizację</a></li>
+        <li class="{{ ktore == "wtoku" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'wtoku'})}}">W toku</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>        
+        {% if app.user.hasRole('PARP_ADMIN') %}
+            <li class="{{ ktore == "wszystkie" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'wszystkie'})}}">Wszystkie</a></li>
+        {%endif%}
     </ul>
-    
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
             
-            {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
-        </div>
-        <div id="wtoku" class="tab-pane fade">
-
-            
             {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
-        <div id="zakonczone" class="tab-pane fade">
-
-            
-            {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
-        </div>
+        
     </div>
 </div>
 

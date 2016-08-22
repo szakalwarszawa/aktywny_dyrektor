@@ -347,6 +347,10 @@ class Wniosek
     {
         return $this->numer;
     }
+    
+    public function czyWtrakcieTworzenia(){
+        return $this->numer  == "wniosek w trakcie tworzenia";
+    }
     /**
      * Get numer
      *

@@ -1371,4 +1371,26 @@ class DevController extends Controller
         die();
     }
     
+    
+    
+    
+    /**
+     * @Route("/checkWnioskiDomenowe", name="checkWnioskiDomenowe", defaults={})
+     * @Template()
+     */
+    public function checkWnioskiDomenoweAction(){
+        
+        $em = $this->getDoctrine()->getManager();
+
+        $wniosek = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find(11);
+        
+        if($wniosek->getWniosekDomenowy()){
+            die("domenowy'");
+        }else{
+            die("zwykly'");
+            
+        }
+        
+    }
+    
 }    

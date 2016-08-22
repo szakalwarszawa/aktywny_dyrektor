@@ -218,6 +218,15 @@ class WniosekUtworzenieZasobu
      */
     private $zmienionePola;
     
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $wniosekDomenowy = false;
+    
     /**
      * Get id
      *
@@ -762,5 +771,29 @@ class WniosekUtworzenieZasobu
     public function getZmienianyZasob()
     {
         return $this->zmienianyZasob;
+    }
+
+    /**
+     * Set wniosekDomenowy
+     *
+     * @param boolean $wniosekDomenowy
+     *
+     * @return WniosekUtworzenieZasobu
+     */
+    public function setWniosekDomenowy($wniosekDomenowy)
+    {
+        $this->wniosekDomenowy = $wniosekDomenowy;
+
+        return $this;
+    }
+
+    /**
+     * Get wniosekDomenowy
+     *
+     * @return boolean
+     */
+    public function getWniosekDomenowy()
+    {
+        return $this->wniosekDomenowy;
     }
 }

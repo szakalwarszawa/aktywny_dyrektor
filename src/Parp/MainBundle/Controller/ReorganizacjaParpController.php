@@ -1159,4 +1159,98 @@ class ReorganizacjaParpController extends Controller
         
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
     }
+    
+    
+    
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/bierzSlownikDapartamentow", name="bierzSlownikDapartamentow", defaults={})
+     * @Method("GET")
+     */
+    public function bierzSlownikDapartamentowAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD();
+        $data = [];
+        $sekcje = [];
+        $i = 0;
+        foreach($users as $u){
+            if(!isset($sekcje[$u['department']])){
+                $sekcje[$u['department']] = $i;
+                $section = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $u['department']]);
+                $data[$i++] = [
+                    'department' => "'".$u['department']."'",
+                    'description' => "'".$u['description']."'",
+                    'istniejeWbazie' => ($section ? "TAK" : "NIE"),
+                    'users' => [$u['samaccountname']]
+                ];
+            }else{
+                $data[$sekcje[$u['department']]]['users'][] = $u['samaccountname']; 
+            }
+            
+        }
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
+    }
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/poprawSlownikDapartamentow", name="poprawSlownikDapartamentow", defaults={})
+     * @Method("GET")
+     */
+    public function poprawSlownikDapartamentowAction()
+    {
+        $mapujDepartamenty = [
+            'Departament Internacjonalizacji Przedsiębiorstw ' => ['name' => 'Departament Internacjonalizacji Przedsiębiorstw', 'shortname' => 'DIP'],
+            'Dep.wdrożeń innowacji w przedsiębiorstwach' => ['name' => 'Departament Wdrożeń Innowacji w Przedsiębiorstwach', 'shortname' => 'DWI'],
+            'Dep.finansowo-księgowy' => ['name' => 'Departament Finansowo-Księgowy', 'shortname' => 'DFK'],
+        ];
+        
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $users = $ldap->getAllFromAD();
+        $data = [];
+        foreach($users as $u){
+            if(isset($mapujDepartamenty[$u['department']]) || $u['department'] != trim($u['department'])){
+                if(isset($mapujDepartamenty[$u['department']])){
+                    $newDep = $mapujDepartamenty[$u['department']]['name'];
+                    $newDepShort = $mapujDepartamenty[$u['department']]['shortname'];
+                }else{
+                    $newDep = trim($u['department']);
+                    $newDepShort = "DPI";
+                }
+                
+                //mamy osobe do poprawy
+                $entry = new \Parp\MainBundle\Entity\Entry();
+                $entry->setSamaccountname($u['samaccountname']);
+                $entry->setDistinguishedname($u['distinguishedname']);
+                $entry->setFromWhen(new \Datetime());
+                $entry->setIsImplemented(0);
+                $entry->setDepartment($newDep);
+                $entryAD = [
+                    'department' => $newDep,
+                    'description' => $newDepShort,
+                    'extensionAttribute14' =>  $newDepShort
+                ];
+                $ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $entryAD);
+                $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                $data[] = [
+                    'samaccountname' => $u['samaccountname'],
+                    'department' => $u['department'],
+                    'description' => $u['description'],   
+                    'departmentNew' => $newDep, 
+                    'descriptionNew' => $newDepShort, 
+                    'ldapstatus' => $ldapstatus
+                ];
+            }
+        }
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
+    }
 }
