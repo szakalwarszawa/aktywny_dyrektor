@@ -8,6 +8,8 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Parp\MainBundle\Form\Type\NestedComboType;
+use Symfony\Component\Form\CallbackTransformer;
+
 
 class UserZasobyType extends AbstractType
 {
@@ -15,9 +17,12 @@ class UserZasobyType extends AbstractType
     private $choicesPoziomDostepu;
     private $isSubForm;
     private $datauz;
+    private $transformer;
 
     public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true, $datauz = null)
     {
+        
+        $this->transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $this->choicesModul = $choicesModul;
         $this->choicesPoziomDostepu = $choicesPoziomDostepu;
         $this->isSubForm = $isSubForm;
@@ -38,22 +43,54 @@ class UserZasobyType extends AbstractType
             ->add('samaccountname', 'hidden')
             ->add('zasobNazwa', 'hidden')
             ->add('zasobId', 'hidden')
-            //->add('loginDoZasobu')
-            ->add('modul', /* NestedComboType::class */ 'choice', array(
+/*
+     ;
+   $builder->add($builder->create('modul', 'choice', [
+                "required" => false, 
+                "empty_value" => null,
+                "choices" => [$this->choicesModul],
+                "multiple" => true,
+                'expanded' => true
+                ]
+            )->addModelTransformer($this->transformer));
+
+        $builder
+*/
+
+            ->add('modul', 'choice', array(
                 "required" => false, 
                 'empty_value' => null,
                 "choices" => $this->choicesModul,
+                'multiple' => true,
+                'expanded' => true
                     //'data' => ($this->datauz ? $this->datauz['modul'] : "")
                 )
             )
-            ->add('poziomDostepu', /* NestedComboType::class */ 'choice', array(
+
+
+/*
+        $builder->add($builder->create('poziomDostepu',  'choice', array(
                 "required" => false, 
                 'empty_value' => null, 
                 "choices" => $this->choicesPoziomDostepu,
+                'multiple' => true,
+                'expanded' => true
+                    //'data' => ($this->datauz ? $this->datauz['poziomDostepu'] : "")
+                )
+            )->addModelTransformer($this->transformer));
+*/
+
+            ->add('poziomDostepu',  'choice', array(
+                "required" => false, 
+                'empty_value' => null, 
+                "choices" => $this->choicesPoziomDostepu,
+                //'multiple' => true,
+                //'expanded' => true
                     //'data' => ($this->datauz ? $this->datauz['poziomDostepu'] : "")
                 )
             )
-            ->add('aktywneOd', 'text', array(
+
+/*         $builder */ ->add('aktywneOd', 'text', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
                     ),
@@ -99,6 +136,14 @@ class UserZasobyType extends AbstractType
             ->add('uprawnieniaAdministracyjne')
             ->add('odstepstwoOdProcedury')
         ;
+        
+ 
+        
+
+        
+        
+        
+        
         if($this->isSubForm){
             $builder->addEventListener(
             FormEvents::PRE_SET_DATA,
@@ -107,16 +152,44 @@ class UserZasobyType extends AbstractType
                 $o = $event->getData();
                 $choices = array();
                 if($o){
-                    $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu");
-                    $this->addChoicesFromDictionary($o, $form, "getModul", "modul");
+                    $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder);
+                    $this->addChoicesFromDictionary($o, $form, "getModul", "modul", $builder);
                     
                 }
                 
     
             });
         }
+
+        $builder->get('modul')
+            ->addModelTransformer(new \Symfony\Component\Form\CallbackTransformer(
+                function ($tagsAsArray) {
+                    var_dump($tagsAsArray);
+                    echo "!!!CallbackTransformer1!!!";
+                    //var_dump($tagsAsArray);
+                    //return [$tagsAsArray];
+                    //var_dump($tagsAsArray);
+                    // transform the array to a string
+                    if($tagsAsArray)
+                        return explode(', ', $tagsAsArray);
+                    else
+                        return ""; //[];
+                },
+                function ($tagsAsString) {
+                    echo "!!!CallbackTransformer2!!!";
+                    //return $tagsAsString;
+                    //var_dump($tagsAsString);
+                    // transform the string back to an array
+                    if($tagsAsString)
+                        return explode(', ', $tagsAsString);
+                    else
+                        return "";
+                }
+            ))
+        ;
+
     }
-    protected function addChoicesFromDictionary($o, $form, $getter, $fieldName){
+    protected function addChoicesFromDictionary($o, $form, $getter, $fieldName, $builder){
         $ch = explode(";", $o->{$getter}());            
         $choices = array("do wypełnienia przez właściciela zasobu" => "do wypełnienia przez właściciela zasobu");
         foreach($ch as $c){
@@ -128,11 +201,49 @@ class UserZasobyType extends AbstractType
         if(count($choices) == 1){
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
-        $form->add($fieldName, NestedComboType::class,
+        if(!isset($this->datauz[$fieldName])){
+            //$this->datauz[$fieldName] = current($choices);
+            //echo ".".$fieldName." ".(isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "").".";
+        }else{
+            //echo("Jest ustawiony ".$this->datauz[$fieldName]);
+        }
+        $this->datauz[$fieldName] = isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "";
+
+        if($fieldName == "modul2"){
+/*
+            $builder->add($builder->create('modul', 'choice', [
+                        "required" => false, 
+                        "empty_value" => null,
+                        "choices" => $choices, //[$this->choicesModul],
+                        'data' => null,
+                        "multiple" => true,
+                        'expanded' => true
+                        ]
+                    )->addModelTransformer($this->transformer));
+*/
+        }else{
+            //print_r($this->datauz);
+            //echo "!!!";
+            $form->add($fieldName, /* NestedComboType::class */ 'choice',
+                array("choices" => $choices,
+                        'data' => $fieldName == "modul" ? null : $this->datauz[$fieldName],
+                        'multiple' => $fieldName == "modul",
+                        'expanded' => $fieldName == "modul"
+                    )
+            );
+        }
+        
+/*
+        $builder->add($builder->create($fieldName, NestedComboType::class,
             array("choices" => $choices,
-                    'data' => (isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "")
+                    //'data' => [$this->datauz[$fieldName]],
+                    'multiple' => true,
+                    'expanded' => true
                 )
-        );
+            )->addModelTransformer($this->transformer));
+*/
+        
+        
     }
     
     /**
