@@ -98,3 +98,6 @@ td .btn{
     white-space: normal;
     text-align: left;
 }
+.border{
+    border: 1px solid #ccc;
+}

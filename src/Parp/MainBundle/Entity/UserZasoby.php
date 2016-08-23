@@ -359,6 +359,9 @@ class UserZasoby
      */
     public function setModul($modul)
     {
+        if(is_array($modul)){
+            $modul = implode(";", $modul);
+        }
         $this->modul = $modul;
 
         return $this;
@@ -371,6 +374,10 @@ class UserZasoby
      */
     public function getModul()
     {
+        
+        if(is_array($this->modul)){
+            $modul = implode(";", $this->modul);
+        }
         return $this->modul;
     }
 
@@ -382,6 +389,9 @@ class UserZasoby
      */
     public function setPoziomDostepu($poziomDostepu)
     {
+        if(is_array($poziomDostepu)){
+            $poziomDostepu = implode(";", $poziomDostepu);
+        }
         $this->poziomDostepu = $poziomDostepu;
 
         return $this;
@@ -394,6 +404,9 @@ class UserZasoby
      */
     public function getPoziomDostepu()
     {
+        if(is_array($this->poziomDostepu)){
+            $this->poziomDostepu = implode(";", $this->poziomDostepu);
+        }
         return $this->poziomDostepu;
     }
 

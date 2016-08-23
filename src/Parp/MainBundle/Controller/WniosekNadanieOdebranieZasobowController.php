@@ -1103,7 +1103,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ];
             
         }
-        
+        $userzasobyRozbite = [];
+        foreach($uzs as $uz){
+            $moduly = explode(";", $uz->getModul());
+            $poziomy = explode(";", $uz->getPoziomDostepu());
+            foreach($moduly as $m){
+                foreach($poziomy as $p){
+                    $nowyUzs = clone $uz;
+                    $nowyUzs->setModul($m);
+                    $nowyUzs->setPoziomDostepu($p);
+                    $userzasobyRozbite[] = $nowyUzs;
+                }
+            }
+        }
 
         $deleteForm = $this->createDeleteForm($id);
         return array(
@@ -1113,7 +1125,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'userzasoby' => $uzs,
             'editor' => $editor,
             'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA"),
-            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername())
+            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'userzasobyRozbite' => $userzasobyRozbite
         );
     }
     

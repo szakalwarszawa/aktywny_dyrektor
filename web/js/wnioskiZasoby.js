@@ -71,3 +71,10 @@ $(document).ready(function(){
     //form[userzasoby][0][bezterminowo]
     
 });
+
+function ZaakceptujWniosek(event, wlasciciel){
+    if(wlasciciel == '1'){
+        event.preventDefault();
+        $('#acceptConfirm').modal('show')
+    }
+}

@@ -82,7 +82,8 @@
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                             {%else%}
-                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" 
+                                onclick="ZaakceptujWniosek(event, '{{entity.wniosek.status.nazwaSystemowa == '03_EDYCJA_WLASCICIEL' ? '1' : '0'}}')" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                             {%endif%}
                         {%endif%}
                     {%else%}
@@ -244,8 +245,7 @@
                             <th class="header">Bezterminowo</th>
                             <th class="header">Aktywne do</th>
                             <th class="header">Kanał dostępu</th>
-                            <th class="header">Uprawnienia administracyjne</th>
-                            <th class="header">Odstepstwo od procedury</th>   
+                            <th class="header">Uprawnienia administracyjne</th> 
                             <th class="header">Cel nadania/odebrania</th>   
                             <th class="header">Akcje</th>                            
                         </tr>
@@ -255,15 +255,14 @@
                             <tr>
                                 <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
                                 <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
-                                <td>{{z.modul}}</td>
-                                <td>{{z.poziomDostepu}}</td>
+                                <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
+                                <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
                                 <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
                                 <td>{{z.aktywneOd|date("Y-m-d")}}</td>
                                 <td>{{z.bezterminowo ? "TAK" : "NIE"}}</td>
                                 <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}</td>
                                 <td>{{z.kanalDostepu}}</td>
                                 <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
-                                <td>{{z.odstepstwoOdProcedury ? "TAK" : "NIE"}}</td>
                                 <td>{{z.powodNadania}}</td>
                                 <td>
                                 {%if editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
@@ -336,7 +335,68 @@
         </div>
     </div>
 
-    
+<!-- Modal -->
+<div id="acceptConfirm" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">        
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Akceptacja wniosku</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="alert alert-danger">
+                        <h2>Akceptujesz nadanie następujących uprawnień:</h2>
+                    </div>
+                    {% if editor %}
+                    <table class="record_properties table table-striped tablesorter">
+                        <thead>
+                            <tr>
+                                <th class="header">Nazwa</th>
+                                <th class="header">Osoba</th>
+                                <th class="header">Moduł</th>
+                                <th class="header">Poziom dostępu</th>
+                                <th class="header">Sumowanie uprawnień</th>
+                                <th class="header">Aktywne od</th>
+                                <th class="header">Bezterminowo</th>
+                                <th class="header">Aktywne do</th>
+                                <th class="header">Kanał dostępu</th>
+                                <th class="header">Uprawnienia administracyjne</th> 
+                                <th class="header">Cel nadania/odebrania</th>                       
+                            </tr>
+                        </thead>
+                            <tbody>
+                            {% for z in userzasobyRozbite %}
+                                <tr>
+                                    <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
+                                    <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
+                                    <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
+                                    <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
+                                    <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
+                                    <td>{{z.aktywneOd|date("Y-m-d")}}</td>
+                                    <td>{{z.bezterminowo ? "TAK" : "NIE"}}</td>
+                                    <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}</td>
+                                    <td>{{z.kanalDostepu}}</td>
+                                    <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
+                                    <td>{{z.powodNadania}}</td>                                    
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                    {%endif%}
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                {% if editor %}
+                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'})}}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj"}} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                {%endif%}
+            </div>
+        </div>
+        
+    </div>
+</div>    
     
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 

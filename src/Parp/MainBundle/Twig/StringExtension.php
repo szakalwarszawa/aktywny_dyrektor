@@ -24,6 +24,7 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('getObjectValue', array($this, 'getObjectValue')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabel', array($this, 'getMultipleCheckboxLabel')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
+            new \Twig_SimpleFilter('showMultiFieldAsNewLines', array($this, 'showMultiFieldAsNewLines')),
         );
     }
     public function zasobyNazwa($zids){
@@ -120,5 +121,8 @@ class StringExtension extends \Twig_Extension
     public function actionTitles($var)
     {
         return $this->renameService->actionTitles($var);
+    }
+    public function showMultiFieldAsNewLines($str){
+        return "<div class='border'>".str_replace(";", "</div><div class='border'>", $str)."</div>";
     }
 }

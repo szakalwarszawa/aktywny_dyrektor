@@ -685,7 +685,7 @@ class NadawanieUprawnienZasobowController extends Controller
             $form->handleRequest($request);
 
             if ($form->isValid()) {
-                //die();
+                //die('temp blokuje by zbadac wnioski');
                 $ndata = $form->getData();
                 //print_r($ndata);
                 //tworzy przypisania do zasobow

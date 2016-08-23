@@ -13,10 +13,8 @@ class StringToArrayTransformer implements DataTransformerInterface
      */
     public function transform($array)
     {
-        echo "transform1";
-        return [];
-        //echo "<pre>"; print_r($array); die();
-        //return $array ? implode(",", $array) : "";
+        //echo "<pre>"; print_r($array);
+        return $array ? explode(",", $array) : array();
     }
 
     /**
@@ -28,7 +26,6 @@ class StringToArrayTransformer implements DataTransformerInterface
      */
     public function reverseTransform($string)
     {
-        echo "reverseTransform1";
         //var_dump($string); die();
         return implode(",", $string);
     }
