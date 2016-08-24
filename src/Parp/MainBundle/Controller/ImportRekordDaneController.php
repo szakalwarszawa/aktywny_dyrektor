@@ -292,7 +292,7 @@ class ImportRekordDaneController extends Controller
                         }
                         if($nowy || $dr->getUmowaDo())
                             $entry->setAccountExpires($dr->getUmowaDo());
-                        $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
+                            $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
                         
                         if($department == null){
                             echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
