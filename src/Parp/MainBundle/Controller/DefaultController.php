@@ -209,18 +209,25 @@ class DefaultController extends Controller
         }
 
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-        
-        $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
-        $grid->addMassAction($massAction1);
-
-        $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
-        $grid->addMassAction($massAction2);     
-        $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
-        //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
-        $grid->addMassAction($massAction3);
-        $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-        //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-        $grid->addMassAction($massAction4);
+        if(
+            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
+            in_array("PARP_ADMIN", $this->getUser()->getRoles())
+        ){
+            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
+            $grid->addMassAction($massAction1);
+    
+            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
+            $grid->addMassAction($massAction2);    
+        }
+        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                 
+            $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
+            //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
+            $grid->addMassAction($massAction3);
+            $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            $grid->addMassAction($massAction4);
+        }
 
         $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
         
