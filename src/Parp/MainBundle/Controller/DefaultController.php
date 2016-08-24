@@ -211,7 +211,7 @@ class DefaultController extends Controller
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
         if(
             in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN", $this->getUser()->getRoles()) || 1 == 1
+            in_array("PARP_ADMIN", $this->getUser()->getRoles())
         ){
             $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
             $grid->addMassAction($massAction1);
@@ -377,7 +377,6 @@ class DefaultController extends Controller
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
         }
         
-        //print_r($defaultData); die();
         $form = $this->createUserEditForm($defaultData);
 
 
@@ -538,7 +537,7 @@ class DefaultController extends Controller
         
         $tmpl = $kadry1 || $kadry2 ?  "ParpMainBundle:Default:editKadry.html.twig" : 'ParpMainBundle:Default:edit.html.twig';
         //die($tmpl);
-        return $this->render($tmpl, array(
+        $tplData = array(
             'userGroups' => $userGroups,
             'user' => $ADUser[0],
             'form' => $form->createView(),
@@ -550,7 +549,9 @@ class DefaultController extends Controller
             'historyEntries' => $historyEntries,
             'dane_rekord' => $dane_rekord
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
-        ));
+        );
+        //echo "<pre>"; print_r($tplData); die();
+        return $this->render($tmpl, $tplData);
     }
     protected function parseUserKadry($samaccountname, $ndata, $odata){
         
@@ -648,7 +649,6 @@ class DefaultController extends Controller
         $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
         $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
-        
         
         $builder = $this->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(

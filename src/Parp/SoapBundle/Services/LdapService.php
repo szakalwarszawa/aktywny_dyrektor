@@ -110,7 +110,7 @@ class LdapService
         $noweAttr = [];
         foreach($zmiany[$u['samaccountname']] as $z){
             if($z->getAccountExpires()){
-                $noweAttr['accountExpires'] = $z->getAccountExpires();
+                $noweAttr['accountExpires'] = $z->getAccountExpires()->format("Y-m-d");
             }
             if($z->getDivision()){
                 $noweAttr['division'] = $z->getDivision();
