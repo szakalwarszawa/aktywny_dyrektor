@@ -625,15 +625,7 @@ class NadawanieUprawnienZasobowController extends Controller
             $z = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->find($v);
             
             
-            $admini = explode(",", $z->getAdministratorZasobu());
-            //var_dump($this->getUser()->getUsername(), $admini, $this->getUser()->getRoles());
-            if($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini) && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
-                //jesli bez wniosku
-                //jesli nie admin_zasobu
-                //jesli nie parp_admin
-                //wtedy nie moze
-                throw new SecurityTestException("Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!");
-            }
+            
             
             //echo ".".count($z->getUzytkownicy()).".";
             if($uzid == 0){
@@ -721,7 +713,15 @@ class NadawanieUprawnienZasobowController extends Controller
                         //tu szukal podobnych dla tego zasobu ale teraz po polaczeniu z wnioskiami i nieaktywnymi to trzeba by warunek zwiekszyc
                         //$suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
                         $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($oz->getZasobId());
-                        
+                        $admini = explode(",", $zasob->getAdministratorZasobu());
+                        //var_dump($this->getUser()->getUsername(), $admini, $this->getUser()->getRoles());
+                        if($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini) && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                            //jesli bez wniosku
+                            //jesli nie admin_zasobu
+                            //jesli nie parp_admin
+                            //wtedy nie moze
+                            throw new SecurityTestException("Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!");
+                        }
                         
                         //print_r($suz);
                         //if($suz == null){

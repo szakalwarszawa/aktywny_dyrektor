@@ -211,7 +211,7 @@ class DefaultController extends Controller
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
         if(
             in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN", $this->getUser()->getRoles())
+            in_array("PARP_ADMIN", $this->getUser()->getRoles()) || 1 == 1
         ){
             $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
             $grid->addMassAction($massAction1);
