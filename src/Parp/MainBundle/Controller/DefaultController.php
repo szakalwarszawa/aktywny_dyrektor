@@ -32,19 +32,18 @@ class DefaultController extends Controller
 {
 
     /**
-     * @Route("/index/{onlyTemporary}", name="main", defaults={"onlyTemporary": "usersFromAd"})
+     * @Route("/index/{ktorzy}", name="main", defaults={"ktorzy": "usersFromAd"})
      * @Route("/", name="main_home")
      * @Template()
      */
-    public function indexAction($onlyTemporary = "usersFromAd")
+    public function indexAction($ktorzy = "usersFromAd")
     {
         //$this->get('check_access')->checkAccess('USER_MANAGEMENT');
         
         $ldap = $this->get('ldap_service');
         // Sięgamy do AD:
-        if($onlyTemporary != "usersFromAd"){
-            $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);
-        }else{
+        
+        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
             $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
             $widzi_wszystkich = 
                 in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
@@ -63,6 +62,8 @@ class DefaultController extends Controller
     
             
             //print_r($ADUsers);
+        }else{
+            $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);            
         }
         //die(".".count($ADUsers));
         if(count($ADUsers) == 0){
@@ -156,7 +157,7 @@ class DefaultController extends Controller
                 ->setFilterable(false)
                 ->setSafe(true);
 
-        if($onlyTemporary == "usersFromAd"){
+        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
             // Edycja konta
             $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
             $rowAction2->setColumn('akcje');
@@ -221,8 +222,14 @@ class DefaultController extends Controller
         //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
         $grid->addMassAction($massAction4);
 
+        $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
+        
+        
+        if($ktorzy == "usersFromAdFull")
+            $grid->setLimits(1000);
+        
 
-        return $grid->getGridResponse();
+        return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
     /**
      * @return array

@@ -19,14 +19,26 @@
 
     <center>
         <div class="btn-group">
-            <a class="btn btn-primary btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
+            <a class="btn btn-primary btn-xs" href="{{ path('main', {'ktorzy' : 'usersFromAdFull'}) }}">Wyszukiwanie aktywne</a>
         </div>
         {% if app.user.hasRole('PARP_ADMIN') %}
+        <div class="btn-group">
+            <a class="btn btn-success btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
+        </div>
         <div>
             <a class="btn btn-danger" href="{{path('publish')}}">Opublikuj zmiany do AD</a>
         </div>
         {%endif%}
     </center>
+    {% if ktorzy == 'usersFromAdFull' %}
+        <div class="well">
+            <label>Wyszukiwanie aktywne</label>
+            <div class="form-group">
+                <input type="text" class="form-control" placeholder="Wpisz frazę wyszukania we wszystkich polach"
+                id="aktywneWyszukanie" />
+            </div>
+        </div>
+    {%endif%}
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
     <script>
@@ -44,5 +56,35 @@
             $("#{{ grid.hash }}").submit();
             $('#export-grid').val('-1');
         })
+        $('#aktywneWyszukanie').keydown(function(){
+            szukajUserow(this);
+        });
+        function szukajUserow(that){
+            var i = 0;
+            var szukaj = $(that).val();
+            $('table tr').each(function(){
+                if(i > 1){
+                    var txt = $(this).text();
+                    var checked = $('input[type=checkbox]', $(this)).prop('checked');
+                    if(checked)
+                        console.log('checked '+checked+' '+txt);
+                    if(txt.indexOf(szukaj) >= 0 || checked){
+                        $(this).removeClass('hidden');
+                    }else{                    
+                        $(this).addClass('hidden');
+                    }
+                }
+                i++;
+            });
+        }
     </script>
+    <style>
+        table tr td:first-child, table tr th:first-child{
+            min-width:30px;
+            width: 30px!important;
+        }
+        form.dirty{
+            background: transparent;
+        }
+    </style>
 {% endblock body %}

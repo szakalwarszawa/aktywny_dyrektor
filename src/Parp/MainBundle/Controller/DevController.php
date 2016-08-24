@@ -1393,4 +1393,41 @@ class DevController extends Controller
         
     }
     
+    /**
+     * @Route("/fixDIP_DPI", name="getAllZablokowaniFrofixDIP_DPImAD", defaults={})
+     * @Template()
+     */
+    public function fixDIP_DPIAction(){
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        //$us = $ldap->getAllFromADIntW("zablokowane", true);
+        $us = $ldap->getAllFromAD();
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $dane = [];
+        foreach($us as $u){
+            $dep =  $em->getRepository('ParpMainBundle:Departament')->findOneBy(['shortname' => $u['description'], 'nowaStruktura' => 1]);
+            if($dep == null || trim($dep->getName()) != trim($u['department'])){
+                $u['error'] = $dep == null ? "Brak depu!!!" : "Skrot i nazwa depu sie nie zgadzaja";
+                unset($u['thumbnailphoto']);
+                unset($u['memberOf']);
+                $u['desc1'] = ".".trim($u['department']).".";
+                $u['desc2'] = ".".($dep ? trim($dep->getName()) : "brak").".";
+                $u['skrot1'] = ".".($dep ? trim($u['description']) : "brak").".";
+                $u['skrot2'] = ".".($dep ? trim($dep->getShortname()) : "brak").".";
+                $dane[] = $u;
+                if($u['samaccountname'] == 'Edyta_Dominiak'){
+                    //poprawioamy na DIP
+                    $entry = ["description" => "DRU", "extensionAttribute14" => "DRU"];
+                    
+                    //$ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $entry);
+                    //echo "!!!wrzucam do ad!!!";
+                }
+            }
+        }
+        
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
+    }
 }    
