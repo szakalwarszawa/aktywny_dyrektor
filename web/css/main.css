@@ -101,3 +101,6 @@ td .btn{
 .border{
     border: 1px solid #ccc;
 }
+.grid_footer .form-control{
+    width:75px;
+}
