@@ -5,7 +5,7 @@
         <div class="alert alert-info">
             <h3>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h3>
             <ul>                
-                <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
+                <li><b>Pracownicy :</b> {{ entity.pracownicy|addSpaces }}</li>
                 <li><b>Zasoby: </b>
                 {% set i = 0 %}
                 {% set przetworzoneZasoby = {} %}

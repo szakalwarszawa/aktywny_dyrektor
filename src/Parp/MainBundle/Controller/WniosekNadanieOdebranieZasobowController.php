@@ -885,7 +885,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->setWniosekStatus($wniosek, "06_EDYCJA_TECHNICZNY", false);
                             break;
                         case "return":
-                            $this->setWniosekStatus($wniosek, "04_EDYCJA_IBI", true);
+                            $maBycIbi = false;
+                            foreach($wniosek->getUSerZasoby() as $uz){
+                                $maBycIbi = $maBycIbi || $uz->getUprawnieniaAdministracyjne();
+                            }
+                            if($maBycIbi){
+                                $this->setWniosekStatus($wniosek, "04_EDYCJA_IBI", false);
+                            }else{
+                                $this->setWniosekStatus($wniosek, "03_EDYCJA_WLASCICIEL", false);                                
+                            }
+                            
                             break;
                     }
                     break;

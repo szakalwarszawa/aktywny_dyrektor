@@ -14,6 +14,7 @@ class StringExtension extends \Twig_Extension
     public function getFilters()
     {
         return array(
+            new \Twig_SimpleFilter('addSpaces', array($this, 'addSpaces')),
             new \Twig_SimpleFilter('toCamelcase', array($this, 'toCamelcase')),
             new \Twig_SimpleFilter('gridTitles', array($this, 'gridTitles')),
             new \Twig_SimpleFilter('datetime', array($this, 'datetimeFormat')),
@@ -26,6 +27,10 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
             new \Twig_SimpleFilter('showMultiFieldAsNewLines', array($this, 'showMultiFieldAsNewLines')),
         );
+    }
+    public function addSpaces($str){
+        $str = str_replace(",", ", ", $str);
+        return $str;
     }
     public function zasobyNazwa($zids){
         $arr = explode(",", $zids);
