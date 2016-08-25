@@ -82,9 +82,9 @@ class UserZasobyType extends AbstractType
                 ))
             ->add('kanalDostepu', 'choice', [
                 'choices' => [
+                    'WK' => 'WK - Wewnętrzny kablowy',
                     'DZ_O' => 'DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP',
                     'DZ_P' => 'DZ_P - Zdalny, za pomocą komputera będącego własnością PARP',
-                    'WK' => 'WK - Wewnętrzny kablowy',
                     'WR' => 'WR - Wewnętrzny radiowy',
                     'WRK' => 'WRK - Wewnętrzny radiowy i kablowy'
                     

@@ -6,6 +6,10 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 
 class StringToArrayTransformer implements DataTransformerInterface
 {
+    protected $separator;
+    public function __construct($separator = ","){
+        $this->separator = $separator;
+    }
     /**
      * Transforms an array to a string. 
      *
@@ -14,7 +18,7 @@ class StringToArrayTransformer implements DataTransformerInterface
     public function transform($array)
     {
         //echo "<pre>"; print_r($array);
-        return $array ? explode(",", $array) : array();
+        return $array ? explode($this->separator, $array) : array();
     }
 
     /**
@@ -27,6 +31,6 @@ class StringToArrayTransformer implements DataTransformerInterface
     public function reverseTransform($string)
     {
         //var_dump($string); die();
-        return implode(",", $string);
+        return implode($this->separator, $string);
     }
 }

@@ -117,15 +117,20 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                ))
-
-            ->add('dokumentacjaFormalna', 'choice', array(
+                ));
+            $builder->add($builder->create('dokumentacjaFormalna', 'choice', array(
+                'multiple' => true,
+                'attr' => ['class' => 'select2'],
                 'choices' => array('protok. odbioru' => 'protok. odbioru', "SIWZ" => "SIWZ", "umowa" => "umowa", "inna" => "inna")
-            ))
-            ->add('dokumentacjaProjektowoTechniczna', 'choice', array(
+            ))->addModelTransformer($transformer));
+            $builder->add($builder->create('dokumentacjaProjektowoTechniczna', 'choice', array(
+                'multiple' => true,
+                'attr' => ['class' => 'select2'],
                 'choices' => array('brak' => 'brak', "inna" => "inna", "powdrożeniowa" => "powdrożeniowa", "proj. techniczny" => "proj. techniczny", "raport z analizy" => "raport z analizy", "specyf. wymagań" => "specyf. wymagań")
-            ))
-            ->add('technologia')
+            ))->addModelTransformer($transformer));  
+            
+            
+            $builder->add('technologia')
             ->add('testyBezpieczenstwa')
             ->add('testyWydajnosciowe')
             ->add('dataZleceniaOstatniegoPrzegladuUprawnien', 'datetime', array(
