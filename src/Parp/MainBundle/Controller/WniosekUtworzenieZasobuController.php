@@ -559,13 +559,40 @@ class WniosekUtworzenieZasobuController extends Controller
             'delete_form' => $deleteForm->createView(),
         );
     }
+    
+    
     /**
-     * Deletes a WniosekUtworzenieZasobu entity.
+     * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}", name="wniosekutworzeniezasobu_delete")
+     * @Route("/skasuj/{id}", name="wniosekutworzeniezasobu_delete")
+     * @Method("GET")
+     * @Template()
+     */
+    public function deleteAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'entity'      => $entity,
+            'delete_form' => $deleteForm->createView(),
+        );
+    }
+    
+    /**
+     * Deletes a WniosekNadanieOdebranieZasobow entity.
+     *
+     * @Route("/skasuj/{id}", name="wniosekutworzeniezasobu_delete_form")
      * @Method("DELETE")
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteFormAction(Request $request, $id)
     {
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
@@ -577,7 +604,8 @@ class WniosekUtworzenieZasobuController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
             }
-
+            
+            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został skasowany.');
             $em->remove($entity);
             $em->flush();
         }
@@ -597,7 +625,7 @@ class WniosekUtworzenieZasobuController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wniosekutworzeniezasobu_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj WniosekUtworzenieZasobu','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

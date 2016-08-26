@@ -22,6 +22,7 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
+use Parp\MainBundle\Exception\SecurityTestException;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -204,6 +205,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->setWniosekStatus($entity, "00_TWORZONY", false);
             $em->persist($entity);
             $em->persist($entity->getWniosek());
+            $prs = explode(",", $entity->getPracownicy());
+            if($entity->getPracownicy() == "" || count($prs) == 0){
+                throw new SecurityTestException("Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz w przeglądarce i wybierz conajmniej jedną osobę w polu 'Pracownicy'!", 745);
+            }
+            
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
@@ -852,7 +858,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         case "accept":
                             $maBycIbi = false;
                             foreach($wniosek->getUSerZasoby() as $uz){
-                                $maBycIbi = $maBycIbi || $uz->getUprawnieniaAdministracyjne() || $uz->getPracownikSpozaParp();
+                                $maBycIbi = $maBycIbi || $uz->getUprawnieniaAdministracyjne() || $wniosek->getPracownikSpozaParp();
                             }
                             
                             if($maBycIbi){
@@ -888,7 +894,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         case "return":
                             $maBycIbi = false;
                             foreach($wniosek->getUSerZasoby() as $uz){
-                                $maBycIbi = $maBycIbi || $uz->getUprawnieniaAdministracyjne() || $uz->getPracownikSpozaParp();
+                                $maBycIbi = $maBycIbi || $uz->getUprawnieniaAdministracyjne() || $wniosek->getPracownikSpozaParp();
                             }
                             if($maBycIbi){
                                 $this->setWniosekStatus($wniosek, "04_EDYCJA_IBI", false);
@@ -1143,7 +1149,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasobow_delete")
+     * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete")
      * @Method("GET")
      * @Template()
      */
@@ -1285,7 +1291,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Deletes a WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasobow_delete_form")
+     * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete_form")
      * @Method("DELETE")
      */
     public function deleteFormAction(Request $request, $id)
