@@ -336,7 +336,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //biore managera z pola managerSpoząParp
                     $ADManager = $ldap->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     if(count($ADManager) == 0){
-                        die("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                        echo ("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     }
                     //$przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                 }else{
@@ -349,12 +349,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 
                 if(count($ADManager) == 0 || $ADManager[0]['samaccountname'] == ''){
                     print_r($ADManager);
-                    print_r($uss);
-                    die("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
+                    //print_r($uss);
+                    //echo ("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
+                }else{
+                    //print_r($ADManager[0]['samaccountname']);
+                    $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                    if ($this->debug) echo "<br>added ".$ADManager[0]['samaccountname']."<br>";
                 }
-                //print_r($ADManager[0]['samaccountname']);
-                $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                if ($this->debug) echo "<br>added ".$ADManager[0]['samaccountname']."<br>";
                 break;
             case "ibi":
                 //
@@ -499,7 +500,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //var_dump($view);
         $this->container->get('mailer')->send($message);
     }
-    protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
+    public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
         if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
         
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
@@ -1002,7 +1003,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
     
     protected function checkAccess($entity, $onlyEditors = false){
-        
         $em = $this->getDoctrine()->getManager();
         $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
 
@@ -1046,8 +1046,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 */
         
-        
-        return ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
+        $ret = ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
+        //var_dump($ret);
+        return $ret;
     }
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
@@ -1323,5 +1324,59 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ->add('submit', 'submit', array('label' => 'Skasuj wniosek','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
+    }
+    
+    
+    
+    /**
+     * @Route("/dev/poprawWnioskiKtorePominelyIBI", name="poprawWnioskiKtorePominelyIBI", defaults={})
+     * @Template()
+     */
+    public function poprawWnioskiKtorePominelyIBIAction(){
+            
+        $em = $this->getDoctrine()->getManager();
+        $ctrl = $this;
+        $wniochy = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->findById([150,844]);
+        foreach($wniochy as $wniosek){
+            //tym trzeba cofnac do IBI
+            $wniosek->getWniosek()->setLockedBy(null);
+            $wniosek->getWniosek()->setLockedAt(null);
+            $ctrl->setWniosekStatus($wniosek, "04_EDYCJA_IBI", true);
+        }
+        
+        $wniochy = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->findById([213,728]);
+        foreach($wniochy as $wniosek){
+            //tym trzeba dodac IBI
+            $wniosek->getWniosek()->setLockedBy(null);
+            $wniosek->getWniosek()->setLockedAt(null);
+            foreach($wniosek->getWniosek()->getStatusy() as $status){
+                if($status->getStatusName() == "W akceptacji u właściciela zasobu"){
+                    $lastStatus = $status;
+                }
+                if($status->getStatusName() == "W akceptacji u administratora zasobu"){
+                    $nextStatus = $status;
+                }
+            }
+            $interval = $nextStatus->getCreatedAt()->diff($lastStatus->getCreatedAt());
+            $newDate = clone $lastStatus->getCreatedAt();
+            $newDate = $newDate->add(new \Dateinterval('PT' . (int)(($interval->i/2)*60+($interval->s/2)) . 'S'));
+            //var_dump($interval->i, $nextStatus->getCreatedAt(), $lastStatus->getCreatedAt(), $newDate); 
+            $ns = $em->getRepository("ParpMainBundle:WniosekStatus")->findOneByNazwaSystemowa("04_EDYCJA_IBI");
+            $status = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
+            $status->setStatus($ns);
+            $status->setWniosek($wniosek->getWniosek());
+            $wniosek->getWniosek()->addStatusy($status);
+            $status->setRejected(false);
+            $status->setCreatedBy("grzegorz_bialowarczu");
+            $status->setCreatedAt($newDate);
+            $status->setStatusname($ns->getNazwa());
+            $status->setOpis($ns->getNazwa());
+            $status->setRejected(false);
+            //die();
+            $em->persist($status);
+        }
+        $em->flush();
+        die(".".count($wniochy));
+        
     }
 }

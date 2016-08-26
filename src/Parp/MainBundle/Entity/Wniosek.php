@@ -107,6 +107,7 @@ class Wniosek
      * @ORM\ManyToOne(targetEntity="WniosekStatus", inversedBy="wnioski")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      * @GRID\Column(field="status.nazwa", title="Status")
+     * @ORM\OrderBy({"createdAtaaa" = "DESC"})
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $status;
@@ -640,6 +641,11 @@ class Wniosek
      */
     public function getStatusy()
     {
+        $sort = \Doctrine\Common\Collections\Criteria::create();
+        $sort->orderBy(Array(
+            'createdAt' => \Doctrine\Common\Collections\Criteria::ASC
+        ));
+        return $this->statusy->matching($sort);
         return $this->statusy;
     }
     
