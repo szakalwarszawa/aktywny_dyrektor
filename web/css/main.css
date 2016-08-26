@@ -104,3 +104,6 @@ td .btn{
 .grid_footer .form-control{
     width:75px;
 }
+table{
+    table-layout: fixed;
+}

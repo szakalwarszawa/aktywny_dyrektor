@@ -228,7 +228,6 @@ class LdapCommand extends ContainerAwareCommand
                         }else{
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
-                            //die();
                         }
                     }
                 }

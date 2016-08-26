@@ -48,7 +48,8 @@ class DefaultController extends Controller
             $widzi_wszystkich = 
                 in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
                 in_array("PARP_BZK_2", $this->getUser()->getRoles()) ||
-                in_array("PARP_ADMIN", $this->getUser()->getRoles())            
+                in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
+                in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles())             
             ;
             $ADUsersTemp = $ldap->getAllFromAD();
             $ADUsers = array();

@@ -80,7 +80,10 @@ class ZasobyController extends Controller
     }
     
     protected function sprawdzDostep(){
-        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+        if(
+            !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
+            !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles())
+        ){
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
             throw new SecurityTestException("Tylko administrator AkD może aktualizować zmiany w zasoback AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
         }
