@@ -679,6 +679,7 @@ class NadawanieUprawnienZasobowController extends Controller
         ))
             ->add('Dalej', 'submit', array(
                 'attr' => array(
+                    'onclick' => 'beforeSubmit(event)',
                     'class' => 'btn btn-success col-sm-12',
                 ),
             ))

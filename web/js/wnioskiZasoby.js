@@ -78,3 +78,16 @@ function ZaakceptujWniosek(event, wlasciciel){
         $('#acceptConfirm').modal('show')
     }
 }
+function beforeSubmit(event){
+    var nieWybrane = false;
+    $('.select2.multiwybor').each(function(){
+        console.log(this.value);
+        nieWybrane = this.value == "" || nieWybrane;
+    });
+    
+    if(nieWybrane){
+        event.preventDefault();
+        alert('Musisz wybrać wartość w polu "Moduł" oraz "Poziom dostępu"!');
+    }
+    //
+}
