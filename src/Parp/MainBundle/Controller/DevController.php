@@ -30,6 +30,8 @@ use Parp\MainBundle\Entity\HistoriaWersji;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+
+include __DIR__."/../../../../vendor/adldapSeparate/adLDAP/lib/adLDAP/adLDAP.php";
 /**
  * Zasoby controller.
  *
@@ -1438,9 +1440,34 @@ class DevController extends Controller
     public function primaryAddressChangeAction(){
         
         $sam = "kamil_jakacki";
-        $ldap = $this->get('ldap_service');
-        $ldap->adldap->exchange()->primaryAddress($sam, "kacy@parp.gov.pl");
+        $ldap = $this->get('ldap_admin_service');
+        $ldap->changePrimaryEmail($sam, "kacy@parp.gov.pl");
+        
     }
     
+    
+    /**
+     * @Route("/getAllWithAttribute/{attr}/{attr2}", name="getAllWithAttribute", defaults={"attr2" : ""})
+     * @Template()
+     */
+    public function getAllWithAttributeAction($attr, $attr2 = ""){
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getAllFromAD();
+        $ret = [];
+        $data = [];
+        foreach($us as $u){
+            $k = $u[$attr].($attr2 == "" ? "" : $u[$attr2]);
+            $ret[$k]['value'] = $u[$attr];
+            if($attr2 != ""){
+                
+                $ret[$k]['value2'] = $u[$attr2];
+            }
+            $ret[$k]['users'][] = $u['samaccountname'];
+        }
+        foreach($ret as $k => $v){
+            $data[] = $v;
+        }
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
+    }
     
 }    

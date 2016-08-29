@@ -396,9 +396,12 @@ class LdapAdminService
         }elseif($person->getCn()){
             //zmieniamy tylko cn
             $cn = $person->getCn();
+            
+            $this->changePrimaryEmail($entry['samaccountname'], $this->container->get('samaccountname_generator')->generateSamaccountnamePoZmianieNazwiska($person->getCn()));
             $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
             
             $ldapstatus = $this->ldap_error($ldapconn);
+            
         }
         if($person->getMemberOf()){
             
@@ -794,6 +797,14 @@ class LdapAdminService
 
         $ldapbind = ldap_bind($ldapconn, $this->AdminUser . $ldapdomain, $this->AdminPass);
         return $ldapconn;
+    }
+    
+    public function changePrimaryEmail($sam, $email){
+        
+        die('zmieniam email dla '.$sam.'  '.$email);
+        
+        $this->adldap->exchange()->addAddress($sam, $email, true);
+        $this->adldap->exchange()->primaryAddress($sam, $email);
     }
     
 }

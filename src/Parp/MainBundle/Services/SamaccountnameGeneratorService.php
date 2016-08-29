@@ -53,6 +53,12 @@ class SamaccountnameGeneratorService
         return $ret;        
     }
     
+    public function generateSamaccountnamePoZmianieNazwiska($cn){
+        $parts = explode(" ", $cn);
+        $ret = $this->generateNextSam($parts[2], $parts[0], 0);
+        //die(".".$cn.".".$ret);
+        return $ret;
+    } 
     
     public function generateSamaccountname($imie, $nazwisko, $sprawdzajCzyJuzJest = true){
         $ldap = $this->container->get('ldap_service');

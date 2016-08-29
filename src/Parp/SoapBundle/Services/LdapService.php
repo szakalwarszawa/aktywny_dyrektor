@@ -23,6 +23,7 @@ class LdapService
     protected $useradn ;
     protected $_ouWithGroups = "PARP Grupy";
     public $adldap;
+    public $adldapSeparate;
     protected $_userCache = null;
     protected $zmianyDoWypchniecia = null;
     
@@ -83,6 +84,7 @@ class LdapService
             //'sso' => false,
         );
         $this->adldap = new \Adldap\Adldap($configuration);
+        
     }
     public function  getAllManagersFromAD(){
         $res = $this->getAllFromAD();

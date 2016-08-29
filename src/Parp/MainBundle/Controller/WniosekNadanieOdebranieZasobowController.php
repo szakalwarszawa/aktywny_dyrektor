@@ -376,6 +376,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case "wlasciciel":
                 //
                 foreach($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u){
+                    echo ".".$u->getZasobId().".";
                     $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
                     $grupa1 = explode(",", $zasob->getWlascicielZasobu());
                     $grupa2 = explode(",", $zasob->getPowiernicyWlascicielaZasobu());
