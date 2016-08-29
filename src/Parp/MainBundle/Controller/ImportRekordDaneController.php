@@ -219,12 +219,15 @@ class ImportRekordDaneController extends Controller
                 $d = new \Datetime();
                 //print_r($dr); die();
                 $nowy = false;
+                $poprzednieDane = null;
                 if($dr === null){
                     $nowy = true;
                     $dr = new \Parp\MainBundle\Entity\DaneRekord();
                     $dr->setCreatedBy($this->getUser()->getUsername());
                     $dr->setCreatedAt($d);
                     $em->persist($dr);
+                }else{
+                    $poprzednieDane = clone $dr;
                 }
                 $dr->setImie($this->parseValue($row['IMIE']));
                 $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
@@ -286,9 +289,13 @@ class ImportRekordDaneController extends Controller
                         
                         
                         
-                        if($nowy || isset($changeSet['imie']) || isset($changeSet['nazwisko'])){
-                            $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
-                                
+                        if($nowy){
+                            $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));                                
+                        }
+                        
+                        if(isset($changeSet['imie']) || isset($changeSet['nazwisko'])){
+                            //zmiana imienia i nazwiska
+                            $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko(), $poprzednieDane->getImie(), $poprzednieDane->getNazwisko()));                                
                         }
                         if($nowy || $dr->getUmowaDo())
                             $entry->setAccountExpires($dr->getUmowaDo());

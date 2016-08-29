@@ -22,7 +22,7 @@ class LdapService
     protected $patch;
     protected $useradn ;
     protected $_ouWithGroups = "PARP Grupy";
-    protected $adldap;
+    public $adldap;
     protected $_userCache = null;
     protected $zmianyDoWypchniecia = null;
     

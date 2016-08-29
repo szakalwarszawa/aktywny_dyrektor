@@ -68,8 +68,11 @@ class SamaccountnameGeneratorService
         return $ret;
     }   
     
-    public function generateFullname($imie, $nazwisko){
+    public function generateFullname($imie, $nazwisko, $stareImie = "", $stareNazwisko = ""){
         $ret = $nazwisko." ".$imie; //$dr->getImie()." ".$dr->getNazwisko();
+        if($stareNazwisko != ""){
+            $ret = $nazwisko." (".$stareNazwisko.") ".$imie;
+        }
         return $ret;
     } 
     

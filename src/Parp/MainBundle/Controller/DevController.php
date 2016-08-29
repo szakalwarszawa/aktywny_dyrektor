@@ -1431,6 +1431,16 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
     }
     
+    /**
+     * @Route("/primaryAddressChange", name="primaryAddressChange", defaults={})
+     * @Template()
+     */
+    public function primaryAddressChangeAction(){
+        
+        $sam = "kamil_jakacki";
+        $ldap = $this->get('ldap_service');
+        $ldap->adldap->exchange()->primaryAddress($sam, "kacy@parp.gov.pl");
+    }
     
     
 }    
