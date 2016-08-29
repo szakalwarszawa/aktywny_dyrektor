@@ -15,15 +15,15 @@ class DaneRekordType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('deletedAt')
+            //->add('deletedAt')
             ->add('symbolRekordId')
             ->add('imie')
             ->add('nazwisko')
             ->add('departament')
             ->add('stanowisko')
             ->add('umowa')
-            ->add('umowaOd')
-            ->add('umowaDo')
+            ->add('umowaOd', 'date', ['widget' => 'single_text', 'required' => false])
+            ->add('umowaDo', 'date', ['widget' => 'single_text', 'required' => false])
         ;
     }
     

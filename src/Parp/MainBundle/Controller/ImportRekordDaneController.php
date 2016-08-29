@@ -286,7 +286,7 @@ class ImportRekordDaneController extends Controller
                         
                         
                         
-                        if($nowy){
+                        if($nowy || isset($changeSet['imie']) || isset($changeSet['nazwisko'])){
                             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
                                 
                         }
