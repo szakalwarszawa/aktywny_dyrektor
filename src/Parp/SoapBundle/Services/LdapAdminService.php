@@ -803,7 +803,7 @@ class LdapAdminService
     
     public function changePrimaryEmail($sam, $email){
         
-        die('zmieniam email dla '.$sam.'  '.$email);
+        //die('zmieniam email dla '.$sam.'  '.$email);
         
         $this->adldap->exchange()->addAddress($sam, $email, true);
         $this->adldap->exchange()->primaryAddress($sam, $email);
