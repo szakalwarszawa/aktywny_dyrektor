@@ -706,7 +706,26 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             // return new Response(""), if you used NullOutput()
             return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
             
-        }else{
+        }elseif($isAccepted == "publish_lsi"){            
+            $sqls = [];
+            foreach($wniosek->getUserZasoby() as $uz){
+                $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                $moduly = explode(";", $uz->getModul());
+                $poziomy = explode(";", $uz->getPoziomDostepu());
+                foreach($moduly as $m){
+                    foreach($poziomy as $p){
+                        $naborDane = explode("/", $m);
+                        $dzialanie = $naborDane[0];
+                        $nabor = $naborDane[1];
+                        $rola = $p;
+                        $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".$uz->getSamaccountname()."', '".$dzialanie."', '".$nabor."', '".$rola."')";
+                        $sqls[] = $sql;
+                    }    
+                }
+            }
+            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish_lsi.html.twig', array('sqls' => $sqls));
+        }
+        else{
             switch($status){
                 case "00_TWORZONY":
                     switch($isAccepted){
@@ -1120,6 +1139,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ];
             
         }
+        $czyLsi = false;
         $userzasobyRozbite = [];
         foreach($uzs as $uz){
             $moduly = explode(";", $uz->getModul());
@@ -1130,11 +1150,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $nowyUzs->setModul($m);
                     $nowyUzs->setPoziomDostepu($p);
                     $userzasobyRozbite[] = $nowyUzs;
+                    $czyLsi = $uz->getZasobId() ==  4420;
                 }
             }
         }
 
         $deleteForm = $this->createDeleteForm($id);
+        
         return array(
             'grupyAD' => $grupyAD,
             'entity'      => $entity,
@@ -1143,7 +1165,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'editor' => $editor,
             'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA"),
             'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
-            'userzasobyRozbite' => $userzasobyRozbite
+            'userzasobyRozbite' => $userzasobyRozbite,
+            'czyLsi' => $czyLsi
         );
     }
     
