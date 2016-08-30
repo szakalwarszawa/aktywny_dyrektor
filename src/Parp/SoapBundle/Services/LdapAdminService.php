@@ -406,6 +406,7 @@ class LdapAdminService
         if($person->getMemberOf()){
             
             $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+            $ldapstatus = $this->ldap_error($ldapconn);
         }
         ldap_unbind($ldapconn);
 
@@ -546,6 +547,7 @@ class LdapAdminService
         
         
         $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+        $ldapstatus = $this->ldap_error($ldapconn);
         
         if($this->debug){
             
