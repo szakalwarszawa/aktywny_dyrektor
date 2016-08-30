@@ -397,7 +397,7 @@ class LdapAdminService
             //zmieniamy tylko cn
             $cn = $person->getCn();
             
-            $this->changePrimaryEmail($entry['samaccountname'], $this->container->get('samaccountname_generator')->generateSamaccountnamePoZmianieNazwiska($person->getCn()));
+            $this->changePrimaryEmail($person->getSamaccountname(), $this->container->get('samaccountname_generator')->generateSamaccountnamePoZmianieNazwiska($person->getCn()));
             $b = $this->ldap_rename($ldapconn, $person->getDistinguishedName(), "CN=" . $cn, null, TRUE);
             
             $ldapstatus = $this->ldap_error($ldapconn);
