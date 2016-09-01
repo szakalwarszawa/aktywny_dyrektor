@@ -1,0 +1,1 @@
+update zasoby set powiernicyWlascicielaZasobu = wlascicielZasobu where powiernicyWlascicielaZasobu is null or powiernicyWlascicielaZasobu = "";

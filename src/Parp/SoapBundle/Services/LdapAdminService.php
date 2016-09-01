@@ -523,9 +523,12 @@ class LdapAdminService
         $entry['objectClass']['3'] = "user";
         $entry['displayName'] = $entry['cn'];
         $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
+        //tu dopisac pozostale atrybuty 
+        
+        
         // if (empty($accountExpires)) {
         $entry["useraccountcontrol"] = 544; // włączenie konta i wymuszenie zmiany hasla
-        $entry["info"] = "aaa";//$person->getInfo();
+        //$entry["info"] = "aaa";//$person->getInfo();
         $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
         if($section)
             $entry['division'] = $section->getName();//$section->getShortname();

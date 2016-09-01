@@ -42,11 +42,14 @@ class ImportRekordDaneController extends Controller
             MAX(umowa.DATA_DO) as UMOWADO
             
             from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."') AND mpr.DATA_OD <=  '".$this->dataGraniczna."'
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND 
+                (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$this->dataGraniczna."') AND stjoin.DATA_OD <=  '".$this->dataGraniczna."'
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND 
+                (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND (umowa.DATA_DO is NULL OR umowa.DATA_DO > '".$this->dataGraniczna."') AND umowa.DATA_OD <=  '".$this->dataGraniczna."'
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND 
+                (umowa.DATA_DO is NULL OR umowa.DATA_DO >= '".$this->dataGraniczna."')
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
             
             GROUP BY 
@@ -144,6 +147,9 @@ class ImportRekordDaneController extends Controller
         $errors = [];
         
         $this->dataGraniczna = date("Y-m-d");
+        //$this->dataGraniczna = "2016-09-01";//date("Y-m-d");
+        
+        
         //$this->dataGraniczna = "2016-08-20";//temp
         $mapowanieDepartamentowPrezesow = [
             '15' => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
@@ -183,35 +189,26 @@ class ImportRekordDaneController extends Controller
         foreach($data as $in => $d){
             if(count($d) > 1){
                 //mamy dubla szukamy najpozniejszej umowy
-                $maxDate = null;
+                $minDate = null;
+                $minDep = null;
                 $teSameDaty = true;
                 foreach($d as $r){
                     $uod = $r['UMOWAOD'] ? new \Datetime($r['UMOWAOD']) : null;
-                    $teSameDaty = $maxDate == null ? true : $teSameDaty && ($maxDate->format("Y-m-d") == $uod->format("Y-m-d"));
-                    if($uod != null && ($maxDate == null || $uod > $maxDate)){
-                        $maxDate = $uod;
+                    $teSameDaty = $minDate == null ? true : $teSameDaty && ($minDate->format("Y-m-d") == $uod->format("Y-m-d"));
+                    if($uod != null && ($minDate == null || $uod < $minDate)){
+                        $minDate = $uod;
+                        $minDep = $r['DEPARTAMENT'] ;
                         $row = $r;
                     }
                 }
-                if($teSameDaty && 1 == 11){
-                    //znaczy ze zmiana departamentu w ramach nowej reorganizacji
-                    //poprawilem sql, kadry poprawily dane w rekordzie  i juz to i duble nie maja miejsca
-                    $maxDep = null;
-                    $teSameDaty = true;
-                    foreach($d as $r){
-                        $uod = $r['DEPARTAMENT'] ;
-                        if($uod != null && ($maxDep == null || $uod > $maxDep)){
-                            $maxDep = $uod;
-                            $row = $r;
-                        }
-                    }
-                }
-                $msg = "Są duplikaty umów dla  ".$in." wybrano najpóźniej podpisaną umowę z dnia ".$maxDate->format("Y-m-d")." te same daty: " .($teSameDaty ? "tak" : "nie").".";
+                
+                $msg = "Są duplikaty umów dla  ".$in." wybrano najwcześniej podpisaną umowę z dnia ".$minDate->format("Y-m-d")." te same daty: " .($teSameDaty ? "tak" : "nie").".";
                 $this->addFlash('warning', $msg);
             }else{
                 $row = $d[0];
             }
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
+            
             if($dr == null || !in_array($dr->getSymbolRekordId(), $pomijajDaneRekord)){
                 $rekordIds[$this->parseValue($row['SYMBOL'])] = $this->parseValue($row['SYMBOL']);
                 //temp
@@ -229,8 +226,13 @@ class ImportRekordDaneController extends Controller
                 }else{
                     $poprzednieDane = clone $dr;
                 }
+                
+                //print_r($row['SYMBOL']);
+                //print_r($dr->getNazwisko());
+                //print_r($poprzednieDane->getNazwisko());
+                
                 $dr->setImie($this->parseValue($row['IMIE']));
-                $dr->setNazwisko($this->parseValue($row['NAZWISKO']));
+                $dr->setNazwisko($this->parseNazwiskoValue($row['NAZWISKO']));
                 if($nowy){
                     
                     $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
@@ -293,7 +295,7 @@ class ImportRekordDaneController extends Controller
                             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));                                
                         }
                         
-                        if(isset($changeSet['imie']) || isset($changeSet['nazwisko'])){
+                        if((isset($changeSet['imie']) || isset($changeSet['nazwisko'])) && !$nowy){
                             //zmiana imienia i nazwiska
                             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko(), $poprzednieDane->getImie(), $poprzednieDane->getNazwisko()));                                
                         }
@@ -307,7 +309,7 @@ class ImportRekordDaneController extends Controller
                             
                             if($nowy || isset($changeSet['departament'])){
                                 $entry->setDepartment($department->getName());
-                                $entry->setGrupyAD($department);                              
+                                $entry->setGrupyAD($department);
                             }
                         
                             //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
@@ -345,7 +347,7 @@ class ImportRekordDaneController extends Controller
                         $entry->setIsImplemented(0);
                         $entry->setInitialRights('');
                         $entry->setIsDisabled(0);
-                        $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$in." .";
+                        $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$entry->getSamaccountname()." .";
                         $imported[] = $dr;
                     }
                 }
@@ -388,6 +390,7 @@ class ImportRekordDaneController extends Controller
      */
     public function importfirebirdTestIndexAction()
     {
+        //die($this->parseNazwiskoValue("JAKACKI-TEST"));
         $sciecha = "";
         
         $this->dataGraniczna = date("Y-m-d");
@@ -531,6 +534,20 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $v = iconv("WINDOWS-1250", "UTF-8", $v);
         $v = $fupper ? $this->my_mb_ucfirst(mb_strtolower($v, "UTF-8")) : mb_strtolower($v, "UTF-8");
         return trim($v);
+    }
+    public function parseNazwiskoValue($v, $fupper = true){
+        $v = iconv("WINDOWS-1250", "UTF-8", $v);
+        $v = $fupper ? $this->my_mb_ucfirst(mb_strtolower($v, "UTF-8")) : mb_strtolower($v, "UTF-8");
+        
+        $ps = explode("-", $v);
+        $ret = [];
+        foreach($ps as $p){
+            if(trim($p) != ""){
+                $ret[] = trim($this->my_mb_ucfirst(mb_strtolower($p, "UTF-8")));
+            }
+        }
+        
+        return implode("-", $ret);
     }
     
     public function executeQuery($sql){

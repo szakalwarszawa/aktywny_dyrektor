@@ -326,11 +326,11 @@ class DefaultController extends Controller
         return $ret;
     }
     /**
-     * @Route("/user/{samaccountname}/edit", name="userEdit")
+     * @Route("/user/{samaccountname}/edit/{dump}", name="userEdit", defaults={"dump" : ""})
      * @Route("/user/{id}/edit", name="user_edit")
      * @Template();
      */
-    function editAction($samaccountname, Request $request)
+    function editAction($samaccountname, Request $request, $dump = "")
     {
         
         $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
@@ -339,7 +339,10 @@ class DefaultController extends Controller
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
-        //print_r($ADUser); die();
+        if($dump == "dump"){
+            unset($ADUser[0]['thumbnailphoto']);
+            echo "<pre>"; print_r($ADUser); die();
+        }
         $ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
 
         // wyciagnij imie i nazwisko managera z nazwy domenowej
@@ -499,14 +502,28 @@ class DefaultController extends Controller
                                 $entry->setFromWhen(new \DateTime($value));
                                 break;
                             case "initialrights"://nieuzywane bo teraz jako array idzie
+                            
+                                
                                 $value = implode(",", $value);
                                 $entry->setInitialrights($value);
+                                
                                 break;
                         }
                     }
-                    if (!$entry->getFromWhen())
+                    if($roznicauprawnien){
+                        //print_r($newrights); die();
+                        if(in_array("UPP", $newrights)){
+                        
+                            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
+                            $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
+                            //var_dump($entry); die();
+                            //die();
+                        }
+                    }
+                    if (!$entry->getFromWhen()){
                         $entry->setFromWhen(new \DateTime('today'));
-                        $this->getDoctrine()->getManager()->persist($entry);
+                    }
+                    $this->getDoctrine()->getManager()->persist($entry);
                 }
 
                 $this->getDoctrine()->getManager()->flush();
