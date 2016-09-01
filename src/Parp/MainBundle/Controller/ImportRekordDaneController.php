@@ -185,6 +185,16 @@ class ImportRekordDaneController extends Controller
         
         $rekordIds = [];
         
+        //temp by sprawdzic czy utworzy dubla mnie
+        $data[] = [
+            'SYMBOL' => '77777',
+            'IMIE' => 'KAMIL',
+            'NAZWISKO' => 'JAKACKI',
+            'UMOWA' => 'Na czas nieokreślony',
+            'UMOWAOD' => '2016-01-01',
+            'UMOWADO' => NULL,
+        ];
+        
         
         foreach($data as $in => $d){
             if(count($d) > 1){

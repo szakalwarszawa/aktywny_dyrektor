@@ -34,15 +34,63 @@ class BlokowaneKontaController extends Controller
     /**
      * Lists all zablokowane konta entities.
      *
-     * @Route("/lista/{ktore}", name="lista", defaults={"ktore" : "zablokowane"})
+     * @Route("/lista/{ktorzy}", name="lista", defaults={"ktorzy" : "zablokowane"})
      * @Template()
      */
-    public function listaAction($ktore = "zablokowane" /* nieobecni */)
+    public function listaAction(Request $request, $ktorzy = "zablokowane" /* nieobecni */)
     {
         $ldap = $this->get('ldap_service');
-        $users = $ldap->getAllFromADIntW($ktore);
-        print_r($users);
-        die();
+        $ADUsers = $ldap->getAllFromADIntW($ktorzy);
+        
+        if(count($ADUsers) == 0){
+            return $this->render('ParpMainBundle:Default:NoData.html.twig');
+        }
+        //echo "<pre>"; print_r($ADUsers); die();
+        $ctrl = new DefaultController();
+        $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers);        
+
+        if($ktorzy == "zablokowane"){
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('samaccountname', 'ktorzy' => $ktorzy)
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction2);
+        }
+            
+        
+        
+        //print_r($users);
+        //die();
+        
+        return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
     
+    /**
+     * Lists all zablokowane konta entities.
+     *
+     * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock")
+     * @Template()
+     */
+    public function unblockAction($ktorzy, $samaccountname)
+    {
+        
+        $ldap = $this->get('ldap_service');
+        $ADUser = $ldap->getUserFromAD($samaccountname, null, null, $ktorzy);
+        $daneRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:DaneRekord")->findOneByLogin($samaccountname);
+        $ctrl = new DefaultController();
+        $form = $ctrl->createUserEditForm($this, $ADUser[0]);
+        $dane = [
+            'samaccountname' => $samaccountname,
+            'daneRekord' => $daneRekord,
+            'user' => (count($ADUser) > 0 ? $ADUser[0] : null),
+            'form' => $form->createView()
+        ];
+        //print_r($dane); die();
+        
+        return $dane;
+    }
 }

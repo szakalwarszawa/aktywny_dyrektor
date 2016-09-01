@@ -31,7 +31,6 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
-include __DIR__."/../../../../vendor/adldapSeparate/adLDAP/lib/adLDAP/adLDAP.php";
 /**
  * Zasoby controller.
  *

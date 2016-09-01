@@ -561,11 +561,22 @@ class LdapService
         return $accountControl;
     }
 
-    public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
+    public function getUserFromAD($samaccountname = null, $cnname = null, $query = null, $ktorych = "aktywni")
     {
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
+        
+        if($ktorych == "aktywni"){
+            //nic nie zmieniamy
+        }elseif($ktorych == "zablokowane"){
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);            
+        }elseif($ktorych == "nieobecni"){
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Nieobecni,", $userdn);            
+        }
+        
+        
+        
 
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);

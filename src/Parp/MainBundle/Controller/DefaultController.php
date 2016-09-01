@@ -71,9 +71,93 @@ class DefaultController extends Controller
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }
         //echo "<pre>"; print_r($ADUsers); die();
+    
+        $grid = $this->getUserGrid($this->get('grid'), $ADUsers);        
+
+        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
+            $rowAction4->setColumn('akcje');
+            $rowAction4->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
+    
+    //        $grid->addRowAction($rowAction1);
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+            $grid->addRowAction($rowAction4);
+        }else{
+            
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('id')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+        }
+
+        if(
+            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
+            in_array("PARP_ADMIN", $this->getUser()->getRoles())
+        ){
+            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
+            $grid->addMassAction($massAction1);
+    
+            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
+            $grid->addMassAction($massAction2);    
+        }
+        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                 
+            $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
+            //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
+            $grid->addMassAction($massAction3);
+            $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            $grid->addMassAction($massAction4);
+        }
+
+        $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
+        
+        
+        if($ktorzy == "usersFromAdFull")
+            $grid->setLimits(1000);
+        
+
+        return $grid->getGridResponse(['ktorzy' => $ktorzy]);
+    }
+    
+    public function getUserGrid($grid, $ADUsers){
         $source = new Vector($ADUsers);
 
-        $grid = $this->get('grid');
 
         //$MyTypedColumn = new TextColumn(array('id' => 'samaccountname', 'field' => 'samaccountname', 'title' => 'Nazwa użytkownika', 'source' => true, 'filterable' => false, 'sortable' => true, 'primary' => true));
         //$grid->addColumn($MyTypedColumn);
@@ -148,6 +232,9 @@ class DefaultController extends Controller
                     ->setOperators(array("like"))
                     ->setOperatorsVisible(false);
         }
+        
+        
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
@@ -157,88 +244,10 @@ class DefaultController extends Controller
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-
-        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
-            // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
-            $rowAction2->setColumn('akcje');
-            $rowAction2->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
-            $rowAction3->setColumn('akcje');
-            $rowAction3->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
-            $rowAction4->setColumn('akcje');
-            $rowAction4->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
-    
-    //        $grid->addRowAction($rowAction1);
-            $grid->addRowAction($rowAction2);
-            $grid->addRowAction($rowAction3);
-            $grid->addRowAction($rowAction4);
-        }else{
-            
-            // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
-            $rowAction2->setColumn('akcje');
-            $rowAction2->setRouteParameters(
-                    array('id')
-            );
-            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
-            $rowAction3->setColumn('akcje');
-            $rowAction3->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-    
-            $grid->addRowAction($rowAction2);
-            $grid->addRowAction($rowAction3);
-        }
-
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-        if(
-            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN", $this->getUser()->getRoles())
-        ){
-            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
-            $grid->addMassAction($massAction1);
-    
-            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
-            $grid->addMassAction($massAction2);    
-        }
-        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
-                 
-            $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
-            //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
-            $grid->addMassAction($massAction3);
-            $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-            //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-            $grid->addMassAction($massAction4);
-        }
-
-        $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
-        
-        
-        if($ktorzy == "usersFromAdFull")
-            $grid->setLimits(1000);
-        
-
-        return $grid->getGridResponse(['ktorzy' => $ktorzy]);
+                
+        return $grid;
     }
+    
     /**
      * @return array
      * @Template();
@@ -381,7 +390,7 @@ class DefaultController extends Controller
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
         }
         
-        $form = $this->createUserEditForm($defaultData);
+        $form = $this->createUserEditForm($this, $defaultData);
 
 
 
@@ -627,22 +636,22 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
         
     }
-    protected function createUserEditForm($defaultData){
+    public function createUserEditForm($that, $defaultData, $wymusUproszczonyFormularz = false){
         // Pobieramy listę stanowisk
-        $titlesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
+        $titlesEntity = $that->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
         $titles = array();
         foreach ($titlesEntity as $tmp) {
             $titles[$tmp->getName()] = $tmp->getName();
         }
 
         // Pobieramy listę Biur i Departamentów
-        $departmentsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
+        $departmentsEntity = $that->getDoctrine()->getRepository('ParpMainBundle:Departament')->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
         $departments = array();
         foreach ($departmentsEntity as $tmp) {
             $departments[$tmp->getName()] = $tmp->getName();
         }
         // Pobieramy listę Sekcji
-        $sectionsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
+        $sectionsEntity = $that->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
             $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : "bez departamentu";
@@ -650,25 +659,31 @@ class DefaultController extends Controller
         }
 
         // Pobieramy listę Uprawnien
-        $rightsEntity = $this->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findBy(array(), array('opis' => 'asc'));
+        $rightsEntity = $that->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findBy(array(), array('opis' => 'asc'));
         $rights = array();
         foreach ($rightsEntity as $tmp) {
             $rights[$tmp->getKod()] = $tmp->getOpis();
         }
-        $rolesEntity = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
+        $rolesEntity = $that->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
         $roles = array();
         foreach ($rolesEntity as $tmp) {
             $roles[$tmp->getName()] = $tmp->getOpis();
         }
         $now = new \Datetime();
         
-        $ldap = $this->get('ldap_service');
-        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
-        $admin = in_array("PARP_ADMIN", $this->getUser()->getRoles());
-        $kadry1 = in_array("PARP_BZK_1", $this->getUser()->getRoles());
-        $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
+        $ldap = $that->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($that->getUser()->getUsername());
+        $admin = in_array("PARP_ADMIN", $that->getUser()->getRoles());
+        $kadry1 = in_array("PARP_BZK_1", $that->getUser()->getRoles());
+        $kadry2 = in_array("PARP_BZK_2", $that->getUser()->getRoles());
         
-        $builder = $this->createFormBuilder(@$defaultData)
+        if($wymusUproszczonyFormularz){
+            $admin = false;
+            $kadry1 = true;
+            $kadry2 = false;
+        }
+        
+        $builder = $that->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,
                     'read_only' => true,
@@ -901,7 +916,7 @@ class DefaultController extends Controller
         
 
         $entry = new Entry($this->getUser()->getUsername());
-        $form = $this->createUserEditForm($entry);
+        $form = $this->createUserEditForm($this, $entry);
         
         $form->handleRequest($request);
 
