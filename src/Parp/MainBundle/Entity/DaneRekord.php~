@@ -11,7 +11,7 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  *
  * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko"})})
  * a@Gedmo\Loggable
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DaneRekordRepository")
  * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, symbolRekordId, login, imie, nazwisko, departament, stanowisko, umowa, umowaOd, umowaDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -157,7 +157,16 @@ class DaneRekord
      * @ORM\OneToMany(targetEntity="Entry", mappedBy="daneRekord")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $entries; 
+    private $entries;
+    
+    
+    /**
+    * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $newUnproccessed = false;
     
 
     /**
@@ -481,5 +490,46 @@ class DaneRekord
     public function getLastModifiedAt()
     {
         return $this->lastModifiedAt;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->entries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add entry
+     *
+     * @param \Parp\MainBundle\Entity\Entry $entry
+     *
+     * @return DaneRekord
+     */
+    public function addEntry(\Parp\MainBundle\Entity\Entry $entry)
+    {
+        $this->entries[] = $entry;
+
+        return $this;
+    }
+
+    /**
+     * Remove entry
+     *
+     * @param \Parp\MainBundle\Entity\Entry $entry
+     */
+    public function removeEntry(\Parp\MainBundle\Entity\Entry $entry)
+    {
+        $this->entries->removeElement($entry);
+    }
+
+    /**
+     * Get entries
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getEntries()
+    {
+        return $this->entries;
     }
 }

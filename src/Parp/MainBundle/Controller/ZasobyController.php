@@ -309,7 +309,8 @@ class ZasobyController extends Controller
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Zasoby entity.');
             }
-
+            //dodac obsluge pola dlaczego niaktywny
+            //$entity->setPublished(0);
             $em->remove($entity);
             $em->flush();
         }

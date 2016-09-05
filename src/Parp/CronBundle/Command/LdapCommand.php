@@ -24,6 +24,7 @@ class LdapCommand extends ContainerAwareCommand
     protected $showonly = true;
     protected $ids = "";
     protected $samaccountname = "console";
+    protected $pushErrors = [];
     
     protected function configure()
     {
@@ -232,6 +233,7 @@ class LdapCommand extends ContainerAwareCommand
                     }
                 }
                 if(!$this->showonly && $this->getContainer()->getParameter('pusz_to_ad')){
+                    $this->proccessErrors($logfile);
                     $em->flush();
                 }
             }
@@ -259,7 +261,45 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<error>'.$e->getTraceAsString()."</error>", false);
         }
     }
-    
+    protected function proccessErrors($logfile){
+        $przetwarzajOK = [
+            'ldap_mod_add' => [68 /*Already exists*/],
+            'ldap_modify' => [],
+            'ldap_rename' => [],
+            'ldap_mod_del' => [],
+            'ldap_add' => [68 /*Already exists*/],
+            'ldap_delete' => [],
+            'ldap_delete' => [],
+        ];
+        
+        foreach($this->pushErrors as $es){
+            foreach($es as $e){
+                if(in_array($e['errorno'], $przetwarzajOK[$e['function']])){
+                    //znaczy ze ok i logujemy i zamykamy zgloszenie
+                    $e['lastEntry']->setIsImplemented(1);
+                    //echo "...ustawiam isImplemented ".$e['lastEntry']->getId();
+                    unset($e['lastEntry']);
+                    $logfileThis = str_replace(".html", "-".$e['function'].".log", $logfile);
+                    
+                    
+                    
+                    //error_log(print_r($e, true), 3, $logfileThis);
+                    file_put_contents($logfileThis, print_r($e, true), FILE_APPEND | LOCK_EX);
+                }
+            }
+        }
+        //echo "<pre>"; print_r($this->pushErrors);
+/*
+        $grouped = [];
+        foreach($this->pushErrors as $es){
+            foreach($es as $e){
+                $grouped[$e['function']][$e['error']][] = $e;
+            }
+        }        
+        echo "<pre>"; print_r($grouped); echo "</pre>";
+        echo "<pre>"; print_r($grouped);
+*/ 
+    }
     protected function tryToPushChanges($ldap, $zmiana, $output, $isCreating){
         $maxConnections = $this->getContainer()->getParameter('maximum_ldap_reconnects');
         $ldapstatus = "";
@@ -279,6 +319,10 @@ class LdapCommand extends ContainerAwareCommand
                 $ldap->switchServer($ldapstatus);
             }
         }while($ldapstatus != "Success" && $i < $maxConnections);
+        
+        if(!empty($ldap->lastConnectionErrors))
+            $this->pushErrors[] = $ldap->lastConnectionErrors;
+        
         return $ldapstatus;
     }
 

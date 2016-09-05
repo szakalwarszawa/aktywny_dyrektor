@@ -157,7 +157,16 @@ class DaneRekord
      * @ORM\OneToMany(targetEntity="Entry", mappedBy="daneRekord")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $entries; 
+    private $entries;
+    
+    
+    /**
+    * @var boolean
+     *
+     * @ORM\Column(type="boolean")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $newUnproccessed = false;
     
 
     /**
@@ -522,5 +531,29 @@ class DaneRekord
     public function getEntries()
     {
         return $this->entries;
+    }
+
+    /**
+     * Set newUnproccessed
+     *
+     * @param boolean $newUnproccessed
+     *
+     * @return DaneRekord
+     */
+    public function setNewUnproccessed($newUnproccessed)
+    {
+        $this->newUnproccessed = $newUnproccessed;
+
+        return $this;
+    }
+
+    /**
+     * Get newUnproccessed
+     *
+     * @return boolean
+     */
+    public function getNewUnproccessed()
+    {
+        return $this->newUnproccessed;
     }
 }
