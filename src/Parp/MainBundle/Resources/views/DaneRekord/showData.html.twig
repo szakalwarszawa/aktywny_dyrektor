@@ -1,0 +1,54 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+{% if msg is defined %}
+    <div class="alert alert-danger">
+        {{msg|raw}}
+    </div>
+{%endif%}
+
+{%if(saNowi)%}
+    <a href="{{path('przejrzyjnowych')}}" class="btn btn-primary">Przejrzyj nowych użytkowników</a>
+{%endif%}
+
+{%if data|length > 0 %}
+<table class="record_properties table table-striped tablesorter">
+    <thead>
+        <tr>
+            {% for key,value in data[0] %}
+            <th>{{key}}</th>
+            {% endfor %}        
+        </tr>
+    </thead>
+    <tbody>
+            {% for obj in data %}
+                <tr>
+                    {% for key,value in obj %}
+                        <td>
+                            {% if value.timestamp is defined %}
+                                {{value|date}}
+                            {% else %}
+                                {%if value is iterable %}
+                                    {% for k, v in value %}
+                                        {{k}} : {{ v|raw }}<br>
+                                    {% endfor %}
+                                {% else %}                                
+                                    {{ value|raw }}
+                                {% endif %}
+                            {% endif %}
+                        
+                        </td>
+                    {% endfor %}                   
+                </tr>
+            {%endfor%}
+    </tbody>
+</table>
+{%endif %}
+    
+<script type="text/javascript">
+    
+    $("table.tablesorter").tablesorter(); 
+
+</script>
+
+{% endblock %}
