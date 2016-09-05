@@ -20,4 +20,13 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         return $query->getResult();
         
     }
+    public function findNewPeople(){
+        $result = $this
+               ->createQueryBuilder('e')
+               ->select('e')
+               ->andWhere("e.newUnproccessed = 1")
+               ->getQuery()
+               ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        return $result;
+    }
 }

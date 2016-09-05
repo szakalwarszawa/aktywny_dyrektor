@@ -168,8 +168,10 @@ class LdapService
             
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zespoly,", $userdn);
         }
-        if($ktorych == "wszyscy"){
-            
+        if($ktorych == "wszyscywszyscy"){
+            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);
+            //die($userdn);
+        }elseif($ktorych == "wszyscy"){
             $userdn = str_replace("OU=Zespoly_2016,", "", $userdn);
         }elseif($ktorych == "zablokowane"){
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);            
@@ -570,7 +572,10 @@ class LdapService
         if($ktorych == "aktywni"){
             //nic nie zmieniamy
         }elseif($ktorych == "zablokowane"){
-            $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);            
+            $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);    
+        }elseif($ktorych == "wszyscywszyscy"){
+            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);    
+             
         }elseif($ktorych == "nieobecni"){
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Nieobecni,", $userdn);            
         }

@@ -1468,5 +1468,14 @@ class DevController extends Controller
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
     }
-    
+    /**
+     * @Route("/getAllAll", name="getAllAll")
+     * @Template()
+     */
+    public function getAllAllAction(){
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getAllFromADIntW("wszyscywszyscy");
+        die(count($us).".");
+        
+    }
 }    

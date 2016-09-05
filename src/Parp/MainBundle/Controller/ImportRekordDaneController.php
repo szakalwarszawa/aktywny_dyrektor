@@ -112,7 +112,7 @@ class ImportRekordDaneController extends Controller
              return $aduser;
          }
          $fullname = $dr->getNazwisko()." ".$dr->getImie();
-         echo "<br> szuka ".$fullname;
+         //echo "<br> szuka ".$fullname;
          $aduser = $ldap->getUserFromAD(null, $fullname);
          if(count($aduser) > 0){
              return $aduser;
@@ -122,13 +122,13 @@ class ImportRekordDaneController extends Controller
              return $aduser;
          }
          $fullname = $dr->getNazwisko()." (*) ".$dr->getImie();
-         echo "<br> szuka ".$fullname;
+         //echo "<br> szuka ".$fullname;
          $aduser = $ldap->getUserFromAD(null, $fullname);
          if(count($aduser) > 0){
              return $aduser;
          }
          $fullname = $dr->getNazwisko()." (*) ".$dr->getImie();
-         echo "<br> szuka ".$fullname;
+         //echo "<br> szuka ".$fullname;
          $aduser = $ldap->getNieobecnyUserFromAD(null, $fullname);
          if(count($aduser) > 0){
              return $aduser;
@@ -144,6 +144,7 @@ class ImportRekordDaneController extends Controller
      */
     public function importfirebirdWrzucDoBazyAction()
     {
+        $saNowi = false;
         $errors = [];
         
         $this->dataGraniczna = date("Y-m-d");
@@ -179,21 +180,36 @@ class ImportRekordDaneController extends Controller
             $data[$in][] = $row;
         }
         //die();
-        $totalmsg = "";
+        $totalmsg = [];
         //echo "<pre>"; print_r($data); die();
         $ldap = $this->get('ldap_service');
         
         $rekordIds = [];
         
         //temp by sprawdzic czy utworzy dubla mnie
-        $data[] = [
+        $data["KAMIL JAKACKI"][] = [
             'SYMBOL' => '77777',
+            'STANOWISKO' => 'starszy specjalista',
+            'DEPARTAMENT' => '504',
             'IMIE' => 'KAMIL',
             'NAZWISKO' => 'JAKACKI',
             'UMOWA' => 'Na czas nieokreślony',
             'UMOWAOD' => '2016-01-01',
             'UMOWADO' => NULL,
         ];
+        
+
+        $data["ROBERT MUCHACKI"][] = [
+            'SYMBOL' => '777773',
+            'STANOWISKO' => 'starszy specjalista',
+            'DEPARTAMENT' => '504',
+            'IMIE' => 'ROBERT',
+            'NAZWISKO' => 'MUCHACKI',
+            'UMOWA' => 'Na czas nieokreślony',
+            'UMOWAOD' => '2016-01-01',
+            'UMOWADO' => NULL,
+        ];
+
         
         
         foreach($data as $in => $d){
@@ -232,7 +248,9 @@ class ImportRekordDaneController extends Controller
                     $dr = new \Parp\MainBundle\Entity\DaneRekord();
                     $dr->setCreatedBy($this->getUser()->getUsername());
                     $dr->setCreatedAt($d);
+                    $dr->setNewUnproccessed(true);
                     $em->persist($dr);
+                    $saNowi = true;
                 }else{
                     $poprzednieDane = clone $dr;
                 }
@@ -291,6 +309,9 @@ class ImportRekordDaneController extends Controller
                         
                     }
                     if(count($changeSet) > 0){
+                        $totalmsg[] = "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$dr->getLogin()." .";
+                    }
+                    if(count($changeSet) > 0 && !$nowy){
                         //echo "<pre>"; print_r($changeSet); //die();
                         $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
                         $em->persist($entry);
@@ -357,15 +378,14 @@ class ImportRekordDaneController extends Controller
                         $entry->setIsImplemented(0);
                         $entry->setInitialRights('');
                         $entry->setIsDisabled(0);
-                        $totalmsg .= "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$entry->getSamaccountname()." .";
                         $imported[] = $dr;
                     }
                 }
             }
             
         }
-        if($totalmsg != "")
-            $this->addFlash('warning', $totalmsg);
+        if(count($totalmsg) > 0)
+            $this->addFlash('warning', implode("<br>", $totalmsg));
         //echo "<pre>"; print_r($imported); 
         //die();
         
@@ -387,7 +407,7 @@ class ImportRekordDaneController extends Controller
         }
         $em->flush(); 
         
-        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $errors, 'msg' => $totalmsg]);
+        return $this->render('ParpMainBundle:DaneRekord:showData.html.twig', ['data' => $errors, 'msg' => implode("<br>", $totalmsg), 'saNowi' => $saNowi]);
         //return $this->redirect($this->generateUrl('danerekord'));
     }
     
@@ -638,5 +658,22 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             fputcsv($outputBuffer, $val, ";");
         }
         fclose($outputBuffer);
+    }
+    
+    
+    /**
+     *
+     * @Route("/przejrzyjnowych", name="przejrzyjnowych", defaults={})
+     * @Method("GET")
+     */
+    public function przejrzyjnowychAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $nowi = $em->getRepository("ParpMainBundle:DaneRekord")->findNewPeople();
+        
+        //print_r($nowi); die();
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $nowi]);
+        //return ['nowi' => $ret];
     }
 } 

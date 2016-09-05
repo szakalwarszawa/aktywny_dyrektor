@@ -9,7 +9,7 @@ use Doctrine\Common\Annotations\UniqueConstraint;
 /**
  * DaneRekord
  *
- * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko"})})
+ * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko", "symbolRekordId"})})
  * a@Gedmo\Loggable
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DaneRekordRepository")
  * @ORM\HasLifecycleCallbacks

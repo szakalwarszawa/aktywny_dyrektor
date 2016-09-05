@@ -20,12 +20,16 @@
                 <tr>
                     {% for key,value in obj %}
                         <td>
-                            {% if value is iterable %}
-                                {% for k, v in value %}
-                                    {{k}} : {{ v|raw }}<br>
-                                {% endfor %}
-                            {% else %}                                
-                                {{ value|raw }}
+                            {% if value.timestamp is defined %}
+                                {{value|date}}
+                            {% else %}
+                                {%if value is iterable %}
+                                    {% for k, v in value %}
+                                        {{k}} : {{ v|raw }}<br>
+                                    {% endfor %}
+                                {% else %}                                
+                                    {{ value|raw }}
+                                {% endif %}
                             {% endif %}
                         
                         </td>
