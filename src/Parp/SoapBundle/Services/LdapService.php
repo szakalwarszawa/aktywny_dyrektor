@@ -168,7 +168,7 @@ class LdapService
             
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zespoly,", $userdn);
         }
-        if($ktorych == "wszyscywszyscy"){
+        if($ktorych == "wszyscyWszyscy"){
             $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);
             //die($userdn);
         }elseif($ktorych == "wszyscy"){
@@ -573,7 +573,7 @@ class LdapService
             //nic nie zmieniamy
         }elseif($ktorych == "zablokowane"){
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);    
-        }elseif($ktorych == "wszyscywszyscy"){
+        }elseif($ktorych == "wszyscyWszyscy"){
             $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);    
              
         }elseif($ktorych == "nieobecni"){
@@ -940,6 +940,20 @@ class LdapService
         $ou = str_replace("OU=", "", $cz[1]);
         return $ou;
         
+    }
+    
+    public function getPrzelozeni(){
+        $stanowiska = ["prezes", "p.o. prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
+        if($this->_userCache === null){
+            $this->_userCache = $this->getAllFromAD();
+        }
+        //echo "<pre>"; print_r($this->_userCache); die();
+        $ret = [];
+        foreach($this->_userCache as $u){
+            if(in_array(trim($u['title']), $stanowiska))
+                $ret[$u['samaccountname']] = $u;
+        }
+        return $ret;
     }
     
 }

@@ -1474,7 +1474,7 @@ class DevController extends Controller
      */
     public function getAllAllAction(){
         $ldap = $this->get('ldap_service');
-        $us = $ldap->getAllFromADIntW("wszyscywszyscy");
+        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
         die(count($us).".");
         
     }

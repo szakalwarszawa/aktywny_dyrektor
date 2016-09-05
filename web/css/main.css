@@ -107,3 +107,6 @@ td .btn{
 table{
 /*     table-layout: fixed; */
 }
+.alert-danger.acceptUser .close{
+    display:none;
+}

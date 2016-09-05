@@ -519,11 +519,24 @@ class DefaultController extends Controller
                                 break;
                         }
                     }
-                    if($roznicauprawnien){
+                    if($roznicauprawnien || isset($newData['department']) || isset($newData['info'])){
                         //print_r($newrights); die();
-                        if(in_array("UPP", $newrights)){
+                        $dep = $ADUser[0]['description'];
+                        $sec = $ADUser[0]['division'];
+                        //odbiera stare
+                        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+                        $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
+                        if(isset($newData['department'])){
+                            $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($newData['department']);
+                            $dep = $department->getShortname();
+                        }
+                        if(isset($newData['info'])){
+                            $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($newData['info']);
+                            $sec = $section->getShortname();
+                        }
+                        if(in_array("UPP", $newrights) || isset($newData['department']) || isset($newData['info'])){
                         
-                            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
+                            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
                             $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
                             //var_dump($entry); die();
                             //die();
@@ -693,13 +706,13 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin)
+                        'readonly' => true //(!$admin)
                     ),
                 ))
                 ->add('cn', 'text', array(
                     'required' => false,
                     'read_only' => false,
-                    'label' => 'Imię i nazwisko',
+                    'label' => 'Nazwisko i Imię',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
@@ -1961,5 +1974,31 @@ class DefaultController extends Controller
         //$vals = array("Kamil Jakacki", "Kamamamama", "Costam");
         $term = json_encode($dane);
         die($term);
+    }
+    
+    
+    /**
+     * @param $term
+     * @Route("/user/suggestLogin/", name="userSuggestLoginAction", options={"expose"=true})
+     */
+    public function userSuggestLoginAction(Request $request)
+    {
+        $post = ($request->getMethod() == 'POST');
+        $ajax = $request->isXMLHttpRequest();
+
+        // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
+/*
+        if ((!$ajax) OR ( !$post)) {
+            return null;
+        }
+*/
+
+        $imienazwisko = $request->get('name', null);
+        if (empty($imienazwisko)) {
+            throw new \Exception('Nie przekazano imienia i nazwiska!');
+        }
+        $parts = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($imienazwisko);
+        $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
+        die($login);
     }
 }

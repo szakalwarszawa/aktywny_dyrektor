@@ -1,0 +1,256 @@
+{% extends '::base.html.twig' %}
+{% import _self as forms %}
+{% macro formKadry(obj, sekcje, przelozeni) %}
+<form class="form-inline">
+    <div class="form-group">
+        <label  for="form_info">Sekcja</label>
+        <select id="form_info" name="form[info]" class="form-control select2 form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+            <option value=""></option>
+            {%for d,g in sekcje%}
+            <optgroup label="{{d}}">
+                {%for k,s in g%}
+                    <option value="{{k}}">{{s}}</option>
+                {%endfor%}
+            </optgroup>
+            {%endfor%}
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="form_manager">Przełożony</label>
+        <select id="form_manager" name="form[manager]" class="form-control select2 form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+            <option value=""></option>
+           {%for s in przelozeni%}
+                <option value="{{s.samaccountname}}">{{s.name}}</option>
+            {%endfor%}
+        </select>
+        
+        
+    </div>
+    <div class="form-group">
+        <label  readonly="" for="form_accountExpires">Data wygaśnięcia konta</label>
+        <div class="input-group datepicker" id="datepicker1">
+            <input type="text" id="form_accountExpires" name="form[accountExpires]" class="form-control form-control">
+            <span class="input-group-addon">
+                <span class="fa fa-calendar glyphicon glyphicon-calendar"></span>
+            </span>
+        </div>
+    </div>
+{#
+    <div class="form-group">
+        <label for="form_isDisabled">Konto wyłączone w AD</label>
+        <div class="input-group">
+            <select id="form_isDisabled" name="form[isDisabled]" class="form-control select21 form-control" onchange="if($(this).val() == 1){$(&quot;#disableDescriptionDiv&quot;).removeClass(&quot;hidden&quot;);}else{$(&quot;#form_disableDescription&quot;).val(&quot;&quot;);$(&quot;#disableDescriptionDiv&quot;).addClass(&quot;hidden&quot;);}">            <option value="0" selected="selected">NIE</option>            <option value="1">TAK</option></select>
+        </div>
+    </div>
+    <div class="form-group">
+        <label  for="form_disableDescription">Podaj powód wyłączenia konta</label>
+        <div class="input-group">
+            <select id="form_disableDescription" name="form[disableDescription]" class="form-control">            <option value="" selected="selected"></option>            <option value="Konto wyłączono z powodu nieobecności dłuższej niż 21 dni">Konto wyłączono z powodu nieobecności dłuższej niż 21 dni</option>            <option value="Konto wyłączono z powodu rozwiązania stosunku pracy">Konto wyłączono z powodu rozwiązania stosunku pracy</option></select>
+        </div>
+    </div>
+#}
+</form>
+{% endmacro %}
+
+{% block body -%}
+{% if msg is defined %}
+    <div class="alert alert-danger">
+        {{msg|raw}}
+    </div>
+{%endif%}
+
+{%if data|length > 0 %}
+{% for obj in data %}
+
+<div class="alert alert-danger acceptUser" id="acceptUser{{obj.id}}">
+    <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+    <h3>Dane zaimportowane z systemu REKORD</h3>
+    <table class="record_properties table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Imię</th>
+                <th>Nazwisko</th>
+                <th>Departament</th>
+                <th>Stanowisko</th>
+                <th>Umowa</th>
+                <th>Umowa od</th>
+                <th>Umowa do</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>{{obj.id}}</td>
+                <td>{{obj.imie}}</td>
+                <td>{{obj.nazwisko}}</td>
+                <td>{{obj.departament.name}}</td>
+                <td>{{obj.stanowisko}}</td>
+                <td>{{obj.umowa}}</td>
+                <td>{{obj.umowaOd|date("Y-m-d")}}</td>
+                <td>{{obj.umowaDo|date("Y-m-d")}}</td>
+            </tr>
+            <tr>
+                <td colspan="8">
+                    {{ forms.formKadry(obj, sekcje, przelozeni) }}
+                </td>
+            </tr>
+            <tr>
+                <td colspan="8">
+                    <h3>Dane w Active Directory</h3>
+                    <table class="record_properties table table-striped">
+                        <thead>
+                        {% if (obj.users|length > 0) %}
+                            <tr>
+                                <th>Login</th>
+                                <th>Imię i Nazwisko</th>
+                                <th>Departament</th>
+                                <th>Stanowisko</th>
+                                <th>Sekcja</th>
+                            </tr>
+                        {%else%}                                
+                            <tr>
+                                <th colspan="4">Nie znaleziono żadnych pasujących użytkowników w AD</th>
+                            </tr>
+                        {% endif %}
+                        </thead>
+                        <tbody>
+                            {%for user in obj.users %}
+                                <tr>
+                                    <td><a href="{{path('userEdit', {samaccountname: user.samaccountname})}}">{{user.samaccountname}}</a></td>
+                                    <td>{{user.name}}</td>
+                                    <td>{{user.department}}</td>
+                                    <td>{{user.title}}</td>
+                                    <td>{{user.info}}</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="5">
+                                        <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmSelection{{user.samaccountname}}{{obj.id}}">Przypisz do tego użytkownika</button>
+                                    </td>
+                                </tr>
+                            {%endfor%}
+                            <tr>
+                                <td colspan="5">
+                                    {% if (obj.users|length > 0) %}<h2>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, utwórz nowego konto w AD za pomocą przycisku poniżej</h2>{%endif%}
+                                    <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>                
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{%endfor%}
+{%endif %}
+    
+    
+ 
+{%if data|length > 0 %}
+{% for obj in data %}   
+    {% for user in obj.users %} 
+    <!-- Modal -->
+    <div id="confirmSelection{{user.samaccountname}}{{obj.id}}" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Akceptacja przypisania nowego użytkownika z systemu REKORD</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="alert alert-danger">
+                            <h2>Akceptujesz przypisanie nowego użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do istniejącego w AD użytkownika '{{user.name}}'</h2>
+                        </div>
+                        <div class="list-group">
+                          <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
+                          {% if user.department != obj.departament.name %}
+                              <a class="list-group-item">Zmiana Biura/Departamentu '{{user.department}}' do '{{obj.departament.name}}'</a>
+                              <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
+                              <a class="list-group-item">Nadanie nowych uprawnień w oparciu o nowy departament '{{obj.departament.name}}'</a>
+                          {%endif%}
+                          {% if obj.nazwisko ~ " " ~obj.imie != user.name %}
+                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{obj.name}}' na '{{obj.nazwisko ~ " " ~obj.imie}}'</a>                          
+                          {%endif%}
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                    <a href="#" onclick="zapisz{{user.samaccountname}}{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function zapisz{{user.samaccountname}}{{obj.id}}(){
+            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: user.samaccountname})}}";
+            var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
+            var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
+            save(url, form, manager, {{obj.id}});
+        }
+    </script>
+    {%endfor%}
+    <!-- Modal -->
+    <div id="confirmSelection{{obj.id}}" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">        
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Akceptacja utworzenia nowego użytkownika z systemu REKORD</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="alert alert-danger">
+                            <h2>Akceptujesz utworzenie nowego użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' z loginem '{{obj.login}}'</h2>
+                        </div>
+                        <div class="list-group">
+                          <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
+                          <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
+                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>
+                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{obj.nazwisko ~ " " ~obj.imie}}'</a>      
+                          <a class="list-group-item">Nadanie loginu '{{obj.login}}'</a>                          
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                    <a href="#" onclick="zapisz{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        function zapisz{{obj.id}}(){
+            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: 'nowy'})}}";
+            var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
+            var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
+            save(url, form, manager, {{obj.id}});
+        }
+    </script>
+{%endfor%}
+{%endif %}
+<script type="text/javascript">
+    function save(url, data, manager, id){
+        console.log(manager);
+        if(manager == ""){
+            alert("Musisz wybrać przełożonego!");            
+        }else{
+            $.post(url, data, function(result){
+                console.log(result);
+                if(result == "ok"){
+                    //alert('Zapisano.');
+                    $("#acceptUser"+id).removeClass('alert-danger').addClass('alert-success');
+                    $('button', $("#acceptUser"+id)).remove();     
+                    $('select, input', $("#acceptUser"+id)).prop('disabled', true);
+                }
+            });
+        }
+    }
+    //$("table.tablesorter").tablesorter(); 
+
+</script>
+
+{% endblock %}

@@ -1,4 +1,4 @@
-<h3>{{ user.name }}</h3>
+
 <div  class="tabContent">
     <form class="form-horizontal" method="POST" role="form">
         {{  form_start(form) }}
@@ -26,7 +26,9 @@
         <div class="form-group">
             {{ form_label(form.title) }}
             <div class="col-sm-4">{{ form_widget(form.title) }}</div>
-            <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
+            {% if user is defined %}
+                <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
+            {%endif%}
         </div>
         <div class="form-group">
             {{ form_label(form.initialrights) }}
@@ -39,12 +41,14 @@
                     <div id="formRowInfo">
                     {{ form_widget(form.info) }}
                     </div>
-                    {{ form_widget(form.infoNew)}}
-                    <span class="input-group-addon">
-                        <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
-                        Nowa Sekcja
-                        </button>
-                    </span>
+                    <div class="hidden">
+                        {{ form_widget(form.infoNew)}}
+                        <span class="input-group-addon">
+                            <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
+                            Nowa Sekcja
+                            </button>
+                        </span>
+                    </div>
                 </div>
             </div>
         </div>
@@ -63,7 +67,10 @@
             </div>
             <div class="col-sm-4 btn-group">
                 <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
+                
+                {% if user is defined %}
                 <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
+                {%endif%}
             </div>
         </div>
                     

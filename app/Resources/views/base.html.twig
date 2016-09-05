@@ -69,13 +69,17 @@
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
+                            {% if "PARP_ADMIN" in app.user.roles or "PARP_BZK1" in app.user.roles or "PARP_BZK1" in app.user.roles %}
                             <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> użytkownicy <b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy</a></li>
-                                    <li><a href="{{ path('main', {'onlyTemporary' : 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi</a></li>
+                                    <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy w AD</a></li>
+                                    <li><a href="{{ path('przejrzyjnowych') }}"><i class="fa fa-users"></i> użytkownicy - nowi z rekorda</a></li>
+                                    <li><a href="{{ path('main', {'onlyTemporary' : 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi (do utworzenia w AD)</a></li>
+                                    <li><a href="{{ path('userAdd') }}"><i class="fa fa-users"></i> Dodaj użytkownika</a></li>
                                 </ul>
                             </li>
+                            {% endif%}
                             {% if "PARP_ADMIN" in app.user.roles %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>

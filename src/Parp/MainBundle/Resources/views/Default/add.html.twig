@@ -18,115 +18,9 @@
 
     <div class="col-sm-8">
         <h3>Dodaj pracownika</h3>
-        <form class="form-horizontal" method="POST" role="form">
-            {{  form_start(form) }}
-            <div class="form-group">
-                {{ form_label(form.samaccountname) }}
-                <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.cn) }}
-                <div class="col-sm-8">{{ form_widget(form.cn) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.initials) }}
-                <div class="col-sm-4">
-                    {{ form_widget(form.initials) }}
-                </div>
-                <div class="col-sm-4">
-                    <a class="btn btn-primary col-sm-12" id="suggestinitials" name="suggestinitials"><i class="fa fa-search"></i> Zasugeruj</a>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.department) }}
-                <div class="col-sm-8">{{ form_widget(form.department) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.title) }}
-                <div class="col-sm-4">{{ form_widget(form.title) }}</div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.initialrights) }}
-                <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
-            </div>
-            
-            <div class="form-group">
-                {{ form_label(form.info) }}
-                <div class="col-sm-8">
-                    <div class="input-group">
-                        <div id="formRowInfo">
-                        {{ form_widget(form.info) }}
-                        </div>
-                        {{ form_widget(form.infoNew)}}
-                        <span class="input-group-addon">
-                            <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
-                            Nowa Sekcja
-                            </button>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            
-            
-{#
-            <div class="form-group">
-                {{ form_label(form.info) }}
-                <div class="col-sm-8">{{ form_widget(form.info) }}</div>
-            </div>
-#}
-            <div class="form-group">
-                {{ form_label(form.manager) }}
-                <div class="col-sm-4">
-                    {{ form_widget(form.manager) }}
-                </div>
-                <div class="col-sm-4 btn-group">
-                    <a class="btn btn-primary col-sm-12" id="nadaj" name="nadaj"><i class="fa fa-users"></i>Nadaj</a>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.accountExpires) }}
-                <div class='col-sm-8'>
-                    <div class="input-group datepicker"  id="datepicker1">
-                        {{ form_widget(form.accountExpires) }}
-                        <span class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.isDisabled) }}
-                <div class='col-sm-8'>
-                    <div class="input-group">
-                        {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#disableDescriptionDiv").addClass("hidden");}'}}) }}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden'}}" id="disableDescriptionDiv" >
-                {{ form_label(form.disableDescription) }}
-                <div class='col-sm-8'>
-                    <div class="input-group">
-                        {{ form_widget(form.disableDescription) }}
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                {{ form_label(form.fromWhen) }}
-                <div class='col-sm-8'>
-                    <div class="input-group datepicker"  id="datepicker2">
-                        {{ form_widget(form.fromWhen) }}
-                        <span class="input-group-addon">
-                            <span class="fa fa-calendar"></span>
-                        </span>
-                    </div>
-                </div>
-            </div>
-            <div class="form-group">
-                <div class="col-sm-12">{{ form_widget(form.zapisz) }}</div>
-            </div>
+        
+        {% include 'ParpMainBundle:Default:userForm.html.twig' %}
     </div>
-    {{ form_rest(form) }}
-
 
 
     <div id="myModal" class="modal fade">
@@ -164,6 +58,7 @@
         $('#form_fromWhen').mask("99-99-9999");
         $('#form_accountExpires').mask("99-99-9999");
 #}
+{#
         $('#suggestinitials').click(function () {
             var samaccountname = $('#form_samaccountname').val();
             var department = $('#form_department').val();
@@ -189,7 +84,7 @@
         $('#nadaj').click(function () {
             $("#myModal").modal('show');
         });
-        $("#imienazwisko").keyup(function () {
+        $("#imienazwisko").change(function () {
             var imienazwisko = null;
             imienazwisko = $("#imienazwisko").val();
             if (imienazwisko.trim()) {
@@ -205,6 +100,7 @@
             $("#form_manager").val($("#manager").val());
             $("#imienazwisko").val();
         });
+#}
 
     </script>
 {% endblock %}
