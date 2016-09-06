@@ -516,9 +516,11 @@ class LdapAdminService
             $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
         }
         $tab = explode(' ', $entry['cn']);
-        $entry['sn'] = count($tab) > 1 ? $tab[1] : "";
-        $entry['givenName'] = $tab[0];
+        $entry['sn'] = count($tab) > 0 ? $tab[0] : "";
+        $entry['givenName'] = $tab[1];
+        
         $entry['name'] = $entry['cn'];
+        $entry['displayName'] = $entry['cn'];
         $entry['userPrincipalName'] = $person->getSamaccountname() . $this->ad_domain;
         $entry['department'] = $person->getDepartment();
         $entry['division'] = $person->getDivision();
@@ -530,9 +532,13 @@ class LdapAdminService
         $entry['objectClass']['1'] = "person";
         $entry['objectClass']['2'] = "organizationalPerson";
         $entry['objectClass']['3'] = "user";
-        $entry['displayName'] = $entry['cn'];
         $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
-        $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
+        $entry['streetAddress'] = 'ul. Pańska 81/83';
+        $entry['wWWHomePage'] = 'www.parp.gov.pl';
+        $entry['co'] = 'Poland';
+        $entry['c'] = 'PL';
+        $entry['l'] = 'Warszawa';
+        $entry['postalCode'] = '00-834';
         //tu dopisac pozostale atrybuty 
         
         
@@ -554,7 +560,7 @@ class LdapAdminService
         //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
         if($this->debug){
             echo "<pre>";print_r($dn);
-            print_r($entry);echo "</pre>";
+            print_r($entry);echo "</pre>"; die();
         }
         $this->ldap_add($ldapconn, $dn, $entry);
         $ldapstatus = $this->ldap_error($ldapconn);

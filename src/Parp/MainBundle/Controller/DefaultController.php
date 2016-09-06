@@ -649,7 +649,7 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
         
     }
-    public function createUserEditForm($that, $defaultData, $wymusUproszczonyFormularz = false){
+    public function createUserEditForm($that, $defaultData, $wymusUproszczonyFormularz = false, $nowy = false){
         // Pobieramy listę stanowisk
         $titlesEntity = $that->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
         $titles = array();
@@ -712,7 +712,7 @@ class DefaultController extends Controller
                 ->add('cn', 'text', array(
                     'required' => false,
                     'read_only' => false,
-                    'label' => 'Nazwisko i Imię',
+                    'label' => 'Nazwisko i Imię', //'Imię i Nazwisko',//'Nazwisko i Imię',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
@@ -847,6 +847,8 @@ class DefaultController extends Controller
                         'disabled' => (!$admin)
                     ),
                     'choices' => $rights,
+                    'data' => ($nowy ? ["UPP"] : []),
+                    
                     //'data' => (@$defaultData["initialrights"]),
                     'multiple' => true,
                     'expanded' => false
@@ -929,7 +931,7 @@ class DefaultController extends Controller
         
 
         $entry = new Entry($this->getUser()->getUsername());
-        $form = $this->createUserEditForm($this, $entry);
+        $form = $this->createUserEditForm($this, $entry, false, true);
         
         $form->handleRequest($request);
 
@@ -1211,7 +1213,7 @@ class DefaultController extends Controller
             return null;
         }
         $p = explode(" ", $request->get('cn'));
-        $initials = substr($p[0], 0, 1). substr($p[1], 0, 1);
+        $initials = substr($p[1], 0, 1). substr($p[0], 0, 1);
         /*
 
         $samaccountname = $request->get('samaccountname', null);
@@ -1998,7 +2000,7 @@ class DefaultController extends Controller
             throw new \Exception('Nie przekazano imienia i nazwiska!');
         }
         $parts = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($imienazwisko);
-        $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[0], $parts[1], true);
+        $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
         die($login);
     }
 }
