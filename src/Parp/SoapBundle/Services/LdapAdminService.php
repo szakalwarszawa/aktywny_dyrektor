@@ -532,6 +532,7 @@ class LdapAdminService
         $entry['objectClass']['3'] = "user";
         $entry['displayName'] = $entry['cn'];
         $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
+        $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
         //tu dopisac pozostale atrybuty 
         
         
@@ -547,6 +548,7 @@ class LdapAdminService
         $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
+            $entry['extensionAttribute14'] = $description->getShortname();
         }
         $newuser_plaintext_password = "F4UCorsair";
         //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));

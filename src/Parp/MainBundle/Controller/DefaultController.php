@@ -1998,7 +1998,7 @@ class DefaultController extends Controller
             throw new \Exception('Nie przekazano imienia i nazwiska!');
         }
         $parts = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($imienazwisko);
-        $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
+        $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[0], $parts[1], true);
         die($login);
     }
 }
