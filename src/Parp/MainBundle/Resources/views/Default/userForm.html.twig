@@ -25,19 +25,18 @@
         </div>
         <div class="form-group">
             {{ form_label(form.title) }}
-            <div class="col-sm-4">{{ form_widget(form.title) }}</div>
+            <div class="col-sm-{{  (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
             {% if user is defined %}
                 <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
             {%endif%}
         </div>
         <div class="form-group">
             {{ form_label(form.initialrights) }}
-            <div class="col-sm-4">{{ form_widget(form.initialrights) }}</div>
+            <div class="col-sm-8">{{ form_widget(form.initialrights) }}</div>
         </div>
         <div class="form-group">
             {{ form_label(form.info) }}
             <div class="col-sm-8">
-                <div class="input-group">
                     <div id="formRowInfo">
                     {{ form_widget(form.info) }}
                     </div>
@@ -49,7 +48,6 @@
                             </button>
                         </span>
                     </div>
-                </div>
             </div>
         </div>
         {#<div class="form-group">#}
@@ -88,22 +86,20 @@
         <div class="form-group">
             {{ form_label(form.isDisabled) }}
             <div class='col-sm-8'>
-                <div class="input-group">
                     {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}'}}) }}
-                </div>
+                
             </div>
         </div>
         <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden'}}" id="disableDescriptionDiv" >
             {{ form_label(form.disableDescription) }}
             <div class='col-sm-8'>
-                <div class="input-group">
                     {{ form_widget(form.disableDescription) }}
-                </div>
+                
             </div>
         </div>
         <div class="form-group">
             {{ form_label(form.roles) }}
-            <div class="col-sm-4">{{ form_widget(form.roles) }}</div>
+            <div class="col-sm-8">{{ form_widget(form.roles) }}</div>
         </div>
         <div class="form-group">
             {{ form_label(form.fromWhen) }}

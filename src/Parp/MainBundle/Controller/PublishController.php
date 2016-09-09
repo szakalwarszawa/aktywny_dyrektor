@@ -24,12 +24,18 @@ class PublishController extends Controller
         $application = new Application($kernel);
         $application->setAutoExit(false);
 
-        $input = new ArrayInput(array(
+        $pars = array(
            'command' => 'parp:ldapsave',
            'showonly' => $showonly,
            '--samaccountname' => $this->getUser()->getUsername(),
            //'--ids' => '1863',
-        ));
+        );
+        if($this->getUser()->getUsername() == "kamil_jakacki"){
+            //$pars['--ids'] = 3326;
+        }
+
+
+        $input = new ArrayInput($pars);
         
         // You can use NullOutput() if you don't need the output
         $output = new BufferedOutput(

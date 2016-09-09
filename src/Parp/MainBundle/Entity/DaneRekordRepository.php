@@ -24,9 +24,11 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         $result = $this
                ->createQueryBuilder('e')
                ->select('e')
-               ->andWhere("e.newUnproccessed = 1")
+               ->andWhere("e.newUnproccessed > 0")
+               ->orderBy("e.newUnproccessed")
                ->getQuery()
                ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
+//               var_dump($result);
         return $result;
     }
 }

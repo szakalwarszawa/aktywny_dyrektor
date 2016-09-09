@@ -429,21 +429,23 @@ class LdapAdminService
         if($person->getMemberOf() != ""){
             $grupy = explode(",", $person->getMemberOf());
             foreach($grupy as $grupa){
-            
-                $znak = substr($grupa, 0, 1);               
-                $g = substr($grupa, 1);
-                //var_dump($g);
-                $grupa = $this->getGrupa($g);
-                $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
-                //var_dump($g, $dn, $addtogroup); die();
-                if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
-                    $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
-                }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
-                    $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
-                }else{
-                    $this->output->writeln('<comment>           Mialem '.($znak == "+" ? "dodawac do" : "zdejmowac z")." grupy  ".$g); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
+                if($grupa != ""){
+                    $znak = substr($grupa, 0, 1);               
+                    $g = substr($grupa, 1);
+                    //var_dump($grupa, $znak);
+                    $grupa = $this->getGrupa($g);
+                    $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                    //var_dump($g, $dn, $addtogroup); die();
+                    if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
+                        $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                    }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
+                        $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
+                    }
+                    
+                    $this->output->writeln('<comment>Dodanie/usuniecie '.($znak)." z grupy  ".$g); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
+                    
                 }
-                return ;
+                //return ;
             }
         }
     }
@@ -549,9 +551,11 @@ class LdapAdminService
         if($section)
             $entry['division'] = $section->getName();//$section->getShortname();
         else{
-            $entry['division'] = 'SD';
+            $entry['division'] = '';
         }
         $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
+        //print_r(".".$person->getId()); 
+        //die();
         if (!empty($description)) {
             $entry['description'] = $description->getShortname();
             $entry['extensionAttribute14'] = $description->getShortname();
@@ -565,8 +569,12 @@ class LdapAdminService
         $this->ldap_add($ldapconn, $dn, $entry);
         $ldapstatus = $this->ldap_error($ldapconn);
         
-        
+        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
+        //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
+        $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
         $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+            
+        //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
         $ldapstatus = $this->ldap_error($ldapconn);
         
         if($this->debug){

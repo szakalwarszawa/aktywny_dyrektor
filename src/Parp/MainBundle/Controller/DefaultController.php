@@ -418,6 +418,7 @@ class DefaultController extends Controller
             $newrights = $ndata['initialrights'];
             $odata = $previousData;
             $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
+//            var_dump($ndata, $odata, $roznicauprawnien); die();
             unset($ndata['initialrights']);
             unset($odata['initialrights']);
             unset($ndata['memberOf']);
@@ -522,7 +523,8 @@ class DefaultController extends Controller
                     if($roznicauprawnien || isset($newData['department']) || isset($newData['info'])){
                         //print_r($newrights); die();
                         $dep = $ADUser[0]['description'];
-                        $sec = $ADUser[0]['division'];
+                        $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($ADUser[0]['division']);
+                        $sec = $section->getShortname();
                         //odbiera stare
                         $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
                         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
@@ -847,7 +849,7 @@ class DefaultController extends Controller
                         'disabled' => (!$admin)
                     ),
                     'choices' => $rights,
-                    'data' => ($nowy ? ["UPP"] : []),
+                    'data' => ($nowy ? ["UPP"] : @$defaultData["initialrights"]),
                     
                     //'data' => (@$defaultData["initialrights"]),
                     'multiple' => true,
@@ -920,6 +922,10 @@ class DefaultController extends Controller
      */
     public function addAction(Request $request)
     {
+        $mozeTuByc = in_array("PARP_ADMIN", $this->getUser()->getRoles()) || in_array("PARP_BZK_2", $this->getUser()->getRoles());
+        if(!$mozeTuByc){
+            throw new \Parp\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by tworzyć użytkowników!');
+        }
         // Sięgamy do AD:
         // $ldap = $this->get('ldap_service');
         // $ADUser = $ldap->getUserFromAD($samaccountname);

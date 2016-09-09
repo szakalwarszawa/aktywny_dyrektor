@@ -163,10 +163,10 @@ class DaneRekord
     /**
     * @var boolean
      *
-     * @ORM\Column(type="boolean")
+     * @ORM\Column(type="integer")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $newUnproccessed = false;
+    private $newUnproccessed = 0;
     
 
     /**

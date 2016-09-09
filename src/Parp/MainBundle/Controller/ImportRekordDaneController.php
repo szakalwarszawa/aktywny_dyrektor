@@ -187,10 +187,21 @@ class ImportRekordDaneController extends Controller
         $ldap = $this->get('ldap_service');
         
         $rekordIds = [];
-        
-        //temp by sprawdzic czy utworzy dubla mnie
+/*
         $data["KAMIL JAKACKI"][] = [
-            'SYMBOL' => '77777',
+            'SYMBOL' => '3834',
+            'STANOWISKO' => 'starszy specjalista',
+            'DEPARTAMENT' => '521',
+            'IMIE' => 'KAMIL',
+            'NAZWISKO' => 'JAKACKI',
+            'UMOWA' => 'Na czas nieokreślony',
+            'UMOWAOD' => '2016-03-01 00:00:00',
+            'UMOWADO' => NULL,
+        ];
+*/
+        //temp by sprawdzic czy utworzy dubla mnie
+        $data["KAMIL JAKACKI1"][] = [
+            'SYMBOL' => '777774',
             'STANOWISKO' => 'starszy specjalista',
             'DEPARTAMENT' => '504',
             'IMIE' => 'KAMIL',
@@ -202,7 +213,7 @@ class ImportRekordDaneController extends Controller
         
 
         $data["ROBERT MUCHACKI"][] = [
-            'SYMBOL' => '777773',
+            'SYMBOL' => '777774',
             'STANOWISKO' => 'starszy specjalista',
             'DEPARTAMENT' => '504',
             'IMIE' => 'ROBERT',
@@ -235,6 +246,12 @@ class ImportRekordDaneController extends Controller
             }else{
                 $row = $d[0];
             }
+            if($this->parseValue($row['SYMBOL']) == "3834"){
+                //jakacki kamil testujemy update pol
+                $row['DEPARTAMENT'] = "516";
+                $row['STANOWISKO'] = "starszy specjalista";
+                //var_dump('mam jakackiego');
+            }
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
             
             if($dr == null || !in_array($dr->getSymbolRekordId(), $pomijajDaneRekord)){
@@ -250,9 +267,10 @@ class ImportRekordDaneController extends Controller
                     $dr = new \Parp\MainBundle\Entity\DaneRekord();
                     $dr->setCreatedBy($this->getUser()->getUsername());
                     $dr->setCreatedAt($d);
-                    $dr->setNewUnproccessed(true);
+                    $dr->setNewUnproccessed(1);
                     $em->persist($dr);
                     $saNowi = true;
+                    $poprzednieDane = clone $dr;
                 }else{
                     $poprzednieDane = clone $dr;
                 }
@@ -313,8 +331,13 @@ class ImportRekordDaneController extends Controller
                     if(count($changeSet) > 0){
                         $totalmsg[] = "\n".($nowy ? "Utworzono dane" : "Uzupełniono dane ")." dla  ".$dr->getLogin()." .";
                     }
-                    if(count($changeSet) > 0 && !$nowy){
-                        $this->utworzEntry($em, $dr, $changeSet, $nowy);
+                    
+                    
+                    if((isset($changeSet['departament']) || isset($changeSet['stanowisko'])) && !$nowy){
+                        //die("mam zmiane stanowiska lub depu dla istniejacego");
+                        $dr->setNewUnproccessed(2);
+                    }elseif(count($changeSet) > 0 && !$nowy){
+                        $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
                         $imported[] = $dr;
                     }
                 }
@@ -347,7 +370,7 @@ class ImportRekordDaneController extends Controller
         return $this->render('ParpMainBundle:DaneRekord:showData.html.twig', ['data' => $errors, 'msg' => implode("<br>", $totalmsg), 'saNowi' => $saNowi]);
         //return $this->redirect($this->generateUrl('danerekord'));
     }
-    protected function utworzEntry($em, $dr, $changeSet, $nowy){
+    protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane ){
         $ldap = $this->get('ldap_service');
         //echo "<pre>"; print_r($changeSet); //die();
         $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
@@ -689,7 +712,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         foreach($nowi as $dr){
             $users = $this->getUserFromAllAD($dr);
             $departament = $em->getRepository("ParpMainBundle:Departament")->findOneByNameInRekord($dr->getDepartament());
-            $d = $this->getObjectPropertiesAsArray($dr, ['id', 'imie', 'nazwisko', 'stanowisko', 'umowa', 'umowaOd', 'umowaDo', 'login']);
+            $d = $this->getObjectPropertiesAsArray($dr, ['id', 'imie', 'nazwisko', 'stanowisko', 'umowa', 'umowaOd', 'umowaDo', 'login', 'newUnproccessed']);
             $d['users'] = $users;
             $d['departament'] = $departament;
             $data[] = $d;
@@ -758,9 +781,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
         $dr = $em->getRepository("ParpMainBundle:DaneRekord")->find($id);
-        if($dr->getNewUnproccessed()){
+        $poprzednieDane = clone $dr;
+        if($dr->getNewUnproccessed() > 0){
             $changeSet = [];
             if($samaccountname != "nowy"){
+                if($dr->getNewUnproccessed() == 2){
+                    $samaccountname = $dr->getLogin();    
+                }
                 $dr->setLogin($samaccountname);
                 $aduser = $ldap->getUserFromAD($samaccountname, null, null, "wszyscyWszyscy");
                 if($aduser[0]['name'] != $dr->getNazwisko()." ".$dr->getImie()){
@@ -777,7 +804,14 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 //nowy user                
                 $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
             }
-            $entry = $this->utworzEntry($em, $dr, $changeSet, $samaccountname == "nowy");
+            $entry = $this->utworzEntry($em, $dr, $changeSet, $samaccountname == "nowy", $poprzednieDane);
+            if($dr->getNewUnproccessed() == 2){
+                //trzeba odebrac stare
+                $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByShortname($aduser[0]['department']);
+                $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($aduser[0]['division']);
+                $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera(['title' => $aduser[0]['title']], $department->getShortname(), ($section ? $section->getShortname() : ""));
+                $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");                
+            }
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
             $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($dane['form']['info']);
             $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera(['title' => $dr->getStanowisko()], $department->getShortname(), ($section ? $section->getShortname() : ""));
