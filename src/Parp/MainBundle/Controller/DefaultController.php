@@ -720,7 +720,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin)
+                        'readonly' => (!$admin && !$kadry2)
                     ),
                 ))
                 ->add('initials', 'text', array(
@@ -732,7 +732,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin)
+                        'readonly' => (!$admin && !$kadry2)
                     ),
                 ))
                 ->add('title', 'choice', array(
@@ -745,7 +745,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin)
+                        'disabled' => (!$admin && !$kadry2)
                     ),
                     //'data' => @$defaultData["title"],
                     'choices' => $titles,
@@ -786,7 +786,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin)
+                        'disabled' => (!$admin && !$kadry2)
                     ),
                     'choices' => $departments,
                     //'data' => @$defaultData["department"],
