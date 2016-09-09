@@ -299,16 +299,6 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'required' => true
                 ))
-                ->add('nazwafiltr', 'text', array(
-                    'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left ',
-                    ),
-                    'label' => 'Filtruj po nazwie',
-                    'attr' => array(
-                        'class' => 'ays-ignore ',
-                    ),
-                    'required' => false
-                ))
                 ->add('grupy', 'choice', array(
                     'required' => false,
                     'read_only' => false,
@@ -338,6 +328,17 @@ class NadawanieUprawnienZasobowController extends Controller
                     'label' => 'Odznacz wszystkie'
                 ))
                 ->add('wybraneZasoby', 'textarea', array('mapped' => false, 'attr' => ["readonly" => true]))
+                
+                ->add('nazwafiltr', 'text', array(
+                    'label_attr' => array(
+                        'class' => 'col-sm-12 control-label text-left ',
+                    ),
+                    'label' => 'Filtruj po nazwie',
+                    'attr' => array(
+                        'class' => 'ays-ignore ',
+                    ),
+                    'required' => false
+                ))
                 ->add('access', 'choice', array(
                     'required' => false,
                     'read_only' => false,

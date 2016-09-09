@@ -97,7 +97,7 @@ class KomentarzController extends Controller
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Komentarz został utworzony.');
-                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
+                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_show", array('id' => $entity->getObiektId())));
         }
 
         return array(

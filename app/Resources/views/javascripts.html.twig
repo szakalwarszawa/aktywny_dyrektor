@@ -24,6 +24,15 @@ $(document).ready(function(){
     });
     
     $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+        console.log("zmiana taba");
+        console.log(e.target.hash);
+        console.log($(e.target.hash));
+        console.log($(e.target.hash).closest('.tab-content'));
+        console.log($(e.target.hash).closest('.tab-content').find('> form > .tab-pane.active:not(' + e.target.hash + ')'));
+        console.log($(e.target.hash).closest('.tab-content').find('> .tab-pane.active:not(' + e.target.hash + ')'));
+        $(e.target.hash).closest('.tab-content').find('> form > .tab-pane.active:not(' + e.target.hash + '),> .tab-pane.active:not(' + e.target.hash + ')').removeClass('active');
+        
+        
         console.log('adjusting tables');
         console.log($(this).attr('href'));
         $('table', $($(this).attr('href'))).colResizable(); 

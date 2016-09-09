@@ -35,7 +35,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $atrs = ['required' => false, 'attr' => []];
+        $atrs = ['required' => false, 'attr' => [], 'label' => "Wniosek dotyczy domeny internetowej (jeśli tak będzie musiał być zatwierdzony przez DKM)"];
         if(!$this->entity->getWniosek()->czyWtrakcieTworzenia()){
             $atrs['attr'] =  ['readonly' => true, 'disabled' => true];
         }

@@ -1156,7 +1156,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        
+        $comments = $em->getRepository("ParpMainBundle:Komentarz")->getCommentCount("WniosekUtworzenieZasobu", $entity->getId());
         return array(
             'grupyAD' => $grupyAD,
             'entity'      => $entity,
@@ -1166,7 +1166,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'canReturn' => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY" && $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA"),
             'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
             'userzasobyRozbite' => $userzasobyRozbite,
-            'czyLsi' => $czyLsi
+            'czyLsi' => $czyLsi,
+            'comments' => $comments
         );
     }
     

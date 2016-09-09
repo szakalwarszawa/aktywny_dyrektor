@@ -130,7 +130,7 @@
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
-            <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
+            <li><a data-toggle="tab" href="#komentarze">Komentarze {% if(entity.id > 0 and comments > 0) %}<span class="badge">{{comments}}</span>{%endif%}</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
             {%if(entity.wniosek.ADentries|length > 0)%}

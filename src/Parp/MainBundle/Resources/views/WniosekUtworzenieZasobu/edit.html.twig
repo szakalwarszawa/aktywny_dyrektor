@@ -118,7 +118,6 @@
             {%endif%}
         </div>
     </div>
-    {{ form_start(form) }}  
     <div class="col-sm-12">
         <ul class="nav nav-tabs" id="navTabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
@@ -134,6 +133,7 @@
         </ul>
         
         <div class="tab-content">
+            {{ form_start(form, {'attr' : {'class' : 'aaa'}}) }}  
             <div id="general" class="tab-pane fade in active">
                 
                 <div class="tabContent">
@@ -266,8 +266,10 @@
                         <div class="col-sm-2 pull-right">{{ form_widget(form.submit) }}  </div>
                     </div>  
                     {%endif%}
+                    {{ form_rest(form) }}   
                 </div>
             </div>
+            {{ form_end(form) }}   
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
                     {%if(entity.id > 0) %}
@@ -310,9 +312,8 @@
             </div>  
         </div>  
     </div>
-    
-
-{{ form_end(form) }}    
+     
+ 
 
 
 <div class="btn-group">
@@ -373,6 +374,8 @@ for(var i = 0; i < zs.length; i++){
     console.log(sel);
     $(sel).closest('.form-group').addClass('has-error');
 }
+
+
 </script>
     
 {% endblock %}

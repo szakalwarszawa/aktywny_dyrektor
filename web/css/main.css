@@ -110,3 +110,21 @@ table{
 .alert-danger.acceptUser .close{
     display:none;
 }
+/*
+.tab-content>form>.tab-pane {
+    display: none;
+    visibility: hidden;
+}
+.tab-content>form>.active {
+    display: block;
+    visibility: visible;
+}
+*/
+.tab-content > form > .tab-pane,
+.pill-content > form > .pill-pane {
+    display: none;
+}
+.tab-content > form > .active,
+.pill-content > form > .active {
+    display: block;
+}
