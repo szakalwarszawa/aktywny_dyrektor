@@ -14,6 +14,7 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Parp\MainBundle\Exception\SecurityTestException;
 
 /**
  * RaportyKadrowe controller.
@@ -24,6 +25,20 @@ class RaportyKadroweController extends Controller
 {
     protected $maxMiesiac = 12;
     protected $debug = 0;
+    protected $miesiace = [
+        '1' => 'Styczeń',
+        '2' => 'Luty',
+        '3' => 'Marzec',
+        '4' => 'Kwiecień',
+        '5' => 'Maj',
+        '6' => 'Czerwiec',
+        '7' => 'Lipiec',
+        '8' => 'Sierpień',
+        '9' => 'Wrzesień',
+        '10' => 'Październik',
+        '11' => 'Listopad',
+        '12' => 'Grudzień',
+    ];
     /**
      *
      * @Route("/generujRaport", name="raportyKadrowe")
@@ -31,6 +46,9 @@ class RaportyKadroweController extends Controller
      */
     public function indexAction(Request $request)
     {
+        if($this->getUser()->getUsername() != "kamil_jakacki"){
+            throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
+        }
         $lata = [];
         for($i = date("Y"); $i > 2003 ; $i--){
             $lata[$i] = $i;
@@ -193,6 +211,8 @@ p_lp_prac m,
 p_pra_grgus g,
 p_pracownik pr
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
+and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
+ \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
 group by m.kod,p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
 
 union 
@@ -205,6 +225,8 @@ p_lp_prac m,
 p_pra_grgus g , 
 p_pracownik pr
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
+and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
+ \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
 group by m.kod,p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol';
         
         return $sql;
@@ -238,20 +260,7 @@ group by m.kod,p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol';
             stanowisko.OPIS";
         return $sql;
     }
-    protected $miesiace = [
-        '1' => 'Styczeń',
-        '2' => 'Luty',
-        '3' => 'Marzec',
-        '4' => 'Kwiecień',
-        '5' => 'Maj',
-        '6' => 'Czerwiec',
-        '7' => 'Lipiec',
-        '8' => 'Sierpień',
-        '9' => 'Wrzesień',
-        '10' => 'Październik',
-        '11' => 'Listopad',
-        '12' => 'Grudzień',
-    ];
+    
     
     protected function generateExcel($data, $rok){
         $kolumny = ["Lp.", "case ID", "personal ID (rekord ID)", "Imię i nazwisko", "Departament", "Stanowisko"];

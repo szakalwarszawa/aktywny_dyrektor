@@ -423,7 +423,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         return $this->redirect($this->generateUrl('main'));
                     }
                     
-                    return $this->redirect($this->generateUrl('main'));
+                    //return $this->redirect($this->generateUrl('main'));
                     break;
                 case "addPrivileges":
                     $powod = $ndata['powod'];

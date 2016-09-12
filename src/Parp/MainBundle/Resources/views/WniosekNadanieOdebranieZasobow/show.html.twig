@@ -42,7 +42,7 @@
                         {%set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent  ? entity.wniosek.parent.parent : entity.wniosek.parent)))%}
                         {%endif%}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default"}}"  
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy }} {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}Podzielony wniosek nr {{wniosekDoLinku.numer}} {%endif%}"
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s")}}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s")}}  : {{ ss.createdBy|showFullname }} {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}Podzielony wniosek nr {{wniosekDoLinku.numer}} {%endif%}"
                         >
                             {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}
                             
@@ -60,6 +60,12 @@
                     {%endfor%}
                 </ul>
             </div>
+            {%if(entity.wniosek.lockedBy != "" and entity.wniosek.lockedBy != app.user.username)%}
+                <div class="alert alert-warning">
+                    Wniosek Edytowany (zablokowany) przez: {{ entity.wniosek.lockedBy|showFullname }}<br>
+                    Edytowany (zablokowany) dnia: {{ entity.wniosek.lockedAt|date('Y-m-d H:i:s') }}
+                </div>
+            {%endif%}
             <div class="btn-group container">  
                 {% if editor %}
                     {% if entity.userZasoby|length > 0 %}
@@ -184,7 +190,7 @@
                                         {% set i = i + 1%}
                                         {% if z.samaccountname not in przetworzoneOsoby %}
                                             {% set przetworzoneOsoby = przetworzoneOsoby|merge([z.samaccountname]) %}
-                                            {{z.samaccountname}} {% if i != entity.userZasoby|length %}<br>{%endif%}
+                                            {{z.samaccountname|showFullname}} {% if i != entity.userZasoby|length %}<br>{%endif%}
                                         {% endif %}
                                     {% endfor%}
                                 </td>
@@ -199,7 +205,7 @@
                             </tr>
                             <tr>
                                 <th>Utworzony przez</th>
-                                <td>{{ entity.wniosek.createdBy }}</td>
+                                <td>{{ entity.wniosek.createdBy|showFullname }}</td>
                             </tr>
                             <tr>
                                 <th>Utworzony dnia</th>
@@ -207,7 +213,7 @@
                             </tr>
                             <tr>
                                 <th>Edytowany (zablokowany) przez</th>
-                                <td>{{ entity.wniosek.lockedBy }}</td>
+                                <td>{{ entity.wniosek.lockedBy|showFullname }}</td>
                             </tr>
                             <tr>
                                 <th>Edytowany (zablokowany) dnia</th>
@@ -216,11 +222,11 @@
                             
                             <tr>
                                 <th>Osoby które widzą wniosek</th>
-                                <td>{{ entity.wniosek.viewernames }}</td>
+                                <td>{{ entity.wniosek.viewernames|addSpaces }}</td>
                             </tr>
                             <tr>
                                 <th>Osoby które mogą edytować wniosek</th>
-                                <td>{{ entity.wniosek.editornames }}</td>
+                                <td>{{ entity.wniosek.editornames|addSpaces }}</td>
                             </tr>
                             
                             
@@ -258,7 +264,7 @@
                         {% for z in userzasoby %}
                             <tr>
                                 <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
-                                <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
+                                <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname|showFullname}}</a></td>
                                 <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
                                 <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
                                 <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
@@ -313,7 +319,7 @@
                         </tr>
                         {%for e in grupyAD%}
                             <tr>
-                                <td><a href="{{path('userEdit', {'samaccountname' : e.entry.samaccountname})}}">{{e.entry.samaccountname}}</a></td>
+                                <td><a href="{{path('userEdit', {'samaccountname' : e.entry.samaccountname})}}">{{e.entry.samaccountname|showFullname}}</a></td>
                                 <td>{{e.entry.memberOf}}</td>
                                 <td>{{e.entry.isImplemented}}</td>
                                 <td>
@@ -374,7 +380,7 @@
                             {% for z in userzasobyRozbite %}
                                 <tr>
                                     <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
-                                    <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname}}</a></td>
+                                    <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname|showFullname}}</a></td>
                                     <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
                                     <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
                                     <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>

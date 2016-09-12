@@ -78,7 +78,7 @@ services:
         tags: ~
     app.twig_extension:
         class: Parp\MainBundle\Twig\StringExtension
-        arguments: ["@rename_service"]
+        arguments: ["@rename_service", "@ldap_service"]
         public: false
         tags:
             - { name: twig.extension }

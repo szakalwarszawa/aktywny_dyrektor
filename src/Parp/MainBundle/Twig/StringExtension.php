@@ -5,10 +5,12 @@ namespace Parp\MainBundle\Twig;
 class StringExtension extends \Twig_Extension
 {
     protected $renameService;
-
-    public function __construct(\Parp\MainBundle\Services\RenameService $renameService)
+    protected $ldapService;
+    protected $sam2name = null;
+    public function __construct(\Parp\MainBundle\Services\RenameService $renameService, \Parp\SoapBundle\Services\LdapService $ldapService)
     {
         $this->renameService = $renameService;
+        $this->ldapService = $ldapService;
     }
     
     public function getFilters()
@@ -26,11 +28,28 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('getMultipleCheckboxLabel', array($this, 'getMultipleCheckboxLabel')),
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
             new \Twig_SimpleFilter('showMultiFieldAsNewLines', array($this, 'showMultiFieldAsNewLines')),
+            new \Twig_SimpleFilter('showFullname', array($this, 'showFullname')),
         );
     }
+    public function showFullname($samaccountname){
+        if($this->sam2name === null){
+            $this->sam2name = [];
+            //wypelniamy cache ze slownikiem
+            $users = $this->ldapService->getAllFromAD();
+            foreach($users as $u){
+                $this->sam2name[$u['samaccountname']] = $u['name'];
+            }
+        }
+        return (isset($this->sam2name[$samaccountname]) ? $this->sam2name[$samaccountname] : $samaccountname);
+    }
     public function addSpaces($str){
-        $str = str_replace(",", ", ", $str);
-        return $str;
+        $sams = explode(",", $str);
+        $ret = [];
+        foreach($sams as $s){
+            $ret[] = $this->showFullname($s);
+        }
+        ///$str = str_replace(",", ", ", $str);//old function content
+        return implode(", ", $ret);
     }
     public function zasobyNazwa($zids){
         $arr = explode(",", $zids);

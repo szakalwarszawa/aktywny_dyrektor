@@ -644,7 +644,8 @@ class Wniosek
         $sort = \Doctrine\Common\Collections\Criteria::create();
         $sort->orderBy(Array(
             'createdAt' => \Doctrine\Common\Collections\Criteria::ASC
-        ));
+        ))
+        ->where(\Doctrine\Common\Collections\Criteria::expr()->isNull("deletedAt"));
         return $this->statusy->matching($sort);
         return $this->statusy;
     }
