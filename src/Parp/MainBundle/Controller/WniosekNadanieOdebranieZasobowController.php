@@ -252,6 +252,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
+        
+        //temp
+        ///$widzi_wszystkich = false;
+        //$aduser[0]['department'] = 'Biuro Prezesa';
+        
         foreach($ADUsers as &$u){
             //unset($u['thumbnailphoto']);
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
