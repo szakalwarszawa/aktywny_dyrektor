@@ -23,6 +23,7 @@ use Parp\MainBundle\Exception\SecurityTestException;
  */
 class RaportyKadroweController extends Controller
 {
+    protected $xtraWhereForTests = ''; //' AND pr.NAZWISKO = \'O\'\'NEILL\' ';
     protected $maxMiesiac = 12;
     protected $debug = 0;
     protected $miesiace = [
@@ -89,7 +90,30 @@ class RaportyKadroweController extends Controller
             'form' => $form->createView()    
         ];
     }
-    
+    protected $bylaJuz = false;
+    protected function array_merge($arr1, $arr2, $allData){
+        $jest790 = false;
+        $ret = $arr1;
+        foreach($arr2 as $k => $v){
+            if(isset($ret[$k])){
+                $ret[$k] += $v;
+            }else{
+                $ret[$k] = $v;
+            }
+            
+            if($k == "790 "){
+                $jest790 = true;
+            }
+        }
+        if($allData['Nazwisko'] == "O'NEILL2222" && $jest790 ){
+            echo "<pre>"; print_r($allData); echo "</pre>";
+            echo "<pre>"; print_r($arr1); echo "</pre>";
+            echo "<pre>"; print_r($arr2); echo "</pre>";
+            echo "<pre>"; print_r($ret); echo "</pre>";
+            die();
+        }
+        return $ret; //array_merge($arr1, $arr2);
+    }
     protected function getRaportKadrowyData($rok){
         $data = [
             'headers' => ['programowe' => [], 'placowe' => []],
@@ -103,6 +127,9 @@ class RaportyKadroweController extends Controller
             $sql = $this->getSqlDoRaportuKadrowegoProgramyOperacyjne($rok, $i);
             //die($sql);
             $dane = $c->executeQuery($sql);
+            if($this->debug){
+                echo "<pre>"; print_r($data); echo "</pre>";
+            }
             //echo "<pre>"; print_r($rok); print_r($i); print_r($dane);  //die();
             $lastId = "";
             foreach($dane as $d){
@@ -110,7 +137,7 @@ class RaportyKadroweController extends Controller
                 if(!isset($data['headers'][$program])){
                     $data['headers']['programowe'][$program." "] = $program;
                 }
-                if($lastId == "" || $lastId != $d['ID']){
+                if($lastId == "" || $lastId != $this->parseValue($d['ID'])){
                     if($lastId != ""){
                         $data['data'][$i][$newdata['Id']] = $newdata;
                     }
@@ -127,7 +154,7 @@ class RaportyKadroweController extends Controller
                 }
                 $newdata['kolumny'][$program." "] = $this->parseValue($d['KWOTA']);
                 ///echo "<pre>";print_r($newdata);
-                $lastId = $d['ID'];
+                $lastId = $this->parseValue($d['ID']);
             }
             if($newdata){
                 $data['data'][$i][$newdata['Id']] = $newdata;
@@ -137,19 +164,22 @@ class RaportyKadroweController extends Controller
             $sql = $this->getSqlDoRaportuKadrowegoSkladnikiPlacowe($rok, $i);
             //die($sql);
             $dane = $c->executeQuery($sql);
+            if($this->debug){
+                echo "<pre>"; print_r($sql); echo "</pre>";
+            }
             //print_r($dane); die();
             $lastId = "";
             foreach($dane as $d){
                 if(!isset($data['headers'][$d['RODZAJ']])){
                     $data['headers']['placowe'][$this->parseValue($d['RODZAJ'])." "] = "[".$d['RODZAJ']."] ".$this->parseValue($d['OPIS']);
                 }
-                if($lastId == "" || $lastId != $d['ID']){
+                if($lastId == "" || $lastId != $this->parseValue($d['ID'])){
                     if($lastId != ""){
                         if(!isset($data['data'][$i][$newdata['Id']])){
                             $data['data'][$i][$newdata['Id']] = $newdata;
                         }else{
                             //laczymy arraye kolumn
-                            $data['data'][$i][$newdata['Id']]['kolumny'] = array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny']);
+                            $data['data'][$i][$newdata['Id']]['kolumny'] = $this->array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny'], $newdata);
                             $data['data'][$i][$newdata['Id']]['Departament'] = $this->parseValue($d['SYMBOL']);
                         }
                     }
@@ -164,13 +194,13 @@ class RaportyKadroweController extends Controller
                     ];
                 }
                 $newdata['kolumny'][$this->parseValue($d['RODZAJ'])." "] = $this->parseValue($d['KWOTA']);
-                $lastId = $d['ID'];
+                $lastId = $this->parseValue($d['ID']);
             }
             if(!isset($data['data'][$i][$newdata['Id']])){
                 $data['data'][$i][$newdata['Id']] = $newdata;
             }else{
                 //laczymy arraye kolumn
-                $data['data'][$i][$newdata['Id']]['kolumny'] = array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny']);
+                $data['data'][$i][$newdata['Id']]['kolumny'] = $this->array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny'], $newdata);
                 $data['data'][$i][$newdata['Id']]['Departament'] = $this->parseValue($d['SYMBOL']);
             }
             
@@ -180,6 +210,9 @@ class RaportyKadroweController extends Controller
             
             //die($sql);
             $dane = $c->executeQuery($sql);
+            if($this->debug){
+                echo "<pre>"; print_r($data); echo "</pre>";
+            }
             foreach($dane as $d){
                 if(isset($data['data'][$i][$d['SYMBOL']])){
                     $data['data'][$i][$d['SYMBOL']]['Departament'] = $this->parseValue($d['DEPARTAMENTNAZWA']);
@@ -187,9 +220,12 @@ class RaportyKadroweController extends Controller
                 }
             }
         }
-        asort($data['headers']);
+        //temp
+        //die();
+        ksort($data['headers']['programowe']);
+        ksort($data['headers']['placowe']);
         if($this->debug){
-            echo "<pre>"; print_r($data); die();
+            echo "<pre>"; print_r($data['headers']); die();
         }
         return $data;
     }
@@ -213,11 +249,12 @@ p_pracownik pr
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
 and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
  \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
-group by m.kod,p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
+'.$this->xtraWhereForTests.'
+group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod
 
 union 
 
-select  pr.symbol as id, pr.nazwisko, pr.imie, m.kod symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz from 
+select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz from 
 p_lp_pot p,
 p_listapl l,
 p_skladnik s, 
@@ -227,34 +264,40 @@ p_pracownik pr
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
 and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
  \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
-group by m.kod,p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol';
-        
+ '.$this->xtraWhereForTests.'
+group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
+order by 5,2,3
+';
+        //die($sql);
         return $sql;
     }
     protected function getSqlDoRaportuKadrowegoProgramyOperacyjne($rok, $miesiac){
-        $sql = 'select d.symbol as id,d.rodz,d.db, sum(d.kwota) kwota,p.nazwisko,p.imie, f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie  
+        $sql = 'select d.symbol as id,d.rodz,d.db, sum(d.kwota) kwota,pr.nazwisko,pr.imie, f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie  
         from 
         p_lp_pla_db d,
         p_listapl l,
-        p_pracownik p,
+        p_pracownik pr,
         f_db f 
-        where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.' and d.rodz = \'010\'    
-        group by 1,2,3,5,6,7,8,9,10 order by p.nazwisko, p.imie';
+        where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.' 
+        and d.rodz = \'6AA\'    
+        '.$this->xtraWhereForTests.'
+        group by 1,2,3,5,6,7,8,9,10 order by pr.nazwisko, pr.imie'; // bylo 010 rodz
         return $sql;
     }
     protected function getSqlDepartamentStanowisko($rok, $miesiac){
         $sql = "SELECT
-            p.SYMBOL,
+            pr.SYMBOL,
             departament.OPIS as departamentNazwa,
             departament.KOD  departament,
             stanowisko.OPIS stanowisko
             
-            from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok."-".$miesiac."-01') AND mpr.DATA_OD <=  '".$rok."-".$miesiac."-01'
+            from P_PRACOWNIK pr
+            join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok."-".$miesiac."-01') AND mpr.DATA_OD <=  '".$rok."-".$miesiac."-01'
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$rok."-".$miesiac."-01') AND stjoin.DATA_OD <= '".$rok."-".$miesiac."-01'
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$rok."-".$miesiac."-01') AND stjoin.DATA_OD <= '".$rok."-".$miesiac."-01'
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            group by p.SYMBOL,
+            where 1 = 1 ".$this->xtraWhereForTests."
+            group by pr.SYMBOL,
             departament.OPIS ,
             departament.KOD ,
             stanowisko.OPIS";

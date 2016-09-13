@@ -524,7 +524,7 @@ class DefaultController extends Controller
                         //print_r($newrights); die();
                         $dep = $ADUser[0]['description'];
                         $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($ADUser[0]['division']);
-                        $sec = $section->getShortname();
+                        $sec = $section ? $section->getShortname() : "";
                         //odbiera stare
                         $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
                         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
