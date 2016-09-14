@@ -23,7 +23,7 @@ use Parp\MainBundle\Exception\SecurityTestException;
  */
 class RaportyKadroweController extends Controller
 {
-    protected $xtraWhereForTests = ''; //' AND pr.NAZWISKO = \'O\'\'NEILL\' ';
+    protected $xtraWhereForTests = ''; //' AND pr.NAZWISKO = \'DROZD\' ';
     protected $maxMiesiac = 12;
     protected $debug = 0;
     protected $miesiace = [
@@ -187,7 +187,7 @@ class RaportyKadroweController extends Controller
                         'Id' => $this->parseValue($d['ID']),
                         'Nazwisko' => $this->parseValue($d['NAZWISKO']),
                         'Imie' => $this->parseValue($d['IMIE']),
-                        'Departament' => $this->parseValue($d['SYMBOL']),
+                        'Departament' => $this->parseValue($d['DEPARTAMENT']),
                         'DepartamentKod' => $this->parseValue($d['SYMBOL']),
                         'Stanowisko' => '',
                         'kolumny' => []
@@ -201,7 +201,55 @@ class RaportyKadroweController extends Controller
             }else{
                 //laczymy arraye kolumn
                 $data['data'][$i][$newdata['Id']]['kolumny'] = $this->array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny'], $newdata);
-                $data['data'][$i][$newdata['Id']]['Departament'] = $this->parseValue($d['SYMBOL']);
+                $data['data'][$i][$newdata['Id']]['Departament'] = $this->parseValue($d['DEPARTAMENT']);
+            }
+            
+            
+            
+            //teraz  skladniki placowe pracodawcy
+            $sql = $this->getSqlDoSkladekPracodwacy($rok, $i);
+            //die($sql);
+            $dane = $c->executeQuery($sql);
+            if($this->debug){
+                echo "<pre>"; print_r($sql); echo "</pre>";
+            }
+            //print_r($dane); die();
+            $lastId = "";
+            foreach($dane as $d){
+                if(!isset($data['headers'][$d['RODZAJ']])){
+                    $opisy = ["ZSA" => "S. emer. prac.", "ZSC" => "S. rent. prac.", "ZSF" => "S. wyp. prac.", "ZSI" => "Fund. pracy"];
+                    //bylo jeszcze ZSN ale to to samo co ZSI
+                    $opis = $opisy[$this->parseValue($d['RODZAJ'])];
+                    
+                    $data['headers']['placowe'][$this->parseValue($d['RODZAJ'])." "] = $opis;
+                }
+                if($lastId == "" || $lastId != $this->parseValue($d['ID'])){
+                    if($lastId != ""){
+                        if(!isset($data['data'][$i][$newdata['Id']])){
+                            $data['data'][$i][$newdata['Id']] = $newdata;
+                        }else{
+                            //laczymy arraye kolumn
+                            $data['data'][$i][$newdata['Id']]['kolumny'] = $this->array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny'], $newdata);
+                        }
+                    }
+                    $newdata = [
+                        'Id' => $this->parseValue($d['ID']),
+                        'Nazwisko' => $this->parseValue($d['NAZWISKO']),
+                        'Imie' => $this->parseValue($d['IMIE']),
+                        'Departament' => '',
+                        'DepartamentKod' => '',
+                        'Stanowisko' => '',
+                        'kolumny' => []
+                    ];
+                }
+                $newdata['kolumny'][$this->parseValue($d['RODZAJ'])." "] = $this->parseValue($d['KWOTA']);
+                $lastId = $this->parseValue($d['ID']);
+            }
+            if(!isset($data['data'][$i][$newdata['Id']])){
+                $data['data'][$i][$newdata['Id']] = $newdata;
+            }else{
+                //laczymy arraye kolumn
+                $data['data'][$i][$newdata['Id']]['kolumny'] = $this->array_merge($data['data'][$i][$newdata['Id']]['kolumny'], $newdata['kolumny'], $newdata);
             }
             
             //dodaje departamenty i stanowiska
@@ -239,36 +287,41 @@ class RaportyKadroweController extends Controller
         }
     }
     protected function getSqlDoRaportuKadrowegoSkladnikiPlacowe($rok, $miesiac){
-        $sql = 'select  pr.symbol as id, pr.nazwisko, pr.imie, m.kod symbol, p.rodz as rodzaj, s.opis,sum(kwota) kwota, sum(godz)/60 godz 
+        $pominKolumny = [742, 743, 740, 744, 745, 746, 748, 725, 726, 747, 825, 830, 856, 857, 905, 907, 910, 913, 914, '006'];
+        $pomin = '\''.implode('\',\'', $pominKolumny).'\'';
+        //die($pomin);
+        
+        $sql = 'select  pr.symbol as id, pr.nazwisko, pr.imie, m.kod symbol, p.rodz as rodzaj, s.opis,sum(kwota) kwota, sum(godz)/60 godz, mp.opis as departament
 from p_lp_pla p,
 p_listapl l,
 p_skladnik s, 
 p_lp_prac m,
 p_pra_grgus g,
-p_pracownik pr
+p_pracownik pr,
+p_mpracy mp 
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
-and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
- \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
+and mp.kod = m.kod
+and p.rodz not in ( '.$pomin.' )
 '.$this->xtraWhereForTests.'
-group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod
+group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 
 union 
 
-select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz from 
+select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz, mp.opis as departament from 
 p_lp_pot p,
 p_listapl l,
 p_skladnik s, 
 p_lp_prac m,
 p_pra_grgus g , 
-p_pracownik pr
+p_pracownik pr,
+p_mpracy mp 
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
-and p.rodz not in ( \'742\', \'743\', \'740\', \'744\', \'745 \'\',746\', \'748\', \'725\', \'726\', \'747\',
- \'825\', \'830\', \'856\', \'857\', \'905\', \'907\', \'910\', \'913\', \'914\', \'006\')
+and mp.kod = m.kod
+and p.rodz not in ( '.$pomin.')
  '.$this->xtraWhereForTests.'
-group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
+group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, mp.opis
 order by 5,2,3
 ';
-        //die($sql);
         return $sql;
     }
     protected function getSqlDoRaportuKadrowegoProgramyOperacyjne($rok, $miesiac){
@@ -279,9 +332,18 @@ order by 5,2,3
         p_pracownik pr,
         f_db f 
         where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.' 
-        and d.rodz = \'6AA\'    
+        and d.rodz IN (\'6AA\')
         '.$this->xtraWhereForTests.'
         group by 1,2,3,5,6,7,8,9,10 order by pr.nazwisko, pr.imie'; // bylo 010 rodz
+        die($sql);
+        return $sql;
+    }
+    protected function getSqlDoSkladekPracodwacy($rok, $miesiac){
+        $sql = "select 
+        d.symbol as id ,d.rodz  as rodzaj, sum(d.kwota) kwota,p.nazwisko,p.imie
+        from p_lp_pla_db d,p_listapl l,p_pracownik p,f_db f where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = ".$rok." and l.miesiac_O = ".$miesiac." 
+        and d.rodz in ('ZSA', 'ZSC', 'ZSF', 'ZSI') 
+        group by 1,2,4,5 order by p.nazwisko,p.imie;";
         return $sql;
     }
     protected function getSqlDepartamentStanowisko($rok, $miesiac){
@@ -301,6 +363,7 @@ order by 5,2,3
             departament.OPIS ,
             departament.KOD ,
             stanowisko.OPIS";
+            //die($sql);
         return $sql;
     }
     
