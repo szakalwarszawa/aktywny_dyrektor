@@ -610,7 +610,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
             foreach($zastepstwa as $z){
                 //var_dump($ret); 
-                if($z->getKogoZastepuje() == $ret['editor']->getSamaccountname()){
+                if( $ret['editor'] && $z->getKogoZastepuje() == $ret['editor']->getSamaccountname()){
                     //var_dump($z); die();
                     return $z;
                 }
@@ -637,6 +637,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        
+        $acc = $this->checkAccess($wniosek);
+        if($acc['editor'] === null){
+            throw new SecurityTestException("Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!", 765);
+        }
+        
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($wniosek);
         //print_r($uzs); die();
         if (!$wniosek) {
@@ -1033,9 +1039,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
     }
     
-    protected function checkAccess($entity, $onlyEditors = false){
+    protected function checkAccess($entity, $onlyEditors = false, $username = null){
+        if($username === null){
+            $username = $this->getUser()->getUsername();
+        }
         $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($username);
 
         //print_r($uzs); die();
         if (!$entity) {
@@ -1043,40 +1052,31 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         
         $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'samaccountname' => $zastepstwa, 
             'wniosek' => $entity->getWniosek()
             )
         );
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
         $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
+            'samaccountname' => $username,
             'wniosek' => $entity->getWniosek()
             )
         );
         if($entity->getWniosek()->getLockedBy()){
-            if($entity->getWniosek()->getLockedBy() != $this->getUser()->getUsername()){
+            if($entity->getWniosek()->getLockedBy() != $username){
                 $editor = null;
             }
         }elseif($editor){
-            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+            $entity->getWniosek()->setLockedBy($username);
             $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
         //die(($editor->getId()).".");
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
-            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
+            'samaccountname' => $zastepstwa, 
             'wniosek' => $entity->getWniosek()
             )
         );
-        //|| $onlyEditors
-/*
-        if ((!$editor ) && (!$viewer)) {
-            
-            
-            return false;
-        }
-*/
-        
         $ret = ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
         //var_dump($ret);
         return $ret;
