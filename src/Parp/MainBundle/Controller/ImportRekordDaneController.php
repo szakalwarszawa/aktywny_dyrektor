@@ -200,6 +200,7 @@ class ImportRekordDaneController extends Controller
         ];
 */
         //temp by sprawdzic czy utworzy dubla mnie
+/*
         $data["KAMIL JAKACKI1"][] = [
             'SYMBOL' => '777774',
             'STANOWISKO' => 'starszy specjalista',
@@ -222,6 +223,7 @@ class ImportRekordDaneController extends Controller
             'UMOWAOD' => '2016-01-01',
             'UMOWADO' => NULL,
         ];
+*/
 
         
         

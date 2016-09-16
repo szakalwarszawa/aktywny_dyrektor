@@ -26,6 +26,7 @@ class RaportyKadroweController extends Controller
     protected $xtraWhereForTests = ''; //' AND pr.NAZWISKO = \'DROZD\' ';
     protected $maxMiesiac = 12;
     protected $debug = 0;
+    protected $showSqlsAndDie = 0;
     protected $miesiace = [
         '1' => 'Styczeń',
         '2' => 'Luty',
@@ -82,6 +83,7 @@ class RaportyKadroweController extends Controller
             $rok = $ndata['rok'];
             
             $data = $this->getRaportKadrowyData($rok);
+            
             //return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);   
             return $this->generateExcel($data, $rok);
         }
@@ -133,7 +135,7 @@ class RaportyKadroweController extends Controller
             //echo "<pre>"; print_r($rok); print_r($i); print_r($dane);  //die();
             $lastId = "";
             foreach($dane as $d){
-                $program = $this->parseValue($d['DZIALANIE']);
+                $program = $this->parseValue($d['DZIALANIE'])." ".$this->parseValue($d['ZRODLO_FIN'])." ".$this->parseValue($d['WPL_WYD'])." ".$this->parseValue($d['ZADANIE']);
                 if(!isset($data['headers'][$program])){
                     $data['headers']['programowe'][$program." "] = $program;
                 }
@@ -254,7 +256,7 @@ class RaportyKadroweController extends Controller
             
             //dodaje departamenty i stanowiska
             
-            $sql = $this->getSqlDepartamentStanowisko($rok, $i);
+            $sql = $this->getSqlDepartamentStanowiskoNaPodstawieRoku($rok, $i); //$this->getSqlDepartamentStanowisko(array_keys($data['data'][$i]));
             
             //die($sql);
             $dane = $c->executeQuery($sql);
@@ -266,6 +268,10 @@ class RaportyKadroweController extends Controller
                     $data['data'][$i][$d['SYMBOL']]['Departament'] = $this->parseValue($d['DEPARTAMENTNAZWA']);
                     $data['data'][$i][$d['SYMBOL']]['Stanowisko'] = $this->parseValue($d['STANOWISKO']);
                 }
+            }
+            
+            if($this->showSqlsAndDie){
+                die("mam sqlki");
             }
         }
         //temp
@@ -307,7 +313,7 @@ group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 
 union 
 
-select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz, mp.opis as departament from 
+select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz, max(mp.opis) as departament from 
 p_lp_pot p,
 p_listapl l,
 p_skladnik s, 
@@ -319,9 +325,12 @@ where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.'
 and mp.kod = m.kod
 and p.rodz not in ( '.$pomin.')
  '.$this->xtraWhereForTests.'
-group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, mp.opis
+group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
 order by 5,2,3
 ';
+        if($this->showSqlsAndDie){
+            echo $sql."<br>";
+        }
         return $sql;
     }
     protected function getSqlDoRaportuKadrowegoProgramyOperacyjne($rok, $miesiac){
@@ -335,7 +344,10 @@ order by 5,2,3
         and d.rodz IN (\'6AA\')
         '.$this->xtraWhereForTests.'
         group by 1,2,3,5,6,7,8,9,10 order by pr.nazwisko, pr.imie'; // bylo 010 rodz
-        die($sql);
+        
+        if($this->showSqlsAndDie){
+            echo $sql."<br>";
+        }
         return $sql;
     }
     protected function getSqlDoSkladekPracodwacy($rok, $miesiac){
@@ -344,9 +356,39 @@ order by 5,2,3
         from p_lp_pla_db d,p_listapl l,p_pracownik p,f_db f where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = ".$rok." and l.miesiac_O = ".$miesiac." 
         and d.rodz in ('ZSA', 'ZSC', 'ZSF', 'ZSI') 
         group by 1,2,4,5 order by p.nazwisko,p.imie;";
+        
+        if($this->showSqlsAndDie){
+            echo $sql."<br>";
+        }
         return $sql;
     }
-    protected function getSqlDepartamentStanowisko($rok, $miesiac){
+    protected function getSqlDepartamentStanowiskoNaPodstawieRoku($rok, $miesiac){
+        $sql = "
+        SELECT
+            pr.SYMBOL,
+            departament.OPIS as departamentNazwa,
+            departament.KOD  departament,
+            stanowisko.OPIS stanowisko
+            
+            from P_PRACOWNIK pr
+            left join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok."-".$miesiac."-01') AND mpr.DATA_OD <=  '".$rok."-".$miesiac."-01'
+            left join P_MPRACY departament on departament.KOD = mpr.KOD
+            left JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$rok."-".$miesiac."-01') AND stjoin.DATA_OD <= '".$rok."-".$miesiac."-01'
+            left join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
+            where 1 = 1 ".$this->xtraWhereForTests."
+            group by pr.SYMBOL,
+            departament.OPIS ,
+            departament.KOD ,
+            stanowisko.OPIS";
+            
+        if($this->showSqlsAndDie){
+            echo $sql."<br>";
+        }
+            //die($sql);
+        return $sql;
+    }
+    
+    protected function getSqlDepartamentStanowisko($pracownicyIds){
         $sql = "SELECT
             pr.SYMBOL,
             departament.OPIS as departamentNazwa,
@@ -363,6 +405,10 @@ order by 5,2,3
             departament.OPIS ,
             departament.KOD ,
             stanowisko.OPIS";
+            
+        if($this->showSqlsAndDie){
+            echo $sql."<br>";
+        }
             //die($sql);
         return $sql;
     }
