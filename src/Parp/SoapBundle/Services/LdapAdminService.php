@@ -335,8 +335,8 @@ class LdapAdminService
         }
         if ($person->getInfo()) {
             if($person->getInfo() == "BRAK"){
-                $entry['info'] = null; //"n/d";
-                $entry['division'] = null; //"n/d";
+                $entry['info'] = "n/d";
+                $entry['division'] = "n/d";
             }elseif($person->getInfo() == "BRAK" || $person->getInfo() == "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY"){
                 //$entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
                 $entry['division'] = null; //"";
