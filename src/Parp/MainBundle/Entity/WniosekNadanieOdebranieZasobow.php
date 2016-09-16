@@ -4,13 +4,13 @@ namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use APY\DataGridBundle\Grid\Mapping as GRID;
-
+/*,userZasoby.zasobOpis:group_concat:distinct*/
 /**
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,userZasoby.zasobOpis:group_concat,wniosek.editornames", groupBy={"id"})
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,wniosek.editornames,zasoby", groupBy={"id"})
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -72,7 +72,7 @@ class WniosekNadanieOdebranieZasobow
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
-     * @GRID\Column(field="userZasoby.zasobOpis:group_concat", title="Zasoby", filter=false)
+     * @@GRID\Column(field="userZasoby.zasobOpis:group_concat:distinct", type="text", title="Zasoby")
      */
     private $userZasoby;
     
@@ -133,7 +133,7 @@ class WniosekNadanieOdebranieZasobow
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=5000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zasoby;
@@ -256,7 +256,7 @@ class WniosekNadanieOdebranieZasobow
     public function addUserZasoby(\Parp\MainBundle\Entity\UserZasoby $userZasoby)
     {
         $this->userZasoby[] = $userZasoby;
-
+        $this->ustawPoleZasoby();
         return $this;
     }
 
@@ -268,6 +268,7 @@ class WniosekNadanieOdebranieZasobow
     public function removeUserZasoby(\Parp\MainBundle\Entity\UserZasoby $userZasoby)
     {
         $this->userZasoby->removeElement($userZasoby);
+        $this->ustawPoleZasoby();
     }
 
     /**
@@ -459,6 +460,7 @@ class WniosekNadanieOdebranieZasobow
     public function addUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
     {
         $this->userZasobyOdbierane[] = $userZasobyOdbierane;
+        $this->ustawPoleZasoby();
 
         return $this;
     }
@@ -471,6 +473,7 @@ class WniosekNadanieOdebranieZasobow
     public function removeUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
     {
         $this->userZasobyOdbierane->removeElement($userZasobyOdbierane);
+        $this->ustawPoleZasoby();
     }
 
     /**
@@ -505,5 +508,26 @@ class WniosekNadanieOdebranieZasobow
     public function getZasoby()
     {
         return $this->zasoby;
+    }
+    
+    public function ustawPoleZasoby(){
+        global $kernel;
+        if ( 'AppCache' == get_class($kernel) )
+        {
+           $kernel = $kernel->getKernel();
+        }
+        $em = $kernel->getContainer()->get( 'doctrine.orm.entity_manager' );
+        $ret = [];
+        foreach($this->getUserZasoby() as $uz){
+            $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            $ret[$z->getNazwa()] = $z->getNazwa();
+        }
+        foreach($this->getUserZasobyOdbierane() as $uz){
+            $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            $ret[$z->getNazwa()] = $z->getNazwa();
+        }
+        $zass = implode(", ", $ret);
+        $this->setZasoby($zass);
+        die("Ustawilem pole zasoby ".$zass);
     }
 }

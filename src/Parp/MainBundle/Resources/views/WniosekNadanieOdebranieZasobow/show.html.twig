@@ -6,7 +6,7 @@
             <h3>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h3>
             <ul>                
                 <li><b>Pracownicy :</b> {{ entity.pracownicy|addSpaces }}</li>
-                <li><b>Zasoby: </b>
+                <li><b>Zasoby: {{entity.zasoby}}</b>
                 {% set i = 0 %}
                 {% set przetworzoneZasoby = {} %}
                 {% for z in entity.userZasoby %}                

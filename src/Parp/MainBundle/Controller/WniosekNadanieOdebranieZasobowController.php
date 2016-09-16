@@ -23,6 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Parp\MainBundle\Exception\SecurityTestException;
+use APY\DataGridBundle\Grid\Column;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -87,10 +88,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $zastepstwa, $ktore)
             {
+                //$query->select($tableAlias.", z.nazwa");
+                
+                //$query->addSelect('group_concat(z.nazwa) zasobek');
+                $query->leftJoin($tableAlias . '.userZasoby', 'uz');
+                //$query->leftJoin('Parp\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
                 $query->leftJoin($tableAlias . '.wniosek', 'w');
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
+                //$query->andWhere('z.id = uz.zasobId');
                 if($ktore != "wszystkie"){
                     $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 }
@@ -122,16 +129,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 //$query->andWhere('w.samaccountname = \''.$sam.'\'');
                 $query->addGroupBy($tableAlias . '.id');   
+                //$query->addGroupBy('z.nazwa');  
+                
+                
+                //die($query->getDQL());
             }
         );
         $grid = $this->get('grid');
         
         
         $grid->setSource($source);
-    
+        //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));        
+        //$grid->addColumn($kolumnaZasobNazwa);
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
+        
+            
     
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
@@ -209,7 +223,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if($entity->getPracownicy() == "" || count($prs) == 0){
                 throw new SecurityTestException("Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz w przeglądarce i wybierz conajmniej jedną osobę w polu 'Pracownicy'!", 745);
             }
-            
+            $entity->ustawPoleZasoby();
             $em->flush();
 
             $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
@@ -1218,6 +1232,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
         }   
         $wniosekId = $entity->getWniosek()->getId();
+        $entity->getWniosek()->removeUserZasoby($entity);
         $em->remove($entity);
         $em->flush();
         return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
@@ -1307,6 +1322,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
             
             
+            $entity->ustawPoleZasoby();
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));

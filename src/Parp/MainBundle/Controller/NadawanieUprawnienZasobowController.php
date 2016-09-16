@@ -415,6 +415,15 @@ class NadawanieUprawnienZasobowController extends Controller
                         //$this->addFlash('warning', $msg);
                         $zmianaupr[] = $zasob->getOpis();                   
                     }
+                    if($wniosek){
+                        $wniosek->ustawPoleZasoby();
+                    }
+                    $this->getDoctrine()->getManager()->flush();
+                    
+                        
+                    if($wniosek){
+                        $wniosek->ustawPoleZasoby();
+                    }
                     $this->getDoctrine()->getManager()->flush();
                     
                     if($wniosekId != 0){
@@ -473,6 +482,10 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
                     }
+                    
+                    if($wniosek){
+                        $wniosek->ustawPoleZasoby();
+                    }
                     $this->getDoctrine()->getManager()->flush();
                     return $this->redirect($this->generateUrl('main'));
                     break;
@@ -516,6 +529,10 @@ class NadawanieUprawnienZasobowController extends Controller
                             if(count($zmianaupr) > 0)
                                 $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array());
                         }
+                    }
+                    
+                    if($wniosek){
+                        $wniosek->ustawPoleZasoby();
                     }
                     $this->getDoctrine()->getManager()->flush();
                     return $this->redirect($this->generateUrl('main'));
@@ -785,7 +802,14 @@ class NadawanieUprawnienZasobowController extends Controller
                         }
                     }
                 }
+                if($wniosek){
+                    $wniosek->ustawPoleZasoby();
+                }
+                $this->getDoctrine()->getManager()->flush();
                 
+                if($wniosek){
+                    $wniosek->ustawPoleZasoby();
+                }
                 $this->getDoctrine()->getManager()->flush();
                 if($wniosekId != 0){
                     return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));

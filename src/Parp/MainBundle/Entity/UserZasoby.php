@@ -9,12 +9,30 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="userzasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserZasobyRepository")
+ * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserZasoby
 {
+    
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     * @ORM\PreRemove()
+     */
+    public function preUpdate(){
+        
+        //die("preUpdate");
+        if($this->wniosek){
+            $this->wniosek->ustawPoleZasoby();
+        }
+        
+        if($this->wniosekOdebranie){
+            $this->wniosekOdebranie->ustawPoleZasoby();
+        }
+    }
     /**
      * @var integer
      *
@@ -655,6 +673,7 @@ class UserZasoby
     {
         $this->deletedAt = $deletedAt;
 
+        
         return $this;
     }
 
@@ -771,7 +790,13 @@ class UserZasoby
      */
     public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
+        if($wniosek === null && $this->wniosek != null){
+            $this->wniosek->ustawPoleZasoby();
+        }
         $this->wniosek = $wniosek;
+        if($this->wniosek){
+            $this->wniosek->ustawPoleZasoby();
+        }
 
         return $this;
     }
@@ -796,6 +821,9 @@ class UserZasoby
     public function setWniosekOdebranie(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
     {
         $this->wniosekOdebranie = $wniosekOdebranie;
+        if($this->wniosekOdebranie){
+            $this->wniosekOdebranie->ustawPoleZasoby();
+        }
 
         return $this;
     }
