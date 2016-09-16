@@ -335,11 +335,11 @@ class LdapAdminService
         }
         if ($person->getInfo()) {
             if($person->getInfo() == "BRAK"){
-                $entry['info'] = "n/d";
-                $entry['division'] = "";
+                $entry['info'] = null; //"n/d";
+                $entry['division'] = null; //"n/d";
             }elseif($person->getInfo() == "BRAK" || $person->getInfo() == "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY"){
                 //$entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
-                $entry['division'] = "";
+                $entry['division'] = null; //"";
             }else{$entry['info'] = $person->getInfo();
                 // obsłuz miane atrybuty division
                 $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());

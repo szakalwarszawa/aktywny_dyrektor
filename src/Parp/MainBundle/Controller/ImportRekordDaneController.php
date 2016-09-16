@@ -781,6 +781,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         //svar_dump($dane);
         
         $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($samaccountname);
         $em = $this->getDoctrine()->getManager();
         $dr = $em->getRepository("ParpMainBundle:DaneRekord")->find($id);
         $poprzednieDane = clone $dr;
@@ -809,12 +810,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $entry = $this->utworzEntry($em, $dr, $changeSet, $samaccountname == "nowy", $poprzednieDane);
             if($dr->getNewUnproccessed() == 2){
                 //trzeba odebrac stare
-                $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByShortname($aduser[0]['department']);
+                $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($aduser[0]['department']);
                 $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($aduser[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera(['title' => $aduser[0]['title']], $department->getShortname(), ($section ? $section->getShortname() : ""));
                 $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");                
             }
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
+            $entry->setDepartment($department->getName());
             $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($dane['form']['info']);
             $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera(['title' => $dr->getStanowisko()], $department->getShortname(), ($section ? $section->getShortname() : ""));
             $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
@@ -825,6 +827,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }
             if($dane['form']['info'] != ""){
                 $entry->setInfo($dane['form']['info']);
+            }
+            if($dane['form']['manager'] != ""){
+                $manager = $ldap->getUserFromAD($samaccountname);
+                $entry->setManager($manager[0]['name']);
             }
             //$dr->setNewUnproccessed(0);
             $em->flush();

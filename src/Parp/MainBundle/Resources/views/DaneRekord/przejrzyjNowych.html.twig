@@ -145,40 +145,7 @@
                         </table>
                     {%else%}                                      
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Zapisz użytkownika</button>
-                                                   
-{#
-                        <h3>Dane w Active Directory</h3>
-                        <table class="record_properties table table-striped">
-                            <thead>
-                            {% if (obj.users|length > 0) %}
-                                <tr>
-                                    <th>Login</th>
-                                    <th>Imię i Nazwisko</th>
-                                    <th>Departament</th>
-                                    <th>Stanowisko</th>
-                                    <th>Sekcja</th>
-                                </tr>
-                            {%else%}                                
-                                <tr>
-                                    <th colspan="4">Nie znaleziono żadnych pasujących użytkowników w AD</th>
-                                </tr>
-                            {% endif %}
-                            </thead>
-                            <tbody>
-                                {%for user in obj.users %}
-                                    <tr>
-                                        <td><a href="{{path('userEdit', {samaccountname: user.samaccountname})}}">{{user.samaccountname}}</a></td>
-                                        <td>{{user.name}}</td>
-                                        <td>{{user.department}}</td>
-                                        <td>{{user.title}}</td>
-                                        <td>{{user.info}}</td>
-                                    </tr>
-                                {%endfor%}
-                            </tbody>
-                        </table> 
-#}               
-
-                    
+                                    
                     {%endif%}
                 </td>
             </tr>
@@ -283,7 +250,7 @@
                           {%else%}
                           <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>                              
                           <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a                             
+                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>                          
                           {%endif%}                     
                         </div>
                     </div>
@@ -297,7 +264,7 @@
     </div>
     <script>
         function zapisz{{obj.id}}(){
-            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: 'nowy'})}}";
+            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)})}}";
             var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
             save(url, form, manager, {{obj.id}});

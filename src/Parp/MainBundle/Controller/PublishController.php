@@ -28,7 +28,7 @@ class PublishController extends Controller
            'command' => 'parp:ldapsave',
            'showonly' => $showonly,
            '--samaccountname' => $this->getUser()->getUsername(),
-           //'--ids' => '1863',
+           '--ids' => '3654',
         );
         if($this->getUser()->getUsername() == "kamil_jakacki"){
             //$pars['--ids'] = 3326;
