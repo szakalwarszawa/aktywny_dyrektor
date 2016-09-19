@@ -21,6 +21,9 @@ security:
         zgloszenie_bledu:
                 pattern:  ^/zgloszenie
                 security: false
+#         RaportyKadrowe_temp:
+#                 pattern:  ^/RaportyKadrowe/generujRaportKamil
+#                 security: false
         import_rekord2:
                 pattern:  ^/import_rekord2
                 security: false

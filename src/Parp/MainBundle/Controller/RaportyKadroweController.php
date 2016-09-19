@@ -44,18 +44,19 @@ class RaportyKadroweController extends Controller
     /**
      *
      * @Route("/generujRaport", name="raportyKadrowe")
+     * @Route("/generujRaportKamil/{rok}", name="raportyKadrowe_unsec")
      * @Template()
      */
-    public function indexAction(Request $request)
+    public function indexAction(Request $request, $rok = 0)
     {
-        if($this->getUser()->getUsername() != "kamil_jakacki" || $this->getUser()->getUsername() != "aktywny_dyrektor"){
-            throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
-        }
+        //if($this->getUser()->getUsername() != "kamil_jakacki" || $this->getUser()->getUsername() != "aktywny_dyrektor"){
+            //throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
+        //}
         $lata = [];
         for($i = date("Y"); $i > 2003 ; $i--){
             $lata[$i] = $i;
         }
-        $builder = $this->createFormBuilder()
+        $builder = $this->createFormBuilder(array('csrf_protection' => false))
             ->add('rok', 'choice', array(
                 'required' => true,
                 'label' => 'Wybierz rok do raportu',
@@ -78,9 +79,11 @@ class RaportyKadroweController extends Controller
         
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        if ($form->isValid() || $rok != 0) {
             $ndata = $form->getData();
-            $rok = $ndata['rok'];
+            if($rok == 0){
+                $rok = $ndata['rok'];
+            }
             
             $data = $this->getRaportKadrowyData($rok);
             
