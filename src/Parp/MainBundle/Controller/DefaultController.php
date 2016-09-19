@@ -695,7 +695,8 @@ class DefaultController extends Controller
         if(!in_array(@$defaultData['manager'], $przelozeni)){
             $przelozeni[$defaultData['manager']] = $defaultData['manager'];
         }
-        
+        asort($przelozeni);
+        //var_dump($przelozeni);
         if($wymusUproszczonyFormularz){
             $admin = false;
             $kadry1 = true;
