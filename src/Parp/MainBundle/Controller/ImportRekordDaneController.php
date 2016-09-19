@@ -832,7 +832,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $manager = $ldap->getUserFromAD($samaccountname);
                 $entry->setManager($manager[0]['name']);
             }
-            //$dr->setNewUnproccessed(0);
+            $dr->setNewUnproccessed(0);
             $em->flush();
         }
         die("ok");

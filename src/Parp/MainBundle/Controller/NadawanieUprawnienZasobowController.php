@@ -803,7 +803,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     }
                 }
                 if($wniosek){
-                    $wniosek->ustawPoleZasoby();
+                    //$wniosek->ustawPoleZasoby();
                 }
                 $this->getDoctrine()->getManager()->flush();
                 

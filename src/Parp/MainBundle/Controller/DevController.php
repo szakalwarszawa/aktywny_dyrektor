@@ -1478,4 +1478,26 @@ class DevController extends Controller
         die(count($us).".");
         
     }
+    
+    
+    /**
+     * @Route("/testNullDivision", name="testNullDivision", defaults={})
+     * @Template()
+     */
+    public function testNullDivisionAction(){
+        
+        $sam = "kamil_jakacki";
+        
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        
+        
+        $user = $ldap->getUserFromAD("kamil_jakacki");
+        
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        
+        $ldapAdmin->ldap_modify($ldapconn, $user[0]['distinguishedname'], ['initials' => []]);
+        
+    }
 }    

@@ -790,6 +790,9 @@ class UserZasoby
      */
     public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
+        if($wniosek){
+            $wniosek->addUserZasoby($this);        
+        }
         if($wniosek === null && $this->wniosek != null){
             $this->wniosek->ustawPoleZasoby();
         }
