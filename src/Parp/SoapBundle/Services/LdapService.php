@@ -629,7 +629,6 @@ class LdapService
             if(isset($zmiany[$u['samaccountname']])){
                 //mamy zmiany
                 $noweAttr = $this->parseZmianyUsera($u, $zmiany);
-                //print_r($noweAttr);
                 foreach($noweAttr as $k => $v){
                     $u[$k."inAD"] = $u[$k];
                     $u[$k] = $v;
@@ -637,7 +636,7 @@ class LdapService
             }
         }
         //unset($result[0]['thumbnailphoto']);
-        //print_r($result);
+        print_r($result); die();
         return $result;
     }
     public function getNieobecnyUserFromAD($samaccountname = null, $cnname = null, $query = null){
