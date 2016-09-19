@@ -528,6 +528,6 @@ class WniosekNadanieOdebranieZasobow
         }
         $zass = implode(", ", $ret);
         $this->setZasoby($zass);
-        die("Ustawilem pole zasoby ".$zass);
+        //die("Ustawilem pole zasoby ".$zass);
     }
 }
