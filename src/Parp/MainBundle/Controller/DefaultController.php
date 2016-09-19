@@ -691,6 +691,10 @@ class DefaultController extends Controller
         $admin = in_array("PARP_ADMIN", $that->getUser()->getRoles());
         $kadry1 = in_array("PARP_BZK_1", $that->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $that->getUser()->getRoles());
+        $przelozeni = $ldap->getPrzelozeniJakoName();
+        if(!in_array(@$defaultData['manager'], $przelozeni)){
+            $przelozeni[$defaultData['manager']] = $defaultData['manager'];
+        }
         
         if($wymusUproszczonyFormularz){
             $admin = false;
@@ -791,7 +795,24 @@ class DefaultController extends Controller
                     'choices' => $departments,
                     //'data' => @$defaultData["department"],
                 ))
-                
+                ->add('manager', 'choice', array(
+                    'required' => false,
+                    'read_only' => (!$admin && !$kadry1 && !$kadry2),
+                    'label' => 'Przełożony',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2',
+                        'readonly' => (!$admin && !$kadry1 && !$kadry2),
+                        
+                        //'disabled' => (!$admin && !$kadry1 && !$kadry2)
+
+                    ),
+                    'choices' => $przelozeni
+                    //'data' => @$defaultData['manager']
+                ))
+/*
                 ->add('manager', 'text', array(
                     'required' => false,
                     'read_only' => true,
@@ -808,6 +829,7 @@ class DefaultController extends Controller
                     ),
                     //'data' => @$defaultData['manager']
                 ))
+*/
                 ->add('accountExpires', 'text', array(
                     'attr' => array(
                         'class' => 'form-control',
