@@ -48,7 +48,7 @@ class RaportyKadroweController extends Controller
      */
     public function indexAction(Request $request)
     {
-        if($this->getUser()->getUsername() != "kamil_jakacki"){
+        if($this->getUser()->getUsername() != "kamil_jakacki" || $this->getUser()->getUsername() != "aktywny_dyrektor"){
             throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
         }
         $lata = [];
@@ -293,7 +293,7 @@ class RaportyKadroweController extends Controller
         }
     }
     protected function getSqlDoRaportuKadrowegoSkladnikiPlacowe($rok, $miesiac){
-        $pominKolumny = [742, 743, 740, 744, 745, 746, 748, 725, 726, 747, 825, 830, 856, 857, 905, 907, 910, 913, 914, '006'];
+        $pominKolumny = [/* 725, 726, 740, 742, 743, 744, 745, 746, 748, 747,  */825, 830, 856, 857, 905, 906, 907, 910, 913, 914, '006'];
         $pomin = '\''.implode('\',\'', $pominKolumny).'\'';
         //die($pomin);
         

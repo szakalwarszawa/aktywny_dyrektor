@@ -65,3 +65,7 @@ $('#zapisz').click(function () {
     $("#form_manager").val($("#manager").val());
     $("#imienazwisko").val();
 });
+$('form').submit(function(){
+    $('input[disabled], select[disabled]').prop('disabled', false);
+    console.log("Ustawia form przed submit");    
+});
