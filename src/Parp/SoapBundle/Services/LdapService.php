@@ -940,16 +940,16 @@ class LdapService
         return $ou;
         
     }
-    
+    private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
+        
     public function getPrzelozeni(){
-        $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromAD();
         }
         //echo "<pre>"; print_r($this->_userCache); die();
         $ret = [];
         foreach($this->_userCache as $u){
-            if(in_array(trim($u['title']), $stanowiska))
+            if(in_array(trim($u['title']), $this->stanowiska))
                 $ret[$u['samaccountname']] = $u;
         }
         return $ret;
@@ -957,14 +957,13 @@ class LdapService
     
     
     public function getPrzelozeniJakoName(){
-        $stanowiska = ["prezes", "p.o. prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji", "kierownik"];
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromAD();
         }
         //echo "<pre>"; print_r($this->_userCache); die();
         $ret = [];
         foreach($this->_userCache as $u){
-            if(in_array(trim($u['title']), $stanowiska))
+            if(in_array(trim($u['title']), $this->stanowiska))
                 $ret[$u['name']] = $u['name'];
         }
         return $ret;
