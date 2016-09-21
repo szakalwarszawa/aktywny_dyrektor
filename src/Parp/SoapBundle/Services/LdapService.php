@@ -636,7 +636,7 @@ class LdapService
             }
         }
         //unset($result[0]['thumbnailphoto']);
-        print_r($result); die();
+        //print_r($result); die();
         return $result;
     }
     public function getNieobecnyUserFromAD($samaccountname = null, $cnname = null, $query = null){

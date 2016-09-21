@@ -49,9 +49,9 @@ class RaportyKadroweController extends Controller
      */
     public function indexAction(Request $request, $rok = 0)
     {
-        //if($this->getUser()->getUsername() != "kamil_jakacki" || $this->getUser()->getUsername() != "aktywny_dyrektor"){
-            //throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
-        //}
+        if(!in_array("PARP_BZK_RAPORTY", $this->getUser()->getRoles())){
+            throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
+        }
         $lata = [];
         for($i = date("Y"); $i > 2003 ; $i--){
             $lata[$i] = $i;

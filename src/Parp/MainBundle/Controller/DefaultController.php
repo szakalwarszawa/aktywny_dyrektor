@@ -352,11 +352,13 @@ class DefaultController extends Controller
             unset($ADUser[0]['thumbnailphoto']);
             echo "<pre>"; print_r($ADUser); die();
         }
-        $ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
-
-        // wyciagnij imie i nazwisko managera z nazwy domenowej
-        $ADUser[0]['manager'] = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
-
+        if(strstr($ADUser[0]['manager'], "CN=") !== false){
+            $managerName = substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ','));
+            $ADManager = $ldap->getUserFromAD(null, $managerName);
+    
+            // wyciagnij imie i nazwisko managera z nazwy domenowej
+            $ADUser[0]['manager'] = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
+        }
         $defaultData = $ADUser[0];
         //print_r($defaultData); die();
         // pobierz uprawnienia poczatkowe
