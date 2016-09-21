@@ -1500,4 +1500,16 @@ class DevController extends Controller
         $ldapAdmin->ldap_modify($ldapconn, $user[0]['distinguishedname'], ['initials' => []]);
         
     }
+    
+    /**
+     * @Route("/getPrzelozeni", name="getPrzelozeni")
+     * @Template()
+     */
+    public function getPrzelozeniAction(){
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getPrzelozeni();
+        var_dump($us);
+        die(count($us).".");
+        
+    }
 }    
