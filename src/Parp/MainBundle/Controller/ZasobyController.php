@@ -56,21 +56,26 @@ class ZasobyController extends Controller
                 ->setFilterable(false)
                 ->setSafe(true);
     
+        
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'zasoby_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
-        // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'zasoby_delete');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+        
+        
         $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
-    
+        
+        if(
+            in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
+            in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles())
+        ){
+            
+            $rowAction3 = new RowAction('<i class="fa fa-delete"></i> '.($aktywne ? "Deaktywuj" : "Aktywuj"), 'zasoby_delete');
+            $rowAction3->setRouteParameters(array('id', 'published' => ($aktywne ? "0" : "1")));
+            $rowAction3->setColumn('akcje');
+            $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+            $grid->addRowAction($rowAction3);
+        }
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
     
 
@@ -293,29 +298,25 @@ class ZasobyController extends Controller
     /**
      * Deletes a Zasoby entity.
      *
-     * @Route("/{id}", name="zasoby_delete")
-     * @Method("DELETE")
+     * @Route("/delete/{id}/{published}", name="zasoby_delete", defaults={"published" : 0})
      */
-    public function deleteAction(Request $request, $id)
+    public function deleteAction(Request $request, $id, $published = 0)
     {
         $this->sprawdzDostep();
-        $form = $this->createDeleteForm($id);
-        $form->handleRequest($request);
+        
+        $em = $this->getDoctrine()->getManager();
+        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
 
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
-
-            if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Zasoby entity.');
-            }
-            //dodac obsluge pola dlaczego niaktywny
-            //$entity->setPublished(0);
-            $em->remove($entity);
-            $em->flush();
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
+        //dodac obsluge pola dlaczego niaktywny
+        $entity->setPublished($published);
+        //$em->remove($entity);
+        $em->flush();
+    
 
-        return $this->redirect($this->generateUrl('zasoby'));
+        return $this->redirect($this->generateUrl('zasoby', ['aktywne' => ($published)]));
     }
 
     /**

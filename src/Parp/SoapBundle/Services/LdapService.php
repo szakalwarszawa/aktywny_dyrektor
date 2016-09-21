@@ -942,7 +942,7 @@ class LdapService
     }
     
     public function getPrzelozeni(){
-        $stanowiska = ["prezes", "p.o. prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
+        $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromAD();
         }
