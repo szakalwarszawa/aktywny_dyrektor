@@ -694,8 +694,18 @@ class DefaultController extends Controller
         $kadry1 = in_array("PARP_BZK_1", $that->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $that->getUser()->getRoles());
         $przelozeni = $ldap->getPrzelozeniJakoName();
-        if(!in_array(@$defaultData['manager'], $przelozeni)){
-            $przelozeni[$defaultData['manager']] = $defaultData['manager'];
+        
+        $manago = "";
+        try{
+            if(is_array($defaultData)){
+                $manago = @$defaultData['manager'];
+            }else{                
+                $manago = @$defaultData->getManager();
+            }
+        }catch(\Exception $e){}
+        
+        if(!in_array($manago, $przelozeni)){
+            $przelozeni[$manago] = $manago;
         }
         asort($przelozeni);
         //var_dump($przelozeni);

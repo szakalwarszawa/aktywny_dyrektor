@@ -27,7 +27,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,
                 'multiple' => true,
-                'required' => true,
+                'required' => false,
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))

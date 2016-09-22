@@ -940,7 +940,7 @@ class LdapService
         return $ou;
         
     }
-    private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji"];
+    private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji", "kierownik", "p.o. kierownika", "koordynator projektu", "główny księgowy, dyrektor"];
         
     public function getPrzelozeni(){
         if($this->_userCache === null){
