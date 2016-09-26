@@ -547,16 +547,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
         }
         
+        $czyLsi = false;
         $czyMaGrupyAD = false;
         foreach($wniosek->getUserZasoby() as $uz){
             $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
             if($z->getGrupyAd()){
                 $czyMaGrupyAD = true;
+                $czyLsi = $uz->getZasobId() == 4420;
             }
         } 
         
         
-        if($statusName == "07_ROZPATRZONY_POZYTYWNIE" && $oldStatus != null && $czyMaGrupyAD){
+        if($statusName == "07_ROZPATRZONY_POZYTYWNIE" && $oldStatus != null && ($czyMaGrupyAD || $czyLsi)){
             //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
             $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
             $es = explode(",", $os->getEditors());
@@ -653,7 +655,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
         
         $acc = $this->checkAccess($wniosek);
-        if($acc['editor'] === null){
+        if($acc['editor'] === null && !($isAccepted == "publish_lsi" && in_array("PARP_ADMIN", $this->getUser()->getRoles()))){
             throw new SecurityTestException("Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!", 765);
         }
         
@@ -934,7 +936,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->setWniosekStatus($wniosek, "07_ROZPATRZONY_POZYTYWNIE", false, $status);
                             break;
                         case "accept":
-                            $this->setWniosekStatus($wniosek, "06_EDYCJA_TECHNICZNY", false);
+                            $this->setWniosekStatus($wniosek, "06_EDYCJA_TECHNICZNY", false, $status);
                             break;
                         case "return":
                             $maBycIbi = false;
