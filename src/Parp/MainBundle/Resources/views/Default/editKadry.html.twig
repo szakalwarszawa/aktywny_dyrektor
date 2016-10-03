@@ -12,6 +12,7 @@
             <div id="general" class="tab-pane fade in active">
                 <h3>Imie  i nazwisko: {{user.name}}</h3>
                 <div class="form-horizontal">
+                    {{  form_start(form) }}
                     <div class="form-group">
                         <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
                             Nazwa konta
@@ -41,7 +42,11 @@
                             Biuro / Departament
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.department}}"/>
+                            {%if (dane_rekord) %}
+                                <input type="text" class="form-control" readonly value="{{user.department}}"/>
+                            {%else%}                            
+                                {{ form_widget(form.department) }}
+                            {%endif%}
                         </div>
                     </div>
                     <div class="form-group">
@@ -52,7 +57,6 @@
                             <input type="text" class="form-control" readonly value="{{user.title}}"/>
                         </div>
                     </div>
-                    {{  form_start(form) }}
                         <div class="form-group">
                             {{ form_label(form.info) }}
                             <div class="col-sm-8">

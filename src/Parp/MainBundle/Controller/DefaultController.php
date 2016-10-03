@@ -392,7 +392,11 @@ class DefaultController extends Controller
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
         }
         
-        $form = $this->createUserEditForm($this, $defaultData);
+        $names = explode(' ', $ADUser[0]["name"]);
+        $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
+        
+        
+        $form = $this->createUserEditForm($this, $defaultData, false, false);
 
 
 
@@ -567,8 +571,6 @@ class DefaultController extends Controller
                 $up2grupaAd[$up->getId()] = $up->getGrupaAd();
         }
         $grupyAd = $ADUser[0]["memberOf"];
-        $names = explode(' ', $ADUser[0]["name"]);
-        $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
         
         
         $userGroupsTemp = $ldap->getAllUserGroupsRecursivlyFromAD($ADUser[0]['samaccountname']);

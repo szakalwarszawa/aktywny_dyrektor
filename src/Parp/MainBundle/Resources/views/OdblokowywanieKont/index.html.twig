@@ -1,0 +1,32 @@
+{% extends "::base.html.twig" %}
+
+{% block body %}
+
+    {% for flashMessage in app.session.flashbag.get('notice') %}
+        <div class="alert alert-danger">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
+    {% for flashMessage in app.session.flashbag.get('warning') %}
+        <div class="alert alert-info">
+            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <strong>Uwaga!</strong> 
+            {{ flashMessage }}
+        </div>       
+    {% endfor %}
+
+
+    {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+    
+    <style>
+        table tr td:first-child, table tr th:first-child{
+            min-width:30px;
+            width: 30px!important;
+        }
+        form.dirty{
+            background: transparent;
+        }
+    </style>
+{% endblock body %}

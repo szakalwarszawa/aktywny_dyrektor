@@ -542,6 +542,17 @@ class LdapAdminService
         $entry['l'] = 'Warszawa';
         $entry['postalCode'] = '00-834';
         //tu dopisac pozostale atrybuty 
+        foreach($entry as $k => $v){
+            if(!is_array($v)){
+                if(strlen($v) == 0){
+                    //wywalamy puste wartosci do invalid syntax
+                    if($person->getId() == 4581){
+                        echo("usuwam ".$k." ".$v);
+                    }
+                    unset($entry[$k]); 
+                }
+            }
+        }
         
         
         // if (empty($accountExpires)) {
@@ -551,7 +562,7 @@ class LdapAdminService
         if($section)
             $entry['division'] = $section->getName();//$section->getShortname();
         else{
-            $entry['division'] = '';
+            $entry['division'] = 'n/d';
         }
         $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         //print_r(".".$person->getId()); 
@@ -568,12 +579,14 @@ class LdapAdminService
         }
         $this->ldap_add($ldapconn, $dn, $entry);
         $ldapstatus = $this->ldap_error($ldapconn);
-        
-        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
-        //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
-        $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
-        $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
-            
+        if($description === null){
+            //var_dump($person);
+        }else{
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
+            //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
+            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
+            $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+        }
         //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
         $ldapstatus = $this->ldap_error($ldapconn);
         
