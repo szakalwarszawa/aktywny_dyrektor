@@ -1512,4 +1512,63 @@ class DevController extends Controller
         die(count($us).".");
         
     }
+    
+    
+    /**
+     * @Route("/testMonolog", name="testMonolog")
+     * @Template()
+     */
+    public function testMonologAction(){
+        $logger = $this->get('logger');
+        $logger->critical('I left the oven on!', array(
+            'cause' => 'in_hurry',
+        ));
+        die('aaa');
+    }
+    
+    
+    
+    /**
+     * @Route("/excelExport", name="excelExport")
+     * @Template()
+     */
+    public function excelExportAction(){
+        
+        $ldap = $this->get('ldap_service');
+        // Sięgamy do AD:        
+        $adusers = $ldap->getAllFromAD();
+        $dajKolumny = ["name", "department", "description", "info", "division", "manager"];
+        $nazwyKolumn = ["name" => "Pracownik", "department" => "Departament", "description" => "Departament skrót", "info" => "Sekcja", "division" => "Sekcja skrót", "manager" => "Przełożony"];
+        $kolumny = [];
+        $data = [];
+        $data[] = $nazwyKolumn;
+        foreach($adusers as $u){
+            $d = [];
+            foreach($dajKolumny as $k1 => $k){
+                $v = $u[$k];
+                if($k == "manager"){
+                    $v = substr($u['manager'], 0, stripos($u['manager'], ','));
+                    $v = str_replace("CN=", "", $v);
+                }
+                $d[] = $v;
+            }
+            $data[] = $d;
+        }
+        //var_dump($data); die();
+        
+        $phpExcelObject = new \PHPExcel();
+        $sheet = $data;
+        $phpExcelObject->setActiveSheetIndex(0);
+
+        $phpExcelObject->getActiveSheet()->fromArray($sheet, null, 'A1');
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="pracownicy.xls"');
+        header('Cache-Control: max-age=0');
+        
+          // Do your stuff here
+          $writer = \PHPExcel_IOFactory::createWriter($phpExcelObject, 'Excel5');
+        
+        $writer->save('php://output');
+        die();
+    }
 }    

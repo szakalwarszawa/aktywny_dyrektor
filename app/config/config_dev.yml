@@ -28,6 +28,19 @@ monolog:
         #chromephp:
         #    type:   chromephp
         #    level:  info
+        slack:
+            type: slack
+            channel: "#aktywny_logs"
+            token: xoxp-34457439059-34607661924-86615147411-9f028a340fcb90fa1fec34d7d6b9e5b9
+            icon_emoji: :ghost:
+            level: critical
+#             [bot_name]: Monolog
+#             [icon_emoji]: null
+#             [use_attachment]: true
+#             [use_short_attachment]: false
+#             [include_extra]: false
+#             [level]: debug
+#             [bubble]: false
 
 assetic:
     use_controller: true

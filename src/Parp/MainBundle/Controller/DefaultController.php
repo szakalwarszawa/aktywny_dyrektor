@@ -72,90 +72,25 @@ class DefaultController extends Controller
         }
         //echo "<pre>"; print_r($ADUsers); die();
     
-        $grid = $this->getUserGrid($this->get('grid'), $ADUsers);        
+        $grid = $this->getUserGrid($this->get('grid'), $ADUsers, $ktorzy);        
 
-        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
-            // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
-            $rowAction2->setColumn('akcje');
-            $rowAction2->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
-            $rowAction3->setColumn('akcje');
-            $rowAction3->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
-            $rowAction4->setColumn('akcje');
-            $rowAction4->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
-    
-    //        $grid->addRowAction($rowAction1);
-            $grid->addRowAction($rowAction2);
-            $grid->addRowAction($rowAction3);
-            $grid->addRowAction($rowAction4);
-        }else{
-            
-            // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
-            $rowAction2->setColumn('akcje');
-            $rowAction2->setRouteParameters(
-                    array('id')
-            );
-            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
-            // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
-            $rowAction3->setColumn('akcje');
-            $rowAction3->setRouteParameters(
-                    array('samaccountname')
-            );
-            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-    
-            $grid->addRowAction($rowAction2);
-            $grid->addRowAction($rowAction3);
+        
+               
+        // Handles filters, sort, exports, action
+        //$grid->handleRequest($this->getRequest());
+
+        if ($grid->isReadyForExport()) {
+            return $grid->getExportResponse();
         }
 
-        if(
-            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN", $this->getUser()->getRoles())
-        ){
-            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
-            $grid->addMassAction($massAction1);
-    
-            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
-            $grid->addMassAction($massAction2);    
+        if ($grid->isReadyForRedirect()) {
+            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         }
-        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
-                 
-            $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
-            //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
-            $grid->addMassAction($massAction3);
-            $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-            //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
-            $grid->addMassAction($massAction4);
-        }
-
-        $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
         
-        
-        if($ktorzy == "usersFromAdFull")
-            $grid->setLimits(1000);
-        
-
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
     
-    public function getUserGrid($grid, $ADUsers){
+    public function getUserGrid($grid, $ADUsers, $ktorzy){
         $source = new Vector($ADUsers);
 
 
@@ -234,7 +169,6 @@ class DefaultController extends Controller
         }
         
         
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
@@ -244,6 +178,90 @@ class DefaultController extends Controller
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
+                
+                
+                
+        if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
+            $rowAction4->setColumn('akcje');
+            $rowAction4->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
+    
+    //        $grid->addRowAction($rowAction1);
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+            $grid->addRowAction($rowAction4);
+        }else{
+            
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->setRouteParameters(
+                    array('id')
+            );
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+    
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->setRouteParameters(
+                    array('samaccountname')
+            );
+            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
+        }
+
+        if(
+            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
+            in_array("PARP_ADMIN", $this->getUser()->getRoles())
+        ){
+            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
+            $grid->addMassAction($massAction1);
+    
+            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
+            $grid->addMassAction($massAction2);    
+        }
+        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                 
+            $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
+            //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
+            $grid->addMassAction($massAction3);
+            $massAction4 = new MassAction("Odbierz uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
+            $grid->addMassAction($massAction4);
+        }
+
+        $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
+        
+        
+        if($ktorzy == "usersFromAdFull")
+            $grid->setLimits(1000);        
+            
+        
+        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));        
+        $grid->isReadyForRedirect();
+                
                 
         return $grid;
     }

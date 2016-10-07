@@ -264,6 +264,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
+        $ktoreDepartamenty = [mb_strtolower(trim($aduser[0]['department']))];
+        if($this->getUser()->getUsername() == "monika_standziak"){
+            $ktoreDepartamenty[] = "zarząd";
+        }
+        
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
         
@@ -275,7 +280,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //unset($u['thumbnailphoto']);
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
             //echo ".".strtolower($aduser[0]['department']).".";
-            if($widzi_wszystkich || mb_strtolower(trim($u['department'])) == mb_strtolower(trim($aduser[0]['department'])) ){
+            if($widzi_wszystkich || in_array(mb_strtolower(trim($u['department'])), $ktoreDepartamenty) ){
                 $users[$u['samaccountname']] = $u['name'];
             }
         }
@@ -891,7 +896,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $em->persist($wn->getWniosek());
                                         $em->persist($wn);
                                 }
-                            }else{
+                            }
+                            else
+                            {
                                 $this->setWniosekStatus($wniosek, "03_EDYCJA_WLASCICIEL", false);
                             }
                             break;
