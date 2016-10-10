@@ -33,6 +33,18 @@ use APY\DataGridBundle\Grid\Column;
 class WniosekNadanieOdebranieZasobowController extends Controller
 {
     protected $debug = false;
+    protected $loguj = true;
+    protected $logger;
+        
+    protected function getLogger(){
+        $this->logger = $this->get('logger');
+    }
+    protected function logg($msg, $data){
+        if(!$this->logger){
+            $this->getLogger();
+        }
+        $this->logger->critical($msg, $data);
+    }
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
@@ -532,9 +544,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $this->container->get('mailer')->send($message);
     }
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
-        if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
         
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
+        
+        $this->logg('setWniosekStatus START!', array(
+            'url' => $this->getRequest()->getRequestUri(),
+            'user' => $this->getUser()->getUsername(),
+            'wniosek.id' => $wniosek->getId(),
+            'statusName' => $statusName,
+            'rejected' => $rejected,
+            'oldStatus' => $oldStatus,
+            'isPost' => $this->getRequest()->isMethod('POST'),
+            'zastepstwo' => $zastepstwo
+        ));
+        
+        
+        if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
+        
         if($zastepstwo != null){
             //var_dump($zastepstwo); 
             //die('Mam zastepstwo');        
@@ -654,6 +680,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function acceptRejectAction(Request $request, $id, $isAccepted, $publishForReal = false)
     {
+        $this->logg("=========================================================================START", [            
+            'url' => $request->getRequestUri(),
+            'user' => $this->getUser()->getUsername(),
+        ]);
+        $this->logg("acceptRejectAction START!", array(
+            'url' => $request->getRequestUri(),
+            'user' => $this->getUser()->getUsername(),
+            'id' => $id,
+            'isAccepted' => $isAccepted,
+            'publishForReal' => $publishForReal,
+            'isPost' => $request->isMethod('POST')
+        ));
+        
+        
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
@@ -663,6 +703,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if($acc['editor'] === null && !($isAccepted == "publish_lsi")){
             throw new SecurityTestException("Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!", 765);
         }
+        
+        
         
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($wniosek);
         //print_r($uzs); die();
@@ -1043,6 +1085,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
             }
         }
+        
+        $this->logg("=========================================================================END", [            
+            'url' => $request->getRequestUri(),
+            'user' => $this->getUser()->getUsername(),
+        ]);
         //temp badam sqle przy akceptacji wniosku Grzesia
         $em->flush();
         //die('a');
