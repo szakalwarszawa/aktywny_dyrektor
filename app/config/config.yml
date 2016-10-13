@@ -97,10 +97,10 @@ apy_data_grid:
            next_message : »
     no_data_message: <div class='alert alert-danger'>Brak danych do pokazania</div>
 monolog:
-    handlers:
-        slack:
-            type: slack
-            channel: "#aktywny_logs"
-            token: xoxp-34457439059-34607661924-86615147411-9f028a340fcb90fa1fec34d7d6b9e5b9
-            icon_emoji: :ghost:
-            level: critical    
+#     handlers:
+#         slack:
+#             type: slack
+#             channel: "#aktywny_logs"
+#             token: xoxp-34457439059-34607661924-86615147411-9f028a340fcb90fa1fec34d7d6b9e5b9
+#             icon_emoji: :ghost:
+#             level: critical    

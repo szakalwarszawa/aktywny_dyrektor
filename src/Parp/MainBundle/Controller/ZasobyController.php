@@ -84,13 +84,22 @@ class ZasobyController extends Controller
         return $grid->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array('aktywne' => $aktywne));
     }
     
-    protected function sprawdzDostep(){
+    protected function sprawdzDostep($zasob){
+        
+        $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
+        
+        
+        $czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
+        
+        
+        
         if(
             !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
-            !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles())
+            !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
+            !$czyJestWlascicielemLubPowiernikiem
         ){
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
-            throw new SecurityTestException("Tylko administrator AkD może aktualizować zmiany w zasoback AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
+            throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
         }
         
     }
@@ -203,6 +212,7 @@ class ZasobyController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
+        $this->sprawdzDostep($entity);
         $grupy = explode(",", $entity->getGrupyAD());
         $grupyAd = array();
         foreach($grupy as $g){
@@ -270,7 +280,6 @@ class ZasobyController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        $this->sprawdzDostep();
         $em = $this->getDoctrine()->getManager();
 
         $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
@@ -278,6 +287,7 @@ class ZasobyController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
+        $this->sprawdzDostep($entity);
 
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
@@ -302,7 +312,6 @@ class ZasobyController extends Controller
      */
     public function deleteAction(Request $request, $id, $published = 0)
     {
-        $this->sprawdzDostep();
         
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
@@ -310,6 +319,7 @@ class ZasobyController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
+        $this->sprawdzDostep($entity);
         //dodac obsluge pola dlaczego niaktywny
         $entity->setPublished($published);
         //$em->remove($entity);

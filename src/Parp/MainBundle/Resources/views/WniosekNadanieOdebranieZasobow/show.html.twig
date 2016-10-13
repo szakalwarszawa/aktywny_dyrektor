@@ -222,11 +222,20 @@
                             
                             <tr>
                                 <th>Osoby które widzą wniosek</th>
-                                <td>{{ entity.wniosek.viewernames|addSpaces }}</td>
+                                <td>
+                                    {% for v in  entity.wniosek.viewers %}
+                                        {{v.samaccountname|showFullname }},
+                                    {%endfor%}
+{#                                     {{ entity.wniosek.viewernames|addSpaces }} #}</td>
                             </tr>
                             <tr>
                                 <th>Osoby które mogą edytować wniosek</th>
-                                <td>{{ entity.wniosek.editornames|addSpaces }}</td>
+                                <td>
+                                    {% for v in  entity.wniosek.editors %}
+                                        {{v.samaccountname|showFullname }},
+                                    {%endfor%}
+{#                                     {{ entity.wniosek.editornames|addSpaces }} #}
+                                </td>
                             </tr>
                             
                             

@@ -8,7 +8,7 @@ from (
     select wz.id, concat(w.id, '') as idd, w.numer, w.`createdBy`,w.`createdAt`, ws.nazwa, group_concat(whs.statusname) statusy from wniosek_nadanie_odebranie_zasobow wz join wniosek w on wz.wniosek_id = w.id join wniosek_status ws on ws.id = w.status_id
     join wniosek_historia_statusow whs on whs.`wniosek_id`= w.id where w.`status_id` in (
     	select id from wniosek_status where nazwaSystemowa in ("07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY")
-    )
+    ) and wz.deletedAt is null and whs.deletedAt is null
     group by w.numer, ws.nazwa, w.`createdBy`
 ) as s 
 
