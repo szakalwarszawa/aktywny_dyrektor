@@ -39,7 +39,7 @@ class WniosekNadanieOdebranieZasobow
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @GRID\Column(field="wniosek.numer", title="Numer")
-     * @GRID\Column(field="wniosek.status.nazwa", title="Status")
+     * @GRID\Column(field="wniosek.status.nazwa", title="Status2")
      * @GRID\Column(field="wniosek.createdBy", title="Utworzony przez")
      * @GRID\Column(field="wniosek.createdAt", type="date", title="Utworzono")
      * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez")

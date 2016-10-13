@@ -43,7 +43,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if(!$this->logger){
             $this->getLogger();
         }
-        $this->logger->critical($msg, $data);
+        //$this->logger->critical($msg, $data);
     }
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
@@ -729,6 +729,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+        if($isAccepted == "acceptAndPublish" && !in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY"])){
+            $isAccepted = "accept"; //byl blad ze ludzie mieli linka do acceptAndPublish i pomijalo wlascicieli i administratorow
+        }
+        
         if($isAccepted == "unblock"){
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
@@ -1015,7 +1019,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     break;
             }
             
-            if($isAccepted == "acceptAndPublish"){
+            if($isAccepted == "acceptAndPublish" && in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY"])){
                 //dla wnioskow spoza parp szukamy departamentu przelozonego
                 if($wniosek->getPracownikSpozaParp()){
                     $aduser = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());
