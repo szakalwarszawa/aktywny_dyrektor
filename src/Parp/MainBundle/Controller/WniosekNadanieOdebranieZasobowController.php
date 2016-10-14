@@ -729,7 +729,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-        if($isAccepted == "acceptAndPublish" && !in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY"])){
+        if($isAccepted == "acceptAndPublish" && !in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY", "07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY"])){
             $isAccepted = "accept"; //byl blad ze ludzie mieli linka do acceptAndPublish i pomijalo wlascicieli i administratorow
         }
         
@@ -1019,7 +1019,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     break;
             }
             
-            if($isAccepted == "acceptAndPublish" && in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY"])){
+            if($isAccepted == "acceptAndPublish" && in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY", "07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY"])){
                 //dla wnioskow spoza parp szukamy departamentu przelozonego
                 if($wniosek->getPracownikSpozaParp()){
                     $aduser = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());

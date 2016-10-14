@@ -1571,4 +1571,5 @@ class DevController extends Controller
         $writer->save('php://output');
         die();
     }
+    
 }    
