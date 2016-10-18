@@ -245,7 +245,7 @@ class UprawnieniaService
             }
 
             // zmien grupę uprawneń
-            $usergrupa = $this->doctrine->getRepository('ParpMainBundle:Usergrupa')->findBy(array('samaccountname' => $person->getSamaccountname()));
+            $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $person->getSamaccountname()));
             $oldgrupy = array();
             $newgrupy = explode(',', $person->getInitialrights());
             foreach($usergrupa as $g){
@@ -262,7 +262,7 @@ class UprawnieniaService
                 $this->doctrine->persist($usergrupa);
             }
             foreach($grupDoSkasowania as $ug){
-                $usergrupa = $this->doctrine->getRepository('ParpMainBundle:Usergrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));            
+                $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));            
                 $this->doctrine->remove($usergrupa);
             }
             

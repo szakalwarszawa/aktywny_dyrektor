@@ -32,6 +32,7 @@ class EntryRepository extends EntityRepository
         $query = $this->createQueryBuilder('e')
                 ->where('e.isImplemented = false')
                 ->andWhere('e.fromWhen <= :date')
+                ->andWhere('e.samaccountname != \'\'')
                 ->andWhere($where)
                 //->andWhere('e.memberOf = \'\' or e.memberOf is null')
                 ->addOrderBy('e.id',  'ASC')

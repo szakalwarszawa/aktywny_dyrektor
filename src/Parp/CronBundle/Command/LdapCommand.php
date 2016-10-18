@@ -104,17 +104,19 @@ class LdapCommand extends ContainerAwareCommand
             if ($zmiany) {
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
-    
+                    
                     $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
                     if ($userNow) {
-    
+                        $liczbaZmian = 0;
                         $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
                         
                         if ($zmiana->getAccountExpires()) {
+                            $liczbaZmian++;
                             // Wygasza się konto
                             $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
                         }
                         if ($zmiana->getDepartment()) {
+                            $liczbaZmian++;
                             if ($userNow[0]['department']) {
                                 $output->writeln('  - Zmiana biura: ' . $userNow[0]['department'] . ' -> ' . $zmiana->getDepartment());
                             } else {
@@ -122,6 +124,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($zmiana->getInfo()) {
+                            $liczbaZmian++;
                             if ($userNow[0]['info']) {
                                 $output->writeln('  - Zmiana sekcji: ' . $userNow[0]['info'] . ' -> ' . $zmiana->getInfo());
                             } else {
@@ -129,6 +132,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($zmiana->getCn()) {
+                            $liczbaZmian++;
                             if ($userNow[0]['cn']) {
                                 $output->writeln('  - Zmiana imienia i nazwiska : ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
                             } else {
@@ -136,6 +140,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($zmiana->getManager()) {
+                            $liczbaZmian++;
                             if ($userNow[0]['manager']) {
                                 $output->writeln('  - Zmiana przełożonego : ' . $userNow[0]['manager'] . ' -> ' . $zmiana->getManager());
                             } else {
@@ -143,6 +148,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($zmiana->getTitle()) {
+                            $liczbaZmian++;
                             if ($userNow[0]['title']) {
                                 $output->writeln('  - Zmiana stanowiska : ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
                             } else {
@@ -150,6 +156,7 @@ class LdapCommand extends ContainerAwareCommand
                             }
                         }
                         if ($zmiana->getInitials() && $zmiana->getInitials() != "puste") {
+                            $liczbaZmian++;
                             if ($userNow[0]['initials']) {
                                 $output->writeln('  - Zmiana inicjałów : ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
                             } else {
@@ -158,6 +165,8 @@ class LdapCommand extends ContainerAwareCommand
                         }
     
                         if ($zmiana->getInitialrights()) {
+/*
+                            $liczbaZmian++;
                             // pobierzmy stare
                             $old = $em->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $zmiana->getSamaccountname()));
                             $oldg = array();
@@ -170,8 +179,10 @@ class LdapCommand extends ContainerAwareCommand
                             } else {
                                 $output->writeln('  - Nadanie uprawnień początkowych : ' . $zmiana->getInitialrights());
                             }
+*/
                         }
                         if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
+                            $liczbaZmian++;
                             
                             if ($zmiana->getIsDisabled()) {
                                 $output->writeln('  - Wyłączenie konta w domenie');
@@ -184,6 +195,7 @@ class LdapCommand extends ContainerAwareCommand
                         }
                         
                         if ($zmiana->getMemberOf()) {
+                            $liczbaZmian++;
                             $znak = substr($zmiana->getMemberOf(), 0, 1);                 
                             $g = substr($zmiana->getMemberOf(), 1);
                             if ($znak == "+") {
@@ -192,10 +204,18 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Usunięciez grupy: ' . $g);
                             }
                         }
+                        
+                        if($liczbaZmian == 0){
+                            $output->writeln('<error>Nie ma nic do opublikowania</error>', false);
+                            $ldapstatus = "Success";
+                        }else{
+                            
+                            $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
+                        }
+                            
                         // zmiana uprawnien początkowych nie powduje zadnch zmian w ldap-ie
                         //if (!$zmiana->getInitialrights() && count($zmiany) == 1) {
                             //print_r($zmiana);
-                        $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
                         if($ldapstatus == "Success"){
                             if(!$this->showonly){
                                 $uprawnienia->zmianaUprawnien($zmiana);
@@ -204,6 +224,7 @@ class LdapCommand extends ContainerAwareCommand
                                 $zmiana->setPublishedBy($this->samaccountname);
                                 $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
+                                //if($liczbaZmian == 0) echo ("zero zian ");
                             }
                         }else{
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getCn().':</error>', false);
@@ -270,21 +291,25 @@ class LdapCommand extends ContainerAwareCommand
             'ldap_add' => [68 /*Already exists*/],
             'ldap_delete' => [],
             'ldap_delete' => [],
+            'addRemoveMemberOf' => []
         ];
         
         foreach($this->pushErrors as $es){
             foreach($es as $e){
-                if(in_array($e['errorno'], $przetwarzajOK[$e['function']])){
-                    //znaczy ze ok i logujemy i zamykamy zgloszenie
-                    $e['lastEntry']->setIsImplemented(1);
-                    //echo "...ustawiam isImplemented ".$e['lastEntry']->getId();
-                    unset($e['lastEntry']);
-                    $logfileThis = str_replace(".html", "-".$e['function'].".log", $logfile);
-                    
-                    
-                    
-                    //error_log(print_r($e, true), 3, $logfileThis);
-                    file_put_contents($logfileThis, print_r($e, true), FILE_APPEND | LOCK_EX);
+                if($e){
+                    //var_dump($e);
+                    if(in_array($e['errorno'], $przetwarzajOK[$e['function']])){
+                        //znaczy ze ok i logujemy i zamykamy zgloszenie
+                        $e['lastEntry']->setIsImplemented(1);
+                        //echo "...ustawiam isImplemented ".$e['lastEntry']->getId();
+                        unset($e['lastEntry']);
+                        $logfileThis = str_replace(".html", "-".$e['function'].".log", $logfile);
+                        
+                        
+                        
+                        //error_log(print_r($e, true), 3, $logfileThis);
+                        file_put_contents($logfileThis, print_r($e, true), FILE_APPEND | LOCK_EX);
+                    }
                 }
             }
         }

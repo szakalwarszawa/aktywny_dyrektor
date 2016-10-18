@@ -1352,8 +1352,10 @@ class DevController extends Controller
             
             //download file
             $file = __DIR__."/../../../../work/logs/".$file;
-            $response = new BinaryFileResponse($file);
-            $response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
+            $fileStr = file_get_contents($file);
+            $response = new Response($fileStr);
+            //die($response);
+            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
             
             return $response;
 
@@ -1570,6 +1572,33 @@ class DevController extends Controller
         
         $writer->save('php://output');
         die();
+    }
+    
+    
+    /**
+     * @Route("/testPublishErrors", name="testPublishErrors")
+     * @Template()
+     */
+    public function testPublishErrorsAction(){
+        
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getUserFromAD('kamil_jakacki');
+        
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        
+        $g = "SGG-DIP-Wewn-Wsp-RW";
+        $grupa = $ldapAdmin->getGrupa($g);
+        
+        $ldapAdmin->ldap_mod_del($ldapconn, $grupa['distinguishedname'], ['member' => $us[0]['distinguishedname']]);
+        
+        var_dump($ldapAdmin->lastConnectionErrors);
+        
+        
+    }
+    public function writeln($msg){
+        echo "$msg\r\n<br>";    
     }
     
 }    

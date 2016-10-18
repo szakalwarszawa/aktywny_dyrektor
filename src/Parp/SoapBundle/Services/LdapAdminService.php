@@ -246,6 +246,11 @@ class LdapAdminService
         $ldapbind = ldap_bind($ldapconn, $this->AdminUser . $ldapdomain, $this->AdminPass);
              
         $dn = $ldapUser;
+        //zmieniamy ze jednak bierze dn z aktualnego usera
+        $adu = $this->getUserFromAD($person->getSamaccountname());
+        $dn = $adu[0]['distinguishedname'];
+        
+        
         $entry = array();
 
         
@@ -281,6 +286,9 @@ class LdapAdminService
                 ));
                 $tmpResults = ldap_get_entries($ldapconn, $search);
                 $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
+                if($entry['manager'] === null){
+                    unset($entry['manager']);
+                }
             }
         }
         if ($person->getTitle()) {
@@ -432,17 +440,35 @@ class LdapAdminService
                 if($grupa != ""){
                     $znak = substr($grupa, 0, 1);               
                     $g = substr($grupa, 1);
-                    //var_dump($grupa, $znak);
-                    $grupa = $this->getGrupa($g);
-                    $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
-                    //var_dump($g, $dn, $addtogroup); die();
-                    if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
-                        $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
-                    }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){                    
-                        $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $dn ));
-                    }
+                    $this->output->writeln('<comment>'.(($znak) == "+" ? "Dodanie do" : "Usuniecie z").' '.($znak)." grupy  ".$g."</comment>"); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");                    
                     
-                    $this->output->writeln('<comment>Dodanie/usuniecie '.($znak)." z grupy  ".$g); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
+                    $grupa = $this->getGrupa($g);
+                    if(!$grupa){
+                        $error = 'Nie istnieje w AD grupa "'.$g.'"!!!';
+                        $this->output->writeln('<error>'.$error.'</error>');
+                        $this->lastConnectionErrors[] = [
+                            'function' => "addRemoveMemberOf",
+                            'error' => $error,
+                            'errorno' => 77771,
+                            'lastEntryId' => $person->getId(),
+                            'lastEntry' => $person->getId()
+                        ];                     
+                    }else{
+                        $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                        //var_dump($g, $dn, $addtogroup); die();
+                        //var_dump($g, $userAD[0]['memberOf']); //die();
+                        if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
+                            $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));
+                        }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){        
+                            $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));
+                        }elseif($znak == "-"){
+                            $this->output->writeln('<error>Nie usunięto użytkownika z grupy '.$g.' bo w niej nie był!</error>');
+                        }elseif($znak == "+"){
+                            $this->output->writeln('<error>Nie dodano użytkownika do grupy '.$g.' bo w niej już jest!</error>');
+                        }else{
+                            //die('a');
+                        }
+                    }
                     
                 }
                 //return ;
@@ -782,8 +808,6 @@ class LdapAdminService
         if($this->pushChanges){
             try{
                 ldap_mod_add($link_identifier, $dn, $entry);
-                //$dn = $entry['member'], ['member' => $dn]);
-                //ldap_modify($link_identifier, $dn, $entry); 
                 $poszlo = true;
             }
             catch(\Exception $e){
@@ -795,7 +819,7 @@ class LdapAdminService
             foreach($entry as $k => $v){
                 $data[] = "'$k' = '$v'";
             }
-            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add (ldap_modify)</error>');
+            $this->output->writeln('<error>wykonuje funkcje ldap_mod_add</error>');
             $this->output->writeln('<error>dn: '.$dn.'</error>');
             $this->output->writeln('<error>entry: '.implode(", ", $data).'</error>');
         }
