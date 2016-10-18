@@ -44,7 +44,7 @@ class LdapService
         "useraccountcontrol",
         "distinguishedName",
         "cn",
-        'memberOf',
+        'memberOf'
         //"extensionAttribute14"
     );
 
@@ -893,6 +893,7 @@ class LdapService
     public function kogoBracJakoManageraDlaUseraDoWniosku($user){
         $ret = 'dyrektor';
         switch(mb_strtolower(trim($user['title']))){
+            case "rzecznik beneficjenta parp, dyrektor":
             case "dyrektor":
             case "p.o. dyrektora":
             case "dyrektor (p.o.)":
@@ -909,13 +910,15 @@ class LdapService
     
     public function getGrupyUsera($user, $depshortname, $sekcja){
         $pomijajSekcje = ["ND", "", "n/d", ""];
-        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW'
+        $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW',
+            'Pracownicy'
             //, 'SGG-(skrót D/B)-Public-RO'
         ];
         if(!in_array($sekcja, $pomijajSekcje)){
             $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
         switch(strtolower($user['title'])){
+            case "rzecznik beneficjenta parp, dyrektor":
             case "dyrektor":
             case "dyrektor (p.o.)":
             case "zastępca dyrektora":

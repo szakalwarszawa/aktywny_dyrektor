@@ -1601,4 +1601,25 @@ class DevController extends Controller
         echo "$msg\r\n<br>";    
     }
     
+    
+    
+    /**
+     * @Route("/sendMail", name="sendMail")
+     * @Template()
+     */
+    public function sendMailAction(){
+        $mails = ["kamil_jakacki@parp.gov.pl"];
+        $view = "Nowy user test";
+        $message = \Swift_Message::newInstance()
+                ->setSubject('Nowy użytkownik w AkD')
+                ->setFrom('intranet@parp.gov.pl')
+                //->setFrom("kamikacy@gmail.com")
+                ->setTo($mails)
+                ->setBody($view)
+                ->setContentType("text/html");
+
+        //var_dump($view);
+        $this->container->get('mailer')->send($message);
+    }
+    
 }    
