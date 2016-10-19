@@ -1607,9 +1607,10 @@ class DevController extends Controller
      * @Route("/sendMail", name="sendMail")
      * @Template()
      */
-    public function sendMailAction(){
-        $mails = ["kamil_jakacki@parp.gov.pl"];
-        $view = "Nowy user test";
+    public function sendMailAction($samaccountname){
+        $samaccountname = "test_test_wcale_nie_utworzony";
+        $mails = ["kamil_jakacki@parp.gov.pl", "marcin_lipinski@parp.gov.pl"];
+        $view = "Dnia ".date("Y-m-d")." został utworzony nowy użytkownik '".$samaccountname."', utwórz mu pocztę pliz :)";
         $message = \Swift_Message::newInstance()
                 ->setSubject('Nowy użytkownik w AkD')
                 ->setFrom('intranet@parp.gov.pl')

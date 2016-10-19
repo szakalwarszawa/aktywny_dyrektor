@@ -287,6 +287,7 @@ class ImportRekordDaneController extends Controller
                     
                     $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
                     $dr->setLogin($login);
+                    $this->sendMailAboutNewUser($dr->getNazwisko()." ".$dr->getImie(), $login);
                 }
                 
                 $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
@@ -455,6 +456,7 @@ class ImportRekordDaneController extends Controller
         $sciecha = "";
         
         $this->dataGraniczna = date("Y-m-d");
+        $this->dataGraniczna = '2016-11-01';
         $sql = $this->getSqlDoImportu();
         $miesiac = 1;
         $rok = 2012;
@@ -836,5 +838,21 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $em->flush();
         }
         die("ok");
+    }
+    
+    public function sendMailAboutNewUser($name, $samaccountname){
+        $samaccountname = "test_test_wcale_nie_utworzony";
+        $mails = ["kamil_jakacki@parp.gov.pl", "marcin_lipinski@parp.gov.pl"];
+        $view = "Dnia ".date("Y-m-d")." został utworzony nowy użytkownik '".$name."' o loginie '".$samaccountname."', utwórz mu pocztę pliz :)";
+        $message = \Swift_Message::newInstance()
+                ->setSubject('Nowy użytkownik w AkD')
+                ->setFrom('intranet@parp.gov.pl')
+                //->setFrom("kamikacy@gmail.com")
+                ->setTo($mails)
+                ->setBody($view)
+                ->setContentType("text/html");
+
+        //var_dump($view);
+        $this->container->get('mailer')->send($message);
     }
 } 
