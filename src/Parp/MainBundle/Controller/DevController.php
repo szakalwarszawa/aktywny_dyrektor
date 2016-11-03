@@ -1623,4 +1623,44 @@ class DevController extends Controller
         $this->container->get('mailer')->send($message);
     }
     
+    
+    /**
+     * @Route("/synchroDyrektorow", name="synchroDyrektorow")
+     * @Template()
+     */
+    public function synchroDyrektorowAction(){
+        $stanowiska = ["dyrektor", "p.o. dyrektora", "rzecznik beneficjenta parp, dyrektor", "główny księgowy, dyrektor"];
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        
+        $wyniki = [];
+        $zmian = 0;
+        $em = $this->getDoctrine()->getManager();
+        foreach($ADUsers as $u){
+            if(in_array($u['title'], $stanowiska)){
+                $departament = $em->getRepository("ParpMainBundle:Departament")->findOneByShortname($u['description']);
+                $dyrektorZmiana = $departament->getDyrektor() != $u['samaccountname'];
+                $wyniki[$u['description']] = [
+                    'description' => $u['description'],
+                    'department' => $u['department'],
+                    'title' => $u['title'],
+                    'samaccountname' => $u['samaccountname'],
+                    'departament' => $departament->getId(),
+                    'dyrektorZmiana' => $dyrektorZmiana
+                ];
+                if($dyrektorZmiana){
+                    $zmian++;
+                    $departament->setDyrektor($u['samaccountname']);
+                    $departament->setDyrektorDN($u['distinguishedname']);
+                    $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByBiuro($departament->getName());
+                    die(count($zasoby).".".$departament->getName());
+                    
+                }
+            }
+        }
+        if($zmian > 0){
+            //$em->flush();
+        }
+        var_dump($wyniki); die();
+    }
 }    

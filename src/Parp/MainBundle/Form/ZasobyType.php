@@ -79,6 +79,12 @@ class ZasobyType extends AbstractType
                 'choice_value' => function($dep){
                     return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
                 },
+                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                    return $er->createQueryBuilder('u')
+                            ->andWhere('u.nowaStruktura = 1')
+                            ->orderBy('u.name', 'ASC');
+                },
+                //dodac warunek ze tylko nowe departamenty
                 'label' => 'Komórka organizacyjna'
             ))
             ->add('miejsceInstalacji')

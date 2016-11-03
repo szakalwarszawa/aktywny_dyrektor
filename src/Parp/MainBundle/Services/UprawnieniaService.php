@@ -32,6 +32,7 @@ class UprawnieniaService
 
     public function ustawPoczatkowe($person)
     {
+        return ;
         $uprawnienia = array();
         //pobierz nowe uprawnienia
         $grupy = array();

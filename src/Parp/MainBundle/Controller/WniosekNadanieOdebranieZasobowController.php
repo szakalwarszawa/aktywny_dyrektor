@@ -792,6 +792,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $poziomy = explode(";", $uz->getPoziomDostepu());
                 foreach($moduly as $m){
                     foreach($poziomy as $p){
+                        //echo $m;
                         $naborDane = explode("/", $m);
                         $dzialanie = $naborDane[0];
                         $nabor = $naborDane[1];

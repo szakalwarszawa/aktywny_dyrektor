@@ -321,25 +321,29 @@ class LdapAdminService
                 //szuka z nazwa stara struktura
                 $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department'])." - stara struktura", 'nowaStruktura' => false]);    
             }
-            if(!$departmentOld)
-                die("Nie znalazl starego departamentu '".$userAD[0]['department']."'");
-            $person->setGrupyAD($departmentOld, "-");
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
-            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
-            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
-            //jesli zmiana departamnentu dodajemy nowe grupy AD
-            if(!$departmentOld)
-                die("Nie znalazl nowego departamentu '".$userAD[0]['department']."'");
-            $person->setGrupyAD($department);
-            if($person->getTitle()){
-                //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
-                $userAD[0]['title'] = $person->getTitle();
+            if(!$departmentOld){
+                echo("Nie znalazl starego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
+            }else{
+                $person->setGrupyAD($departmentOld, "-");
+                $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
+                $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
+                $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             }
-            
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $department->getShortname(), "");
-            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
-            //$person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
-            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+            //jesli zmiana departamnentu dodajemy nowe grupy AD
+            if(!$department){
+                echo("Nie znalazl nowego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
+            }else{
+                $person->setGrupyAD($department);
+                if($person->getTitle()){
+                    //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
+                    $userAD[0]['title'] = $person->getTitle();
+                }
+                
+                $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $department->getShortname(), "");
+                $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
+                //$person->setInfo("SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY");
+                $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+            }
         }
         if ($person->getInfo()) {
             if($person->getInfo() == "BRAK"){
@@ -348,7 +352,8 @@ class LdapAdminService
             }elseif($person->getInfo() == "BRAK" || $person->getInfo() == "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY"){
                 //$entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
                 $entry['division'] = null; //"";
-            }else{$entry['info'] = $person->getInfo();
+            }else{
+                $entry['info'] = $person->getInfo();
                 // obsłuz miane atrybuty division
                 $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
                 $entry['division'] =  $section->getName();//getShortname();
