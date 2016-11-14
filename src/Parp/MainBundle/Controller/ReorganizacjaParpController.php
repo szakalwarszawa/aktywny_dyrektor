@@ -1253,4 +1253,34 @@ class ReorganizacjaParpController extends Controller
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
     }
+    
+    
+    
+    
+    /**
+     *
+     * @Route("/wczytajExcelSekcjePrzelozeni", name="wczytajExcelSekcjePrzelozeni", defaults={})
+     * @Method("GET")
+     */
+    public function wczytajExcelSekcjePrzelozeniAction(){
+        $file = "/media/parp/pracownicy.xlsx";
+        $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
+        //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
+        if (!file_exists($file)) {
+            //exit("Please run 05featuredemo.php first." );
+            die('nie ma pliku');
+        }
+        $objPHPExcel = \PHPExcel_IOFactory::load($file);
+        //$EOL = "\r\n";
+        //echo date('H:i:s') , " Iterate worksheets" , $EOL;
+        $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
+        
+        $userdane = array();
+        
+        var_dump($sheetData); die();
+        $i = 0;
+        foreach($sheetData as $row){
+            
+        }
+    }
 }
