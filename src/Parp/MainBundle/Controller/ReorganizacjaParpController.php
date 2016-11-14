@@ -1263,24 +1263,92 @@ class ReorganizacjaParpController extends Controller
      * @Method("GET")
      */
     public function wczytajExcelSekcjePrzelozeniAction(){
-        $file = "/media/parp/pracownicy.xlsx";
-        $phpExcelObject = new \PHPExcel(); //$this->get('phpexcel')->createPHPExcelObject();
-        //$file = $this->get('kernel')->getRootDir()."/../web/uploads/import/membres.xlsx";
+        
+        $mapManagers = [
+            'Dyląg - Sajór Monika' => 'Dyląg-Sajór Monika',
+            'Skubiszeska-Nietz Aleksandra' => 'Skubiszewska-Nietz Aleksandra'
+        ];
+        
+        $ldap = $this->get('ldap_service');
+        $em = $this->getDoctrine()->getManager();
+        
+        $mapDep = ['DEPARTAMENT USŁUG ROZWOJOWYCH' => 'DEPARTAMENT  USŁUG ROZWOJOWYCH'];
+        
+        $file = "/media/parp/pracownicy.xls";
+        $phpExcelObject = new \PHPExcel(); 
         if (!file_exists($file)) {
-            //exit("Please run 05featuredemo.php first." );
+            
             die('nie ma pliku');
         }
         $objPHPExcel = \PHPExcel_IOFactory::load($file);
-        //$EOL = "\r\n";
-        //echo date('H:i:s') , " Iterate worksheets" , $EOL;
+        $objPHPExcel->setActiveSheetIndex(0);
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
         
-        $userdane = array();
+        $rowStart = 1;
+        $mapowanie = [
+            'A' => 'name',
+            'H' => 'name2',
+            'I' => 'department',
+            'K' => 'info',
+            'L' => 'manager'  
+        ];
+        $wynik = [];
         
-        var_dump($sheetData); die();
+        $braki = [
+            'bez dep' => 0,
+            'bez sekcji' => 0,
+            'bez managera' => 0,
+        ];
+        
+        $managerzyProblem = [];
+        
+        
+        $sekcje = [];
+        
         $i = 0;
         foreach($sheetData as $row){
-            
+            if($i > $rowStart){
+                $o = [];
+                foreach($mapowanie as $k => $v){
+                    $o[$v] = trim($row[$k]);
+                }
+                $sekcje[$o['info']] = $o['info'];
+                if(isset($mapDep[$o['department']])){
+                    $o['department'] = $mapDep[$o['department']];
+                }
+                $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(
+                    ['name' => $o['department'], 'nowaStruktura' => 1]
+                );
+                $o['dbDep'] = $departament ? $departament->getId() : 0;
+                
+                if($departament == null)
+                    $braki['bez dep']++;
+                
+                $sekcja = $em->getRepository('ParpMainBundle:Section')->findOneBy(
+                    ['name' => $o['info']]
+                );
+                $o['dbSekcja'] = $sekcja ? $sekcja->getId() : 0;
+                
+                if($sekcja == null)
+                    $braki['bez sekcji']++;
+                
+                //managera dodac
+                $manager = $ldap->getUserFromAD(null, $o['manager']);
+                $manager = count($manager) > 0 ? $manager[0] : null;
+                
+                $o['adManager'] = $manager ? $manager['samaccountname'] : '';
+                
+                if($manager == null){
+                    $braki['bez managera']++;
+                    $managerzyProblem[$o['manager']] = $o['manager'];  
+                }
+                
+                $wynik[] = $o;
+            }
+            $i++;
         }
+        echo "<pre>"; print_r($managerzyProblem); die();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
+        //var_dump($wynik); die();
     }
 }

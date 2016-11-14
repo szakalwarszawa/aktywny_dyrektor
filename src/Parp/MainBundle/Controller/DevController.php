@@ -2234,4 +2234,20 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
     }
     
+    
+    
+    
+    /**
+     * @Route("/naprawSkrotyDepartamentow", name="naprawSkrotyDepartamentow")
+     * @Template()
+     */
+    public function naprawSkrotyDepartamentowAction(){
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getAllFromAD();
+        $w = [];
+        foreach($us as $u){
+            $w[$u['description']] = $u['description'];
+        }
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => [$w]]);
+    }
 }    
