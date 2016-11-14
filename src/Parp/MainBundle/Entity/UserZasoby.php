@@ -864,4 +864,26 @@ class UserZasoby
     {
         return $this->zasobOpis;
     }
+    
+    public function getLsiSql(){
+        $sqls = [];
+        $moduly = explode(";", $this->getModul());
+        $poziomy = explode(";", $this->getPoziomDostepu());
+        foreach($moduly as $m){
+            foreach($poziomy as $p){
+                //echo $m;
+                $naborDane = explode("/", $m);
+                if(count($naborDane) > 1){
+                    $dzialanie = $naborDane[0];
+                    $nabor = $naborDane[1];
+                    $rola = $p;
+                    $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".$this->getSamaccountname()."', '".$dzialanie."', '".$nabor."', '".$rola."')";
+                    $sqls[] = $sql;
+                }else{
+                    echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby ".$this->getSamaccountname();
+                }
+            }    
+        }
+        return $sqls;
+    }
 }

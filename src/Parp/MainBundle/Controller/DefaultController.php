@@ -72,7 +72,7 @@ class DefaultController extends Controller
         }
         //echo "<pre>"; print_r($ADUsers); die();
     
-        $grid = $this->getUserGrid($this->get('grid'), $ADUsers, $ktorzy);        
+        $grid = $this->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());        
 
         
                
@@ -90,7 +90,7 @@ class DefaultController extends Controller
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
     
-    public function getUserGrid($grid, $ADUsers, $ktorzy){
+    public function getUserGrid($grid, $ADUsers, $ktorzy, $roles){
         $source = new Vector($ADUsers);
 
 
@@ -210,7 +210,17 @@ class DefaultController extends Controller
             $grid->addRowAction($rowAction2);
             $grid->addRowAction($rowAction3);
             $grid->addRowAction($rowAction4);
-        }else{
+        }elseif($ktorzy == "zablokowane2"){
+            
+            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+            $rowAction->setColumn('akcje');
+            $rowAction->setRouteParameters(
+                    array('samaccountname', 'ktorzy' => $ktorzy)
+            );
+            $rowAction->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction);
+        }elseif($ktorzy != "zablokowane"){
             
             // Edycja konta
             $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
@@ -233,8 +243,8 @@ class DefaultController extends Controller
         }
 
         if(
-            in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN", $this->getUser()->getRoles())
+            in_array("PARP_ADMIN_ZASOBOW", $roles) ||
+            in_array("PARP_ADMIN", $roles)
         ){
             $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
             $grid->addMassAction($massAction1);
@@ -242,7 +252,7 @@ class DefaultController extends Controller
             $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
             $grid->addMassAction($massAction2);    
         }
-        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+        if(in_array("PARP_ADMIN", $roles)){
                  
             $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
             //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
@@ -260,12 +270,59 @@ class DefaultController extends Controller
             
         
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));        
-        $grid->isReadyForRedirect();
+        //$grid->isReadyForRedirect();
                 
                 
         return $grid;
     }
-    
+    public function parseUserFormData($newData, &$entry){
+        foreach ($newData as $key => $value) {
+            switch ($key) {
+                case "isDisabled":
+                    $entry->setIsDisabled($value);
+                    break;
+                case "disableDescription":
+                    $entry->setDisableDescription($value);
+                    break;
+                case "name":
+                    $entry->setCn($value);
+                    break;
+                case "initials":
+                    $entry->setInitials($value);
+                    break;
+                case "accountExpires":
+                    if($value){
+                        $entry->setAccountexpires(new \DateTime($value));    
+                    }else{
+                        $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
+                    }
+                    
+                    break;
+                case "title":
+                    $entry->setTitle($value);
+                    break;
+                case "info":
+                    $entry->setInfo($value);
+                    break;
+                case "department":
+                    $entry->setDepartment($value);
+                    break;
+                case "manager":
+                    $entry->setManager($value);
+                    break;
+                case "fromWhen":
+                    $entry->setFromWhen(new \DateTime($value));
+                    break;
+                case "initialrights"://nieuzywane bo teraz jako array idzie
+                
+                    
+                    $value = implode(",", $value);
+                    $entry->setInitialrights($value);
+                    
+                    break;
+            }
+        }
+    }
     /**
      * @return array
      * @Template();
@@ -498,52 +555,7 @@ class DefaultController extends Controller
                         $value = implode(",", $newrights);
                         $entry->setInitialrights($value);
                     }
-                    foreach ($newData as $key => $value) {
-                        switch ($key) {
-                            case "isDisabled":
-                                $entry->setIsDisabled($value);
-                                break;
-                            case "disableDescription":
-                                $entry->setDisableDescription($value);
-                                break;
-                            case "name":
-                                $entry->setCn($value);
-                                break;
-                            case "initials":
-                                $entry->setInitials($value);
-                                break;
-                            case "accountExpires":
-                                if($value){
-                                    $entry->setAccountexpires(new \DateTime($value));    
-                                }else{
-                                    $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
-                                }
-                                
-                                break;
-                            case "title":
-                                $entry->setTitle($value);
-                                break;
-                            case "info":
-                                $entry->setInfo($value);
-                                break;
-                            case "department":
-                                $entry->setDepartment($value);
-                                break;
-                            case "manager":
-                                $entry->setManager($value);
-                                break;
-                            case "fromWhen":
-                                $entry->setFromWhen(new \DateTime($value));
-                                break;
-                            case "initialrights"://nieuzywane bo teraz jako array idzie
-                            
-                                
-                                $value = implode(",", $value);
-                                $entry->setInitialrights($value);
-                                
-                                break;
-                        }
-                    }
+                    $this->parseUserFormData($newData, $entry);
                     if($roznicauprawnien || isset($newData['department']) || isset($newData['info'])){
                         //print_r($newrights); die();
                         $dep = $ADUser[0]['description'];

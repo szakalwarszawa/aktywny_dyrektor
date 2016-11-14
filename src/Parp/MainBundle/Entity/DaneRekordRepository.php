@@ -21,13 +21,24 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         
     }
     public function findNewPeople(){
-        $result = $this
+        
+        if($_SERVER['REMOTE_ADDR'] == "10.10.50.1"){
+            $result = $this
+               ->createQueryBuilder('e')
+               ->select('e')
+               ->andWhere("e.newUnproccessed > 0 or e.id = 529")
+               ->orderBy("e.newUnproccessed")
+               ->getQuery()
+               ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
+        }else{
+            $result = $this
                ->createQueryBuilder('e')
                ->select('e')
                ->andWhere("e.newUnproccessed > 0")
                ->orderBy("e.newUnproccessed")
                ->getQuery()
                ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
+        }
 //               var_dump($result);
         return $result;
     }

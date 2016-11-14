@@ -255,11 +255,15 @@ class LdapAdminService
 
         
         if ($person->getAccountExpires()) {
-            $d = $this->UnixtoLDAP($person->getAccountExpires()->getTimestamp());
-            if($person->getAccountExpires()->format("Y") == "3000"){
-               $d = "9223372036854775807";
+            if($person->getAccountExpires()->format("Y") == 2000){//jesli rok 2000 znaczy ze mamy wynullowac date konca
+                $entry['accountExpires'] = 0;
+            }else{
+                $d = $this->UnixtoLDAP($person->getAccountExpires()->getTimestamp());
+                if($person->getAccountExpires()->format("Y") == "3000"){
+                   $d = "9223372036854775807";
+                }
+                $entry['accountExpires'] = $d;
             }
-            $entry['accountExpires'] = $d;
         }
         if ($person->getManager()) {
             $manager = $person->getManager();
@@ -493,6 +497,20 @@ class LdapAdminService
         return $userdata; 
     }
 
+    public function sendMailAboutNewUser($name, $samaccountname){
+        $mails = ["kamil_jakacki@parp.gov.pl", "marcin_lipinski@parp.gov.pl"];
+        $view = "Dnia ".date("Y-m-d")." został utworzony nowy użytkownik '".$name."' o loginie '".$samaccountname."', utwórz mu pocztę pliz :)";
+        $message = \Swift_Message::newInstance()
+                ->setSubject('Nowy użytkownik w AkD')
+                ->setFrom('intranet@parp.gov.pl')
+                //->setFrom("kamikacy@gmail.com")
+                ->setTo($mails)
+                ->setBody($view)
+                ->setContentType("text/html");
+
+        //var_dump($view);
+        $this->container->get('mailer')->send($message);
+    }
     public function createEntity($person)
     {
         $this->lastEntryId = $person->getId();
@@ -627,6 +645,9 @@ class LdapAdminService
         }
 
         ldap_unbind($ldapconn);
+        
+        $this->sendMailAboutNewUser($entry['name'], $entry['samaccountname']);
+        
       
         
         //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!

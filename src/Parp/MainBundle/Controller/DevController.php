@@ -1310,25 +1310,534 @@ class DevController extends Controller
     }
     
     /**
-     * @Route("/updateDyrektorow", name="updateDyrektorow")
+     * @Route("/updateDyrektorowZasobow", name="updateDyrektorowZasobow")
      * @Template()
      */
-    public function updateDyrektorowAction()
+    public function updateDyrektorowZasobowAction()
     {
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $deps = $em->getRepository("ParpMainBundle:Departament")->findByNowaStruktura(1);
+        $wyniki = [];
         foreach($deps as $d){
             $dyr = $ldap->getDyrektoraDepartamentu($d->getShortname());
             if($dyr){
-                $d->setDyrektor($dyr['samaccountname']);
-                $d->setDyrektorDN($dyr['distinguishedname']);
+                if($d->getDyrektor() != $dyr['samaccountname']){
+                    //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>zmiana dyr z ".$d->getDyrektor()." na ".$dyr['samaccountname']];
+                    $d->setDyrektor($dyr['samaccountname']);
+                    $d->setDyrektorDN($dyr['distinguishedname']);
+                }else{
+                    //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>bez zmian  dyr z ".$d->getDyrektor()." na ".$dyr['samaccountname']];
+                }
+                
+            }else{
+                //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>brak dyra"];
+                
             }
-        }
-        $em->flush();
+            $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByKomorkaOrgazniacyjna($d->getName());
+            foreach($zasoby as $z){
+                if($z->getWlascicielZasobu() != $dyr['samaccountname']){
+                    $wyniki[] = ['departament' => $d->getName(), 'zasob_id' => $z->getNazwa(), 
+                    'stary_wlasciciel' => $z->getWlascicielZasobu(),
+                    'nowy_wlasciciel' => $dyr['samaccountname'],
+                    'msg' => "zmiana  wlasciciela z ".$z->getWlascicielZasobu()." na ".$dyr['samaccountname']];  
+                    
+                    $z->setWlascicielZasobu($dyr['samaccountname']);
+                      
+                    //
+                }else{
+                    $wyniki[] = ['departament' => $d->getName(), 'zas_id' => $z->getNazwa(), 
+                    'stary_wlasciciel' => $z->getWlascicielZasobu(),
+                    'nowy_wlasciciel' => $dyr['samaccountname'],
+                    'msg' => "Bez zmian ".$z->getWlascicielZasobu()." na ".$dyr['samaccountname']]; 
+                    
+                }
+            }
+            
+        } 
+        //$em->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wyniki]);
         
     }
     
+    /**
+     * @Route("/updateZasobyDepartamanty", name="updateZasobyDepartamanty")
+     * @Template()
+     */
+    public function updateZasobyDepartamantyAction(){
+        $zamienBiura = [
+            4376 =>'Biuro Zarządzania Kadrami',
+            4377 =>'Biuro Zarządzania Kadrami',
+            4366 =>'Departament Usług Proinnowacyjnych',
+            4368 =>'Departament Usług Proinnowacyjnych',
+            4391 =>'Departament Usług Proinnowacyjnych',
+            4392 =>'Departament Usług Proinnowacyjnych',
+            4393 =>'Departament Usług Proinnowacyjnych',
+            4394 =>'Departament Usług Proinnowacyjnych',
+            4395 =>'Departament Usług Proinnowacyjnych',
+            4421 =>'Departament Usług Proinnowacyjnych',
+            4422 =>'Departament Usług Proinnowacyjnych',
+            4423 =>'Departament Usług Proinnowacyjnych',
+            4424 =>'Departament Usług Proinnowacyjnych',
+            4425 =>'Departament Usług Proinnowacyjnych',
+            4454 =>'Departament Usług Proinnowacyjnych',
+            4455 =>'Departament Usług Proinnowacyjnych',
+            4456 =>'Departament Usług Proinnowacyjnych',
+            4457 =>'Departament Usług Proinnowacyjnych',
+            4458 =>'Departament Usług Proinnowacyjnych',
+            4460 =>'Departament Usług Proinnowacyjnych',
+            4461 =>'Departament Usług Proinnowacyjnych',
+            4462 =>'Departament Usług Proinnowacyjnych',
+            4463 =>'Departament Usług Proinnowacyjnych',
+            4464 =>'Departament Usług Proinnowacyjnych',
+            4465 =>'Departament Usług Proinnowacyjnych',
+            4466 =>'Departament Usług Proinnowacyjnych',
+            4467 =>'Departament Usług Proinnowacyjnych',
+            4468 =>'Departament Usług Proinnowacyjnych',
+            4469 =>'Departament Usług Proinnowacyjnych',
+            4478 =>'Departament Usług Proinnowacyjnych',
+            3608 =>'Departament Usług Proinnowacyjnych',
+            3610 =>'Departament Usług Proinnowacyjnych',
+            3355 =>'Departament Usług Proinnowacyjnych',
+            3356 =>'Departament Usług Proinnowacyjnych',
+            3357 =>'Departament Usług Proinnowacyjnych',
+            3358 =>'Departament Usług Proinnowacyjnych',
+            3359 =>'Departament Usług Proinnowacyjnych',
+            3884 =>'Departament Usług Proinnowacyjnych',
+            3885 =>'Departament Usług Proinnowacyjnych',
+            3886 =>'Departament Usług Proinnowacyjnych',
+            3889 =>'Departament Usług Proinnowacyjnych',
+            3890 =>'Departament Usług Proinnowacyjnych',
+            3744 =>'Departament Usług Proinnowacyjnych',
+            3254 =>'Departament Usług Proinnowacyjnych',
+            3262 =>'Departament Usług Proinnowacyjnych',
+            3528 =>'Departament Usług Proinnowacyjnych',
+            3531 =>'Departament Usług Proinnowacyjnych',
+            4078 =>'Departament Usług Proinnowacyjnych',
+            4334 =>'Departament Usług Proinnowacyjnych',
+            4079 =>'Departament Usług Proinnowacyjnych',
+            4080 =>'Departament Usług Proinnowacyjnych',
+            4081 =>'Departament Usług Proinnowacyjnych',
+            4082 =>'Departament Usług Proinnowacyjnych',
+            4342 =>'Departament Usług Proinnowacyjnych',
+            3362 =>'Departament Usług Proinnowacyjnych',
+            3377 =>'Departament Usług Proinnowacyjnych',
+            3437 =>'Departament Usług Proinnowacyjnych',
+            3529 =>'Departament Usług Proinnowacyjnych',
+            3718 =>'Departament Usług Proinnowacyjnych',
+            3745 =>'Departament Usług Proinnowacyjnych',
+            3716 =>'Departament Usług Proinnowacyjnych',
+            4397 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4398 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4399 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4400 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4401 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4402 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4475 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4481 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4482 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4096 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4097 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4098 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4099 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3615 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3617 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3365 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3368 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3369 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3370 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4200 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4201 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4202 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4203 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3699 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3731 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3740 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3253 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4335 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4336 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4343 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4089 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4091 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4092 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4093 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4094 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4095 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3407 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3865 =>'???',
+            4369 =>'Biuro Administracji',
+            4370 =>'Biuro Administracji',
+            4412 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4413 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4431 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4432 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4111 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4117 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4118 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3626 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3383 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3909 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3910 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3911 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3913 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3914 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3915 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3711 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3279 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3306 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3307 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3308 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3309 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3570 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4137 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            4166 =>'Departament Wdrożeń Innowacji w Przedsiębiorstwach',
+            3614 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3616 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4221 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4222 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4224 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4225 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4226 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4227 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4228 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3484 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3485 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            3486 =>'Departament Rozwoju Kadr w Przedsiębiorstwach',
+            4378 =>'Departament Analiz i Strategii',
+            4103 =>'Departament Analiz i Strategii',
+            4105 =>'Departament Analiz i Strategii',
+            3618 =>'Departament Analiz i Strategii',
+            3620 =>'Departament Analiz i Strategii',
+            3897 =>'Departament Analiz i Strategii',
+            3898 =>'Departament Analiz i Strategii',
+            3903 =>'Departament Analiz i Strategii',
+            3904 =>'Departament Analiz i Strategii',
+            3460 =>'Departament Analiz i Strategii',
+            3461 =>'Departament Analiz i Strategii',
+            4386 =>'Departament Koordynacji Wdrażania Programów',
+            4420 =>'Departament Koordynacji Wdrażania Programów',
+            4443 =>'Departament Koordynacji Wdrażania Programów',
+            4490 =>'Departament Koordynacji Wdrażania Programów',
+            4494 =>'Departament Koordynacji Wdrażania Programów',
+            4056 =>'Departament Koordynacji Wdrażania Programów',
+            4059 =>'Departament Koordynacji Wdrażania Programów',
+            4367 =>'Departament Finansowo-Księgowy',
+            4480 =>'Departament Finansowo-Księgowy',
+            4484 =>'Departament Finansowo-Księgowy',
+            4388 =>'Departament Projektów Infrastrukturalnych',
+            4389 =>'Departament Projektów Infrastrukturalnych',
+            4390 =>'Departament Projektów Infrastrukturalnych',
+            3439 =>'Departament Projektów Infrastrukturalnych',
+            3440 =>'Departament Projektów Infrastrukturalnych',
+            3441 =>'Departament Projektów Infrastrukturalnych',
+            3442 =>'Departament Projektów Infrastrukturalnych',
+            3444 =>'Departament Projektów Infrastrukturalnych',
+            3717 =>'Departament Projektów Infrastrukturalnych',
+            3741 =>'Departament Projektów Infrastrukturalnych',
+            3742 =>'Departament Projektów Infrastrukturalnych',
+            4330 =>'Departament Projektów Infrastrukturalnych',
+            4381 =>'Departament Kontroli',
+            4382 =>'Departament Kontroli',
+            4383 =>'Departament Kontroli',
+            4384 =>'Departament Kontroli',
+            4385 =>'Departament Kontroli',
+            4418 =>'Departament Kontroli',
+            4426 =>'Departament Kontroli',
+            4427 =>'Departament Kontroli',
+            4428 =>'Departament Kontroli',
+            4450 =>'Departament Kontroli',
+            4472 =>'Departament Kontroli',
+            4479 =>'Departament Kontroli',
+            4053 =>'Departament Kontroli',
+            4135 =>'Departament Kontroli',
+            4172 =>'Departament Kontroli',
+            4403 =>'Departament Rozwoju Startapów',
+            4404 =>'Departament Rozwoju Startapów',
+            4493 =>'Departament Rozwoju Startapów',
+            4138 =>'Departament Rozwoju Startapów',
+            4140 =>'Departament Rozwoju Startapów',
+            4141 =>'Departament Rozwoju Startapów',
+            4142 =>'Departament Rozwoju Startapów',
+            4144 =>'Departament Rozwoju Startapów',
+            3634 =>'Departament Rozwoju Startapów',
+            3635 =>'Departament Rozwoju Startapów',
+            3636 =>'Departament Rozwoju Startapów',
+            3637 =>'Departament Rozwoju Startapów',
+            3638 =>'Departament Rozwoju Startapów',
+            3639 =>'Departament Rozwoju Startapów',
+            3640 =>'Departament Rozwoju Startapów',
+            3641 =>'Departament Rozwoju Startapów',
+            3643 =>'Departament Rozwoju Startapów',
+            3645 =>'Departament Rozwoju Startapów',
+            3399 =>'Departament Rozwoju Startapów',
+            3400 =>'Departament Rozwoju Startapów',
+            3403 =>'Departament Rozwoju Startapów',
+            3404 =>'Departament Rozwoju Startapów',
+            3405 =>'Departament Rozwoju Startapów',
+            3406 =>'Departament Rozwoju Startapów',
+            3934 =>'Departament Rozwoju Startapów',
+            3714 =>'Departament Rozwoju Startapów',
+            4232 =>'Departament Rozwoju Startapów',
+            4233 =>'Departament Rozwoju Startapów',
+            4236 =>'Departament Rozwoju Startapów',
+            4239 =>'Departament Rozwoju Startapów',
+            3746 =>'Departament Rozwoju Startapów',
+            3493 =>'Departament Rozwoju Startapów',
+            3522 =>'Departament Rozwoju Startapów',
+            3524 =>'Departament Rozwoju Startapów',
+            3274 =>'Departament Rozwoju Startapów',
+            4387 =>'Departament Promocji Gospodarczej',
+            4379 =>'Departament Komunikacji i Marketingu',
+            4380 =>'Departament Komunikacji i Marketingu',
+            4497 =>'Departament Komunikacji i Marketingu',
+            3330 =>'Departament Komunikacji i Marketingu',
+            3331 =>'Departament Komunikacji i Marketingu',
+            3332 =>'Departament Komunikacji i Marketingu',
+            3333 =>'Departament Komunikacji i Marketingu',
+            3337 =>'Departament Komunikacji i Marketingu',
+            3595 =>'Departament Komunikacji i Marketingu',
+            3341 =>'Departament Komunikacji i Marketingu',
+            3342 =>'Departament Komunikacji i Marketingu',
+            3598 =>'Departament Komunikacji i Marketingu',
+            3343 =>'Departament Komunikacji i Marketingu',
+            3599 =>'Departament Komunikacji i Marketingu',
+            3600 =>'Departament Komunikacji i Marketingu',
+            3345 =>'Departament Komunikacji i Marketingu',
+            3878 =>'Departament Komunikacji i Marketingu',
+            3879 =>'Departament Komunikacji i Marketingu',
+            3661 =>'Departament Komunikacji i Marketingu',
+            3662 =>'Departament Komunikacji i Marketingu',
+            4190 =>'Departament Komunikacji i Marketingu',
+            4191 =>'Departament Komunikacji i Marketingu',
+            4192 =>'Departament Komunikacji i Marketingu',
+            4193 =>'Departament Komunikacji i Marketingu',
+            4194 =>'Departament Komunikacji i Marketingu',
+            4195 =>'Departament Komunikacji i Marketingu',
+            4196 =>'Departament Komunikacji i Marketingu',
+            3686 =>'Departament Komunikacji i Marketingu',
+            3943 =>'Departament Komunikacji i Marketingu',
+            3703 =>'Departament Komunikacji i Marketingu',
+            3463 =>'Departament Komunikacji i Marketingu',
+            3465 =>'Departament Komunikacji i Marketingu',
+            3466 =>'Departament Komunikacji i Marketingu',
+            3468 =>'Departament Komunikacji i Marketingu',
+            3470 =>'Departament Komunikacji i Marketingu',
+            3726 =>'Departament Komunikacji i Marketingu',
+            3983 =>'Departament Komunikacji i Marketingu',
+            3984 =>'Departament Komunikacji i Marketingu',
+            3730 =>'Departament Komunikacji i Marketingu',
+            3986 =>'Departament Komunikacji i Marketingu',
+            3987 =>'Departament Komunikacji i Marketingu',
+            3988 =>'Departament Komunikacji i Marketingu',
+            3735 =>'Departament Komunikacji i Marketingu',
+            3737 =>'Departament Komunikacji i Marketingu',
+            3739 =>'Departament Komunikacji i Marketingu',
+            3252 =>'Departament Komunikacji i Marketingu',
+            3519 =>'Departament Komunikacji i Marketingu',
+            3520 =>'Departament Komunikacji i Marketingu',
+            3265 =>'Departament Komunikacji i Marketingu',
+            3266 =>'Departament Komunikacji i Marketingu',
+            3523 =>'Departament Komunikacji i Marketingu',
+            3268 =>'Departament Komunikacji i Marketingu',
+            3270 =>'Departament Komunikacji i Marketingu',
+            3271 =>'Departament Komunikacji i Marketingu',
+            3272 =>'Departament Komunikacji i Marketingu',
+            3273 =>'Departament Komunikacji i Marketingu',
+            3275 =>'Departament Komunikacji i Marketingu',
+            3287 =>'Departament Komunikacji i Marketingu',
+            4316 =>'Departament Komunikacji i Marketingu',
+            4317 =>'Departament Komunikacji i Marketingu',
+            4318 =>'Departament Komunikacji i Marketingu',
+            4064 =>'Departament Komunikacji i Marketingu',
+            4065 =>'Departament Komunikacji i Marketingu',
+            4321 =>'Departament Komunikacji i Marketingu',
+            4066 =>'Departament Komunikacji i Marketingu',
+            4322 =>'Departament Komunikacji i Marketingu',
+            4067 =>'Departament Komunikacji i Marketingu',
+            4068 =>'Departament Komunikacji i Marketingu',
+            4346 =>'Departament Komunikacji i Marketingu',
+            3323 =>'Departament Komunikacji i Marketingu',
+            3326 =>'Departament Komunikacji i Marketingu',
+            4371 =>'Biuro Prawne',
+            4372 =>'Biuro Prawne',
+            4489 =>'Biuro Prawne',
+            4280 =>'Biuro Prawne',
+            4373 =>'Biuro Prezesa',
+            3888 =>'Departament Usług Proinnowacyjnych',
+            4108 =>'Departament Analiz i Strategii',
+            4109 =>'Departament Analiz i Strategii',
+            3391 =>'Departament Usług Proinnowacyjnych',
+            3936 =>'Departament  Usług Rozwojowych',
+            4471 =>'Biuro Audytu Wewnętrznego',
+            4430 =>'Departament Analiz i Strategii',
+            4446 =>'Departament Analiz i Strategii',
+            3896 =>'Departament Analiz i Strategii',
+            3736 =>'Departament Analiz i Strategii',
+            4100 =>'Departament Analiz i Strategii',
+            4101 =>'Departament Analiz i Strategii',
+            4102 =>'Departament Analiz i Strategii',
+            4104 =>'Departament Analiz i Strategii',
+            4106 =>'Departament Analiz i Strategii',
+            4107 =>'Departament Analiz i Strategii',
+            3619 =>'Departament Analiz i Strategii',
+            3621 =>'Departament Analiz i Strategii',
+            3374 =>'Departament Analiz i Strategii',
+            3375 =>'Departament Analiz i Strategii',
+            3376 =>'Departament Analiz i Strategii',
+            3380 =>'Departament Analiz i Strategii',
+            3381 =>'Departament Analiz i Strategii',
+            3382 =>'Departament Analiz i Strategii',
+            3899 =>'Departament Analiz i Strategii',
+            3901 =>'Departament Analiz i Strategii',
+            3902 =>'Departament Analiz i Strategii',
+            4179 =>'Departament Analiz i Strategii',
+            4180 =>'Departament Analiz i Strategii',
+            4181 =>'Departament Analiz i Strategii',
+            4183 =>'Departament Analiz i Strategii',
+            3688 =>'Departament Analiz i Strategii',
+            3707 =>'Departament Analiz i Strategii',
+            3728 =>'Departament Analiz i Strategii',
+            3729 =>'Departament Analiz i Strategii',
+            3267 =>'Departament Analiz i Strategii',
+            3532 =>'Departament Analiz i Strategii',
+            3533 =>'Departament Analiz i Strategii',
+            4415 =>'Biuro Informatyki',
+            4449 =>'Biuro Informatyki',
+            4486 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4487 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4119 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4120 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4121 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4122 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4123 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4124 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4125 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4126 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4127 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4128 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4129 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3627 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3387 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3388 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3916 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4209 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4210 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4211 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3712 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3713 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3512 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3515 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4288 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4289 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4291 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4292 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4293 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4294 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4295 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            4296 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3396 =>'Departament Internacjonalizacji Przedsiębiorstw',
+            3708 =>'Departament  Usług Rozwojowych',
+            3453 =>'Departament  Usług Rozwojowych',
+            3709 =>'Departament  Usług Rozwojowych',
+            3459 =>'Departament  Usług Rozwojowych',
+            4406 =>'Departament  Usług Rozwojowych',
+            4407 =>'Departament  Usług Rozwojowych',
+            4408 =>'Departament  Usług Rozwojowych',
+            4409 =>'Departament  Usług Rozwojowych',
+            4410 =>'Departament  Usług Rozwojowych',
+            4411 =>'Departament  Usług Rozwojowych',
+            4434 =>'Departament  Usług Rozwojowych',
+            4435 =>'Departament  Usług Rozwojowych',
+            4436 =>'Departament  Usług Rozwojowych',
+            4437 =>'Departament  Usług Rozwojowych',
+            4438 =>'Departament  Usług Rozwojowych',
+            4439 =>'Departament  Usług Rozwojowych',
+            4440 =>'Departament  Usług Rozwojowych',
+            4441 =>'Departament  Usług Rozwojowych',
+            4451 =>'Departament  Usług Rozwojowych',
+            3363 =>'Departament  Usług Rozwojowych',
+            3451 =>'Departament  Usług Rozwojowych',
+            3698 =>'Departament  Usług Rozwojowych',
+            4145 =>'Departament  Usług Rozwojowych',
+            4146 =>'Departament  Usług Rozwojowych',
+            4147 =>'Departament  Usług Rozwojowych',
+            4148 =>'Departament  Usług Rozwojowych',
+            4149 =>'Departament  Usług Rozwojowych',
+            4150 =>'Departament  Usług Rozwojowych',
+            4151 =>'Departament  Usług Rozwojowych',
+            4152 =>'Departament  Usług Rozwojowych',
+            4153 =>'Departament  Usług Rozwojowych',
+            4154 =>'Departament  Usług Rozwojowych',
+            4155 =>'Departament  Usług Rozwojowych',
+            3646 =>'Departament  Usług Rozwojowych',
+            3647 =>'Departament  Usług Rozwojowych',
+            3410 =>'Departament  Usług Rozwojowych',
+            3417 =>'Departament  Usług Rozwojowych',
+            3421 =>'Departament  Usług Rozwojowych',
+            3422 =>'Departament  Usług Rozwojowych',
+            3424 =>'Departament  Usług Rozwojowych',
+            3425 =>'Departament  Usług Rozwojowych',
+            3426 =>'Departament  Usług Rozwojowych',
+            3938 =>'Departament  Usług Rozwojowych',
+            3949 =>'Departament  Usług Rozwojowych',
+            3950 =>'Departament  Usług Rozwojowych',
+            3720 =>'Departament  Usług Rozwojowych',
+            3721 =>'Departament  Usług Rozwojowych',
+            3722 =>'Departament  Usług Rozwojowych',
+            3752 =>'Departament  Usług Rozwojowych',
+            4374 =>'Biuro Zarządzania Jakością',
+            4375 =>'Biuro Zarządzania Jakością',
+            3278 =>'Departament  Usług Rozwojowych',
+        ];
+        
+        $em = $this->getDoctrine()->getManager();
+        $wynik = [];
+        foreach($zamienBiura as $id => $biuro){
+            $error = "";
+            $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+            
+            if($biuro == "???"){
+                $wynik[] = [
+                        'zasob' => $id,
+                        'biuro' => $biuro,    
+                        'error' => "deaktywowano"
+                    ];
+                $zasob->setPublished(0);
+            }else{
+            
+                $departament = $em->getRepository('ParpMainBundle:Departament')->findOneByName($biuro);
+                if($zasob == null && $departament == null){
+                    $error = "brak zasobu o id $id oraz depatramentu $biuro";
+                }
+                elseif($zasob == null){
+                    $error = "brak zasobu o id $id";
+                }elseif($departament == null){
+                    $error = "brak depatramentu $biuro";
+                }else{
+                    //OK
+                    if($zasob->getKomorkaOrgazniacyjna() != $departament->getName()){
+                        $error = "Zmiana biura z ".$zasob->getKomorkaOrgazniacyjna()." na $biuro ";
+                        $zasob->setBiuro($departament->getName());
+                        $zasob->setKomorkaOrgazniacyjna($departament->getName());
+                    }else{
+                        $error = "biuro bez zmian $id $biuro";
+                    }
+                }
+                
+                if($error != ""){
+                    $wynik[] = [
+                        'zasob' => $id,
+                        'biuro' => $biuro,    
+                        'error' => $error
+                    ];
+                }
+                
+            }
+            
+        }
+        //$em->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
+    }
     
     /**
      * @Route("/listLogs/{file}", name="listLogs", defaults={"file" : ""})
@@ -1499,7 +2008,8 @@ class DevController extends Controller
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
         
-        $ldapAdmin->ldap_modify($ldapconn, $user[0]['distinguishedname'], ['initials' => []]);
+        $sekcja = "Sekcja Rozwoju Oprogramowania";
+        $ldapAdmin->ldap_modify($ldapconn, $user[0]['distinguishedname'], ['initials' => "KJ", 'info' => $sekcja]);
         
     }
     
@@ -1653,14 +2163,75 @@ class DevController extends Controller
                     $departament->setDyrektor($u['samaccountname']);
                     $departament->setDyrektorDN($u['distinguishedname']);
                     $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByBiuro($departament->getName());
-                    die(count($zasoby).".".$departament->getName());
+                    //die(count($zasoby).".".$departament->getName());
                     
                 }
             }
         }
         if($zmian > 0){
-            //$em->flush();
+            $em->flush();
         }
-        var_dump($wyniki); die();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => [$wyniki]]);
+        //var_dump($wyniki); die();
     }
+    
+    
+    /**
+     * @Route("/uprawnieniaLsiAudyt", name="uprawnieniaLsiAudyt")
+     * @Template()
+     */
+    public function uprawnieniaLsiAudytAction(){
+        //generuje liste sqli z aktualnymi uprawnieniami do lsi
+        $em = $this->getDoctrine()->getManager();
+        $userZasoby = $em
+            ->getRepository('ParpMainBundle:UserZasoby')
+            ->createQueryBuilder('uz')
+            //->join('e.idRelatedEntity', 'r')
+            ->where('uz.zasobId = 4420')
+            ->andWhere('uz.aktywneOd <= :now and (uz.aktywneDo is null or uz.aktywneDo >= :now)')
+            ->setParameter('now', date("Y-m-d H:i:s"))            
+            ->getQuery()
+            ->getResult();
+        $sqls = [];
+        foreach($userZasoby as $uz){
+            $nSqls = $uz->getLsiSql();
+            $sqls = array_merge($sqls, $nSqls);
+        }    
+        //var_dump($sqls);
+        //die(count($userZasoby).".");
+        $msg = "\n\n-----------------------------------------\n\n".implode(";\n", $sqls);
+        $msg = nl2br($msg);
+        die($msg);
+        
+    }
+    
+    
+    /**
+     * @Route("/poprawAtrybut", name="poprawAtrybut")
+     * @Template()
+     */
+    public function poprawAtrybutAction(){
+        
+        
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        
+        $atrybut = "info";
+        $wartosci = ["Nd", "ND", "N/d", "n/d"];
+        $nowaWartosc = [];
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $wynik = [];
+        foreach($ADUsers as $u){
+            if(in_array(trim($u[$atrybut]), $wartosci)){
+                $wynik[] = ['samaccountname' => $u['samaccountname'], $atrybut => $u[$atrybut]];
+                //$ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], [$atrybut => $nowaWartosc]);
+                
+            }
+        }
+        //var_dump($wynik);
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
+    }
+    
 }    

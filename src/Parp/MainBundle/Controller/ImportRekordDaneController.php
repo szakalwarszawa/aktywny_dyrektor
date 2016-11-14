@@ -287,7 +287,7 @@ class ImportRekordDaneController extends Controller
                     
                     $login = $this->get('samaccountname_generator')->generateSamaccountname($dr->getImie(), $dr->getNazwisko());
                     $dr->setLogin($login);
-                    $this->sendMailAboutNewUser($dr->getNazwisko()." ".$dr->getImie(), $login);
+                    //$this->sendMailAboutNewUser($dr->getNazwisko()." ".$dr->getImie(), $login);
                 }
                 
                 $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
@@ -311,10 +311,10 @@ class ImportRekordDaneController extends Controller
                 //var_dump($dr->getUmowaDo());
                 //var_dump($d2);
                 if(
-                ($d2 != null) && (
+                (
                 ($dr->getUmowaDo() == null && $d2 != null) || 
                 ($dr->getUmowaDo() != null && $d2 == null) || 
-                ($dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
+                ($dr->getUmowaDo() != null && $d2 != null && $dr->getUmowaDo()->format("Y-m-d") != $d2->format("Y-m-d")))){
                     $dr->setUmowaDo($d2);    
                 }
                 
@@ -394,7 +394,11 @@ class ImportRekordDaneController extends Controller
             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko(), $poprzednieDane->getImie(), $poprzednieDane->getNazwisko()));                                
         }
         if($nowy || $dr->getUmowaDo())
-            $entry->setAccountExpires($dr->getUmowaDo());
+            if($dr->getUmowaDo()){
+                $entry->setAccountExpires($dr->getUmowaDo());
+            }else{
+                $entry->setAccountExpires(new \Datetime("2000-01-01"));//musimy wstawic nie null zeby potem wypychanie do AD wiedzialo ze chcemy wyczyscic to pole
+            }
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
         
         if($department == null){
@@ -447,6 +451,25 @@ class ImportRekordDaneController extends Controller
     /**
      * Lists all Klaster entities.
      *
+     * @Route("/sql", name="importfirebird_sql", defaults={})
+     * @Method("GET")
+     */
+    public function showSqlAction()
+    {
+        //die($this->parseNazwiskoValue("JAKACKI-TEST"));
+        $sciecha = "";
+        
+        $this->dataGraniczna = date("Y-m-d");
+        //$this->dataGraniczna = '2016-11-01';
+        $sql = $this->getSqlDoImportu();
+        $miesiac = 1;
+        $rok = 2012;
+        die($sql);
+        
+    }
+    /**
+     * Lists all Klaster entities.
+     *
      * @Route("/", name="importfirebird_index", defaults={})
      * @Method("GET")
      */
@@ -456,7 +479,7 @@ class ImportRekordDaneController extends Controller
         $sciecha = "";
         
         $this->dataGraniczna = date("Y-m-d");
-        $this->dataGraniczna = '2016-11-01';
+        //$this->dataGraniczna = '2016-11-01';
         $sql = $this->getSqlDoImportu();
         $miesiac = 1;
         $rok = 2012;
@@ -789,28 +812,36 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $poprzednieDane = clone $dr;
         if($dr->getNewUnproccessed() > 0){
             $changeSet = [];
+            $nowy = false;
             if($samaccountname != "nowy"){
+                $nowy = false;
                 if($dr->getNewUnproccessed() == 2){
                     $samaccountname = $dr->getLogin();    
                 }
                 $dr->setLogin($samaccountname);
                 $aduser = $ldap->getUserFromAD($samaccountname, null, null, "wszyscyWszyscy");
-                if($aduser[0]['name'] != $dr->getNazwisko()." ".$dr->getImie()){
-                    $changeSet['imie'] = 1;
-                    $changeSet['nazwisko'] = 1;
-                }
-                if($aduser[0]['department'] != $dr->getDepartament()){
-                    $changeSet['department'] = 1;
-                }
-                if($aduser[0]['title'] != $dr->getStanowisko()){
-                    $changeSet['stanowisko'] = 1;
+                if(count($aduser) == 0){
+                    $nowy = true;
+                    $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
+                }else{
+                    if($aduser[0]['name'] != $dr->getNazwisko()." ".$dr->getImie()){
+                        $changeSet['imie'] = 1;
+                        $changeSet['nazwisko'] = 1;
+                    }
+                    if($aduser[0]['department'] != $dr->getDepartament()){
+                        $changeSet['department'] = 1;
+                    }
+                    if($aduser[0]['title'] != $dr->getStanowisko()){
+                        $changeSet['stanowisko'] = 1;
+                    }
                 }
             }else{
+                $nowy = true;
                 //nowy user                
                 $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
             }
-            $entry = $this->utworzEntry($em, $dr, $changeSet, $samaccountname == "nowy", $poprzednieDane);
-            if($dr->getNewUnproccessed() == 2){
+            $entry = $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
+            if($dr->getNewUnproccessed() == 2 && !$nowy){
                 //trzeba odebrac stare
                 $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($aduser[0]['department']);
                 $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($aduser[0]['division']);
@@ -831,7 +862,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $entry->setInfo($dane['form']['info']);
             }
             if($dane['form']['manager'] != ""){
-                $manager = $ldap->getUserFromAD($samaccountname);
+                $manager = $ldap->getUserFromAD($dane['form']['manager']);
                 $entry->setManager($manager[0]['name']);
             }
             $dr->setNewUnproccessed(0);
@@ -841,7 +872,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     }
     
     public function sendMailAboutNewUser($name, $samaccountname){
-        $samaccountname = "test_test_wcale_nie_utworzony";
         $mails = ["kamil_jakacki@parp.gov.pl", "marcin_lipinski@parp.gov.pl"];
         $view = "Dnia ".date("Y-m-d")." został utworzony nowy użytkownik '".$name."' o loginie '".$samaccountname."', utwórz mu pocztę pliz :)";
         $message = \Swift_Message::newInstance()

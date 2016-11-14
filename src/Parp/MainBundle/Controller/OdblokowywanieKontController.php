@@ -52,7 +52,12 @@ class OdblokowywanieKontController extends Controller
         if(count($ADUsers) == 0){
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }    
-        $grid = $defaultController->getUserGrid($this->get('grid'), $ADUsers);        
+        //$grid = $defaultController->getUserGrid($this->get('grid'), $ADUsers, 'zablokowane');        
+        $grid = $this->forward('ParpMainBundle:Default:getUserGrid', array(
+            'grid'  => $this->get('grid'),
+            'ADUsers' => $ADUsers,
+            'ktorzy' => 'zablokowane',
+        ));
 
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');

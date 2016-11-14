@@ -91,8 +91,8 @@
                 <td>{{obj.departament.name}}</td>
                 <td>{{obj.stanowisko}}</td>
                 <td>{{obj.umowa}}</td>
-                <td>{{obj.umowaOd|date("Y-m-d")}}</td>
-                <td>{{obj.umowaDo|date("Y-m-d")}}</td>
+                <td>{{obj.umowaOd ? obj.umowaOd|date("Y-m-d") : ""}}</td>
+                <td>{{obj.umowaDo ? obj.umowaDo|date("Y-m-d") : ""}}</td>
             </tr>
             <tr>
                 <td colspan="8">

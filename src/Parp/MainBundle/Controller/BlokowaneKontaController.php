@@ -23,6 +23,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Parp\MainBundle\Exception\SecurityTestException;
+use Parp\MainBundle\Entity\Entry;
 
 /**
  * BlokowaneKontaController .
@@ -47,21 +48,21 @@ class BlokowaneKontaController extends Controller
         }
         //echo "<pre>"; print_r($ADUsers); die();
         $ctrl = new DefaultController();
-        $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers);        
+        $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());        
 
-        if($ktorzy == "zablokowane"){
+        //if($ktorzy == "zablokowane"){
             // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock');
-            $rowAction2->setColumn('akcje');
-            $rowAction2->setRouteParameters(
+            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+            $rowAction->setColumn('akcje');
+            $rowAction->setRouteParameters(
                     array('samaccountname', 'ktorzy' => $ktorzy)
             );
-            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+            $rowAction->addAttribute('class', 'btn btn-success btn-xs');
     
-            $grid->addRowAction($rowAction2);
-        }
-            
-        
+            $grid->addRowAction($rowAction);
+        //}
+        $grid->isReadyForRedirect();
+        //var_dump($rowAction2);
         
         //print_r($users);
         //die();
@@ -72,10 +73,10 @@ class BlokowaneKontaController extends Controller
     /**
      * Lists all zablokowane konta entities.
      *
-     * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock")
+     * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock_user")
      * @Template()
      */
-    public function unblockAction($ktorzy, $samaccountname)
+    public function unblockAction(Request $request, $ktorzy, $samaccountname)
     {
         
         $ldap = $this->get('ldap_service');
@@ -83,6 +84,19 @@ class BlokowaneKontaController extends Controller
         $daneRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:DaneRekord")->findOneByLogin($samaccountname);
         $ctrl = new DefaultController();
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
+        $form->handleRequest($request);
+        if ($request->getMethod() == "POST") {
+            $data = $request->request->get('form'); 
+            $ctrl = new DefaultController();   
+            
+            $entry = new Entry();
+            $entry->setSamaccountname($samaccountname);
+            $ctrl->parseUserFormData($data, $entry);
+            //dodac flage ze odblokowanie
+            //dodac metode w ldapAdmin ktora przeniesie z odblokowanych
+            var_dump($entry); die();
+        }
+        
         $dane = [
             'samaccountname' => $samaccountname,
             'daneRekord' => $daneRekord,
