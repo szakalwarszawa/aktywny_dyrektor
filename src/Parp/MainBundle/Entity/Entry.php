@@ -253,6 +253,15 @@ class Entry
      */
     private $createdBy;
     
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="activateDeactivated", type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $activateDeactivated = false;
+    
     /**
      * Get id
      *
@@ -844,5 +853,29 @@ class Entry
     public function getCreatedBy()
     {
         return $this->createdBy;
+    }
+
+    /**
+     * Set activateDeactivated
+     *
+     * @param boolean $activateDeactivated
+     *
+     * @return Entry
+     */
+    public function setActivateDeactivated($activateDeactivated)
+    {
+        $this->activateDeactivated = $activateDeactivated;
+
+        return $this;
+    }
+
+    /**
+     * Get activateDeactivated
+     *
+     * @return boolean
+     */
+    public function getActivateDeactivated()
+    {
+        return $this->activateDeactivated;
     }
 }

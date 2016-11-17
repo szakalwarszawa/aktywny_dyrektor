@@ -128,7 +128,7 @@ class Departament
      * @ORM\Column(name="nowaStruktura", type="boolean", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $nowaStruktura;
+    private $nowaStruktura = 1;
     
     
     
@@ -162,7 +162,7 @@ class Departament
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $viceDyrektor;
@@ -171,7 +171,7 @@ class Departament
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $viceDyrektorDN;
@@ -359,6 +359,7 @@ class Departament
      */
     public function __construct()
     {
+        $this->nowaStruktura = 1;
         $this->sections = new \Doctrine\Common\Collections\ArrayCollection();
     }
 

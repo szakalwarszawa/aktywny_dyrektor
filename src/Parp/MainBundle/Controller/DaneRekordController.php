@@ -243,7 +243,7 @@ class DaneRekordController extends Controller
     /**
      * Deletes a DaneRekord entity.
      *
-     * @Route("/{id}", name="danerekord_delete")
+     * @Route("/delete/{id}", name="danerekord_delete")
      * @Method("DELETE")
      */
     public function deleteAction(Request $request, $id)

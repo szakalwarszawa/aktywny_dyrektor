@@ -25,7 +25,7 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
                 ->add('shortname', null, array(
                     'required' => false,
                     'read_only' => false,
@@ -55,6 +55,36 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control tagAjaxInput',
+            )))
+            ->add('skroconaNazwaRekord', null, array(
+                'required' => true,
+                'read_only' => false,
+                'label' => 'Skrócona nazwa w rekord',
+                'label_attr' => array(
+                    'class' => 'col-sm-2 control-label',
+                ),
+                'attr' => array(
+                    'class' => 'form-control',
+            )))
+            ->add('dyrektor', null, array(
+                'required' => true,
+                'read_only' => false,
+                'label' => 'Dyrektor',
+                'label_attr' => array(
+                    'class' => 'col-sm-2 control-label',
+                ),
+                'attr' => array(
+                    'class' => 'form-control',
+            )))
+            ->add('dyrektorDN', null, array(
+                'required' => true,
+                'read_only' => false,
+                'label' => 'Dyrektor DN',
+                'label_attr' => array(
+                    'class' => 'col-sm-2 control-label',
+                ),
+                'attr' => array(
+                    'class' => 'form-control',
             )))
 /*
             ->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',

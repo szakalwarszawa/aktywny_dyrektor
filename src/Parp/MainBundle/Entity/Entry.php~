@@ -253,6 +253,15 @@ class Entry
      */
     private $createdBy;
     
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="activateDeactivated", type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $activateDeactivated = false;
+    
     /**
      * Get id
      *
@@ -470,8 +479,9 @@ class Entry
         return $this->fromWhen;
     }
 
-    public function __construct()
+    public function __construct($samaccountname = "undefined")
     {
+        $this->createdBy = $samaccountname;
         $this->isImplemented = false;
     }
 
@@ -669,6 +679,13 @@ class Entry
             $this->setMemberOf(implode(",", $gr));
         }
     }
+    public function addGrupyAD($grupy, $znak){
+        $grupyJuzSa = explode(",", $this->getMemberOf());
+        foreach($grupy as $g){
+            $grupyJuzSa[] = $znak.$g;
+        }
+        $this->setMemberOf(implode(",", $grupyJuzSa));
+    }
 
     /**
      * Set wniosek
@@ -812,5 +829,29 @@ class Entry
     public function getDaneRekord()
     {
         return $this->daneRekord;
+    }
+
+    /**
+     * Set createdBy
+     *
+     * @param string $createdBy
+     *
+     * @return Entry
+     */
+    public function setCreatedBy($createdBy)
+    {
+        $this->createdBy = $createdBy;
+
+        return $this;
+    }
+
+    /**
+     * Get createdBy
+     *
+     * @return string
+     */
+    public function getCreatedBy()
+    {
+        return $this->createdBy;
     }
 }

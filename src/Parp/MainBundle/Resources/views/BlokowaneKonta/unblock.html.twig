@@ -30,7 +30,7 @@
                         <tr>
                             <th>Biuro / Departament</th>
                             <td>{{user  ? user.department ~ "(" ~ user.description ~ ")" : "BRAK WPISU W AD"}}</td>
-                            <td>{{daneRekord  ? daneRekord.departament : "BRAK WPISU W REKORD"}}</td>
+                            <td>{{daneRekord  ? departamentRekord : "BRAK WPISU W REKORD"}}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.department) }}</div>

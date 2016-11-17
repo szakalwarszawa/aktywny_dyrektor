@@ -79,6 +79,7 @@ class LdapCommand extends ContainerAwareCommand
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
             $ldap = $this->getContainer()->get('ldap_admin_service');
+            $ldap_client = $this->getContainer()->get('ldap_service');
             $ldap->output = $output;
             
             $time = date("Y-m-d_H-i-s");
@@ -105,10 +106,20 @@ class LdapCommand extends ContainerAwareCommand
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
                     
-                    $userNow = $ldap->getUserFromAD($zmiana->getSamaccountname());
+                    $userNowData = $ldap->getUserFromAllAD($zmiana->getSamaccountname());
+                    $userNow = $userNowData['user'];
+                    $ktorzy = $userNowData['ktorzy'];
+                    
+                    
                     if ($userNow) {
                         $liczbaZmian = 0;
-                        $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                        if($ktorzy == "aktywne"){
+                            $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                        }elseif($ktorzy == "zablokowane"){
+                            $output->writeln('<info>Znalazłem następujące zmiany dla ZABLOKOWANEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                        }elseif($ktorzy == "nieaktywne"){
+                            $output->writeln('<info>Znalazłem następujące zmiany dla NIEAKTYWNEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');                        
+                        }
                         
                         if ($zmiana->getAccountExpires()) {
                             $liczbaZmian++;
@@ -123,12 +134,20 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie biura: ' . $zmiana->getDepartment());
                             }
                         }
-                        if ($zmiana->getInfo()) {
+                        if ($zmiana->getInfo() != null) {
                             $liczbaZmian++;
                             if ($userNow[0]['info']) {
                                 $output->writeln('  - Zmiana sekcji: ' . $userNow[0]['info'] . ' -> ' . $zmiana->getInfo());
                             } else {
-                                $output->writeln('  - Nadanie sekcji: ' . $zmiana->getInfo());
+                                $output->writeln('  - Nadanie sekcji: ' . ($zmiana->getInfo() == null ? "n/d" : ""));
+                            }
+                        }
+                        if ($zmiana->getDivision() != null) {
+                            $liczbaZmian++;
+                            if ($userNow[0]['division']) {
+                                $output->writeln('  - Zmiana skrótu sekcji: ' . $userNow[0]['division'] . ' -> ' . $zmiana->getDivision());
+                            } else {
+                                $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d" : ""));
                             }
                         }
                         if ($zmiana->getCn()) {
@@ -227,7 +246,7 @@ class LdapCommand extends ContainerAwareCommand
                                 //if($liczbaZmian == 0) echo ("zero zian ");
                             }
                         }else{
-                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getCn().':</error>', false);
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getSamaccountname().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
                         }
     

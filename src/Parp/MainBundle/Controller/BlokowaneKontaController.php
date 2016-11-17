@@ -35,7 +35,7 @@ class BlokowaneKontaController extends Controller
     /**
      * Lists all zablokowane konta entities.
      *
-     * @Route("/lista/{ktorzy}", name="lista", defaults={"ktorzy" : "zablokowane"})
+     * @Route("/lista/{ktorzy}", name="lista_oblokowania", defaults={"ktorzy" : "zablokowane"})
      * @Template()
      */
     public function listaAction(Request $request, $ktorzy = "zablokowane" /* nieobecni */)
@@ -78,12 +78,16 @@ class BlokowaneKontaController extends Controller
      */
     public function unblockAction(Request $request, $ktorzy, $samaccountname)
     {
-        
+        $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, $ktorzy);
-        $daneRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:DaneRekord")->findOneByLogin($samaccountname);
+        $daneRekord = $em->getRepository("ParpMainBundle:DaneRekord")->findOneByLogin($samaccountname);
         $ctrl = new DefaultController();
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
+        $departamentRekord = "";
+        if($daneRekord){
+            $departamentRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:Departament")->findOneByNameInRekord($daneRekord->getDepartament());
+        }
         $form->handleRequest($request);
         if ($request->getMethod() == "POST") {
             $data = $request->request->get('form'); 
@@ -94,14 +98,26 @@ class BlokowaneKontaController extends Controller
             $ctrl->parseUserFormData($data, $entry);
             //dodac flage ze odblokowanie
             //dodac metode w ldapAdmin ktora przeniesie z odblokowanych
-            var_dump($entry); die();
+            $entry->setActivateDeactivated(true);
+            $entry->setFromWhen(new \Datetime());
+            
+            //$aduser = $this->get('ldap_service')->getUserFromAD(null, "", null, $ktorzy);
+            
+            $cn =  $daneRekord->getNazwisko(). " " . $daneRekord->getImie();
+            $entry->setCn($cn);
+            $entry->setDistinguishedname($ADUser[0]['distinguishedname']);
+            
+            $entry->setCreatedBy($this->getUser()->getUsername());
+            $em->persist($entry);
+            $em->flush();
         }
         
         $dane = [
             'samaccountname' => $samaccountname,
             'daneRekord' => $daneRekord,
             'user' => (count($ADUser) > 0 ? $ADUser[0] : null),
-            'form' => $form->createView()
+            'form' => $form->createView(),
+            'departamentRekord' => $departamentRekord
         ];
         //print_r($dane); die();
         

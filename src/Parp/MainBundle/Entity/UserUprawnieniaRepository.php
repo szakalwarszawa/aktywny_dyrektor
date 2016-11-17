@@ -24,8 +24,8 @@ class UserUprawnieniaRepository extends EntityRepository
                  AND uu.samaccountname = :samaccountname
                 '
                 )->setParameter('samaccountname', $samaccountname);
-
-        return $query->getOneOrNullResult();
+        $res = $query->getResult();
+        return count($res) > 0 ? $res[0] : null; //$query->getOneOrNullResult();
     }
 
     public function findDepartament($samaccountname)
