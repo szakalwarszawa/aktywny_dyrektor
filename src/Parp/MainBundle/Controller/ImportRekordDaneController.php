@@ -429,8 +429,16 @@ class ImportRekordDaneController extends Controller
             
         }
         //$entry->setDivision();//TODO:
-        if($nowy || isset($changeSet['stanowisko']))
+        if($nowy || isset($changeSet['stanowisko'])){
+            $mapa = [
+                'rzecznik beneficjenta parp, dyrektor' => 'Rzecznik Beneficjenta PARP'
+            ];
+            $stanowisko = $dr->getStanowisko();
+            if(isset($mapa[$dr->getStanowisko()])){
+                $stanowisko = $mapa[$dr->getStanowisko()];
+            }
             $entry->setTitle($dr->getStanowisko());
+        }
         $entry->setFromWhen(new \Datetime());
         if($nowy){
             $in = mb_substr($dr->getImie(), 0, 1, "UTF-8").mb_substr($dr->getNazwisko(), 0, 1, "UTF-8");

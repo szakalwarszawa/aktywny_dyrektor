@@ -114,6 +114,14 @@
                 </div>
             </div>
         </div>
+        
+        <div class="form-group">
+            {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
+            <div class='col-sm-8'>
+                {{ form_widget(form.ustawUprawnieniaPoczatkowe) }}
+            </div>
+        </div>
+        
         {% if form.zapisz is defined %}
         <div class="form-group">
             <div class="col-sm-6"><input type="button" class="btn btn-danger btncancel" disabled onclick="cancelForm()" value="Cofnij zmiany"/></div>

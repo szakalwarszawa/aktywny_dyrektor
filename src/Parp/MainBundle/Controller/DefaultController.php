@@ -474,13 +474,14 @@ class DefaultController extends Controller
         $form = $this->createUserEditForm($this, $defaultData, false, false);
 
 
-
         $form->handleRequest($request);
 
-        if ($form->isValid()) {
+        $ustawUprawnieniaPoczatkowe = $request->isMethod('POST') && $form->get('ustawUprawnieniaPoczatkowe')->getData();
+        //die(" ".$ustawUprawnieniaPoczatkowe);
+        if ($form->isValid() || $ustawUprawnieniaPoczatkowe) {
             $ndata = $form->getData();
             if($kadry1 || $kadry2){
-                return $this->parseUserKadry($samaccountname, $ndata, $previousData);
+                return $this->parseUserKadry($samaccountname, $ndata, $previousData, $ustawUprawnieniaPoczatkowe);
             }elseif(!$admin){
                 die("Nie masz uprawnien by edytowac uzytkownikow!!!");
             }
@@ -498,6 +499,8 @@ class DefaultController extends Controller
             //die($newSection);
             $newrights = $ndata['initialrights'];
             $odata = $previousData;
+            
+            
             $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
 //            var_dump($ndata, $odata, $roznicauprawnien); die();
             unset($ndata['initialrights']);
@@ -521,8 +524,8 @@ class DefaultController extends Controller
             unset($ndata['roles']);
             
             $rolesDiff = $roles1 != $roles2;
-
-            if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $rolesDiff) {
+            
+            if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $rolesDiff || $ustawUprawnieniaPoczatkowe) {
                 
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
@@ -542,7 +545,7 @@ class DefaultController extends Controller
                     $this->get('session')->getFlashBag()->set('warning', "Role zostały zmienione");
                     
                 }
-                if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien){
+                if(0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe){
                     //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
                     
                     
@@ -556,29 +559,9 @@ class DefaultController extends Controller
                         $entry->setInitialrights($value);
                     }
                     $this->parseUserFormData($newData, $entry);
-                    if($roznicauprawnien || isset($newData['department']) || isset($newData['info'])){
+                    if($roznicauprawnien || isset($newData['department']) || isset($newData['info']) || $ustawUprawnieniaPoczatkowe){
                         //print_r($newrights); die();
-                        $dep = $ADUser[0]['description'];
-                        $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($ADUser[0]['division']);
-                        $sec = $section ? $section->getShortname() : "";
-                        //odbiera stare
-                        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
-                        $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
-                        if(isset($newData['department'])){
-                            $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($newData['department']);
-                            $dep = $department->getShortname();
-                        }
-                        if(isset($newData['info'])){
-                            $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($newData['info']);
-                            $sec = $section->getShortname();
-                        }
-                        if(in_array("UPP", $newrights) || isset($newData['department']) || isset($newData['info'])){
-                        
-                            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
-                            $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
-                            //var_dump($entry); die();
-                            //die();
-                        }
+                        $this->nadajUprawnieniaPocztakowe($ADUser, $entry, $newData);
                     }
                     if (!$entry->getFromWhen()){
                         $entry->setFromWhen(new \DateTime('today'));
@@ -590,6 +573,14 @@ class DefaultController extends Controller
 
                 return $this->redirect($this->generateUrl('main'));
             }
+        }
+        elseif($request->isMethod('POST')){
+
+            var_export($this->getErrorMessages($form));
+            //var_dump((string) $form->getErrors(true, true));
+            var_export((string) $form->getErrors(true));
+            die("invalid form ".$form->getErrorsAsString());
+
         }
         $uprawnienia = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
         $historyEntries = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
@@ -629,7 +620,51 @@ class DefaultController extends Controller
         //echo "<pre>"; print_r($tplData); die();
         return $this->render($tmpl, $tplData);
     }
-    protected function parseUserKadry($samaccountname, $ndata, $odata){
+    private function nadajUprawnieniaPocztakowe($ADUser, $entry, $newData){
+        
+        
+        $dep = $ADUser[0]['description'];
+        $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByShortname(trim($ADUser[0]['division']));
+        $sec = $section ? $section->getShortname() : "";
+        //odbiera stare
+        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+        $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
+        if(isset($newData['department'])){
+            $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($newData['department']);
+            $dep = $department->getShortname();
+        }
+        if(isset($newData['info'])){
+            $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByName($newData['info']);
+            $sec = $section->getShortname();
+        }
+        //if(in_array("UPP", $newrights) || isset($newData['department']) || isset($newData['info'])){
+        
+            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+            $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
+            //var_dump($entry); die();
+            //die();
+        //}
+    }
+    private function getErrorMessages(\Symfony\Component\Form\Form $form) {
+        $errors = array();
+    
+        foreach ($form->getErrors() as $key => $error) {
+            if ($form->isRoot()) {
+                $errors['#'][] = $error->getMessage();
+            } else {
+                $errors[] = $error->getMessage();
+            }
+        }
+    
+        foreach ($form->all() as $child) {
+            if (!$child->isValid()) {
+                $errors[$child->getName()] = $this->getErrorMessages($child);
+            }
+        }
+    
+        return $errors;
+    }
+    protected function parseUserKadry($samaccountname, $ndata, $odata, $ustawUprawnieniaPoczatkowe){
         
         $ldap = $this->get('ldap_service');
         $diff = $this->array_diff($ndata, $odata);
@@ -671,6 +706,10 @@ class DefaultController extends Controller
                 $entry->setIsDisabled($ndata['isDisabled']);
                 $entry->setDisableDescription($ndata['disableDescription']);                
             }
+            if($ustawUprawnieniaPoczatkowe){
+                $this->nadajUprawnieniaPocztakowe($aduser, $entry, $ndata);
+            }
+            
             $this->getDoctrine()->getManager()->persist($entry);
             $this->getDoctrine()->getManager()->flush();
             //powod wylaczenia
@@ -969,6 +1008,16 @@ class DefaultController extends Controller
                     'attr' => array(                        
                         'disabled' => (!$admin && !$kadry1 && !$kadry2)
                     )
+                ))
+                ->add('ustawUprawnieniaPoczatkowe', 'checkbox', array(
+                    'label' => 'Ustaw Uprawnienia początkowe',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control2',
+                    ),
+                    'data' => true,
                 ));
                                
                 if(!(!$admin && !$kadry1 && !$kadry2)){

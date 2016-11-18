@@ -1967,10 +1967,10 @@ class DevController extends Controller
         $data = [];
         foreach($us as $u){
             $k = $u[$attr].($attr2 == "" ? "" : $u[$attr2]);
-            $ret[$k]['value'] = $u[$attr];
+            $ret[$k][$attr] = $u[$attr];
             if($attr2 != ""){
                 
-                $ret[$k]['value2'] = $u[$attr2];
+                $ret[$k][$attr2] = $u[$attr2];
             }
             $ret[$k]['users'][] = $u['samaccountname'];
         }

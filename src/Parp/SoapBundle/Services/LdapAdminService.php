@@ -357,6 +357,11 @@ class LdapAdminService
                 $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
                 $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
                 $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+                
+                //pobieramy ponownie usera bo musimy mu zdjac grupy
+                $userNowData = $this->getUserFromAllAD($person->getSamaccountname());
+                $userAD = $userNowData['user'];
+                
             }
             //jesli zmiana departamnentu dodajemy nowe grupy AD
             if(!$department){
@@ -483,7 +488,7 @@ class LdapAdminService
     function getGrupa($grupa){
         return $this->adldap->group()->find($grupa);
     }
-    function addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn){
+    function addRemoveMemberOf($person, &$userAD, $dn, $userdn, $ldapconn){
         if($person->getMemberOf() != ""){
             $grupy = explode(",", $person->getMemberOf());
             foreach($grupy as $grupa){
@@ -507,16 +512,35 @@ class LdapAdminService
                         $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
                         //var_dump($g, $dn, $addtogroup); die();
                         //var_dump($g, $userAD[0]['memberOf']); //die();
+                        $akcja = true;
                         if($znak == "+" && !in_array($g, $userAD[0]['memberOf'])){
-                            $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));
+                            $this->ldap_mod_add($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));                            
                         }elseif($znak == "-" && in_array($g, $userAD[0]['memberOf'])){        
                             $this->ldap_mod_del($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));
                         }elseif($znak == "-"){
                             $this->output->writeln('<error>Nie usunięto użytkownika z grupy '.$g.' bo w niej nie był!</error>');
+                            $akcja = true;
                         }elseif($znak == "+"){
                             $this->output->writeln('<error>Nie dodano użytkownika do grupy '.$g.' bo w niej już jest!</error>');
+                            $akcja = true;
                         }else{
-                            //die('a');
+                            $akcja = true;
+                        }
+                        if($akcja){
+                            $ldapstatus = $this->ldap_error($ldapconn);
+                            //echo "<br>ldapstatus $ldapstatus";
+                            if($ldapstatus == 'Success'){
+                                if($znak == "+"){
+                                    //dodac do memberOf
+                                    //echo "<br>Dodaje memberOf $g";
+                                    $userAD[0]['memberOf'][] = $g;
+                                }else{
+                                    //zdjac z memberOf
+                                    //echo "<br>Zjemuje memberOf $g";
+                                    $userAD[0]['memberOf'] = array_diff($userAD[0]['memberOf'], array($g));
+                                }
+                                
+                            }
                         }
                     }
                     
@@ -524,6 +548,7 @@ class LdapAdminService
                 //return ;
             }
         }
+        //die('a');
     }
     function pwd_encryption( $newPassword ) {
     
