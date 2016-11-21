@@ -437,9 +437,18 @@ class WniosekUtworzenieZasobuController extends Controller
         $z2 = array();
         foreach($metadata->getFieldNames() as $fm){
             $getter = "get".ucfirst($fm);
-            $z1[$fm] = $entity->getZasob()->{$getter}();
-            $z2[$fm] = $entity->getZmienianyZasob()->{$getter}();
+            $val1 = $entity->getZasob()->{$getter}();
+            $val2 = $entity->getZmienianyZasob()->{$getter}();
+            if(\is_a($val1, "Datetime")){
+                $val1 = $val1->format("Y-m-d");
+            }
+            if(\is_a($val2, "Datetime")){
+                $val2 = $val2->format("Y-m-d");
+            }
+            $z1[$fm] = $val1;
+            $z2[$fm] = $val2;
         }
+        
         $delta = array_diff($z1, $z2);
         
         

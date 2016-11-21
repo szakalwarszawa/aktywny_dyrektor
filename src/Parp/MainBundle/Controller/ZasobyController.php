@@ -86,17 +86,20 @@ class ZasobyController extends Controller
     
     protected function sprawdzDostep($zasob){
         
-        $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
-        
-        
-        $czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
-        
-        
+        if($zasob){
+            $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
+            
+            
+            $czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
+            $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
+                !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
+                !$czyJestWlascicielemLubPowiernikiem;   
+        }else{
+            $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
+        }
         
         if(
-            !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
-            !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
-            !$czyJestWlascicielemLubPowiernikiem
+            $niemoze
         ){
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
             throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            

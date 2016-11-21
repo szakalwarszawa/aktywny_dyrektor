@@ -944,7 +944,7 @@ class LdapService
         return $ou;
         
     }
-    private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji", "kierownik", "p.o. kierownika", "koordynator projektu", "główny księgowy, dyrektor"];
+    private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji", "kierownik", "p.o. kierownika", "koordynator projektu", "główny księgowy, dyrektor", "główny księgowy", "rzecznik beneficjenta parp, dyrektor", "rzecznik beneficjenta parp"];
         
     public function getPrzelozeni(){
         if($this->_userCache === null){
@@ -953,7 +953,7 @@ class LdapService
         //echo "<pre>"; print_r($this->_userCache); die();
         $ret = [];
         foreach($this->_userCache as $u){
-            if(in_array(trim($u['title']), $this->stanowiska))
+            if(in_array(trim( strtolower($u['title'])), $this->stanowiska))
                 $ret[$u['samaccountname']] = $u;
         }
         return $ret;
