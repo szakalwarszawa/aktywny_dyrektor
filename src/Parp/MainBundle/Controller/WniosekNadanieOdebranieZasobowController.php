@@ -207,14 +207,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Creates a new WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/", name="wnioseknadanieodebraniezasobow_create")
+     * @Route("/utworz", name="wnioseknadanieodebraniezasobow_create")
      * @Method("POST")
      * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */
     public function createAction(Request $request)
     {
         $msg = "";
+        $dane = $request->request->get('parp_mainbundle_wnioseknadanieodebraniezasobow');
+        $odebranie = $dane['odebranie'];
         $entity = new WniosekNadanieOdebranieZasobow();
+        $entity->setOdebranie($odebranie); //musze tu zeby form wiedzial ze ma dodac pole daty odebrania
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
         $jestCoOdebrac = false;
@@ -309,7 +312,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $entity), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
             'method' => 'POST',
         ));
@@ -1343,7 +1346,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $entity), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -1355,7 +1358,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Edits an existing WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}", name="wnioseknadanieodebraniezasobow_update")
+     * @Route("/update/{id}", name="wnioseknadanieodebraniezasobow_update")
      * @Method("PUT")
      * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */

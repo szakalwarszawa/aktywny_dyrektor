@@ -34,10 +34,11 @@ class NadawanieUprawnienZasobowController extends Controller
 
     /**
      * @param $samaccountName
-     * @Route("/addRemoveAccessToUsersAction/{action}/{wniosekId}", name="addRemoveAccessToUsersAction", defaults={"wniosekId":0})
+     * @Route("/addRemoveAccessToUsersAction/{action}/{wniosekId}", name="addRemoveAccessToUsersAction", defaults={"wniosekId" : 0})
      */
     public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
+        die('addRemoveAccessToUsersAction');
         if($request->getMethod() == "POST"){
             //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();    
             $samaccountnames = $request->get('form')['samaccountnames'];

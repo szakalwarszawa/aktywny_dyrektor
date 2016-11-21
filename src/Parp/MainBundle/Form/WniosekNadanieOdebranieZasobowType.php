@@ -9,9 +9,11 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 class WniosekNadanieOdebranieZasobowType extends AbstractType
 {
     protected $ADUsers;
+    protected $entity;
     
-    public function __construct($ADUsers){
+    public function __construct($ADUsers, $entity){
         $this->ADUsers = $ADUsers;
+        $this->entity = $entity;
     }
     /**
      * @param FormBuilderInterface $builder
@@ -21,8 +23,26 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     {
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
-            ->add('odebranie', 'hidden')
-            ->add('pracownikSpozaParp', 'checkbox', array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
+            ->add('odebranie', 'hidden');
+        //die(". ".$this->entity->getOdebranie());
+        if($this->entity->getOdebranie()){
+            
+            $builder->add('dataOdebrania', 'datetime', array(
+                    'attr' => array(
+                        'class' => 'form-control datepicker',
+                    ),
+                    'label' => 'Data odebrania uprawnień',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'required' => false,
+                    'widget' => 'single_text'
+                    
+                ));
+        }
+            
+            
+        $builder->add('pracownikSpozaParp', 'checkbox', array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
 
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,

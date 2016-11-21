@@ -102,6 +102,13 @@ class WniosekNadanieOdebranieZasobow
      */
     private $odebranie = false;
     
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+    */
+    private $dataOdebrania;
+    
     
     
     /**
@@ -529,5 +536,29 @@ class WniosekNadanieOdebranieZasobow
         $zass = implode(", ", $ret);
         $this->setZasoby($zass);
         //die("Ustawilem pole zasoby ".$zass);
+    }
+
+    /**
+     * Set dataOdebrania
+     *
+     * @param \DateTime $dataOdebrania
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setDataOdebrania($dataOdebrania)
+    {
+        $this->dataOdebrania = $dataOdebrania;
+
+        return $this;
+    }
+
+    /**
+     * Get dataOdebrania
+     *
+     * @return \DateTime
+     */
+    public function getDataOdebrania()
+    {
+        return $this->dataOdebrania;
     }
 }

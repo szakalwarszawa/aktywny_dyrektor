@@ -27,6 +27,7 @@ use Parp\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use APY\DataGridBundle\Grid\Column\TextColumn;
+use Symfony\Component\HttpFoundation\RedirectResponse;
 
 class DefaultController extends Controller
 {
@@ -75,10 +76,7 @@ class DefaultController extends Controller
         $grid = $this->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());        
 
         
-               
-        // Handles filters, sort, exports, action
-        //$grid->handleRequest($this->getRequest());
-
+        
         if ($grid->isReadyForExport()) {
             return $grid->getExportResponse();
         }
@@ -246,10 +244,10 @@ class DefaultController extends Controller
             in_array("PARP_ADMIN_ZASOBOW", $roles) ||
             in_array("PARP_ADMIN", $roles)
         ){
-            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'addResources'));
+            $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', true, array('action' => 'addResources'));
             $grid->addMassAction($massAction1);
     
-            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', false, array('action' => 'removeResources'));
+            $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', true, array('action' => 'removeResources'));
             $grid->addMassAction($massAction2);    
         }
         if(in_array("PARP_ADMIN", $roles)){
@@ -324,23 +322,16 @@ class DefaultController extends Controller
         }
     }
     /**
-     * @return array
-     * @Template();
+     * @Route("/mass", name="mass_action", defaults={"action" : ""})
+     * @return Response
      */
-    public function processMassActionAction($action, $primaryKeys, $allPrimaryKeys, $session = null, $parameters = null)
-    {/*
-
-        print_r($action);
-        echo "-------";
-        print_r($primaryKeys);
-        echo "-------";
-        print_r($parameters);
-        echo "-------";
-        print_r($_POST); 
-        die();
-*/
+    function processMassActionAction($action = "", $primaryKeys = null, $allPrimaryKeys = null, $session = null, $parameters = null)
+    {
+       
         if (isset($_POST)) {
+            
             $array = array_shift($_POST);
+            $actiond = "";
             if (isset($array['__action_id'])) {
                 $action_id = $array['__action_id'];
             }
@@ -348,9 +339,14 @@ class DefaultController extends Controller
                 $actiond = $array['__action'];
             }
             $a = json_encode($actiond);
-            return $this->redirect($this->generateUrl('addRemoveAccessToUsersAction', array('samaccountnames' => $a, 'action' => $action)));
+            //$url = $this->generateUrl('addRemoveAccessToUsersAction', array('action' => $action, 'samaccountnames' => $a));
+            //var_dump($a, $action, $url); die('mam posta');
+            //$url = $this->generateUrl("wnioseknadanieodebraniezasobow"); //die($url);
+            $url = "/app_dev.php/wnioseknadanieodebraniezasobow/index";
+            return $this->redirect($url);
         }
-        die();    
+        $url = $this->generateUrl("wnioseknadanieodebraniezasobow");
+        return new RedirectResponse($url);  
     }
     
     
