@@ -32,19 +32,57 @@ use Parp\MainBundle\Exception\SecurityTestException;
 class NadawanieUprawnienZasobowController extends Controller
 {
 
+    protected function generateRemoveAccessChoices($sams){
+        //tu zwracamy labelki z separatorem @@@ ktory pokazuje kolejne kolumny (osoba, od, do , modul, funkcja)
+        $choices = [];
+        $userzasoby = array();
+        $userzasobyOpisy = array();
+        $zasobyOpisy = array();
+        $ids = array();
+        $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'wniosekOdebranie' => null, 'czyOdebrane' => false /*  'czyNadane' => true */));
+        // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
+        foreach($uzs as $uu){
+            if(!in_array($uu->getZasobId(), $ids))
+                $ids[] = $uu->getZasobId();
+            $userzasoby[$uu->getId()] = $uu;
+            $userzasobyOpisy[$uu->getId()] = $uu->getOpisHtml();//nieuzywane 
+        }
+        $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($ids);
+        foreach($chs as $ch){
+            $zasobyOpisy[$ch->getId()] = $ch;
+        }
+        foreach($userzasoby as $uzid => $uz){
+            $moduly = explode(";", $uz->getModul());
+            foreach($moduly as $modul){
+                $poziomy = explode(";", $uz->getPoziomDostepu());
+                foreach($poziomy as $poziom){
+                    $data = [
+                        $zasobyOpisy[$uz->getZasobId()], 
+                        $uz->getSamaccountname(), 
+                        $uz->getAktywneOd()->format("Y-m-d")." - ".($uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "*"), 
+                        $modul,
+                        $poziom
+                    ];
+                    $klucz = $uzid.";".$modul.";".$poziom;
+                    $choices[$klucz] = implode("@@@", $data);
+                }
+            }
+        }
+        return $choices;
+    }
     /**
      * @param $samaccountName
      * @Route("/addRemoveAccessToUsersAction/{action}/{wniosekId}", name="addRemoveAccessToUsersAction", defaults={"wniosekId" : 0})
      */
     public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
-        die('addRemoveAccessToUsersAction');
         if($request->getMethod() == "POST"){
             //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();    
             $samaccountnames = $request->get('form')['samaccountnames'];
         }else{        
             $samaccountnames = $request->get('samaccountnames');
         }
+        //var_dump($samaccountnames); die('addRemoveAccessToUsersAction - mam tamten controller');
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
@@ -79,22 +117,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 break;
             case "removeResources":
                 $title = "Odbierz zasoby";
-                $userzasoby = array();
-                $userzasobyOpisy = array();
-                $zasobyOpisy = array();
-                $ids = array();
-                $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true,/*  'czyNadane' => true */));
-                // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
-                foreach($uzs as $uu){
-                    if(!in_array($uu->getZasobId(), $ids))
-                        $ids[] = $uu->getZasobId();
-                    $userzasoby[$uu->getId()] = $uu;
-                    $userzasobyOpisy[$uu->getId()] = $uu->getOpisHtml();
-                }
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($ids);
-                foreach($chs as $ch){
-                    $zasobyOpisy[$ch->getId()] = $ch;
-                }
+                $choices = $this->generateRemoveAccessChoices($sams);
                 //$chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findBySamaccountnames($sams);
                 break;
             case "editResources":
@@ -145,30 +168,10 @@ class NadawanieUprawnienZasobowController extends Controller
                 break;
         }
         
-        $choices = array();
-        $choicesDescription = array();
-        
-        
-        if($action == "removeResources"){
-            foreach($userzasoby as $uzid => $uz){
-                $choices[$uzid] = $zasobyOpisy[$uz->getZasobId()];//. "@@@".$uz->getSamaccountname()."@@@".$uz->getOpisHtml(", ", true);
-                
-                
-/*
-                if(isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0){
-                    $ret = array();
-                    foreach($userzasoby[$ch->getId()] as $u){
-                        $ret[] = $u;//"<span data-toggle='popover' data-content='".$userzasobyOpisy[$ch->getId()][$u]."'>".$u."</span>";
-                    }
-                    
-                    
-                    //$uss = implode(",", $userzasoby[$ch->getId()]);
-                    $info = (count($userzasoby[$ch->getId()]) > 1 ? "Posiadają : " : "Posiada : ").implode(" ", $ret);
-                }
-*/
-                               
-            }
-        }else{        
+        $choicesDescription = array();//niwuzywane 
+          
+        if($action != "removeResources"){ 
+            $choices = array();    
             foreach($chs as $ch){
                 if($action == "addResources"){
                     $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
@@ -394,46 +397,8 @@ class NadawanieUprawnienZasobowController extends Controller
                     break;
                 
                 case "removeResources":
-                    $powod = $ndata['powod'];
-                    //print_r($ndata); die();
-                    foreach($ndata['access'] as $z){
-                        $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($z);
-                        $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($suz->getZasobId());
-                        if($wniosek)
-                            $suz->setWniosekOdebranie($wniosek);
-
-/*
-                        
-                        $suz->setAktywneDo(new \Datetime($ndata['fromWhen']));
-                        $suz->setCzyAktywne(false);
-                        $suz->setPowodOdebrania($powod);
-                        $this->getDoctrine()->getManager()->persist($suz);
-                        
-*/
-                        
-                        //$this->getDoctrine()->getManager()->remove($suz);
-                        //$msg = "Zabiera userowi ".$currentsam." uprawnienia do zasobu '".$this->get('renameService')->zasobNazwa($z)."'";
-                        //$this->addFlash('warning', $msg);
-                        $zmianaupr[] = $zasob->getOpis();                   
-                    }
-                    if($wniosek){
-                        $wniosek->ustawPoleZasoby();
-                    }
-                    $this->getDoctrine()->getManager()->flush();
+                    return $this->removeResourcesToUsersAction($request, $ndata, $wniosekId);  
                     
-                        
-                    if($wniosek){
-                        $wniosek->ustawPoleZasoby();
-                    }
-                    $this->getDoctrine()->getManager()->flush();
-                    
-                    if($wniosekId != 0){
-                        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
-                    }else{
-                        return $this->redirect($this->generateUrl('main'));
-                    }
-                    
-                    //return $this->redirect($this->generateUrl('main'));
                     break;
                 case "addPrivileges":
                     $powod = $ndata['powod'];
@@ -550,8 +515,85 @@ class NadawanieUprawnienZasobowController extends Controller
             'users' => $users,
             'form' => $form->createView() ,
             'title' => $title,
-            'choicesDescription' => $choices
+            'choicesDescription' => $choices,
+            'action' => $action
         ));
+    }
+    
+    
+    protected function removeResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null){
+        
+        $wniosek = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
+        $powod = $ndata['powod'];
+        //print_r($ndata); die();
+        //grupuje uprawnienia po uzid
+        $daneDoZmiany = [];
+        foreach($ndata['access'] as $z){
+            $data = explode(";", $z);
+            $id = $data[0];
+            $modul = $data[1];
+            $poziom = $data[2];
+            $daneDoZmiany[$id]['dane'][] = [
+                'modul' => $modul,
+                'poziom' => $poziom,
+                'odbierane' => 1
+            ];
+            $daneDoZmiany[$id]['moduly'][$modul] = $modul;
+            $daneDoZmiany[$id]['poziomy'][$poziom] = $poziom;
+            $daneDoZmiany[$id]['odbiera'][$modul.$poziom] = $modul.$poziom;
+        }
+        foreach($daneDoZmiany as $id => $dane){
+            $uz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($id);
+            $uz->setWniosekOdebranie(null);
+            $wynik = $uz->podzielUprawnieniaPrzyOdbieraniu($dane);
+            
+            //ustawiamy te co zostaja
+            $uz->setModul($wynik['modulyKtoreZostaja']);
+            $uz->setPoziomdostepu($wynik['poziomyKtoreZostaja']);
+            
+            foreach($wynik['nowe'] as $d){
+                $noweUz = clone $uz;
+                $noweUz->setModul($d['modul']);
+                $noweUz->setPoziomdostepu($d['poziom']);
+                if($d['odbierane']){
+                    $noweUz->setPowodOdebrania($powod);
+                    $noweUz->setCzyAktywne(false);
+                    if($wniosek){
+                        $noweUz->setWniosekOdebranie($wniosek);
+                        $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                    }else{
+                        $noweUz->setKtoOdebral($this->getUser()->getUsername());
+                        $noweUz->setCzyOdebrane(true);
+                        $noweUz->setAktywneDo(new \Datetime($ndata['fromWhen']));
+                        $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                    }
+                }else{
+                    $noweUz->setWniosekOdebranie(null);
+                }
+                $this->getDoctrine()->getManager()->persist($noweUz);
+            }
+            
+            
+            //var_dump($uz->getId(), $uz->getModul(), $uz->getPoziomdostepu(), $dane, $wynik);die();
+            $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+
+            $zmianaupr[] = $zasob->getOpis();   
+        }
+        
+        
+        if($wniosek){
+            $wniosek->ustawPoleZasoby();
+        }
+        
+        $this->getDoctrine()->getManager()->flush();
+        
+        if($wniosekId != 0){
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+        }else{
+            return $this->redirect($this->generateUrl('main'));
+        }
+        
+        //return $this->redirect($this->generateUrl('main'));
     }
     
     /**
@@ -804,7 +846,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     }
                 }
                 if($wniosek){
-                    //$wniosek->ustawPoleZasoby();
+                    $wniosek->ustawPoleZasoby();
                 }
                 $this->getDoctrine()->getManager()->flush();
                 

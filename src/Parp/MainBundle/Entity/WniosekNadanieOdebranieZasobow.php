@@ -526,16 +526,18 @@ class WniosekNadanieOdebranieZasobow
         $em = $kernel->getContainer()->get( 'doctrine.orm.entity_manager' );
         $ret = [];
         foreach($this->getUserZasoby() as $uz){
+            echo "!";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();
         }
         foreach($this->getUserZasobyOdbierane() as $uz){
+            echo "$";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();
         }
         $zass = implode(", ", $ret);
         $this->setZasoby($zass);
-        //die("Ustawilem pole zasoby ".$zass);
+        echo("Ustawilem pole zasoby ".$zass.$this->getId());
     }
 
     /**

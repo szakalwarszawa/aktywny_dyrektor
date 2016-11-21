@@ -193,7 +193,15 @@ class UserZasoby
      * @ORM\Column(name="czy_nadane", type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $czyNadane = false;
+    private $czyNadane = false; 
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="czy_odebrane", type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $czyOdebrane = false;
     
     
     /**
@@ -221,7 +229,28 @@ class UserZasoby
      */
     private $wniosekOdebranie;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ktoOdebral;
+    
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dataOdebrania;
+    
     private $_ADUser;
+    
+    
+    
     /**
      * Set _ADUser
      *
@@ -732,6 +761,28 @@ class UserZasoby
             $html = strip_tags($html);
         return $html;
     }
+    
+    
+    public function getDaneDoCheckboxRemoveAccess($spacer = "<br>", $stripTags = false){
+        $html = "";
+        if($this->getModul() != "")
+            $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
+        if($this->getPoziomDostepu() != "")
+            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
+        if($this->getAktywneOd() != "")
+            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
+        if($this->getAktywneDo() != "")
+            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
+        if($this->getKanalDostepu() != "")
+            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
+        if($this->getUprawnieniaAdministracyjne() != "")
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+            
+        $html = "<div>".$html."</div>";
+        if($stripTags)
+            $html = strip_tags($html);
+        return $html;
+    }
 
     /**
      * Set czyNadane
@@ -885,5 +936,120 @@ class UserZasoby
             }    
         }
         return $sqls;
+    }
+    public function podzielUprawnieniaPrzyOdbieraniu($dane){
+        $moduly = explode(";", $this->getModul());
+        $poziomy = explode(";", $this->getPoziomDostepu());
+        
+        $modulyKtoreZostaja = array_diff($moduly, $dane['moduly']);
+        $poziomyKtoreZostaja = array_diff($poziomy, $dane['poziomy']);
+        
+        $noweUz = $dane['dane'];
+        
+        //szukam tych co nie sa odnierane ale pokrywaja sie z nimi poziomami
+        foreach($dane['moduly'] as $m){
+            foreach($dane['poziomy'] as $p){
+                if(!isset($dane['odbiera'][$m.$p])){
+                    //znaczy ze musze utworzyc
+                    $noweUz[] = [
+                        'odbierane' => 0,
+                        'modul' => $m,
+                        'poziom' => $p    
+                    ];
+                }
+            }
+        }
+        
+        $noweUz[] = [
+            'odbierane' => 0,
+            'modul' => implode(";", $dane['moduly']),
+            'poziom' => implode(";", $poziomyKtoreZostaja)    
+        ];
+        $noweUz[] = [
+            'odbierane' => 0,
+            'modul' => implode(";", $modulyKtoreZostaja),
+            'poziom' => implode(";", $dane['poziomy']) 
+        ];
+        
+        $ret = [
+            'modulyKtoreZostaja' => $modulyKtoreZostaja,
+            'poziomyKtoreZostaja' => $poziomyKtoreZostaja,
+            'nowe' => $noweUz
+        ];
+        
+        //die('a');
+        return $ret;
+    }
+
+    /**
+     * Set czyOdebrane
+     *
+     * @param boolean $czyOdebrane
+     *
+     * @return UserZasoby
+     */
+    public function setCzyOdebrane($czyOdebrane)
+    {
+        $this->czyOdebrane = $czyOdebrane;
+
+        return $this;
+    }
+
+    /**
+     * Get czyOdebrane
+     *
+     * @return boolean
+     */
+    public function getCzyOdebrane()
+    {
+        return $this->czyOdebrane;
+    }
+
+    /**
+     * Set ktoOdebral
+     *
+     * @param string $ktoOdebral
+     *
+     * @return UserZasoby
+     */
+    public function setKtoOdebral($ktoOdebral)
+    {
+        $this->ktoOdebral = $ktoOdebral;
+
+        return $this;
+    }
+
+    /**
+     * Get ktoOdebral
+     *
+     * @return string
+     */
+    public function getKtoOdebral()
+    {
+        return $this->ktoOdebral;
+    }
+
+    /**
+     * Set dataOdebrania
+     *
+     * @param \DateTime $dataOdebrania
+     *
+     * @return UserZasoby
+     */
+    public function setDataOdebrania($dataOdebrania)
+    {
+        $this->dataOdebrania = $dataOdebrania;
+
+        return $this;
+    }
+
+    /**
+     * Get dataOdebrania
+     *
+     * @return \DateTime
+     */
+    public function getDataOdebrania()
+    {
+        return $this->dataOdebrania;
     }
 }

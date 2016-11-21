@@ -291,15 +291,40 @@
                                 <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
                                 <td>{{z.aktywneOd|date("Y-m-d")}}</td>
                                 <td>{{z.bezterminowo ? "TAK" : "NIE"}}</td>
-                                <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}</td>
+                                <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}
+                                
+                                    {%if(z.czyOdebrane)%}
+                                    <div class="alert alert-danger">
+                                        <b>Odebrane</b>
+                                    </div>
+                                    {%endif%}
+                                </td>
                                 <td>{{z.kanalDostepu}}</td>
                                 <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
-                                <td>{{z.powodNadania}}</td>
                                 <td>
-                                {%if editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
+                                    {{z.powodNadania}}
+                                    
+                                    {%if(z.czyOdebrane)%}
+                                    <div class="alert alert-danger">
+                                        <b>Odebrane</b>
+                                        {{z.powodOdebrania}}
+                                    </div>
+                                    {%endif%}
+                                </td>
+                                <td>
+                                {%if entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames})}}" class="btn btn-primary">Edycja</a>
                                     <a href="{{path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id})}}" class="btn btn-danger">Kasuj</a>
                                 {%endif%}
+                                
+                                {%if(entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0)%}
+                                    <a href="{{path('wnioseknadanieodebraniezasobow_show', {'id' : z.wniosek.id}) }}" class="btn btn-warning">Nadanie</a>
+                                {%else%}
+                                    {%if(z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id )%}
+                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {'id' : z.wniosekOdebranie.id}) }}" class="btn btn-warning">Odebranie</a>
+                                    {%endif%}
+                                {%endif%}
+                                
                                 </td>
                             </tr>
                         {% endfor %}
@@ -410,7 +435,7 @@
                                     <td>{{z.aktywneDo ? z.aktywneDo|date("Y-m-d") : ""}}</td>
                                     <td>{{z.kanalDostepu}}</td>
                                     <td>{{z.uprawnieniaAdministracyjne ? "TAK" : "NIE"}}</td>
-                                    <td>{{z.powodNadania}}</td>                                    
+                                    <td>{{z.powodNadania}} </td>                                    
                                 </tr>
                             {% endfor %}
                         </tbody>

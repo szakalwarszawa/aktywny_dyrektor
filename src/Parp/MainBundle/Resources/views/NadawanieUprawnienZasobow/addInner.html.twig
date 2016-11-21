@@ -1,4 +1,4 @@
-
+{% form_theme form action == 'removeResources' ? 'ParpMainBundle:NadawanieUprawnienZasobow:formStyle.html.twig' : 'bootstrap_3_horizontal_layout.html.twig' %}
 <div class="col-sm-12">
     <div class="panel panel-default">
         <div class="panel-heading">
@@ -76,13 +76,13 @@
         var v = $('#form_grupy').val();
         var s = $('#form_nazwafiltr').val().toUpperCase();
         if(v || s){
-            $('.uprawnienieRow').closest('.checkbox').addClass('hidden');
+            $('#form_access .uprawnienieRow').addClass('hidden');
             //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
             if(s){
-                $('.uprawnienieRow').each(function(){
+                $('#form_access .uprawnienieRow').each(function(){
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
-                    //console.log('sprawdzam txt '+txt+' i classes '+classes);
+                    console.log('sprawdzam txt '+txt+' i classes '+classes);
                     var show = false;
                     if(v){
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien'+v) >= 0;
@@ -90,7 +90,7 @@
                         show = txt.indexOf(s) >= 0;
                     } 
                     if(show){
-                        $(this).closest('.checkbox').removeClass('hidden');
+                        $(this).removeClass('hidden');
                     }
                 });
             }else{
@@ -100,7 +100,7 @@
             //pokazujemy zaznaczone
             $('.uprawnienieRow input:checked').closest('.checkbox').removeClass('hidden');
         }else{                
-            $('.uprawnienieRow').closest('.checkbox').removeClass('hidden');
+            $('.uprawnienieRow').removeClass('hidden');
         }
     }
     $('#form_grupy').change(function(){
@@ -110,11 +110,11 @@
          filtrujZasobUprawnienia();
     });
     $('#form_buttonzaznacz').click(function(){
-        $('.checkbox:not(.hidden) input[type=checkbox]').prop('checked', true);
+        $('.uprawnienieRow:not(.hidden) input[type=checkbox]').prop('checked', true);
         zmianaZaznaczenia(); 
     });
     $('#form_buttonodznacz').click(function(){
-        $('.checkbox input[type=checkbox]:checked').prop('checked', false);
+        $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);
         zmianaZaznaczenia(); 
     });
     function beforeSubmit(e){
@@ -127,7 +127,9 @@
     function zmianaZaznaczenia(){
         var ret = [];
         $('#form_access input[type=checkbox]:checked').each(function(){
-            ret.push($('label', $(this).closest('.checkbox')).text());
+            var v = $('label', $(this).closest('.checkbox')).text();
+            v = v.trim();
+            ret.push(v);
         });
         console.log('zmieniam zaznaczenie');
         $('#form_wybraneZasoby').val(ret.join(', '));

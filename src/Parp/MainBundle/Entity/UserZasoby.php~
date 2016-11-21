@@ -9,12 +9,30 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="userzasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserZasobyRepository")
+ * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
 class UserZasoby
 {
+    
+    /**
+     * @ORM\PrePersist()
+     * @ORM\PreUpdate()
+     * @ORM\PreRemove()
+     */
+    public function preUpdate(){
+        
+        //die("preUpdate");
+        if($this->wniosek){
+            $this->wniosek->ustawPoleZasoby();
+        }
+        
+        if($this->wniosekOdebranie){
+            $this->wniosekOdebranie->ustawPoleZasoby();
+        }
+    }
     /**
      * @var integer
      *
@@ -74,7 +92,7 @@ class UserZasoby
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $modul;
@@ -82,7 +100,7 @@ class UserZasoby
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $poziomDostepu;
@@ -175,7 +193,15 @@ class UserZasoby
      * @ORM\Column(name="czy_nadane", type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $czyNadane = false;
+    private $czyNadane = false; 
+    
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="czy_odebrane", type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $czyOdebrane = false;
     
     
     /**
@@ -203,7 +229,28 @@ class UserZasoby
      */
     private $wniosekOdebranie;
     
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ktoOdebral;
+    
+    
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dataOdebrania;
+    
     private $_ADUser;
+    
+    
+    
     /**
      * Set _ADUser
      *
@@ -359,6 +406,9 @@ class UserZasoby
      */
     public function setModul($modul)
     {
+        if(is_array($modul)){
+            $modul = implode(";", $modul);
+        }
         $this->modul = $modul;
 
         return $this;
@@ -371,6 +421,10 @@ class UserZasoby
      */
     public function getModul()
     {
+        
+        if(is_array($this->modul)){
+            $modul = implode(";", $this->modul);
+        }
         return $this->modul;
     }
 
@@ -382,6 +436,9 @@ class UserZasoby
      */
     public function setPoziomDostepu($poziomDostepu)
     {
+        if(is_array($poziomDostepu)){
+            $poziomDostepu = implode(";", $poziomDostepu);
+        }
         $this->poziomDostepu = $poziomDostepu;
 
         return $this;
@@ -394,6 +451,9 @@ class UserZasoby
      */
     public function getPoziomDostepu()
     {
+        if(is_array($this->poziomDostepu)){
+            $this->poziomDostepu = implode(";", $this->poziomDostepu);
+        }
         return $this->poziomDostepu;
     }
 
@@ -642,6 +702,7 @@ class UserZasoby
     {
         $this->deletedAt = $deletedAt;
 
+        
         return $this;
     }
 
@@ -682,6 +743,28 @@ class UserZasoby
         $html = "";
         if($this->getLoginDoZasobu() != "")
             $html .= "<b>Login:</b> ".$this->getLoginDoZasobu().$spacer;
+        if($this->getModul() != "")
+            $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
+        if($this->getPoziomDostepu() != "")
+            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
+        if($this->getAktywneOd() != "")
+            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
+        if($this->getAktywneDo() != "")
+            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
+        if($this->getKanalDostepu() != "")
+            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
+        if($this->getUprawnieniaAdministracyjne() != "")
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+            
+        $html = "<div>".$html."</div>";
+        if($stripTags)
+            $html = strip_tags($html);
+        return $html;
+    }
+    
+    
+    public function getDaneDoCheckboxRemoveAccess($spacer = "<br>", $stripTags = false){
+        $html = "";
         if($this->getModul() != "")
             $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
         if($this->getPoziomDostepu() != "")
@@ -758,7 +841,16 @@ class UserZasoby
      */
     public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
+        if($wniosek){
+            $wniosek->addUserZasoby($this);        
+        }
+        if($wniosek === null && $this->wniosek != null){
+            $this->wniosek->ustawPoleZasoby();
+        }
         $this->wniosek = $wniosek;
+        if($this->wniosek){
+            $this->wniosek->ustawPoleZasoby();
+        }
 
         return $this;
     }
@@ -783,6 +875,9 @@ class UserZasoby
     public function setWniosekOdebranie(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
     {
         $this->wniosekOdebranie = $wniosekOdebranie;
+        if($this->wniosekOdebranie){
+            $this->wniosekOdebranie->ustawPoleZasoby();
+        }
 
         return $this;
     }
@@ -795,5 +890,142 @@ class UserZasoby
     public function getWniosekOdebranie()
     {
         return $this->wniosekOdebranie;
+    }
+
+    /**
+     * Set zasobOpis
+     *
+     * @param string $zasobOpis
+     *
+     * @return UserZasoby
+     */
+    public function setZasobOpis($zasobOpis)
+    {
+        $this->zasobOpis = $zasobOpis;
+
+        return $this;
+    }
+
+    /**
+     * Get zasobOpis
+     *
+     * @return string
+     */
+    public function getZasobOpis()
+    {
+        return $this->zasobOpis;
+    }
+    
+    public function getLsiSql(){
+        $sqls = [];
+        $moduly = explode(";", $this->getModul());
+        $poziomy = explode(";", $this->getPoziomDostepu());
+        foreach($moduly as $m){
+            foreach($poziomy as $p){
+                //echo $m;
+                $naborDane = explode("/", $m);
+                if(count($naborDane) > 1){
+                    $dzialanie = $naborDane[0];
+                    $nabor = $naborDane[1];
+                    $rola = $p;
+                    $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".$this->getSamaccountname()."', '".$dzialanie."', '".$nabor."', '".$rola."')";
+                    $sqls[] = $sql;
+                }else{
+                    echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby ".$this->getSamaccountname();
+                }
+            }    
+        }
+        return $sqls;
+    }
+    public function podzielUprawnieniaPrzyOdbieraniu($dane){
+        $moduly = explode(";", $this->getModul());
+        $poziomy = explode(";", $this->getPoziomDostepu());
+        
+        $modulyKtoreZostaja = array_diff($moduly, $dane['moduly']);
+        $poziomyKtoreZostaja = array_diff($poziomy, $dane['poziomy']);
+        
+        $noweUz = $dane['dane'];
+        
+        //szukam tych co nie sa odnierane ale pokrywaja sie z nimi poziomami
+        foreach($dane['moduly'] as $m){
+            foreach($dane['poziomy'] as $p){
+                if(!isset($dane['odbiera'][$m.$p])){
+                    //znaczy ze musze utworzyc
+                    $noweUz[] = [
+                        'odbierane' => 0,
+                        'modul' => $m,
+                        'poziom' => $p    
+                    ];
+                }
+            }
+        }
+        
+        $noweUz[] = [
+            'odbierane' => 0,
+            'modul' => implode(";", $dane['moduly']),
+            'poziom' => implode(";", $poziomyKtoreZostaja)    
+        ];
+        $noweUz[] = [
+            'odbierane' => 0,
+            'modul' => implode(";", $modulyKtoreZostaja),
+            'poziom' => implode(";", $dane['poziomy']) 
+        ];
+        
+        $ret = [
+            'modulyKtoreZostaja' => $modulyKtoreZostaja,
+            'poziomyKtoreZostaja' => $poziomyKtoreZostaja,
+            'nowe' => $noweUz
+        ];
+        
+        //die('a');
+        return $ret;
+    }
+
+    /**
+     * Set czyOdebrane
+     *
+     * @param boolean $czyOdebrane
+     *
+     * @return UserZasoby
+     */
+    public function setCzyOdebrane($czyOdebrane)
+    {
+        $this->czyOdebrane = $czyOdebrane;
+
+        return $this;
+    }
+
+    /**
+     * Get czyOdebrane
+     *
+     * @return boolean
+     */
+    public function getCzyOdebrane()
+    {
+        return $this->czyOdebrane;
+    }
+
+    /**
+     * Set ktoOdebral
+     *
+     * @param string $ktoOdebral
+     *
+     * @return UserZasoby
+     */
+    public function setKtoOdebral($ktoOdebral)
+    {
+        $this->ktoOdebral = $ktoOdebral;
+
+        return $this;
+    }
+
+    /**
+     * Get ktoOdebral
+     *
+     * @return string
+     */
+    public function getKtoOdebral()
+    {
+        return $this->ktoOdebral;
     }
 }

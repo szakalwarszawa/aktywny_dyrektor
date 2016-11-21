@@ -207,17 +207,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Creates a new WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/utworz", name="wnioseknadanieodebraniezasobow_create")
+     * @Route("/", name="wnioseknadanieodebraniezasobow_create")
      * @Method("POST")
      * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */
     public function createAction(Request $request)
     {
         $msg = "";
-        $dane = $request->request->get('parp_mainbundle_wnioseknadanieodebraniezasobow');
-        $odebranie = $dane['odebranie'];
         $entity = new WniosekNadanieOdebranieZasobow();
-        $entity->setOdebranie($odebranie); //musze tu zeby form wiedzial ze ma dodac pole daty odebrania
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
         $jestCoOdebrac = false;
@@ -331,6 +328,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function newAction($odebranie = 0)
     {
+        if($odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
+            die("Na razie to jeszcze nie jest wlaczone");
+        }
         //var_dump($this->getUser());
         
         $ldap = $this->get('ldap_service');
@@ -743,6 +743,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         elseif($isAccepted == "reject"){
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, "08_ROZPATRZONY_NEGATYWNIE", true);
+            if($wniosek->getOdebranie()){
+                foreach($wniosek->getUserZasoby() as $uz){
+                    $cloneuz = clone $uz;//robimy klony by pozostal slad we wniosku na co byl skladany
+                    $uz->setWniosekOdebranie(null);//zdejmujemy wniosek z uz do ktorych byl przypisany
+                    $cloneuz->setWniosekOdebranie($wniosek);
+                    $cloneuz->setWniosek(null);//zeby nie bylo dubli przy oryginalnym wniosku
+                    $em->persist($cloneuz);
+                }
+                //die('zabieram uz');
+            }
         }
         elseif($isAccepted == "publish"){
             //przenosi do status 11
@@ -1034,7 +1044,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 foreach($wniosek->getUserZasoby() as $uz){
                     $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
-                    $uz->setCzyAktywne(true);
+                    $uz->setCzyAktywne(!$wniosek->getOdebranie());
+                    if($wniosek->getOdebranie()){
+                        $uz->setCzyOdebrane(true);
+                        $uz->setKtoOdebral($this->getUser()->getUsername());
+                        $uz->setAktywneDo($uz->getDataOdebrania());
+                    }
                     if($z->getGrupyAd()){
                         $grupy = explode(";", $z->getGrupyAd());
                         
@@ -1346,7 +1361,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $entity), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -1358,7 +1373,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Edits an existing WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/update/{id}", name="wnioseknadanieodebraniezasobow_update")
+     * @Route("/{id}", name="wnioseknadanieodebraniezasobow_update")
      * @Method("PUT")
      * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
      */

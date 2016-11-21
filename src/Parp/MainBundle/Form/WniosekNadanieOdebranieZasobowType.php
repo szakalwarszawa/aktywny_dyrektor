@@ -27,6 +27,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         //die(". ".$this->entity->getOdebranie());
         if($this->entity->getOdebranie()){
             
+/*
             $builder->add('dataOdebrania', 'datetime', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
@@ -39,6 +40,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                     'widget' => 'single_text'
                     
                 ));
+*/
         }
             
             

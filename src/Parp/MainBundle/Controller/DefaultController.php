@@ -82,9 +82,10 @@ class DefaultController extends Controller
         }
 
         if ($grid->isReadyForRedirect()) {
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
+            //return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         }
         
+        //return $grid->getGridResponse(['ktorzy' => $ktorzy]);
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
     
@@ -339,11 +340,23 @@ class DefaultController extends Controller
                 $actiond = $array['__action'];
             }
             $a = json_encode($actiond);
-            //$url = $this->generateUrl('addRemoveAccessToUsersAction', array('action' => $action, 'samaccountnames' => $a));
-            //var_dump($a, $action, $url); die('mam posta');
+            $url = $this->generateUrl('addRemoveAccessToUsersAction', array('action' => $action, 'samaccountnames' => $a));
+            //var_dump($a, $action, $url); die('mam posta'); 
             //$url = $this->generateUrl("wnioseknadanieodebraniezasobow"); //die($url);
-            $url = "/app_dev.php/wnioseknadanieodebraniezasobow/index";
+            //$url = "/app_dev.php/wnioseknadanieodebraniezasobow/index";
             return $this->redirect($url);
+            /*
+            $response = $this->forward('ParpMainBundle:NadawanieUprawnienZasobow:addRemoveAccessToUsers', array(
+                'action' => $action, 
+                'samaccountnames' => $a
+            ));
+            //var_dump($response); die();
+            return $response;
+            */
+            
+            
+        }else{
+            die('a');
         }
         $url = $this->generateUrl("wnioseknadanieodebraniezasobow");
         return new RedirectResponse($url);  

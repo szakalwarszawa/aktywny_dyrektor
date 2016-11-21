@@ -1,0 +1,86 @@
+
+{% form_theme form  'bootstrap_3_horizontal_layout.html.twig' _self %}
+
+{% block _form_fromWhen_widget %}
+<div class="input-group datepicker" >
+    {{ block('form_widget_simple') }}
+    <span class="input-group-addon">
+        <span class="fa fa-calendar"></span>
+    </span>
+</div>
+{% endblock %} 
+
+{% block _form_access_row %}
+<div class="form-group">
+    <div class="col-sm-12 control-label text-left control-label">
+    <h3>{{ block('form_label') }}</h3>
+    </div>
+    <div class="col-sm-12"> 
+        {{ block('_form_access_widget') }}
+    </div>
+</div>
+
+{% endblock %}
+{% block _form_access_widget %}
+    <div class="col-sm-12 ">
+        <div class="col-sm-4">    
+            <b>Zasób/uprawnienie</b>
+        </div>
+        <div class="col-sm-2">    
+            <b>Użytkownik</b>
+        </div>
+        <div class="col-sm-2">    
+            <b>Aktywne</b>
+        </div>
+        <div class="col-sm-2">    
+            <b>Moduł</b>
+        </div>
+        <div class="col-sm-2">    
+            <b>Poziom</b>
+        </div>
+    </div>
+    {{ block('form_widget') }}
+{% endblock %} 
+
+{% block checkbox_radio_row -%}
+{% spaceless %}
+    <div class="col-sm-12 {% if not valid %} has-error{% endif %} {{label|getMultipleCheckboxLabelClasses }} uprawnienieRow">
+        
+        {{ form_widget(form) }}
+        {{ form_errors(form) }}
+    </div>
+{% endspaceless %}
+{%- endblock checkbox_radio_row %}
+{% block checkbox_radio_label %}
+    {# Do not display the label if widget is not defined in order to prevent double label rendering #}
+    {% if widget is defined %}
+        {% if required %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' required')|trim}) %}
+        {% endif %}
+        {% if parent_label_class is defined %}
+            {% set label_attr = label_attr|merge({class: (label_attr.class|default('') ~ ' noPadding ' ~ parent_label_class)|trim}) %}
+        {% endif %}
+        {% if label is not same as(false) and label is empty %}
+            {% set label = name|humanize %}
+        {% endif %}
+            <div class="col-sm-4">
+                {{- widget|raw }} 
+                <label for="{{id}}" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %} 
+                data-ajaxload2="/app_dev.php/dev/getUzInfo" data-original-title="Tytuł" class="noPadding">
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(0) -}}
+                </label>
+            </div>
+            <div class="col-sm-2">
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(1)|raw}}                
+            </div>
+            <div class="col-sm-2">
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(2)|raw}}                
+            </div>
+            <div class="col-sm-2">
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(3)|raw}}                
+            </div>
+            <div class="col-sm-2">
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(4)|raw}}                
+            </div>
+    {% endif %}
+{% endblock checkbox_radio_label %}
