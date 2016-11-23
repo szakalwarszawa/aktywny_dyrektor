@@ -16,7 +16,7 @@
         
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h3>{{ user.name }} 1</h3>
+                <h3>{{ user.name }}</h3>
                 {% include 'ParpMainBundle:Default:userForm.html.twig' %}
             </div>
             <div id="daneRekord" class="tab-pane fade">
@@ -86,8 +86,8 @@
                                             >{{ row.nazwa  }}<br>{{row.opis|raw}}</a></td>
                                             <td>{{row.loginDoZasobu}}</td>
                                             <td>{{row.modul}}</td>
-                                            <td>{{row.kanalDostepu}}</td>
                                             <td>{{row.poziomDostepu}}</td>
+                                            <td>{{row.kanalDostepu}}</td>
                                             <td>{{row.aktywneOd}}</td>
                                             <td>{{row.aktywneDo}}</td>
                                             <td>{{row.powodNadania}}</td>
@@ -146,7 +146,15 @@
                                             <td>{{row.poziomDostepu}}</td>
                                             <td>{{row.aktywneOd}}</td>
                                             <td>{{row.aktywneDo}}</td>
-                                            <td>{{row.powodNadania}}</td>
+                                            <td>{{row.powodNadania}}
+                                            
+                                            {%if(row.czyOdebrane)%}
+                                            <div class="alert alert-danger">
+                                                <b>Odebrane</b>
+                                                {{row.powodOdebrania}}
+                                            </div>
+                                            {%endif%}
+                                            </td>
                                             
                                             
                                         </tr>

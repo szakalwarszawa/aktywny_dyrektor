@@ -547,30 +547,38 @@ class NadawanieUprawnienZasobowController extends Controller
             $uz->setWniosekOdebranie(null);
             $wynik = $uz->podzielUprawnieniaPrzyOdbieraniu($dane);
             
-            //ustawiamy te co zostaja
-            $uz->setModul($wynik['modulyKtoreZostaja']);
-            $uz->setPoziomdostepu($wynik['poziomyKtoreZostaja']);
+            //var_dump($dane, $wynik); die();
+            
+            if(count($wynik['modulyKtoreZostaja']) != 0 && count($wynik['modulyKtoreZostaja']) != 0){
+                //ustawiamy te co zostaja jesli sa
+                $uz->setModul($wynik['modulyKtoreZostaja']);
+                $uz->setPoziomdostepu($wynik['poziomyKtoreZostaja']);
+            }else{
+                $this->getDoctrine()->getManager()->remove($uz);
+            }
             
             foreach($wynik['nowe'] as $d){
-                $noweUz = clone $uz;
-                $noweUz->setModul($d['modul']);
-                $noweUz->setPoziomdostepu($d['poziom']);
-                if($d['odbierane']){
-                    $noweUz->setPowodOdebrania($powod);
-                    $noweUz->setCzyAktywne(false);
-                    if($wniosek){
-                        $noweUz->setWniosekOdebranie($wniosek);
-                        $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                if(trim($d['modul']) != "" && trim($d['poziom']) != ""){
+                    $noweUz = clone $uz;
+                    $noweUz->setModul($d['modul']);
+                    $noweUz->setPoziomdostepu($d['poziom']);
+                    if($d['odbierane']){
+                        $noweUz->setPowodOdebrania($powod);
+                        $noweUz->setCzyAktywne(false);
+                        if($wniosek){
+                            $noweUz->setWniosekOdebranie($wniosek);
+                            $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                        }else{
+                            $noweUz->setKtoOdebral($this->getUser()->getUsername());
+                            $noweUz->setCzyOdebrane(true);
+                            $noweUz->setAktywneDo(new \Datetime($ndata['fromWhen']));
+                            $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                        }
                     }else{
-                        $noweUz->setKtoOdebral($this->getUser()->getUsername());
-                        $noweUz->setCzyOdebrane(true);
-                        $noweUz->setAktywneDo(new \Datetime($ndata['fromWhen']));
-                        $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
+                        $noweUz->setWniosekOdebranie(null);
                     }
-                }else{
-                    $noweUz->setWniosekOdebranie(null);
+                    $this->getDoctrine()->getManager()->persist($noweUz);
                 }
-                $this->getDoctrine()->getManager()->persist($noweUz);
             }
             
             

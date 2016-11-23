@@ -946,7 +946,7 @@ class UserZasoby
         
         $noweUz = $dane['dane'];
         
-        //szukam tych co nie sa odnierane ale pokrywaja sie z nimi poziomami
+        //szukam tych co nie sa odbierane ale pokrywaja sie z nimi poziomami
         foreach($dane['moduly'] as $m){
             foreach($dane['poziomy'] as $p){
                 if(!isset($dane['odbiera'][$m.$p])){

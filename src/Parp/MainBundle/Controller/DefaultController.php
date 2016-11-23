@@ -478,6 +478,7 @@ class DefaultController extends Controller
             $zasoby[$i]['czyAktywne'] = $uz->getCzyAktywne();
             $zasoby[$i]['wniosekId'] = $uz->getWniosek() ? $uz->getWniosek()->getId() : 0;
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
+            $zasoby[$i]['czyOdebrane'] = $uz->getCzyOdebrane();
         }
         
         $names = explode(' ', $ADUser[0]["name"]);

@@ -61,10 +61,10 @@
         });
         function szukajUserow(that){
             var i = 0;
-            var szukaj = $(that).val();
+            var szukaj = $(that).val().toUpperCase();
             $('table tr').each(function(){
                 if(i > 1){
-                    var txt = $(this).text();
+                    var txt = $(this).text().toUpperCase();
                     var checked = $('input[type=checkbox]', $(this)).prop('checked');
                     if(checked)
                         console.log('checked '+checked+' '+txt);

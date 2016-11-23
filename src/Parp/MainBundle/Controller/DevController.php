@@ -2346,4 +2346,25 @@ class DevController extends Controller
         );
     
     }
+    
+    /**
+     * @Route("/poprawWniosek1672", name="poprawWniosek1672")
+     * @Template()
+     */
+    public function poprawWniosek1672Action(){
+        $em = $this->getDoctrine()->getManager();
+        $wniosek = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->find(1672);
+        
+        foreach($wniosek->getUserZasoby() as $uz){
+            echo "<br>".$uz->getId();
+            if($uz->getId() == 7223){
+                $uz->setModul("POPW.01.01.01/1;POPW.01.01.02/1;POPW.01.02.00/1;POPW.01.03.01/1;POPW.01.03.01/2;POPW.01.03.02/1;POPW.01.04.00/1;POPW.01.04.00/2;POPW.02.02.00/1");
+                $uz->setPoziomDostepu("ROLE_ADMIN_MERYTORYCZNY;ROLE_EDYCJA_NABOROW;ROLE_EKSPERT;ROLE_IMPORT_WNIOSKOW_XML;ROLE_KARTAPROJEKTU;ROLE_LISTA_NABOROW;ROLE_OCENA_FORMALNA;ROLE_OCENA_MERYTORYCZNA;ROLE_OCENA_MERYTORYCZNA_KONFIGURACJA;ROLE_PRZYDZIELANIE_FORMALNEJ;ROLE_RAPORTY");
+            }else{
+                $em->remove($uz);
+            }
+        }
+        $em->flush();
+        die(count($wniosek->getUserZasoby())."");
+    }
 }    
