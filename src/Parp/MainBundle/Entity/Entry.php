@@ -878,4 +878,8 @@ class Entry
     {
         return $this->activateDeactivated;
     }
+    
+    public function getUstawUprawnieniaPoczatkowe(){
+        return true;
+    }
 }

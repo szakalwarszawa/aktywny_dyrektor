@@ -431,7 +431,11 @@ class DefaultController extends Controller
         $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
-        $ADUser = $ldap->getUserFromAD($samaccountname);
+        if($dump == "dump"){
+            $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
+        }else{
+            $ADUser = $ldap->getUserFromAD($samaccountname);
+        }
         if($dump == "dump"){
             unset($ADUser[0]['thumbnailphoto']);
             echo "<pre>"; print_r($ADUser); die();

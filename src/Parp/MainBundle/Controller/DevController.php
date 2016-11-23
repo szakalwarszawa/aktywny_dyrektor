@@ -2250,4 +2250,100 @@ class DevController extends Controller
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => [$w]]);
     }
+    
+    
+    /**
+     * @Route("/testNazw", name="testNazw")
+     * @Template()
+     */
+    public function testNazwAction(){
+        $ldap = $this->get('ldap_service');
+        $searchName = ("Wojtaszek Dariusz");
+        $aduser = $ldap->getUserFromAD(null, $searchName, null, "wszyscyWszyscy");
+        
+        var_dump($aduser);
+        die($searchName);
+    }
+    
+    
+    
+    /**
+     * @Route("/poprawManagerow", name="poprawManagerow")
+     * @Template()
+     */
+    public function poprawManagerowAction(){
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $dane = [
+            'anna_awdiejewa' => 'Wojtaszek Dariusz',
+            'Edyta_Banasiak' => 'joanna_skrzynska',
+            'adam_bernatowicz' => 'Standziak-Koresh Monika',
+            'grzegorz_bialowarczu' => 'Standziak-Koresh Monika',
+            'slawomir_biedermann' => 'Wojtaszek Dariusz',
+            'joanna_boratynska' => 'joanna_skrzynska',
+            'wojciech_chatys' => 'Wojtaszek Dariusz',
+            'marcin_chojnacki' => 'Standziak-Koresh Monika',
+            //'aneta_jeziorska' => 'pracownik nieobecny',
+            //'katarzyna_jusinska' => 'pracownik nieobecny',
+            'witold_kajszczak' => 'Wojtaszek Dariusz',
+            //'patrycja_klarecka' => 'nd',
+            'karolina_kowalska' => 'Lasocki Robert',
+            'Milosz_Marczuk' => 'Standziak-Koresh Monika',
+            //'anna_markiewicz' => 'pracownik nieobecny',
+            'Magdalena_Mazek' => 'joanna_skrzynska',
+            'sylwia_michalczuk' => 'joanna_skrzynska',
+            'agnieszka_oktabowicz' => 'joanna_skrzynska',
+            'barbara_piatkowska' => 'joanna_skrzynska',
+            'agnieszka_promianows' => 'Wojtaszek Dariusz',
+            //'joanna_sankowska' => 'nd',
+            'irena_socha' => 'joanna_skrzynska',
+            'tomasz_szelag' => 'joanna_skrzynska',
+            'daniel_smiarowski' => 'joanna_skrzynska',
+            'marzena_talar' => 'Lasocki Robert',
+            'aleksandra_wadowska' => 'Wojtaszek Dariusz',
+            'katarzyna_winiarska' => 'Standziak-Koresh Monika',
+            'magdalena_zwolinska' => 'Wojtaszek Dariusz',
+            'joanna_zebrowska' => 'Standziak-Koresh Monika',
+        ];
+        foreach($dane as $user => $manager){
+            $entry = new Entry();
+            $entry->setSamaccountname($user);
+            if(strstr($manager, "_") !== false){
+                //po loginie
+                $mgr = $ldap->getUserFromAD($manager, null, null, "wszyscyWszyscy");
+            }elseif($manager == "nd"){
+                $entry->setManager("BRAK");
+            }else{
+                $mgr = $ldap->getUserFromAD(null, $manager, null, "wszyscyWszyscy");
+            }
+            if($mgr){
+                $entry->setManager($mgr[0]['distinguishedname']);
+            }
+            $entry->setFromWhen(new \Datetime());
+            $em->persist($entry);
+            
+        }
+        $em->flush();
+    }
+    
+    
+    /**
+     * @Route("/poprawPrezes", name="poprawPrezes")
+     * @Template()
+     */
+    public function poprawPrezesAction(){
+    
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        
+        $ldapAdmin->ldap_modify(
+            $ldapconn,  
+            //"CN=Klarecka Patrycja,OU=ZA,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",  
+            "CN=Sankowska-Tecław Joanna,OU=BZK,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
+            //"CN=Jakacki Kamil,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
+            ['manager' => []]
+        );
+    
+    }
 }    

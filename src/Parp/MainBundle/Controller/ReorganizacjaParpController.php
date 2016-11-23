@@ -1332,6 +1332,10 @@ class ReorganizacjaParpController extends Controller
             'Sekcja Wdrażania i Monitorowania Programu Po Wer' => 'Sekcja Wdrażania i Monitorowania Programu PO WER',
             'Sekcja Współpracy Z RIF' => 'Sekcja Współpracy z RIF',
             'Sekcja Zleceniobiorca' => '',
+            'Sekcja Nd' => '',
+            '"SS DS programowania\n /Sekcja Rad do spraw Kompetencji"' => 'Samodzielne stanowisko do spraw programowania',
+            //'Samodzielne stanowisko do spraw ewaluacji i analiz rozwoju przedsiębiorstw' => '',
+            'Samodzielne stanowisko do spraw programowania /rad do spraw kompetencji' => 'Samodzielne stanowisko do spraw programowania',
             'Samodzielne stanowisko do spraw programowania /rad do spraw kompetencji' => 'Samodzielne stanowisko do spraw programowania'
         ];
         $sekcja = isset($mapaSekcji2[$sekcja]) ? $mapaSekcji2[$sekcja] : $sekcja;
@@ -1346,23 +1350,34 @@ class ReorganizacjaParpController extends Controller
      */
     public function wczytajExcelSekcjePrzelozeniAction(){
         
-        
+        //21.11.2016
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
         
-        $mapDep = ['DEPARTAMENT USŁUG ROZWOJOWYCH' => 'DEPARTAMENT  USŁUG ROZWOJOWYCH'];
+        $mapDep = ['DEPARTAMENT USŁUG ROZWOJOWYCH' => 'DEPARTAMENT  USŁUG ROZWOJOWYCH',
+        'DEPARTAMENT KOMUNIKACJI I MARKETINGU - EXPO' => 'Departament Komunikacji i Marketingu – EXPO'];
         $mapManagers = [
             'Dyląg - Sajór Monika' => 'Dyląg-Sajór Monika',
-            'Skubiszeska-Nietz Aleksandra' => 'Skubiszewska-Nietz (Skubiszewska-Nietz) Aleksandra', //'Skubiszewska-Nietz Aleksandra',
+            "Skubiszewska-Nietz Aleksandra" => 'Skubiszewska-Nietz (Skubiszewska-Nietz) Aleksandra',
+            "SKUBISZEWSKA-NIETZ ALEKSANDRA" => 'Skubiszewska-Nietz (Skubiszewska-Nietz) Aleksandra', //'Skubiszewska-Nietz Aleksandra',
             'Nawrocka Monika' => 'Nawrocka (Trzcińska) Monika',
             'Kieruczenko-Adamczyk Katarzyna' => 'Kieruczenko-Adamczyk  Katarzyna',
             'Gniadek Mariola' => 'Gniadek (Jechna) Mariola',
             'Świebocka-Nerbowska Anna' => 'Świebocka-Nerkowska Anna',
             'Laskowski Robert' => 'Laskowski Robert',
+            'SKRZYŃSKA JOANNA' => "Skrzyńska Joanna",
+            'Skrzyńska Joanna' => "joanna_skrzynska",
+            'CZUPRYŃSKA-FRĄCZEK KATARZYNA' => "Czupryńska Katarzyna",
+            'CHABROSZEWSKA KAROLINA' => 'Gromulska Karolina',
+            'KŁOS-TYBUROWSKA MARTA' => 'Kłos Marta',
+            'MACHOWIAK-KRZYSZTAŁOWICZ BEATA' => 'Machowiak Beata',
+            'SŁUGOCKA-MORAWSKA DARIA' => 'Morawska Daria',
+            'ŻEBER-SIKORSKA MILENA' => 'Żeber Milena',
+            'N/d' => ''
         ];
         
         //$file = "/media/parp/pracownicy.xls";
-        $file = "/tmp/pracownicy.xls";
+        $file = "/tmp/pracownicy2.xlsx";
         $phpExcelObject = new \PHPExcel(); 
         if (!file_exists($file)) {
             
@@ -1374,11 +1389,11 @@ class ReorganizacjaParpController extends Controller
         
         $rowStart = 1;
         $mapowanie = [
-            'A' => 'name',
+            'C' => 'name',
             'H' => 'name2',
-            'I' => 'department',
-            'K' => 'info',
-            'L' => 'manager'  
+            'D' => 'department',
+            'F' => 'info',
+            'G' => 'manager'  
         ];
         $wynik = [];
         
@@ -1395,10 +1410,10 @@ class ReorganizacjaParpController extends Controller
         $sekcjeSa = [];
         
         $noweDane = [];
-        
+        //var_dump($sheetData); die();
         $i = 0;
         foreach($sheetData as $row){
-            if($i > $rowStart){
+            if($i > $rowStart && $row['C'] != ""){
                 $o = ['akcja' => 'nic'];
                 foreach($mapowanie as $k => $v){
                     $o[$v] = trim($row[$k]);
@@ -1410,15 +1425,33 @@ class ReorganizacjaParpController extends Controller
                 if(isset($mapManagers[$o['manager']])){
                     $o['manager'] = $mapManagers[$o['manager']];
                 }
+                if(isset($mapManagers[$o['name']])){
+                    $o['name'] = $mapManagers[$o['name']];
+                }
                 
                 $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(
                     ['name' => $o['department'], 'nowaStruktura' => 1]
                 );
                 $o['dbDep'] = $departament ? $departament->getId() : 0;
 
+                $searchName = (isset($mapManagers[$o['name']]) ? $mapManagers[$o['name']] : $o['name']);
+                $aduser = $ldap->getUserFromAD(null, $searchName);
+                $o['disabled'] = 0; 
+                if(count($aduser) == 0 && $o['name'] != ""){
+                    $im = explode(" ", $o['name']);
+                    $searchName = $im[0]."*".$im[1];
+                    //echo "SZukam $searchName ";
+                    $aduser = $ldap->getUserFromAD(null, $searchName, null, "wszyscyWszyscy");
+                    $o['disabled'] = 1;
+                    if(count($aduser) == 0){
+                        echo ("BLAD!!! Nie mam osoby $searchName");
+                    }
+                }
+                
+                
+                $o['samaccountname'] = count($aduser) > 0 ? $aduser[0]['samaccountname'] : "!!!";         
 
-                $aduser = $ldap->getUserFromAD(null, (isset($mapManagers[$o['name']]) ? $mapManagers[$o['name']] : $o['name']));
-                $o['samaccountname'] = count($aduser) > 0 ? $aduser[0]['samaccountname'] : "";         
+
 /*
                 $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(
                     ['samaccountname' => $o['department'], 'nowaStruktura' => 1]
@@ -1444,8 +1477,13 @@ class ReorganizacjaParpController extends Controller
                 }
                 
                 //managera dodac
-                $manager = $ldap->getUserFromAD(null, $o['manager']);
-                $manager = count($manager) > 0 ? $manager[0] : null;
+                if(strstr($o['manager'], "_") !== false){
+                    $manager = $ldap->getUserFromAD($o['manager'], null, null, 'wszyscyWszyscy');
+                    $manager = count($manager) == 1 ? $manager[0] : null;
+                }else{
+                    $manager = $ldap->getUserFromAD(null, $o['manager'], null, 'wszyscyWszyscy');
+                    $manager = count($manager) == 1 ? $manager[0] : null;
+                }
                 
                 $o['adManager'] = $manager ? $manager['samaccountname'] : '';
                 
@@ -1473,9 +1511,10 @@ class ReorganizacjaParpController extends Controller
         $ldap = $this->get('ldap_service');
         //zapodaje akcje
         foreach($wyniki as $w){
-            if($w['department'] != "#N/A" && $w['department'] != "#REF!" && !in_array($w['samaccountname'], $pominLudzi)){
-                $aduser = $ldap->getUserFromAD($w['samaccountname']);
-                if(count($aduser) > 0){
+            //var_dump($w);
+            if($w['name'] != ''  && $w['department'] != "#N/A" && $w['department'] != "#REF!" && !in_array($w['samaccountname'], $pominLudzi)){
+                $aduser = $ldap->getUserFromAD($w['samaccountname'], null, null, "wszyscyWszyscy");
+                if(count($aduser) > 0 && $w['samaccountname'] != "!!!"){
                     $zmian = 0;
                     echo "<br>zmiany dla ".$w['name']." ".$w['samaccountname']."<br>";
                     $zmiany = new \Parp\MainBundle\Entity\Entry();
@@ -1509,11 +1548,11 @@ class ReorganizacjaParpController extends Controller
                             $zmian++;
                         }
                     }
-                    if($aduser[0]['department'] != $departament->getName()){
+                    if($departament != null && $aduser[0]['department'] != $departament->getName()){
                         //$zmiany->setDepartment($departament->getName());
                         echo "          zmiana nazwy department ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['department'] ." na ".$departament->getName()."<br>";
                     }
-                    if($aduser[0]['description'] != $departament->getShortname() && !strstr("Konto wy", $aduser[0]['description']) === false){
+                    if($departament != null && $aduser[0]['description'] != $departament->getShortname() && !strstr("Konto wy", $aduser[0]['description']) === false){
                         //$zmiany->setDescription($departament->getShortname());
                         echo "          zmiana skrotu department ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['description'] ." na ".$departament->getShortname()."<br>";
                     }
@@ -1525,7 +1564,7 @@ class ReorganizacjaParpController extends Controller
                             $zmiany->setManager($manager[0]['distinguishedname']);
                         }
                     }else{
-                        echo "BLAD nie znalazl managera !!!! ".$w['name']." ".$w['samaccountname']."<br>";    
+                        echo "BLAD nie znalazl managera !!!! ".$w['name']." ".$w['samaccountname']." ".$w['manager']."<br>";    
                     }
                     if($zmian > 0){
                         echo "Robie zmiany ";
@@ -1546,8 +1585,8 @@ class ReorganizacjaParpController extends Controller
                 echo "kasuje ".$w['samaccountname']."<br>";
             }
         }
-        //$em->flush();
-        die();
+        ///$em->flush();
+        //die();
     }
     protected function utworzSekcje($data){
         

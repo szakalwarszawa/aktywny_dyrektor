@@ -123,6 +123,10 @@ class LdapAdminService
         if(count($userNow) == 0){                 
             $ktorzy = "nieaktywne";
             $userNow = $ldap_client->getUserFromAD($samaccountname, null, null, $ktorzy);            
+        }        
+        if(count($userNow) == 0){                 
+            $ktorzy = "wszyscyWszyscy";
+            $userNow = $ldap_client->getUserFromAD($samaccountname, null, null, $ktorzy);            
         }
         return ['user' => $userNow, 'ktorzy' => $ktorzy];
     }
@@ -284,7 +288,9 @@ class LdapAdminService
         
         if ($person->getManager()) {
             $manager = $person->getManager();
-            if (strstr($manager, "CN=") === false) {
+            if($manager == "BRAK"){
+                $entry['manager'] = [];
+            }elseif (strstr($manager, "CN=") === false) {
                 // znajdz sciezke przelozonego
                 $cn = $manager;
                 $searchString = "(&(cn=" . $cn . ")(objectClass=person))";
@@ -314,10 +320,9 @@ class LdapAdminService
             }elseif(strstr($manager, "CN=") !== false){
                 $entry['manager'] = $person->getManager();
                 
-            }else{
-                
             }
         }
+        //var_dump($person->getManager(), $entry); die();
         if ($person->getTitle()) {
             $entry['title'] = $person->getTitle();
         }

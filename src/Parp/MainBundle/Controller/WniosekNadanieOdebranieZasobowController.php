@@ -328,7 +328,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function newAction($odebranie = 0)
     {
-        if( $this->getParameter('pusz_to_ad') == true  ){   // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
+        if( $this->getParameter('pusz_to_ad') == true && $odebranie == 1 ){   // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
             die("Na razie to jeszcze nie jest wlaczone");
         }
         //var_dump($this->getUser());

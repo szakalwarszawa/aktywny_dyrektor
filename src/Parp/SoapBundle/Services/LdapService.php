@@ -600,7 +600,16 @@ class LdapService
         if ($samaccountname) {
             $searchString = "(&(samaccountname=" . $samaccountname . ")(objectClass=person))";
         } elseif ($cnname) {
-            $cnname = ldap_escape($cnname);
+            if(strstr($cnname, "*")){
+                $ps = explode("*", $cnname);
+                $ret = [];
+                foreach($ps as $p){
+                    $ret[] = ldap_escape($p);
+                }
+                $cnname = implode("*", $ret);
+            }else{
+                $cnname = ldap_escape($cnname);
+            }
             $searchString = '(&(name=*' . $cnname . '*)(objectClass=person))';
 
         } elseif($query) {
