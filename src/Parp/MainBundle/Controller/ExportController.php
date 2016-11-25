@@ -62,17 +62,27 @@ class ExportController extends Controller
                 'Opis',
                 'Właściciel',
                 'Administrator',
+                'Aktywny',
+                'Wniosek'
             ]
         ];
         
         foreach($zasoby as $zasob){
+            $wniosekNr = "";
+            try{
+                $wniosekNr = $zasob->getWniosekUtworzenieZasobu() ? $zasob->getWniosekUtworzenieZasobu()->getWniosek()->getNumer() : "";
+            }catch(\Exception $e){
+                
+            }
+            
             $data[] = [
                 'id' => $zasob->getId(),
                 'nazwa' => $zasob->getNazwa(),
                 'opis' => $zasob->getOpis(),
-                'wlasciciel' => isset($mapaOsob[$zasob->getWlascicielZasobu()]) ? $mapaOsob[$zasob->getWlascicielZasobu()] : $zasob->getWlascicielZasobu(),
-                'administrator' => isset($mapaOsob[$zasob->getAdministratorZasobu()]) ? $mapaOsob[$zasob->getAdministratorZasobu()] : $zasob->getAdministratorZasobu(),
-                'aktywny' => $zasob->getPublished(),   
+                'wlasciciel' => $this->getNames($zasob->getWlascicielZasobu(), $mapaOsob),
+                'administrator' => $this->getNames($zasob->getAdministratorZasobu(), $mapaOsob),
+                'aktywny' => $zasob->getPublished(),
+                'wniosek' => $wniosekNr
             ];
         }
         
@@ -92,5 +102,13 @@ class ExportController extends Controller
         
         $writer->save('php://output');
         die();
+    }
+    protected function getNames($oss, $mapaOsob){
+        $osoby = [];
+        $os = explode(",", $oss);
+        foreach($os as $o){
+            $osoby[] = isset($mapaOsob[$o]) ? $mapaOsob[$o] : $o;
+        }
+        return implode(", ", $osoby);
     }
 }
