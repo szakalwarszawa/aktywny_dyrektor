@@ -76,10 +76,10 @@
         var v = $('#form_grupy').val();
         var s = $('#form_nazwafiltr').val().toUpperCase();
         if(v || s){
-            $('#form_access .uprawnienieRow').addClass('hidden');
+            $('#form_access > div').addClass('hidden');
             //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
             if(s){
-                $('#form_access .uprawnienieRow').each(function(){
+                $('#form_access > div').each(function(){
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
                     console.log('sprawdzam txt '+txt+' i classes '+classes);

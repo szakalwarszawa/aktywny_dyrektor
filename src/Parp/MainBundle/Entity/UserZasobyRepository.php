@@ -51,6 +51,28 @@ class UserZasobyRepository extends EntityRepository
         
         return $query->getResult();
     }
+    public function findUserZasobyByAccountname($samaccountname)
+    {
+
+        $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND uz.samaccountname = :samaccountname and uz.czyAktywne = 1
+              ORDER BY z.nazwa ASC
+              ')->setParameter('samaccountname', $samaccountname);
+        $a1 = $query->getResult();
+        
+        
+        $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND uz.samaccountname = :samaccountname and uz.czyOdebrane = 1
+              ORDER BY z.nazwa ASC
+              ')->setParameter('samaccountname', $samaccountname);
+        $a2 = $query->getResult();    
+        
+        return array_merge($a1, $a2);
+    }
     public function findUsersByZasobId($zasobId){
         global $kernel;
         

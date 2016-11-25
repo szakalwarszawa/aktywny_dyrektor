@@ -174,30 +174,6 @@ class ZasobyController extends Controller
         );
     }
 
-    /**
-     * Finds and displays a Zasoby entity.
-     *
-     * @Route("/{id}", name="zasoby_show")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
-    }
 
     /**
      * Displays a form to edit an existing Zasoby entity.
@@ -359,5 +335,30 @@ class ZasobyController extends Controller
             $users[$u['samaccountname']] = $u['name'];
         }
         return $users;
+    }
+    
+    /**
+     * Finds and displays a Zasoby entity.
+     *
+     * @Route("/{id}/show", name="zasoby_show")
+     * @Method("GET")
+     * @Template()
+     */
+    public function showAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+
+        if (!$entity) {
+            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+        }
+
+        $deleteForm = $this->createDeleteForm($id);
+
+        return array(
+            'entity'      => $entity,
+            'delete_form' => $deleteForm->createView(),
+        );
     }
 }

@@ -462,7 +462,7 @@ class DefaultController extends Controller
         $previousData = $defaultData;
 
         
-        $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
+        $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findUserZasobyByAccountname($samaccountname);
         for($i = 0; $i < count($zasoby); $i++){
             $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
             
