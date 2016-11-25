@@ -2340,9 +2340,9 @@ class DevController extends Controller
         $ldapAdmin->ldap_modify(
             $ldapconn,  
             //"CN=Klarecka Patrycja,OU=ZA,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",  
-            "CN=Sankowska-Tecław Joanna,OU=BZK,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
-            //"CN=Jakacki Kamil,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
-            ['manager' => []]
+            //"CN=Sankowska-Tecław Joanna,OU=BZK,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
+            "CN=Jakacki Kamil,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
+            ['manager' => "CN=Trocewicz Andrzej,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local"/*[]*/]
         );
     
     }
