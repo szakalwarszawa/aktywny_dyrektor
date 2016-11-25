@@ -78,7 +78,7 @@ class ExportController extends Controller
             $data[] = [
                 'id' => $zasob->getId(),
                 'nazwa' => $zasob->getNazwa(),
-                'opis' => $zasob->getOpis(),
+                'opis' => $zasob->getOpisZasobu(),
                 'wlasciciel' => $this->getNames($zasob->getWlascicielZasobu(), $mapaOsob),
                 'administrator' => $this->getNames($zasob->getAdministratorZasobu(), $mapaOsob),
                 'aktywny' => $zasob->getPublished(),
