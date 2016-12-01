@@ -2380,5 +2380,43 @@ class DevController extends Controller
         var_dump($manager);
     }
     
+    /**
+     * @Route("/cofnijWniosekZasobOKrok/{wid}", name="cofnijWniosekZasobOKrok")
+     * @Template()
+     */
+    public function cofnijWniosekZasobOKrokAction($wid){
+        $manager = $this->getDoctrine()->getManager();
+        $wniosek = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($wid);
+        
+        
+        $lastStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 1];
+        $newStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 2];
+        
+        $manager->remove($lastStatus);
+        $wniosek->getWniosek()->setStatus($newStatus->getStatus());
+        //var_dump($lastStatus);
+        $manager->flush();
+        die(".".$wniosek->getWniosek()->getStatus());
+    }
+    
+    
+    /**
+     * @Route("/poprawHistorieZasobow", name="poprawHistorieZasobow")
+     * @Template()
+     */
+    public function poprawHistorieZasobowAction(){
+        $manager = $this->getDoctrine()->getManager();
+        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();   
+        foreach($zasoby as $zasob){     
+            $zasob->setWlascicielZasobu($zasob->getWlascicielZasobu()." ");
+        }
+        $manager->flush();
+        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();   
+        foreach($zasoby as $zasob){     
+            $zasob->setWlascicielZasobu(str_replace(" ", "", $zasob->getWlascicielZasobu()));
+        }           
+        $manager->flush();
+        die(".".$zasob->getId());
+    }
     
 }    
