@@ -2367,4 +2367,18 @@ class DevController extends Controller
         $em->flush();
         die(count($wniosek->getUserZasoby())."");
     }
+    
+    
+    /**
+     * @Route("/sprawdzDyrektora/{skrot}", name="sprawdzDyrektora")
+     * @Template()
+     */
+    public function sprawdzDyrektoraAction($skrot){
+        $ldap = $this->get('ldap_service');
+        $manager = $ldap->getDyrektoraDepartamentu($skrot);
+        
+        var_dump($manager);
+    }
+    
+    
 }    

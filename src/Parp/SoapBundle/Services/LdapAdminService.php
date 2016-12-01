@@ -705,7 +705,8 @@ class LdapAdminService
             $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
             //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
             $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "+");
-            $this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+            $data = [["memberOf" => []]];
+            $this->addRemoveMemberOf($person, $data, $dn, $userdn, $ldapconn);
         }
         //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
         $ldapstatus = $this->ldap_error($ldapconn);

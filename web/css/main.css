@@ -128,3 +128,7 @@ table{
 .pill-content > form > .active {
     display: block;
 }
+
+#historia .JColResizer{
+    table-layout: auto;
+}
