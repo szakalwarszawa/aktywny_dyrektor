@@ -917,6 +917,120 @@ class ReorganizacjaParpController extends Controller
     }
     
     /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/audytUprawnienWszystkichTest", name="audytUprawnienWszystkichTest", defaults={})
+     * @Method("GET")
+     */
+    public function audytUprawnienWszystkichTestAction()
+    {        
+        $ret = $this->wyliczGrupyUsera('kamil_jakacki');
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+        
+    }
+    protected function wyliczGrupyUsera($sam){
+        $em = $this->getDoctrine()->getManager();
+        $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($sam);
+        $ret = [];
+        foreach($userzasoby as $uz){
+            $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            if($z->getGrupyAD()){
+                
+                
+                
+                $ret[] = [
+                    'id' => $uz->getId(),
+                    'zasobId' => $uz->getZasobId(),
+                    'zasob' => $z->getNazwa(),
+                    'grupyAd' => $z->getGrupyAD(),
+                    'poziomyDostepu' => $z->getPoziomDostepu(),
+                    'poziomDostepu' => $uz->getPoziomDostepu(),
+                    'poziom' => $this->znajdzGrupeAD($uz, $z)
+                ];
+            }
+        }
+        return $ret;
+    }
+    protected function znajdzGrupeAD($uz, $z){
+        $grupy = explode(";", $z->getGrupyAD());
+        $poziomy = explode(";", $z->getPoziomDostepu());
+        $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
+        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : "!!!blad $ktoryPoziom ".count($grupy)."!!!";
+    }
+    protected function znajdzPoziom($poziomy, $poziom){
+        $i = -1;
+        for($i = 0; $i < count($poziomy); $i++){
+            if(trim($poziomy[$i]) == trim($poziom) || strstr(trim($poziomy[$i]), trim($poziom)) !== false){
+                return $i;
+            }
+        }
+        return $i;
+    }
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/audytUprawnienWszystkich", name="audytUprawnienWszystkich", defaults={})
+     * @Method("GET")
+     */
+    public function audytUprawnienWszystkichAction()
+    {
+        $em = $this->getDoctrine()->getManager();
+        $odbieraj = false;
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $ret = [];
+                           
+        $users = $this->get('ldap_service')->getAllFromAD(false, false);
+        //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
+        foreach($users as $u){
+            $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy([
+                'pracownik' => strtoupper($u['name'])
+            ]);
+            $section = $u['division'];
+            if(count($sekcja) > 0){
+                $section = $sekcja[0]->getSekcjaSkrot();
+            }
+            $grupyPodstawowe = $this->get('ldap_service')->getGrupyUsera($u, $this->get('ldap_service')->getOUfromDN($u), $section);
+            
+            $trzebaNadac = array_diff($grupyPodstawowe, $u['memberOf']);
+            $trzebaOdebrac = array_diff($u['memberOf'], $grupyPodstawowe);
+            
+            $msg = "";
+            if(count($trzebaNadac) > 0 && $odbieraj){
+                //die();
+                foreach($trzebaNadac as $g){
+                    $dn = $u['distinguishedname'];
+                    $grupa = $ldapAdmin->getGrupa($g);
+                    $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
+                    //echo "<pre>"; var_dump($g, $addtogroup); echo "</pre>";
+                    //var_dump($g, $addtogroup, array('member' => $dn ));
+                    $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
+                    
+                    $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+                    $msg = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn." ".$g."</span>\r\n<br>";
+                }
+            }
+            
+            $ret[] = [
+                'samaccountname' => $u['samaccountname'],
+                'memberOf' => $u['memberOf'],
+                'uprawnieniaPoczatkowe' => $grupyPodstawowe,
+                'trzebaNadac' => $trzebaNadac,
+                'trzebaOdebrac' => $trzebaOdebrac,
+                'sekcjaNaPodstawieAD' => (count($sekcja) == 0 ? "TAK" : "NIE"),
+                'title' => $u['title'],
+                'msg' => $msg
+            ];
+        }
+    
+        
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
+    
+    /**
      * @Route("/updateManagersAndTitles", name="updateManagersAndTitles")
      */
     public function updateManagersAndTitlesAction()
