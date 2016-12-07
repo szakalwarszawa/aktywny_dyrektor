@@ -81,7 +81,7 @@ class UserZasobyRepository extends EntityRepository
         }
         
         $ldap = $kernel->getContainer()->get('ldap_service');
-        
+        /*
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
@@ -91,6 +91,20 @@ class UserZasobyRepository extends EntityRepository
                
         
         $res = $query->getResult();
+        */
+        $res = $this->getEntityManager()
+        ->createQueryBuilder()
+        ->select('uz, w')
+        ->from('ParpMainBundle:UserZasoby', 'uz')
+        ->innerJoin('uz.wniosek','w')
+        ->innerJoin('ParpMainBundle:Zasoby','z')
+        ->andWhere('z.id = uz.zasobId')
+        ->andWhere('w.id = uz.wniosek')
+        ->andWhere('z.id = :zasobId')
+        ->setParameter('zasobId', $zasobId)
+        ->orderBy('uz.samaccountname')
+        ->getQuery()
+        ->getResult();
         
         foreach($res as $uz){
             //echo $uz->getSamaccountname()."<br>";

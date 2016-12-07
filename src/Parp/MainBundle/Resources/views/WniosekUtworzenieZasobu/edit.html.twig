@@ -77,9 +77,6 @@
                         {%endif%}
                         
                         
-                        {% if canUnblock %}
-                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
-                        {%endif%}
                         
                         {% if not(
                             entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB"  or

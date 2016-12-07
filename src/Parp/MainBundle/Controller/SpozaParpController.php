@@ -27,7 +27,7 @@ class SpozaParpController extends Controller
     /**
      * Lists all DaneRekord entities.
      *
-     * @Route("/index", name="danerekord")
+     * @Route("/index", name="spozaparp")
      * @Template()
      */
     public function indexAction()
