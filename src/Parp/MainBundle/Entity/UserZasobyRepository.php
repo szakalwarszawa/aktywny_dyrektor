@@ -125,4 +125,16 @@ class UserZasobyRepository extends EntityRepository
         //print_r($res);die();
         return $res;
     }
+    
+    public function findAktywneDlaOsoby($samaccountname){
+        $query = $this->getEntityManager()->createQuery('
+        SELECT uz FROM ParpMainBundle:UserZasoby uz
+              JOIN ParpMainBundle:Zasoby z
+              WHERE uz.zasobId = z.id
+              AND (uz.samaccountname = :samaccountname or 1 = 1) and uz.czyNadane = 1
+              ORDER BY z.nazwa ASC
+              ')->setParameter('samaccountname', $samaccountname);
+        $a2 = $query->getResult();    
+        return $a2;
+    }
 }

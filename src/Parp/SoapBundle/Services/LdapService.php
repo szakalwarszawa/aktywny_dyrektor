@@ -929,6 +929,7 @@ class LdapService
         }
         switch(strtolower($user['title'])){
             case "rzecznik beneficjenta parp, dyrektor":
+            case "główny księgowy, dyrektor":
             case "dyrektor":
             case "dyrektor (p.o.)":
             case "zastępca dyrektora":
@@ -938,6 +939,10 @@ class LdapService
             case "zastępca prezesa (p.o.)":
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                break;
+            case "koordynator projektu":
+            case "kierownik":
+            case "p.o. kierownika":
                 break;
         }
         for($i = 0; $i < count($grupy); $i++){
