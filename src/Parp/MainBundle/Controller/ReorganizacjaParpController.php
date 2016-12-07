@@ -919,25 +919,55 @@ class ReorganizacjaParpController extends Controller
     /**
      * Lists all Klaster entities.
      *
-     * @Route("/audytUprawnienWszystkichTest", name="audytUprawnienWszystkichTest", defaults={})
+     * @Route("/audytUprawnienWszystkich", name="audytUprawnienWszystkich", defaults={})
      * @Method("GET")
      */
-    public function audytUprawnienWszystkichTestAction()
-    {        
-        $ret = $this->wyliczGrupyUsera('kamil_jakacki');
+    public function audytUprawnienWszystkichAction()
+    {   
+        //$user = $this->get('ldap_service')->getUserFromAD('kamil_jakacki');
+        //$ret[] = $this->audytUprawnienUsera($user[0]);
+        $ret = [];
+        $users = $this->get('ldap_service')->getAllFromAD(false, false);
+        foreach($users as $user){
+            $ret[] = $this->audytUprawnienUsera($user);
+        }
+        
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
         
     }
-    protected function wyliczGrupyUsera($sam){
+    protected function audytUprawnienUsera($user){
+        $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
+        $maGrupy = $user['memberOf'];
+        $diff1 = array_diff($powinienMiecGrupy, $maGrupy);
+        $diff2 = array_diff($maGrupy, $powinienMiecGrupy);
+        
+        $ret = [
+            'osoba' => $user['samaccountname'],
+            'maGrupy' => $maGrupy,
+            'powinienMiec' => $powinienMiecGrupy,
+            'dodac' => $diff1,
+            'zdjac' => $diff2
+        ];
+        return $ret;
+        
+        
+        //var_dump($maGrupy, $powinienMiecGrupy, $diff1, $diff2); die();
+    }
+    protected function wyliczGrupyUsera($user){
         $em = $this->getDoctrine()->getManager();
-        $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($sam);
-        $ret = [];
+        $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
+        //$ret = [];
+        $ret = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
+
         foreach($userzasoby as $uz){
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
-            if($z->getGrupyAD()){
-                
-                
-                
+            if(
+                $z->getGrupyAD() && 
+                $uz->getPoziomDostepu() != "nie dotyczy" && 
+                $uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
+            ){
+                $ret[] = $this->znajdzGrupeAD($uz, $z);
+                /*
                 $ret[] = [
                     'id' => $uz->getId(),
                     'zasobId' => $uz->getZasobId(),
@@ -946,9 +976,11 @@ class ReorganizacjaParpController extends Controller
                     'poziomyDostepu' => $z->getPoziomDostepu(),
                     'poziomDostepu' => $uz->getPoziomDostepu(),
                     'poziom' => $this->znajdzGrupeAD($uz, $z)
-                ];
+                ];*/
             }
         }
+        
+        
         return $ret;
     }
     protected function znajdzGrupeAD($uz, $z){
@@ -965,69 +997,6 @@ class ReorganizacjaParpController extends Controller
             }
         }
         return $i;
-    }
-    /**
-     * Lists all Klaster entities.
-     *
-     * @Route("/audytUprawnienWszystkich", name="audytUprawnienWszystkich", defaults={})
-     * @Method("GET")
-     */
-    public function audytUprawnienWszystkichAction()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $odbieraj = false;
-        $ldap = $this->get('ldap_service');
-        $ldapAdmin = $this->get('ldap_admin_service');
-        $ldapAdmin->output = $this;
-        $ldapconn = $ldapAdmin->prepareConnection();
-        $ret = [];
-                           
-        $users = $this->get('ldap_service')->getAllFromAD(false, false);
-        //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
-        foreach($users as $u){
-            $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy([
-                'pracownik' => strtoupper($u['name'])
-            ]);
-            $section = $u['division'];
-            if(count($sekcja) > 0){
-                $section = $sekcja[0]->getSekcjaSkrot();
-            }
-            $grupyPodstawowe = $this->get('ldap_service')->getGrupyUsera($u, $this->get('ldap_service')->getOUfromDN($u), $section);
-            
-            $trzebaNadac = array_diff($grupyPodstawowe, $u['memberOf']);
-            $trzebaOdebrac = array_diff($u['memberOf'], $grupyPodstawowe);
-            
-            $msg = "";
-            if(count($trzebaNadac) > 0 && $odbieraj){
-                //die();
-                foreach($trzebaNadac as $g){
-                    $dn = $u['distinguishedname'];
-                    $grupa = $ldapAdmin->getGrupa($g);
-                    $addtogroup = $grupa['distinguishedname'];//"CN=".$g.",OU=".$this->grupyOU."".$this->patch;
-                    //echo "<pre>"; var_dump($g, $addtogroup); echo "</pre>";
-                    //var_dump($g, $addtogroup, array('member' => $dn ));
-                    $ldapAdmin->ldap_mod_add($ldapconn, $addtogroup, array('member' => $dn ));
-                    
-                    $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
-                    $msg = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_mod_add $ldapstatus dla osoby ".$addtogroup." ".$dn." ".$g."</span>\r\n<br>";
-                }
-            }
-            
-            $ret[] = [
-                'samaccountname' => $u['samaccountname'],
-                'memberOf' => $u['memberOf'],
-                'uprawnieniaPoczatkowe' => $grupyPodstawowe,
-                'trzebaNadac' => $trzebaNadac,
-                'trzebaOdebrac' => $trzebaOdebrac,
-                'sekcjaNaPodstawieAD' => (count($sekcja) == 0 ? "TAK" : "NIE"),
-                'title' => $u['title'],
-                'msg' => $msg
-            ];
-        }
-    
-        
-        
-        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
     
     /**

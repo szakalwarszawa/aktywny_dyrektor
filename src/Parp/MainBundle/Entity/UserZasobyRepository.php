@@ -145,7 +145,7 @@ class UserZasobyRepository extends EntityRepository
         SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
               WHERE uz.zasobId = z.id
-              AND (uz.samaccountname = :samaccountname or 1 = 1) and uz.czyNadane = 1
+              AND (uz.samaccountname = :samaccountname or 1 = 12) and uz.czyNadane = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
         $a2 = $query->getResult();    
