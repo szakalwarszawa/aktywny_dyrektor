@@ -291,7 +291,13 @@ class DefaultController extends Controller
                     break;
                 case "accountExpires":
                     if($value){
+                        
+                        
                         $entry->setAccountexpires(new \DateTime($value));    
+                        if($entry->getAccountExpires()){
+                            $entry->setAccountExpires($entry->getAccountExpires()->setTime(23, 59));
+                        }
+                        
                     }else{
                         $entry->setAccountexpires(new \DateTime("3000-01-01 00:00:00"));
                     }
@@ -713,6 +719,9 @@ class DefaultController extends Controller
             //data wygasniecia
             if(isset($diff['accountExpires'])){
                 $entry->setAccountExpires(new \Datetime($ndata['accountExpires']));
+                if($entry->getAccountExpires()){
+                    $entry->setAccountExpires($entry->getAccountExpires()->setTime(23, 59));
+                }
                 
             }
             //konto wylaczone
@@ -1097,7 +1106,12 @@ class DefaultController extends Controller
             
             $entry->setFromWhen(new \DateTime($entry->getFromWhen()));
             
-            $entry->setAccountExpires(new \DateTime($entry->getAccountExpires()));
+            $d = new \DateTime($entry->getAccountExpires());
+            if($d){
+                $d->setTime(23,59);
+                $entry->setAccountExpires($d);
+                //die(".".$d->format("Y-m-d h:I:s"));
+            }
             
             $value = implode(",", $entry->getInitialrights());
             $entry->setInitialrights($value);

@@ -315,9 +315,6 @@ class Entry
      */
     public function getAccountExpires()
     {
-        if($this->accountExpires){
-            $this->accountExpires->setTime(23, 59);
-        }
         return $this->accountExpires;
     }
 
