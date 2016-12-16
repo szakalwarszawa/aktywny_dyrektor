@@ -2401,6 +2401,26 @@ class DevController extends Controller
     
     
     /**
+     * @Route("/cofnijWniosekUprawnieniaOKrok/{wid}", name="cofnijWniosekUprawnieniaOKrok")
+     * @Template()
+     */
+    public function cofnijWniosekUprawnieniaOKrokAction($wid){
+        $manager = $this->getDoctrine()->getManager();
+        $wniosek = $manager->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wid);
+        
+        
+        $lastStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 1];
+        $newStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 2];
+        
+        $manager->remove($lastStatus);
+        $wniosek->getWniosek()->setStatus($newStatus->getStatus());
+        //var_dump($lastStatus);
+        $manager->flush();
+        
+        die(".".$wniosek->getWniosek()->getStatus());
+        
+    }
+    /**
      * @Route("/poprawHistorieZasobow", name="poprawHistorieZasobow")
      * @Template()
      */
