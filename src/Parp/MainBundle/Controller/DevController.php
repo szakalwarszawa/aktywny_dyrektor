@@ -2419,7 +2419,7 @@ class DevController extends Controller
         
         die(".".$wniosek->getWniosek()->getStatus());
         
-    }
+    }    
     /**
      * @Route("/poprawHistorieZasobow", name="poprawHistorieZasobow")
      * @Template()
@@ -2437,6 +2437,126 @@ class DevController extends Controller
         }           
         $manager->flush();
         die(".".$zasob->getId());
+    }
+
+    
+    /**
+     * @Route("/zestawieniaPacownikowSpozaPARP", name="zestawieniaPacownikowSpozaPARP")
+     * @Template()
+     */
+    public function zestawieniaPacownikowSpozaPARPAction(){
+        
+        $manager = $this->getDoctrine()->getManager();
+        $statusy = $manager->getRepository('ParpMainBundle:WniosekStatus')->findByNazwaSystemowa([
+            "07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY"
+        ]);
+        $sql = "select wz,w from ParpMainBundle:WniosekNadanieOdebranieZasobow wz join wz.wniosek w join w.status s 
+        where s.nazwaSystemowa in ('07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY')
+        and wz.pracownikSpozaParp = 1";
+        
+        $wnioski = $manager->createQuery($sql)->getResult();
+        
+        $ret = [];
+        foreach($wnioski as $w){
+            foreach($w->getUserZasoby() as $uz){
+                $zasob = $manager->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+                $dyrektor = "";
+                foreach($w->getWniosek()->getStatusy() as $hs){
+                    if($hs->getStatus()->getNazwaSystemowa() == "02_EDYCJA_PRZELOZONY"){
+                        $dyrektor = $hs->getCreatedBy();
+                    }
+                }
+                $ret[] = [
+                    'wniosekId' => $w->getId(),
+                    'wniosekNumer' => $w->getWniosek()->getNumer(),
+                    'osoba' => $uz->getSamaccountname(),
+                    'zasobId' => $zasob->getId(), 
+                    'zasob' => $zasob->getNazwa(),
+                    'od' => $uz->getAktywneOd()->format("Y-m-d"),
+                    'do' => $uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "" ,
+                    'odebrane' => $uz->getCzyOdebrane(),
+                    'departament' => $w->getWniosek()->getJednostkaOrganizacyjna(),
+                    'dyrektor' => $dyrektor
+                ];
+            }
+        }
+        
+        
+/*
+        $wnioski = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->findBy([
+        
+        $wnioski = $manager->createQuery($sql)->getResult();
+        
+        $ret = [];
+        foreach($wnioski as $w){
+            foreach($w->getUserZasoby() as $uz){
+                $zasob = $manager->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+                $dyrektor = "";
+                foreach($w->getWniosek()->getStatusy() as $hs){
+                    if($hs->getStatus()->getNazwaSystemowa() == "02_EDYCJA_PRZELOZONY"){
+                        $dyrektor = $hs->getCreatedBy();
+                    }
+                }
+                $ret[] = [
+                    'wniosekId' => $w->getId(),
+                    'wniosekNumer' => $w->getWniosek()->getNumer(),
+                    'osoba' => $uz->getSamaccountname(),
+                    'zasobId' => $zasob->getId(), 
+                    'zasob' => $zasob->getNazwa(),
+                    'od' => $uz->getAktywneOd()->format("Y-m-d"),
+                    'do' => $uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "" ,
+                    'odebrane' => $uz->getCzyOdebrane(),
+                    'departament' => $w->getWniosek()->getJednostkaOrganizacyjna(),
+                    'dyrektor' => $dyrektor
+                ];
+            }
+        }
+        
+        
+/*
+        $wnioski = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->findBy([
+            'wniosek.status' => $statusy
+        ]);
+*/
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+        //var_dump(count($wnioski)); die();
+    }
+    
+    /**
+     * @Route("/listaOsobExpired", name="listaOsobExpired")
+     * @Template()
+     */
+    public function listaOsobExpiredAction()
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $dzis = new \Datetime();
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD('wszyscyWszyscy');
+        $ret = [];
+        foreach($users as $u){
+            if($u['accountExpires']){
+                $dateParts = explode("-", $u['accountExpires']);
+                if($dateParts[0] >= 2016){
+                    unset($u['thumbnailphoto']);
+                    unset($u['memberOf']);
+                    unset($u['roles']);
+                    
+                    $expiry = new \Datetime($u['accountExpires']);
+                    $expiry->setTime(23,59);
+                    $u['myExpiry'] = $expiry->format("Y-m-d H:i:s");
+                    
+                    $entry = new Entry();
+                    $entry->setFromWhen($dzis);
+                    $entry->setSamaccountname($u['samaccountname']);
+                    $entry->setAccountExpires($expiry);
+                    $entry->setIsImplemented(0);
+                    $manager->persist($entry);
+                    $ret[] = $u;
+                }
+            }
+        }
+        //$manager->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
     
 }    

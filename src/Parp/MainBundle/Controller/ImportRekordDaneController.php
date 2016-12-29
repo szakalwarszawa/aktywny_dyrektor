@@ -6,6 +6,13 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use APY\DataGridBundle\APYDataGridBundle;
+use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Source\Entity;
+use APY\DataGridBundle\Grid\Column\ActionsColumn;
+use APY\DataGridBundle\Grid\Action\RowAction;
+use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 /**
  * Klaster controller.
@@ -16,6 +23,51 @@ class ImportRekordDaneController extends Controller
 {
     
     protected $dataGraniczna = '2016-08-01';//'2011-10-01';//'2016-08-01'; //'2016-07-31'
+
+
+    
+    /**
+     * Lists all Klaster entities.
+     *
+     * @Route("/grid", name="importfirebird_grid_index", defaults={})
+     * @Template("ParpMainBundle:DaneRekord:index.html.twig")
+     */
+    public function importfirebirdTestGridIndexAction()
+    {
+        //die($this->parseNazwiskoValue("JAKACKI-TEST"));
+        $sciecha = "";
+        
+        $this->dataGraniczna = date("Y-m-d");
+        //$this->dataGraniczna = '2016-11-01';
+        $sql = $this->getSqlDoImportu();
+        $miesiac = 1;
+        $rok = 2012;
+        //die($sql);
+        //$rows = $this->executeQueryIbase($sql);
+        $dane = $this->executeQuery($sql);
+        //echo "<pre>"; print_r($dane); die();
+        $rows = [];
+        foreach($dane as $d){
+            $row = [];
+            foreach($d as $k => $v){
+                $row[$k] = $this->parseValue($v);
+            }
+            $rows[] = $row;
+        }
+        $grid = $this->get('grid');
+        $source = new Vector($rows);
+        
+        $source->setId('SYMBOL');
+        $grid->setSource($source);
+        $grid->setLimits(5000);
+        
+        $grid->isReadyForRedirect();
+        return $grid->getGridResponse();
+        
+        //return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $rows]);
+        //echo "<pre>"; print_r($rows);
+        //die('testfirebird');
+    }
 
 /*
     protected $container;
