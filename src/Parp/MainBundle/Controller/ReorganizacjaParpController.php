@@ -935,7 +935,7 @@ class ReorganizacjaParpController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
         
     }
-    protected function audytUprawnienUsera($user){
+    public function audytUprawnienUsera($user){
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
         $maGrupy = $user['memberOf'];
         $diff1 = array_diff($powinienMiecGrupy, $maGrupy);
@@ -953,7 +953,7 @@ class ReorganizacjaParpController extends Controller
         
         //var_dump($maGrupy, $powinienMiecGrupy, $diff1, $diff2); die();
     }
-    protected function wyliczGrupyUsera($user){
+    public function wyliczGrupyUsera($user){
         $em = $this->getDoctrine()->getManager();
         $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
         //$ret = [];

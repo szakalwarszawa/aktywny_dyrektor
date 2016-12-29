@@ -1,0 +1,1 @@
+INSERT INTO `acl_role`(`deletedAt`, `name`, `opis`) VALUES (NULL, 'ROLE_MANAGER_DLA_OSOB_SPOZA_PARP', 'Rola managera dla osób spoza PARP');

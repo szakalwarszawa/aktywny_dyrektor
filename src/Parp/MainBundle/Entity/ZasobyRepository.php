@@ -29,4 +29,17 @@ class ZasobyRepository extends EntityRepository
 */
         
     }
-}
+
+
+    public function findByGrupaAD($grupa)
+    {
+
+        $query = $this->createQueryBuilder('z')
+                ->where('z.nazwa like :grupa or z.grupyAD like :grupa ')
+                ->setParameters(array('grupa' => "%$grupa%"))
+                ->getQuery();
+        $results = $query->getResult();
+        return count($results) == 1 ? $results[0] : null;
+
+        
+    }}

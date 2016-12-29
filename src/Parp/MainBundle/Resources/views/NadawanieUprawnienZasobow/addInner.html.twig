@@ -136,6 +136,24 @@
     }
     $('#form_access input[type=checkbox]').click(zmianaZaznaczenia);
 </script>
+{%if(zasobyId != '')%}
+<script>
+{% set ids = zasobyId|split(",")%}
+
+
+{% for id in ids %}
+    $('input[name="form[access][]"][value={{id}}]').prop('checked', true);
+{%endfor%}
+
+{%if(ids|length == 1)%}
+    $('#form_nazwafiltr').val($('input[name="form[access][]"][value={{ids[0]}}]').closest('label').text().trim());
+    $('#form_nazwafiltr').trigger('input');
+{%else%}
+    $('#form_nazwafiltr').val("Zaznaczono wybrane zasoby");
+    $('#form_nazwafiltr').trigger('input');
+{%endif%}
+</script>
+{%endif%}
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 
 

@@ -423,7 +423,7 @@ class LdapAdminService
             }
             
             if($person->getIsDisabled()){
-                $entry['description'] = "Konto wyłączone bo: ".$person->getDisableDescription();
+                $entry['description'] = $person->getDisableDescription();
             }else{
                 $entry['description'] = $sn;                
             }

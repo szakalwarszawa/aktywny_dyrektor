@@ -76,11 +76,13 @@ class NadawanieUprawnienZasobowController extends Controller
      */
     public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
+        $zasobyId = "";
         if($request->getMethod() == "POST"){
             //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();    
             $samaccountnames = $request->get('form')['samaccountnames'];
         }else{        
             $samaccountnames = $request->get('samaccountnames');
+            $zasobyId = $request->get('zasobyId');
         }
         //var_dump($samaccountnames); die('addRemoveAccessToUsersAction - mam tamten controller');
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
@@ -221,10 +223,10 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             }
         }
-        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId);    
+        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);    
     }
     
-    protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action, $wniosekId = 0)
+    protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action, $wniosekId = 0, $zasobyId = "")
     {
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         //print_r($samaccountnames);
@@ -516,7 +518,8 @@ class NadawanieUprawnienZasobowController extends Controller
             'form' => $form->createView() ,
             'title' => $title,
             'choicesDescription' => $choices,
-            'action' => $action
+            'action' => $action,
+            'zasobyId' => $zasobyId
         ));
     }
     

@@ -299,6 +299,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //echo "<pre>"; var_dump($users); die();
         return $users;
     }
+    protected function getManagerzySpozaPARP(){
+        $ldap = $this->get('ldap_service');
+        $managersSpozaParp = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:AclRole')->findOneByName("ROLE_MANAGER_DLA_OSOB_SPOZA_PARP");
+        
+        $managerzySpozaParp = [];
+        foreach($managersSpozaParp->getUsers() as $u){
+            $aduser = $ldap->getUserFromAD($u->getSamaccountname());
+            $managerzySpozaParp[$u->getSamaccountname()] = $aduser[0]['name'];
+        }
+        return $managerzySpozaParp;
+    }
     /**
      * Creates a form to create a WniosekNadanieOdebranieZasobow entity.
      *
@@ -309,7 +320,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $entity), $entity, array(
+        
+        
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getManagerzySpozaPARP(), $entity), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
             'method' => 'POST',
         ));
@@ -319,6 +332,56 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return $form;
     }
 
+    /**
+     * Displays a form to create a new WniosekNadanieOdebranieZasobow entity.
+     *
+     * @Route("/new_dla_zasobow/{zasobyId}", name="wnioseknadanieodebraniezasobow_new_dla_zasobow", defaults={})
+     * @Method("GET")
+     * @Template("ParpMainBundle:WniosekNadanieOdebranieZasobow:edit.html.twig")
+     */
+    public function newDlaZasobowAction($zasobyId)
+    {
+        $em = $this->getDoctrine()->getManager();
+        $entity = $this->createEmptyWniosek(false);
+        $entity->setPracownicy($this->getUser()->getUsername());
+        $em->persist($entity);
+        $em->persist($entity->getWniosek());
+        
+        $entity->ustawPoleZasoby();
+        $em->flush();
+
+        $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
+        $prs = explode(",", $entity->getPracownicy());
+        $pr = array();
+        foreach($prs as $p){
+            $pr[$p] = 1;
+        }
+        
+        return $this->redirect($this->generateUrl('addRemoveAccessToUsersAction', array(
+            'samaccountnames' => json_encode($pr),
+            'action' => ($entity->getOdebranie() ? 'removeResources' : 'addResources'),
+            'wniosekId' => $entity->getId(),
+            'zasobyId' => $zasobyId
+        )));
+        
+    }
+    protected function createEmptyWniosek($odebranie){
+        $ldap = $this->get('ldap_service');
+        $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        
+        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        
+        $entity = new WniosekNadanieOdebranieZasobow();
+        $entity->getWniosek()->setCreatedAt(new \Datetime());
+        $entity->getWniosek()->setLockedAt(new \Datetime());
+        $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
+        $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
+        $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
+        $entity->getWniosek()->setStatus($status);
+        $entity->setOdebranie($odebranie);
+        return $entity;
+    }
     /**
      * Displays a form to create a new WniosekNadanieOdebranieZasobow entity.
      *
@@ -338,15 +401,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
         
-        $entity = new WniosekNadanieOdebranieZasobow();
-        $entity->getWniosek()->setCreatedAt(new \Datetime());
-        $entity->getWniosek()->setLockedAt(new \Datetime());
-        $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
-        $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
-        $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
-        $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
-        $entity->getWniosek()->setStatus($status);
-        $entity->setOdebranie($odebranie);
+        $entity = $this->createEmptyWniosek($odebranie);
         $form   = $this->createCreateForm($entity);
 
         return array(
@@ -1361,7 +1416,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getManagerzySpozaPARP()), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

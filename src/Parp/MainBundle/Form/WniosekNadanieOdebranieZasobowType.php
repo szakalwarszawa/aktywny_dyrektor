@@ -10,10 +10,12 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
 {
     protected $ADUsers;
     protected $entity;
+    protected $managerzySpozaPARP;
     
-    public function __construct($ADUsers, $entity){
+    public function __construct($ADUsers, $managerzySpozaPARP, $entity){
         $this->ADUsers = $ADUsers;
         $this->entity = $entity;
+        $this->managerzySpozaPARP = $managerzySpozaPARP;
     }
     /**
      * @param FormBuilderInterface $builder
@@ -57,7 +59,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
             ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
             
             ->add('managerSpozaParp', 'choice',  array(
-                'choices' => $this->ADUsers,
+                'choices' => $this->managerzySpozaPARP,
                 'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2'))
             )
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
