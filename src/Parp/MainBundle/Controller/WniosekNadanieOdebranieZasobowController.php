@@ -271,6 +271,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'userzasoby' => []
         );
     }
+    private function getUsersFromADWithRole($role){
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $users = array();
+        foreach($ADUsers as &$u){
+            if(in_array($role, $u['roles'])){
+                $users[$u['samaccountname']] = $u['name'];
+            }
+        }
+        //echo "<pre>"; var_dump($users); die();
+        return $users;
+    }
+
+    
     private function getUsersFromAD(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
@@ -321,8 +335,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         
         
-        
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getManagerzySpozaPARP(), $entity), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getUsersFromADWithRole("ROLE_MANAGER_DLA_OSOB_SPOZA_PARP"), $entity), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
             'method' => 'POST',
         ));
@@ -1416,7 +1429,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getManagerzySpozaPARP()), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getUsersFromADWithRole("ROLE_MANAGER_DLA_OSOB_SPOZA_PARP")), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

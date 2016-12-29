@@ -4,15 +4,15 @@
 
     <div class="alert alert-danger">
         <h1>UWAGA!!!!!</h1>
-        Niedługo zostaną odebrane uprawnienia, które nie są uprawnieniami podstawowymi pracownika i nie wynikają z wniosków o nadanie uprawnień złożonych w AkD
+        Dnia 12.01.2017 zostaną odebrane uprawnienia, które nie są uprawnieniami podstawowymi pracownika i nie wynikają z wniosków o nadanie uprawnień złożonych w AkD
         
     </div>
     <table class="table">
         <tr>
             <th>Obecne uprawnienia</th>
-            <th>Uprawnienia które zostaną</th>
+            <th>Uprawnienia które pozostaną</th>
 {#             <th>Nowe uprawnienia</th> #}
-            <th>Odebrane uprawnienia</th>
+            <th>Uprawnienia które zostaną odebrane</th>
         </tr>
         <tr>
             <td>
@@ -42,10 +42,11 @@
                     </div>
                 {%endfor%}
                 
-                
+                {#
                     {%if(uprawnienia.zasobyId)%}
                     <a href="{{url('wnioseknadanieodebraniezasobow_new_dla_zasobow', {'zasobyId' : uprawnienia.zasobyId})}}" class="btn btn-success">Złóż wniosek o nadanie uprawnień do odbieranych zasobów</a>
                     {%endif%}
+                #}
             </td>
         </tr>
     </table>

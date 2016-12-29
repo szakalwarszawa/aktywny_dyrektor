@@ -61,7 +61,19 @@ class WiadomoscController extends Controller
         foreach($diff2 as $zdejmowanaGrupa){
             $zasob = $em->getRepository('ParpMainBundle:Zasoby')->findByGrupaAD($zdejmowanaGrupa);
             if($zasob){
-                $zasobyId[] = $zasob->getId();
+                $userzasob = $em->getRepository('ParpMainBundle:UserZasoby')->findBy([
+                    'samaccountname' => $this->getUser()->getUsername(),
+                    'zasobId' => $zasob->getId()
+                ]);
+                if(count($userzasob) > 0){
+                    $zasob = null;
+                }else{
+                
+                    $zasobyId[] = $zasob->getId();
+                }
+                
+                
+                
             }
             $zdejmowaneGrupy[] = [
                 'grupaAD' =>   $zdejmowanaGrupa,
