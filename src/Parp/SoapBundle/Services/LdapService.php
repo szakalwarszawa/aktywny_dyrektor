@@ -918,6 +918,12 @@ class LdapService
     } 
     
     public function getGrupyUsera($user, $depshortname, $sekcja){
+        /*
+        Prezesa PARP	[UPr]	PARP	członkostwo w grupie INT Olimp [send]; 
+członkostwo w grupie INT Prezesi [send];
+wysyłanie do grupy INT Dyrektorzy;
+wysyłanie do grupy INT-Zastepcy-Dyrektorow;
+        */
         $pomijajSekcje = ["ND", "", "n/d", ""];
         $grupy = ['SGG-(skrót D/B)-Wewn-Wsp-RW',
             'Pracownicy'
@@ -928,21 +934,74 @@ class LdapService
             $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
         switch(strtolower($user['title'])){
-            case "rzecznik beneficjenta parp, dyrektor":
-            case "główny księgowy, dyrektor":
-            case "dyrektor":
-            case "dyrektor (p.o.)":
-            case "zastępca dyrektora":
-            case "zastępca dyrektora (p.o.)":
             case "prezes":
             case "zastępca prezesa":
             case "zastępca prezesa (p.o.)":
+                /*
+członkostwo w grupie INT Olimp [send]; 
+członkostwo w grupie INT Prezesi [send];
+wysyłanie do grupy INT Dyrektorzy;
+wysyłanie do grupy INT-Zastepcy-Dyrektorow;
+                */
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                $grupy[] = 'INT Olimp Senders';
+                $grupy[] = 'INT-Prezesi';
+                $grupy[] = 'INT-Dyrektorzy';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                break;
+            case "dyrektor":
+            case "dyrektor (p.o.)":
+            case "rzecznik beneficjenta parp, dyrektor":
+                /*
+członkostwo w grupie INT Olimp [send];
+członkostwo w grupie INT Dyrektorzy [send];
+wysyłanie do grupy INT-Zastepcy-Dyrektorow;
+dostęp zdalny do zasobów PARP z urządzenia będącego własnością PARP
+dostęp do aplikacji Rejestr Umów (RUM) [UD/B]
+dostęp do katalogu W:Olimp (SG-Olimp) [RW]
+dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Public  (SGG-D/B-Public) [RW]                    
+                */    
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                $grupy[] = 'INT Olimp Senders';
+                $grupy[] = 'INT-Dyrektorzy-Senders';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                break;
+            case "główny księgowy, dyrektor":
+                /*
+dostęp do katalogu W:Umowy (SGG-***-Umowy) [RO]                    
+                */    
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 break;
-            case "koordynator projektu":
-            case "kierownik":
+            case "zastępca dyrektora":
+            case "zastępca dyrektora (p.o.)":
+                /*
+członkostwo w grupie INT Olimp [send];
+dostęp do aplikacji Rejestr Umów (RUM) [UD/B]
+dostęp zdalny do zasobów PARP z urządzenia będącego własnością PARP
+wysyłanie do grupy INT Dyrektorzy;
+członkostwo w grupie INT-Zastepcy-Dyrektorow [send];
+dostęp do katalogu W:Olimp (SG-Olimp) [RW]
+dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Public  (SGG-D/B-Public) [RW]                    
+                */    
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                $grupy[] = 'INT Olimp Senders';
+                $grupy[] = 'INT-Dyrektorzy-Senders';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
+                break;
+            
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                break;
             case "p.o. kierownika":
+            case "kierownik":
+//członkostwo w grupie INT Kierownicy [send].
+                $grupy[] = 'INT-Kierownicy-Senders';
+                break;
+            case "koordynator projektu":
                 break;
         }
         for($i = 0; $i < count($grupy); $i++){
