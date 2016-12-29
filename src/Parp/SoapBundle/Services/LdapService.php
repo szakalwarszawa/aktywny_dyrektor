@@ -945,14 +945,15 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 */
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT Olimp Senders';
+                $grupy[] = 'INT Olimp';
                 $grupy[] = 'INT-Prezesi';
-                $grupy[] = 'INT-Dyrektorzy';
-                $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                $grupy[] = 'INT-Dyrektorzy-Senders';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
                 break;
             case "dyrektor":
             case "dyrektor (p.o.)":
             case "rzecznik beneficjenta parp, dyrektor":
+            case "główny księgowy, dyrektor":
                 /*
 członkostwo w grupie INT Olimp [send];
 członkostwo w grupie INT Dyrektorzy [send];
@@ -964,16 +965,11 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 */    
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT Olimp Senders';
-                $grupy[] = 'INT-Dyrektorzy-Senders';
-                $grupy[] = 'INT-Zastepcy-Dyrektorow';
-                break;
-            case "główny księgowy, dyrektor":
-                /*
-dostęp do katalogu W:Umowy (SGG-***-Umowy) [RO]                    
-                */    
-                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
-                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                $grupy[] = 'INT Olimp';
+                $grupy[] = 'SG Olimp';
+                $grupy[] = 'INT-Dyrektorzy';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
+                //$grupy[] = 'SG-OLIMP';
                 break;
             case "zastępca dyrektora":
             case "zastępca dyrektora (p.o.)":
@@ -988,18 +984,15 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 */    
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT Olimp Senders';
+                $grupy[] = 'INT Olimp';
+                $grupy[] = 'SG Olimp';
                 $grupy[] = 'INT-Dyrektorzy-Senders';
-                $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
-                break;
-            
-                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
-                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
+                $grupy[] = 'INT-Zastepcy-Dyrektorow';
                 break;
             case "p.o. kierownika":
             case "kierownik":
 //członkostwo w grupie INT Kierownicy [send].
-                $grupy[] = 'INT-Kierownicy-Senders';
+                $grupy[] = 'INT-Kierownicy';
                 break;
             case "koordynator projektu":
                 break;

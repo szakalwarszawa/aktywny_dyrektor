@@ -104,9 +104,9 @@ class WiadomoscController extends Controller
         foreach($userzasoby as $uz){
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             if(
-                $z->getGrupyAD() && 
-                $uz->getPoziomDostepu() != "nie dotyczy" && 
-                $uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
+                $z->getGrupyAD() //&& 
+                //$uz->getPoziomDostepu() != "nie dotyczy" && 
+                //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
                 $ret[] = $this->znajdzGrupeAD($uz, $z);
                 /*
