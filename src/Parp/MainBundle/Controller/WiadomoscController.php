@@ -117,12 +117,15 @@ class WiadomoscController extends Controller
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             //var_dump($z->getGrupyAD());
             if(
-                $z->getGrupyAD() //&& 
+                $z->getGrupyAD() 
+                || $z->getId() == 4311
+                //&& 
                 //$uz->getPoziomDostepu() != "nie dotyczy" && 
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
                 $ret[] = $this->znajdzGrupeAD($uz, $z);
                 
+                //echo "<br>".$z->getId()." ".$uz->getKanalDostepu() ."<br>";
                 //VPN 
                 if($z->getId() == 4311 && in_array($uz->getKanalDostepu() , ['DZ_O', 'DZ_P'])){
                     $ret[] = "SG-BI-VPN-Access";
