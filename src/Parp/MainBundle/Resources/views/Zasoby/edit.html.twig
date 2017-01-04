@@ -13,7 +13,7 @@
         
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Edycja Zasoby </h1>
+                <h1>Edycja Zasoby {{entity.published == 0 ? "(ZASÓB NIEAKTYWNY)" : ""}} </h1>
                 <div class="tabContent">
                                         <div class="btn-group">
 
@@ -22,6 +22,7 @@
 </a>
 </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
+                    
                     {{ form(edit_form) }}
                 </div>
             </div>            
