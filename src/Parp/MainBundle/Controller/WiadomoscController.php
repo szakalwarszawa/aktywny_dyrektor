@@ -27,22 +27,28 @@ class WiadomoscController extends Controller
 
     /**
      *
-     * @Route("/powitalna", name="powitalna")
+     * @Route("/powitalna/{samaccountname}", name="powitalna", defaults={"samaccountname" : ""})
      * @Template()
      */
-    public function powitalnaAction()
+    public function powitalnaAction($samaccountname)
     {
         
         $em = $this->getDoctrine()->getManager();
-        $log = new \Parp\MainBundle\Entity\Log();
-        $log->setLogin($this->getUser()->getUsername());
-        $log->setUrl("/powitalna");
-        $log->setDescription("Odczytano wiadomość powitalną.");
+        if($samaccountname == ""){
+            $log = new \Parp\MainBundle\Entity\Log();
+            $log->setLogin($this->getUser()->getUsername());
+            $log->setUrl("/powitalna");
+            $log->setDescription("Odczytano wiadomość powitalną.");
+            
+            $em->persist($log);
+            $em->flush();
+            
+            
+            $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
+        }else{
+            $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+        }
         
-        $em->persist($log);
-        $em->flush();
-        
-        $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
         
         $uprawnienia = $this->audytUprawnienUsera($user[0]);
         
@@ -53,6 +59,7 @@ class WiadomoscController extends Controller
     public function audytUprawnienUsera($user){
         $em = $this->getDoctrine()->getManager();
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
+        //var_dump($powinienMiecGrupy);
         $maGrupy = $user['memberOf'];
         $diff1 = array_diff($powinienMiecGrupy, $maGrupy);
         $diff2 = array_diff($maGrupy, $powinienMiecGrupy);
@@ -100,9 +107,10 @@ class WiadomoscController extends Controller
         $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
         //$ret = [];
         $ret = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
-
+//var_dump($userzasoby);
         foreach($userzasoby as $uz){
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            //var_dump($z->getGrupyAD());
             if(
                 $z->getGrupyAD() //&& 
                 //$uz->getPoziomDostepu() != "nie dotyczy" && 
@@ -130,7 +138,13 @@ class WiadomoscController extends Controller
         $grupy = explode(";", $z->getGrupyAD());
         $poziomy = explode(";", $z->getPoziomDostepu());
         $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
-        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : "!!!blad $ktoryPoziom ".count($grupy)."!!!";
+        
+        if(!($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy))){
+            //var_dump($grupy, $poziomy, $ktoryPoziom);
+        }
+        
+        
+        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')' ; //$grupy[0];
     }
     protected function znajdzPoziom($poziomy, $poziom){
         $i = -1;
