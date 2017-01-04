@@ -57,6 +57,9 @@ class WiadomoscController extends Controller
         return ['uprawnienia' => $uprawnienia];
     }
     public function audytUprawnienUsera($user){
+        
+        $NIE_ODBIERAC_TYCH_GRUP = ['', '', ''];//tu beda grupy accessowe
+        
         $em = $this->getDoctrine()->getManager();
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
         //var_dump($powinienMiecGrupy);
@@ -82,10 +85,12 @@ class WiadomoscController extends Controller
                 
                 
             }
-            $zdejmowaneGrupy[] = [
-                'grupaAD' =>   $zdejmowanaGrupa,
-                'zasob' => $zasob
-            ];
+            if(!in_array($zdejmowanaGrupa, $NIE_ODBIERAC_TYCH_GRUP)){
+                $zdejmowaneGrupy[] = [
+                    'grupaAD' =>   $zdejmowanaGrupa,
+                    'zasob' => $zasob
+                ];
+            }
         }
         
         
@@ -117,6 +122,12 @@ class WiadomoscController extends Controller
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
                 $ret[] = $this->znajdzGrupeAD($uz, $z);
+                
+                //VPN 
+                if($z->getId() == 4311 && in_array($uz->getKanalDostepu() , ['DZ_O', 'DZ_P'])){
+                    $ret[] = "SG-BI-VPN-Access";
+                }
+                
                 /*
                 $ret[] = [
                     'id' => $uz->getId(),
@@ -129,6 +140,8 @@ class WiadomoscController extends Controller
                 ];*/
             }
         }
+        
+        
         
         
         return $ret;
