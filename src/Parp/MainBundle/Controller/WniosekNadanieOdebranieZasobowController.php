@@ -382,7 +382,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
         
-        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        
         
         $entity = new WniosekNadanieOdebranieZasobow();
         $entity->getWniosek()->setCreatedAt(new \Datetime());
@@ -391,7 +391,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
         $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
         $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
-        $entity->getWniosek()->setStatus($status);
+        
+        $this->setWniosekStatus($entity, "00_TWORZONY", false);
+        //$status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        //$entity->getWniosek()->setStatus($status);
         $entity->setOdebranie($odebranie);
         return $entity;
     }

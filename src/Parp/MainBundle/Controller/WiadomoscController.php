@@ -143,8 +143,8 @@ class WiadomoscController extends Controller
             //var_dump($grupy, $poziomy, $ktoryPoziom);
         }
         
-        
-        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')' ; //$grupy[0];
+        //$uz->getId()." ".$z->getId()." ".
+        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')') ; //$grupy[0];
     }
     protected function znajdzPoziom($poziomy, $poziom){
         $i = -1;
