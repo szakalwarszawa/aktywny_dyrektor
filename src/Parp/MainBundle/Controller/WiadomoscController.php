@@ -67,7 +67,7 @@ class WiadomoscController extends Controller
         $zasobyId = [];
         foreach($diff2 as $zdejmowanaGrupa){
             $zasob = $em->getRepository('ParpMainBundle:Zasoby')->findByGrupaAD($zdejmowanaGrupa);
-            if($zasob){
+            if($zasob && $zasob->getPublished() == 1){
                 $userzasob = $em->getRepository('ParpMainBundle:UserZasoby')->findBy([
                     'samaccountname' => $this->getUser()->getUsername(),
                     'zasobId' => $zasob->getId()
@@ -84,7 +84,7 @@ class WiadomoscController extends Controller
             }
             $zdejmowaneGrupy[] = [
                 'grupaAD' =>   $zdejmowanaGrupa,
-                'zasob' => $zasob
+                'zasob' => ($zasob && $zasob->getPublished() == 1 ? $zasob : null)
             ];
         }
         
@@ -109,10 +109,11 @@ class WiadomoscController extends Controller
         $ret = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
 //var_dump($userzasoby);
         foreach($userzasoby as $uz){
-            $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            $z = $em->getRepository("ParpMainBundle:Zasoby")->findOneBy(['id' => $uz->getZasobId(), 'published' => 1]);
+            
             //var_dump($z->getGrupyAD());
             if(
-                $z->getGrupyAD() //&& 
+                $z != null  && $z->getGrupyAD() //&& 
                 //$uz->getPoziomDostepu() != "nie dotyczy" && 
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
