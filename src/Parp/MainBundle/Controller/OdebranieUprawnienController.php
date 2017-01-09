@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\APYDataGridBundle;
 use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Source\Entity;
@@ -15,19 +16,55 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\DaneRekord;
+use Parp\MainBundle\Entity\Entry;
 use Parp\MainBundle\Form\DaneRekordType;
 
 /**
  * Wiadomosc controller.
  *
- * @Route("/wiadomosc")
+ * @Route("/")
  */
-class WiadomoscController extends Controller
+class OdebranieUprawnienController extends Controller
 {
+    /**
+     * @Security("has_role('PARP_ADMIN')")
+     * @Route("/odebranie_uprawnien/{samaccountname}", name="oderbanie_uprawnien", defaults={"samaccountname" : ""})
+     * @Template()
+     */
+     public function odebranieUprawnienAction($samaccountname){
+        $em = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        if($samaccountname == ""){
+            $ADUsers = $ldap->getAllFromAD();
+        }else{
+            $ADUsers = $this->get('ldap_service')->getUserFromAD($samaccountname);
+        }
+        $dt = new \Datetime();
+        $zdejme = [];
+        foreach($ADUsers as $user){
+            $uprawnienia = $this->audytUprawnienUsera($user);
+            foreach($uprawnienia['zdjac'] as $zdjac){
+                $e = new Entry();
+                $e->setFromWhen($dt);
+                $e->setSamaccountname($user['samaccountname']);
+                //$zd = "-".implode(",-", $zdjac);
+                //$zd = substr($zd, 0, strlen($zd) - 2);
+                $zd = "-".$zdjac['grupaAD'];
+                $e->setMemberOf($zd);
+                $zdejme[] = $e;
+                $em->persist($e);
+            }
+        }
+        var_dump($zdejme);
+        
+        
+        //$em->flush();
+     }
+
 
     /**
      *
-     * @Route("/powitalna/{samaccountname}", name="powitalna", defaults={"samaccountname" : ""})
+     * @Route("/wiadomosc/powitalna/{samaccountname}", name="powitalna", defaults={"samaccountname" : ""})
      * @Template()
      */
     public function powitalnaAction($samaccountname)
@@ -64,8 +101,8 @@ class WiadomoscController extends Controller
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
         //var_dump($powinienMiecGrupy);
         $maGrupy = $user['memberOf'];
-        $diff1 = array_diff($powinienMiecGrupy, $maGrupy);
-        $diff2 = array_diff($maGrupy, $powinienMiecGrupy);
+        $diff1 = array_udiff($powinienMiecGrupy, $maGrupy, 'strcasecmp');
+        $diff2 = array_udiff($maGrupy, $powinienMiecGrupy, 'strcasecmp');
         $zdejmowaneGrupy = [];
         $zasobyId = [];
         foreach($diff2 as $zdejmowanaGrupa){
