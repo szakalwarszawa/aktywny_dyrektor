@@ -101,8 +101,8 @@ class OdebranieUprawnienController extends Controller
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
         //var_dump($powinienMiecGrupy);
         $maGrupy = $user['memberOf'];
-        $diff1 = array_udiff($powinienMiecGrupy, $maGrupy, 'strcasecmp');
-        $diff2 = array_udiff($maGrupy, $powinienMiecGrupy, 'strcasecmp');
+        $diff1 = array_udiff($powinienMiecGrupy['grupyAD'], $maGrupy, 'strcasecmp');
+        $diff2 = array_udiff($maGrupy, $powinienMiecGrupy['grupyAD'], 'strcasecmp');
         $zdejmowaneGrupy = [];
         $zasobyId = [];
         foreach($diff2 as $zdejmowanaGrupa){
@@ -145,10 +145,11 @@ class OdebranieUprawnienController extends Controller
         //var_dump($maGrupy, $powinienMiecGrupy, $diff1, $diff2); die();
     }
     public function wyliczGrupyUsera($user){
+        $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
         $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
-        //$ret = [];
-        $ret = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
+        $ret = ['grupyAD' => [], 'zasobyBezGrupAD' => [], 'sumaZWnioskow' => []];
+        $ret['grupyAD'] = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
 //var_dump($userzasoby);
         foreach($userzasoby as $uz){
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
@@ -160,12 +161,31 @@ class OdebranieUprawnienController extends Controller
                 //$uz->getPoziomDostepu() != "nie dotyczy" && 
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
-                $ret[] = $this->znajdzGrupeAD($uz, $z);
+                $grupa = $this->znajdzGrupeAD($uz, $z);
+                $ret['grupyAD'][] = $grupa;
+                
+                
+                $grupawAD = $ldap->getGrupa($grupa);
+                if($grupawAD){
+                    $ret['sumaZWnioskow'][] = [
+                        'grupa' => $grupa,
+                        'jestWAD' => true,
+                        'zasob' => $z->getNazwa(),
+                        'zasobId' => $z->getId()
+                    ];
+                }else{
+                    $ret['sumaZWnioskow'][] = [
+                        'grupa' => $grupa,
+                        'jestWAD' => false,
+                        'zasob' => $z->getNazwa(),
+                        'zasobId' => $z->getId()
+                    ];
+                }
                 
                 //echo "<br>".$z->getId()." ".$uz->getKanalDostepu() ."<br>";
                 //VPN 
                 if($z->getId() == 4311 && in_array($uz->getKanalDostepu() , ['DZ_O', 'DZ_P'])){
-                    $ret[] = "SG-BI-VPN-Access";
+                    $ret['grupyAD'][] = "SG-BI-VPN-Access";
                 }
                 
                 /*
@@ -178,9 +198,15 @@ class OdebranieUprawnienController extends Controller
                     'poziomDostepu' => $uz->getPoziomDostepu(),
                     'poziom' => $this->znajdzGrupeAD($uz, $z)
                 ];*/
+            }else{
+                $ret['sumaZWnioskow'][] = [
+                    'grupa' => 'brak',
+                    'jestWAD' => false,
+                    'zasob' => $z->getNazwa(),
+                    'zasobId' => $z->getId()
+                ];
             }
         }
-        
         
         
         

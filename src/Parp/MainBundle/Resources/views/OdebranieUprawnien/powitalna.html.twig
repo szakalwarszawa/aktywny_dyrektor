@@ -13,6 +13,10 @@
             <th>Uprawnienia które pozostaną</th>
 {#             <th>Nowe uprawnienia</th> #}
             <th>Uprawnienia które zostaną odebrane</th>
+            {% if "PARP_ADMIN" in app.user.roles %}
+            <th>Wszystkie uprawnienia na które są wnioski</th>
+            {%endif%}
+            
         </tr>
         <tr>
             <td>
@@ -21,7 +25,7 @@
                 {%endfor%}
             </td>
             <td>
-                {% for g in uprawnienia.powinienMiec %}
+                {% for g in uprawnienia.powinienMiec.grupyAD %}
                     <div class="alert alert-success">{{g}}</div>
                 {%endfor%}
             </td>
@@ -48,6 +52,23 @@
                     {%endif%}
                 #}
             </td>
+            
+            {% if "PARP_ADMIN" in app.user.roles %}
+            <td>
+                {% for g in uprawnienia.powinienMiec.sumaZWnioskow %}
+                    <div class="alert alert-{{g.grupa == 'brak' ? "warning" : (g.jestWAD ? "success" : "danger") }}">
+                        Zasób : 
+                        <a href="{{url('zasoby_edit', {'id' : g.zasobId})}}" class="btn btn-success">{{g.zasob}}</a>
+                        
+                        {%if g.grupa == 'brak' %}
+                            ZASÓB NIE MA GRUPY AD
+                        {%else%}
+                        GrupaAD: <b>{{g.grupa}}</b>, ({{g.jestWAD ? "grupa ISTNIEJE" : "grupa NIE ISTNIEJE"}})
+                        {%endif%}
+                    </div>
+                {%endfor%}
+            </td>
+            {%endif%}
         </tr>
     </table>
     
