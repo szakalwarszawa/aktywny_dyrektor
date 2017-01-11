@@ -1055,8 +1055,13 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                     $grupy[] = "SGG-".$depshortname."-Wewn-".$s."-RW";
                 }
             }
+            if (in_array("PARP_ADMIN", $this->container->get('security.context')
+                    ->getToken()
+                    ->getUser()->getRoles())){
+                var_dump(($sekcje)); 
+            }
             
-            //var_dump(($sekcje)); die();
+            //die();
         }
         
         
