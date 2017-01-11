@@ -916,7 +916,7 @@ class LdapService
         }
         return $ret;
     } 
-    protected $stanowiskaDyrektorzy = ["dyrektor", "dyrektor (p.o.)", "rzecznik beneficjenta parp, dyrektor", "główny księgowy, dyrektor"];
+    protected $stanowiskaDyrektorzy = ["dyrektor", "dyrektor (p.o.)", "p.o. dyrektora", "koordynator projektu", "rzecznik beneficjenta parp, dyrektor", "główny księgowy, dyrektor"];
     protected $stanowiskaWiceDyrektorzy = ["zastępca dyrektora", "zastępca dyrektora (p.o.)"];
     
     public function getSekcjePodwladnych($manager){
@@ -975,8 +975,10 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 break;
             case "dyrektor":
             case "dyrektor (p.o.)":
+            case "p.o. dyrektora":
             case "rzecznik beneficjenta parp, dyrektor":
             case "główny księgowy, dyrektor":
+            case "koordynator projektu":
                 /*
 członkostwo w grupie INT Olimp [send];
 członkostwo w grupie INT Dyrektorzy [send];

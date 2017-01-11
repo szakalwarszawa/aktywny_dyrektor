@@ -242,4 +242,20 @@ class OdebranieUprawnienController extends Controller
         }
         return $i;
     }
+    
+    
+    /**
+     * @Security("has_role('PARP_ADMIN')")
+     * @Route("/uprawnienia_przed_odebraniem/{login}/{data}", name="uprawnienia_przed_odebraniem", defaults={"login" : "", "data" : ""})
+     * @Template()
+     */
+    public function uprawnieniaPrzedOdebraniemAction($login = "", $data = ""){
+        $now = new \Datetime();
+        $data = $data == "" ? $now->format("Y-m-d") : $data;
+        $adusers = $this->getDoctrine()->getManager()->getRepository('ParpSoapBundle:ADUser')->findPrzedOdebraniem($login, $data);
+        //var_dump($adusers);
+        
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $adusers]);
+    }
+    
 }

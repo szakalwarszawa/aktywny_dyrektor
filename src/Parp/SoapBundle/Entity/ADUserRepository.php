@@ -10,4 +10,21 @@ namespace Parp\SoapBundle\Entity;
  */
 class ADUserRepository extends \Doctrine\ORM\EntityRepository
 {
+    public function findPrzedOdebraniem($login, $data){
+        $data1 = \DateTime::createFromFormat('Y-m-d', $data);
+        $data1->setTime(0,0);
+        $data2 = clone $data1;
+        $data2->add(new \Dateinterval('P1D'));
+        //var_dump($data1, $data2);
+        
+        $qb = $this->createQueryBuilder("e");
+        $qb
+            ->andWhere('e.createdAt BETWEEN :from AND :to AND (e.samaccountname = :login or :login = \'\')')
+            ->setParameter('from', $data1 )
+            ->setParameter('to', $data2)
+            ->setParameter('login', $login)
+        ;
+        $result = $qb->getQuery()->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        return $result;
+    }
 }
