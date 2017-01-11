@@ -96,8 +96,9 @@ class DevController extends Controller
         $gr = 'INT-BI';
         
         $gr = "marcin_lipinski";
+        $group = "*–Umowy-*";
         
-        $result = $adldap->group()->find('INT Winadmin');
+        $result = $adldap->group()->find($group);
         print_r($result); die(); 
         
         
@@ -2558,5 +2559,38 @@ class DevController extends Controller
         //$manager->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
-    
+    /**
+     * @Route("/getGrupa/{grupa}", name="getGrupa")
+     * @Template()
+     */
+    public function getGrupaAction($grupa){
+        $ldap = $this->get('ldap_service');
+        $g = $ldap->getGrupa($grupa);
+        var_dump($g);
+    }
+    /**
+     * @Route("/nadajDfk", name="nadajDfk")
+     * @Template()
+     */
+    public function nadajSGGUMOWYAction($grupa){
+        $manager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD();
+        $dzis = new \Datetime();
+        foreach($users as $u){
+            if($u['description'] == "DFK"){
+                echo "...dodaje ".$u['samaccountname']."...";
+                $entry = new Entry();
+                $entry->setFromWhen($dzis);
+                $entry->setSamaccountname($u['samaccountname']);
+                $entry->setMemberOf("+SGG-UMOWY-RO");
+                $entry->setIsImplemented(0);
+                $manager->persist($entry);
+            }
+        }
+        
+        
+        $manager->flush();
+        
+    }
 }    

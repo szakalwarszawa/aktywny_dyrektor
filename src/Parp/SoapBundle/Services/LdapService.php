@@ -916,8 +916,30 @@ class LdapService
         }
         return $ret;
     } 
+    protected $stanowiskaDyrektorzy = ["dyrektor", "dyrektor (p.o.)", "rzecznik beneficjenta parp, dyrektor", "główny księgowy, dyrektor"];
+    protected $stanowiskaWiceDyrektorzy = ["zastępca dyrektora", "zastępca dyrektora (p.o.)"];
+    
+    public function getSekcjePodwladnych($manager){
+        $users = $this->getAllFromAD();
+        $powdladni = [];
+        foreach($users as $user){
+            if($user['manager'] == $manager['distinguishedname']){
+                $podwladni[] = $user['division'];
+                $stanowisko = mb_strtolower(trim($user['title']));;
+                if(in_array($stanowisko, $this->stanowiskaWiceDyrektorzy)){
+                    //robimy merge z jego podwladnymi
+                    $podwladni2 = $this->getSekcjePodwladnych($user);
+                    $podwladni = array_merge($podwladni, $podwladni2);
+                }
+            }
+        }
+        return $podwladni;
+    }
     
     public function getGrupyUsera($user, $depshortname, $sekcja){
+        
+        $stanowisko = mb_strtolower(trim($user['title']));
+        
         /*
         Prezesa PARP	[UPr]	PARP	członkostwo w grupie INT Olimp [send]; 
 członkostwo w grupie INT Prezesi [send];
@@ -933,7 +955,7 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
             //die('1');
             $grupy[] =  'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
-        switch(strtolower($user['title'])){
+        switch($stanowisko){
             case "prezes":
             case "zastępca prezesa":
             case "zastępca prezesa (p.o.)":
@@ -949,6 +971,7 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 $grupy[] = 'INT-Prezesi';
                 $grupy[] = 'INT-Dyrektorzy-Senders';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
+                $grupy[] = 'SG-BI-VPN-Access';
                 break;
             case "dyrektor":
             case "dyrektor (p.o.)":
@@ -969,6 +992,9 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 $grupy[] = 'SG Olimp';
                 $grupy[] = 'INT-Dyrektorzy';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
+                $grupy[] = 'SG-BI-VPN-Access';
+                //SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW
+                
                 //$grupy[] = 'SG-OLIMP';
                 break;
             case "zastępca dyrektora":
@@ -988,6 +1014,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 $grupy[] = 'SG Olimp';
                 $grupy[] = 'INT-Dyrektorzy-Senders';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                $grupy[] = 'SG-BI-VPN-Access';
                 break;
             case "p.o. kierownika":
             case "kierownik":
@@ -1000,6 +1027,39 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
         for($i = 0; $i < count($grupy); $i++){
             $grupy[$i] = str_replace("(skrót sekcji)", $sekcja, str_replace("(skrót D/B)", $depshortname, $grupy[$i]));
         }
+        
+        $em = $this->container->get('doctrine')->getManager();
+        $departament = $em->getRepository('ParpMainBundle:Departament')->findOneByShortname($depshortname);
+        //var_dump($departament);
+        $grupyDepartamentowe = explode(";", $departament->getGrupyAD());
+        foreach($grupyDepartamentowe as $grupaDep){
+            $grupy[] = $grupaDep;
+        }
+        $sekcyjne = [
+            'SRO' => ['SG-BI-VPN-Access'],
+        ];
+        if(isset($sekcyjne[$sekcja])){
+            foreach($sekcyjne[$sekcja] as $s){
+                //foreach($s as $g){
+                    $grupy[] = $s;
+                //}
+            }
+        }
+        
+        $pomijajSekcje = ['', 'n/d'];
+        if(in_array($stanowisko, $this->stanowiskaDyrektorzy) || in_array($stanowisko, $this->stanowiskaWiceDyrektorzy)){
+            //przeleciec rekurencyjnie wszystkich podwladnych
+            $sekcje = $this->getSekcjePodwladnych($user);
+            foreach($sekcje as $s){
+                if(!in_array($s, $pomijajSekcje)){
+                    $grupy[] = "SGG-".$depshortname."-Wewn-".$s."-RW";
+                }
+            }
+            
+            //var_dump(($sekcje)); die();
+        }
+        
+        
         return $grupy;
     }
     

@@ -32,6 +32,9 @@ class OdebranieUprawnienController extends Controller
      * @Template()
      */
      public function odebranieUprawnienAction($samaccountname){
+         
+//         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!!
+         
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         if($samaccountname == ""){
@@ -95,7 +98,10 @@ class OdebranieUprawnienController extends Controller
     }
     public function audytUprawnienUsera($user){
         
-        $NIE_ODBIERAC_TYCH_GRUP = ['', '', ''];//tu beda grupy accessowe
+        
+
+
+        $NIE_ODBIERAC_TYCH_GRUP = [];
         
         $em = $this->getDoctrine()->getManager();
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
@@ -207,8 +213,10 @@ class OdebranieUprawnienController extends Controller
                 ];
             }
         }
-        
-        
+        $NIE_ODBIERAC_TYCH_GRUP = ['APP-V Acces 97', 'APP-V Access 2010', 'App-V Default Users'];//tu beda grupy accessowe
+        foreach($NIE_ODBIERAC_TYCH_GRUP as $g){
+            $ret['grupyAD'][] = $g;
+        }
         
         return $ret;
     }

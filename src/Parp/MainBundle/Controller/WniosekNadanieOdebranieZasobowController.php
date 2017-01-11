@@ -452,7 +452,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //biore managera z pola managerSpoząParp
                     $ADManager = $ldap->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     if(count($ADManager) == 0){
-                        die ("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                        //die ("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     }
                     //$przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                 }else{
@@ -466,7 +466,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 if(count($ADManager) == 0 || $ADManager[0]['samaccountname'] == ''){
                     print_r($ADManager);
                     //print_r($uss);
-                    die ("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
+                    //die ("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
                 }else{
                     //print_r($ADManager[0]['samaccountname']);
                     $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
