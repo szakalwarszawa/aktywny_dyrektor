@@ -114,6 +114,10 @@
                 {% if canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'})}}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                 {%endif%}
+                {% if app.user.username == 'marcin_lipinski' or app.user.username == 'kamil_jakacki' %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Zaakceptuj i PONÓW PUBLIKACJĘ <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                {%endif%}
                 
             </div>
             <div class="collapse" id="rejectDiv">

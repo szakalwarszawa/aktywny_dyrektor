@@ -1015,7 +1015,6 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
             case "p.o. dyrektora":
             case "rzecznik beneficjenta parp, dyrektor":
             case "główny księgowy, dyrektor":
-            case "koordynator projektu":
                 /*
 członkostwo w grupie INT Olimp [send];
 członkostwo w grupie INT Dyrektorzy [send];
@@ -1057,6 +1056,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 break;
             case "p.o. kierownika":
             case "kierownik":
+            case "koordynator projektu":
 //członkostwo w grupie INT Kierownicy [send].
                 $grupy[] = 'INT-Kierownicy';
                 break;

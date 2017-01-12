@@ -34,7 +34,7 @@ class OdebranieUprawnienController extends Controller
      public function odebranieUprawnienAction($samaccountname){
          
 //         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!! sobie tez nie bo jak mnie wypnie z VPN...
-         $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'marcin_szygula', 'czeslaw_testowy', 'text_testowy'];
+         $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'robert_muchacki', 'marcin_szygula', 'czeslaw_testowy', 'text_testowy'];
         $em = $this->getDoctrine()->getManager();
         $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
         $pominOsoby = array_merge($pominOsoby, $sams);
@@ -49,7 +49,7 @@ class OdebranieUprawnienController extends Controller
         $dane = [];
         foreach($ADUsers as $user){
             $rob = false;
-            if($user['description'] == 'BI' && !in_array($user['samaccountname'], $pominOsoby)){
+            if($user['title'] == 'koordynator projektu' && !in_array($user['samaccountname'], $pominOsoby)){
                 //nam  nie odbierac na razie!!!
                 $rob = true;
             }
@@ -132,7 +132,7 @@ class OdebranieUprawnienController extends Controller
         
         
 
-        $NIE_ODBIERAC_TYCH_GRUP = ['APP-V Acces 97', 'APP-V Access 2010', 'App-V Default Users'];//tu beda grupy accessowe
+        $NIE_ODBIERAC_TYCH_GRUP = ['APP-V Acces 97', 'APP-V Access 2010', 'App-V Default Users', 'SG-BI-VPN-Admins'];//tu beda grupy accessowe
         
         
         $em = $this->getDoctrine()->getManager();

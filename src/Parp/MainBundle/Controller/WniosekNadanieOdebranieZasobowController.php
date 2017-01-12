@@ -774,7 +774,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
         
         $acc = $this->checkAccess($wniosek);
-        if($acc['editor'] === null && !($isAccepted == "publish_lsi")){
+        if($acc['editor'] === null && !($isAccepted == "publish_lsi"  || in_array($this->getUser()->getUsername(), ['marcin_lipinski', 'kamil_jakacki']))){
             throw new SecurityTestException("Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!", 765);
         }
         

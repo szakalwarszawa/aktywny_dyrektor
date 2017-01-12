@@ -2769,5 +2769,33 @@ class DevController extends Controller
         //$manager->flush();
     }
     
+    /**
+     * @Route("/poprawicHurtowo", name="poprawicHurtowo")
+     * @Template()
+     */
+    public function poprawicHurtowoAction()
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $dzis = new \Datetime();
+        $ldap = $this->get('ldap_service');
+        $ret = [];
+        $users = $ldap->getAllFromAD();
+        $dt = new \Datetime();
+        foreach($users as $user){
+            if($user['description'] == 'DPI'){
+                $ret[] = $user;
+                 $e = new Entry();
+                $e->setFromWhen($dt);
+                $e->setSamaccountname($user['samaccountname']);
+                //$e->setCreatedBy($this->getUser()->getUsername());
+                //$e->setDivision('SWzRIF');
+        
+                $e->setMemberOf("+SG-DPI-Kalendarz");
+                $manager->persist($e);
+            }
+        }
     
+        //$manager->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
 }    

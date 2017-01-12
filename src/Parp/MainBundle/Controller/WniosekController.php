@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\Wniosek;
 use Parp\MainBundle\Form\WniosekType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Wniosek controller.
@@ -24,6 +25,30 @@ use Parp\MainBundle\Form\WniosekType;
  */
 class WniosekController extends Controller
 {
+
+    /**
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @Route("/{id}/przekierujWniosek", name="wniosek_przekieruj")
+     * @Method("GET")
+     * @Template()
+     */
+    public function przekierujAction($id)
+    {
+        $em = $this->getDoctrine()->getManager();
+
+        $wniosek = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+
+        if (!$wniosek) {
+            throw $this->createNotFoundException('Unable to find Wniosek entity.');
+        }
+
+        return array(
+            'wniosek'      => $wniosek
+        );
+    }
+
+
 
     /**
      * Lists all Wniosek entities.

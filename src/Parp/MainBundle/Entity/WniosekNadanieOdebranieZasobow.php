@@ -537,7 +537,7 @@ class WniosekNadanieOdebranieZasobow
         }
         $zass = implode(", ", $ret);
         $this->setZasoby($zass);
-        echo("Ustawilem pole zasoby ".$zass.$this->getId());
+        //echo("Ustawilem pole zasoby ".$zass.$this->getId());
     }
 
     /**
