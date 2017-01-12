@@ -38,7 +38,7 @@ class OdebranieUprawnienController extends Controller
         $em = $this->getDoctrine()->getManager();
         $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
         $pominOsoby = array_merge($pominOsoby, $sams);
-        print_r($pominOsoby); die();
+        //print_r($pominOsoby); die();
         $ldap = $this->get('ldap_service');
         if($samaccountname == ""){
             $ADUsers = $ldap->getAllFromAD();
@@ -65,7 +65,7 @@ class OdebranieUprawnienController extends Controller
                         $wpis['dodac'][] = $dodac;
                     }
                     $dane[] = $wpis;
-                    $em->flush();
+                    //$em->flush();
                 }
             }
         }
@@ -89,6 +89,7 @@ class OdebranieUprawnienController extends Controller
 
     /**
      *
+     * @Security("has_role('PARP_ADMIN')")
      * @Route("/wiadomosc/powitalna/{samaccountname}", name="powitalna", defaults={"samaccountname" : ""})
      * @Template()
      */
@@ -265,6 +266,30 @@ class OdebranieUprawnienController extends Controller
         return $i;
     }
     
+    /**
+     * @Security("has_role('PARP_ADMIN')")
+     * @Route("/wykluczBI", name="wykluczBI")
+     * @Template()
+     */
+    public function wykluczBIAction(){
+        $em = $this->getDoctrine()->getManager();
+        $adusers = $em->getRepository('ParpSoapBundle:ADUser')->findPrzezDescription("BI");
+        $sams = [];
+        foreach($adusers as $u){
+            $sams[] = $u['samaccountname'];
+        }
+        $entries = $em->getRepository('ParpMainBundle:Entry')->findBy(['samaccountname' => $sams, 'createdBy' => 'odbieranie_uprawnien']);
+        $ids = [];
+        
+        //
+        foreach($entries as $e){
+            $ids[ ] = $e->getId();
+            //$e->setIsImplemented(7);
+            //$em->flush();
+        }
+        var_export($ids); die();
+        
+    }
     
     /**
      * @Security("has_role('PARP_ADMIN')")
@@ -272,12 +297,12 @@ class OdebranieUprawnienController extends Controller
      * @Template()
      */
     public function uprawnieniaPrzedOdebraniemAction($login = "", $data = ""){
-        $now = new \Datetime();
+        $now = new \Datetime('2017-01-10');
         $data = $data == "" ? $now->format("Y-m-d") : $data;
         $adusers = $this->getDoctrine()->getManager()->getRepository('ParpSoapBundle:ADUser')->findPrzedOdebraniem($login, $data);
         //var_dump($adusers);
         
-        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $adusers]);
+        return $this->render('ParpMainBundle:OdebranieUprawnien:przywracanie.html.twig', ['data' => $adusers]);
     }
     
 }

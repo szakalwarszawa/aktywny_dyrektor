@@ -23,12 +23,12 @@ class PublishController extends Controller
         $kernel = $this->get('kernel');
         $application = new Application($kernel);
         $application->setAutoExit(false);
-
+        
         $pars = array(
            'command' => 'parp:ldapsave',
            'showonly' => $showonly,
            '--samaccountname' => $this->getUser()->getUsername(),
-           //'--ids' => '5923',
+           //'--ids' => implode(',', $ids),
         );
         if($this->getUser()->getUsername() == "kamil_jakacki"){
             //$pars['--ids'] = 9916;

@@ -1,0 +1,30 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+
+   <table class="table">
+        <tr>
+            <th>Id</th>
+            <th>login</th>
+            <th>Name</th>
+            <th>Stanowisko</th>
+            <th>Sekcja</th>
+            <th>Departament skrót</th>
+            <th>Sekcja skrót</th>
+            <th>Grupy</th>                        
+        </tr>
+        {%for d in data%}
+            <tr>
+                <td>{{d.id}}</td>
+                <td>{{d.samaccountname}}</td>
+                <td>{{d.name}}</td>
+                <td>{{d.title}}</td>
+                <td>{{d.info}}</td>
+                <td>{{d.description}}</td>
+                <td>{{d.division}}</td>
+                <td>{{d.memberOfNames}}</td>
+            </tr>
+        {%endfor%}
+   </table>
+    
+{%endblock%}
