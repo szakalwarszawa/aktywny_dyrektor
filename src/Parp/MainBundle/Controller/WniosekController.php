@@ -104,7 +104,7 @@ class WniosekController extends Controller
                 ))
                 ->add('zapisz', 'submit', array(
                         'attr' => array(
-                            'class' => 'btn btn-success col-sm-12'
+                            'class' => 'btn btn-danger col-sm-12'
                         ),
                     ));
                 
