@@ -17,6 +17,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Parp\MainBundle\Entity\Wniosek;
 use Parp\MainBundle\Entity\WniosekViewer;
 use Parp\MainBundle\Entity\WniosekEditor;
+use Parp\MainBundle\Entity\Komentarz;
 use Parp\MainBundle\Form\WniosekType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
@@ -102,6 +103,16 @@ class WniosekController extends Controller
                     'multiple' => true,
                     'expanded' => false
                 ))
+                ->add('powod', 'textarea', array(
+                    'required' => false,
+                    'label' => 'Powód',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control'
+                    ),
+                ))
                 ->add('zapisz', 'submit', array(
                         'attr' => array(
                             'class' => 'btn btn-danger col-sm-12'
@@ -113,6 +124,15 @@ class WniosekController extends Controller
         if ($request->getMethod() == "POST") {
             $form->handleRequest($request);
             $dane = $form->getData();
+//            die('.'.$dane['powod']);
+            $komentarz = new Komentarz();
+            $komentarz->setSamaccountname($this->getUser()->getUsername());
+            $komentarz->setCreatedAt(new \Datetime());
+            $komentarz->setTytul("Ręczne przekierowanie wniosku");
+            $komentarz->setOpis($dane['powod']);
+            $komentarz->setObiekt($typWniosku == 'wniosekONadanieUprawnien' ? "WniosekNadanieOdebranieZasobow" : "WniosekUtworzenieZasobu");
+            $komentarz->setObiektId($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId());
+            $em->persist($komentarz);
             
             $nowyStatus = $em->getRepository('ParpMainBundle:WniosekStatus')->find($dane['status']);
             $wniosek->setStatus($nowyStatus);

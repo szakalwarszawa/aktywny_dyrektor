@@ -1325,7 +1325,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $deleteForm = $this->createDeleteForm($id);
-        $comments = $em->getRepository("ParpMainBundle:Komentarz")->getCommentCount("WniosekUtworzenieZasobu", $entity->getId());
+        $comments = $em->getRepository("ParpMainBundle:Komentarz")->getCommentCount("WniosekNadanieOdebranieZasobow", $entity->getId());
+        //var_dump($comments); die();
         return array(
             'grupyAD' => $grupyAD,
             'entity'      => $entity,
