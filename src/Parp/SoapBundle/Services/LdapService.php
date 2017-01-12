@@ -15,6 +15,7 @@ use Memcached;
 class LdapService
 {
 
+    public $dodatkoweOpcje = '';
     protected $securityContext;
     protected $ad_host;
     protected $ad_domain;
@@ -137,8 +138,13 @@ class LdapService
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
         }else{
+            
+            /* wylaczam na czas odbierania uprawnien, bo zamula
             $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
+            */
         }
+        
+        /* wylaczam na czas odbierania uprawnien, bo zamula
         $zmiany = [];
         foreach($this->zmianyDoWypchniecia as $z){
             $zmiany[$z->getSamaccountname()][] = $z;
@@ -154,11 +160,12 @@ class LdapService
                 }
             }
         }
+        */
         return $this->_userCache;
     }
     public function getAllFromADIntW($ktorych = "aktywni", $justDump = false, $struktura = null)
     {
-        $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
+        //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
         $userdn = $this->useradn . $this->patch;
         
         if($struktura == "2016"){
@@ -625,6 +632,7 @@ class LdapService
 
         $result = $this->parseResults($tmpResults);
         if(count($result) > 0){
+            /* wylaczam na czas odbierania uprawnien, bo zamula
             //dodaje zmiany do wypchniecia
             $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findBy(
                 ['isImplemented' => 0, 'samaccountname' => $result[0]['samaccountname']], ['samaccountname' => 'ASC', 'id' => 'ASC']
@@ -643,6 +651,7 @@ class LdapService
                     $u[$k] = $v;
                 }
             }
+            */
         }
         //unset($result[0]['thumbnailphoto']);
         //print_r($result); die();
@@ -730,16 +739,15 @@ class LdapService
                 $result[$i]["memberOf"] = $this->parseMemberOf($tmpResult);
                 //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
                 $roles = [];
-                
-                //temp Grzesia wniosek
-                //wylaczam na chwile role by sprawdziuc ile sqlek bedzie mniej
-                $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
-                $rs = array();
-                foreach($roles as $r){
-                    $rs[] = $r->getRole()->getName();
+                if($this->dodatkoweOpcje == 'ekranEdycji'){
+                    $roles = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($tmpResult["samaccountname"][0]);
+                    $rs = array();
+                    foreach($roles as $r){
+                        $rs[] = $r->getRole()->getName();
+                    }
+                    $result[$i]['roles'] = $rs;
                 }
                 
-                $result[$i]['roles'] = $rs;
                 $i++;
             }
         }
@@ -921,10 +929,13 @@ class LdapService
     
     public function getSekcjePodwladnych($manager){
         $users = $this->getAllFromAD();
-        $powdladni = [];
+        $podwladni = [];
         foreach($users as $user){
             if($user['manager'] == $manager['distinguishedname']){
-                $podwladni[] = $user['division'];
+                $dodac = $user['division'];
+                if(!in_array($dodac, $podwladni)){
+                    $podwladni[] = $dodac;
+                }
                 $stanowisko = mb_strtolower(trim($user['title']));;
                 if(in_array($stanowisko, $this->stanowiskaWiceDyrektorzy)){
                     //robimy merge z jego podwladnymi
@@ -1035,7 +1046,9 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
         //var_dump($departament);
         $grupyDepartamentowe = explode(";", $departament->getGrupyAD());
         foreach($grupyDepartamentowe as $grupaDep){
-            $grupy[] = $grupaDep;
+            if($grupaDep != ''){
+                $grupy[] = $grupaDep;
+            }
         }
         $sekcyjne = [
             'SRO' => ['SG-BI-VPN-Access'],
@@ -1048,19 +1061,24 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
             }
         }
         
-        $pomijajSekcje = ['', 'n/d'];
+        $pomijajSekcje = ['', 'n/d', 'BRAK'];
         if(in_array($stanowisko, $this->stanowiskaDyrektorzy) || in_array($stanowisko, $this->stanowiskaWiceDyrektorzy)){
             //przeleciec rekurencyjnie wszystkich podwladnych
             $sekcje = $this->getSekcjePodwladnych($user);
             foreach($sekcje as $s){
-                if(!in_array($s, $pomijajSekcje)){
-                    $grupy[] = "SGG-".$depshortname."-Wewn-".$s."-RW";
+                if($s != ''){
+                    if(!in_array($s, $pomijajSekcje)){
+                        $grupaDoDodania = "SGG-".$depshortname."-Wewn-".$s."-RW";
+                        if(!in_array($grupaDoDodania, $grupy)){
+                            $grupy[] = $grupaDoDodania;
+                        }
+                    }
                 }
             }
             if (in_array("PARP_ADMIN", $this->container->get('security.context')
                     ->getToken()
                     ->getUser()->getRoles())){
-                var_dump(($sekcje)); 
+                //var_dump(($grupy)); 
             }
             
             //die();

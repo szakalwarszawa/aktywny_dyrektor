@@ -2594,6 +2594,133 @@ class DevController extends Controller
         
     }
     
+    /**
+     * @Route("/dodacGrupyADDoZasobow", name="dodacGrupyADDoZasobow")
+     * @Template()
+     */
+    public function dodacGrupyADZexcelaOdAdamaPrzedOdebraniem(){
+        $manager = $this->getDoctrine()->getManager();
+        $grupy = [                        
+            3283 => ['Administrator ECM'],
+            4434 => ['EXT-DRU-infolinia_uslugirozwojowe'],
+            3532 => ['SPSS'],
+            4496 => ['INT-DAS-SME'],
+            4430 => ['INT-DAS-SPI'],
+            3585 => ['INT-DFK-Platnosci'],
+            3771 => ['SG Olimp'],
+            3772 => ['SG Prezesi'],
+            4513 => ['SG_DB_Raporty-lsi-typ-1'],
+            3789 => ['SG-Audytorzy'],
+            3800 => ['SG-BI-ECM-M', 'SG-BI-ECM-M'],
+            4270 => ['SG-BI-TESTOWY'],
+            3818 => ['SG-BP-Wewn-Dane_Osobowe-RW'],
+            3830 => ['SG-DFK-Asysta-RW'],
+            3869 => ['SG-DKW-PEFS_DKW-RW'],
+            3979 => ['SG-KPI-RW'],
+            3991 => ['SG-Olimp-RW'],
+            4016 => ['SG-PRINT-BIX-LXT654M02-P'],
+            4019 => ['SG-PRINT-BPR-LXT430M01-P'],
+            4021 => ['SG-PRINT-BPR-LXX736deW01-P'],
+            4022 => ['SG-PRINT-BPX-LXT430M01-P'],
+            4023 => ['SG-PRINT-BPX-LXT650M01-P'],
+            4026 => ['SG-PRINT-BZJ-LXT430M01-P'],
+            4027 => ['SG-PRINT-BZJ-LXX736deW01-P'],
+            4028 => ['SG-PRINT-BZK-HP1320M01-P'],
+            4029 => ['SG-PRINT-BZK-LXE450M01-P'],
+            4030 => ['SG-PRINT-BZK-LXE450M02-P'],
+            4031 => ['SG-PRINT-BZK-LXT430M01-P'],
+            4032 => ['SG-PRINT-BZK-LXT650M01-P'],
+            4035 => ['SG-PRINT-BZP-LXE450M02-P'],
+            4179 => ['SG-PRINT-DAS-HPP2055M01-P'],
+            4180 => ['SG-PRINT-DAS-HPP2055M02-P'],
+            4105 => ['SG-PRINT-DAS-LXE450M01-P'],
+            4181 => ['SG-PRINT-DAS-LXE450M01-P'],
+            4183 => ['SG-PRINT-DAS-LXT622M01-P'],
+            4161 => ['SG-PRINT-DFK-LXE450M02-P'],
+            4041 => ['SG-PRINT-DFK-LXE450M03-P'],
+            4045 => ['SG-PRINT-DFK-LXT430M02-P'],
+            4046 => ['SG-PRINT-DFK-LXT430M03-P'],
+            4047 => ['SG-PRINT-DFK-LXT622M01-P'],
+            4049 => ['SG-PRINT-DFK-LXX658deW01-P'],
+            4162 => ['SG-PRINT-DFKX-LXT430M01-P'],
+            4209 => ['SG-PRINT-DIP-HP1320M02-P'],
+            4119 => ['SG-PRINT-DIP-HP2420M02-P'],
+            4122 => ['SG-PRINT-DIP-LXE450M02-P'],
+            4210 => ['SG-PRINT-DIP-LXT430M01-P'],
+            4211 => ['SG-PRINT-DIP-LXT430M02-P'],
+            4124 => ['SG-PRINT-DIP-LXT634M01-P'],
+            4128 => ['SG-PRINT-DIP-LXX736dtnW01-P'],
+            4190 => ['SG-PRINT-DKM-LXC770C01-P'],
+            4191 => ['SG-PRINT-DKM-LXE450M01-P'],
+            4192 => ['SG-PRINT-DKM-LXE450M02-P'],
+            4193 => ['SG-PRINT-DKM-LXE450M03-P'],
+            4194 => ['SG-PRINT-DKM-LXE450M05-P'],
+            4066 => ['SG-PRINT-DKM-LXE450M06-P'],
+            4195 => ['SG-PRINT-DKM-LXE450M06-P'],
+            4196 => ['SG-PRINT-DKM-LXX544C01-P'],
+            4056 => ['SG-PRINT-DKW-LXE450M01-p'],
+            4058 => ['SG-PRINT-DKW-LXE450M02-P'],
+            4059 => ['SG-PRINT-DKW-LXT430M01-P'],
+            4061 => ['SG-PRINT-DKW-LXT622M01-P'],
+            4062 => ['SG-PRINT-DKW-LXW820W01-P'],
+            4063 => ['SG-PRINT-DKW-LXX738deW01-P'],
+            4197 => ['SG-PRINT-DPG-LX850EW01-P'],
+            4198 => ['SG-PRINT-DPG-LXC770C01-P'],
+            4072 => ['SG-PRINT-DPI-LEX6500EW01-P'],
+            4076 => ['SG-PRINT-DPI-LXX792deC1-P'],
+            4077 => ['SG-PRINT-DPI-LXX954W01-P'],
+            4469 => ['SG-PRINT-DPU-LXE450M02-P'],
+            4091 => ['SG-PRINT-DRK-LXC534C02-P'],
+            4200 => ['SG-PRINT-DRK-LXC534DNC01-P'],
+            4201 => ['SG-PRINT-DRK-LXC780C01-P'],
+            4097 => ['SG-PRINT-DRK-LXE450M04-P'],
+            4203 => ['SG-PRINT-DRK-LXE450M04-P'],
+            4098 => ['SG-PRINT-DRK-LXX642EW01-P'],
+            4099 => ['SG-PRINT-DRK-LXX642EW02-P'],
+            4145 => ['SG-PRINT-DRU-HP1320M01-P'],
+            4147 => ['SG-PRINT-DRU-LXE450M01-P'],
+            4148 => ['SG-PRINT-DRU-LXE450M02-P'],
+            4155 => ['SG-PRINT-DRU-LXX792deC01-P'],
+            4166 => ['SG-PRINT-DWI-LXT430M04-P'],
+            4156 => ['SG-PRINT-ECM-TSCTTP1PL-P'],
+            4157 => ['SG-PRINT-ECM-TSCTTP2PS-P'],
+            4158 => ['SG-PRINT-ECM-TSCTTP3PL-P'],
+            4159 => ['SG-PRINT-ECM-TSCTTPKPS-P'],
+            4184 => ['SG-PRINT-KP1-KM500M01-P'],
+            4185 => ['SG-PRINT-KP1-KMC450C01-P'],
+            4186 => ['SG-PRINT-KP1-LXX950W01-P'],
+            4187 => ['SG-PRINT-KP2-KM750M01-P'],
+            4206 => ['SG-PRINT-ZPX-LXE450M01-P'],
+            4207 => ['SG-PRINT-ZPX-LXE450M02-P'],
+            4318 => ['EXT-DKZ-team_expo'],
+            4327 => ['SG-WD-BP-RADA-RO', 'SG-WD-BP-RADA-RW'],
+            4328 => ['SG-WD-BZP-RO', 'SG-WD-BZP-RW'],
+            4522 => ['SG-WD-DKM-RO', 'SG-WD-DKM-RW'],
+            4333 => ['SG-WD-DPI-01-RO', 'SG-WD-DPI-01-RW'],
+            4334 => ['SG-WD-DPP-KOSMOS-RO', 'SG-WD-DPP-KOSMOS-RW'],
+        ];
+        foreach($grupy as $id => $groups){
+            $zasob = $manager->getRepository('ParpMainBundle:Zasoby')->find($id);
+            if($zasob->getGrupyAD() == ""){
+                $poziomy = explode(";", $zasob->getPoziomDostepu());
+                if(count($poziomy) == count($groups)){
+                    $nadacGrupy = $groups;
+                }else{
+                    $nadacGrupy = [];
+                    for($i =0; $i < count($poziomy); $i++){
+                        $nadacGrupy[] = $groups[0];
+                    }
+                }
+                $nadaje = implode(";", $nadacGrupy);
+                $zasob->setGrupyAD($nadaje);
+                
+                echo "<br>zasob ".$zasob->getId()." nie ma grup ".count($poziomy). " ".count($groups). ' nadaje '.$nadaje;
+            }else{
+                echo "<br>zasob ".$zasob->getId()." MA grupy!!!! : ".$zasob->getGrupyAD()." a powinien ".$groups[0];
+            }
+        }
+        //$manager->flush();
+    }
     
     
 }    

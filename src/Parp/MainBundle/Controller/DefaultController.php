@@ -42,6 +42,7 @@ class DefaultController extends Controller
         //$this->get('check_access')->checkAccess('USER_MANAGEMENT');
         
         $ldap = $this->get('ldap_service');
+        $ldap->dodatkoweOpcje = 'ekranEdycji';
         // Sięgamy do AD:
         
         if($ktorzy == "usersFromAd" || $ktorzy == "usersFromAdFull"){
@@ -437,10 +438,11 @@ class DefaultController extends Controller
         $kadry2 = in_array("PARP_BZK_2", $this->getUser()->getRoles());
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
+        $ldap->dodatkoweOpcje = 'ekranEdycji';
         if($dump == "dump"){
-            $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
+            $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy' );
         }else{
-            $ADUser = $ldap->getUserFromAD($samaccountname);
+            $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
         }
         if($dump == "dump"){
             unset($ADUser[0]['thumbnailphoto']);

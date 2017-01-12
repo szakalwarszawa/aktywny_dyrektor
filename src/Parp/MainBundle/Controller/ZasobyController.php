@@ -194,11 +194,13 @@ class ZasobyController extends Controller
         $this->sprawdzDostep($entity);
         $grupy = explode(",", $entity->getGrupyAD());
         $grupyAd = array();
+        $ldap = $this->get('ldap_service');
+        $ldap->dodatkoweOpcje = 'ekranEdycji';
         foreach($grupy as $g){
             if($g != ""){
                 $grupyAd[$g] = array(
-                    'exists' => $this->get('ldap_service')->checkGroupExistsFromAD($g),
-                    'members' => $this->get('ldap_service')->getMembersOfGroupFromAD($g)
+                    'exists' => $ldap->checkGroupExistsFromAD($g),
+                    'members' => $ldap->getMembersOfGroupFromAD($g)
                 );
             }
         }

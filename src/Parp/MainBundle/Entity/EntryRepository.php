@@ -94,6 +94,22 @@ accountexpires: ""
         }
         return $rets;
     }
-    
+    public function findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu($createdBy){
+        $query = $this->createQueryBuilder('e')
+                ->select('e.samaccountname')
+                ->where('e.isImplemented = 0')
+                ->andWhere('e.createdBy in ( :data )')
+                ->orderBy('e.id')
+                ->setParameters(array('data' => $createdBy))
+                ->getQuery();
+        $ret = $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
+        $data = [];
+        foreach($ret as $d){
+            if(!in_array($d['samaccountname'], $data)){
+                $data[] = $d['samaccountname'];
+            }
+        }
+        return $data;
+    }
 
 }

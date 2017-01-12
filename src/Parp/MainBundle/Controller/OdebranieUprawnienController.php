@@ -33,9 +33,12 @@ class OdebranieUprawnienController extends Controller
      */
      public function odebranieUprawnienAction($samaccountname){
          
-//         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!!
-         
+//         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!! sobie tez nie bo jak mnie wypnie z VPN...
+         $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'marcin_szygula', 'czeslaw_testowy'];
         $em = $this->getDoctrine()->getManager();
+        $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
+        $pominOsoby = array_merge($pominOsoby, $sams);
+        print_r($pominOsoby); die();
         $ldap = $this->get('ldap_service');
         if($samaccountname == ""){
             $ADUsers = $ldap->getAllFromAD();
@@ -43,27 +46,46 @@ class OdebranieUprawnienController extends Controller
             $ADUsers = $this->get('ldap_service')->getUserFromAD($samaccountname);
         }
         $dt = new \Datetime();
-        $zdejme = [];
+        $dane = [];
         foreach($ADUsers as $user){
-            $uprawnienia = $this->audytUprawnienUsera($user);
-            foreach($uprawnienia['zdjac'] as $zdjac){
-                $e = new Entry();
-                $e->setFromWhen($dt);
-                $e->setSamaccountname($user['samaccountname']);
-                //$zd = "-".implode(",-", $zdjac);
-                //$zd = substr($zd, 0, strlen($zd) - 2);
-                $zd = "-".$zdjac['grupaAD'];
-                $e->setMemberOf($zd);
-                $zdejme[] = $e;
-                $em->persist($e);
+            if($user['description'] == 'BI'){
+                //nam  nie odbierac na razie!!!
+            }else{
+                if(!in_array($user['samaccountname'], $pominOsoby)){
+                    $uprawnienia = $this->audytUprawnienUsera($user);
+                    $wpis = ['osoba' => $user['name'], 'samaccountname' => $user['samaccountname'], 'zdjac' => [], 'dodac' => []];
+                    foreach($uprawnienia['zdjac'] as $zdjac){
+                        $e = $this->zrobEntry($dt, $user, "-".$zdjac['grupaAD']);
+                        $em->persist($e);
+                        $wpis['zdjac'][] = $zdjac['grupaAD'];
+                    }
+                    foreach($uprawnienia['dodac'] as $dodac){
+                        $e = $this->zrobEntry($dt, $user, "+".$dodac);
+                        $em->persist($e);
+                        $wpis['dodac'][] = $dodac;
+                    }
+                    $dane[] = $wpis;
+                    $em->flush();
+                }
             }
         }
-        var_dump($zdejme);
         
         
-        //$em->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
+//        var_dump($dane);
+        
      }
+     protected function zrobEntry($dt, $user, $grupa){
+         $e = new Entry();
+        $e->setFromWhen($dt);
+        $e->setSamaccountname($user['samaccountname']);
+        $e->setCreatedBy('odbieranie_uprawnien');
+        //$zd = "-".implode(",-", $zdjac);
+        //$zd = substr($zd, 0, strlen($zd) - 2);
 
+        $e->setMemberOf($grupa);
+        return $e;
+     }
 
     /**
      *
@@ -100,8 +122,8 @@ class OdebranieUprawnienController extends Controller
         
         
 
-
-        $NIE_ODBIERAC_TYCH_GRUP = [];
+        $NIE_ODBIERAC_TYCH_GRUP = ['APP-V Acces 97', 'APP-V Access 2010', 'App-V Default Users'];//tu beda grupy accessowe
+        
         
         $em = $this->getDoctrine()->getManager();
         $powinienMiecGrupy = $this->wyliczGrupyUsera($user);
@@ -133,6 +155,8 @@ class OdebranieUprawnienController extends Controller
                     'grupaAD' =>   $zdejmowanaGrupa,
                     'zasob' => $zasob
                 ];
+            }else{
+                $powinienMiecGrupy['grupyAD'][] = $zdejmowanaGrupa;
             }
         }
         
@@ -156,7 +180,7 @@ class OdebranieUprawnienController extends Controller
         $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
         $ret = ['grupyAD' => [], 'zasobyBezGrupAD' => [], 'sumaZWnioskow' => []];
         $ret['grupyAD'] = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
-//var_dump($userzasoby);
+
         foreach($userzasoby as $uz){
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             //var_dump($z->getGrupyAD());
@@ -168,24 +192,26 @@ class OdebranieUprawnienController extends Controller
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ){
                 $grupa = $this->znajdzGrupeAD($uz, $z);
-                $ret['grupyAD'][] = $grupa;
-                
-                
-                $grupawAD = $ldap->getGrupa($grupa);
-                if($grupawAD){
-                    $ret['sumaZWnioskow'][] = [
-                        'grupa' => $grupa,
-                        'jestWAD' => true,
-                        'zasob' => $z->getNazwa(),
-                        'zasobId' => $z->getId()
-                    ];
-                }else{
-                    $ret['sumaZWnioskow'][] = [
-                        'grupa' => $grupa,
-                        'jestWAD' => false,
-                        'zasob' => $z->getNazwa(),
-                        'zasobId' => $z->getId()
-                    ];
+                if($grupa != ''){
+                    
+                    
+                    $grupawAD = $ldap->getGrupa($grupa);
+                    if($grupawAD){
+                        $ret['grupyAD'][] = $grupa;
+                        $ret['sumaZWnioskow'][] = [
+                            'grupa' => $grupa,
+                            'jestWAD' => true,
+                            'zasob' => $z->getNazwa(),
+                            'zasobId' => $z->getId()
+                        ];
+                    }else{
+                        $ret['sumaZWnioskow'][] = [
+                            'grupa' => $grupa,
+                            'jestWAD' => false,
+                            'zasob' => $z->getNazwa(),
+                            'zasobId' => $z->getId()
+                        ];
+                    }
                 }
                 
                 //echo "<br>".$z->getId()." ".$uz->getKanalDostepu() ."<br>";
@@ -213,11 +239,7 @@ class OdebranieUprawnienController extends Controller
                 ];
             }
         }
-        $NIE_ODBIERAC_TYCH_GRUP = ['APP-V Acces 97', 'APP-V Access 2010', 'App-V Default Users'];//tu beda grupy accessowe
-        foreach($NIE_ODBIERAC_TYCH_GRUP as $g){
-            $ret['grupyAD'][] = $g;
-        }
-        
+        //var_dump($ret); die();
         return $ret;
     }
     
