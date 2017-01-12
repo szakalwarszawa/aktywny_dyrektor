@@ -34,7 +34,7 @@ class OdebranieUprawnienController extends Controller
      public function odebranieUprawnienAction($samaccountname){
          
 //         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!! sobie tez nie bo jak mnie wypnie z VPN...
-         $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'marcin_szygula', 'czeslaw_testowy'];
+         $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'marcin_szygula', 'czeslaw_testowy', 'text_testowy'];
         $em = $this->getDoctrine()->getManager();
         $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
         $pominOsoby = array_merge($pominOsoby, $sams);
@@ -48,26 +48,29 @@ class OdebranieUprawnienController extends Controller
         $dt = new \Datetime();
         $dane = [];
         foreach($ADUsers as $user){
-            if($user['description'] == 'BI'){
+            $rob = false;
+            if($user['description'] == 'BI' && !in_array($user['samaccountname'], $pominOsoby)){
                 //nam  nie odbierac na razie!!!
-            }else{
-                if(!in_array($user['samaccountname'], $pominOsoby)){
-                    $uprawnienia = $this->audytUprawnienUsera($user);
-                    $wpis = ['osoba' => $user['name'], 'samaccountname' => $user['samaccountname'], 'zdjac' => [], 'dodac' => []];
-                    foreach($uprawnienia['zdjac'] as $zdjac){
-                        $e = $this->zrobEntry($dt, $user, "-".$zdjac['grupaAD']);
-                        $em->persist($e);
-                        $wpis['zdjac'][] = $zdjac['grupaAD'];
-                    }
-                    foreach($uprawnienia['dodac'] as $dodac){
-                        $e = $this->zrobEntry($dt, $user, "+".$dodac);
-                        $em->persist($e);
-                        $wpis['dodac'][] = $dodac;
-                    }
-                    $dane[] = $wpis;
-                    //$em->flush();
-                }
+                $rob = true;
             }
+            
+            if($rob){
+                $uprawnienia = $this->audytUprawnienUsera($user);
+                $wpis = ['osoba' => $user['name'], 'samaccountname' => $user['samaccountname'], 'zdjac' => [], 'dodac' => []];
+                foreach($uprawnienia['zdjac'] as $zdjac){
+                    $e = $this->zrobEntry($dt, $user, "-".$zdjac['grupaAD']);
+                    $em->persist($e);
+                    $wpis['zdjac'][] = $zdjac['grupaAD'];
+                }
+                foreach($uprawnienia['dodac'] as $dodac){
+                    $e = $this->zrobEntry($dt, $user, "+".$dodac);
+                    $em->persist($e);
+                    $wpis['dodac'][] = $dodac;
+                }
+                $dane[] = $wpis;
+                //$em->flush();
+            }
+        
         }
         
         
@@ -89,35 +92,41 @@ class OdebranieUprawnienController extends Controller
 
     /**
      *
-     * @Security("has_role('PARP_ADMIN')")
      * @Route("/wiadomosc/powitalna/{samaccountname}", name="powitalna", defaults={"samaccountname" : ""})
      * @Template()
      */
     public function powitalnaAction($samaccountname)
     {
-        
-        $em = $this->getDoctrine()->getManager();
-        if($samaccountname == ""){
-            $log = new \Parp\MainBundle\Entity\Log();
-            $log->setLogin($this->getUser()->getUsername());
-            $log->setUrl("/powitalna");
-            $log->setDescription("Odczytano wiadomość powitalną.");
+        $ldap = $this->get('ldap_service');
+        $user = $this->getUser()->getUsername();
+        $userAD = $ldap->getUserFromAD($user);
+        if(count($userAD) > 0 && $userAD[0]['description'] == 'BI'){
             
-            $em->persist($log);
-            $em->flush();
+            $em = $this->getDoctrine()->getManager();
+            if($samaccountname == ""){
+                $log = new \Parp\MainBundle\Entity\Log();
+                $log->setLogin($this->getUser()->getUsername());
+                $log->setUrl("/powitalna");
+                $log->setDescription("Odczytano wiadomość powitalną.");
+                
+                $em->persist($log);
+                $em->flush();
+                
+                
+                $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
+            }else{
+                $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+            }
             
             
-            $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
+            $uprawnienia = $this->audytUprawnienUsera($user[0]);
+            
+            //var_dump($uprawnienia); die();
+            
+            return ['uprawnienia' => $uprawnienia];
         }else{
-            $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+            die("Nie masz uprawnien by to ogladac!");
         }
-        
-        
-        $uprawnienia = $this->audytUprawnienUsera($user[0]);
-        
-        //var_dump($uprawnienia); die();
-        
-        return ['uprawnienia' => $uprawnienia];
     }
     public function audytUprawnienUsera($user){
         

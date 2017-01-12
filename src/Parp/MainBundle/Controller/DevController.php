@@ -67,6 +67,53 @@ class DevController extends Controller
         die();
         
     }
+    
+    /**
+     * @Route("/sprawdzPodgrupy/{grupa}", name="sprawdzPodgrupy")
+     * @Template()
+     */
+    public function sprawdzPodgrupyAction($grupa)
+    {
+        $configuration = array(
+            //'user_id_key' => 'samaccountname',
+            'account_suffix' => '@parp.local',
+            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
+            'base_dn' => 'dc=parp,dc=local',
+            'domain_controllers' => array('10.10.16.21'),
+            'admin_username' => 'aktywny_dyrektor',
+            'admin_password' => 'abcd@123',
+            //'real_primarygroup' => true,
+            //'use_ssl' => false,
+            //'use_tls' => false,
+            'recursive_groups' => true,
+            'ad_port' => '389',
+            //'sso' => false,
+        );
+        $adldap = new \Adldap\Adldap($configuration);
+        
+        echo("<pre>\n");
+        
+        $gr = 'SGG-ZZP-PUBLIC-RO';
+        $gr = 'INT-BI';
+        
+        $gr = "marcin_lipinski";
+        $group = "*–Umowy-*";
+        
+        $result = $adldap->group()->find($grupa);
+        print_r($result); 
+        die(); 
+        
+        
+        
+        $result = $adldap->search()->recursive(true)->where('CN', '=', $gr/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
+        print_r($result); die(); 
+        /*
+        $ldap = $this->get('ldap_service');;
+        
+        $ret = $ldap->getAllUserGroupsRecursivlyFromADbeasedOnGroup($grupa);
+        var_dump($ret); die();
+        */
+    }
     /**
      * @Route("/testAdLib2", name="testAdLib2")
      * @Template()
@@ -99,7 +146,7 @@ class DevController extends Controller
         $group = "*–Umowy-*";
         
         $result = $adldap->group()->find($group);
-        print_r($result); die(); 
+        ///print_r($result); die(); 
         
         
         
@@ -157,7 +204,7 @@ class DevController extends Controller
 */
 
             //"sgg-zzp-public-ro"
-            $grupa = $search->recursive(true)->where('CN', '=' , 'INT Winadmin')->get();
+            $grupa = $search->recursive(true)->where('CN', '=' , 'PRAKTYKI-ZID')->get();
         
             echo "<br><pre>"; print_r($grupa->all()); echo "</pre>"; die();
             //echo "<br><pre>"; print_r($grupa); echo "</pre>";
