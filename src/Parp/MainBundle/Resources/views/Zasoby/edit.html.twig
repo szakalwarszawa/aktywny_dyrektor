@@ -62,7 +62,7 @@
                                     <td>{{row.kanalDostepu}}</td>
                                     <td>{{row.poziomDostepu}}</td>
                                     <td>{{row.aktywneOd|date("Y-m-d")}}</td>
-                                    <td>{{row.aktywneDo|date("Y-m-d")}}</td>
+                                    <td>{{row.aktywneDo ? row.aktywneDo|date("Y-m-d") : ""}}</td>
                                     <td>{{row.powodNadania}}</td>
                                     <td>
                                     {%if row.wniosek %}

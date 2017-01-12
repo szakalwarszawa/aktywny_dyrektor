@@ -79,7 +79,7 @@ class OdebranieUprawnienController extends Controller
          $e = new Entry();
         $e->setFromWhen($dt);
         $e->setSamaccountname($user['samaccountname']);
-        $e->setCreatedBy('odbieranie_uprawnien');
+        $e->setCreatedBy($this->getUser()->getUsername());
         //$zd = "-".implode(",-", $zdjac);
         //$zd = substr($zd, 0, strlen($zd) - 2);
 
@@ -297,12 +297,44 @@ class OdebranieUprawnienController extends Controller
      * @Template()
      */
     public function uprawnieniaPrzedOdebraniemAction($login = "", $data = ""){
+        $ldap = $this->get('ldap_service');
         $now = new \Datetime('2017-01-10');
         $data = $data == "" ? $now->format("Y-m-d") : $data;
         $adusers = $this->getDoctrine()->getManager()->getRepository('ParpSoapBundle:ADUser')->findPrzedOdebraniem($login, $data);
+        for($i = 0; $i < count($adusers); $i++){
+            $adusers[$i]['memberOf'] = explode(";", $adusers[$i]['memberOfNames']);
+
+            $user = $ldap->getUserFromAD($login);
+            $adusers[$i]['memberOfNow'] = $user[0]['memberOf'];            
+        }
         //var_dump($adusers);
         
         return $this->render('ParpMainBundle:OdebranieUprawnien:przywracanie.html.twig', ['data' => $adusers]);
     }
     
+    /**
+     * @Security("has_role('PARP_ADMIN')")
+     * @Route("/nadaj_grupy_ad/{login}/{grupy}/{opis}", name="nadaj_grupy_ad", defaults={"login" : "", "grupy" : "", "opis" : ""})
+     * @Template()
+     */
+    public function nadajGrupyAction($login, $grupy, $opis){
+        $grupyRozbite = explode(";", $grupy);
+        $em = $this->getDoctrine()->getManager();
+        $dt = new \Datetime();
+        foreach($grupyRozbite as $grupa){
+            $e = $this->zrobEntry($dt, ['samaccountname' => $login], "+".$grupa);
+            //var_dump($e);
+            $e->setOpis($opis);
+            $em->persist($e);
+        }
+        
+        //$em->flush();
+        return $this->render('ParpMainBundle:OdebranieUprawnien:przywracanie2.html.twig', ['login' => $login, 'grupy' => $grupy]);
+        
+        
+    }
+    
+    
+    
 }
+

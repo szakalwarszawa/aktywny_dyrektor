@@ -2155,4 +2155,6 @@ class DefaultController extends Controller
         $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
         die($login);
     }
+    
+    
 }

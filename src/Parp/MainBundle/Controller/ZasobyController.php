@@ -278,6 +278,8 @@ class ZasobyController extends Controller
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
+        }else{
+            die($editForm->getErrorsAsString());
         }
 
         return array(

@@ -262,6 +262,16 @@ class Entry
      */
     private $activateDeactivated = false;
     
+    
+    
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="opis", type="string", length=2000, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $opis;
+    
     /**
      * Get id
      *
@@ -881,5 +891,29 @@ class Entry
     
     public function getUstawUprawnieniaPoczatkowe(){
         return true;
+    }
+
+    /**
+     * Set opis
+     *
+     * @param string $opis
+     *
+     * @return Entry
+     */
+    public function setOpis($opis)
+    {
+        $this->opis = $opis;
+
+        return $this;
+    }
+
+    /**
+     * Get opis
+     *
+     * @return string
+     */
+    public function getOpis()
+    {
+        return $this->opis;
     }
 }

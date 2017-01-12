@@ -830,8 +830,11 @@ class LdapService
     
     
     public function getUsersWithRole($role){
-        if($this->_userCache === null){
+        if($this->_userCache === null || $this->dodatkoweOpcje == ''){
+            $popOpcje = $this->dodatkoweOpcje;
+            $this->dodatkoweOpcje = 'ekranEdycji';
             $this->_userCache = $this->getAllFromAD();
+            $this->dodatkoweOpcje = $popOpcje;
         }
         //echo "<pre>"; print_r($this->_userCache); die();
         $ret = [];

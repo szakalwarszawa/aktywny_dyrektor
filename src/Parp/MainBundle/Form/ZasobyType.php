@@ -99,6 +99,7 @@ class ZasobyType extends AbstractType
             ->add('dataZakonczeniaWdrozenia', 'datetime', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
+                        'placeholder' => 'wpisz tle grup AD ile poziomo dostepu'
                     ),
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
