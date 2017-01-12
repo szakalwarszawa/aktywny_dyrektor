@@ -68,6 +68,10 @@ TO  NIEUZYWANE !!!!!!!!!!!
                     {%endif%}
                     
                 {% endif %}
+                
+                {% if 'PARP_ADMIN' in app.user.roles%}
+                    <a href="{{path('wniosek_przekieruj', {'id' : entity.wniosek.id})}}" class="btn btn-warning">Przekaż ręcznie wniosek <i class="glyphicons glyphicons-random">&nbsp;</i></a>
+                {%endif%}
             </div>
             <div class="collapse" id="rejectDiv">
                 <form action="" method="POST" id="subFormOdrzucenie">

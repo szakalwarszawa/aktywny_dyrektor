@@ -119,6 +119,10 @@
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'})}}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {%endif%}
                 
+                {% if 'PARP_ADMIN' in app.user.roles%}
+                    <a href="{{path('wniosek_przekieruj', {'id' : entity.wniosek.id})}}" class="btn btn-warning">Przekaż ręcznie wniosek</a>
+                {%endif%}
+                
             </div>
             <div class="collapse" id="rejectDiv">
                 <form action="" method="POST" id="subFormOdrzucenie">

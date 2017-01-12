@@ -15,6 +15,8 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use Parp\MainBundle\Entity\Wniosek;
+use Parp\MainBundle\Entity\WniosekViewer;
+use Parp\MainBundle\Entity\WniosekEditor;
 use Parp\MainBundle\Form\WniosekType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
@@ -30,10 +32,9 @@ class WniosekController extends Controller
      * @Security("has_role('PARP_ADMIN')")
      *
      * @Route("/{id}/przekierujWniosek", name="wniosek_przekieruj")
-     * @Method("GET")
      * @Template()
      */
-    public function przekierujAction($id)
+    public function przekierujAction(Request $request, $id)
     {
         $em = $this->getDoctrine()->getManager();
 
@@ -42,12 +43,126 @@ class WniosekController extends Controller
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find Wniosek entity.');
         }
+        $typWniosku = $wniosek->getWniosekNadanieOdebranieZasobow() ? 'wniosekONadanieUprawnien' : 'wniosekOUtworzenieZasobu';
+        $people = ['viewrs' => [], 'editors' => []];
+        foreach($wniosek->getViewers() as $v){
+            $people['viewers'][$v->getSamaccountname()] = $v->getSamaccountname();
+        }
+        foreach($wniosek->getEditors() as $v){
+            $people['editors'][$v->getSamaccountname()] = $v->getSamaccountname();
+        }
+        $dane = [
+            'status' => $wniosek->getStatus()->getId(),
+            'viewers' => $people['viewers'],
+            'editors' => $people['editors'],
+        ];
+        
+        $statusyEntities = $em->getRepository('ParpMainBundle:WniosekStatus')->findBy(['typWniosku' => $typWniosku]);
+        $statusy = [];
+        foreach($statusyEntities as $e){
+            $statusy[$e->getId()] = $e->getNazwa();
+        }
+        
+        
+        $builder = $this->createFormBuilder($dane)
+                ->add('status', 'choice', array(
+                    'required' => false,
+                    'label' => 'Status',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control'
+                    ),
+                    'choices' => $statusy
+                ))
+                ->add('viewers', 'choice', array(
+                    'required' => false,
+                    'label' => 'Viewers',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2'
+                    ),
+                    'choices' => $this->getUsersFromADWithRole(""),
+                    'multiple' => true,
+                    'expanded' => false
+                ))
+                ->add('editors', 'choice', array(
+                    'required' => false,
+                    'label' => 'Editors',
+                    'label_attr' => array(
+                        'class' => 'col-sm-4 control-label',
+                    ),
+                    'attr' => array(
+                        'class' => 'form-control select2'
+                    ),
+                    'choices' => $this->getUsersFromADWithRole(""),
+                    'multiple' => true,
+                    'expanded' => false
+                ))
+                ->add('zapisz', 'submit', array(
+                        'attr' => array(
+                            'class' => 'btn btn-success col-sm-12'
+                        ),
+                    ));
+                
+                $form = $builder->setAction($this->generateUrl('wniosek_przekieruj', ['id' => $id]))->setMethod('POST')->getForm();
+        
+        if ($request->getMethod() == "POST") {
+            $form->handleRequest($request);
+            $dane = $form->getData();
+            
+            $nowyStatus = $em->getRepository('ParpMainBundle:WniosekStatus')->find($dane['status']);
+            $wniosek->setStatus($nowyStatus);
+            
+            foreach($wniosek->getViewers() as $v){
+                $em->remove($v);
+            }
+            foreach($wniosek->getEditors() as $v){
+                $em->remove($v);
+            }
+            foreach($dane['viewers'] as $v){
+                $nv = new WniosekViewer();
+                $nv->setSamaccountname($v);
+                $nv->setWniosek($wniosek);
+                $wniosek->addViewer($nv);
+                $em->persist($nv);
+            }
+            foreach($dane['editors'] as $v){
+                $nv = new WniosekEditor();
+                $nv->setSamaccountname($v);
+                $nv->setWniosek($wniosek);
+                $wniosek->addEditor($nv);
+                $em->persist($nv);
+            }
+            
+            $em->flush();
+            return $this->redirect($this->generateUrl(($typWniosku == 'wniosekONadanieUprawnien' ? 'wnioseknadanieodebraniezasobow_show' : 'wniosekutworzeniezasobu_edit'), ['id' => ($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId())]));
+            //var_dump($dane);
+            //die('mam dane post');    
+        }
+        
 
         return array(
-            'wniosek'      => $wniosek
+            'wniosek'      => $wniosek,
+            'form' => $form->createView()
         );
     }
 
+    private function getUsersFromADWithRole($role){
+        $ldap = $this->get('ldap_service');
+        $ADUsers = $ldap->getAllFromAD();
+        $users = array();
+        foreach($ADUsers as &$u){
+            if(in_array($role, $u['roles']) || $role == ""){
+                $users[$u['samaccountname']] = $u['name'];
+            }
+        }
+        //echo "<pre>"; var_dump($users); die();
+        return $users;
+    }
 
 
     /**
