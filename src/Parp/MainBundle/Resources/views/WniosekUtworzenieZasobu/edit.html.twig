@@ -67,14 +67,8 @@
                         <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'})}}" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                                                                                    
                     {%else%}
-                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
-                        class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                         
-                        {% if canReturn %}
-                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
-                        class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
                         
-                        {%endif%}
                         
                         
                         
@@ -86,6 +80,15 @@
                         {% endif %}
                         
                     {%endif%}
+                    
+                    
+                    {% if canReturn %}
+                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
+                        class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                    
+                    {%endif%}
+                    <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id : entity.id, isAccepted: 'reject'})}}');"
+                        class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                     
                 {% endif %}
                 

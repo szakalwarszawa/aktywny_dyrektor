@@ -88,7 +88,7 @@
                             class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                             {% if canReturn %}
                             <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'})}}');"
-                            class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                            class="btn btn-info" title="">Zwrot do poprawy o jeden krok do tyłu <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
                             
                             {%endif%}
                             {% if(entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR") %}

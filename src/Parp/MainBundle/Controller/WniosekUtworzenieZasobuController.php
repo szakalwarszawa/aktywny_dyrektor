@@ -414,12 +414,12 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
         return array(
-            'canReturn' => (
+            'canReturn' => true, /*(
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" && 
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB" && 
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "04_EDYCJA_ADMINISTRATOR_O_ZASOB" && 
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "05_EDYCJA_TECHNICZNY_O_ZASOB"
-            ),
+            ),*/
             'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
             'editor' => $editor,
             'entity'      => $entity,
