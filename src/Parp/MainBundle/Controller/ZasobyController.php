@@ -270,6 +270,9 @@ class ZasobyController extends Controller
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
         $this->sprawdzDostep($entity);
+        if(in_array('PARP_ADMIN_ZASOBOW', $this->getUser()->getRoles())){
+            die("nie masz uprawnien do edycji zasobow.");
+        }
 
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
