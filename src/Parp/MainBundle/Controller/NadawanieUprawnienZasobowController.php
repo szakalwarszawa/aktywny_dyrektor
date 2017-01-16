@@ -118,11 +118,12 @@ class NadawanieUprawnienZasobowController extends Controller
                     $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
                 }
                 $chsTemp = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
-                if(!in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                if(!in_array("PARP_ADMIN2", $this->getUser()->getRoles())){
                     $chs = [];
-                    $login = $this->getUser()->getUsername();
+                    $login = 'katarzyna_wypich'; //$this->getUser()->getUsername();
                     foreach($chsTemp as $zasob){
-                        $admini = explode(";", $zasob->getAdministratorZasobu());
+                        $admini = explode(",", $zasob->getAdministratorZasobu());
+                        //echo ".".$zasob->getAdministratorZasobu().".";
                         if(in_array($login, $admini)){
                             $chs[] = $zasob;
                         }
@@ -130,6 +131,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 }else{
                     $chs = $chsTemp;
                 }
+                //var_dump($chs); die();
                 break;
             case "removeResources":
                 $title = "Odbierz zasoby";
@@ -565,7 +567,7 @@ class NadawanieUprawnienZasobowController extends Controller
         $nieJestAdminem = [];
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($zids);
         foreach($zasoby as $zasob){
-            $admini = explode(";", $zasob->getAdministratorZasobu());
+            $admini = explode(",", $zasob->getAdministratorZasobu());
             $jestAdminemWszystkichZasobow = $jestAdminemWszystkichZasobow && in_array($username, $admini);
             if(!in_array($username, $admini)){
                 $nieJestAdminem[] = $zasob->getNazwa();
