@@ -120,7 +120,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $chsTemp = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
                 if(!in_array("PARP_ADMIN2", $this->getUser()->getRoles())){
                     $chs = [];
-                    $login = 'katarzyna_wypich'; //$this->getUser()->getUsername();
+                    $login = $this->getUser()->getUsername();
                     foreach($chsTemp as $zasob){
                         $admini = explode(",", $zasob->getAdministratorZasobu());
                         //echo ".".$zasob->getAdministratorZasobu().".";
