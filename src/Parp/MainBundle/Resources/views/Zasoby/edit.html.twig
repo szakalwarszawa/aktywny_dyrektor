@@ -121,8 +121,22 @@
                         <tbody>
                             {% for uz in users %}
                                 <tr>
-                                    <td><a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">{{uz.wniosek.id}}</a></td>
-                                    <td><a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">Wniosek  o {{uz.wniosek.odebranie ? "odebranie" : "nadanie"}} uprawnień numer: {{uz.wniosek.wniosek.numer}} </a></td>
+                                    <td>
+                                        {%if uz.wniosek is not null %}
+                                            <a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">{{uz.wniosek.id}}</a>
+                                        {%else%}
+                                            Bez wniosku
+                                        {%endif%}
+                                    </td>
+                                    <td>
+                                        
+                                        {%if uz.wniosek is not null %}
+                                            <a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">Wniosek  o {{uz.wniosek.odebranie ? "odebranie" : "nadanie"}} uprawnień numer: {{uz.wniosek.wniosek.numer}} </a>
+                                        {%else%}
+                                            Nie odebrane
+                                        {%endif%}
+                                        
+                                    </td>
                                 </tr>
                             {% endfor %}
                             {% if entity.wniosekUtworzenieZasobu %}
