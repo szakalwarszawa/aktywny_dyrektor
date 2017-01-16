@@ -68,6 +68,8 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             }
         }
+        
+        
         return $choices;
     }
     /**
@@ -115,7 +117,19 @@ class NadawanieUprawnienZasobowController extends Controller
                     $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
                     $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
                 }
-                $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
+                $chsTemp = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
+                if(!in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                    $chs = [];
+                    $login = $this->getUser()->getUsername();
+                    foreach($chsTemp as $zasob){
+                        $admini = explode(";", $zasob->getAdministratorTechnicznyZasobu());
+                        if(in_array($login, $admini)){
+                            $chs[] = $zasob;
+                        }
+                    }
+                }else{
+                    $chs = $chsTemp;
+                }
                 break;
             case "removeResources":
                 $title = "Odbierz zasoby";
@@ -395,10 +409,30 @@ class NadawanieUprawnienZasobowController extends Controller
             
             switch($ndata['action']){
                 case "addResources":
+                    //check privileges - czy jest adminem zasobow
+                    if(!$wniosekId){
+                        //jesli bez wniosku sprawdzamy czy jest PARP_ADMIN albo PARP_ADMIN_ZASOBU dla swoich zasobow
+                        $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ndata['access']);
+                    }
+                    
+                    
                     return $this->addResourcesToUsersAction($request, $ndata, $wniosekId);        
                     break;
                 
                 case "removeResources":
+                    //check privileges - czy jest adminem zasobow!!!
+                    if(!$wniosekId){
+                        //jesli bez wniosku sprawdzamy czy jest PARP_ADMIN albo PARP_ADMIN_ZASOBU dla swoich zasobow
+                        $ids = [];
+                        foreach($ndata['access'] as $a){
+                            $ps = explode(";", $a);
+                            $userZasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($ps[0]);
+
+                            $ids[] = $userZasob->getZasobId();
+                        }
+                        $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
+                    }
+                
                     return $this->removeResourcesToUsersAction($request, $ndata, $wniosekId);  
                     
                     break;
@@ -522,7 +556,26 @@ class NadawanieUprawnienZasobowController extends Controller
             'zasobyId' => $zasobyId
         ));
     }
-    
+    protected function sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($zids){
+        
+        $jestAdminemWszystkichZasobow = true;
+        $username = $this->getUser()->getUsername();
+        $nieJestAdminem = [];
+        $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($zids);
+        foreach($zasoby as $zasob){
+            $admini = explode(";", $zasob->getAdministratorTechnicznyZasobu());
+            $jestAdminemWszystkichZasobow = $jestAdminemWszystkichZasobow && in_array($username, $admini);
+            if(!in_array($username, $admini)){
+                $nieJestAdminem[] = $zasob->getNazwa();
+            }
+        }
+        
+        if(!$jestAdminemWszystkichZasobow && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+            $msg = "Nie możesz dodawać/odejmować uprawnień do zasbów których nie jesteś administratorem!!!";
+            $msg .= "\r\n<br>Nie jesteś administratorem tych zasobów: ".implode(", ", $nieJestAdminem);
+            die($msg);
+        }
+    }
     
     protected function removeResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null){
         
