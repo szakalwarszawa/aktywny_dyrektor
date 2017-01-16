@@ -93,6 +93,7 @@ class ZasobyController extends Controller
             $czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
             $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
                 !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
+                !in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) &&
                 !$czyJestWlascicielemLubPowiernikiem;   
         }else{
             $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
