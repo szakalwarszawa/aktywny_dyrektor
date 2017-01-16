@@ -51,7 +51,7 @@ class DefaultController extends Controller
                 in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
                 in_array("PARP_BZK_2", $this->getUser()->getRoles()) ||
                 in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
-                in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles())             
+                in_array("PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW", $this->getUser()->getRoles())             
             ;
             $ADUsersTemp = $ldap->getAllFromAD();
             $ADUsers = array();
@@ -243,7 +243,7 @@ class DefaultController extends Controller
         }
 
         if(
-            in_array("PARP_ADMIN_ZASOBOW", $roles) ||
+            in_array("PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW", $roles) ||
             in_array("PARP_ADMIN", $roles)
         ){
             $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', true, array('action' => 'addResources'));

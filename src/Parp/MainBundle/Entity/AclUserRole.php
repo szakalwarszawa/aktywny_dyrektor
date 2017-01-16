@@ -42,7 +42,7 @@ class AclUserRole
     
     /**
      *
-     * @ORM\ManyToOne(targetEntity="AclRole", inversedBy="users")
+     * @ORM\ManyToOne(targetEntity="AclRole", inversedBy="users", cascade={"persist"})
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */

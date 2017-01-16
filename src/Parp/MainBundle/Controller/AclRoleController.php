@@ -223,15 +223,25 @@ class AclRoleController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
         }
-
+        $originalUsers = clone $entity->getUsers();
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+            foreach($originalUsers as $user){
+                $em->remove($user);
+            }
+            //var_dump(count($editForm->getData()->getUsers())); die();
+            foreach($entity->getUsers() as $user){
+                $em->persist($user);
+            }
             $em->flush();
+            //die();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('aclrole_edit', array('id' => $id)));
+        }else{
+            die('a');
         }
 
         return array(
