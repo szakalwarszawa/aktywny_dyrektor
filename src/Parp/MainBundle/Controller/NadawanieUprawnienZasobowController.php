@@ -122,7 +122,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     $chs = [];
                     $login = $this->getUser()->getUsername();
                     foreach($chsTemp as $zasob){
-                        $admini = explode(";", $zasob->getAdministratorTechnicznyZasobu());
+                        $admini = explode(";", $zasob->getAdministratorZasobu());
                         if(in_array($login, $admini)){
                             $chs[] = $zasob;
                         }
@@ -565,7 +565,7 @@ class NadawanieUprawnienZasobowController extends Controller
         $nieJestAdminem = [];
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($zids);
         foreach($zasoby as $zasob){
-            $admini = explode(";", $zasob->getAdministratorTechnicznyZasobu());
+            $admini = explode(";", $zasob->getAdministratorZasobu());
             $jestAdminemWszystkichZasobow = $jestAdminemWszystkichZasobow && in_array($username, $admini);
             if(!in_array($username, $admini)){
                 $nieJestAdminem[] = $zasob->getNazwa();
