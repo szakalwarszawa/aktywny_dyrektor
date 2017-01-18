@@ -395,7 +395,7 @@ class WniosekUtworzenieZasobuController extends Controller
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
         $access = $this->checkAccess($entity);
-        if(!$access['viewer'] && !$access['editor']){
+        if(!$access['viewer'] && !$access['editor'] && !$readonly){
             return $this->render("ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig", array('wniosek' => $entity, 'viewer' => 0));
         }
         //die(count($uzs).">");

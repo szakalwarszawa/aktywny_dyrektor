@@ -42,7 +42,9 @@ class ZasobyController extends Controller
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $aktywne)
             {
+                $query->leftJoin($tableAlias.'.wniosekUtworzenieZasobu', 'w');
                 $query->andWhere($tableAlias.'.published = '.($aktywne ? "1" : "0"));
+                $query->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)');
             });
         $grid = $this->get('grid');
         $grid->setSource($source);
