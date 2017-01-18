@@ -28,7 +28,7 @@ class ZastepstwoType extends AbstractType
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2'))
             );    
-        if(in_array("PARP_ADMIN", $this->ADUser->getRoles())){
+        if(in_array("PARP_ADMIN", $this->ADUser->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $this->ADUser->getRoles())){
             $builder->add('kogoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2'))
