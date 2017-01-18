@@ -179,7 +179,7 @@ class ZastepstwoController extends Controller
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
         }
         
-        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles()) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()){
+        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles() && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()){
             
             $this->get('session')->getFlashBag()->set('warning', 'Nie masz uprwanień do edycji nie swoich zastępstw.');
             return $this->redirect($this->generateUrl('zastepstwo'));
