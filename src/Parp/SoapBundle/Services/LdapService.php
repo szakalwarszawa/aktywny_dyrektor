@@ -604,7 +604,7 @@ class LdapService
         }elseif($ktorych == "zablokowane"){
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zablokowane,", $userdn);    
         }elseif($ktorych == "wszyscyWszyscy"){
-            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);    
+            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", str_replace("OU=Zespoly_2016,OU=PARP Pracownicy ,", "", $userdn));    
              
         }elseif($ktorych == "nieobecni"){
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Nieobecni,", $userdn);            
@@ -648,6 +648,7 @@ class LdapService
             $searchString = "(&(samaccountname=)(objectClass=person))";
         }
 
+//die($userdn);
 
         $search = ldap_search($ldapconn, $userdn, $searchString, $this->ADattributes);
         $tmpResults = ldap_get_entries($ldapconn, $search);

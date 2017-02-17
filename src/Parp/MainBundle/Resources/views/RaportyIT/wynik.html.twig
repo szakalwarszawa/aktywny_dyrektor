@@ -1,0 +1,55 @@
+{% extends '::base.html.twig' %}
+
+{% block body -%}
+{% if msg is defined %}
+    <div class="alert alert-danger">
+        {{msg}}
+    </div>
+{%endif%}
+{%if daneZRekorda|length > 0 %}
+Data count: {{daneZRekorda|length}}
+<table class="record_properties table table-striped tablesorter">
+    <thead>
+        <tr>
+            <th>Login</th>
+            <th>Nazwisko</th>
+            <th>Imię</th>
+            <th>Data zatrudnienia</th>
+            <th>Data końca umowy</th>
+            <th>Data wygaszenia konta AD</th>
+            <th>Akcja</th>
+            <th>Data zmiany</th>
+        </tr>
+    </thead>
+    <tbody>
+            {% for obj in daneZRekorda %}
+                <tr>
+                    {% for key,value in obj %}
+                        <td>
+                            {% if value.timestamp is defined %}
+                                {{value|date}}
+                            {% else %}
+                                {%if value is iterable %}
+                                    {% for k, v in value %}
+                                        {{k}} : {{ v|raw }}<br>
+                                    {% endfor %}
+                                {% else %}                                
+                                    {{ value|raw }}
+                                {% endif %}
+                            {% endif %}
+                        
+                        </td>
+                    {% endfor %}                   
+                </tr>
+            {%endfor%}
+    </tbody>
+</table>
+{%endif %}
+    
+<script type="text/javascript">
+    
+    $("table.tablesorter").tablesorter(); 
+
+</script>
+
+{% endblock %}

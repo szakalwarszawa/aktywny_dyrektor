@@ -42,4 +42,60 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 //               var_dump($result);
         return $result;
     }
+    
+    public function findChangesInMonth($rok, $miesiac){
+        $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
+        if($miesiac < 12){
+            $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
+        }else{
+            $dataEnd = new \Datetime(($rok+1).'-01-01');
+        }
+   
+        $result = $this
+           ->createQueryBuilder('e')
+           ->select('e')
+           ->andWhere("
+            (e.umowaOd >= :dataStart and e.umowaOd < :dataEnd) or 
+            (e.umowaDo >= :dataStart and e.umowaDo < :dataEnd)")
+            ->orderBy("e.nazwisko")
+           ->getQuery()
+           ->setParameters([
+               'dataStart' => $dataStart,
+               'dataEnd' => $dataEnd,
+               
+           ])
+           ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+    
+        //var_dump($result);
+        return $result;
+    }
+    
+    public function findChangesDeprtamentInMonth($rok, $miesiac){
+        $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
+        if($miesiac < 12){
+            $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
+        }else{
+            $dataEnd = new \Datetime(($rok+1).'-01-01');
+        }
+   
+        $result = $this
+           ->createQueryBuilder('e')
+           ->select('e, w.id, w.data, w.version, w.loggedAt')
+           ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji','w')
+           ->where("w.objectId = e.id and w.data like '%\"departament\"%' and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
+           and (w.loggedAt >= :dataStart and w.loggedAt < :dataEnd)")
+            ->orderBy("e.nazwisko")
+           ->getQuery()
+           ->setParameters([
+               'dataStart' => $dataStart,
+               'dataEnd' => $dataEnd,
+               
+           ])
+           ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+    
+        //var_dump($result);
+        return $result;
+    }
+    
+    
 }
