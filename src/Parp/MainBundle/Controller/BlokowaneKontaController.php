@@ -24,7 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Parp\MainBundle\Entity\Entry;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 /**
  * BlokowaneKontaController .
  *
@@ -36,6 +36,7 @@ class BlokowaneKontaController extends Controller
      * Lists all zablokowane konta entities.
      *
      * @Route("/lista/{ktorzy}", name="lista_oblokowania", defaults={"ktorzy" : "zablokowane"})
+     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
      * @Template()
      */
     public function listaAction(Request $request, $ktorzy = "zablokowane" /* nieobecni */)
@@ -75,6 +76,7 @@ class BlokowaneKontaController extends Controller
      *
      * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock_user")
      * @Template()
+     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
      */
     public function unblockAction(Request $request, $ktorzy, $samaccountname)
     {
@@ -93,9 +95,12 @@ class BlokowaneKontaController extends Controller
             $data = $request->request->get('form'); 
             $ctrl = new DefaultController();   
             
+            //var_dump($data);
             $entry = new Entry();
             $entry->setSamaccountname($samaccountname);
             $ctrl->parseUserFormData($data, $entry);
+            
+            //var_dump($entry); die();
             //dodac flage ze odblokowanie
             //dodac metode w ldapAdmin ktora przeniesie z odblokowanych
             $entry->setActivateDeactivated(true);
