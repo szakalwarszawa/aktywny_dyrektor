@@ -85,6 +85,17 @@ class RaportyKadroweController extends Controller
                 $rok = $ndata['rok'];
             }
             
+            if($this->getUser()->getUsername() == "kamil_jakacki"){
+                $this->xtraWhereForTests = ' AND pr.NAZWISKO LIKE \'ALEKS%\' '; 
+                $c = new ImportRekordDaneController();
+                $c->setContainer($this->container);
+                $dane = $c->executeQuery($this->getSqlDoProcentowychUdzialowProgramow($rok, 1));
+                return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]); 
+                var_dump($dane);
+                die();
+            }
+            
+            
             $data = $this->getRaportKadrowyData($rok);
             
             //return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);   
@@ -533,4 +544,47 @@ order by 5,2,3
         
         return $response; 
     }
+    
+    
+    protected function getSqlDoProcentowychUdzialowProgramow($rok, $miesiac){
+        $sql = 'select d.symbol as id,
+        pr.nazwisko,pr.imie,
+        f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie ,
+        round(((d.kwota) / s.kwota)*100, 0) as procent,
+        (d.kwota) kwota, s.kwota as pensja
+from 
+p_lp_pla_db d, 
+p_listapl l, 
+p_pracownik pr, 
+f_db f ,
+
+ (
+    select  
+    pr.symbol as id, pr.nazwisko, pr.imie,
+    p.rodz as rodzaj, s.opis,sum(kwota) kwota
+    from p_lp_pla p,
+    p_listapl l,
+    p_skladnik s, 
+    p_lp_prac m,
+    p_pra_grgus g,
+    p_pracownik pr,
+    p_mpracy mp 
+    where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = 2017 and l.miesiac_O = 1   
+    and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
+    and mp.kod = m.kod and p.rodz = \'010\'
+    group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis    
+) as s
+
+where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'
+
+
+--and d.rodz IN (\'6AA\') 
+
+and l.LABEL not like \'Premia%\'
+and s.id = pr.symbol
+        '.$this->xtraWhereForTests.'
+order by pr.nazwisko, pr.imie';
+return $sql;
+    }
+    
 }
