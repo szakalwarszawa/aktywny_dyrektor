@@ -220,7 +220,7 @@ class DefaultController extends Controller
             $rowAction->addAttribute('class', 'btn btn-success btn-xs');
     
             $grid->addRowAction($rowAction);
-        }elseif($ktorzy != "zablokowane" && $ktorzy != "nieaktywne"){
+        }elseif($ktorzy != "zablokowane" && $ktorzy != "nieobecni"){
             
             // Edycja konta
             $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');

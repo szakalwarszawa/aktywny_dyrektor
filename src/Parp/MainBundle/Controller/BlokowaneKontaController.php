@@ -115,6 +115,8 @@ class BlokowaneKontaController extends Controller
             $entry->setCreatedBy($this->getUser()->getUsername());
             $em->persist($entry);
             $em->flush();
+            
+            return $this->redirect($this->generateUrl('main'));
         }
         
         $dane = [

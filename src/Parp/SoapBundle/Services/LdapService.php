@@ -224,6 +224,53 @@ class LdapService
         return $result;
     }
     
+    public function getAllDisabled()
+    {
+        //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
+        $userdn = $this->useradn . $this->patch;
+        
+        $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);
+        
+        
+        
+        $ldapconn = ldap_connect($this->ad_host);
+        if (!$ldapconn)
+            throw new Exception('Brak połączenia z serwerem domeny!');
+        $ldapdomain = $this->ad_domain;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
+        
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+
+        $letters = "abcdefghijklmnopqrstuvwxyz";
+        $letters_array = str_split($letters);
+
+        $tmpResults = array();
+        foreach ($letters_array as $letter) {
+            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=" . $letter . "*)(objectClass=person)(|((userAccountControl=514))((userAccountControl=66050))))", $this->ADattributes);
+            $results = ldap_get_entries($ldapconn, $search);
+            $tmpResults = array_merge($tmpResults, $results);
+        }
+        ldap_bind($ldapconn);
+
+        
+        $result = $this->parseResults($tmpResults);
+        $justDump = false;
+        if($justDump){
+            foreach($result as &$r){
+                unset($r['thumbnailphoto']);
+            }
+            echo "<pre>"; print_r($result); die();    
+        }
+        
+        return $result;
+    }
+    
     public function getMembersOfGroupFromAD($group=FALSE,$inclusive=FALSE)
     {
         

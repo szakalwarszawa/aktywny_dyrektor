@@ -2798,4 +2798,21 @@ class DevController extends Controller
         //$manager->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
+    
+    /**
+     * @Route("/getDisabled", name="getDisabled")
+     * @Template()
+     */
+    public function getDisabledAction()
+    {
+        $ldap = $this->get('ldap_service');
+        
+        $disabled = $ldap->getAllDisabled();
+        var_dump($disabled);
+        die();
+    
+        //$manager->flush();
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
+    }
+    
 }    
