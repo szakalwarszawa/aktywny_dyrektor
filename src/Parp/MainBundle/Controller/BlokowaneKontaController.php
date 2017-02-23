@@ -25,6 +25,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Parp\MainBundle\Entity\Entry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use APY\DataGridBundle\Grid\Column\TextColumn;
 /**
  * BlokowaneKontaController .
  *
@@ -104,6 +105,7 @@ class BlokowaneKontaController extends Controller
             //dodac flage ze odblokowanie
             //dodac metode w ldapAdmin ktora przeniesie z odblokowanych
             $entry->setActivateDeactivated(true);
+            $entry->setIsDisabled(0);
             $entry->setFromWhen(new \Datetime());
             
             //$aduser = $this->get('ldap_service')->getUserFromAD(null, "", null, $ktorzy);
@@ -130,4 +132,75 @@ class BlokowaneKontaController extends Controller
         
         return $dane;
     }
+    
+    
+    /**
+     * Lists all zablokowane konta entities.
+     *
+     * @Route("/kontaDisabledPrzenies", name="kontaDisabledPrzenies")
+     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
+     * @Template()
+     */
+    public function kontaDisabledPrzeniesAction(Request $request)
+    {
+        $ldap = $this->get('ldap_service');
+        
+        $disabled = $ldap->getAllDisabled();
+        
+        for($i = 0; $i < count($disabled); $i++){
+            $d = $disabled[$i];
+            $name = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($d['name']);
+            $rekordDane = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(
+                [
+                    'nazwisko' => $name[0],
+                    'imie' => $name[1],
+                ]
+            );
+            $d['daneRekord'] = (array)$rekordDane;
+            unset($d['daneRekord']['entries']);
+            $disabled[$i] = $d;
+            //var_dump($d);
+        }
+
+        
+        
+        $ctrl = new DefaultController();
+        $grid = $ctrl->getUserGrid($this->get('grid'), $disabled, "nieobecni", $this->getUser()->getRoles());        
+
+        $grid->hideColumns(['thumbnailphoto', 'daneRekord', 'akcje']);
+        
+        $akcje = new TextColumn(array('id' => 'akcje', 'title' => 'Przenieś do', 'source' => false, 'filterable' => false, 'sortable' => false));
+
+        $grid->addColumn($akcje);
+        
+        $ktorzy = "disabled";
+        
+        if ($request->getMethod() == "POST") {
+            $postData = $request->request->all();
+            var_dump($postData);
+            die("mam post");    
+        }
+        
+        /*
+            // Edycja konta
+            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+            $rowAction->setColumn('akcje');
+            $rowAction->setRouteParameters(
+                    array('samaccountname', 'ktorzy' => $ktorzy)
+            );
+            $rowAction->addAttribute('class', 'btn btn-success btn-xs');
+    
+            $grid->addRowAction($rowAction);
+        */
+        $grid->isReadyForRedirect();
+        //var_dump($rowAction2);
+        
+        //print_r($users);
+        //die();
+        $keys = array_keys($disabled[0]);
+        //unset($keys[count($keys) - 1]);
+        //var_dump($keys, $disabled[0]); //die();
+        return $grid->getGridResponse(['ktorzy' => $ktorzy, 'polaAD' => $keys]); 
+    }
+    
 }

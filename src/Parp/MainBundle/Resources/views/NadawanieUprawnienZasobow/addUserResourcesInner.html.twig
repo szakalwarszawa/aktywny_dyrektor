@@ -77,7 +77,7 @@
                         <thead>
                             <tr>
                                 <th>Nazwa</th>
-                                <th>Moduł / Poziom dostępu</th>
+                                <th>Moduł  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('modul'); " class=" "><i class="fa fa-check-square">&nbsp;</i></a>/ Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('poziomDostepu')" class=" "><i class="fa fa-check-square">&nbsp;</i></a></th>
                                 <th>Aktywne od / Aktywne do / bezterminowo
                                 <th>Kanał dostępu / Sumowanie uprawnień / Uprawnienia administracyjne</th>
                             </tr>
@@ -93,13 +93,13 @@
                                     </td>
                                     <td>
                                         <div>
-                                        <label>Moduł</label>
+                                        <label>Moduł <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
                                         {{form_widget(userzasoby.samaccountname)}}
                                         {{form_widget(userzasoby.zasobId)}}
                                         {{form_widget(userzasoby.modul)}}
                                         </div>
                                         <div>
-                                        <label>Poziom dostępu</label>
+                                        <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
                                         {{form_widget(userzasoby.poziomDostepu)}}
                                         </div>
                                     </td>
@@ -128,3 +128,24 @@
         </div>
     </div>
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
+<script>
+    function zaznaczOdznaczWszsytkoSelect2(dys){
+        if(typeof dys == 'string'){
+            $('select.'+dys).each(function(){
+                zaznaczSelect2(this);
+            });
+        }else{
+            //mamy jeden rzad
+            $('select', $(dys).closest('div')).each(function(){
+                zaznaczSelect2(this);
+            });
+        }
+    }
+    function zaznaczSelect2(dys){
+        var sel = $(dys).attr('data-selected') == "true";
+        //alert(sel);
+        $('option', $(dys)).prop("selected", !sel ? "selected" : false);
+        $(dys).trigger("change");
+        $(dys).attr('data-selected', !sel);
+    }
+</script>

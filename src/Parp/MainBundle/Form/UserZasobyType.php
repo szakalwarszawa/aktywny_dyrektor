@@ -137,7 +137,7 @@ class UserZasobyType extends AbstractType
                         'multiple' => true,
                         'expanded' => false,
                         'required' => true,
-                        'attr' => ['class' => 'select2 multiwybor', 'required' => false]
+                        'attr' => ['class' => 'select2 multiwybor '.$fieldName, 'required' => false]
                     )
             );             
             

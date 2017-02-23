@@ -121,7 +121,7 @@ class LdapAdminService
             $userNow = $ldap_client->getUserFromAD($samaccountname, null, null, $ktorzy);  
         }        
         if(count($userNow) == 0){                 
-            $ktorzy = "nieaktywne";
+            $ktorzy = "nieobecni";
             $userNow = $ldap_client->getUserFromAD($samaccountname, null, null, $ktorzy);            
         }        
         if(count($userNow) == 0){                 

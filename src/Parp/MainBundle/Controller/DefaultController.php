@@ -243,8 +243,9 @@ class DefaultController extends Controller
         }
 
         if(
-            in_array("PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW", $roles) ||
-            in_array("PARP_ADMIN", $roles)
+            (in_array("PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW", $roles) ||
+            in_array("PARP_ADMIN", $roles))
+            && ($ktorzy != "zablokowane" && $ktorzy != "nieobecni")
         ){
             $massAction1 = new MassAction("Przypisz dodatkowe zasoby", 'ParpMainBundle:Default:processMassAction', true, array('action' => 'addResources'));
             $grid->addMassAction($massAction1);
@@ -252,7 +253,7 @@ class DefaultController extends Controller
             $massAction2 = new MassAction("Odbierz prawa do zasobów", 'ParpMainBundle:Default:processMassAction', true, array('action' => 'removeResources'));
             $grid->addMassAction($massAction2);    
         }
-        if(in_array("PARP_ADMIN", $roles)){
+        if(in_array("PARP_ADMIN", $roles) && ($ktorzy != "zablokowane" && $ktorzy != "nieobecni")){
                  
             $massAction3 = new MassAction("Przypisz dodatkowe uprawnienia",'ParpMainBundle:Default:processMassAction', false, array('action' => 'addPrivileges'));
             //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
@@ -268,8 +269,8 @@ class DefaultController extends Controller
         if($ktorzy == "usersFromAdFull")
             $grid->setLimits(1000);        
             
-        
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));        
+        
         //$grid->isReadyForRedirect();
                 
                 

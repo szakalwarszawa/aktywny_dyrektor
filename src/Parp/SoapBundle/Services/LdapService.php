@@ -229,8 +229,8 @@ class LdapService
         //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
         $userdn = $this->useradn . $this->patch;
         
-        $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);
-        
+        //$userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", str_replace("OU=Zespoly_2016,OU=PARP Pracownicy ,", "", $userdn));
+
         
         
         $ldapconn = ldap_connect($this->ad_host);
@@ -252,7 +252,7 @@ class LdapService
 
         $tmpResults = array();
         foreach ($letters_array as $letter) {
-            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=" . $letter . "*)(objectClass=person)(|((userAccountControl=514))((userAccountControl=66050))))", $this->ADattributes);
+            $search = ldap_search($ldapconn, $userdn, "(&(samaccountname=" . $letter . "*)(objectClass=person)(|(userAccountControl=514)(userAccountControl=66050)))", $this->ADattributes);
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
         }
