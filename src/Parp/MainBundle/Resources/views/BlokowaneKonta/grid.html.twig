@@ -1,0 +1,99 @@
+{% extends "::grid.html.twig" %}
+
+
+{% block grid_column_akcje_cell %}
+<div>
+    <select name="przeniesDo{{row.getField('samaccountname')}}" id="przeniesDo[]" class="row2">
+        <option value="nic***{{row.getField('samaccountname')}}"><b>Nie rób nic</b></option>
+        <option value="nieobecni***{{row.getField('samaccountname')}}">NIEOBECNI</option>
+        <option value="nieaktywni***{{row.getField('samaccountname')}}">NIEKATYWNI</option>
+        <option value="aktywuj***{{row.getField('samaccountname')}}">AKTYWUJ konto</option>
+    </select>
+    <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#myModal{{row.getField('samaccountname')}}">Pokaż informacje</button>
+</div>
+
+<!-- Modal -->
+<div id="myModal{{row.getField('samaccountname')}}" class="modal fade" role="dialog">
+    <div class="modal-dialog">
+    
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Dane użytkownika {{row.getField('samaccountname')}}</h4>
+        </div>
+        <div class="modal-body">
+        
+            <div class="button-group">
+                <a href="#" class="btn btn-danger">Przenieś do NIEOBECNI</a>
+                <a href="#" class="btn btn-warning">Przenieś do NIEAKTYWNI</a>
+                <a href="#" class="btn btn-success">AKTYWUJ KONTO</a>
+                <a href="#" class="btn">Nic nie rób</a>
+            </div>
+            <div class="col-sm-6">
+                <h3>Dane AD</h3>
+                <table class="table table-striped">
+                    {% for k in polaAD%}
+                        {% if(k != 'daneRekord') %}
+                            {% if(k == 'memberOf' or k == 'roles') %}
+                                <tr>
+                                    <th class="col-xs-6">{{k}}</th>
+                                    <td class="col-xs-6">
+                                        {% for v in row.getField(k) %}
+                                            {#{{v}} , #}
+                                        {%endfor%}
+                                    </td>
+                                </tr>
+                            {%else%}
+                            <tr>
+                                <th class="col-xs-6">{{k}}</th>
+                                <td class="col-xs-6">{{row.getField(k)}}</td>
+                            </tr>
+                            {%endif%}
+                        {%endif%}
+                    {%endfor%}
+                </table>
+            </div>
+            <div class="col-sm-6">
+                <h3>Dane REKORD</h3>
+                <table class="table table-striped">
+                    {%for k2,v in row.getField('daneRekord')%}
+                    <tr>
+                        <th class="col-xs-6">{{k2}}</th>
+                        <td class="col-xs-6">
+                            {% if v.timestamp is defined %}
+                                {{v|date}}
+                            {%else%}
+                                {%if not v is iterable %}
+                                    {{v}}
+                                {%endif%}
+                            {%endif%}
+                        </td>
+                    </tr>
+                    {%endfor%}
+                </table>
+            </div>
+            
+            <div class="button-group">
+                <a href="#" class="btn btn-danger">Przenieś do NIEOBECNI</a>
+                <a href="#" class="btn btn-warning">Przenieś do NIEAKTYWNI</a>
+                <a href="#" class="btn btn-success">AKTYWUJ KONTO</a>
+                <a href="#" class="btn">Nic nie rób</a>
+            </div>
+            
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+        </div>
+    </div>
+    
+    </div>
+</div>
+
+{%endblock%}
+
+{% block grid_exports %}
+<div class="pull-right">
+    <button id="submitform" type="submit" class="btn btn-success"><i class="fa fa-edit"></i> {{ 'Opublikuj zmiany'|trans }}</button> 
+</div>
+{% endblock grid_exports %}

@@ -176,7 +176,7 @@ class LdapService
             $userdn = str_replace("OU=Zespoly_2016,", "OU=Zespoly,", $userdn);
         }
         if($ktorych == "wszyscyWszyscy"){
-            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", $userdn);
+            $userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", str_replace("OU=Zespoly_2016,OU=PARP Pracownicy ,", "", $userdn));    
             //die($userdn);
         }elseif($ktorych == "wszyscy"){
             $userdn = str_replace("OU=Zespoly_2016,", "", $userdn);

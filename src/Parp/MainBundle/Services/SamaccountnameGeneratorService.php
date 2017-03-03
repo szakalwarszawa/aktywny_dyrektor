@@ -84,11 +84,11 @@ class SamaccountnameGeneratorService
     
     public function rozbijFullname($name){
         $cz = explode(" ", $name);
-        $imie = ucfirst(strtolower(trim($cz[1])));
+        $imie = ucfirst(mb_strtolower(trim($cz[1])));
         $nazwiska = explode("-", trim($cz[0]));
         $nazwisko = [];
         foreach($nazwiska as $n){
-            $nazwisko[] = ucfirst(strtolower(trim($n)));
+            $nazwisko[] = ucfirst(mb_strtolower(trim($n)));
         }
         $ret = ['imie' => $imie, 'nazwisko' => implode("-", $nazwisko)];
         return $ret;

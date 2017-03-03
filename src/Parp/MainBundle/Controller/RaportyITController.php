@@ -92,6 +92,12 @@ class RaportyITController extends Controller
             $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac']);
             
             $daneZRekorda = [];
+            
+            
+           
+            
+            
+            
             foreach($daneRekord as $dr){
                 $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
             }
@@ -132,14 +138,55 @@ class RaportyITController extends Controller
                     }
                 }
             }
-            //var_dump($zmianyDep); die();
-            /*
-            $users = $ldap->getAllFromAD();
-            $daneAD = [];
+            
+            
+            $users = $ldap->getAllFromADIntW('wszyscyWszyscy');
+            //var_dump($users); die();
+            //$daneAD = [];
+            $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
             foreach($users as $u){
-                $daneAD[$dr['login']] = $this->zrobRekord($dr, $ndata['rok'], $ndata['miesiac']);
+                if($u['accountexpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
+                    $rok = explode("-", $u['accountexpires'])[0];
+                    $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
+                        
+                    //var_dump($rok,  date("Y"), $u, $dataExpire);
+                    if($rok == date("Y")){
+                        if($rok < 3000 && $dataExpire->format("Y-m") == $ndata['rok']."-".$miesiac){
+                            //$akcja = 'Nowa osoba przyszła do pracy';
+                            //$dataZmiany = $dr['umowaOd']->format("Y-m-d");
+                            if(!isset($daneZRekorda[$u['samaccountname']])){
+                                $danaRekord = $repo->findOneByLogin($u['samaccountname']);
+                                if($danaRekord){
+                                    $dr = [
+                                        'login' => $danaRekord->getLogin(),
+                                        'nazwisko' => $danaRekord->getNazwisko(),
+                                        'imie' => $danaRekord->getImie(),
+                                        'umowaOd' => $danaRekord->getUmowaOd(),
+                                        'umowaDo' => $danaRekord->getUmowaDo(),
+                                        'dataZmiany' => $u['accountexpires'],
+                                    ];
+                                }else{
+                                    $rozbite = $this->get('samaccountname_generator')->rozbijFullname($u['name']);
+                                    $dr = [
+                                        'login' => $u['samaccountname'],
+                                        'nazwisko' => $rozbite['nazwisko'],
+                                        'imie' => $rozbite['imie'],
+                                        'umowaOd' => "__Brak danych w REKORD",
+                                        'umowaDo' => "__Brak danych w REKORD",
+                                        'dataZmiany' => $u['accountexpires'],
+                                    ];
+                                }
+                                $daneZRekorda[$u['samaccountname']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], 'wygaszenie konta w AD');
+                            }
+                        }
+                    }
+                }
             }
-            */
+            //die(); //przeniesc na koniec !!!!!!
+            
+            
+            
+            //var_dump($zmianyDep); die();
             
             return $this->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda]);   
             //return $this->generateExcel($data, $rok);
