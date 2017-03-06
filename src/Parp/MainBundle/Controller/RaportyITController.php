@@ -145,11 +145,14 @@ class RaportyITController extends Controller
             //$daneAD = [];
             $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
             foreach($users as $u){
-                if($u['accountexpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
+                if($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
                     $rok = explode("-", $u['accountexpires'])[0];
                     $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
-                        
-                    //var_dump($rok,  date("Y"), $u, $dataExpire);
+                    
+                    if($u['samaccountname'] == 'leszek_czech'){
+                        //var_dump($rok,  date("Y"), $u, $dataExpire); die('b');
+                    }
+                    
                     if($rok == date("Y")){
                         if($rok < 3000 && $dataExpire->format("Y-m") == $ndata['rok']."-".$miesiac){
                             //$akcja = 'Nowa osoba przyszła do pracy';
@@ -188,7 +191,7 @@ class RaportyITController extends Controller
             
             //var_dump($zmianyDep); die();
             
-            return $this->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda]);   
+            return $this->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac ]);   
             //return $this->generateExcel($data, $rok);
         }
         

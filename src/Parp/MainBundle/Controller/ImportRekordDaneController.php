@@ -38,7 +38,11 @@ class ImportRekordDaneController extends Controller
         $sciecha = "";
         
         $this->dataGraniczna = date("Y-m-d");
-        //$this->dataGraniczna = '2016-11-01';
+        if($this->getUser()->getUsername() == "kamil_jakacki"){
+            $this->dataGraniczna = '2016-09-01';//DEV
+            echo "...DEV...";
+        }
+        
         $sql = $this->getSqlDoImportu();
         $miesiac = 1;
         $rok = 2012;
