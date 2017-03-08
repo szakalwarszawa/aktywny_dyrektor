@@ -2166,7 +2166,7 @@ class DevController extends Controller
      * @Route("/sendMail", name="sendMail")
      * @Template()
      */
-    public function sendMailAction($samaccountname){
+    public function sendMailAction(){
 
         $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'imie_nazwisko' => 'Kamil Jakacki', 'data_dzien_rozpoczecia_pracy_w_nowym_db' => 'jakas data']);
     }

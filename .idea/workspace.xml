@@ -2,43 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d135ebf-fe93-48e1-a6db-976b80f55bc9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikMigracja1.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikMigracja2.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikMigracja3.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikMigracja4.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikMigracja5.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikPrzyjecieImport.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikPrzyjecieNadanieUprawnien.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikWygasniecieUprawnien1.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikWygasniecieUprawnien2.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikWygasniecieUprawnien3.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikWygasniecieUprawnien4.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaSekcji1.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaSekcji2.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaStanowiska1.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaStanowiska2.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaStanowiska3.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZmianaZaangazowania.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZwolnienie1.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZwolnienie2.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZwolnienie3.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/pracownikZwolnienie4.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/raportZbiorczy.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekNadanieUprawnien.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekOdebranieUprawnien.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekOdrzucenie.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobOdrzucenie.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZrealizowanie.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZwrocenie.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/Resources/views/maile/wniosekZwrocenie.html.twig" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/Email.php" />
-      <change type="DELETED" beforePath="$PROJECT_DIR$/.idea/Aktywny Dyrektor@ubuntu.iml" afterPath="" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/.name" afterPath="$PROJECT_DIR$/.idea/.name" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/deployment.xml" afterPath="$PROJECT_DIR$/.idea/deployment.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/modules.xml" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config.yml" afterPath="$PROJECT_DIR$/app/config/config.yml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/services.yml" afterPath="$PROJECT_DIR$/app/config/services.yml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
     </list>
     <ignored path="aktywny_dyrektor.iws" />
@@ -73,25 +37,26 @@
       <file leaf-file-name="DevController.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="175">
-              <caret line="2170" column="100" lean-forward="false" selection-start-line="2170" selection-start-column="100" selection-end-line="2170" selection-end-column="100" />
+            <state relative-caret-position="127">
+              <caret line="2164" column="7" lean-forward="true" selection-start-line="2164" selection-start-column="7" selection-end-line="2164" selection-end-column="7" />
               <folding>
-                <marker date="1488983494000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
-                <marker date="1488983494000" expanded="true" signature="11599:11636" ph="update entry... " />
-                <marker date="1488983494000" expanded="true" signature="11637:11654" ph="delete from " />
-                <marker date="1488983494000" expanded="true" signature="11656:11679" ph="delete from " />
-                <marker date="1488983494000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
-                <marker date="1488983494000" expanded="true" signature="20972:21048" ph="select group... Parp" />
-                <marker date="1488983494000" expanded="true" signature="28159:28472" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="28207:28472" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="28254:28445" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="28691:28996" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="28739:28996" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="28786:28969" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="29208:29514" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="29256:29514" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="29303:29487" ph="..." />
-                <marker date="1488983494000" expanded="true" signature="99399:99620" ph="select wz,w ParpMainBundle" />
+                <element signature="e#86684#86758#0#PHP" expanded="true" />
+                <marker date="1488984654000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
+                <marker date="1488984654000" expanded="true" signature="11599:11636" ph="update entry... " />
+                <marker date="1488984654000" expanded="true" signature="11637:11654" ph="delete from " />
+                <marker date="1488984654000" expanded="true" signature="11656:11679" ph="delete from " />
+                <marker date="1488984654000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
+                <marker date="1488984654000" expanded="true" signature="20972:21048" ph="select group... Parp" />
+                <marker date="1488984654000" expanded="true" signature="28159:28472" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="28207:28472" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="28254:28445" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="28691:28996" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="28739:28996" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="28786:28969" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="29208:29514" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="29256:29514" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="29303:29487" ph="..." />
+                <marker date="1488984654000" expanded="true" signature="99384:99605" ph="select wz,w ParpMainBundle" />
               </folding>
             </state>
           </provider>
@@ -585,12 +550,12 @@
       <workItem from="1488838368421" duration="494000" />
       <workItem from="1488871805737" duration="48000" />
       <workItem from="1488872363487" duration="1630000" />
-      <workItem from="1488973463869" duration="7701000" />
+      <workItem from="1488973463869" duration="7824000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="13903000" />
+    <option name="totallyTimeSpent" value="14026000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -612,7 +577,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33835617" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20273973" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1080,25 +1045,26 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="2170" column="100" lean-forward="false" selection-start-line="2170" selection-start-column="100" selection-end-line="2170" selection-end-column="100" />
+        <state relative-caret-position="127">
+          <caret line="2164" column="7" lean-forward="true" selection-start-line="2164" selection-start-column="7" selection-end-line="2164" selection-end-column="7" />
           <folding>
-            <marker date="1488983494000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
-            <marker date="1488983494000" expanded="true" signature="11599:11636" ph="update entry... " />
-            <marker date="1488983494000" expanded="true" signature="11637:11654" ph="delete from " />
-            <marker date="1488983494000" expanded="true" signature="11656:11679" ph="delete from " />
-            <marker date="1488983494000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
-            <marker date="1488983494000" expanded="true" signature="20972:21048" ph="select group... Parp" />
-            <marker date="1488983494000" expanded="true" signature="28159:28472" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="28207:28472" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="28254:28445" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="28691:28996" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="28739:28996" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="28786:28969" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="29208:29514" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="29256:29514" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="29303:29487" ph="..." />
-            <marker date="1488983494000" expanded="true" signature="99399:99620" ph="select wz,w ParpMainBundle" />
+            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <marker date="1488984654000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
+            <marker date="1488984654000" expanded="true" signature="11599:11636" ph="update entry... " />
+            <marker date="1488984654000" expanded="true" signature="11637:11654" ph="delete from " />
+            <marker date="1488984654000" expanded="true" signature="11656:11679" ph="delete from " />
+            <marker date="1488984654000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
+            <marker date="1488984654000" expanded="true" signature="20972:21048" ph="select group... Parp" />
+            <marker date="1488984654000" expanded="true" signature="28159:28472" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="28207:28472" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="28254:28445" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="28691:28996" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="28739:28996" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="28786:28969" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="29208:29514" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="29256:29514" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="29303:29487" ph="..." />
+            <marker date="1488984654000" expanded="true" signature="99384:99605" ph="select wz,w ParpMainBundle" />
           </folding>
         </state>
       </provider>
