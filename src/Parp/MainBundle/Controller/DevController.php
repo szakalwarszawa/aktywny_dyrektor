@@ -8,6 +8,7 @@ use Parp\MainBundle\Entity\UserEngagement;
 use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Form\EngagementType;
 use Parp\MainBundle\Form\UserEngagementType;
+use Parp\MainBundle\Services\ParpMailerService;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -2166,19 +2167,8 @@ class DevController extends Controller
      * @Template()
      */
     public function sendMailAction($samaccountname){
-        $samaccountname = "test_test_wcale_nie_utworzony";
-        $mails = ["kamil_jakacki@parp.gov.pl", "marcin_lipinski@parp.gov.pl"];
-        $view = "Dnia ".date("Y-m-d")." został utworzony nowy użytkownik '".$samaccountname."', utwórz mu pocztę pliz :)";
-        $message = \Swift_Message::newInstance()
-                ->setSubject('Nowy użytkownik w AkD')
-                ->setFrom('intranet@parp.gov.pl')
-                //->setFrom("kamikacy@gmail.com")
-                ->setTo($mails)
-                ->setBody($view)
-                ->setContentType("text/html");
 
-        //var_dump($view);
-        $this->container->get('mailer')->send($message);
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'imie_nazwisko' => 'Kamil Jakacki', 'data_dzien_rozpoczecia_pracy_w_nowym_db' => 'jakas data']);
     }
     
     

@@ -98,3 +98,6 @@ services:
         class: Parp\MainBundle\Services\ExcelService
         arguments: ["@service_container" ]
         tags: ~
+    parp.mailer:
+        class : Parp\MainBundle\Services\ParpMailerService
+        arguments: [ "@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.context", "@templating" ]
