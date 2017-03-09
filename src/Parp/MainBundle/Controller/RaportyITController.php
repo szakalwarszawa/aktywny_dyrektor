@@ -129,6 +129,7 @@ class RaportyITController extends Controller
                             'login' => $wpisNowy->getLogin(),
                             'nazwisko' => $wpisNowy->getNazwisko(),
                             'imie' => $wpisNowy->getImie(),
+                            'umowa' => $wpisNowy->getUmowa(),
                             'umowaOd' => $wpisNowy->getUmowaOd(),
                             'umowaDo' => $wpisNowy->getUmowaDo(),
                             'dataZmiany' => $zmiana['loggedAt']->format("Y-m-d"),
@@ -164,6 +165,7 @@ class RaportyITController extends Controller
                                         'login' => $danaRekord->getLogin(),
                                         'nazwisko' => $danaRekord->getNazwisko(),
                                         'imie' => $danaRekord->getImie(),
+                                        'umowa' => $danaRekord->getUmowa(),
                                         'umowaOd' => $danaRekord->getUmowaOd(),
                                         'umowaDo' => $danaRekord->getUmowaDo(),
                                         'dataZmiany' => $u['accountexpires'],
@@ -174,6 +176,7 @@ class RaportyITController extends Controller
                                         'login' => $u['samaccountname'],
                                         'nazwisko' => $rozbite['nazwisko'],
                                         'imie' => $rozbite['imie'],
+                                        'umowa' => "__Brak danych w REKORD",
                                         'umowaOd' => "__Brak danych w REKORD",
                                         'umowaDo' => "__Brak danych w REKORD",
                                         'dataZmiany' => $u['accountexpires'],
@@ -199,6 +202,17 @@ class RaportyITController extends Controller
             'form' => $form->createView()    
         ];
     }
+    protected function parseManagerDN($dn){
+        if(strstr($dn, "=") !== false) {
+            //CN=Pokorski Jacek,OU=DAS,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local
+            echo $dn . ".";
+            $p = explode("=", $dn);
+            $p2 = explode(",", $p[1]);
+            return $p2[0];
+        }else{
+            return "";
+        }
+    }
     protected function zrobRekordZRekorda($dr, $rok, $miesiac, $akcja = ''){
         $miesiac = str_pad($miesiac, 2, '0', STR_PAD_LEFT);
         //die($rok."-".$miesiac);
@@ -222,6 +236,11 @@ class RaportyITController extends Controller
             'login' => $dr['login'],
             'nazwisko' => $dr['nazwisko'],
             'imie' => $dr['imie'],
+            'departament' => $user[0]['department'],
+            'sekcja' => $user[0]['info'],
+            'stanowisko' => $user[0]['title'],
+            'przelozony' => $this->parseManagerDN($user[0]['manager']),
+            'umowa' => $dr['umowa'],
             'umowaOd' => $dr['umowaOd'],
             'umowaDo' => $dr['umowaDo'],
             'expiry' => $user[0]['accountexpires'],
