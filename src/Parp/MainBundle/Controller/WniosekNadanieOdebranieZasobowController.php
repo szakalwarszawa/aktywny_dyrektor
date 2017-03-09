@@ -618,7 +618,22 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $this->container->get('mailer')->send($message);
     }
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
-        
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
+        if(in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)){
+            if($wniosek->getOdebranie()) {
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN);
+            }else{
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN);
+            }
+        }elseif($rejected){
+            if($statusName == "08_ROZPATRZONY_NEGATYWNIE"){
+                //odrzucenie
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE);
+            }else {
+                //zwroct do poprzednika
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
+            }
+        }
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
         
         $this->logg('setWniosekStatus START!', array(
@@ -824,6 +839,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 //die('zabieram uz');
             }
+
         }
         elseif($isAccepted == "publish"){
             //przenosi do status 11

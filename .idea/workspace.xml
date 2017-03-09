@@ -4,6 +4,9 @@
     <list default="true" id="7d135ebf-fe93-48e1-a6db-976b80f55bc9" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
     </list>
     <ignored path="aktywny_dyrektor.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -34,30 +37,50 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DevController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="DevController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="127">
-              <caret line="2164" column="7" lean-forward="true" selection-start-line="2164" selection-start-column="7" selection-end-line="2164" selection-end-column="7" />
+            <state relative-caret-position="255">
+              <caret line="2170" column="292" lean-forward="true" selection-start-line="2170" selection-start-column="8" selection-end-line="2170" selection-end-column="292" />
               <folding>
                 <element signature="e#86684#86758#0#PHP" expanded="true" />
-                <marker date="1488984654000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
-                <marker date="1488984654000" expanded="true" signature="11599:11636" ph="update entry... " />
-                <marker date="1488984654000" expanded="true" signature="11637:11654" ph="delete from " />
-                <marker date="1488984654000" expanded="true" signature="11656:11679" ph="delete from " />
-                <marker date="1488984654000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
-                <marker date="1488984654000" expanded="true" signature="20972:21048" ph="select group... Parp" />
-                <marker date="1488984654000" expanded="true" signature="28159:28472" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="28207:28472" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="28254:28445" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="28691:28996" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="28739:28996" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="28786:28969" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="29208:29514" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="29256:29514" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="29303:29487" ph="..." />
-                <marker date="1488984654000" expanded="true" signature="99384:99605" ph="select wz,w ParpMainBundle" />
+                <marker date="1488988696000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
+                <marker date="1488988696000" expanded="true" signature="11599:11636" ph="update entry... " />
+                <marker date="1488988696000" expanded="true" signature="11637:11654" ph="delete from " />
+                <marker date="1488988696000" expanded="true" signature="11656:11679" ph="delete from " />
+                <marker date="1488988696000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
+                <marker date="1488988696000" expanded="true" signature="20972:21048" ph="select group... Parp" />
+                <marker date="1488988696000" expanded="true" signature="28159:28472" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="28207:28472" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="28254:28445" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="28691:28996" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="28739:28996" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="28786:28969" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="29208:29514" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="29256:29514" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="29303:29487" ph="..." />
+                <marker date="1488988696000" expanded="true" signature="99412:99633" ph="select wz,w ParpMainBundle" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="LdapService.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="177">
+              <caret line="642" column="33" lean-forward="false" selection-start-line="642" selection-start-column="20" selection-end-line="642" selection-end-column="33" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="parameters.yml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/config/parameters.yml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="320">
+              <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -65,15 +88,37 @@
       <file leaf-file-name="ParpMailerService.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="4000">
-              <caret line="262" column="118" lean-forward="false" selection-start-line="262" selection-start-column="118" selection-end-line="262" selection-end-column="118" />
+            <state relative-caret-position="192">
+              <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="44" />
               <folding>
                 <element signature="e#43#74#0#PHP" expanded="true" />
                 <element signature="e#163#302#0#PHP" expanded="true" />
-                <element signature="e#3795#4138#0#PHP" expanded="true" />
-                <element signature="e#5887#6072#0#PHP" expanded="true" />
-                <marker date="1488983457000" expanded="true" signature="4556:4568" ph="..." />
+                <element signature="e#3835#4178#0#PHP" expanded="true" />
+                <element signature="e#10275#10460#0#PHP" expanded="true" />
+                <marker date="1488988737000" expanded="true" signature="4596:4608" ph="..." />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WniosekNadanieOdebranieZasobowController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="176">
+              <caret line="620" column="8" lean-forward="true" selection-start-line="620" selection-start-column="8" selection-end-line="635" selection-end-column="9" />
+              <folding>
+                <marker date="1489044902000" expanded="true" signature="41499:41625" ph="SELECT * FRO... akd_realizacja_wnioskow" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WniosekUtworzenieZasobuController.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="189">
+              <caret line="712" column="75" lean-forward="false" selection-start-line="712" selection-start-column="75" selection-end-line="712" selection-end-column="75" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -93,6 +138,11 @@
       <find>^case ([^\n]+):$</find>
       <find>case</find>
       <find>TEMPLATE_</find>
+      <find>TEMPLATE_PRACOWNIKMIGRACJA2</find>
+      <find>odrzuc</find>
+      <find>odebr</find>
+      <find>zwroc</find>
+      <find>setWniosekStatus</find>
     </findStrings>
     <replaceStrings>
       <replace>\n\n</replace>
@@ -111,8 +161,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile/pracownikZwolnienie1.html.twig" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile/pracownikZwolnienie2.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile/pracownikZwolnienie3.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile/pracownikZwolnienie4.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile/pracownikZmianaSekcji.html.twig" />
@@ -160,8 +208,10 @@
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobOdrzucenie.html.twig" />
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZrealizowanie.html.twig" />
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZwrocenie.html.twig" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
       </list>
     </option>
   </component>
@@ -550,12 +600,12 @@
       <workItem from="1488838368421" duration="494000" />
       <workItem from="1488871805737" duration="48000" />
       <workItem from="1488872363487" duration="1630000" />
-      <workItem from="1488973463869" duration="7824000" />
+      <workItem from="1488973463869" duration="11002000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="14026000" />
+    <option name="totallyTimeSpent" value="17204000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -576,7 +626,7 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.50382656" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20273973" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -631,29 +681,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/Resources/views/maile/pracownikPrzyjecieNadanieUprawnien.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/ImportRekordDaneController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="512">
-          <caret line="51" column="23" lean-forward="false" selection-start-line="51" selection-start-column="23" selection-end-line="51" selection-end-column="23" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/LICENSE">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="288">
-          <caret line="18" column="13" lean-forward="false" selection-start-line="18" selection-start-column="13" selection-end-line="18" selection-end-column="13" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/ImportRekordDaneController.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -769,14 +796,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/config/parameters.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -1029,43 +1048,77 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
+    <entry file="file://$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4000">
-          <caret line="262" column="118" lean-forward="false" selection-start-line="262" selection-start-column="118" selection-end-line="262" selection-end-column="118" />
-          <folding>
-            <element signature="e#43#74#0#PHP" expanded="true" />
-            <element signature="e#163#302#0#PHP" expanded="true" />
-            <element signature="e#3795#4138#0#PHP" expanded="true" />
-            <element signature="e#5887#6072#0#PHP" expanded="true" />
-            <marker date="1488983457000" expanded="true" signature="4556:4568" ph="..." />
-          </folding>
+        <state relative-caret-position="177">
+          <caret line="642" column="33" lean-forward="false" selection-start-line="642" selection-start-column="20" selection-end-line="642" selection-end-column="33" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/config/parameters.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="320">
+          <caret line="26" column="0" lean-forward="false" selection-start-line="26" selection-start-column="0" selection-end-line="26" selection-end-column="0" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="127">
-          <caret line="2164" column="7" lean-forward="true" selection-start-line="2164" selection-start-column="7" selection-end-line="2164" selection-end-column="7" />
+        <state relative-caret-position="255">
+          <caret line="2170" column="292" lean-forward="true" selection-start-line="2170" selection-start-column="8" selection-end-line="2170" selection-end-column="292" />
           <folding>
             <element signature="e#86684#86758#0#PHP" expanded="true" />
-            <marker date="1488984654000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
-            <marker date="1488984654000" expanded="true" signature="11599:11636" ph="update entry... " />
-            <marker date="1488984654000" expanded="true" signature="11637:11654" ph="delete from " />
-            <marker date="1488984654000" expanded="true" signature="11656:11679" ph="delete from " />
-            <marker date="1488984654000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
-            <marker date="1488984654000" expanded="true" signature="20972:21048" ph="select group... Parp" />
-            <marker date="1488984654000" expanded="true" signature="28159:28472" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="28207:28472" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="28254:28445" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="28691:28996" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="28739:28996" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="28786:28969" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="29208:29514" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="29256:29514" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="29303:29487" ph="..." />
-            <marker date="1488984654000" expanded="true" signature="99384:99605" ph="select wz,w ParpMainBundle" />
+            <marker date="1488988696000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
+            <marker date="1488988696000" expanded="true" signature="11599:11636" ph="update entry... " />
+            <marker date="1488988696000" expanded="true" signature="11637:11654" ph="delete from " />
+            <marker date="1488988696000" expanded="true" signature="11656:11679" ph="delete from " />
+            <marker date="1488988696000" expanded="true" signature="12587:12869" ph="INSERT INTO `entry`... " />
+            <marker date="1488988696000" expanded="true" signature="20972:21048" ph="select group... Parp" />
+            <marker date="1488988696000" expanded="true" signature="28159:28472" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="28207:28472" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="28254:28445" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="28691:28996" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="28739:28996" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="28786:28969" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="29208:29514" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="29256:29514" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="29303:29487" ph="..." />
+            <marker date="1488988696000" expanded="true" signature="99412:99633" ph="select wz,w ParpMainBundle" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="620" column="8" lean-forward="true" selection-start-line="620" selection-start-column="8" selection-end-line="635" selection-end-column="9" />
+          <folding>
+            <marker date="1489044902000" expanded="true" signature="41499:41625" ph="SELECT * FRO... akd_realizacja_wnioskow" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="44" />
+          <folding>
+            <element signature="e#43#74#0#PHP" expanded="true" />
+            <element signature="e#163#302#0#PHP" expanded="true" />
+            <element signature="e#3835#4178#0#PHP" expanded="true" />
+            <element signature="e#10275#10460#0#PHP" expanded="true" />
+            <marker date="1488988737000" expanded="true" signature="4596:4608" ph="..." />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="189">
+          <caret line="712" column="75" lean-forward="false" selection-start-line="712" selection-start-column="75" selection-end-line="712" selection-end-column="75" />
+          <folding />
         </state>
       </provider>
     </entry>

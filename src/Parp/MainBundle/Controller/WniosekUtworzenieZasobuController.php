@@ -709,6 +709,22 @@ class WniosekUtworzenieZasobuController extends Controller
     }
     
     protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', '11_OPUBLIKOWANY_O_ZASOB'];
+        if(in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)){
+            $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE);
+
+        }elseif($rejected){
+            if($statusName == "08_ROZPATRZONY_NEGATYWNIE_O_ZASOB"){
+                //odrzucenie
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE);
+            }else {
+                //zwroct do poprzednika
+                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE);
+            }
+        }
+
+
+
         if ($this->debug) echo "<br>setWniosekStatus ".$statusName."<br>";
         
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);

@@ -2168,7 +2168,7 @@ class DevController extends Controller
      */
     public function sendMailAction(){
 
-        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'imie_nazwisko' => 'Kamil Jakacki', 'data_dzien_rozpoczecia_pracy_w_nowym_db' => 'jakas data']);
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'login' => 'kamil_jakacki', 'imie_nazwisko' => 'Kamil Jakacki', 'data_dzien_rozpoczecia_pracy_w_nowym_db' => 'jakas data']);
     }
     
     

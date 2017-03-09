@@ -14,6 +14,7 @@ use Symfony\Component\Security\Core\SecurityContext;
  */
 class ParpMailerService
 {
+    const DEBUG_ZAMIAST_WYSYLKI = true;
     const DEFAULT_PRIORITY = '3';
     const DEFAULT_SENDER = ['aktywnydyrektor@parp.gov.pl' => 'Aktywny Dyrektor'];
     const RETURN_PATH = 'aktywnydyrektor@parp.gov.pl';
@@ -126,7 +127,12 @@ class ParpMailerService
         $message->setReturnPath(SELF::RETURN_PATH);
         $message->setPriority($priority);
 
-        $sent = $mailer->send($message);
+        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
+            var_dump($message);
+            $sent = 0;
+        }else {
+            $sent = $mailer->send($message);
+        }
 
         $email = new Email();
         $email
@@ -148,7 +154,91 @@ class ParpMailerService
 
         return $sent;
     }
+    protected function getUserMail($login){
+        return $login."@parp.gov.pl";
+    }
+    public function sendEmailWniosekNadanieOdebranieUprawnien($wniosek, $template){
+        $odbiorcy = [
+            $this->getUserMail($wniosek->getWniosek()->getCreatedBy())
+        ];
+        if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE])){
+            //dodac wszystkich ktorzy procesowali wniosek
+            foreach($wniosek->getWniosek()->getEditors() as $e){
+                $odbiorcy[] = $e->getSamaccountname();
+            }
+            foreach($wniosek->getWniosek()->getViewers() as $v){
+                $odbiorcy[] = $v->getSamaccountname();
+            }
+        }
+        elseif(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE])){
+            //dodac obecnych editors
+            foreach($wniosek->getWniosek()->getEditors() as $e){
+                $odbiorcy[] = $e->getSamaccountname();
+            }
+        }
+        $odbiorcy = array_unique($odbiorcy);
+        foreach($wniosek->getUserZasoby() as $userZasob) {
+            $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
+            $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobyId());
+            $usermail = $this->getUserMail($userZasob->getSamaccountname());
+            $data = [
+                'odbiorcy' => array_merge($odbiorcy, [$usermail]),
+                'imie_nazwisko' => $user[0]['name'],
+                'login' => $userZasob->getSamaccountname(),
+                'departament' => $user[0]['department'],
+                'data_zmiany' => $userZasob->getAktywneOd(),
+                'numer_wniosku' => $wniosek->getWniosek()->getNumer(),
+                'nazwa_zasobu' => $zasob->getNazwa(),
+                'data_odebrania_uprawnien' => $userZasob->getAktywneDo(),
+                'data_zwrocenia' => new \Datetime(),
+                'powod' => $userZasob->getPowodOdebrania(),
+            ];
+            $this->sendEmailByType($template, $data);
+        }
+    }
+    public function sendEmailWniosekZasoby($wniosek, $template){
+        $odbiorcy = [
+            $this->getUserMail($wniosek->getWniosek()->getCreatedBy())
+        ];
+        if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE])){
+            //dodac wszystkich ktorzy procesowali wniosek
+            foreach($wniosek->getWniosek()->getEditors() as $e){
+                $odbiorcy[] = $e->getSamaccountname();
+            }
+            foreach($wniosek->getWniosek()->getViewers() as $v){
+                $odbiorcy[] = $v->getSamaccountname();
+            }
+        }
+        elseif(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE])){
+            //dodac obecnych editors
+            foreach($wniosek->getWniosek()->getEditors() as $e){
+                $odbiorcy[] = $e->getSamaccountname();
+            }
+        }
 
+        foreach($wniosek->getUserZasoby() as $userZasob) {
+            $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
+            $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobyId());
+            $usermail = $this->getUserMail($userZasob->getSamaccountname());
+            $dodatkowyMailWlascicielZasobu = "";
+            if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE])){
+                //dodac wlasciciela zasobu
+                $dodatkowyMailWlascicielZasobu = $this->getUserMail($zasob->getWlascicielZasobu());
+            }
+            $data = [
+                'odbiorcy' => array_merge($odbiorcy, [$usermail, $dodatkowyMailWlascicielZasobu]),
+                'imie_nazwisko' => $user[0]['name'],
+                'login' => $userZasob->getSamaccountname(),
+                'numer_wniosku' => $wniosek->getWniosek()->getNumer(),
+                'nazwa_zasobu' => $zasob->getNazwa(),
+                'data_odrzucenia' => '',
+                'data_dzien_rejestracji_w_rejestrze' => '',
+                'data_zwrocenia' => new \Datetime(),
+                'powod' => $userZasob->getPowodOdebrania(),
+            ];
+            $this->sendEmailByType($template, $data);
+        }
+    }
 
     /**
      * @param mixed  $template
