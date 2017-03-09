@@ -14,7 +14,7 @@ use Symfony\Component\Security\Core\SecurityContext;
  */
 class ParpMailerService
 {
-    const DEBUG_ZAMIAST_WYSYLKI = true;
+    const DEBUG_ZAMIAST_WYSYLKI = false;
     const DEFAULT_PRIORITY = '3';
     const DEFAULT_SENDER = ['aktywnydyrektor@parp.gov.pl' => 'Aktywny Dyrektor'];
     const RETURN_PATH = 'aktywnydyrektor@parp.gov.pl';

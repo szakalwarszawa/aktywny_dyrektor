@@ -3,9 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="7d135ebf-fe93-48e1-a6db-976b80f55bc9" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
     </list>
     <ignored path="aktywny_dyrektor.iws" />
@@ -85,17 +82,17 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ParpMailerService.php" pinned="false" current-in-tab="false">
+      <file leaf-file-name="ParpMailerService.php" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="44" />
+            <state relative-caret-position="160">
+              <caret line="16" column="39" lean-forward="false" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
               <folding>
                 <element signature="e#43#74#0#PHP" expanded="true" />
                 <element signature="e#163#302#0#PHP" expanded="true" />
-                <element signature="e#3835#4178#0#PHP" expanded="true" />
-                <element signature="e#10275#10460#0#PHP" expanded="true" />
-                <marker date="1488988737000" expanded="true" signature="4596:4608" ph="..." />
+                <element signature="e#3836#4179#0#PHP" expanded="true" />
+                <element signature="e#10276#10461#0#PHP" expanded="true" />
+                <marker date="1489045366000" expanded="true" signature="4597:4609" ph="..." />
               </folding>
             </state>
           </provider>
@@ -113,11 +110,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="WniosekUtworzenieZasobuController.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="WniosekUtworzenieZasobuController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="189">
-              <caret line="712" column="75" lean-forward="false" selection-start-line="712" selection-start-column="75" selection-end-line="712" selection-end-column="75" />
+            <state relative-caret-position="61">
+              <caret line="704" column="9" lean-forward="true" selection-start-line="704" selection-start-column="9" selection-end-line="704" selection-end-column="9" />
               <folding />
             </state>
           </provider>
@@ -209,9 +206,9 @@
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZrealizowanie.html.twig" />
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZwrocenie.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekNadanieOdebranieZasobowController.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
       </list>
     </option>
   </component>
@@ -600,12 +597,12 @@
       <workItem from="1488838368421" duration="494000" />
       <workItem from="1488871805737" duration="48000" />
       <workItem from="1488872363487" duration="1630000" />
-      <workItem from="1488973463869" duration="11002000" />
+      <workItem from="1488973463869" duration="11352000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="17204000" />
+    <option name="totallyTimeSpent" value="17554000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -627,7 +624,7 @@
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.24959612" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20273973" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.3849315" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -1100,25 +1097,25 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="49" column="44" lean-forward="false" selection-start-line="49" selection-start-column="10" selection-end-line="49" selection-end-column="44" />
-          <folding>
-            <element signature="e#43#74#0#PHP" expanded="true" />
-            <element signature="e#163#302#0#PHP" expanded="true" />
-            <element signature="e#3835#4178#0#PHP" expanded="true" />
-            <element signature="e#10275#10460#0#PHP" expanded="true" />
-            <marker date="1488988737000" expanded="true" signature="4596:4608" ph="..." />
-          </folding>
+        <state relative-caret-position="61">
+          <caret line="704" column="9" lean-forward="true" selection-start-line="704" selection-start-column="9" selection-end-line="704" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php">
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="712" column="75" lean-forward="false" selection-start-line="712" selection-start-column="75" selection-end-line="712" selection-end-column="75" />
-          <folding />
+        <state relative-caret-position="160">
+          <caret line="16" column="39" lean-forward="false" selection-start-line="16" selection-start-column="39" selection-end-line="16" selection-end-column="39" />
+          <folding>
+            <element signature="e#43#74#0#PHP" expanded="true" />
+            <element signature="e#163#302#0#PHP" expanded="true" />
+            <element signature="e#3836#4179#0#PHP" expanded="true" />
+            <element signature="e#10276#10461#0#PHP" expanded="true" />
+            <marker date="1489045366000" expanded="true" signature="4597:4609" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
