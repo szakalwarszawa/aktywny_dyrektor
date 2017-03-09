@@ -23,6 +23,7 @@ use Parp\MainBundle\Exception\SecurityTestException;
  */
 class RaportyITController extends Controller
 {
+    protected $ldap;
     protected $miesiace = [
         '1' => 'Styczeń',
         '2' => 'Luty',
@@ -87,114 +88,9 @@ class RaportyITController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $ldap = $this->get('ldap_service');
             $ndata = $form->getData();
-            $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac']);
-            
-            $daneZRekorda = [];
-            
-            
-           
-            
-            
-            
-            foreach($daneRekord as $dr){
-                $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
-            }
-            
-            $zmianyDepartamentow = [];
-            $repo = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord');
-            $historyRepo = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
-            $zmianyDep = $repo->findChangesDeprtamentInMonth($ndata['rok'], $ndata['miesiac']);
-            foreach($zmianyDep as $zmiana){
-                $id = $zmiana[0]['id'];
-                $wersja = $zmiana['version'];
-                if($wersja > 1){
-                    
-                    $wpis = $repo->find($id);
-                    //var_dump($wpis);
-                    $historyRepo->revert($wpis, $wersja);
-                    $wpisNowy = clone $wpis;
-                    //var_dump($wpis);
-                    $historyRepo->revert($wpis, $wersja-1);
-                    //var_dump($wpis);
-                    //die();
-                    if($wpisNowy->getDepartament() != $wpis->getDepartament()){
-                        //die("zmiana dep!!!!");
-                        $dep1 = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpis->getDepartament());
-                        $dep2 = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpisNowy->getDepartament());
-                        $akcja = "Zmiana departamentu z '".$dep1->getName()."' na '".$dep2->getName()."'";
-                        //var_dump($zmiana); 
-                        $dr = [
-                            'login' => $wpisNowy->getLogin(),
-                            'nazwisko' => $wpisNowy->getNazwisko(),
-                            'imie' => $wpisNowy->getImie(),
-                            'umowa' => $wpisNowy->getUmowa(),
-                            'umowaOd' => $wpisNowy->getUmowaOd(),
-                            'umowaDo' => $wpisNowy->getUmowaDo(),
-                            'dataZmiany' => $zmiana['loggedAt']->format("Y-m-d"),
-                        ];
-                        
-                        $daneZRekorda[$wpis->getLogin()] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], $akcja);
-                    }
-                }
-            }
-            
-            
-            $users = $ldap->getAllFromADIntW('wszyscyWszyscy');
-            //var_dump($users); die();
-            //$daneAD = [];
-            $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
-            foreach($users as $u){
-                if($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
-                    $rok = explode("-", $u['accountexpires'])[0];
-                    $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
-                    
-                    if($u['samaccountname'] == 'leszek_czech'){
-                        //var_dump($rok,  date("Y"), $u, $dataExpire); die('b');
-                    }
-                    
-                    if($rok == date("Y")){
-                        if($rok < 3000 && $dataExpire->format("Y-m") == $ndata['rok']."-".$miesiac){
-                            //$akcja = 'Nowa osoba przyszła do pracy';
-                            //$dataZmiany = $dr['umowaOd']->format("Y-m-d");
-                            if(!isset($daneZRekorda[$u['samaccountname']])){
-                                $danaRekord = $repo->findOneByLogin($u['samaccountname']);
-                                if($danaRekord){
-                                    $dr = [
-                                        'login' => $danaRekord->getLogin(),
-                                        'nazwisko' => $danaRekord->getNazwisko(),
-                                        'imie' => $danaRekord->getImie(),
-                                        'umowa' => $danaRekord->getUmowa(),
-                                        'umowaOd' => $danaRekord->getUmowaOd(),
-                                        'umowaDo' => $danaRekord->getUmowaDo(),
-                                        'dataZmiany' => $u['accountexpires'],
-                                    ];
-                                }else{
-                                    $rozbite = $this->get('samaccountname_generator')->rozbijFullname($u['name']);
-                                    $dr = [
-                                        'login' => $u['samaccountname'],
-                                        'nazwisko' => $rozbite['nazwisko'],
-                                        'imie' => $rozbite['imie'],
-                                        'umowa' => "__Brak danych w REKORD",
-                                        'umowaOd' => "__Brak danych w REKORD",
-                                        'umowaDo' => "__Brak danych w REKORD",
-                                        'dataZmiany' => $u['accountexpires'],
-                                    ];
-                                }
-                                $daneZRekorda[$u['samaccountname']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], 'wygaszenie konta w AD');
-                            }
-                        }
-                    }
-                }
-            }
-            //die(); //przeniesc na koniec !!!!!!
-            
-            
-            
-            //var_dump($zmianyDep); die();
-            
-            return $this->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac ]);   
+
+            return $this->generujRaport($ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
             //return $this->generateExcel($data, $rok);
         }
         
@@ -202,10 +98,113 @@ class RaportyITController extends Controller
             'form' => $form->createView()    
         ];
     }
+
+    public function generujRaport($ndata, $ldap, $em, $samaccountNameGenerator, $twig){
+        $this->ldap = $ldap;
+        $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac'], $em);
+
+        $daneZRekorda = [];
+        foreach($daneRekord as $dr){
+            $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
+        }
+
+        $zmianyDepartamentow = [];
+        $repo = $em->getRepository('ParpMainBundle:DaneRekord');
+        $historyRepo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
+        $zmianyDep = $repo->findChangesDeprtamentInMonth($ndata['rok'], $ndata['miesiac']);
+        foreach($zmianyDep as $zmiana){
+            $id = $zmiana[0]['id'];
+            $wersja = $zmiana['version'];
+            if($wersja > 1){
+
+                $wpis = $repo->find($id);
+                //var_dump($wpis);
+                $historyRepo->revert($wpis, $wersja);
+                $wpisNowy = clone $wpis;
+                //var_dump($wpis);
+                $historyRepo->revert($wpis, $wersja-1);
+                //var_dump($wpis);
+                //die();
+                if($wpisNowy->getDepartament() != $wpis->getDepartament()){
+                    //die("zmiana dep!!!!");
+                    $dep1 = $em->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpis->getDepartament());
+                    $dep2 = $em->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpisNowy->getDepartament());
+                    $akcja = "Zmiana departamentu z '".$dep1->getName()."' na '".$dep2->getName()."'";
+                    //var_dump($zmiana);
+                    $dr = [
+                        'login' => $wpisNowy->getLogin(),
+                        'nazwisko' => $wpisNowy->getNazwisko(),
+                        'imie' => $wpisNowy->getImie(),
+                        'umowa' => $wpisNowy->getUmowa(),
+                        'umowaOd' => $wpisNowy->getUmowaOd(),
+                        'umowaDo' => $wpisNowy->getUmowaDo(),
+                        'dataZmiany' => $zmiana['loggedAt']->format("Y-m-d"),
+                    ];
+
+                    $daneZRekorda[$wpis->getLogin()] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], $akcja);
+                }
+            }
+        }
+
+
+        $users = $ldap->getAllFromADIntW('wszyscyWszyscy');
+        //var_dump($users); die();
+        //$daneAD = [];
+        $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
+        foreach($users as $u){
+            if($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
+                $rok = explode("-", $u['accountexpires'])[0];
+                $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
+
+                if($u['samaccountname'] == 'leszek_czech'){
+                    //var_dump($rok,  date("Y"), $u, $dataExpire); die('b');
+                }
+
+                if($rok == date("Y")){
+                    if($rok < 3000 && $dataExpire->format("Y-m") == $ndata['rok']."-".$miesiac){
+                        //$akcja = 'Nowa osoba przyszła do pracy';
+                        //$dataZmiany = $dr['umowaOd']->format("Y-m-d");
+                        if(!isset($daneZRekorda[$u['samaccountname']])){
+                            $danaRekord = $repo->findOneByLogin($u['samaccountname']);
+                            if($danaRekord){
+                                $dr = [
+                                    'login' => $danaRekord->getLogin(),
+                                    'nazwisko' => $danaRekord->getNazwisko(),
+                                    'imie' => $danaRekord->getImie(),
+                                    'umowa' => $danaRekord->getUmowa(),
+                                    'umowaOd' => $danaRekord->getUmowaOd(),
+                                    'umowaDo' => $danaRekord->getUmowaDo(),
+                                    'dataZmiany' => $u['accountexpires'],
+                                ];
+                            }else{
+                                $rozbite = $samaccountNameGenerator->rozbijFullname($u['name']);
+                                $dr = [
+                                    'login' => $u['samaccountname'],
+                                    'nazwisko' => $rozbite['nazwisko'],
+                                    'imie' => $rozbite['imie'],
+                                    'umowa' => "__Brak danych w REKORD",
+                                    'umowaOd' => "__Brak danych w REKORD",
+                                    'umowaDo' => "__Brak danych w REKORD",
+                                    'dataZmiany' => $u['accountexpires'],
+                                ];
+                            }
+                            $daneZRekorda[$u['samaccountname']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], 'wygaszenie konta w AD');
+                        }
+                    }
+                }
+            }
+        }
+        //die(); //przeniesc na koniec !!!!!!
+
+
+
+        return $twig->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac ]);
+    }
+
     protected function parseManagerDN($dn){
         if(strstr($dn, "=") !== false) {
             //CN=Pokorski Jacek,OU=DAS,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local
-            echo $dn . ".";
+            //echo $dn . ".";
             $p = explode("=", $dn);
             $p2 = explode(",", $p[1]);
             return $p2[0];
@@ -217,7 +216,7 @@ class RaportyITController extends Controller
         $miesiac = str_pad($miesiac, 2, '0', STR_PAD_LEFT);
         //die($rok."-".$miesiac);
         $dataZmiany = "";
-        $ldap = $this->get('ldap_service');
+        $ldap = $this->ldap;
         $user = $ldap->getUserFromAD($dr['login'], null, null, 'wszyscyWszyscy' );
         //var_dump($user, $dr); //die();
         if($akcja == ''){
@@ -248,7 +247,17 @@ class RaportyITController extends Controller
             'data' => (isset($dr['dataZmiany']) ? $dr['dataZmiany'] : $dataZmiany),
         ];
     }
-    protected function getData($rok, $miesiac){
-        return $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
+    protected function getData($rok, $miesiac, $em){
+        return $em->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
+    }
+    /**
+     *
+     * @Route("/tempTest", name="tempTest")
+     * @Template()
+     */
+    public function tempTestAction(Request $request, $rok = 0)
+    {
+        die('dzialam');
+
     }
 }

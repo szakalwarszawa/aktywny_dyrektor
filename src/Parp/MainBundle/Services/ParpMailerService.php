@@ -251,17 +251,21 @@ class ParpMailerService
     public function sendEmailByType($template, $data)
     {
         $wymaganePola = $this->getWymaganePola($template);
+        $tytul = "Aktywny Dyrektor komunikat: ".$this->getTytulMaila($template);
         if(count(array_intersect_key(array_flip($wymaganePola), $data)) === count($wymaganePola)) {
             //Mamy wszystkie wymagane dane
-            $view = $this->templating->render(
-                'maile/'.$template,
-                $data
-            );
-            $tytul = "Aktywny Dyrektor komunikat: ".$this->getTytulMaila($template);
+            if($template == ParpMailerService::TEMPLATE_RAPORTZBIORCZY){
+                $view = $data['html'];
+            }else {
+                $view = $this->templating->render(
+                    'maile/' . $template,
+                    $data
+                );
+            }
             $this->sendEmail($data['odbiorcy'], $tytul, $view);
         }else{
             $braki = array_diff($wymaganePola, array_keys($data));
-            $msg = 'Błąd brakuje danych do wygenerowania maila!! Brakujące dane : '.implode(', ', $braki);
+            $msg = 'Błąd brakuje danych do wygenerowania maila o tytule "'.$tytul.'" z szablonu "'.$template.'"!! Brakujące dane : '.implode(', ', $braki);
             die($msg);
         }
     }
@@ -269,6 +273,11 @@ class ParpMailerService
     protected function getWymaganePola($template){
         $wymaganePola = ['odbiorcy', 'imie_nazwisko', 'login'];
         switch($template){
+            case ParpMailerService::TEMPLATE_RAPORTZBIORCZY:
+                unset($wymaganePola[2]);//login
+                unset($wymaganePola[1]);//imie_nazwisko
+                $wymaganePola[] = 'html';
+                break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1:
                 $wymaganePola[] = 'data_dzien_rozpoczecia_pracy_w_nowym_db';
                 break;
@@ -331,8 +340,6 @@ class ParpMailerService
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE4:
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_zmiany']);
-                break;
-            case ParpMailerService::TEMPLATE_RAPORTZBIORCZY:
                 break;
             case ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN:
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_zmiany', 'numer_wniosku', 'nazwa_zasobu']);
