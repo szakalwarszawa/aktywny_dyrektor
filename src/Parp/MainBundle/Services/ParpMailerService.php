@@ -285,7 +285,7 @@ class ParpMailerService
         }else{
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg = 'Błąd brakuje danych do wygenerowania maila o tytule "'.$tytul.'" z szablonu "'.$template.'"!! Brakujące dane : '.implode(', ', $braki);
-            die($msg);
+            echo ($msg);
         }
     }
 
