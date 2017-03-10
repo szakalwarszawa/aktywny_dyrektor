@@ -20,6 +20,7 @@ use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
+use Parp\MainBundle\Services\ParpMailerService;
 
 use Symfony\Component\HttpFoundation\Response;
 
@@ -711,15 +712,15 @@ class WniosekUtworzenieZasobuController extends Controller
     protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null){
         $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', '11_OPUBLIKOWANY_O_ZASOB'];
         if(in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)){
-            $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE);
+            $this->get('parp.mailer')->sendEmailWniosekZasoby($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE);
 
         }elseif($rejected){
             if($statusName == "08_ROZPATRZONY_NEGATYWNIE_O_ZASOB"){
                 //odrzucenie
-                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE);
+                $this->get('parp.mailer')->sendEmailWniosekZasoby($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE);
             }else {
                 //zwroct do poprzednika
-                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE);
+                $this->get('parp.mailer')->sendEmailWniosekZasoby($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE);
             }
         }
 

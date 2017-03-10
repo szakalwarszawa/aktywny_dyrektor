@@ -100,4 +100,4 @@ services:
         tags: ~
     parp.mailer:
         class : Parp\MainBundle\Services\ParpMailerService
-        arguments: [ "@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.context", "@templating" ]
+        arguments: [ "@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.context", "@templating", "@ldap_service" ]

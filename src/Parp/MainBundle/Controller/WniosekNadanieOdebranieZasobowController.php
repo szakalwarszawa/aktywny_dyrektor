@@ -24,6 +24,7 @@ use Symfony\Bundle\FrameworkBundle\Console\Application;
 use Symfony\Component\Console\Input\ArrayInput;
 use Parp\MainBundle\Exception\SecurityTestException;
 use APY\DataGridBundle\Grid\Column;
+use Parp\MainBundle\Services\ParpMailerService;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.

@@ -10,7 +10,7 @@ use Symfony\Component\Security\Core\SecurityContext;
  *
  * Klasa odpowiada za obsługę wychodzących wiadomości e-mail.
  *
- * @package Parp\MainBundle\Service
+ * @package Parp\MainBundle\Services
  */
 class ParpMailerService
 {
@@ -46,10 +46,10 @@ class ParpMailerService
     const TEMPLATE_WNIOSEKNADANIEUPRAWNIEN = 'wniosekNadanieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN = 'wniosekOdebranieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODRZUCENIE = 'wniosekOdrzucenie.html.twig';
+    const TEMPLATE_WNIOSEKZWROCENIE = 'wniosekZwrocenie.html.twig';
     const TEMPLATE_WNIOSEKZASOBODRZUCENIE = 'wniosekZasobOdrzucenie.html.twig';
     const TEMPLATE_WNIOSEKZASOBZREALIZOWANIE = 'wniosekZasobZrealizowanie.html.twig';
     const TEMPLATE_WNIOSEKZASOBZWROCENIE = 'wniosekZasobZwrocenie.html.twig';
-    const TEMPLATE_WNIOSEKZWROCENIE = 'wniosekZwrocenie.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -68,6 +68,8 @@ class ParpMailerService
 
     private $templating;
 
+    private $ldap;
+
     /**
      * EmailerService constructor.
      *
@@ -79,12 +81,14 @@ class ParpMailerService
         EntityManager $entityManager,
         \Swift_Mailer $mailer,
         SecurityContext $securityContext,
-        $templating
+        $templating,
+        $ldap
     ) {
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
         $this->securityContext = $securityContext;
         $this->templating = $templating;
+        $this->ldap = $ldap;
     }
 
     /**
@@ -113,6 +117,10 @@ class ParpMailerService
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
         $recipientForId = is_array($recipient) ? 'array' : $recipient;
 
+        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
+            $recipient = 'kamil_jakacki@parp.gov.pl';//dev only
+        }
+
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
@@ -128,11 +136,10 @@ class ParpMailerService
         $message->setPriority($priority);
 
         if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
-            var_dump($message);
-            $sent = 0;
-        }else {
-            $sent = $mailer->send($message);
+            var_dump($recipient);
         }
+        $sent = $mailer->send($message);
+
 
         $email = new Email();
         $email
@@ -179,20 +186,28 @@ class ParpMailerService
         $odbiorcy = array_unique($odbiorcy);
         foreach($wniosek->getUserZasoby() as $userZasob) {
             $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
-            $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobyId());
+            $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobId());
             $usermail = $this->getUserMail($userZasob->getSamaccountname());
             $data = [
                 'odbiorcy' => array_merge($odbiorcy, [$usermail]),
                 'imie_nazwisko' => $user[0]['name'],
                 'login' => $userZasob->getSamaccountname(),
                 'departament' => $user[0]['department'],
-                'data_zmiany' => $userZasob->getAktywneOd(),
+                'data_zmiany' => $this->formatDateForDisplay($userZasob->getAktywneOd()),
                 'numer_wniosku' => $wniosek->getWniosek()->getNumer(),
                 'nazwa_zasobu' => $zasob->getNazwa(),
-                'data_odebrania_uprawnien' => $userZasob->getAktywneDo(),
-                'data_zwrocenia' => new \Datetime(),
-                'powod' => $userZasob->getPowodOdebrania(),
+                'data_odebrania_uprawnien' => $this->formatDateForDisplay($userZasob->getAktywneDo()),
+                'data_zwrocenia' => $this->formatDateForDisplay(new \Datetime()),
+                'powod' => "" //$userZasob->getPowodOdebrania(),
             ];
+            switch($template){
+                case ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE:
+                    $data['powod'] = $wniosek->getPowodZwrotu();
+                    break;
+                case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
+                    $data['powod'] = $wniosek->getPowodZwrotu();
+                    break;
+            }
             $this->sendEmailByType($template, $data);
         }
     }
@@ -216,28 +231,32 @@ class ParpMailerService
             }
         }
 
-        foreach($wniosek->getUserZasoby() as $userZasob) {
-            $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
-            $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobyId());
-            $usermail = $this->getUserMail($userZasob->getSamaccountname());
-            $dodatkowyMailWlascicielZasobu = "";
-            if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE])){
-                //dodac wlasciciela zasobu
-                $dodatkowyMailWlascicielZasobu = $this->getUserMail($zasob->getWlascicielZasobu());
-            }
-            $data = [
-                'odbiorcy' => array_merge($odbiorcy, [$usermail, $dodatkowyMailWlascicielZasobu]),
-                'imie_nazwisko' => $user[0]['name'],
-                'login' => $userZasob->getSamaccountname(),
-                'numer_wniosku' => $wniosek->getWniosek()->getNumer(),
-                'nazwa_zasobu' => $zasob->getNazwa(),
-                'data_odrzucenia' => '',
-                'data_dzien_rejestracji_w_rejestrze' => '',
-                'data_zwrocenia' => new \Datetime(),
-                'powod' => $userZasob->getPowodOdebrania(),
-            ];
-            $this->sendEmailByType($template, $data);
+
+        $zasob = $wniosek->getZasob();
+        if($wniosek->getTyp() == "nowy"){
+            $zasob = $wniosek->getZasob();
         }
+        elseif($wniosek->getTyp() == "zmiana"){
+            $zasob = $wniosek->getZmienianyZasob();
+        }
+        elseif($wniosek->getTyp() == "kasowanie"){
+            $zasob = $wniosek->getZmienianyZasob();
+        }
+        $dodatkowyMailWlascicielZasobu = $this->getUserMail($zasob->getWlascicielZasobu());
+
+        $data = [
+            'odbiorcy' => array_merge($odbiorcy, [$dodatkowyMailWlascicielZasobu]),
+            'imie_nazwisko' => $wniosek->getImienazwisko(),
+            'login' => $wniosek->getLogin(),
+            'numer_wniosku' => $wniosek->getWniosek()->getNumer(),
+            'nazwa_zasobu' => $zasob->getNazwa(),
+            'data_odrzucenia' => $this->formatDateForDisplay(new \Datetime()),
+            'data_dzien_rejestracji_w_rejestrze' => $this->formatDateForDisplay(new \Datetime()),
+            'data_zwrocenia' => $this->formatDateForDisplay(new \Datetime()),
+            'powod' => $wniosek->getPowodZwrotu(),
+        ];
+        $this->sendEmailByType($template, $data);
+
     }
 
     /**
@@ -400,4 +419,7 @@ class ParpMailerService
         return isset($tytuly[$template]) ? $tytuly[$template] : "Domyślny tytuł maila";
     }
 
+    protected function formatDateForDisplay($dt){
+        return $dt ? $dt->format("Y-m-d") : "";
+    }
 }
