@@ -295,6 +295,7 @@ class ZastepstwoController extends Controller
     private function getUsersFromAD(){
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+
         $widzi_wszystkich = in_array("PARP_ADMIN", $this->getUser()->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles());
         
         $ADUsers = $ldap->getAllFromAD();

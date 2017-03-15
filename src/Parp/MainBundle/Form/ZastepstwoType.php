@@ -29,13 +29,21 @@ class ZastepstwoType extends AbstractType
                 'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2'))
             );    
         if(in_array("PARP_ADMIN", $this->ADUser->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $this->ADUser->getRoles())){
+            //PARP_ADMIN oraz PARP_ADMIN_ZASTEPSTW moga ustawic kogolowiek jako kogo zastepuja
             $builder->add('kogoZastepuje', 'choice',  array(
                 'choices' => $this->ADUsers,
                 'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2'))
             );
-        }else{
-            
-            
+        }
+        elseif(in_array("PARP_DB_ZASTEPSTWA", $this->ADUser->getRoles())){
+            //PARP_DB_ZASTEPSTWA moga ustawic kogolowiek z DB jako kogo zastepuja
+            $builder->add('kogoZastepuje', 'choice',  array(
+                    'choices' => $this->ADUsers,
+                    'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2'))
+            );
+        }
+        else{
+            //reszta normalnych osob, ma ustawionego tylko siebie jako kogoZastepuje
             $builder->add('kogoZastepuje', 'text',  array(
                 'required' => false, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true))
             );
