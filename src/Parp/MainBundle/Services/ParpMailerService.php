@@ -120,6 +120,17 @@ class ParpMailerService
         if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
             $recipient = 'kamil_jakacki@parp.gov.pl';//dev only
         }
+        if(is_array($recipient)){
+            for($i = 0; $i < count($recipient); $i++){
+                if(strstr($recipient[$i], "@") === false) {
+                    $recipient[$i] = $this->getUserMail($recipient[$i]);
+                }
+            }
+        }else{
+            if(strstr($recipient, "@") === false) {
+                $recipient = $this->getUserMail($recipient);
+            }
+        }
 
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
@@ -171,16 +182,16 @@ class ParpMailerService
         if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE])){
             //dodac wszystkich ktorzy procesowali wniosek
             foreach($wniosek->getWniosek()->getEditors() as $e){
-                $odbiorcy[] = $e->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
             foreach($wniosek->getWniosek()->getViewers() as $v){
-                $odbiorcy[] = $v->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($v->getSamaccountname());
             }
         }
         elseif(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE])){
             //dodac obecnych editors
             foreach($wniosek->getWniosek()->getEditors() as $e){
-                $odbiorcy[] = $e->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
         }
         $odbiorcy = array_unique($odbiorcy);
@@ -218,16 +229,16 @@ class ParpMailerService
         if(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE])){
             //dodac wszystkich ktorzy procesowali wniosek
             foreach($wniosek->getWniosek()->getEditors() as $e){
-                $odbiorcy[] = $e->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
             foreach($wniosek->getWniosek()->getViewers() as $v){
-                $odbiorcy[] = $v->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($v->getSamaccountname());
             }
         }
         elseif(in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE])){
             //dodac obecnych editors
             foreach($wniosek->getWniosek()->getEditors() as $e){
-                $odbiorcy[] = $e->getSamaccountname();
+                $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
         }
 

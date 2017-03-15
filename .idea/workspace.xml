@@ -2,9 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d135ebf-fe93-48e1-a6db-976b80f55bc9" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
     </list>
     <ignored path="aktywny_dyrektor.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -28,10 +26,26 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
+      <file leaf-file-name="ParpMailerService.php" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="292">
+              <caret line="130" column="58" lean-forward="false" selection-start-line="130" selection-start-column="58" selection-end-line="130" selection-end-column="58" />
+              <folding>
+                <element signature="e#43#74#0#PHP" expanded="true" />
+                <element signature="e#163#303#0#PHP" expanded="true" />
+                <element signature="e#3901#4244#0#PHP" expanded="true" />
+                <element signature="e#11269#11454#0#PHP" expanded="true" />
+                <marker date="1489570671000" expanded="true" signature="4662:4674" ph="..." />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
       <file leaf-file-name="ZastepstwoController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="216">
+            <state relative-caret-position="248">
               <caret line="208" column="44" lean-forward="false" selection-start-line="208" selection-start-column="44" selection-end-line="208" selection-end-column="44" />
               <folding>
                 <element signature="e#4425#4452#1#PHP" expanded="true" />
@@ -43,11 +57,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="ZastepstwoType.php" pinned="false" current-in-tab="true">
+      <file leaf-file-name="ZastepstwoType.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="304">
-              <caret line="38" column="62" lean-forward="false" selection-start-line="38" selection-start-column="62" selection-end-line="38" selection-end-column="62" />
+            <state relative-caret-position="288">
+              <caret line="37" column="43" lean-forward="false" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="43" />
               <folding />
             </state>
           </provider>
@@ -86,6 +100,7 @@
       <find>DEBUG_ZAMIAST_WYSYLKI</find>
       <find>sendEmailWniosekNadanieOdebranieUprawniensendEmailWniosekZasoby</find>
       <find>blad 5034</find>
+      <find>getUserMail</find>
     </findStrings>
     <replaceStrings>
       <replace>\n\n</replace>
@@ -156,9 +171,9 @@
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/WniosekUtworzenieZasobu.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
         <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZrealizowanie.html.twig" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php" />
       </list>
     </option>
   </component>
@@ -331,7 +346,7 @@
     <option name="remove_strategy" value="false" />
   </component>
   <component name="StructureViewFactory">
-    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR" />
+    <option name="ACTIVE_ACTIONS" value=",ALPHA_COMPARATOR,Show Fields,Show Constants" />
   </component>
   <component name="SvnConfiguration">
     <configuration />
@@ -357,12 +372,12 @@
       <workItem from="1489141839497" duration="2110000" />
       <workItem from="1489153683255" duration="98000" />
       <workItem from="1489391541065" duration="10000" />
-      <workItem from="1489568605298" duration="508000" />
+      <workItem from="1489568605298" duration="1024000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="23814000" />
+    <option name="totallyTimeSpent" value="24330000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -383,8 +398,8 @@
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32846716" sideWeight="0.50382656" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25040388" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.17534247" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.23344104" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.34931508" sideWeight="0.49744898" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -443,7 +458,7 @@
         <state relative-caret-position="34736">
           <caret line="2171" column="179" lean-forward="false" selection-start-line="2171" selection-start-column="179" selection-end-line="2171" selection-end-column="179" />
           <folding>
-            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <element signature="e#86684#86758#0#PHP" expanded="false" />
             <marker date="1489049395000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
             <marker date="1489049395000" expanded="true" signature="11599:11636" ph="update entry... " />
             <marker date="1489049395000" expanded="true" signature="11637:11654" ph="delete from " />
@@ -480,8 +495,8 @@
             <element signature="e#43#74#0#PHP" expanded="true" />
             <element signature="e#163#303#0#PHP" expanded="true" />
             <element signature="e#3901#4244#0#PHP" expanded="true" />
-            <element signature="e#10743#10928#0#PHP" expanded="true" />
-            <marker date="1489153772000" expanded="true" signature="4662:4674" ph="..." />
+            <element signature="e#11269#11454#0#PHP" expanded="true" />
+            <marker date="1489570671000" expanded="true" signature="4662:4674" ph="..." />
           </folding>
         </state>
       </provider>
@@ -517,7 +532,7 @@
         <state relative-caret-position="12624">
           <caret line="895" column="42" lean-forward="false" selection-start-line="895" selection-start-column="33" selection-end-line="895" selection-end-column="42" />
           <folding>
-            <element signature="e#46#91#0#PHP" expanded="true" />
+            <element signature="e#46#91#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -554,7 +569,7 @@
         <state relative-caret-position="31648">
           <caret line="2171" column="179" lean-forward="false" selection-start-line="2171" selection-start-column="179" selection-end-line="2171" selection-end-column="179" />
           <folding>
-            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <element signature="e#86684#86758#0#PHP" expanded="false" />
             <marker date="1489049395000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
             <marker date="1489049395000" expanded="true" signature="11599:11636" ph="update entry... " />
             <marker date="1489049395000" expanded="true" signature="11637:11654" ph="delete from " />
@@ -591,8 +606,8 @@
             <element signature="e#43#74#0#PHP" expanded="true" />
             <element signature="e#163#303#0#PHP" expanded="true" />
             <element signature="e#3901#4244#0#PHP" expanded="true" />
-            <element signature="e#10743#10928#0#PHP" expanded="true" />
-            <marker date="1489153772000" expanded="true" signature="4662:4674" ph="..." />
+            <element signature="e#11269#11454#0#PHP" expanded="true" />
+            <marker date="1489570671000" expanded="true" signature="4662:4674" ph="..." />
           </folding>
         </state>
       </provider>
@@ -628,7 +643,7 @@
         <state relative-caret-position="14320">
           <caret line="895" column="42" lean-forward="false" selection-start-line="895" selection-start-column="33" selection-end-line="895" selection-end-column="42" />
           <folding>
-            <element signature="e#46#91#0#PHP" expanded="true" />
+            <element signature="e#46#91#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -664,7 +679,7 @@
         <state relative-caret-position="31648">
           <caret line="2171" column="179" lean-forward="false" selection-start-line="2171" selection-start-column="179" selection-end-line="2171" selection-end-column="179" />
           <folding>
-            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <element signature="e#86684#86758#0#PHP" expanded="false" />
             <marker date="1489049395000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
             <marker date="1489049395000" expanded="true" signature="11599:11636" ph="update entry... " />
             <marker date="1489049395000" expanded="true" signature="11637:11654" ph="delete from " />
@@ -707,8 +722,8 @@
             <element signature="e#43#74#0#PHP" expanded="true" />
             <element signature="e#163#303#0#PHP" expanded="true" />
             <element signature="e#3901#4244#0#PHP" expanded="true" />
-            <element signature="e#10743#10928#0#PHP" expanded="true" />
-            <marker date="1489153772000" expanded="true" signature="4662:4674" ph="..." />
+            <element signature="e#11269#11454#0#PHP" expanded="true" />
+            <marker date="1489570671000" expanded="true" signature="4662:4674" ph="..." />
           </folding>
         </state>
       </provider>
@@ -757,7 +772,7 @@
         <state relative-caret-position="34736">
           <caret line="2171" column="179" lean-forward="false" selection-start-line="2171" selection-start-column="179" selection-end-line="2171" selection-end-column="179" />
           <folding>
-            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <element signature="e#86684#86758#0#PHP" expanded="false" />
             <marker date="1489049395000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
             <marker date="1489049395000" expanded="true" signature="11599:11636" ph="update entry... " />
             <marker date="1489049395000" expanded="true" signature="11637:11654" ph="delete from " />
@@ -858,7 +873,7 @@
         <state relative-caret-position="31648">
           <caret line="2171" column="179" lean-forward="false" selection-start-line="2171" selection-start-column="179" selection-end-line="2171" selection-end-column="179" />
           <folding>
-            <element signature="e#86684#86758#0#PHP" expanded="true" />
+            <element signature="e#86684#86758#0#PHP" expanded="false" />
             <marker date="1489049395000" expanded="true" signature="9458:9746" ph="INSERT INTO `entry`... " />
             <marker date="1489049395000" expanded="true" signature="11599:11636" ph="update entry... " />
             <marker date="1489049395000" expanded="true" signature="11637:11654" ph="delete from " />
@@ -926,21 +941,7 @@
         <state relative-caret-position="12624">
           <caret line="895" column="42" lean-forward="false" selection-start-line="895" selection-start-column="33" selection-end-line="895" selection-end-column="42" />
           <folding>
-            <element signature="e#46#91#0#PHP" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4640">
-          <caret line="302" column="64" lean-forward="true" selection-start-line="302" selection-start-column="64" selection-end-line="302" selection-end-column="64" />
-          <folding>
-            <element signature="e#43#74#0#PHP" expanded="true" />
-            <element signature="e#163#303#0#PHP" expanded="true" />
-            <element signature="e#3901#4244#0#PHP" expanded="true" />
-            <element signature="e#10743#10928#0#PHP" expanded="true" />
-            <marker date="1489153772000" expanded="true" signature="4662:4674" ph="..." />
+            <element signature="e#46#91#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -953,9 +954,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="288">
+          <caret line="37" column="43" lean-forward="false" selection-start-line="37" selection-start-column="25" selection-end-line="37" selection-end-column="43" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="216">
+        <state relative-caret-position="248">
           <caret line="208" column="44" lean-forward="false" selection-start-line="208" selection-start-column="44" selection-end-line="208" selection-end-column="44" />
           <folding>
             <element signature="e#4425#4452#1#PHP" expanded="true" />
@@ -966,11 +975,17 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php">
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="304">
-          <caret line="38" column="62" lean-forward="false" selection-start-line="38" selection-start-column="62" selection-end-line="38" selection-end-column="62" />
-          <folding />
+        <state relative-caret-position="292">
+          <caret line="130" column="58" lean-forward="false" selection-start-line="130" selection-start-column="58" selection-end-line="130" selection-end-column="58" />
+          <folding>
+            <element signature="e#43#74#0#PHP" expanded="true" />
+            <element signature="e#163#303#0#PHP" expanded="true" />
+            <element signature="e#3901#4244#0#PHP" expanded="true" />
+            <element signature="e#11269#11454#0#PHP" expanded="true" />
+            <marker date="1489570671000" expanded="true" signature="4662:4674" ph="..." />
+          </folding>
         </state>
       </provider>
     </entry>
