@@ -2,6 +2,7 @@
 
 namespace Parp\MainBundle\Controller;
 
+use Parp\MainBundle\Services\ParpMailerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -457,13 +458,21 @@ class ImportRekordDaneController extends Controller
             }
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
         
-        if($department == null){
-            echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
+            if($department == null){
+                echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
             }else{
             
             if($nowy || isset($changeSet['departament'])){
+
+
+
                 $entry->setDepartment($department->getName());
                 $entry->setGrupyAD($department);
+
+                if(!$nowy){
+                    //zmiana departamentu
+                    $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($entry, true);
+                }
             }
         
             //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST

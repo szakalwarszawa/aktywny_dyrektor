@@ -2806,4 +2806,75 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
     
+    
+    /**
+     * @Route("/renameStartupDepartament", name="renameStartupDepartament")
+     * @Template()
+     */
+    public function renameStartupDepartamentAction(){
+        $manager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
+        
+        foreach($us as $u){
+            
+            if($u['description'] == "DRS" || $u['department'] == "Departament Rozwoju Startapów"){
+                $e = new Entry();
+                $e->setSamaccountname($u['samaccountname']);
+                $e->setIsImplemented(0);
+                $e->setFromWhen(new \Datetime());
+                $e->setDistinguishedName($u['distinguishedname']);
+                $e->setDepartment("Departament Rozwoju Startupów");
+                $manager->persist($e);
+            }
+        }
+        //$manager->flush();
+        
+        die(count($us).".");
+        
+    }
+    
+    
+    /**
+     * @Route("/fixStartupUprawnienia", name="fixStartupUprawnienia")
+     * @Template()
+     */
+    public function fixStartupUprawnieniaAction(){
+        $data = '2017-03-15';
+        $manager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
+        
+        $ret = [];
+        
+        foreach($us as $u){
+            
+            if($u['description'] == "DRS" || $u['department'] == "Departament Rozwoju Startapów"|| $u['department'] == "Departament Rozwoju Startupów"){
+                $e = new Entry();
+                $e->setSamaccountname($u['samaccountname']);
+                $e->setIsImplemented(0);
+                $e->setFromWhen(new \Datetime());
+                $e->setDistinguishedName($u['distinguishedname']);
+                $aduser = $manager->getRepository('ParpSoapBundle:ADUser')->findDlaDnia($u['samaccountname'], $data);
+                var_dump($aduser);
+                $ret[$u['samaccountname']] = $aduser[0]['memberOfNames'];
+                $e->setMemberOf($this->parseMemberOf($aduser[0]['memberOfNames']));
+                $manager->persist($e);
+            }
+        }
+        //$manager->flush();
+        var_dump($ret);
+        die(count($us).".");
+        
+    }
+    
+    protected function parseMemberOf($m){
+        $ms = explode(';', $m);
+        $ret = [];
+        foreach($ms as $mm){
+            $ret[] = '+'.$mm;
+        }
+        return implode(',', $ret);
+    }
+    
 }    

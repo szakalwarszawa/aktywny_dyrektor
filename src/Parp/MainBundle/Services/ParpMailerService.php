@@ -175,6 +175,52 @@ class ParpMailerService
     protected function getUserMail($login){
         return $login."@parp.gov.pl";
     }
+
+
+    public function sendEmailZmianaKadrowaMigracja($daneRekord, $wDniuZmiany = true)
+    {
+        $data = [];
+        if($wDniuZmiany) {
+            $templatki = [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5];
+        }else{
+            $templatki = [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1];//jesli nie w dniu zmiany to znaczy ze 4 dni wczesniej i inny template i tylko jeden
+            $dane['odbiorcy'] = [];
+        }
+        foreach($templatki as $templatka){
+            switch($templatka){
+                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1:
+                    //Pracownik migruje do innego D/B 1
+                    //$wymaganePola[] = 'data_dzien_rozpoczecia_pracy_w_nowym_db';
+                    $dane['odbiorcy'] = [];
+                    break;
+                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2:
+                    //Pracownik migruje do innego D/B 2
+                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'nazwa_zasobu', 'nowy_db']);
+                    $dane['odbiorcy'] = [];
+                    break;
+                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3:
+                    //Pracownik migruje do innego D/B 3
+                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
+                    $dane['odbiorcy'] = [];
+                    break;
+                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4:
+                    //Pracownik migruje do innego D/B 4
+                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
+                    $dane['odbiorcy'] = [];
+                    break;
+                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5:
+                    //Pracownik migruje do innego D/B 5
+                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
+                    $dane['odbiorcy'] = [];
+                    break;
+            }
+            $this->sendEmailByType($templatka, $data);
+        }
+
+
+
+    }
+
     public function sendEmailWniosekNadanieOdebranieUprawnien($wniosek, $template){
         $odbiorcy = [
             $this->getUserMail($wniosek->getWniosek()->getCreatedBy())
@@ -312,24 +358,31 @@ class ParpMailerService
                 $wymaganePola[] = 'html';
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1:
+                //Pracownik migruje do innego D/B 1
                 $wymaganePola[] = 'data_dzien_rozpoczecia_pracy_w_nowym_db';
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2:
+                //Pracownik migruje do innego D/B 2
                 $wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'nazwa_zasobu', 'nowy_db']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3:
+                //Pracownik migruje do innego D/B 3
                 $wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4:
+                //Pracownik migruje do innego D/B 4
                 $wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5:
+                //Pracownik migruje do innego D/B 5
                 $wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEIMPORT:
+                //Pracownik jest przyjmowany do pracy w PARP 1
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_nadania_uprawnien_poczatkowych']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN:
+                //Pracownik jest przyjmowany do pracy w PARP 2
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_nadania_uprawnien_poczatkowych']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1:
@@ -398,6 +451,7 @@ class ParpMailerService
         }
         return $wymaganePola;
     }
+
     protected function getTytulMaila($template){
         $tytuly = [
             ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1 => "Pracownik migruje do innego D/B",
