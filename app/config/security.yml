@@ -1,4 +1,5 @@
 security:
+    erase_credentials:    true
     encoders:
         Parp\AuthBundle\Security\ParpUser:
             algorithm:   plaintext
