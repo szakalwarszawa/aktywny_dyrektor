@@ -556,4 +556,8 @@ class DaneRekord
     {
         return $this->newUnproccessed;
     }
+    
+    public function getImieNazwisko(){
+        return $this->getImie()." ".$this->getNazwisko();
+    }
 }

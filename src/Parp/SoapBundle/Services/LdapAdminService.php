@@ -324,7 +324,7 @@ class LdapAdminService
         }
         //var_dump($person->getManager(), $entry); die();
         if ($person->getTitle()) {
-            $entry['title'] = $person->getTitle();
+            $entry['title'] = $this->mapowanieStanowisk($person->getTitle());
         }
         $entry['initials'] = array();
         if ($person->getInitials()) {
@@ -375,7 +375,7 @@ class LdapAdminService
                 $person->setGrupyAD($department);
                 if($person->getTitle()){
                     //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
-                    $userAD[0]['title'] = $person->getTitle();
+                    $userAD[0]['title'] = $this->mapowanieStanowisk($person->getTitle());
                 }
                 
                 $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $department->getShortname(), "");
@@ -998,4 +998,19 @@ class LdapAdminService
         return ldap_errno($ldapconn);
     }
     
+    public function mapowanieStanowisk($stanowisko){
+        $mapa = [
+            'rzecznik prasowy' => 'rzecznik prasowy PARP'    
+        ];
+        if(isset($mapa[$stanowisko])){
+            $stanowisko = $mapa[$stanowisko];
+        }
+        
+        
+        //die('.'.$stanowisko.'.');
+        
+        
+        return $stanowisko;
+        
+    }
 }

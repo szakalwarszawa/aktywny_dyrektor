@@ -2162,15 +2162,6 @@ class DevController extends Controller
     
     
     
-    /**
-     * @Route("/sendMail", name="sendMail")
-     * @Template()
-     */
-    public function sendMailAction(){
-        $raportCtrl = new RaportyITController();
-        $html = $raportCtrl->generujRaport(["rok" => date("Y"), "miesiac" => date("m")], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
-        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'html' => $html]);
-    }
     
     
     /**
@@ -2875,6 +2866,44 @@ class DevController extends Controller
             $ret[] = '+'.$mm;
         }
         return implode(',', $ret);
+    }
+    
+    /**
+     * @Route("/textMail231", name="textMail231")
+     * @Template()
+     */
+    public function textMail231Action(){
+        $dr = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId('3834');
+        $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $dr, true);
+        
+        
+        $raportCtrl = new RaportyITController();
+        $html = $raportCtrl->generujRaport(["rok" => date("Y"), "miesiac" => date("m")], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'html' => $html]);
+        
+        
+    }
+    
+    
+    /**
+     * @Route("/sendMail", name="sendMail")
+     * @Template()
+     */
+    public function sendMailAction(){
+        $raportCtrl = new RaportyITController();
+        $html = $raportCtrl->generujRaport(["rok" => date("Y"), "miesiac" => date("m")], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
+    }
+    
+    
+    /**
+     * @Route("/sendMail2", name="sendMail2")
+     * @Template()
+     */
+    public function sendMail2Action(){
+        
+        $html = "JAKIS MAIL TEXT";
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
     }
     
 }    

@@ -15,9 +15,12 @@ use Symfony\Component\Security\Core\SecurityContext;
 class ParpMailerService
 {
     const DEBUG_ZAMIAST_WYSYLKI = false;
+    const OSOBA_NA_KTOREJ_TYLKO_TEST_MAILA = 'kamil_jakacki';
     const DEFAULT_PRIORITY = '3';
     const DEFAULT_SENDER = ['aktywnydyrektor@parp.gov.pl' => 'Aktywny Dyrektor'];
     const RETURN_PATH = 'aktywnydyrektor@parp.gov.pl'; 
+    const EMAIL_DO_AUMS_AD = 'jaroslaw_bednarczyk';
+    const EMAIL_DO_HELPDESK = 'INT-BI-HELPDESK';
 
     const TEMPLATE_PRACOWNIKMIGRACJA1 = 'pracownikMigracja1.html.twig';
     const TEMPLATE_PRACOWNIKMIGRACJA2 = 'pracownikMigracja2.html.twig';
@@ -117,8 +120,10 @@ class ParpMailerService
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
         $recipientForId = is_array($recipient) ? 'array' : $recipient;
 
-        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
-            $recipient = 'kamil_jakacki@parp.gov.pl';//dev only
+        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI || $this->securityContext->getToken()->getUser()->getUsername() == ParpMailerService::OSOBA_NA_KTOREJ_TYLKO_TEST_MAILA){
+            $recpsOld = is_array($recipient) ? implode(', ', $recipient) : $recipient;
+            $recipient = ParpMailerService::OSOBA_NA_KTOREJ_TYLKO_TEST_MAILA;//dev only
+            $contentHtml = "Email mial isc do ".$recpsOld." \r\n\r\n<br><br>".$contentHtml;
         }
         if(is_array($recipient)){
             for($i = 0; $i < count($recipient); $i++){
@@ -145,12 +150,16 @@ class ParpMailerService
         $message->addPart($contentHtml, 'text/html');
         $message->setReturnPath(SELF::RETURN_PATH);
         $message->setPriority($priority);
-
-        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI){
-            var_dump($recipient);
+        $failures = null;
+        if(ParpMailerService::DEBUG_ZAMIAST_WYSYLKI || $this->securityContext->getToken()->getUser()->getUsername() == ParpMailerService::OSOBA_NA_KTOREJ_TYLKO_TEST_MAILA){
+            
+            //echo "<pre>".print_r($message)."</pre>";
+            //echo "<pre>".print_r($recipient)."</pre>";
+            //echo "<pre>".print_r($sent)."</pre>";
+            //echo "<pre>".print_r($failures)."</pre>";
+            //die();
         }
         $sent = $mailer->send($message);
-
 
         $email = new Email();
         $email
@@ -166,7 +175,6 @@ class ParpMailerService
             $uzytkownik = $this->securityContext->getToken()->getUser()->getUsername();
             $email->setUzytkownik($uzytkownik);
         }
-
         $this->entityManager->persist($email);
         $this->entityManager->flush();
 
@@ -177,44 +185,67 @@ class ParpMailerService
     }
 
 
-    public function sendEmailZmianaKadrowaMigracja($daneRekord, $wDniuZmiany = true)
+    public function sendEmailZmianaKadrowaMigracja($daneRekord, $poprzednieDaneRekord, $wDniuZmiany = true)
     {
-        $data = [];
+        $nowyDep = $this->entityManager->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($daneRekord->getDepartament());
+        $staryDep = $this->entityManager->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($poprzednieDaneRekord->getDepartament());
+        
+        
+        $data = [
+            'data_dzien_rozpoczecia_pracy_w_nowym_db' => date('Y-m-d'),
+            'stary_db' => $staryDep->getName(),
+            'nowy_db' => $nowyDep->getName(),
+            'odbiorcy' => '',
+            'imie_nazwisko' => $daneRekord->getImieNazwisko(),
+            'login' => $daneRekord->getLogin(),
+            
+        ];
         if($wDniuZmiany) {
-            $templatki = [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5];
+            $templatki = [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4, ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5];
         }else{
             $templatki = [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1];//jesli nie w dniu zmiany to znaczy ze 4 dni wczesniej i inny template i tylko jeden
-            $dane['odbiorcy'] = [];
+            
         }
         foreach($templatki as $templatka){
             switch($templatka){
-                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1:
-                    //Pracownik migruje do innego D/B 1
-                    //$wymaganePola[] = 'data_dzien_rozpoczecia_pracy_w_nowym_db';
-                    $dane['odbiorcy'] = [];
-                    break;
-                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2:
-                    //Pracownik migruje do innego D/B 2
-                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'nazwa_zasobu', 'nowy_db']);
-                    $dane['odbiorcy'] = [];
-                    break;
                 case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3:
                     //Pracownik migruje do innego D/B 3
                     //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $dane['odbiorcy'] = [];
+                    $data['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
                     break;
                 case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4:
                     //Pracownik migruje do innego D/B 4
                     //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $dane['odbiorcy'] = [];
+                    $data['odbiorcy'] = [$staryDep->getDyrektor(), $nowyDep->getDyrektor(), $daneRekord->getLogin(), ParpMailerService::EMAIL_DO_AUMS_AD];
+                    /*
+                        poprzedni [P]; przyszły [P]; [U]; dw [AUMS-AD],
+                        */
                     break;
                 case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5:
                     //Pracownik migruje do innego D/B 5
                     //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $dane['odbiorcy'] = [];
+                    $data['odbiorcy'] = [ParpMailerService::EMAIL_DO_HELPDESK];
                     break;
             }
             $this->sendEmailByType($templatka, $data);
+        }
+        
+        if($wDniuZmiany){
+            //wyslac maila do wsystkich administratorow zasobow!!!!
+            $userzasoby = $this->entityManager->getRepository('ParpMainBundle:UserZasoby')->findBySamaccountname($daneRekord->getLogin());
+            
+            
+            $zasoby = [];//@todo: wybrac faktycznie zasoby usera!!!
+            foreach($userzasoby as $uz){
+                $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                $zasoby[] = $zasob;
+            }
+            
+            foreach($zasoby as $zasob){
+                $data['odbiorcy'] = [$zasob->getAdministratorZasobu(), $daneRekord->getLogin(), $nowyDep->getDyrektor(), $staryDep->getDyrektor()];
+                $data['nazwa_zasobu'] = $zasob->getNazwa();
+                $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, $data);
+            }
         }
 
 

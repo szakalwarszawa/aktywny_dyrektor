@@ -248,11 +248,11 @@ class ImportRekordDaneController extends Controller
         $data["KAMIL JAKACKI"][] = [
             'SYMBOL' => '3834',
             'STANOWISKO' => 'starszy specjalista',
-            'DEPARTAMENT' => '521',
+            'DEPARTAMENT' => '526',
             'IMIE' => 'KAMIL',
             'NAZWISKO' => 'JAKACKI',
             'UMOWA' => 'Na czas nieokreślony',
-            'UMOWAOD' => '2016-03-01 00:00:00',
+            'UMOWAOD' => '2016-03-24x 00:00:00',
             'UMOWADO' => NULL,
         ];
 */
@@ -307,7 +307,7 @@ class ImportRekordDaneController extends Controller
             }
             if($this->parseValue($row['SYMBOL']) == "3834"){
                 //jakacki kamil testujemy update pol
-                $row['DEPARTAMENT'] = "516";
+                $row['DEPARTAMENT'] = "523";
                 $row['STANOWISKO'] = "starszy specjalista";
                 //var_dump('mam jakackiego');
             }
@@ -400,6 +400,27 @@ class ImportRekordDaneController extends Controller
                         $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
                         $imported[] = $dr;
                     }
+                    
+                    if($nowy){
+                        
+                    }else{
+                        if(isset($changeSet['departament'])){
+                            //zmiana departamentu
+                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
+                        }
+                        /*
+                        if(isset($changeSet['stanowisko']){
+                            //zmiana departamentu
+                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
+                        }*/
+                    }
+                    
+                    
+                }
+                
+                if($dr->getLogin() == 'kamil_jakacki'){
+                    //var_dump($changeSet);
+                    //die('nie zapisuje bo kamil_jakacki');
                 }
             }
             
@@ -469,10 +490,6 @@ class ImportRekordDaneController extends Controller
                 $entry->setDepartment($department->getName());
                 $entry->setGrupyAD($department);
 
-                if(!$nowy){
-                    //zmiana departamentu
-                    $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($entry, true);
-                }
             }
         
             //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
@@ -515,6 +532,11 @@ class ImportRekordDaneController extends Controller
                 die(".".$dr->getImie().".");
 */
         }
+        
+        
+        
+        
+        
         $entry->setIsImplemented(0);
         $entry->setInitialRights('');
         $entry->setIsDisabled(0);
