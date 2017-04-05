@@ -70,7 +70,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
     
-    public function findChangesDeprtamentInMonth($rok, $miesiac){
+    public function findChangesInMonthByPole($rok, $miesiac, $pole = 'departament'){
         $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
         if($miesiac < 12){
             $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
@@ -82,7 +82,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
            ->createQueryBuilder('e')
            ->select('e, w.id, w.data, w.version, w.loggedAt')
            ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji','w')
-           ->where("w.objectId = e.id and w.data like '%\"departament\"%' and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
+           ->where("w.objectId = e.id and w.data like '%\"".$pole."\"%' and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
            and (w.loggedAt >= :dataStart and w.loggedAt < :dataEnd)")
             ->orderBy("e.nazwisko")
            ->getQuery()
@@ -96,6 +96,30 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         //var_dump($result);
         return $result;
     }
-    
+    public function findChangesByPoleForUser($login, $pola){
+        $where = [];
+        foreach($pola as $pole){
+            $where[] = "w.data like '%\"".$pole."\"%'";
+        }
+
+
+
+        $result = $this
+            ->createQueryBuilder('e')
+            ->select('e, w.id, w.data, w.version, w.loggedAt')
+            ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji','w')
+            ->where("w.objectId = e.id and (".implode(' OR ', $where).") and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
+           and e.login like :login")
+            ->orderBy("e.nazwisko")
+            ->getQuery()
+            ->setParameters([
+                'login' => $login
+
+            ])
+            ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+
+        //var_dump($result);
+        return $result;
+    }
     
 }

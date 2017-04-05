@@ -111,7 +111,7 @@ class RaportyITController extends Controller
         $zmianyDepartamentow = [];
         $repo = $em->getRepository('ParpMainBundle:DaneRekord');
         $historyRepo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
-        $zmianyDep = $repo->findChangesDeprtamentInMonth($ndata['rok'], $ndata['miesiac']);
+        $zmianyDep = $repo->findChangesInMonthByPole($ndata['rok'], $ndata['miesiac']);
         foreach($zmianyDep as $zmiana){
             $id = $zmiana[0]['id'];
             $wersja = $zmiana['version'];
@@ -259,5 +259,38 @@ class RaportyITController extends Controller
     {
         die('dzialam');
 
+    }
+
+    /**
+     * @Route("/raport_bss", name="raport_bss")
+     * @Template()
+     */
+    public function raport_bssAction(){
+        $login = 'kamil_jakacki';
+        //pobierz dane zmiany departamentow
+        $dane = $em->getRepository('ParpMainBundle:DaneRekord')->findChangesByPoleForUser($login, ['departament', 'sekcja', 'stanowisko']);
+
+
+        //pobierz dane zmiany sekcji
+
+        //pobierz dane zmiany stanowisk
+
+        //
+
+        $dane = [
+            ['id' => 1, 'content' => 'Biuro Informatyki', 'start' => '2017-01-01', 'end' => '2017-02-01', 'type' => 'background', 'group' => 'departament'],
+            ['id' => 2, 'content' => 'Wspierania Oprogramowania', 'start' => '2017-01-01', 'end' => '2017-01-11', 'group' => 'sekcja'],
+            ['id' => 3, 'content' => 'Rozwoju Oprogramowania', 'start' => '2017-01-11', 'end' => '2017-02-01', 'group' => 'sekcja'],
+            ['id' => 4, 'content' => 'Starszy specjalista', 'start' => '2017-01-01', 'end' => '2017-01-21', 'group' => 'stanowisko'],
+            ['id' => 5, 'content' => 'Główny specjalista', 'start' => '2017-01-21', 'end' => '2017-03-01', 'group' => 'stanowisko'],
+            ['id' => 6, 'content' => 'Zasób: LSI1420', 'start' => '2017-01-05', 'end' => '2017-01-30', 'group' => 'zasoby'],
+            ['id' => 7, 'content' => 'Akd, rola: PARP_ADMIN', 'start' => '2017-01-11', 'end' => '2017-02-01', 'group' => 'zasoby'],
+            ['id' => 11, 'content' => 'Biuro Administracji', 'start' => '2017-02-01', 'end' => '2017-03-01', 'type' => 'background', 'group' => 'departament'],
+            ['id' => 12, 'content' => 'Wspierania Ścian', 'start' => '2017-02-01', 'end' => '2017-03-01', 'group' => 'sekcja'],
+            ['id' => 16, 'content' => 'Zasób: INT_BA', 'start' => '2017-02-15', 'end' => '2017-02-28', 'group' => 'zasoby'],
+            ['id' => 17, 'content' => 'LSI1420, rola: OCENA_MERYTORYCZNA', 'start' => '2017-02-19', 'end' => '2017-03-01', 'group' => 'zasoby'],
+        ];
+
+        return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', ['dane' => json_encode($dane)]);
     }
 }
