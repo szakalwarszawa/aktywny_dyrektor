@@ -19,7 +19,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;;
  *
  * @ORM\Table(name="departament")
  * a@Gedmo\Loggable
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DepartamentRepository")
  * @UniqueEntity(
  *     fields={"name"},
  *     errorPath="name",

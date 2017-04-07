@@ -151,4 +151,19 @@ class UserZasobyRepository extends EntityRepository
         $a2 = $query->getResult();    
         return $a2;
     }
+
+
+    public function findDlaOsoby($samaccountname, $dataStart, $dataEnd){
+        $query = $this->getEntityManager()->createQuery('
+        SELECT uz FROM ParpMainBundle:UserZasoby uz
+              WHERE uz.aktywneOd >= :dataStart and uz.aktywneOd <= :dataEnd
+              and uz.samaccountname = :samaccountname
+              ORDER BY uz.aktywneOd  ASC
+              ')->setParameter('samaccountname', $samaccountname)
+            ->setParameter('dataStart', $dataStart)
+            ->setParameter('dataEnd', $dataEnd);
+        $a2 = $query->getResult();
+        return $a2;
+    }
+
 }

@@ -1458,4 +1458,23 @@ class Zasoby
         return $this->powiernicyWlascicielaZasobu;
     }
 
+    public function getGrupyADdlaPoziomu($poziomDostepu){
+        $ignoruj = ['nie dotyczy', '[BZ] Bez zmian'];
+        $grupa = '';
+        if(!in_array($poziomDostepu, $ignoruj)) {
+            $grupy = explode(";", $this->getGrupyAd());
+
+            $poziomy = str_replace("; ", ";", $this->getPoziomDostepu());
+
+            $dostepnePoziomy = explode(";", $poziomy);
+            if (!in_array($poziomDostepu, $dostepnePoziomy)) {
+                die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
+            }
+            $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
+
+            //foreach($grupy as $grupa){
+            $grupa = isset($grupy[$indexGrupy]) ? trim($grupy[$indexGrupy]) : '';
+        }
+        return $grupa;
+    }
 }

@@ -1163,15 +1163,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     ];
                                     //print_r($aduser); die();
                                 }
-                                $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
-                                $entry->setWniosek($wniosek->getWniosek());
-                                $entry->setFromWhen(new \Datetime());
-                                $entry->setSamaccountname($aduser[0]["samaccountname"]);
-                                $symbol = $wniosek->getOdebranie() ? "-" : "+";
-                                $entry->setMemberOf($symbol.$grupa);
-                                $entry->setIsImplemented(0);
-                                $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
-                                $em->persist($entry);
+                                if(!$wniosek->getPracownikSpozaParp()) {
+                                    $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+                                    $entry->setWniosek($wniosek->getWniosek());
+                                    $entry->setFromWhen(new \Datetime());
+                                    $entry->setSamaccountname($aduser[0]["samaccountname"]);
+                                    $symbol = $wniosek->getOdebranie() ? "-" : "+";
+                                    $entry->setMemberOf($symbol . $grupa);
+                                    $entry->setIsImplemented(0);
+                                    $entry->setDistinguishedName($aduser[0]["distinguishedname"]);
+                                    $em->persist($entry);
+                                }
                             }
                         //}
                     }else{

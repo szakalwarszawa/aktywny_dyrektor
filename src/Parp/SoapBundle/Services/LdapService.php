@@ -1057,6 +1057,7 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 $grupy[] = 'INT-Dyrektorzy-Senders';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
                 $grupy[] = 'SG-BI-VPN-Access';
+                $grupy[] = 'SG-Prezesi';
                 break;
             case "dyrektor":
             case "dyrektor (p.o.)":
@@ -1079,6 +1080,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 $grupy[] = 'INT-Dyrektorzy';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow-Senders';
                 $grupy[] = 'SG-BI-VPN-Access';
+                $grupy[] = 'SG-Dyrektorzy';
                 //SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW
                 
                 //$grupy[] = 'SG-OLIMP';
@@ -1100,7 +1102,9 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
                 $grupy[] = 'SG Olimp';
                 $grupy[] = 'INT-Dyrektorzy-Senders';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                $grupy[] = 'INT Zastepcy Dyr';
                 $grupy[] = 'SG-BI-VPN-Access';
+                $grupy[] = 'SG-Zastepcy_Dyrektora';
                 break;
             case "p.o. kierownika":
             case "kierownik":
@@ -1116,7 +1120,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
         }
         
         $em = $this->container->get('doctrine')->getManager();
-        $departament = $em->getRepository('ParpMainBundle:Departament')->findOneByShortname($depshortname);
+        $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['shortname' => $depshortname, 'nowaStruktura' => 1]);
         //var_dump($departament);
         $grupyDepartamentowe = explode(";", $departament->getGrupyAD());
         foreach($grupyDepartamentowe as $grupaDep){

@@ -15,10 +15,12 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Parp\MainBundle\Exception\SecurityTestException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * RaportyIT controller.
  *
+ * @Security("has_role('PARP_ADMIN')")
  * @Route("/RaportyIT")
  */
 class RaportyITController extends Controller
@@ -260,37 +262,191 @@ class RaportyITController extends Controller
         die('dzialam');
 
     }
-
+    protected function makeRowVersion($eNext, $log, &$datyKonca){
+        $ret = [];
+        $grupy = ['departament', 'stanowisko'];
+        foreach($log->getData() as $l => $v) {
+            if(in_array($l, $grupy)) {
+                $content = $v;
+                if($l == 'departament'){
+                    $content = isset($this->departamenty[$v]) ? $this->departamenty[$v]->getName() : 'stary departament';
+                }
+                $group = $l;
+                $dana = [
+                    'id' => \uniqid().$l.''.$log->getId(),
+                    'content' => $content,
+                    'title' => $content,
+                    'start' => $log->getLoggedAt(),
+                    'end' => $datyKonca[$l],
+                    'group' => $group
+                ];
+                if($this->zakres['min'] == null || $this->zakres['min'] > $log->getLoggedAt()){
+                    $this->zakres['min'] = $log->getLoggedAt();
+                }
+                if($this->zakres['max'] == null || $this->zakres['max'] < $datyKonca[$l]){
+                    $this->zakres['max'] = $datyKonca[$l];
+                }
+                $ret[] = $dana;
+                $datyKonca[$l] = $log->getLoggedAt();
+                if($l == 'departament'){
+                    $dana['id'] = $dana['id'].md5($content);
+                    $dana['type'] = 'background';
+                    $dana['className'] = 'tloWykresu'.$this->className++;
+                    unset($dana['group']);
+                    if($this->ostatniDepartament == null) {
+                        $this->ostatniDepartament = $dana;
+                        $this->ostatniDepartament['daneRekord'] = $eNext;
+                        $this->ostatniDepartament['departament'] = $this->departamenty[$v]->getShortname();
+                        $this->ostatniDepartament['sekcja'] = $this->user['division'];
+                        $this->user['title'] = $eNext->getStanowisko();
+                    }
+                    $ret[] = $dana;
+                }
+            }
+        }
+        return $ret;
+    }
+    protected $departamenty = [];
+    protected $grupy = [];
+    protected $zakres = ['min' => null, 'max' => null];
+    protected $className = 1;
+    protected $ostatniDepartament = null;
+    protected $sumaUprawnien = [];
+    protected $user = null;
     /**
-     * @Route("/raport_bss", name="raport_bss")
+     * @Route("/raportBss/{login}", name="raportBss")
      * @Template()
      */
-    public function raport_bssAction(){
-        $login = 'kamil_jakacki';
-        //pobierz dane zmiany departamentow
-        $dane = $em->getRepository('ParpMainBundle:DaneRekord')->findChangesByPoleForUser($login, ['departament', 'sekcja', 'stanowisko']);
-
-
-        //pobierz dane zmiany sekcji
-
-        //pobierz dane zmiany stanowisk
-
-        //
-
-        $dane = [
-            ['id' => 1, 'content' => 'Biuro Informatyki', 'start' => '2017-01-01', 'end' => '2017-02-01', 'type' => 'background', 'group' => 'departament'],
-            ['id' => 2, 'content' => 'Wspierania Oprogramowania', 'start' => '2017-01-01', 'end' => '2017-01-11', 'group' => 'sekcja'],
-            ['id' => 3, 'content' => 'Rozwoju Oprogramowania', 'start' => '2017-01-11', 'end' => '2017-02-01', 'group' => 'sekcja'],
-            ['id' => 4, 'content' => 'Starszy specjalista', 'start' => '2017-01-01', 'end' => '2017-01-21', 'group' => 'stanowisko'],
-            ['id' => 5, 'content' => 'Główny specjalista', 'start' => '2017-01-21', 'end' => '2017-03-01', 'group' => 'stanowisko'],
-            ['id' => 6, 'content' => 'Zasób: LSI1420', 'start' => '2017-01-05', 'end' => '2017-01-30', 'group' => 'zasoby'],
-            ['id' => 7, 'content' => 'Akd, rola: PARP_ADMIN', 'start' => '2017-01-11', 'end' => '2017-02-01', 'group' => 'zasoby'],
-            ['id' => 11, 'content' => 'Biuro Administracji', 'start' => '2017-02-01', 'end' => '2017-03-01', 'type' => 'background', 'group' => 'departament'],
-            ['id' => 12, 'content' => 'Wspierania Ścian', 'start' => '2017-02-01', 'end' => '2017-03-01', 'group' => 'sekcja'],
-            ['id' => 16, 'content' => 'Zasób: INT_BA', 'start' => '2017-02-15', 'end' => '2017-02-28', 'group' => 'zasoby'],
-            ['id' => 17, 'content' => 'LSI1420, rola: OCENA_MERYTORYCZNA', 'start' => '2017-02-19', 'end' => '2017-03-01', 'group' => 'zasoby'],
+    public function raportBssAction($login = 'kamil_jakacki'){
+        $now = new \Datetime();
+        $datyKonca = [
+            'departament' => $now,
+            'sekcja' => $now,
+            'stanowisko' => $now,
         ];
+        $em = $this->getDoctrine()->getManager();
 
-        return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', ['dane' => json_encode($dane)]);
+        $this->user = $this->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy' )[0];
+
+        $this->departamenty = $em->getRepository('ParpMainBundle:Departament')->bierzDepartamentyNowe();
+        //pobierz dane zmiany departamentow, stanowisk
+        $entity = $em->getRepository('ParpMainBundle:DaneRekord')->findOneByLogin($login);
+
+        $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
+        $logs = $repo->getLogEntries($entity);
+        $dane = [];
+        foreach($logs as $log){
+            $entityTemp = clone $entity;
+            $repo->revert($entityTemp, $log->getVersion());
+            $dane = array_merge($dane, $this->makeRowVersion($entity, $log, $datyKonca));
+        }
+
+        foreach($dane as $d){
+            $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findDlaOsoby($login, $d['start'], $d['end']);
+            foreach($uzs as $uz){
+                $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                $do = $uz->getAktywneDo() ? ($uz->getAktywneDo() < $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];
+                $dana = [
+                    'id' => \uniqid().'Zasob'.$zasob->getId(),
+                    'content' => $zasob->getNazwa(),
+                    'title' => $zasob->getNazwa(),
+                    'start' => $uz->getAktywneOd(),
+                    'end' => $do,
+                    'group' => 'zasoby',
+                    'userzasoby' => $uz,
+                    'zasob' => $zasob
+                ];
+                $dane[] = $dana;
+            }
+        }
+        $dane = $this->przygotujDaneRaportuBss($dane);
+        //var_dump($dane);
+        //die();
+
+        return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', [
+            'login' => $login,
+            'dane' => json_encode($dane),
+            'zakresMin' => $this->zakres['min']->format('Y-m-d'),
+            'zakresMax' => $this->zakres['max']->format('Y-m-d'),
+        ]);
     }
+    protected function przygotujDaneRaportuBss(&$dane){
+        $now = new \Datetime();
+        usort($dane, function($a, $b){
+            return $a['start'] < $b['start'];
+        });
+        $okresNr = 1;
+        $okresy = [];
+        for($i = 0; $i < count($dane); $i++){
+            if(
+                $dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
+                $dane[$i]['start'] <= $this->ostatniDepartament['end']
+            ){
+                if($this->sumaUprawnien == null){
+                    $this->sumaUprawnien = [
+                        'id' => 'sumaUprawnien12',
+                        'start' => $this->ostatniDepartament['start'],
+                        'end' => $this->ostatniDepartament['end'],
+                        'content' => 'Suma uprawnień które powinny być obecnie',
+                        'title' => '',
+                        'group' => 'suma',
+                        'grupy' => $this->get('ldap_service')->getGrupyUsera($this->user, $this->ostatniDepartament['departament'], $this->ostatniDepartament['sekcja'])
+                    ];
+                }
+                if(isset($dane[$i]['group']) && $dane[$i]['group'] == 'zasoby') {
+                    $grupy = $dane[$i]['zasob']->getGrupyADdlaPoziomu($dane[$i]['userzasoby']->getPoziomDostepu());
+                    //var_dump($grupy);
+                    if($grupy){
+                        $this->sumaUprawnien['grupy'][] = $grupy;
+                    }
+                    //die();
+
+                    unset($dane[$i]['userzasoby']);
+                    unset($dane[$i]['zasob']);
+                    if ($this->sumaUprawnien['start'] < $dane[$i]['start']) {
+                        $this->sumaUprawnien['start'] = $dane[$i]['start'];
+                    }
+                }
+
+            }
+            $dane[$i]['start'] = $dane[$i]['start']->format('Y-m-d');
+            $dane[$i]['end'] = $dane[$i]['end'] ? $dane[$i]['end']->format('Y-m-d') : $now->format('Y-m-d');
+        }
+        $this->sumaUprawnien['grupy'] = array_unique($this->sumaUprawnien['grupy']);
+        $this->sumaUprawnien['title'] = implode(", <br>", $this->sumaUprawnien['grupy']);
+        $this->sumaUprawnien['content'] = $this->sumaUprawnien['content'].': <br>'.$this->sumaUprawnien['title'].'<br><a href="'.$this->generateUrl('nadajGrupy', ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).'" class="btn btn-success" target="_blank">Nadaj</a>';
+        $this->sumaUprawnien['start'] = $this->sumaUprawnien['start']->format('Y-m-d');
+        $this->sumaUprawnien['end'] = $this->sumaUprawnien['end']->format('Y-m-d');
+        unset($this->sumaUprawnien['grupy']);
+
+        //var_dump($this->sumaUprawnien);
+
+        $dane[] = $this->sumaUprawnien;
+
+        usort($dane, function($a, $b){
+            return $a['start'] > $b['start'];
+        });
+
+        return $dane;
+    }
+
+    /**
+     * @Route("/nadajGrupy/{login}/{grupy}", name="nadajGrupy")
+     * @Template()
+     */
+    public function nadajGrupyAction($login = 'kamil_jakacki', $grupy = ''){
+        $grupy = explode(',', $grupy);
+        $entry = new \Parp\MainBundle\Entity\Entry();
+        $entry->setFromWhen(new \Datetime());
+        $entry->setSamaccountname($login);
+        $entry->setMemberOf('+'.implode(';+', $grupy));
+        $entry->setCreatedBy($this->getUser()->getUsername());
+        $entry->setOpis("Przywracanie uprawnien za pomoca linku.");
+        $this->getDoctrine()->getManager()->persist($entry);
+        $this->getDoctrine()->getManager()->flush();
+        var_dump($login, $grupy, $entry); die();
+    }
+
+
+
 }
