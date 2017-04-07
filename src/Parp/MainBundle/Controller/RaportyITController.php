@@ -346,9 +346,10 @@ class RaportyITController extends Controller
             foreach($uzs as $uz){
                 $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
                 $do = $uz->getAktywneDo() ? ($uz->getAktywneDo() < $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];
+                $c = ' <a href="'.$this->generateUrl('zasoby_edit', ['id' => $zasob->getId()]).'">'.$zasob->getNazwa().'</a>';
                 $dana = [
                     'id' => \uniqid().'Zasob'.$zasob->getId(),
-                    'content' => $zasob->getNazwa(),
+                    'content' => $c,
                     'title' => $zasob->getNazwa(),
                     'start' => $uz->getAktywneOd(),
                     'end' => $do,
@@ -397,7 +398,7 @@ class RaportyITController extends Controller
                     $grupy = $dane[$i]['zasob']->getGrupyADdlaPoziomu($dane[$i]['userzasoby']->getPoziomDostepu());
                     //var_dump($grupy);
                     if($grupy){
-                        $this->sumaUprawnien['grupy'][] = $grupy;
+                        $this->sumaUprawnien['grupy'] = array_merge($grupy, $this->sumaUprawnien['grupy']);
                     }
                     //die();
 
@@ -412,9 +413,21 @@ class RaportyITController extends Controller
             $dane[$i]['start'] = $dane[$i]['start']->format('Y-m-d');
             $dane[$i]['end'] = $dane[$i]['end'] ? $dane[$i]['end']->format('Y-m-d') : $now->format('Y-m-d');
         }
-        $this->sumaUprawnien['grupy'] = array_unique($this->sumaUprawnien['grupy']);
+        $this->sumaUprawnien['grupy'] = array_unique(array_filter($this->sumaUprawnien['grupy']));
         $this->sumaUprawnien['title'] = implode(", <br>", $this->sumaUprawnien['grupy']);
-        $this->sumaUprawnien['content'] = $this->sumaUprawnien['content'].': <br>'.$this->sumaUprawnien['title'].'<br><a href="'.$this->generateUrl('nadajGrupy', ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).'" class="btn btn-success" target="_blank">Nadaj</a>';
+
+        $content = $this->sumaUprawnien['content'].': <br><br>';
+        foreach($this->sumaUprawnien['grupy'] as $g){
+            if(!in_array($g, $this->user['memberOf'])){
+                $content .= '<span style="color:red"><b>'.$g.'</b></span><br>';
+            }else {
+                $content .= $g.'<br>';
+            }
+        }
+        $content .= '<br><a href="'.$this->generateUrl('nadajGrupy', ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).'" class="btn btn-success" target="_blank">NAPRAW</a>';
+
+
+        $this->sumaUprawnien['content'] = $content;
         $this->sumaUprawnien['start'] = $this->sumaUprawnien['start']->format('Y-m-d');
         $this->sumaUprawnien['end'] = $this->sumaUprawnien['end']->format('Y-m-d');
         unset($this->sumaUprawnien['grupy']);
@@ -443,7 +456,7 @@ class RaportyITController extends Controller
         $entry->setCreatedBy($this->getUser()->getUsername());
         $entry->setOpis("Przywracanie uprawnien za pomoca linku.");
         $this->getDoctrine()->getManager()->persist($entry);
-        $this->getDoctrine()->getManager()->flush();
+        //$this->getDoctrine()->getManager()->flush();
         var_dump($login, $grupy, $entry); die();
     }
 

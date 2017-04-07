@@ -1459,22 +1459,38 @@ class Zasoby
     }
 
     public function getGrupyADdlaPoziomu($poziomDostepu){
-        $ignoruj = ['nie dotyczy', '[BZ] Bez zmian'];
-        $grupa = '';
+        $ignoruj = ['nie dotyczy', '[BZ] Bez zmian', 'do wypełnienia przez właściciela zasobu'];
+        $grupa = [];
         if(!in_array($poziomDostepu, $ignoruj)) {
             $grupy = explode(";", $this->getGrupyAd());
 
             $poziomy = str_replace("; ", ";", $this->getPoziomDostepu());
 
             $dostepnePoziomy = explode(";", $poziomy);
-            if (!in_array($poziomDostepu, $dostepnePoziomy)) {
-                die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
-            }
-            $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
 
-            //foreach($grupy as $grupa){
-            $grupa = isset($grupy[$indexGrupy]) ? trim($grupy[$indexGrupy]) : '';
+            if(strpos($poziomDostepu, ';') !== false){
+                $wybranePoziomy = explode(';', $poziomDostepu);
+
+                foreach($wybranePoziomy as $wb){
+                    if($wb) {
+                        $grupa[] = $this->znajdzPoziomDostepu($wb, $dostepnePoziomy);
+                    }
+                }
+            }else {
+                $grupa[] = $this->znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy);
+
+            }
         }
+        return $grupa;
+    }
+    protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy){
+        if (!in_array($poziomDostepu, $dostepnePoziomy)) {
+            die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
+        }
+        $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
+
+        //foreach($grupy as $grupa){
+        $grupa = isset($grupy[$indexGrupy]) ? trim($grupy[$indexGrupy]) : '';
         return $grupa;
     }
 }
