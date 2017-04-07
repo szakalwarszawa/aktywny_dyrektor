@@ -1452,7 +1452,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getUsersFromADWithRole("ROLE_MANAGER_DLA_OSOB_SPOZA_PARP")), $entity, array(
+        $form = $this->createForm(new WniosekNadanieOdebranieZasobowType($this->getUsersFromAD(), $this->getUsersFromADWithRole("ROLE_MANAGER_DLA_OSOB_SPOZA_PARP"), $entity), $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

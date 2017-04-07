@@ -17,7 +17,7 @@ class PlikType extends AbstractType
         $builder
             //->add('deletedAt')
             ->add('nazwa')
-            ->add('typ', 'choice' , array('choices' => array('typ1' => 'typ1', 'typ2' => 'typ2', 'typ3' => 'typ3', 'typ4' => 'typ4', )))
+            ->add('typ', 'choice' , array('choices' => array('wniosek' => 'załącznik')))
             ->add('opis')
             ->add('file', 'file', array('data' => null, 'required' => false))
             ->add('obiekt', 'hidden')
