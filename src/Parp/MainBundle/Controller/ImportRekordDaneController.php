@@ -896,7 +896,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      */
     public function przypiszUtworzUzytkownikaAction(Request $request, $id, $samaccountname)
     {
-        
+        $zmieniamySekcje = false;
         $dane = $this->get('request')->request->all();
         //svar_dump($dane);
         
@@ -929,11 +929,18 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     if($aduser[0]['title'] != $dr->getStanowisko()){
                         $changeSet['stanowisko'] = 1;
                     }
+                    if($aduser[0]['title'] != $dr->getStanowisko()){
+                        $changeSet['stanowisko'] = 1;
+                    }
+                    if($dane['form']['info'] != "" && $aduser[0]['info'] != $dane['form']['info']){
+                        $zmieniamySekcje = true;
+                    }
                 }
             }else{
                 $nowy = true;
                 //nowy user                
                 $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
+                $zmieniamySekcje = true;
             }
             $entry = $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
             if($dr->getNewUnproccessed() == 2 && !$nowy){
@@ -960,6 +967,41 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $manager = $ldap->getUserFromAD($dane['form']['manager']);
                 $entry->setManager($manager[0]['name']);
             }
+
+            if(!$nowy){
+                $administratorzy = [];
+
+                $userzasoby = $em->getRepository('ParpMainBundle:UserZasoby')->findAktywneDlaOsoby($aduser[0]['samaccountname']);
+                foreach($userzasoby as $uz){
+                    if(!in_array($uz->getAdministratorZasobu(), $administratorzy)){
+                        $administratorzy[] = $uz->getAdministratorZasobu();
+                    }
+                }
+
+                if($zmieniamySekcje && !isset($changeSet['departament'])){
+
+
+                    $this->get('parp.mailer')->sendEmailZmianaSekcji($aduser[0], $dane['form']['info'], $administratorzy);
+                }
+                if(isset($changeSet['stanowisko'])){
+                    $this->get('parp.mailer')->sendEmailZmianaStanowiska($aduser[0], $dane['form']['title'], $administratorzy);
+                }
+            }else{
+                //['departament', 'data_nadania_uprawnien_poczatkowych']
+                $now = new \Datetime();
+                $dane =[
+                    'imie_nazwisko' => $dr->getImie()." ".$dr->getNazwisko(),
+                    'login' => $dr->getLogin(),
+                    'departament' => $department->getName(),
+                    'data_nadania_uprawnien_poczatkowych' => $now
+                ];
+
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEIMPORT, $dane);
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN, $dane);
+            }
+
+
+
             $dr->setNewUnproccessed(0);
             $em->flush();
         }

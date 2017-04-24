@@ -1485,7 +1485,7 @@ class Zasoby
     }
     protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy){
         if (!in_array($poziomDostepu, $dostepnePoziomy)) {
-            die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
+            echo("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
         }
         $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
 

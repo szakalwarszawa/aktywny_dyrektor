@@ -183,7 +183,46 @@ class ParpMailerService
     protected function getUserMail($login){
         return $login."@parp.gov.pl";
     }
+    protected function getManagerLoginFromDN($manager){
+        $parts = explode('=', $manager);
+        $parts2 = explode(',', $parts[1]);
+        return $parts2[0];
+    }
+    public function sendEmailZmianaSekcji($user, $nowasekcja, $administratorzy)
+    {
+        $now = new \Datetime();
+        $odbiorcy = [$user['samaccountname']];
+        $dane = [
+            'odbiorcy' => $odbiorcy,
+            'imie_nazwisko' => $user['name'],
+            'login' => $user['samaccountname'],
+            'stara_sekcja' => $user['division'],
+            'nowa_sekcja' => $nowasekcja,
+            'data_zmiany' => $now
+        ];
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1, $dane);
+        $dane['odbiorcy'] = [$user['samaccountname'], $this->getManagerLoginFromDN($user['manager']), ParpMailerService::EMAIL_DO_AUMS_AD];
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2, $dane);
+    }
 
+    public function sendEmailZmianaStanowiska($user, $noweStanowisko, $administratorzy)
+    {
+        $now = new \Datetime();
+        $odbiorcy = [$user['samaccountname']];
+        $dane = [
+            'odbiorcy' => $odbiorcy,
+            'imie_nazwisko' => $user['name'],
+            'login' => $user['samaccountname'],
+            'stare_stanowisko' => $user['title'],
+            'nowe_stanowisko' => $noweStanowisko,
+            'data_zmiany' => $now
+        ];
+        $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1, $dane);
+        $dane['odbiorcy'] = [$user['samaccountname'], $this->getManagerLoginFromDN($user['manager']), ParpMailerService::EMAIL_DO_AUMS_AD];
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2, $dane);
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3, $dane);
+    }
 
     public function sendEmailZmianaKadrowaMigracja($daneRekord, $poprzednieDaneRekord, $wDniuZmiany = true)
     {

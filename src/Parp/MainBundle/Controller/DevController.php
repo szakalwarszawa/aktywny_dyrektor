@@ -2928,4 +2928,40 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', ['dane' => json_encode($dane)]);
     }
 
+    /**
+     * @Route("/test21", name="test21")
+     * @Template()
+     */
+    public function test21Action(){
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+
+        $dn = 'CN=Grudzień Paweł,OU=DIP,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local';
+        $newdn = 'CN=Grudzień Paweł';
+        $newparent = 'OU=Zablokowane,OU=PARP Pracownicy,DC=parp,DC=local';
+
+        $ldapAdmin->ldap_rename($ldapconn, $dn, $newdn, $newparent, true);
+
+
+        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+        //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
+        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_rename $ldapstatus "."</span> \r\n<br>";
+    }
+
+    /**
+     * @Route("/test22", name="test22")
+     * @Template()
+     */
+    public function test22Action(){
+        $entry = [];
+        $entry["useraccountcontrol"][0] = 514;
+        $dn = 'CN=Grudzień Paweł,OU=Zablokowane,OU=PARP Pracownicy,DC=parp,DC=local';
+
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapAdmin->output = $this;
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $ldapAdmin->ldap_modify($ldapconn, $dn, $entry);
+    }
+
 }    

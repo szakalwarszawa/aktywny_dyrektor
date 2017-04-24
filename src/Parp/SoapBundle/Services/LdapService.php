@@ -831,6 +831,7 @@ class LdapService
     
     
     protected function parseMemberOf($res){
+
         $ret = array();
         $gr = isset($res["memberof"]) ? $res["memberof"]: array();
         foreach($gr as $k => $g){
@@ -1201,5 +1202,15 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
         }
         return $ret;
     }
-    
+    public function getZarzad(){
+        $ludzie = $this->getAllFromAD();
+        $ret = [];
+        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+        foreach($ludzie as $u){
+            if(in_array($u['title'], $stanowiska)){
+                $ret[] = $u;
+            }
+        }
+        return $ret;
+    }
 }

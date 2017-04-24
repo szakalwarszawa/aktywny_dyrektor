@@ -461,7 +461,10 @@ class UprawnieniaService
                 ->setContentType("text/html");
 
         //var_dump($view);
-        $this->container->get('mailer')->send($message);
+
+        if('kjakacki' == 'WYLACZAM') {
+            $this->container->get('mailer')->send($message);
+        }
         
         
         $zadanie->setOpis($view);

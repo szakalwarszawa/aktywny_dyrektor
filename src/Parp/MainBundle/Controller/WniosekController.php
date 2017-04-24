@@ -136,6 +136,8 @@ class WniosekController extends Controller
             
             $nowyStatus = $em->getRepository('ParpMainBundle:WniosekStatus')->find($dane['status']);
             $wniosek->setStatus($nowyStatus);
+            $wniosek->setLockedBy(null);
+            $wniosek->setLockedAt(null);
             
             foreach($wniosek->getViewers() as $v){
                 $em->remove($v);

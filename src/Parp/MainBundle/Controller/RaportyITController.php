@@ -398,6 +398,8 @@ class RaportyITController extends Controller
                     $grupy = $dane[$i]['zasob']->getGrupyADdlaPoziomu($dane[$i]['userzasoby']->getPoziomDostepu());
                     //var_dump($grupy);
                     if($grupy){
+                        //var_dump($this->user);
+                        $this->sumaUprawnien['grupy'] = isset($this->sumaUprawnien['grupy']) ? $this->sumaUprawnien['grupy'] : [];
                         $this->sumaUprawnien['grupy'] = array_merge($grupy, $this->sumaUprawnien['grupy']);
                     }
                     //die();
@@ -413,13 +415,16 @@ class RaportyITController extends Controller
             $dane[$i]['start'] = $dane[$i]['start']->format('Y-m-d');
             $dane[$i]['end'] = $dane[$i]['end'] ? $dane[$i]['end']->format('Y-m-d') : $now->format('Y-m-d');
         }
+        $this->sumaUprawnien['grupy'] = isset($this->sumaUprawnien['grupy']) ? $this->sumaUprawnien['grupy'] : [];
         $this->sumaUprawnien['grupy'] = array_unique(array_filter($this->sumaUprawnien['grupy']));
         $this->sumaUprawnien['title'] = implode(", <br>", $this->sumaUprawnien['grupy']);
 
         $content = $this->sumaUprawnien['content'].': <br><br>';
+        $this->sumaUprawnien['brakujace'] = [];
         foreach($this->sumaUprawnien['grupy'] as $g){
             if(!in_array($g, $this->user['memberOf'])){
                 $content .= '<span style="color:red"><b>'.$g.'</b></span><br>';
+                $this->sumaUprawnien['brakujace'][] = $g;
             }else {
                 $content .= $g.'<br>';
             }
@@ -428,8 +433,8 @@ class RaportyITController extends Controller
 
 
         $this->sumaUprawnien['content'] = $content;
-        $this->sumaUprawnien['start'] = $this->sumaUprawnien['start']->format('Y-m-d');
-        $this->sumaUprawnien['end'] = $this->sumaUprawnien['end']->format('Y-m-d');
+        $this->sumaUprawnien['start'] = is_string($this->sumaUprawnien['start']) ? $this->sumaUprawnien['start'] : $this->sumaUprawnien['start']->format('Y-m-d');
+        $this->sumaUprawnien['end'] = is_string($this->sumaUprawnien['end']) ? $this->sumaUprawnien['end'] :$this->sumaUprawnien['end']->format('Y-m-d');
         unset($this->sumaUprawnien['grupy']);
 
         //var_dump($this->sumaUprawnien);
@@ -452,14 +457,44 @@ class RaportyITController extends Controller
         $entry = new \Parp\MainBundle\Entity\Entry();
         $entry->setFromWhen(new \Datetime());
         $entry->setSamaccountname($login);
-        $entry->setMemberOf('+'.implode(';+', $grupy));
+        $entry->setMemberOf('+'.implode(',+', $grupy));
         $entry->setCreatedBy($this->getUser()->getUsername());
         $entry->setOpis("Przywracanie uprawnien za pomoca linku.");
         $this->getDoctrine()->getManager()->persist($entry);
         //$this->getDoctrine()->getManager()->flush();
-        var_dump($login, $grupy, $entry); die();
+        var_dump($login, $grupy, $entry);
+        //die();
     }
 
+
+
+    /**
+     * @Route("/poprawKierownictwo", name="poprawKierownictwo")
+     * @Template()
+     */
+    public function poprawKierownictwoAction(){
+        $dyrs = $this->get('ldap_service')->getZarzad();
+        $braki = [];
+        $pomin = ['fsdds_fdsf', 'testowy_test'];
+        foreach($dyrs as $d){
+            if(!in_array($d['samaccountname'], $pomin)) {
+                if(strpos($d['useraccountcontrol'], 'ACCOUNTDISABLE') === false){
+                    $this->raportBssAction($d['samaccountname']);
+                    $braki[$d['samaccountname']] = $this->sumaUprawnien['brakujace'];
+                    $this->nadajGrupyAction($d['samaccountname'], implode(',', $this->sumaUprawnien['brakujace']));
+                    //var_dump($braki); die();
+                    $this->departamenty = [];
+                    $this->grupy = [];
+                    $this->zakres = ['min' => null, 'max' => null];
+                    $this->className = 1;
+                    $this->ostatniDepartament = null;
+                    $this->sumaUprawnien = [];$this->user = null;
+                }
+            }
+        }
+        var_dump($braki);
+        //$this->getDoctrine()->getManager()->flush();
+    }
 
 
 }
