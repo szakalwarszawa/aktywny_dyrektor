@@ -1,6 +1,6 @@
 {% extends '::base.html.twig' %}
 
-{% block body %} 
+{% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
@@ -17,6 +17,10 @@
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h3>{{ user.name }}</h3>
+                {% if "PARP_ADMIN" in app.user.roles %}
+                    <a href="{{ path('raportBss', {'login' : user.samaccountname}) }}" class="btn btn-warning">Linia czasowa uprawnień</a>
+                {% endif %}
+
                 {% include 'ParpMainBundle:Default:userForm.html.twig' %}
             </div>
             <div id="daneRekord" class="tab-pane fade">

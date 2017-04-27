@@ -1,0 +1,47 @@
+.wnioseknadanieodebraniezasobow table td:nth-child(5),
+.wnioseknadanieodebraniezasobow table td:nth-child(7),
+.wnioseknadanieodebraniezasobow table td:nth-child(8),
+.wnioseknadanieodebraniezasobow table td:nth-child(9),
+
+.main table td:nth-child(3),
+.main table td:nth-child(4),
+
+.zasoby table td:nth-child(4),
+.zasoby table td:nth-child(5),
+.zasoby table td:nth-child(6),
+
+
+.zasoby_edit .form-group:nth-child(2),
+.zasoby_edit .form-group:nth-child(3),
+.zasoby_edit .form-group:nth-child(4),
+.zasoby_edit .form-group:nth-child(5),
+.zasoby_edit .form-group:nth-child(6),
+.zasoby_edit .form-group:nth-child(7),
+.zasoby_edit .form-group:nth-child(8),
+.zasoby_edit .form-group:nth-child(9),
+.zasoby_edit .form-group:nth-child(10),
+
+
+.wnioseknadanieodebraniezasobow_show .alert-info > ul > li:nth-child(1),
+.wnioseknadanieodebraniezasobow_show #general table.record_properties tr:nth-child(4) td:nth-child(2),
+.wnioseknadanieodebraniezasobow_show #general table.record_properties tr:nth-child(7) td:nth-child(2),
+.wnioseknadanieodebraniezasobow_show #general table.record_properties tr:nth-child(11) td:nth-child(2),
+.wnioseknadanieodebraniezasobow_show #general table.record_properties tr:nth-child(12) td:nth-child(2),
+.wnioseknadanieodebraniezasobow_show #zasoby table.record_properties td:nth-child(2),
+.wnioseknadanieodebraniezasobow_show #historia table.record_properties td:nth-child(4),
+.wnioseknadanieodebraniezasobow_show #historiaAkceptacji table td:nth-child(2),
+
+
+.userEdit #general form .form-group:nth-child(1) input,
+.userEdit #general form .form-group:nth-child(2) input,
+.userEdit #general form .form-group:nth-child(8) .select2-selection,
+#parp_mainbundle_departament_dyrektorDN,
+#chart_div table td span,
+.przejrzyjnowych table.record_properties td:nth-child(2),
+.przejrzyjnowych table.record_properties td:nth-child(3)
+
+{
+    color: transparent;
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    opacity:0.6;
+}

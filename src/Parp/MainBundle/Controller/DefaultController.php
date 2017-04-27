@@ -491,7 +491,8 @@ class DefaultController extends Controller
         }
         
         $names = explode(' ', $ADUser[0]["name"]);
-        $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[0], 'nazwisko' => $names[1]));
+        //var_dump($names); die();
+        $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
         
         
         $form = $this->createUserEditForm($this, $defaultData, false, false);

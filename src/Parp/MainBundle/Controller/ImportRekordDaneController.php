@@ -40,7 +40,7 @@ class ImportRekordDaneController extends Controller
         
         $this->dataGraniczna = date("Y-m-d");
         if($this->getUser()->getUsername() == "kamil_jakacki"){
-            $this->dataGraniczna = '2016-09-01';//DEV
+            //$this->dataGraniczna = '2016-09-01';//DEV
             echo "...DEV...";
         }
         
