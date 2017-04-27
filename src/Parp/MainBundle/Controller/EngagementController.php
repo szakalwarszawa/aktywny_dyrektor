@@ -370,24 +370,45 @@ class EngagementController extends Controller
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
         
-        for($i = 2; $i < count($sheetData); $i++){
+        for($i = 2; $i < count($sheetData)+1; $i++){
             $dane = [];
+            $j = 0;
             foreach($this->mapowanieKolumn as $k => $f){
-                $dane[$f] = $sheetData[$i][$k];
+                $dana = $sheetData[$i][$k];
+
+                if($f == 'program'){
+                    $dana = $this->parseNazwaProgramu($dana);
+                }
+                if($j > 3){
+                    $dana = floatval($dana);
+                }
+
+                $dane[$f] = $dana;
+                $j++;
             }
             $wynik[$dane['name']][] = $dane;
         }
-//var_dump($wynik); die();
         $this->parseWyniki($wynik, $form);
     }
     protected function correctWyniki($dane)
     {
         $ret = [];
-        $mamKamile = false;
+
         foreach($dane as $person => $data){
             $programy = [];
-            foreach($data as $d){
-                for($i = 1; $i < 13; $i++) {
+
+            for($i = 1; $i < 13; $i++) {
+                foreach ($data as $d) {
+                    $program = $d['program'];
+                    if(!isset($programy[$program][$i])){
+                        $programy[$program][$i] = floatval($d[$i]);
+                    }else{
+                        $programy[$program][$i] += floatval($d[$i]);
+                    }
+
+                }
+            }
+            /*    for($i = 1; $i < 13; $i++) {
                     $percent = 0;
                     if (isset($programy[$d['program']])) {
                         $percent = floatval($programy[$d['program']]);
@@ -396,23 +417,17 @@ class EngagementController extends Controller
                     $d[$i] = $percent;
                 }
                 $programy[$d['program']] = $d;
-            }
+            }*/
+            $ret[$d['name']] = $programy;
 
-
-
-            $ret[$d['name']][] = $d;
-            if($d['name'] == 'BANASIAK KAMILA') {
-                $mamKamile = true;
-            }
-            if($mamKamile && $d['name'] != 'BANASIAK KAMILA'){
-                //var_dump($ret['BANASIAK KAMILA'], $ret);
-                //die('BANASIAK KAMILA');
-            }
         }
         return $ret;
     }
     protected function parseWyniki($dane, $form){
+        var_dump($dane);
         $dane = $this->correctWyniki($dane);
+        echo "<pre>" . print_r($dane, true). "</pre>";
+        //die();
         $em = $this->getDoctrine()->getManager();
 
         $programy = [];
@@ -423,15 +438,8 @@ class EngagementController extends Controller
 
         $rok = $form->getData()['rok'];
         $bledy = [];
-        $mamKamile = false;
         foreach($dane as $id => $d){
-            if($id == ''){
-                $mamKamile = true;
-            }
-            if($mamKamile && $id != ''){
-                var_dump($id, $d);
-                die();
-            }
+
             //$daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($id);
             $rozbite = $this->get('samaccountname_generator')->rozbijFullname($id);
             $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy([
@@ -449,22 +457,21 @@ class EngagementController extends Controller
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
-                foreach ($d as $wpis) {
-                    $wpis['program'] = $this->parseNazwaProgramu($wpis['program']);
+                foreach ($d as $program => $wpis) {
                     for($i = 1; $i < 13; $i++){
                         $ug = clone $usereng;
                         $ug->setMonth($i);
                         $p = 100*$wpis[$i];
                         $ug->setPercent($p);
-                        if(isset($programy[$wpis['program']])){
-                            $program = $programy[$wpis['program']];
+                        if(isset($programy[$program])){
+                            $program2 = $programy[$program];
                         }else{
-                            $program = new Engagement();
-                            $program->setName($wpis['program']);
-                            $programy[$wpis['program']] = $program;
-                            $em->persist($program);
+                            $program2 = new Engagement();
+                            $program2->setName($program);
+                            $programy[$program] = $program2;
+                            $em->persist($program2);
                         }
-                        $ug->setEngagement($program);
+                        $ug->setEngagement($program2);
 
                         $em->persist($ug);
                     }

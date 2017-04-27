@@ -48,9 +48,9 @@ class UserEngagement
     private $engagement;
 
     /**
-     * @var integer
+     * @var float
      *
-     * @ORM\Column(name="percent", type="integer",nullable=true)
+     * @ORM\Column(name="percent", type="float",nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $percent;
@@ -104,28 +104,6 @@ class UserEngagement
         return $this->engagement;
     }
 
-    /**
-     * Set percent
-     *
-     * @param integer $percent
-     * @return UserEngagement
-     */
-    public function setPercent($percent)
-    {
-        $this->percent = $percent;
-
-        return $this;
-    }
-
-    /**
-     * Get percent
-     *
-     * @return integer 
-     */
-    public function getPercent()
-    {
-        return $this->percent;
-    }
 
     /**
      * Set samaccountname
@@ -217,5 +195,29 @@ class UserEngagement
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Set percent
+     *
+     * @param float $percent
+     *
+     * @return UserEngagement
+     */
+    public function setPercent($percent)
+    {
+        $this->percent = $percent;
+
+        return $this;
+    }
+
+    /**
+     * Get percent
+     *
+     * @return float
+     */
+    public function getPercent()
+    {
+        return $this->percent;
     }
 }

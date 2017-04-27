@@ -1315,7 +1315,8 @@ class DefaultController extends Controller
 //
 //            return $this->redirect($this->generateUrl('engageUser',array('samaccountname'=>$samaccountname)));
 //        }
-
+        var_dump($sumy);
+        //die();
         return array(
             'engagements' => $engagements,
             'userEngagements' => $userEngagements,

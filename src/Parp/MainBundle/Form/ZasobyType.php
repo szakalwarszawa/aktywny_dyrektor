@@ -11,10 +11,12 @@ class ZasobyType extends AbstractType
     protected $nazwaLabel;
     
     protected $container;
+    protected $zablokujPolaPozaPoziomModul = false;
     
-    public function __construct($container, $nazwaLabel = "Nazwa"){
+    public function __construct($container, $nazwaLabel = "Nazwa", $niemozeEdytowac = false, $czyJestWlascicielemLubPowiernikiem = false){
         $this->container = $container;
         $this->nazwaLabel = $nazwaLabel;
+        $this->zablokujPolaPozaPoziomModul = true; //$niemozeEdytowac && $czyJestWlascicielemLubPowiernikiem;
     }
         /**
      * @param FormBuilderInterface $builder
@@ -31,7 +33,7 @@ class ZasobyType extends AbstractType
         $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             //->add('id')
-            ->add('nazwa', 'text', ['label' => $this->nazwaLabel])
+            ->add('nazwa', 'text', ['label' => $this->nazwaLabel, 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden');
         if($adminiMulti){
@@ -39,14 +41,14 @@ class ZasobyType extends AbstractType
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => true,
                 'required' => false,
-                'attr' => array('class' => 'select2')
+                'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer));
         }else{
             $builder->add('wlascicielZasobu', 'choice', array(
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => false,
                 'required' => false,
-                'attr' => array('class' => 'select2')
+                'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ));
         }
             
@@ -54,26 +56,27 @@ class ZasobyType extends AbstractType
                 'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
-                'attr' => array('class' => 'select2')
+                'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', 'choice', array(
                 'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
-                'attr' => array('class' => 'select2')
+                'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorTechnicznyZasobu', 'choice', array(
                 'choices' => $ldap->getAdministratorzyTechniczniZasobow(),
                 'multiple' => true,
                 'required' => false,
-                'attr' => array('class' => 'select2')
+                'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             
             
             ->add('uzytkownicy', 'choice', array(
-                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni")
+                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni"),
+                'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]
             ))
-            ->add('daneOsobowe')
+            ->add('daneOsobowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('komorkaOrgazniacyjna', 'entity', array(
                 'class' => 'Parp\MainBundle\Entity\Departament',
                 'choice_value' => function($dep){
@@ -85,21 +88,23 @@ class ZasobyType extends AbstractType
                             ->orderBy('u.name', 'ASC');
                 },
                 //dodac warunek ze tylko nowe departamenty
-                'label' => 'Komórka organizacyjna'
+                'label' => 'Komórka organizacyjna',
+                'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]
             ))
-            ->add('miejsceInstalacji')
-            ->add('opisZasobu')
+            ->add('miejsceInstalacji', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
+            ->add('opisZasobu', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('modulFunkcja', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInput']])
             ->add('poziomDostepu', 'text', ['required' => false, 'attr' => ['class' => 'tagAjaxInput']])
             ->add('grupyAD', 'text', array(
-                'attr' => array('class' => 'tagAjaxInput'), 'required' => false
+                'attr' => array('class' => 'tagAjaxInput', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul), 'required' => false,
             ))
             
             
             ->add('dataZakonczeniaWdrozenia', 'datetime', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
-                        'placeholder' => 'wpisz tle grup AD ile poziomo dostepu'
+                        'placeholder' => 'wpisz tle grup AD ile poziomo dostepu',
+                        'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
@@ -110,13 +115,14 @@ class ZasobyType extends AbstractType
                     
                 ))
             ->add('wykonawca', 'choice', array(
-                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny")
+                'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny"),
+                'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]
             ))
-            ->add('nazwaWykonawcy')
-            ->add('asystaTechniczna')
+            ->add('nazwaWykonawcy', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
+            ->add('asystaTechniczna', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataWygasnieciaAsystyTechnicznej', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data wygaśnięcia asysty technicznej',
                     'label_attr' => array(
@@ -128,23 +134,23 @@ class ZasobyType extends AbstractType
             $builder->add($builder->create('dokumentacjaFormalna', 'choice', array(
                 'multiple' => true,
                 'required' => false,
-                'attr' => ['class' => 'select2'],
+                'attr' => ['class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul],
                 'choices' => array('protok. odbioru' => 'protok. odbioru', "SIWZ" => "SIWZ", "umowa" => "umowa", "inna" => "inna")
             ))->addModelTransformer($transformer));
             $builder->add($builder->create('dokumentacjaProjektowoTechniczna', 'choice', array(
                 'multiple' => true,
                 'required' => false,
-                'attr' => ['class' => 'select2'],
+                'attr' => ['class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul],
                 'choices' => array('brak' => 'brak', "inna" => "inna", "powdrożeniowa" => "powdrożeniowa", "proj. techniczny" => "proj. techniczny", "raport z analizy" => "raport z analizy", "specyf. wymagań" => "specyf. wymagań")
-            ))->addModelTransformer($transformer));  
+            ), ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])->addModelTransformer($transformer));
             
             
-            $builder->add('technologia')
-            ->add('testyBezpieczenstwa')
-            ->add('testyWydajnosciowe')
+            $builder->add('technologia', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
+            ->add('testyBezpieczenstwa', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
+            ->add('testyWydajnosciowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuUprawnien', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
@@ -157,10 +163,10 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text'
                     
                 ))
-            ->add('interwalPrzegladuUprawnien')
+            ->add('interwalPrzegladuUprawnien', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu aktywności',
@@ -173,10 +179,10 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text'
                     
                 ))
-            ->add('interwalPrzegladuAktywnosci')
+            ->add('interwalPrzegladuAktywnosci', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniej zmiany haseł',
@@ -189,10 +195,10 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text'
                     
                 ))
-            ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych')
+            ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataUtworzeniaZasobu', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data utworzenia zasobu',
                     'label_attr' => array(
@@ -203,7 +209,7 @@ class ZasobyType extends AbstractType
                 ))
             ->add('dataZmianyZasobu', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data ostatniej zmiany zasobu',
                     'label_attr' => array(
@@ -214,7 +220,7 @@ class ZasobyType extends AbstractType
                 ))
             ->add('dataUsunieciaZasobu', 'datetime', array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => 'form-control datepicker', 'readonly' => $this->zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data usunięcia zasobu',
                     'label_attr' => array(
@@ -224,6 +230,7 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text'
                 ))
         ;
+
     }
     
     /**

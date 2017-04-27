@@ -25,6 +25,8 @@ use Parp\MainBundle\Exception\SecurityTestException;
  */
 class ZasobyController extends Controller
 {
+    protected $czyJestWlascicielemLubPowiernikiem = false;
+    protected $niemozeEdytowac = false;
 
     /**
      * Lists all Zasoby entities.
@@ -92,17 +94,17 @@ class ZasobyController extends Controller
             $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
             
             
-            $czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
-            $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
+            $this->czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
+            $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
                 !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
                 !in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) &&
-                !$czyJestWlascicielemLubPowiernikiem;   
+                !$this->czyJestWlascicielemLubPowiernikiem;
         }else{
-            $niemoze = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
+            $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
         }
         
         if(
-            $niemoze
+            $this->niemozeEdytowac
         ){
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
             throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
@@ -245,7 +247,7 @@ class ZasobyController extends Controller
     */
     private function createEditForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this), $entity, array(
+        $form = $this->createForm(new ZasobyType($this, "Nazwa", $this->niemozeEdytowac, $this->czyJestWlascicielemLubPowiernikiem), $entity, array(
             'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -272,7 +274,7 @@ class ZasobyController extends Controller
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
         $this->sprawdzDostep($entity);
-        if(!in_array('PARP_ADMIN', $this->getUser()->getRoles()) && !in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())){
+        if(!in_array('PARP_ADMIN', $this->getUser()->getRoles()) && !in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles()) && !$this->czyJestWlascicielemLubPowiernikiem){
             die("nie masz uprawnien do edycji zasobow.");
         }
 

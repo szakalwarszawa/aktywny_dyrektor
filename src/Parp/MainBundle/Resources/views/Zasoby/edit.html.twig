@@ -167,7 +167,14 @@
         </div>
     </div>
 
-    
+<script>
+    $('form').submit(function(){
+        $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('disabled', false);
+        $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('readonly', false);
+        $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('disabled', false);
+        $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('readonly', false);
+    });
+</script>
     
     
 {% endblock %}
