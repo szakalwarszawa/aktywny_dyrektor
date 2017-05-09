@@ -110,8 +110,8 @@ class BlokowaneKontaController extends Controller
             
             //$aduser = $this->get('ldap_service')->getUserFromAD(null, "", null, $ktorzy);
             
-            $cn =  $daneRekord->getNazwisko(). " " . $daneRekord->getImie();
-            $entry->setCn($cn);
+            //$cn =  $daneRekord->getNazwisko(). " " . $daneRekord->getImie();
+            //$entry->setCn($cn);
             $entry->setDistinguishedname($ADUser[0]['distinguishedname']);
             
             $entry->setCreatedBy($this->getUser()->getUsername());
