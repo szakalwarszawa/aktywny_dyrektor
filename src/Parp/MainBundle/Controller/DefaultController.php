@@ -28,6 +28,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use APY\DataGridBundle\Grid\Column\TextColumn;
 use Symfony\Component\HttpFoundation\RedirectResponse;
+use Parp\MainBundle\Controller\RaportyITController;
 
 class DefaultController extends Controller
 {
@@ -645,14 +646,24 @@ class DefaultController extends Controller
         return $this->render($tmpl, $tplData);
     }
     private function nadajUprawnieniaPocztakowe($ADUser, $entry, $newData){
-        
+        $raportCtrl = new RaportyITController();
+        $raportCtrl->container = $this;
+        $dane = $raportCtrl->raportBssProcesuj($ADUser[0]['samaccountname']);
+        $grupDoNadania = $raportCtrl->brakujaceGrupy;
+        //echo "<pre>".print_r($ret, true)."</pre>"; //die();
+
+
+
         
         $dep = $ADUser[0]['description'];
         $section = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Section')->findOneByShortname(trim($ADUser[0]['division']));
         $sec = $section ? $section->getShortname() : "";
         //odbiera stare
-        $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+        $grupyNaPodstawieSekcjiOrazStanowiska = $ADUser[0]['memberOf']; //teraz czyscimy wszystko a nie tylko to co powinien miec w podstawowych
+        //$this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+        //var_dump($ADUser[0]['memberOf'], $grupyNaPodstawieSekcjiOrazStanowiska); die();
         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");
+        $entry->addGrupyAD($grupDoNadania, "+");
         if(isset($newData['department'])){
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($newData['department']);
             $dep = $department->getShortname();
@@ -1040,7 +1051,7 @@ class DefaultController extends Controller
                     )
                 ))
                 ->add('ustawUprawnieniaPoczatkowe', 'checkbox', array(
-                    'label' => 'Ustaw Uprawnienia początkowe',
+                    'label' => 'Resetuj do uprawnień początkowych',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),

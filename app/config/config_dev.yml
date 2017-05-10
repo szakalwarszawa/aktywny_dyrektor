@@ -37,7 +37,7 @@ monolog:
 
 assetic:
     use_controller: true
-
+    node: /usr/local/bin/node
 #swiftmailer:
 #    delivery_address: me@example.com
 

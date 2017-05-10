@@ -25,6 +25,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
  */
 class RaportyITController extends Controller
 {
+    public $container = null;
+    public $brakujaceGrupy = [];
     protected $ldap;
     protected $miesiace = [
         '1' => 'Styczeń',
@@ -275,6 +277,7 @@ class RaportyITController extends Controller
                 $dana = [
                     'id' => \uniqid().$l.''.$log->getId(),
                     'content' => $content,
+                    'kolejnosc' => 1,
                     'title' => $content,
                     'start' => $log->getLoggedAt(),
                     'end' => $datyKonca[$l],
@@ -313,20 +316,27 @@ class RaportyITController extends Controller
     protected $ostatniDepartament = null;
     protected $sumaUprawnien = [];
     protected $user = null;
+
     /**
      * @Route("/raportBss/{login}", name="raportBss")
      * @Template()
      */
     public function raportBssAction($login = 'kamil_jakacki'){
+        $this->container = $this;
+        $dane = $this->raportBssProcesuj($login);
+        return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', $dane);
+    }
+
+    public function raportBssProcesuj($login){
         $now = new \Datetime();
         $datyKonca = [
             'departament' => $now,
             'sekcja' => $now,
             'stanowisko' => $now,
         ];
-        $em = $this->getDoctrine()->getManager();
+        $em = $this->container->getDoctrine()->getManager();
 
-        $this->user = $this->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy' )[0];
+        $this->user = $this->container->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy' )[0];
 
         $this->departamenty = $em->getRepository('ParpMainBundle:Departament')->bierzDepartamentyNowe();
         //pobierz dane zmiany departamentow, stanowisk
@@ -350,6 +360,7 @@ class RaportyITController extends Controller
                 $dana = [
                     'id' => \uniqid().'Zasob'.$zasob->getId(),
                     'content' => $c,
+                    'kolejnosc' => 1,
                     'title' => $zasob->getNazwa(),
                     'start' => $uz->getAktywneOd(),
                     'end' => $do,
@@ -363,14 +374,14 @@ class RaportyITController extends Controller
         $dane = $this->przygotujDaneRaportuBss($dane);
         //var_dump($dane);
         //die();
-
-        return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', [
+        return [
             'login' => $login,
             'dane' => json_encode($dane),
             'zakresMin' => $this->zakres['min']->format('Y-m-d'),
             'zakresMax' => $this->zakres['max']->format('Y-m-d'),
-        ]);
+        ];
     }
+
     protected function przygotujDaneRaportuBss(&$dane){
         $now = new \Datetime();
         usort($dane, function($a, $b){
@@ -389,9 +400,10 @@ class RaportyITController extends Controller
                         'start' => $this->ostatniDepartament['start'],
                         'end' => $this->ostatniDepartament['end'],
                         'content' => 'Suma uprawnień które powinny być obecnie',
+                        'kolejnosc' => 9,
                         'title' => '',
                         'group' => 'suma',
-                        'grupy' => $this->get('ldap_service')->getGrupyUsera($this->user, $this->ostatniDepartament['departament'], $this->ostatniDepartament['sekcja'])
+                        'grupy' => $this->container->get('ldap_service')->getGrupyUsera($this->user, $this->ostatniDepartament['departament'], $this->ostatniDepartament['sekcja'])
                     ];
                 }
                 if(isset($dane[$i]['group']) && $dane[$i]['group'] == 'zasoby') {
@@ -432,9 +444,11 @@ class RaportyITController extends Controller
         $content .= '<br><a href="'.$this->generateUrl('nadajGrupy', ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).'" class="btn btn-success" target="_blank">NAPRAW</a>';
 
 
+        $this->sumaUprawnien['kolejnosc'] = 11;
         $this->sumaUprawnien['content'] = $content;
         $this->sumaUprawnien['start'] = is_string($this->sumaUprawnien['start']) ? $this->sumaUprawnien['start'] : $this->sumaUprawnien['start']->format('Y-m-d');
         $this->sumaUprawnien['end'] = is_string($this->sumaUprawnien['end']) ? $this->sumaUprawnien['end'] :$this->sumaUprawnien['end']->format('Y-m-d');
+        $this->brakujaceGrupy = $this->sumaUprawnien['grupy'];
         unset($this->sumaUprawnien['grupy']);
 
         //var_dump($this->sumaUprawnien);
@@ -442,7 +456,7 @@ class RaportyITController extends Controller
         $dane[] = $this->sumaUprawnien;
 
         usort($dane, function($a, $b){
-            return $a['start'] > $b['start'];
+            return $a['kolejnosc'] > $b['kolejnosc'] && $a['start'] > $b['start'];
         });
 
         return $dane;
