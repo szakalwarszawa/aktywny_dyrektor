@@ -461,7 +461,7 @@ class RaportyITController extends Controller
         $entry->setCreatedBy($this->getUser()->getUsername());
         $entry->setOpis("Przywracanie uprawnien za pomoca linku.");
         $this->getDoctrine()->getManager()->persist($entry);
-        //$this->getDoctrine()->getManager()->flush();
+        $this->getDoctrine()->getManager()->flush();
         var_dump($login, $grupy, $entry);
         //die();
     }

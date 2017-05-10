@@ -16,7 +16,7 @@ class ZasobyType extends AbstractType
     public function __construct($container, $nazwaLabel = "Nazwa", $niemozeEdytowac = false, $czyJestWlascicielemLubPowiernikiem = false){
         $this->container = $container;
         $this->nazwaLabel = $nazwaLabel;
-        $this->zablokujPolaPozaPoziomModul = true; //$niemozeEdytowac && $czyJestWlascicielemLubPowiernikiem;
+        $this->zablokujPolaPozaPoziomModul = $niemozeEdytowac && $czyJestWlascicielemLubPowiernikiem;
     }
         /**
      * @param FormBuilderInterface $builder

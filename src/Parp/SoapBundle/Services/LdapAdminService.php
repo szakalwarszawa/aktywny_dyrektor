@@ -415,7 +415,7 @@ class LdapAdminService
         }
         
                 
-        if ($person->getIsDisabled() !== null) {
+        if ($person->getIsDisabled() !== null || $person->getActivateDeactivated()) {
             $entry['useraccountcontrol'][0] = $person->getIsDisabled() ? 514 : 512; //546 : 544;
             $sn = "Konto aktywowane";
             if (!empty($department)) {
