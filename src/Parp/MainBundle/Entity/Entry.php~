@@ -171,7 +171,7 @@ class Entry
     /**
      * @var string
      *
-     * @ORM\Column(name="memberOf", type="string", length=255, nullable=true)
+     * @ORM\Column(name="memberOf", type="string", length=8000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $memberOf;
@@ -599,29 +599,6 @@ class Entry
         return $this->initialrights;
     }
 
-    /**
-     * Set memberOf
-     *
-     * @param string $memberOf
-     *
-     * @return Entry
-     */
-    public function setMemberOf($memberOf)
-    {
-        $this->memberOf = $memberOf;
-
-        return $this;
-    }
-
-    /**
-     * Get memberOf
-     *
-     * @return string
-     */
-    public function getMemberOf()
-    {
-        return $this->memberOf;
-    }
 
     /**
      * Set isDisabled
@@ -891,5 +868,29 @@ class Entry
     
     public function getUstawUprawnieniaPoczatkowe(){
         return true;
+    }
+
+    /**
+     * Set opis
+     *
+     * @param string $opis
+     *
+     * @return Entry
+     */
+    public function setOpis($opis)
+    {
+        $this->opis = $opis;
+
+        return $this;
+    }
+
+    /**
+     * Get opis
+     *
+     * @return string
+     */
+    public function getOpis()
+    {
+        return $this->opis;
     }
 }

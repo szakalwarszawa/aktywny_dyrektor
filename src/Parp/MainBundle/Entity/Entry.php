@@ -893,4 +893,28 @@ class Entry
     {
         return $this->opis;
     }
+
+    /**
+     * Set memberOf
+     *
+     * @param string $memberOf
+     *
+     * @return Entry
+     */
+    public function setMemberOf($memberOf)
+    {
+        $this->memberOf = $memberOf;
+
+        return $this;
+    }
+
+    /**
+     * Get memberOf
+     *
+     * @return string
+     */
+    public function getMemberOf()
+    {
+        return $this->memberOf;
+    }
 }
