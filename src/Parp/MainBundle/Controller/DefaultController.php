@@ -860,7 +860,8 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry2)
+                        'disabled' => (!$admin && !$kadry2),
+                        'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     //'data' => @$defaultData["title"],
                     'choices' => $titles,
@@ -887,7 +888,8 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry1 && !$kadry2)
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2),
+                        'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     'choices' => $sections,
                     //'data' => @$defaultData['info'],
@@ -901,7 +903,8 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry2)
+                        'disabled' => (!$admin && !$kadry2),
+                        'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     'choices' => $departments,
                     //'data' => @$defaultData["department"],
@@ -1041,10 +1044,12 @@ class DefaultController extends Controller
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
+                    'required' => false,
                     'attr' => array(
                         'class' => 'form-control2',
+                        'required' => false,
                     ),
-                    'data' => true,
+                    'data' => false,
                 ));
                                
                 if(!(!$admin && !$kadry1 && !$kadry2)){
@@ -1315,7 +1320,7 @@ class DefaultController extends Controller
 //
 //            return $this->redirect($this->generateUrl('engageUser',array('samaccountname'=>$samaccountname)));
 //        }
-        var_dump($sumy);
+        //var_dump($sumy);
         //die();
         return array(
             'engagements' => $engagements,

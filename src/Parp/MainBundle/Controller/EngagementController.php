@@ -424,9 +424,9 @@ class EngagementController extends Controller
         return $ret;
     }
     protected function parseWyniki($dane, $form){
-        var_dump($dane);
+        //var_dump($dane);
         $dane = $this->correctWyniki($dane);
-        echo "<pre>" . print_r($dane, true). "</pre>";
+        //echo "<pre>" . print_r($dane, true). "</pre>";
         //die();
         $em = $this->getDoctrine()->getManager();
 
@@ -438,6 +438,7 @@ class EngagementController extends Controller
 
         $rok = $form->getData()['rok'];
         $bledy = [];
+        //var_dump($dane); die();
         foreach($dane as $id => $d){
 
             //$daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($id);
@@ -446,10 +447,10 @@ class EngagementController extends Controller
                 'nazwisko' => $rozbite['nazwisko'],
                 'imie' => $rozbite['imie'],
             ]);
-            //var_dump($rozbite); die();
             if($daneRekord === null){
+                //var_dump($d);
                 $bledy[] = [
-                    'error' => 'Brak danych o osobie '.$id.' '.$d[0]['name'].' '.$d[0]['id'],
+                    'error' => 'Brak danych o osobie '.$id,
                     'dane' => $d
                 ];
             }else {
@@ -481,7 +482,7 @@ class EngagementController extends Controller
             }
         }
         $em->flush();
-        var_dump($bledy);
+        //var_dump($bledy);
     }
     protected function parseNazwaProgramu($program){
         $pattern = ['/[,\d]+%/i', '/[\d]+,[\d]+/i', '/--/'];
