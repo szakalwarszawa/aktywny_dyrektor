@@ -12,3 +12,5 @@
 /upload
 /web/dev
 /work
+/app/config/parameters_parp.yml
+/app/config/parameters_local.yml

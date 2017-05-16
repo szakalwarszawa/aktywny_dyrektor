@@ -672,6 +672,7 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
+        //var_dump($this->ad_host, $ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         if ($samaccountname) {
@@ -696,7 +697,7 @@ class LdapService
         }
 
 //die($userdn);
-
+        //var_dump($ldapconn, $userdn, $searchString, $this->ADattributes);
         $search = ldap_search($ldapconn, $userdn, $searchString, $this->ADattributes);
         $tmpResults = ldap_get_entries($ldapconn, $search);
         ldap_unbind($ldapconn);
@@ -1177,6 +1178,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
     private $stanowiska = ["prezes", "p.o. prezesa", "zastępca prezesa", "dyrektor", "p.o. dyrektora", "zastępca dyrektora", "p.o. zastępcy dyrektora", "kierownik sekcji", "p.o. kierownika sekcji", "kierownik", "p.o. kierownika", "koordynator projektu", "główny księgowy, dyrektor", "główny księgowy", "rzecznik beneficjenta parp, dyrektor", "rzecznik beneficjenta parp"];
         
     public function getPrzelozeni(){
+        //echo "<pre>"; print_r($this->_userCache);
         if($this->_userCache === null){
             $this->_userCache = $this->getAllFromAD();
         }
@@ -1186,6 +1188,7 @@ dostęp do katalogów W:Zespoly\D/B\Olimp (SGG-D/B-Olimp) [RW]; W:Zespoly\D/B\Pu
             if(in_array(trim( strtolower($u['title'])), $this->stanowiska))
                 $ret[$u['samaccountname']] = $u;
         }
+        //var_dump($ret); die();
         return $ret;
     }
     

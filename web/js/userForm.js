@@ -69,3 +69,6 @@ $('form').submit(function(){
     $('input[disabled], select[disabled]').prop('disabled', false);
     console.log("Ustawia form przed submit");    
 });
+function zaznaczUstawieniePoczatkowych(){
+    $('#form_ustawUprawnieniaPoczatkowe').attr('checked', true);
+}

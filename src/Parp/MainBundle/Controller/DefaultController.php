@@ -823,7 +823,7 @@ class DefaultController extends Controller
             $kadry1 = true;
             $kadry2 = false;
         }
-        
+        //var_dump($przelozeni);
         $builder = $that->createFormBuilder(@$defaultData)
                 ->add('samaccountname', 'text', array(
                     'required' => false,

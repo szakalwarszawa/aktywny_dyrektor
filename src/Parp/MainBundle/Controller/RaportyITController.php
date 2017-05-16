@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Validator\Constraints\DateTime;
 
 /**
  * RaportyIT controller.
@@ -338,18 +339,47 @@ class RaportyITController extends Controller
 
         $this->user = $this->container->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy' )[0];
 
+
         $this->departamenty = $em->getRepository('ParpMainBundle:Departament')->bierzDepartamentyNowe();
         //pobierz dane zmiany departamentow, stanowisk
         $entity = $em->getRepository('ParpMainBundle:DaneRekord')->findOneByLogin($login);
 
-        $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
-        $logs = $repo->getLogEntries($entity);
-        $dane = [];
-        foreach($logs as $log){
-            $entityTemp = clone $entity;
-            $repo->revert($entityTemp, $log->getVersion());
-            $dane = array_merge($dane, $this->makeRowVersion($entity, $log, $datyKonca));
+        if($entity === null){
+            $min = new \DateTime('2001-01-01 00:00:00');
+            $max = new \DateTime('2101-01-01 00:00:00');
+            $dana = [
+                'id' => '54673547623',
+                'content' => 'uprawnienia',
+                'kolejnosc' => 1,
+                'title' => 'stanowisko',
+                'start' => $min,
+                'end' => $max,
+                'group' => 'stanowisko'
+            ];
+            $dane = [
+                $dana
+            ];
+
+            $this->ostatniDepartament = $dana;
+            $this->ostatniDepartament['daneRekord'] = [];
+            $this->ostatniDepartament['departament'] = $this->user['description'];
+            $this->ostatniDepartament['sekcja'] = $this->user['division'];
+            $this->user['title'] = $this->user['title'];
+            $this->zakres['min'] = $min;
+            $this->zakres['max'] = $max;
+            //die('tutaj');
+        }else {
+
+            $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
+            $logs = $repo->getLogEntries($entity);
+            $dane = [];
+            foreach ($logs as $log) {
+                $entityTemp = clone $entity;
+                $repo->revert($entityTemp, $log->getVersion());
+                $dane = array_merge($dane, $this->makeRowVersion($entity, $log, $datyKonca));
+            }
         }
+        //var_dump($dane); die();
 
         foreach($dane as $d){
             $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findDlaOsoby($login, $d['start'], $d['end']);

@@ -947,7 +947,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 //trzeba odebrac stare
                 $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName($aduser[0]['department']);
                 $section = $em->getRepository('ParpMainBundle:Section')->findOneByName($aduser[0]['division']);
-                $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera(['title' => $aduser[0]['title']], $department->getShortname(), ($section ? $section->getShortname() : ""));
+                $grupyNaPodstawieSekcjiOrazStanowiska = $ldap->getGrupyUsera($aduser[0], $department->getShortname(), ($section ? $section->getShortname() : ""));
                 $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, "-");                
             }
             $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
