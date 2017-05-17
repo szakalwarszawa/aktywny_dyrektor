@@ -869,6 +869,10 @@ class Entry
     public function getUstawUprawnieniaPoczatkowe(){
         return true;
     }
+    public function setUstawUprawnieniaPoczatkowe($var)
+    {
+        return $this;
+    }
 
     /**
      * Set opis

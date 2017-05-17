@@ -2,18 +2,15 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="7d135ebf-fe93-48e1-a6db-976b80f55bc9" name="Default" comment="">
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/config/parameters_local.yml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/app/config/parameters_parp.yml" />
-      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevTestController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.gitignore" afterPath="$PROJECT_DIR$/.gitignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersjiRepository.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/config/config.yml" afterPath="$PROJECT_DIR$/app/config/config.yml" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ImportRekordDaneController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ImportRekordDaneController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig" afterPath="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php" afterPath="$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/web/js/userForm.js" afterPath="$PROJECT_DIR$/web/js/userForm.js" />
     </list>
     <ignored path="aktywny_dyrektor.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -88,22 +85,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name=".gitignore" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/.gitignore">
+      <file leaf-file-name="add.html.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/add.html.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="110">
-              <caret line="13" column="5" lean-forward="true" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="AbstractLogEntry.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity/MappedSuperclass/AbstractLogEntry.php">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="11" column="15" lean-forward="false" selection-start-line="11" selection-start-column="15" selection-end-line="11" selection-end-column="15" />
-              <folding />
+            <state relative-caret-position="79">
+              <caret line="50" column="12" lean-forward="false" selection-start-line="50" selection-start-column="12" selection-end-line="51" selection-end-column="2" />
+              <folding>
+                <element signature="e#12#28#0#Twig" expanded="false" />
+                <element signature="e#659#700#0#Twig" expanded="false" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -111,8 +101,8 @@
       <file leaf-file-name="config.yml" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/config/config.yml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="73" column="16" lean-forward="true" selection-start-line="73" selection-start-column="16" selection-end-line="73" selection-end-column="16" />
+            <state relative-caret-position="16">
+              <caret line="1" column="34" lean-forward="false" selection-start-line="1" selection-start-column="34" selection-end-line="1" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -121,52 +111,78 @@
       <file leaf-file-name="DefaultController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-573">
-              <caret line="764" column="20" lean-forward="false" selection-start-line="764" selection-start-column="20" selection-end-line="764" selection-end-column="20" />
+            <state relative-caret-position="518">
+              <caret line="862" column="62" lean-forward="false" selection-start-line="862" selection-start-column="62" selection-end-line="862" selection-end-column="62" />
               <folding>
-                <element signature="e#47480#49433#0#PHP" expanded="false" />
-                <marker date="1494938151000" expanded="true" signature="73290:73335" ph="delete from " />
+                <element signature="e#47827#49780#0#PHP" expanded="false" />
+                <marker date="1495026130000" expanded="true" signature="73670:73715" ph="delete from " />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="DepartamentRepository.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/DepartamentRepository.php">
+      <file leaf-file-name="DevController.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+            <state relative-caret-position="-1725">
+              <caret line="2988" column="22" lean-forward="false" selection-start-line="2988" selection-start-column="22" selection-end-line="2988" selection-end-column="22" />
+              <folding>
+                <element signature="e#118077#118147#0#PHP" expanded="true" />
+                <element signature="e#119360#119464#0#PHP" expanded="true" />
+                <element signature="e#119609#119640#1#PHP" expanded="true" />
+                <element signature="e#120287#120317#1#PHP" expanded="true" />
+                <marker date="1495021186000" expanded="true" signature="9536:9824" ph="INSERT INTO `entry`... " />
+                <marker date="1495021186000" expanded="true" signature="11677:11714" ph="update entry... " />
+                <marker date="1495021186000" expanded="true" signature="11715:11732" ph="delete from " />
+                <marker date="1495021186000" expanded="true" signature="11734:11757" ph="delete from " />
+                <marker date="1495021186000" expanded="true" signature="12665:12947" ph="INSERT INTO `entry`... " />
+                <marker date="1495021186000" expanded="true" signature="21050:21126" ph="select group... Parp" />
+                <marker date="1495021186000" expanded="true" signature="28237:28550" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="28285:28550" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="28332:28523" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="28769:29074" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="28817:29074" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="28864:29047" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="29286:29592" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="29334:29592" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="29381:29565" ph="..." />
+                <marker date="1495021186000" expanded="true" signature="99073:99294" ph="select wz,w ParpMainBundle" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="edit.html.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/edit.html.twig">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="8">
+              <caret line="86" column="151" lean-forward="false" selection-start-line="86" selection-start-column="146" selection-end-line="86" selection-end-column="151" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="HistoriaWersji.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php">
+      <file leaf-file-name="editKadry.html.twig" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="112">
-              <caret line="22" column="38" lean-forward="true" selection-start-line="22" selection-start-column="38" selection-end-line="22" selection-end-column="38" />
-              <folding />
+            <state relative-caret-position="174">
+              <caret line="28" column="50" lean-forward="false" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
+              <folding>
+                <element signature="e#3351#3361#0#Twig" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="LdapService.php" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php">
+      <file leaf-file-name="HistoriaWersjiRepository.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersjiRepository.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="310">
-              <caret line="1199" column="10" lean-forward="false" selection-start-line="1199" selection-start-column="10" selection-end-line="1199" selection-end-column="10" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="parameters_parp.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/config/parameters_parp.yml">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="90">
-              <caret line="40" column="27" lean-forward="false" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
-              <folding />
+            <state relative-caret-position="274">
+              <caret line="21" column="37" lean-forward="false" selection-start-line="21" selection-start-column="37" selection-end-line="21" selection-end-column="78" />
+              <folding>
+                <element signature="e#42#178#0#PHP" expanded="true" />
+                <element signature="e#567#606#0#PHP" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -174,21 +190,35 @@
       <file leaf-file-name="RaportyITController.php" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="386">
-              <caret line="368" column="39" lean-forward="false" selection-start-line="368" selection-start-column="39" selection-end-line="368" selection-end-column="39" />
+            <state relative-caret-position="-4">
+              <caret line="342" column="0" lean-forward="false" selection-start-line="342" selection-start-column="0" selection-end-line="342" selection-end-column="0" />
               <folding>
+                <element signature="e#1418#1505#0#PHP" expanded="true" />
                 <element signature="e#13312#13396#0#PHP" expanded="true" />
-                <marker date="1494940488000" expanded="true" signature="19917:19926" ph="..." />
+                <marker date="1495023676000" expanded="true" signature="19946:19955" ph="..." />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="services.yml" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/config/services.yml">
+      <file leaf-file-name="userForm.html.twig" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/userForm.html.twig">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="267">
-              <caret line="16" column="13" lean-forward="true" selection-start-line="16" selection-start-column="13" selection-end-line="16" selection-end-column="13" />
+            <state relative-caret-position="184">
+              <caret line="30" column="21" lean-forward="false" selection-start-line="26" selection-start-column="12" selection-end-line="30" selection-end-column="21" />
+              <folding>
+                <element signature="e#1314#1324#0#Twig" expanded="false" />
+                <element signature="e#3409#3418#0#Twig" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="WniosekEditor.php" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/WniosekEditor.php">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="0">
+              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -198,12 +228,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>var_dump</find>
-      <find>fixture</find>
-      <find>sumSty</find>
-      <find>FixturesBundle</find>
-      <find>Fixtures</find>
-      <find>assetic</find>
       <find>ctrl</find>
       <find>this-&gt;get</find>
       <find>upraw</find>
@@ -223,11 +247,17 @@
       <find>&quot;ADUser&quot;</find>
       <find>findPrzedOdebraniem</find>
       <find>findDlaDnia</find>
-      <find>EntityWrapper</find>
-      <find>getPrzelozeniJakoName</find>
       <find>ostatniDepartament</find>
       <find>this-&gt;departamenty</find>
       <find>this-&gt;zakres</find>
+      <find>EntityWrapper</find>
+      <find>ustawUprawnieniaPoczatkowe</find>
+      <find>getPrzelozeniJakoName</find>
+      <find>userForm.js</find>
+      <find>historiaWersji</find>
+      <find>;</find>
+      <find>title</find>
+      <find>rekord</find>
     </findStrings>
     <replaceStrings>
       <replace>\n\n</replace>
@@ -242,11 +272,13 @@
       <replace>\topacity:0.5;\n}</replace>
       <replace>=&gt; '',</replace>
       <replace>'$1',</replace>
+      <replace>,+</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$/app</dir>
       <dir>$PROJECT_DIR$</dir>
       <dir>$PROJECT_DIR$/src</dir>
+      <dir>$PROJECT_DIR$/src/Parp/MainBundle/Resources/views</dir>
     </dirStrings>
   </component>
   <component name="Git.Settings">
@@ -255,11 +287,6 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/WniosekUtworzenieZasobu.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/WniosekUtworzenieZasobuController.php" />
-        <option value="$PROJECT_DIR$/app/Resources/views/maile/wniosekZasobZrealizowanie.html.twig" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZastepstwoController.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Form/ZastepstwoType.php" />
         <option value="$APPLICATION_CONFIG_DIR$/consoles/db/ab009433-7d44-4396-b5bf-c9578fbf2329/console.sql" />
         <option value="$PROJECT_DIR$/app/config/security.yml" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/DaneRekordRepository.php" />
@@ -281,7 +308,6 @@
         <option value="$PROJECT_DIR$/setup/DEV_deleteEngagement.sql" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/BlokowaneKontaController.php" />
         <option value="$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapAdminService.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
         <option value="$PROJECT_DIR$/src/Parp/AuthBundle/Security/ParpUserProvider.php" />
         <option value="$PROJECT_DIR$/web/css/main.css" />
         <option value="$PROJECT_DIR$/web/css/hide_names.css" />
@@ -290,22 +316,28 @@
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ZasobyController.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Zasoby/edit.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Form/ZasobyType.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/edit.html.twig" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/EngagementController.php" />
         <option value="$PROJECT_DIR$/app/config/config_dev.yml" />
         <option value="$PROJECT_DIR$/app/AppKernel.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/ImportRekordDaneController.php" />
         <option value="$PROJECT_DIR$/app/config/parameters.yml" />
         <option value="$PROJECT_DIR$/src/Parp/MainBundle/DevTestController.php" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig" />
         <option value="$PROJECT_DIR$/web/js/userForm.js" />
         <option value="$PROJECT_DIR$/app/config/parameters_parp.yml" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php" />
         <option value="$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php" />
-        <option value="$PROJECT_DIR$/app/config/config.yml" />
-        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php" />
         <option value="$PROJECT_DIR$/.gitignore" />
+        <option value="$PROJECT_DIR$/app/config/parameters_local.yml" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersjiRepository.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/edit.html.twig" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/add.html.twig" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.twig" />
+        <option value="$PROJECT_DIR$/app/config/config.yml" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php" />
+        <option value="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig" />
       </list>
     </option>
   </component>
@@ -439,8 +471,26 @@
               <option name="myItemId" value="Parp" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
+          </PATH>
+          <PATH>
             <PATH_ELEMENT>
-              <option name="myItemId" value="SoapBundle" />
+              <option name="myItemId" value="Aktywny@local" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aktywny_dyrektor" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Parp" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainBundle" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -462,7 +512,97 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="SoapBundle" />
+              <option name="myItemId" value="MainBundle" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Resources" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Aktywny@local" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aktywny_dyrektor" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Parp" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainBundle" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Resources" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="views" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Default" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Aktywny@local" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aktywny_dyrektor" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Parp" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainBundle" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Resources" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Aktywny@local" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="aktywny_dyrektor" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Parp" />
+              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="MainBundle" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
@@ -480,91 +620,7 @@
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
             <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Parp" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainBundle" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Aktywny@local" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aktywny_dyrektor" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Parp" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="MainBundle" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Controller" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Aktywny@local" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aktywny_dyrektor" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="src" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Parp" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Aktywny@local" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aktywny_dyrektor" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
               <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-          </PATH>
-          <PATH>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="Aktywny@local" />
-              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="aktywny_dyrektor" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="app" />
-              <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
-            </PATH_ELEMENT>
-            <PATH_ELEMENT>
-              <option name="myItemId" value="config" />
               <option name="myItemType" value="com.jetbrains.php.projectView.PhpTreeStructureProvider$1" />
             </PATH_ELEMENT>
           </PATH>
@@ -588,9 +644,11 @@
     <property name="com.intellij.database.dataSource.DataSourceTemplate" value="MySQL" />
     <property name="FullScreen" value="true" />
     <property name="add_unversioned_files" value="$PROJECT_DIR$/app/config/parameters.yml" />
+    <property name="com.intellij.ide.scratch.LRUPopupBuilder$2/Languages" value="Twig" />
   </component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/Parp/MainBundle/Entity" />
       <recent name="$PROJECT_DIR$/app/config" />
       <recent name="$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Maile" />
     </key>
@@ -736,12 +794,12 @@
       <workItem from="1494578099333" duration="1286000" />
       <workItem from="1494583276406" duration="381000" />
       <workItem from="1494829676235" duration="24000" />
-      <workItem from="1494929595419" duration="5463000" />
+      <workItem from="1494929595419" duration="11713000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="95939000" />
+    <option name="totallyTimeSpent" value="102189000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -754,17 +812,19 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1280" height="800" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info id="Remote Host" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3529887" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.36591277" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.329927" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Messages" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.53424656" sideWeight="0.27382874" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32875606" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.54383564" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32876712" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
-      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30547947" sideWeight="0.72617126" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.30547947" sideWeight="0.72617126" order="8" side_tool="false" content_ui="tabs" />
+      <window_info id="Remote Host" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3529887" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.36591277" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32875606" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.54383564" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32956383" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.67932147" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -818,62 +878,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/web/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="314">
-          <caret line="134" column="0" lean-forward="true" selection-start-line="134" selection-start-column="0" selection-end-line="134" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/web/css/hide_names.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="38" column="25" lean-forward="true" selection-start-line="38" selection-start-column="25" selection-end-line="38" selection-end-column="25" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/swiftmailer/swiftmailer/lib/classes/Swift/Mailer.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="126">
-          <caret line="78" column="34" lean-forward="false" selection-start-line="78" selection-start-column="34" selection-end-line="78" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/vendor/swiftmailer/swiftmailer/lib/classes/Swift/Transport.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="27" column="20" lean-forward="false" selection-start-line="27" selection-start-column="20" selection-end-line="27" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/AuthBundle/Security/ParpUserProvider.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="362">
-          <caret line="139" column="21" lean-forward="false" selection-start-line="139" selection-start-column="21" selection-end-line="139" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Services/ParpMailerService.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="646">
-          <caret line="161" column="27" lean-forward="false" selection-start-line="161" selection-start-column="27" selection-end-line="161" selection-end-column="27" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/UprawnieniaController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-11">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Dev/wykresBss.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="364">
-          <caret line="63" column="14" lean-forward="false" selection-start-line="63" selection-start-column="14" selection-end-line="63" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/Resources/views/base.html.twig">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="122">
@@ -1022,109 +1026,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/userForm.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1920">
-          <caret line="120" column="46" lean-forward="false" selection-start-line="120" selection-start-column="41" selection-end-line="120" selection-end-column="46" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/edit.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3712">
-          <caret line="232" column="40" lean-forward="false" selection-start-line="232" selection-start-column="40" selection-end-line="232" selection-end-column="40" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="4992">
-          <caret line="602" column="7" lean-forward="false" selection-start-line="602" selection-start-column="7" selection-end-line="602" selection-end-column="7" />
-          <folding>
-            <element signature="e#42#74#0#PHP" expanded="false" />
-            <element signature="e#131#374#0#PHP" expanded="false" />
-            <element signature="e#394#405#0#PHP" expanded="false" />
-            <element signature="e#544#687#0#PHP" expanded="false" />
-            <element signature="e#710#1177#0#PHP" expanded="false" />
-            <element signature="e#1212#1690#0#PHP" expanded="false" />
-            <element signature="e#1713#1870#0#PHP" expanded="false" />
-            <element signature="e#1905#2394#0#PHP" expanded="false" />
-            <element signature="e#2425#2583#0#PHP" expanded="false" />
-            <element signature="e#2612#2723#0#PHP" expanded="false" />
-            <element signature="e#2748#2905#0#PHP" expanded="false" />
-            <element signature="e#2933#3393#0#PHP" expanded="false" />
-            <element signature="e#3419#3837#0#PHP" expanded="false" />
-            <element signature="e#3866#4033#0#PHP" expanded="false" />
-            <element signature="e#4071#4302#0#PHP" expanded="false" />
-            <element signature="e#4331#4426#0#PHP" expanded="false" />
-            <element signature="e#4469#4669#0#PHP" expanded="false" />
-            <element signature="e#4708#4867#0#PHP" expanded="false" />
-            <element signature="e#4898#5048#0#PHP" expanded="false" />
-            <element signature="e#5083#5251#0#PHP" expanded="false" />
-            <element signature="e#5299#5497#0#PHP" expanded="false" />
-            <element signature="e#5534#5695#0#PHP" expanded="false" />
-            <element signature="e#5731#5894#0#PHP" expanded="false" />
-            <element signature="e#5930#6087#0#PHP" expanded="false" />
-            <element signature="e#6119#6323#0#PHP" expanded="false" />
-            <element signature="e#6363#6446#0#PHP" expanded="false" />
-            <element signature="e#6485#6644#0#PHP" expanded="false" />
-            <element signature="e#6683#6843#0#PHP" expanded="false" />
-            <element signature="e#6905#7060#0#PHP" expanded="false" />
-            <element signature="e#7089#7145#0#PHP" expanded="false" />
-            <element signature="e#7217#7295#0#PHP" expanded="false" />
-            <element signature="e#7392#7447#0#PHP" expanded="false" />
-            <element signature="e#7519#7624#0#PHP" expanded="false" />
-            <element signature="e#7769#7839#0#PHP" expanded="false" />
-            <element signature="e#7935#8030#0#PHP" expanded="false" />
-            <element signature="e#8159#8223#0#PHP" expanded="false" />
-            <element signature="e#8311#8402#0#PHP" expanded="false" />
-            <element signature="e#8523#8585#0#PHP" expanded="false" />
-            <element signature="e#8669#8752#0#PHP" expanded="false" />
-            <element signature="e#8857#8919#0#PHP" expanded="false" />
-            <element signature="e#8995#9083#0#PHP" expanded="false" />
-            <element signature="e#9200#9260#0#PHP" expanded="false" />
-            <element signature="e#9342#9427#0#PHP" expanded="false" />
-            <element signature="e#9536#9595#0#PHP" expanded="false" />
-            <element signature="e#9673#9781#0#PHP" expanded="false" />
-            <element signature="e#9938#10008#0#PHP" expanded="false" />
-            <element signature="e#10110#10203#0#PHP" expanded="false" />
-            <element signature="e#10324#10388#0#PHP" expanded="false" />
-            <element signature="e#10630#10731#0#PHP" expanded="false" />
-            <element signature="e#10872#10939#0#PHP" expanded="false" />
-            <element signature="e#11039#11141#0#PHP" expanded="false" />
-            <element signature="e#11663#11730#0#PHP" expanded="false" />
-            <element signature="e#11827#11917#0#PHP" expanded="false" />
-            <element signature="e#12038#12099#0#PHP" expanded="false" />
-            <element signature="e#12198#12298#0#PHP" expanded="false" />
-            <element signature="e#12439#12505#0#PHP" expanded="false" />
-            <element signature="e#12600#12702#0#PHP" expanded="false" />
-            <element signature="e#12831#12894#0#PHP" expanded="false" />
-            <element signature="e#12982#13099#0#PHP" expanded="false" />
-            <element signature="e#13260#13330#0#PHP" expanded="false" />
-            <element signature="e#14179#14299#0#PHP" expanded="false" />
-            <element signature="e#14455#14539#0#PHP" expanded="false" />
-            <element signature="e#14621#14724#0#PHP" expanded="false" />
-            <element signature="e#14857#14920#0#PHP" expanded="false" />
-            <element signature="e#15010#15116#0#PHP" expanded="false" />
-            <element signature="e#15249#15315#0#PHP" expanded="false" />
-            <element signature="e#15405#15500#0#PHP" expanded="false" />
-            <element signature="e#15617#15676#0#PHP" expanded="false" />
-            <element signature="e#15758#15860#0#PHP" expanded="false" />
-            <element signature="e#15985#16049#0#PHP" expanded="false" />
-            <element signature="e#16135#16264#0#PHP" expanded="false" />
-            <element signature="e#16435#16525#0#PHP" expanded="false" />
-            <element signature="e#16613#16712#0#PHP" expanded="false" />
-            <element signature="e#16837#16898#0#PHP" expanded="false" />
-            <element signature="e#16984#17104#0#PHP" expanded="false" />
-            <element signature="e#17269#17341#0#PHP" expanded="false" />
-            <element signature="e#17532#17621#0#PHP" expanded="false" />
-            <element signature="e#17726#17782#0#PHP" expanded="false" />
-            <element signature="e#17858#17955#0#PHP" expanded="false" />
-            <element signature="e#18076#18136#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Form/WniosekNadanieOdebranieZasobowType.php">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="96">
@@ -1165,22 +1066,10 @@
         <state relative-caret-position="210">
           <caret line="50" column="31" lean-forward="false" selection-start-line="50" selection-start-column="20" selection-end-line="50" selection-end-column="31" />
           <folding>
-            <element signature="e#42#170#0#PHP" expanded="true" />
+            <element signature="e#42#170#0#PHP" expanded="false" />
             <element signature="e#239#955#0#PHP" expanded="false" />
             <element signature="e#960#1651#0#PHP" expanded="false" />
             <element signature="e#1666#2374#0#PHP" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="219">
-          <caret line="2859" column="5" lean-forward="true" selection-start-line="2828" selection-start-column="4" selection-end-line="2859" selection-end-column="5" />
-          <folding>
-            <element signature="e#113864#113887#1#PHP" expanded="false" />
-            <element signature="e#117913#117953#0#PHP" expanded="false" />
-            <element signature="e#118808#118878#0#PHP" expanded="false" />
           </folding>
         </state>
       </provider>
@@ -1192,14 +1081,6 @@
           <folding>
             <element signature="e#655#716#0#PHP" expanded="false" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/config/parameters_local.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="639">
-          <caret line="40" column="22" lean-forward="false" selection-start-line="40" selection-start-column="22" selection-end-line="40" selection-end-column="22" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1218,34 +1099,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="81">
-          <caret line="215" column="58" lean-forward="false" selection-start-line="215" selection-start-column="58" selection-end-line="215" selection-end-column="58" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/web/js/userForm.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="232">
           <caret line="70" column="3" lean-forward="false" selection-start-line="70" selection-start-column="3" selection-end-line="70" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/config/parameters_parp.yml">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="90">
-          <caret line="40" column="27" lean-forward="false" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="112">
-          <caret line="22" column="38" lean-forward="true" selection-start-line="22" selection-start-column="38" selection-end-line="22" selection-end-column="38" />
           <folding />
         </state>
       </provider>
@@ -1260,7 +1117,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/SoapBundle/Services/LdapService.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="310">
+        <state relative-caret-position="294">
           <caret line="1199" column="10" lean-forward="false" selection-start-line="1199" selection-start-column="10" selection-end-line="1199" selection-end-column="10" />
           <folding />
         </state>
@@ -1274,10 +1131,58 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/config/config.yml">
+    <entry file="file://$PROJECT_DIR$/.gitignore">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="73" column="16" lean-forward="true" selection-start-line="73" selection-start-column="16" selection-end-line="73" selection-end-column="16" />
+        <state relative-caret-position="208">
+          <caret line="13" column="5" lean-forward="true" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/config/parameters_parp.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="90">
+          <caret line="40" column="27" lean-forward="false" selection-start-line="40" selection-start-column="27" selection-end-line="40" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/config/parameters_local.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="163">
+          <caret line="34" column="27" lean-forward="false" selection-start-line="34" selection-start-column="27" selection-end-line="34" selection-end-column="27" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/config/parameters_dom.yml">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-536">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/Wniosek.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersji.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-67">
+          <caret line="19" column="80" lean-forward="false" selection-start-line="19" selection-start-column="80" selection-end-line="19" selection-end-column="80" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/Entry.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="176">
+          <caret line="12" column="71" lean-forward="false" selection-start-line="12" selection-start-column="15" selection-end-line="12" selection-end-column="71" />
           <folding />
         </state>
       </provider>
@@ -1290,33 +1195,146 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php">
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/UprawnieniaRepository.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-573">
-          <caret line="764" column="20" lean-forward="false" selection-start-line="764" selection-start-column="20" selection-end-line="764" selection-end-column="20" />
+        <state relative-caret-position="298">
+          <caret line="30" column="24" lean-forward="false" selection-start-line="17" selection-start-column="8" selection-end-line="30" selection-end-column="24" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/HistoriaWersjiRepository.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="274">
+          <caret line="21" column="37" lean-forward="false" selection-start-line="21" selection-start-column="37" selection-end-line="21" selection-end-column="78" />
           <folding>
-            <element signature="e#47480#49433#0#PHP" expanded="false" />
-            <marker date="1494938151000" expanded="true" signature="73290:73335" ph="delete from " />
+            <element signature="e#42#178#0#PHP" expanded="true" />
+            <element signature="e#567#606#0#PHP" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DevController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1725">
+          <caret line="2988" column="22" lean-forward="false" selection-start-line="2988" selection-start-column="22" selection-end-line="2988" selection-end-column="22" />
+          <folding>
+            <element signature="e#118077#118147#0#PHP" expanded="true" />
+            <element signature="e#119360#119464#0#PHP" expanded="true" />
+            <element signature="e#119609#119640#1#PHP" expanded="true" />
+            <element signature="e#120287#120317#1#PHP" expanded="true" />
+            <marker date="1495021186000" expanded="true" signature="9536:9824" ph="INSERT INTO `entry`... " />
+            <marker date="1495021186000" expanded="true" signature="11677:11714" ph="update entry... " />
+            <marker date="1495021186000" expanded="true" signature="11715:11732" ph="delete from " />
+            <marker date="1495021186000" expanded="true" signature="11734:11757" ph="delete from " />
+            <marker date="1495021186000" expanded="true" signature="12665:12947" ph="INSERT INTO `entry`... " />
+            <marker date="1495021186000" expanded="true" signature="21050:21126" ph="select group... Parp" />
+            <marker date="1495021186000" expanded="true" signature="28237:28550" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="28285:28550" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="28332:28523" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="28769:29074" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="28817:29074" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="28864:29047" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="29286:29592" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="29334:29592" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="29381:29565" ph="..." />
+            <marker date="1495021186000" expanded="true" signature="99073:99294" ph="select wz,w ParpMainBundle" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/add.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="79">
+          <caret line="50" column="12" lean-forward="false" selection-start-line="50" selection-start-column="12" selection-end-line="51" selection-end-column="2" />
+          <folding>
+            <element signature="e#12#28#0#Twig" expanded="false" />
+            <element signature="e#659#700#0#Twig" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Entity/WniosekEditor.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/robots.txt">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="1" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="511" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/RaportyITController.php">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="386">
-          <caret line="368" column="39" lean-forward="false" selection-start-line="368" selection-start-column="39" selection-end-line="368" selection-end-column="39" />
+        <state relative-caret-position="-4">
+          <caret line="342" column="0" lean-forward="false" selection-start-line="342" selection-start-column="0" selection-end-line="342" selection-end-column="0" />
           <folding>
+            <element signature="e#1418#1505#0#PHP" expanded="true" />
             <element signature="e#13312#13396#0#PHP" expanded="true" />
-            <marker date="1494940488000" expanded="true" signature="19917:19926" ph="..." />
+            <marker date="1495023676000" expanded="true" signature="19946:19955" ph="..." />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/.gitignore">
+    <entry file="file://$PROJECT_DIR$/app/config/config.yml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="110">
-          <caret line="13" column="5" lean-forward="true" selection-start-line="13" selection-start-column="5" selection-end-line="13" selection-end-column="5" />
+        <state relative-caret-position="16">
+          <caret line="1" column="34" lean-forward="false" selection-start-line="1" selection-start-column="34" selection-end-line="1" selection-end-column="34" />
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/edit.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="8">
+          <caret line="86" column="151" lean-forward="false" selection-start-line="86" selection-start-column="146" selection-end-line="86" selection-end-column="151" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/userForm.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="184">
+          <caret line="30" column="21" lean-forward="false" selection-start-line="26" selection-start-column="12" selection-end-line="30" selection-end-column="21" />
+          <folding>
+            <element signature="e#1314#1324#0#Twig" expanded="false" />
+            <element signature="e#3409#3418#0#Twig" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Controller/DefaultController.php">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="862" column="62" lean-forward="false" selection-start-line="862" selection-start-column="62" selection-end-line="862" selection-end-column="62" />
+          <folding>
+            <element signature="e#47827#49780#0#PHP" expanded="false" />
+            <marker date="1495026130000" expanded="true" signature="73670:73715" ph="delete from " />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Parp/MainBundle/Resources/views/Default/editKadry.html.twig">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="174">
+          <caret line="28" column="50" lean-forward="false" selection-start-line="28" selection-start-column="50" selection-end-line="28" selection-end-column="50" />
+          <folding>
+            <element signature="e#3351#3361#0#Twig" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

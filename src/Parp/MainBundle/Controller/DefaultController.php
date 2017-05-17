@@ -496,7 +496,7 @@ class DefaultController extends Controller
         $dane_rekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
         
         
-        $form = $this->createUserEditForm($this, $defaultData, false, false);
+        $form = $this->createUserEditForm($this, $defaultData, false, false, $dane_rekord);
 
 
         $form->handleRequest($request);
@@ -639,7 +639,8 @@ class DefaultController extends Controller
             'up2grupaAd' => $up2grupaAd,
             'pendingEntries' => $pendingEntries,
             'historyEntries' => $historyEntries,
-            'dane_rekord' => $dane_rekord
+            'dane_rekord' => $dane_rekord,
+            'guid' => $this->generateGUID()
                 //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
         //echo "<pre>"; print_r($tplData); die();
@@ -762,7 +763,7 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
         
     }
-    public function createUserEditForm($that, $defaultData, $wymusUproszczonyFormularz = false, $nowy = false){
+    public function createUserEditForm($that, $defaultData, $wymusUproszczonyFormularz = false, $nowy = false, $dane_rekord = null){
         // Pobieramy listę stanowisk
         $titlesEntity = $that->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
         $titles = array();
@@ -802,6 +803,7 @@ class DefaultController extends Controller
         $admin = in_array("PARP_ADMIN", $that->getUser()->getRoles());
         $kadry1 = in_array("PARP_BZK_1", $that->getUser()->getRoles());
         $kadry2 = in_array("PARP_BZK_2", $that->getUser()->getRoles());
+        $pracownikTymczasowy = !$nowy && $dane_rekord === null;
         $przelozeni = $ldap->getPrzelozeniJakoName();
         
         $manago = "";
@@ -846,7 +848,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin && !$kadry2)
+                        'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy)
                     ),
                 ))
                 ->add('initials', 'text', array(
@@ -858,7 +860,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-                        'readonly' => (!$admin && !$kadry2)
+                        'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy)
                     ),
                 ))
                 ->add('title', 'choice', array(
@@ -871,7 +873,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry2),
+                        'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                         'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     //'data' => @$defaultData["title"],
@@ -899,7 +901,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry1 && !$kadry2),
+                        'disabled' => (!$admin && !$kadry1 && !$kadry2 && !$pracownikTymczasowy),
                         'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     'choices' => $sections,
@@ -914,7 +916,7 @@ class DefaultController extends Controller
                     ),
                     'attr' => array(
                         'class' => 'form-control select2',
-                        'disabled' => (!$admin && !$kadry2),
+                        'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                         'onchange' => 'zaznaczUstawieniePoczatkowych()'
                     ),
                     'choices' => $departments,
@@ -1075,6 +1077,11 @@ class DefaultController extends Controller
                 ->getForm();
         return $form;
     }
+
+    protected function generateGUID(){
+        return date("YmdhIs");
+    }
+
     /**
      * @Route("/user/add", name="userAdd")
      * @Template()
@@ -1142,7 +1149,7 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));
         }
 
-        return $this->render('ParpMainBundle:Default:add.html.twig', array('form' => $form->createView()));
+        return $this->render('ParpMainBundle:Default:add.html.twig', array('form' => $form->createView(), 'guid' => $this->generateGUID()));
     }
 
     /**

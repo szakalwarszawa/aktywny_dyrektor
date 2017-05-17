@@ -26,7 +26,7 @@
                             Imię i nazwisko
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.name}}"/>
+                            {{ form_widget(form.cn) }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -34,7 +34,7 @@
                             Inicjały
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.initials}}"/>
+                            {{ form_widget(form.initials) }}
                         </div>
                     </div>
                     <div class="form-group">
@@ -54,7 +54,16 @@
                             Stanowisko
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.title}}"/>
+                            {%if (dane_rekord) %}
+                                <input type="text" class="form-control" readonly value="{{user.title}}"/>
+                            {% else %}
+                                <div class="col-sm-{{  (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
+                            {% endif %}
+
+
+
+
+
                             {% if user is defined %}
                                 <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
                             {%endif%}

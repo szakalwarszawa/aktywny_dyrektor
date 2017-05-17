@@ -1,5 +1,5 @@
 imports:
-    - { resource: parameters_parp.yml }
+    - { resource: parameters_local.yml }
     - { resource: security.yml }
     - { resource: services.yml }
 

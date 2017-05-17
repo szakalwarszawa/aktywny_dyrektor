@@ -323,8 +323,10 @@ class RaportyITController extends Controller
      * @Template()
      */
     public function raportBssAction($login = 'kamil_jakacki'){
+        //
         $this->container = $this;
         $dane = $this->raportBssProcesuj($login);
+        die('a');
         return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', $dane);
     }
 

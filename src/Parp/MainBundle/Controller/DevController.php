@@ -6,6 +6,8 @@ use Parp\MainBundle\Entity\Engagement;
 use Parp\MainBundle\Entity\Entry;
 use Parp\MainBundle\Entity\UserEngagement;
 use Parp\MainBundle\Entity\UserUprawnienia;
+use Parp\MainBundle\Entity\Wniosek;
+use Parp\MainBundle\Entity\WniosekEditor;
 use Parp\MainBundle\Form\EngagementType;
 use Parp\MainBundle\Form\UserEngagementType;
 use Parp\MainBundle\Services\ParpMailerService;
@@ -2964,4 +2966,50 @@ class DevController extends Controller
         $ldapAdmin->ldap_modify($ldapconn, $dn, $entry);
     }
 
+    /**
+     * @Route("/fixMissingWniosekEditor", name="fixMissingWniosekEditor")
+     * @Template()
+     */
+    public function fixMissingWniosekEditorAction(){
+
+        $em = $this->getDoctrine()->getManager();
+
+        $historie = $em->getRepository('ParpMainBundle:HistoriaWersji')->getDoPoprawy();
+
+
+        foreach($historie as $h){
+            switch($h->getAction()){
+                case 'create':
+                    /*
+                    $we = new WniosekEditor();
+                    $wniosek = $em->getRepository('ParpMainBundle:WniosekEditor')->find($h->getData()['wniosek']['id']);
+                    $we->setWniosek($wniosek);
+                    $we->setSamaccountname($h->getData()['samaccountname']);
+                    $em->persist($we);
+                    */
+                    break;
+                case 'remove':
+                    var_dump($h->getData());
+                    $e = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(
+                        [
+                            'wniosek' => $h->getData()['wniosek']['id'],
+                            'samaccountname' => $h->getData()['samaccountname']
+                        ]
+                    );
+                    if($e !== null) {
+                        $e->remove();
+                    }
+                    break;
+            }
+            $em->flush();
+            //var_dump($h->getData());
+            //die();
+        }
+
+
+
+
+        die('fixMissingWniosekEditor');
+
+    }
 }    
