@@ -26,7 +26,7 @@
                             Imię i nazwisko
                         </label>
                         <div class="col-sm-8">
-                            {{ form_widget(form.cn) }}
+                            <input type="text" class="form-control" readonly value="{{user.name}}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -34,7 +34,7 @@
                             Inicjały
                         </label>
                         <div class="col-sm-8">
-                            {{ form_widget(form.initials) }}
+                            <input type="text" class="form-control" readonly value="{{user.initials}}"/>
                         </div>
                     </div>
                     <div class="form-group">

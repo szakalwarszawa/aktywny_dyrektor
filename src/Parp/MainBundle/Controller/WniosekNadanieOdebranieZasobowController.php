@@ -288,7 +288,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     
     private function getUsersFromAD(){
         $ldap = $this->get('ldap_service');
-        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $aduser = $this->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $ktoreDepartamenty = [mb_strtolower(trim($aduser[0]['department']))];
@@ -320,7 +320,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         $managerzySpozaParp = [];
         foreach($managersSpozaParp->getUsers() as $u){
-            $aduser = $ldap->getUserFromAD($u->getSamaccountname());
+            $aduser = $this->getUserFromAD($u->getSamaccountname());
             $managerzySpozaParp[$u->getSamaccountname()] = $aduser[0]['name'];
         }
         return $managerzySpozaParp;
@@ -381,7 +381,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
     protected function createEmptyWniosek($odebranie){
         $ldap = $this->get('ldap_service');
-        $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $ADUser = $this->getUserFromAD($this->getUser()->getUsername());
         
         
         
@@ -414,7 +414,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //var_dump($this->getUser());
         
         $ldap = $this->get('ldap_service');
-        $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $ADUser = $this->getUserFromAD($this->getUser()->getUsername());
         
         $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
         
@@ -448,10 +448,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case "przelozony":
                 //bierze managera tworzacego - jednak nie , ma byc po podmiotach
-                //$ADUser = $ldap->getUserFromAD($wniosek->getCreatedBy());  
+                //$ADUser = $this->getUserFromAD($wniosek->getCreatedBy());  
                 if($wniosek->getWniosekNadanieOdebranieZasobow()->getPracownikSpozaParp()){
                     //biore managera z pola managerSpoząParp
-                    $ADManager = $ldap->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
+                    $ADManager = $this->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     if(count($ADManager) == 0){
                         //die ("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
                     }
@@ -459,7 +459,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }else{
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(",", $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
-                    $ADUser = $ldap->getUserFromAD(trim($uss[0]));
+                    $ADUser = $this->getUserFromAD(trim($uss[0]));
                     $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
                     
                 }
@@ -499,7 +499,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $g = trim($g);
                             //$g = $this->get('renameService')->fixImieNazwisko($g);
                             //$g = $this->get('renameService')->fixImieNazwisko($g);
-                            $ADManager = $ldap->getUserFromAD($g);
+                            $ADManager = $this->getUserFromAD($g);
                             if(count($ADManager) > 0){
                                 if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
                                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
@@ -527,7 +527,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         $g = trim($g);
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $ADManager = $ldap->getUserFromAD($g);
+                        $ADManager = $this->getUserFromAD($g);
                         if(count($ADManager) > 0){
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
@@ -551,7 +551,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
                         //$g = $this->get('renameService')->fixImieNazwisko($g);
                         $g = trim($g);
-                        $ADManager = $ldap->getUserFromAD($g);
+                        $ADManager = $this->getUserFromAD($g);
                         if(count($ADManager) > 0){
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                             if ($this->debug) echo "<br>added ".$ADManager[0]['name']."<br>";
@@ -583,7 +583,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 var_dump($ADUser['manager'], $in1, $in2, $in3);
                 $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
                 $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                $ADManager = $ldap->getUserFromAD(null, $mgr);
+                $ADManager = $this->getUserFromAD(null, $mgr);
                 break;
             case "prezes":
                 $ADManager = [$ldap->getPrezes()];
@@ -916,19 +916,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             foreach($wniosek->getUserZasoby() as $uz){
                                 if($wniosek->getPracownikSpozaParp()){
                                     //biore managera z pola managerSpoząParp
-                                    $ADManager = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());
+                                    $ADManager = $this->getUserFromAD($wniosek->getManagerSpozaParp());
                                     if(count($ADManager) == 0){
                                         die("Blad 453 Nie moge znalezc przelozonego dla osoby : ".$uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }else{
-                                    $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());  
+                                    $ADUser = $this->getUserFromAD($uz->getSamaccountname());  
 /*
                                     $mgr = mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1, (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
                                     
                                     
                                     $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
-                                    $ADManager = $ldap->getUserFromAD(null, $mgr);
+                                    $ADManager = $this->getUserFromAD(null, $mgr);
 */
                                     
                                     $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
@@ -1124,7 +1124,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if($isAccepted == "acceptAndPublish" && in_array($status, ["05_EDYCJA_ADMINISTRATOR", "06_EDYCJA_TECHNICZNY", "07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY"])){
                 //dla wnioskow spoza parp szukamy departamentu przelozonego
                 if($wniosek->getPracownikSpozaParp()){
-                    $aduser = $ldap->getUserFromAD($wniosek->getManagerSpozaParp());
+                    $aduser = $this->getUserFromAD($wniosek->getManagerSpozaParp());
                     
                     $department = $this->getDoctrine()->getRepository('ParpMainBundle:Departament')->findOneByName(trim($aduser[0]['department']));
                     $biuro = $department->getShortname();
@@ -1153,7 +1153,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $grupa = trim($grupy[$indexGrupy]);
                             if($grupa != "" ){
                                 //jesli sa grupy ad to tworzy entry powiazane i daje przycisk opublikuj
-                                $aduser = $ldap->getUserFromAD($uz->getSamaccountname());
+                                $aduser = $this->getUserFromAD($uz->getSamaccountname());
                                 if($wniosek->getPracownikSpozaParp()){
                                     $imieNazwisko = $this->get('samaccountname_generator')->rozbijFullname($uz->getSamaccountname());
                                     $aduser[] = [
@@ -1602,5 +1602,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         die(".".count($wniochy));
 */
         
+    }
+
+    private function getUserFromAD($samaccountname){
+        $ldap = $this->get('ldap_service');
+        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        if($aduser === null || count($aduser) == 0){
+            $aduser = $this->getUserFromAD($this->getUser()->getUsername(), null, null, 'nieobecni');
+        }
+        return $aduser;
     }
 }
