@@ -1606,9 +1606,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     private function getUserFromAD($samaccountname){
         $ldap = $this->get('ldap_service');
-        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $aduser = $ldap->getUserFromAD($samaccountname);
         if($aduser === null || count($aduser) == 0){
-            $aduser = $this->getUserFromAD($this->getUser()->getUsername(), null, null, 'nieobecni');
+            $aduser = $ldap->getUserFromAD($samaccountname, null, null, 'nieobecni');
         }
         return $aduser;
     }
