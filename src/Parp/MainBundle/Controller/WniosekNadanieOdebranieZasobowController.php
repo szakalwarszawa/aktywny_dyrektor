@@ -1762,12 +1762,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     }
 
+    /**
+     * Prywatna funkcja zwracająca użytkownika z AD. Jeżeli dany użytkownik nie zostanie znaleziony w pierwszym
+     * przebiegu (użytkowników aktywnych), pobierany jest z użytkowników nieaktywnych.
+     *
+     * @param string $samaccountname
+     *
+     * @return array
+     */
     private function getUserFromAD($samaccountname)
     {
         $ldap = $this->get('ldap_service');
-        $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
+        $aduser = $ldap->getUserFromAD($samaccountname);
         if ($aduser === null || count($aduser) === 0) {
-            $aduser = $this->getUserFromAD($samaccountname);
+            $aduser = $ldap->getUserFromAD($samaccountname, null, null, 'nieobecni');
         }
 
         return $aduser;
