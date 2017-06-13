@@ -12,7 +12,11 @@ use Doctrine\ORM\EntityRepository;
  */
 class ZastepstwoRepository extends EntityRepository
 {
-
+    /**
+     * @param $samaccountname
+     *
+     * @return array
+     */
     public function znajdzZastepstwa($samaccountname){
         $qb = $this->_em->createQueryBuilder();
         $now = new \Datetime();
@@ -22,9 +26,15 @@ class ZastepstwoRepository extends EntityRepository
             ->andWhere('z.dataOd <= :now')
             ->andWhere('z.dataDo >= :now')
             ->setParameters(array('samaccountname' => $samaccountname, 'now' => $now));
-        $res = $qb->getQuery()->getResult();
-        return $res;
+
+        return $qb->getQuery()->getResult();
     }
+
+    /**
+     * @param $samaccountname
+     *
+     * @return array
+     */
     public function znajdzKogoZastepuje($samaccountname){
         $res = $this->znajdzZastepstwa($samaccountname);
         $ret = [$samaccountname];

@@ -10,7 +10,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,wniosek.editornames,zasoby", groupBy={"id"})
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,wniosek.editornames,zasoby", groupBy={"id", "wniosek.numer", "wniosek.status.nazwa", "wniosek.createdBy", "wniosek.createdAt", "wniosek.lockedBy", "wniosek.editornames"})
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -25,15 +25,15 @@ class WniosekNadanieOdebranieZasobow
      * @GRID\Column(field="id", title="Id")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $deletedAt;
-    
-    
+
+
     /**
      *
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
@@ -45,8 +45,8 @@ class WniosekNadanieOdebranieZasobow
      * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez")
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
-    private $wniosek; 
-    
+    private $wniosek;
+
 
 
     /**
@@ -56,8 +56,8 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $pracownikSpozaParp = false;
-  
-    
+
+
     /**
      * @var string
      *
@@ -66,7 +66,7 @@ class WniosekNadanieOdebranieZasobow
      */
     private $pracownicy;
 
-    
+
     /**
      * @var string
      *
@@ -75,8 +75,8 @@ class WniosekNadanieOdebranieZasobow
      * @@GRID\Column(field="userZasoby.zasobOpis:group_concat:distinct", type="text", title="Zasoby")
      */
     private $userZasoby;
-    
-    
+
+
     /**
      * @var string
      *
@@ -84,8 +84,8 @@ class WniosekNadanieOdebranieZasobow
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $userZasobyOdbierane;
-    
-    
+
+
     /**
      * @var integer
      *
@@ -93,7 +93,7 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zasobId;
-    
+
     /**
      * @var boolean
      *
@@ -101,16 +101,16 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $odebranie = false;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $dataOdebrania;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -118,9 +118,9 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $managerSpozaParp;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -128,7 +128,7 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $instytucjaSpozaParp;
-    
+
     /**
      * @var string
      *
@@ -227,7 +227,7 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->pracownicy;
     }
-    
+
     /**
      * Set pracownicy
      *
@@ -290,7 +290,7 @@ class WniosekNadanieOdebranieZasobow
         else
             return $this->userZasoby;
     }
-    
+
     public function getJsonSams(){
         $ar = explode(",", $this->getPracownicy());
         $ars = array();
@@ -324,8 +324,8 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->zasobId;
     }
-    
-    
+
+
     /**
      * Set wniosek
      *
@@ -349,8 +349,8 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->wniosek;
     }
-    
-    
+
+
     /**
      * Set odebranie
      *
@@ -516,7 +516,7 @@ class WniosekNadanieOdebranieZasobow
     {
         return $this->zasoby;
     }
-    
+
     public function ustawPoleZasoby(){
         global $kernel;
         if ( 'AppCache' == get_class($kernel) )

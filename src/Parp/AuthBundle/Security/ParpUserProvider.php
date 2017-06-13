@@ -15,16 +15,16 @@ class ParpUserProvider implements UserProviderInterface
     var $ad_ou = "";
     var $ad_dc1 = "";
     var $ad_dc2 = "";
-    
-    
+
+
     public function __construct()
     {
         global $kernel;
-        
+
         if ('AppCache' == get_class($kernel)) {
             $kernel = $kernel->getKernel();
         }
-        
+
 
         $tab = explode(".", $kernel->getContainer()->getParameter('ad_domain'));
         $this->ad_host = $kernel->getContainer()->getParameter('ad_host');
@@ -35,7 +35,7 @@ class ParpUserProvider implements UserProviderInterface
         //die( ".". $this->ad_host.".".$this->ad_domain.".".$this->ad_ou.".");
         //die('a');
     }
-    
+
     public function loadUserByUsername($username)
     {
         global $kernel;
@@ -49,7 +49,7 @@ class ParpUserProvider implements UserProviderInterface
             //die( ".11.".$username.$ldapdomain);
       //var_dump($username);
       //die();
-        
+
 //      DEBUG ONLY:
 //      $password = null;
 //      $salt = null;
@@ -57,7 +57,7 @@ class ParpUserProvider implements UserProviderInterface
 //      ldap_unbind($ldapconn);
 
 //      return new ParpUser($username, $password, $salt, $roles);
-        
+
         if ($ldapconn) {
             try {
                     //die( ".".$username.".".$ldapdomain.".".$password.".");
@@ -69,25 +69,25 @@ class ParpUserProvider implements UserProviderInterface
                     $ldapbind = ldap_bind($ldapconn, $username . $ldapdomain, $password);
                 }
             } catch (Exception $e) {
-                //die('.1'); 
+                //die('.1');
                 throw new UsernameNotFoundException(sprintf('Użytkownik "%s" nie istnieje.', $username));
             }
 
             if ($ldapbind) {
                 //echo ".12.";
                 $salt = null;
-                
+
                 $rolesEntities = [];
                 //temp Grzesia wniosek
                 //echo "!!!!pobieram role $username !!!";
                 $rolesEntities = $kernel->getContainer()->get('doctrine')->getRepository('ParpMainBundle:AclUserRole')->findBySamaccountname($username);
-                
+
                 $roles = [];
                 foreach($rolesEntities as $r){
                     $roles[] = $r->getRole()->getName();
                 }
                 //print_r($roles);
-                //die($username);                                
+                //die($username);
                 //$roles = array('ROLE_USER');
                 ldap_unbind($ldapconn);
 
@@ -98,7 +98,7 @@ class ParpUserProvider implements UserProviderInterface
             }
 
         }else{
-            die('ldapconn not valid');   
+            die('ldapconn not valid');
         }
                 //die('.3');
         throw new UsernameNotFoundException(sprintf('Użytkownik "%s" nie istnieje.', $username));
@@ -127,11 +127,11 @@ class ParpUserProvider implements UserProviderInterface
 
         if ($ldapconn &&
             $ldappass &&
-            $ldapuser) 
+            $ldapuser)
         {
 
                 try {
-                    
+
                     //die( ".".$ldapuser.".".$ldapdomain.".".$ldappass.".");
                     if($_SERVER['HTTP_HOST'] == 'localhost:15552'){
                         $ldapbind = true;
@@ -150,10 +150,10 @@ class ParpUserProvider implements UserProviderInterface
         }
         return false;
     }
-    
+
     public function supportsClass($class)
     {
-  
+
         return $class === 'Parp\AuthBundle\Security\ParpUser';
     }
 }
