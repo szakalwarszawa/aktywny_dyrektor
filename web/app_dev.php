@@ -1,4 +1,4 @@
-<?php    
+<?php
 //    die();
 // Sprawdzenie czy adres uzytkownika (lub jego czesc) jest na liscie dozwolonych IP.
 $ipDozwolone = array(
