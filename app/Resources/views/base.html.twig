@@ -14,7 +14,7 @@
             <link rel="stylesheet" href="{{ asset('css/main.css') }}">
             <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
             <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
-            <link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">
+            {#<link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">#}
             <link rel="stylesheet" href="{{ asset('css/jquery.treegrid.css') }}">
             <link rel="stylesheet" href="{{ asset('css/table.sorter.css') }}">
         {% endblock %}
@@ -32,14 +32,14 @@
             <script type="text/javascript" src="{{ asset('js/jsapi.js') }}"></script>
             <script src="{{ asset('js/jquery-ui.min.js') }}" type="text/javascript" charset="utf-8"></script>
             <script type="text/javascript" src="{{ asset('js/tag-it.min.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>
+            {#<script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>#}
             <script type="text/javascript" src="{{ asset('js/jquery.are-you-sure.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.bootstrap3.js') }}"></script>
             <script type="text/javascript" src="{{ asset('resizable/inna/colResizable-1.6.js') }}"></script>
-                
+
                 <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
-                
+
                 <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
                 <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 {#             <script type="text/javascript" src="{{ asset('resizable/dist/jquery-resizable.js') }}"></script> #}
@@ -53,11 +53,14 @@
             <![endif]-->
         {% endblock %}
 
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
+
         <title>Aktywny Dyrektor 2.0 {% block title %}{% endblock %}</title>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body class="{{ app.request.attributes.get('_route') }}">
-    </div>
+    <div>
         {% if app.user %}
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
@@ -65,11 +68,11 @@
                     <div class="navbar-header">
                         <a class="navbar-brand" href="{{ path('powitalna') }}">Aktywny Dyrektor <small>v2.0 beta</small></a>
                     </div>
-                    
+
                     <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
-                        
+
                             {% if "PARP_ADMIN" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or  "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
@@ -98,11 +101,11 @@
                                     <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
                                     <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
                                     <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
-                                    
+
                                 </ul>
                             </li>
                             {% endif %}
-                            
+
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
@@ -129,7 +132,7 @@
                                 <ul class="dropdown-menu">
                                     <li class=""><a href="{{ path('listLogs') }}"><i class="fa fa-floppy-o"></i> Logi z wypychania do AD</a></li>
                                     <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane ECM</a></li>
-                                    <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>                                                                        
+                                    <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
                                     <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
                                     <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
                                     <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
@@ -138,8 +141,8 @@
                                 </ul>
                             </li>
                             {% endif %}
-                            
-                            
+
+
                             {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Raporty <b class="caret"></b></a>
@@ -147,21 +150,21 @@
                                     {% if "PARP_BZK_RAPORTY" in app.user.roles %}
                                         <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
                                     {% endif %}
-                                    
+
                                     {% if "PARP_ADMIN" in app.user.roles %}
                                         <li class=""><a href="{{ path('raportIT1') }}"><i class="fa fa-floppy-o"></i> Raport IT</a></li>
                                     {% endif %}
                                 </ul>
                             </li>
                             {% endif %}
-                            
-                            
+
+
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{app.user.getRolesHtml}}"
                              data-placement="left">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-                                
+
                                 >{{ app.user.username }} <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>

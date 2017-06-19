@@ -8,7 +8,7 @@ function guid() {
   return s4() + s4() + '_' + s4() + '_' + s4() + '_' +
     s4() + '_' + s4() + s4() + s4();
 }
-$("[data-toggle=tooltip").tooltip();
+$('[data-toggle~="tooltip"]').tooltip();
 //$("table").colResizable();
 $(document).ready(function(){
     $("table").each(function(){
@@ -19,10 +19,12 @@ $(document).ready(function(){
                 $(this).attr('id', id);
             }
             console.log("Tabelka z id "+id);
-            $('#'+id).colResizable();      
+            $('#'+id).colResizable();
         }
     });
-    
+
+    $('[data-toggle~="select2"]').select2();
+
     $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
         console.log("zmiana taba");
         console.log(e.target.hash);
@@ -31,15 +33,15 @@ $(document).ready(function(){
         console.log($(e.target.hash).closest('.tab-content').find('> form > .tab-pane.active:not(' + e.target.hash + ')'));
         console.log($(e.target.hash).closest('.tab-content').find('> .tab-pane.active:not(' + e.target.hash + ')'));
         $(e.target.hash).closest('.tab-content').find('> form > .tab-pane.active:not(' + e.target.hash + '),> .tab-pane.active:not(' + e.target.hash + ')').removeClass('active');
-        
-        
+
+
         console.log('adjusting tables');
         console.log($(this).attr('href'));
-        $('table', $($(this).attr('href'))).colResizable(); 
-        $("table.tablesorter").tablesorter(); 
+        $('table', $($(this).attr('href'))).colResizable();
+        $("table.tablesorter").tablesorter();
     } );
-    $("table.tablesorter").tablesorter(); 
-    
+    $("table.tablesorter").tablesorter();
+
 });
 
 $('.tagAjaxInputUsers:not([disabled])').tagit({
@@ -56,9 +58,9 @@ $('.tagAjaxInput:not([disabled])').tagit({
     'allowDuplicates' : true
 });
 $(document).ready(function(){
-    $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true}); 
+    $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
 });
-$('.select2:not([disabled2])').select2({  
+$('.select2:not([disabled2])').select2({
     dropdownAutoWidth : true,
     width: '100%',
     placeholder: "Wybierz wartość"
@@ -99,14 +101,14 @@ function cancelForm(){
         var v2 = $(this).data('ays-orig');
         console.log('v1 '+v1+' v2 '+v2)
         if(v2 && v2.length > 0 && v1 && v1.length > 0 && v1 != v2)
-            $(this).val(v2);        
+            $(this).val(v2);
 {#
         if(v1 != v2){
             $(this).addClass('dirty');
         }else{
             $(this).removeClass('dirty');
         }
-        
+
 #}
     });
      $('form').trigger('reinitialize.areYouSure');
@@ -120,6 +122,8 @@ $('*[data-ajaxload]').mouseenter(function() {
 }).mouseleave(function() {
     $(this).popover('hide');
 });
+
+$('#select2').select2();
 {#
 $('*[data-ajaxload]').bind('hover',function(){
   var e=$(this);
