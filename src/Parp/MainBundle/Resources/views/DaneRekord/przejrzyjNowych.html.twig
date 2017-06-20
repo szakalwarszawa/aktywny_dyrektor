@@ -275,12 +275,10 @@
             alert("Musisz wybrać przełożonego!");
         }else{
             $.post(url, data, function(result){
-                console.log(result);
-                if(result === "ok"){
-                    $("#acceptUser"+id).removeClass('alert-danger').addClass('alert-success');
-                    $('button', $("#acceptUser"+id)).remove();
-                    $('select, input', $("#acceptUser"+id)).prop('disabled', true);
-                }
+            }).success(function(){
+                $("#acceptUser"+id).removeClass('alert-danger').addClass('alert-success');
+                $('button', $("#acceptUser"+id)).remove();
+                $('select, input', $("#acceptUser"+id)).prop('disabled', true);
             });
         }
     }
