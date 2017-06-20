@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "content-hash": "4a1f86156546aa34b013585dc7d1d38e",
+    "content-hash": "e62773dce6ba75d19e30f0eaffb2c18d",
     "packages": [
         {
             "name": "adldap/adldap",
@@ -233,57 +233,6 @@
                 "transliterator"
             ],
             "time": "2017-04-04T11:38:05+00:00"
-        },
-        {
-            "name": "codeplex/phpexcel",
-            "version": "1.7.8",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/markushausammann/PHPExcel.git",
-                "reference": "6236b1e1513dda38a68a5ac22bbab5fc2b7942fd"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/markushausammann/PHPExcel/zipball/6236b1e1513dda38a68a5ac22bbab5fc2b7942fd",
-                "reference": "6236b1e1513dda38a68a5ac22bbab5fc2b7942fd",
-                "shasum": ""
-            },
-            "require": {
-                "ext-xml": "*",
-                "php": ">=5.2.0"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-0": {
-                    "PHPExcel": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "LGPL"
-            ],
-            "authors": [
-                {
-                    "name": "Maarten Balliauw",
-                    "homepage": "http://blog.maartenballiauw.be"
-                },
-                {
-                    "name": "Mark Baker"
-                },
-                {
-                    "name": "Erit Tilt"
-                }
-            ],
-            "description": "PHPExcel - OpenXML - Create Excel2007 documents in PHP - Spreadsheet engine",
-            "homepage": "http://phpexcel.codeplex.com",
-            "keywords": [
-                "OpenXML",
-                "excel",
-                "php",
-                "spreadsheet"
-            ],
-            "abandoned": "phpoffice/phpexcel",
-            "time": "2012-11-21T10:55:52+00:00"
         },
         {
             "name": "doctrine/annotations",
@@ -1284,54 +1233,6 @@
             "time": "2014-11-20T16:49:30+00:00"
         },
         {
-            "name": "irongit/symfony2-stream-response",
-            "version": "v1.0",
-            "target-dir": "n3b/Bundle/Util/HttpFoundation/StreamResponse",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/toretto460/Symfony2-StreamResponse.git",
-                "reference": "3e5082e7beec9c9130e30e49bad44e1e99ab33b1"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/toretto460/Symfony2-StreamResponse/zipball/3e5082e7beec9c9130e30e49bad44e1e99ab33b1",
-                "reference": "3e5082e7beec9c9130e30e49bad44e1e99ab33b1",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=5.3.2"
-            },
-            "type": "symfony-bundle",
-            "autoload": {
-                "psr-0": {
-                    "n3b\\Bundle\\Util\\HttpFoundation\\StreamResponse": ""
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "n3b",
-                    "email": "mail@n3b.ru",
-                    "homepage": "http://n3b.ru/"
-                },
-                {
-                    "name": "Simone Di Maulo",
-                    "homepage": "https://github.com/toretto460"
-                }
-            ],
-            "description": "Symfony2 StreamResponse Bundle",
-            "homepage": "https://github.com/toretto460/Symfony2-StreamResponse",
-            "keywords": [
-                "StreamResponse",
-                "file",
-                "stream"
-            ],
-            "time": "2012-08-07T09:27:11+00:00"
-        },
-        {
             "name": "jdorn/sql-formatter",
             "version": "v1.2.17",
             "source": {
@@ -1460,29 +1361,44 @@
         },
         {
             "name": "liuggio/ExcelBundle",
-            "version": "v1.0.4",
-            "target-dir": "Liuggio/ExcelBundle",
+            "version": "v2.1.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/liuggio/ExcelBundle.git",
-                "reference": "bcb4e448d594065e1565fbab2a97d5a6be0f07e8"
+                "reference": "b4fe94b64449490a1b5fbbce827c2501be335126"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/liuggio/ExcelBundle/zipball/bcb4e448d594065e1565fbab2a97d5a6be0f07e8",
-                "reference": "bcb4e448d594065e1565fbab2a97d5a6be0f07e8",
+                "url": "https://api.github.com/repos/liuggio/ExcelBundle/zipball/b4fe94b64449490a1b5fbbce827c2501be335126",
+                "reference": "b4fe94b64449490a1b5fbbce827c2501be335126",
                 "shasum": ""
             },
             "require": {
-                "codeplex/phpexcel": "1.7.8",
-                "irongit/symfony2-stream-response": ">=1.0",
                 "php": ">=5.3.2",
-                "symfony/framework-bundle": "2.*"
+                "phpoffice/phpexcel": "~1.8.1",
+                "symfony/framework-bundle": "~2.6|~3.0"
             },
-            "type": "library",
+            "require-dev": {
+                "phpunit/phpunit": "~4.6",
+                "sensio/framework-extra-bundle": "~2.3|~3.0",
+                "symfony/browser-kit": "~2.6|~3.0",
+                "symfony/class-loader": "~2.6|~3.0",
+                "symfony/finder": "~2.6|~3.0",
+                "symfony/form": "~2.6|~3.0",
+                "symfony/validator": "~2.6|~3.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "2.0.x-dev"
+                }
+            },
             "autoload": {
-                "psr-0": {
-                    "Liuggio\\ExcelBundle": ""
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ],
+                "psr-4": {
+                    "Liuggio\\ExcelBundle\\": ""
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -1491,13 +1407,12 @@
             ],
             "authors": [
                 {
-                    "name": "liuggio",
-                    "email": "liuggio@gmail.com",
-                    "homepage": "http://www.welcometothebundle.com"
-                },
-                {
                     "name": "ExcelBundle Contributors",
                     "homepage": "https://github.com/liuggio/ExcelBundle#contributors"
+                },
+                {
+                    "name": "Giulio De Donato",
+                    "email": "liuggio@gmail.com"
                 }
             ],
             "description": "This is a Symfony2 Bundle helps you to read and write Excel files (including pdf, xlsx, odt), thanks to the PHPExcel library",
@@ -1508,20 +1423,20 @@
                 "excel",
                 "xls"
             ],
-            "time": "2013-02-21T12:59:18+00:00"
+            "time": "2016-06-20T17:11:22+00:00"
         },
         {
             "name": "monolog/monolog",
-            "version": "1.22.1",
+            "version": "1.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Seldaek/monolog.git",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0"
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/1e044bc4b34e91743943479f1be7a1d5eb93add0",
-                "reference": "1e044bc4b34e91743943479f1be7a1d5eb93add0",
+                "url": "https://api.github.com/repos/Seldaek/monolog/zipball/fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
+                "reference": "fd8c787753b3a2ad11bc60c063cff1358a32a3b4",
                 "shasum": ""
             },
             "require": {
@@ -1542,7 +1457,7 @@
                 "phpunit/phpunit-mock-objects": "2.3.0",
                 "ruflin/elastica": ">=0.90 <3.0",
                 "sentry/sentry": "^0.13",
-                "swiftmailer/swiftmailer": "~5.3"
+                "swiftmailer/swiftmailer": "^5.3|^6.0"
             },
             "suggest": {
                 "aws/aws-sdk-php": "Allow sending log messages to AWS services like DynamoDB",
@@ -1586,7 +1501,7 @@
                 "logging",
                 "psr-3"
             ],
-            "time": "2017-03-13T07:08:03+00:00"
+            "time": "2017-06-19T01:22:40+00:00"
         },
         {
             "name": "pagerfanta/pagerfanta",
@@ -1743,16 +1658,16 @@
         },
         {
             "name": "phpoffice/phpexcel",
-            "version": "dev-master",
+            "version": "1.8.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/PHPOffice/PHPExcel.git",
-                "reference": "049e85ae98a90869e1bc83087f755010e9223091"
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/049e85ae98a90869e1bc83087f755010e9223091",
-                "reference": "049e85ae98a90869e1bc83087f755010e9223091",
+                "url": "https://api.github.com/repos/PHPOffice/PHPExcel/zipball/372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
+                "reference": "372c7cbb695a6f6f1e62649381aeaa37e7e70b32",
                 "shasum": ""
             },
             "require": {
@@ -1796,7 +1711,7 @@
                 "xls",
                 "xlsx"
             ],
-            "time": "2015-05-05 00:10:25"
+            "time": "2015-05-01T07:00:55+00:00"
         },
         {
             "name": "psr/log",
@@ -3225,7 +3140,6 @@
     "minimum-stability": "stable",
     "stability-flags": {
         "white-october/pagerfanta-bundle": 20,
-        "phpoffice/phpexcel": 20,
         "adldap/adldap": 20
     },
     "prefer-stable": false,
