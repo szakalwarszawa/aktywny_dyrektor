@@ -8,8 +8,6 @@ function guid() {
   return s4() + s4() + '_' + s4() + '_' + s4() + '_' +
     s4() + '_' + s4() + s4() + s4();
 }
-$('[data-toggle~="tooltip"]').tooltip();
-//$("table").colResizable();
 $(document).ready(function(){
     $("table").each(function(){
         if($(this).closest('.tab-pane').length == 0){
@@ -23,9 +21,11 @@ $(document).ready(function(){
         }
     });
 
+    $('[data-toggle~="tooltip"]').tooltip();
+
     $('[data-toggle~="select2"]').select2();
 
-    $('a[data-toggle="tab"]').on( 'shown.bs.tab', function (e) {
+    $('a[data-toggle~="tab"]').on( 'shown.bs.tab', function (e) {
         console.log("zmiana taba");
         console.log(e.target.hash);
         console.log($(e.target.hash));
