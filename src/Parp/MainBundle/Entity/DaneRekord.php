@@ -19,14 +19,16 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  */
 class DaneRekord
 {
-    
+
     /**
+     *
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
         $d = new \Datetime();
         if(!$this->getId())
             $this->setCreatedAt($d);
-        
+
         $this->setLastModifiedAt($d);
     }
     /**
@@ -37,16 +39,16 @@ class DaneRekord
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $deletedAt;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -55,9 +57,9 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="symbolRekordId", title="Id w rekord")
      */
     private $symbolRekordId;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -66,7 +68,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="login", title="Login")
      */
     private $login;
-    
+
     /**
      * @var string
      *
@@ -76,7 +78,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="imie", title="Imię")
      */
     private $imie;
-    
+
     /**
      * @var string
      *
@@ -86,7 +88,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="nazwisko", title="Nazwisko")
      */
     private $nazwisko;
-    
+
     /**
      * @var string
      *
@@ -95,7 +97,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="departament", title="Departament")
      */
     private $departament;
-    
+
     /**
      * @var string
      *
@@ -104,7 +106,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="stanowisko", title="Stanowisko")
      */
     private $stanowisko;
-    
+
     /**
      * @var string
      *
@@ -113,7 +115,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="umowa", title="Umowa")
      */
     private $umowa;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -121,7 +123,7 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="umowaOd", title="Umowa od")
     */
     private $umowaOd;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -129,20 +131,20 @@ class DaneRekord
      * @APY\DataGridBundle\Grid\Mapping\Column(field="umowaDo", title="Umowa do")
     */
     private $umowaDo;
-    
-    
+
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
     */
     private $createdAt;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
     */
     private $lastModifiedAt;
-    
+
     /**
      * @var string
      *
@@ -150,7 +152,7 @@ class DaneRekord
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdBy;
-    
+
      /**
      * @var string
      *
@@ -158,8 +160,8 @@ class DaneRekord
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $entries;
-    
-    
+
+
     /**
     * @var boolean
      *
@@ -167,7 +169,7 @@ class DaneRekord
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $newUnproccessed = 0;
-    
+
 
     /**
      * Get id
@@ -556,7 +558,7 @@ class DaneRekord
     {
         return $this->newUnproccessed;
     }
-    
+
     public function getImieNazwisko(){
         return $this->getImie()." ".$this->getNazwisko();
     }

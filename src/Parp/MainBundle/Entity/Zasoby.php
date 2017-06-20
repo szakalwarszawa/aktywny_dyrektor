@@ -1,15 +1,16 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+
 use APY\DataGridBundle\Grid\Mapping as GRID;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Zasoby
- *
  * @ORM\Table(name="zasoby")
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZasobyRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa, opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, nazwa,
+ *                                                      opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -17,360 +18,311 @@ class Zasoby
 {
     /**
      * @var integer
-     *
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
-    
+    protected $id;
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
-    */
-    private $deletedAt;
+     */
+    protected $deletedAt;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="nazwa", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $nazwa;
+    protected $nazwa;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="opis", type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $opis;
+    protected $opis;
 
     /**
      * @var string
-     *
      * @ORM\Column(name="biuro", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $biuro;
-    
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $wlascicielZasobu;
-    
-    
+    protected $biuro;
+
     /**
      * @var string
-     *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $powiernicyWlascicielaZasobu;
-    
-    
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorZasobu;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorTechnicznyZasobu;
-    
-    
-    
-    
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $wlascicielZasobuEcm;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorZasobuEcm;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorTechnicznyZasobuEcm;
-    
-    
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $wlascicielZasobuZgubieni;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorZasobuZgubieni;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $administratorTechnicznyZasobuZgubieni;
-    
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $uzytkownicy;
-    /**
-    * @var boolean
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $daneOsobowe;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $komorkaOrgazniacyjna;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $miejsceInstalacji;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $opisZasobu;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $modulFunkcja;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $poziomDostepu;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="text", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $grupyAD;
-    /**
-    * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dataZakonczeniaWdrozenia;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $wykonawca;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $nazwaWykonawcy;
-    /**
-    * @var boolean
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $asystaTechniczna;
-    /**
-    * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dataWygasnieciaAsystyTechnicznej;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dokumentacjaFormalna;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dokumentacjaProjektowoTechniczna;
-    /**
-    * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $technologia;
-    /**
-    * @var boolean
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $testyBezpieczenstwa;
-    /**
-    * @var boolean
-     *
-     * @ORM\Column(type="boolean", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $testyWydajnosciowe;
-    /**
-    * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dataZleceniaOstatniegoPrzegladuUprawnien;
-    /**
-    * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $interwalPrzegladuUprawnien;
-    /**
-    * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dataZleceniaOstatniegoPrzegladuAktywnosci;
-    /**
-    * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $interwalPrzegladuAktywnosci;
-    /**
-    * @var \DateTime
-     *
-     * @ORM\Column(type="datetime", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
-    /**
-    * @var integer
-     *
-     * @ORM\Column(type="integer", nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
-
+    protected $wlascicielZasobu;
 
 
     /**
-     *
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $powiernicyWlascicielaZasobu;
+
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorZasobu;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorTechnicznyZasobu;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $wlascicielZasobuEcm;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorZasobuEcm;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorTechnicznyZasobuEcm;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $wlascicielZasobuZgubieni;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorZasobuZgubieni;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $administratorTechnicznyZasobuZgubieni;
+
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $uzytkownicy;
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $daneOsobowe;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $komorkaOrgazniacyjna;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $miejsceInstalacji;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $opisZasobu;
+    /**
+     * @var string
+     * @ORM\Column(type="text", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $modulFunkcja;
+    /**
+     * @var string
+     * @ORM\Column(type="text", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $poziomDostepu;
+    /**
+     * @var string
+     * @ORM\Column(type="text", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $grupyAD;
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dataZakonczeniaWdrozenia;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $wykonawca;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $nazwaWykonawcy;
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $asystaTechniczna;
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dataWygasnieciaAsystyTechnicznej;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dokumentacjaFormalna;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dokumentacjaProjektowoTechniczna;
+    /**
+     * @var string
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $technologia;
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $testyBezpieczenstwa;
+    /**
+     * @var boolean
+     * @ORM\Column(type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $testyWydajnosciowe;
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dataZleceniaOstatniegoPrzegladuUprawnien;
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $interwalPrzegladuUprawnien;
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dataZleceniaOstatniegoPrzegladuAktywnosci;
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $interwalPrzegladuAktywnosci;
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
+    /**
+     * @var integer
+     * @ORM\Column(type="integer", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
+
+
+    /**
      * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasob")
      * @ORM\JoinColumn(name="wniosekUtworzenieZasobu_id", referencedColumnName="id")
      * @GRID\Column(field="wniosekUtworzenieZasobu.wniosek.numer", title="Numer")
      * @GRID\Column(field="wniosekUtworzenieZasobu.id", visible=false)
      */
-    private $wniosekUtworzenieZasobu;
-    
-    
+    protected $wniosekUtworzenieZasobu;
+
+
     /**
      * @var string
-     *
      * @ORM\OneToMany(targetEntity="WniosekUtworzenieZasobu", mappedBy="zmienianyZasob")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $wnioskiZmieniajaceZasob;
-    
-    
+    protected $wnioskiZmieniajaceZasob;
 
 
     /**
-     *
      * @ORM\ManyToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="zasobyDoSkasowania")
      * @ORM\JoinColumn(name="WniosekUtworzenieZasobuDoSkasowania_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosekSkasowanieZasobu;
+    protected $wniosekSkasowanieZasobu;
 
 
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
-    */
-    private $dataUtworzeniaZasobu;
-    
+     */
+    protected $dataUtworzeniaZasobu;
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
-    */
-    private $dataZmianyZasobu;
-    
+     */
+    protected $dataZmianyZasobu;
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
-    */
-    private $dataUsunieciaZasobu;
-    
-    
+     */
+    protected $dataUsunieciaZasobu;
+
+
     /**
      * @var boolean
-     *
      * @ORM\Column(name="published", type="boolean")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $published = false;
+    protected $published = false;
 
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -381,6 +333,7 @@ class Zasoby
      * Set nazwa
      *
      * @param string $nazwa
+     *
      * @return Zasoby
      */
     public function setNazwa($nazwa)
@@ -393,7 +346,7 @@ class Zasoby
     /**
      * Get nazwa
      *
-     * @return string 
+     * @return string
      */
     public function getNazwa()
     {
@@ -404,6 +357,7 @@ class Zasoby
      * Set opis
      *
      * @param string $opis
+     *
      * @return Zasoby
      */
     public function setOpis($opis)
@@ -416,7 +370,7 @@ class Zasoby
     /**
      * Get opis
      *
-     * @return string 
+     * @return string
      */
     public function getOpis()
     {
@@ -427,6 +381,7 @@ class Zasoby
      * Set biuro
      *
      * @param string $biuro
+     *
      * @return Zasoby
      */
     public function setBiuro($biuro)
@@ -439,7 +394,7 @@ class Zasoby
     /**
      * Get biuro
      *
-     * @return string 
+     * @return string
      */
     public function getBiuro()
     {
@@ -450,6 +405,7 @@ class Zasoby
      * Set wlascicielZasobu
      *
      * @param string $wlascicielZasobu
+     *
      * @return Zasoby
      */
     public function setWlascicielZasobu($wlascicielZasobu)
@@ -462,7 +418,7 @@ class Zasoby
     /**
      * Get wlascicielZasobu
      *
-     * @return string 
+     * @return string
      */
     public function getWlascicielZasobu()
     {
@@ -473,6 +429,7 @@ class Zasoby
      * Set administratorZasobu
      *
      * @param string $administratorZasobu
+     *
      * @return Zasoby
      */
     public function setAdministratorZasobu($administratorZasobu)
@@ -485,7 +442,7 @@ class Zasoby
     /**
      * Get administratorZasobu
      *
-     * @return string 
+     * @return string
      */
     public function getAdministratorZasobu()
     {
@@ -496,6 +453,7 @@ class Zasoby
      * Set administratorTechnicznyZasobu
      *
      * @param string $administratorTechnicznyZasobu
+     *
      * @return Zasoby
      */
     public function setAdministratorTechnicznyZasobu($administratorTechnicznyZasobu)
@@ -508,7 +466,7 @@ class Zasoby
     /**
      * Get administratorTechnicznyZasobu
      *
-     * @return string 
+     * @return string
      */
     public function getAdministratorTechnicznyZasobu()
     {
@@ -519,6 +477,7 @@ class Zasoby
      * Set uzytkownicy
      *
      * @param string $uzytkownicy
+     *
      * @return Zasoby
      */
     public function setUzytkownicy($uzytkownicy)
@@ -531,7 +490,7 @@ class Zasoby
     /**
      * Get uzytkownicy
      *
-     * @return string 
+     * @return string
      */
     public function getUzytkownicy()
     {
@@ -542,6 +501,7 @@ class Zasoby
      * Set daneOsobowe
      *
      * @param boolean $daneOsobowe
+     *
      * @return Zasoby
      */
     public function setDaneOsobowe($daneOsobowe)
@@ -554,7 +514,7 @@ class Zasoby
     /**
      * Get daneOsobowe
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getDaneOsobowe()
     {
@@ -565,6 +525,7 @@ class Zasoby
      * Set komorkaOrgazniacyjna
      *
      * @param string $komorkaOrgazniacyjna
+     *
      * @return Zasoby
      */
     public function setKomorkaOrgazniacyjna($komorkaOrgazniacyjna)
@@ -577,7 +538,7 @@ class Zasoby
     /**
      * Get komorkaOrgazniacyjna
      *
-     * @return string 
+     * @return string
      */
     public function getKomorkaOrgazniacyjna()
     {
@@ -588,6 +549,7 @@ class Zasoby
      * Set miejsceInstalacji
      *
      * @param string $miejsceInstalacji
+     *
      * @return Zasoby
      */
     public function setMiejsceInstalacji($miejsceInstalacji)
@@ -600,7 +562,7 @@ class Zasoby
     /**
      * Get miejsceInstalacji
      *
-     * @return string 
+     * @return string
      */
     public function getMiejsceInstalacji()
     {
@@ -611,6 +573,7 @@ class Zasoby
      * Set opisZasobu
      *
      * @param string $opisZasobu
+     *
      * @return Zasoby
      */
     public function setOpisZasobu($opisZasobu)
@@ -623,7 +586,7 @@ class Zasoby
     /**
      * Get opisZasobu
      *
-     * @return string 
+     * @return string
      */
     public function getOpisZasobu()
     {
@@ -634,6 +597,7 @@ class Zasoby
      * Set modulFunkcja
      *
      * @param string $modulFunkcja
+     *
      * @return Zasoby
      */
     public function setModulFunkcja($modulFunkcja)
@@ -646,7 +610,7 @@ class Zasoby
     /**
      * Get modulFunkcja
      *
-     * @return string 
+     * @return string
      */
     public function getModulFunkcja()
     {
@@ -657,6 +621,7 @@ class Zasoby
      * Set poziomDostepu
      *
      * @param string $poziomDostepu
+     *
      * @return Zasoby
      */
     public function setPoziomDostepu($poziomDostepu)
@@ -669,7 +634,7 @@ class Zasoby
     /**
      * Get poziomDostepu
      *
-     * @return string 
+     * @return string
      */
     public function getPoziomDostepu()
     {
@@ -680,6 +645,7 @@ class Zasoby
      * Set dataZakonczeniaWdrozenia
      *
      * @param \DateTime $dataZakonczeniaWdrozenia
+     *
      * @return Zasoby
      */
     public function setDataZakonczeniaWdrozenia($dataZakonczeniaWdrozenia)
@@ -692,7 +658,7 @@ class Zasoby
     /**
      * Get dataZakonczeniaWdrozenia
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataZakonczeniaWdrozenia()
     {
@@ -703,6 +669,7 @@ class Zasoby
      * Set wykonawca
      *
      * @param string $wykonawca
+     *
      * @return Zasoby
      */
     public function setWykonawca($wykonawca)
@@ -715,7 +682,7 @@ class Zasoby
     /**
      * Get wykonawca
      *
-     * @return string 
+     * @return string
      */
     public function getWykonawca()
     {
@@ -726,6 +693,7 @@ class Zasoby
      * Set nazwaWykonawcy
      *
      * @param string $nazwaWykonawcy
+     *
      * @return Zasoby
      */
     public function setNazwaWykonawcy($nazwaWykonawcy)
@@ -738,7 +706,7 @@ class Zasoby
     /**
      * Get nazwaWykonawcy
      *
-     * @return string 
+     * @return string
      */
     public function getNazwaWykonawcy()
     {
@@ -749,6 +717,7 @@ class Zasoby
      * Set asystaTechniczna
      *
      * @param boolean $asystaTechniczna
+     *
      * @return Zasoby
      */
     public function setAsystaTechniczna($asystaTechniczna)
@@ -761,7 +730,7 @@ class Zasoby
     /**
      * Get asystaTechniczna
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAsystaTechniczna()
     {
@@ -772,6 +741,7 @@ class Zasoby
      * Set dataWygasnieciaAsystyTechnicznej
      *
      * @param \DateTime $dataWygasnieciaAsystyTechnicznej
+     *
      * @return Zasoby
      */
     public function setDataWygasnieciaAsystyTechnicznej($dataWygasnieciaAsystyTechnicznej)
@@ -784,7 +754,7 @@ class Zasoby
     /**
      * Get dataWygasnieciaAsystyTechnicznej
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataWygasnieciaAsystyTechnicznej()
     {
@@ -795,6 +765,7 @@ class Zasoby
      * Set dokumentacjaFormalna
      *
      * @param string $dokumentacjaFormalna
+     *
      * @return Zasoby
      */
     public function setDokumentacjaFormalna($dokumentacjaFormalna)
@@ -807,7 +778,7 @@ class Zasoby
     /**
      * Get dokumentacjaFormalna
      *
-     * @return string 
+     * @return string
      */
     public function getDokumentacjaFormalna()
     {
@@ -818,6 +789,7 @@ class Zasoby
      * Set dokumentacjaProjektowoTechniczna
      *
      * @param string $dokumentacjaProjektowoTechniczna
+     *
      * @return Zasoby
      */
     public function setDokumentacjaProjektowoTechniczna($dokumentacjaProjektowoTechniczna)
@@ -830,7 +802,7 @@ class Zasoby
     /**
      * Get dokumentacjaProjektowoTechniczna
      *
-     * @return string 
+     * @return string
      */
     public function getDokumentacjaProjektowoTechniczna()
     {
@@ -841,6 +813,7 @@ class Zasoby
      * Set technologia
      *
      * @param string $technologia
+     *
      * @return Zasoby
      */
     public function setTechnologia($technologia)
@@ -853,7 +826,7 @@ class Zasoby
     /**
      * Get technologia
      *
-     * @return string 
+     * @return string
      */
     public function getTechnologia()
     {
@@ -864,6 +837,7 @@ class Zasoby
      * Set testyBezpieczenstwa
      *
      * @param boolean $testyBezpieczenstwa
+     *
      * @return Zasoby
      */
     public function setTestyBezpieczenstwa($testyBezpieczenstwa)
@@ -876,7 +850,7 @@ class Zasoby
     /**
      * Get testyBezpieczenstwa
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTestyBezpieczenstwa()
     {
@@ -887,6 +861,7 @@ class Zasoby
      * Set testyWydajnosciowe
      *
      * @param boolean $testyWydajnosciowe
+     *
      * @return Zasoby
      */
     public function setTestyWydajnosciowe($testyWydajnosciowe)
@@ -899,7 +874,7 @@ class Zasoby
     /**
      * Get testyWydajnosciowe
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getTestyWydajnosciowe()
     {
@@ -910,6 +885,7 @@ class Zasoby
      * Set dataZleceniaOstatniegoPrzegladuUprawnien
      *
      * @param \DateTime $dataZleceniaOstatniegoPrzegladuUprawnien
+     *
      * @return Zasoby
      */
     public function setDataZleceniaOstatniegoPrzegladuUprawnien($dataZleceniaOstatniegoPrzegladuUprawnien)
@@ -922,7 +898,7 @@ class Zasoby
     /**
      * Get dataZleceniaOstatniegoPrzegladuUprawnien
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataZleceniaOstatniegoPrzegladuUprawnien()
     {
@@ -933,6 +909,7 @@ class Zasoby
      * Set interwalPrzegladuUprawnien
      *
      * @param integer $interwalPrzegladuUprawnien
+     *
      * @return Zasoby
      */
     public function setInterwalPrzegladuUprawnien($interwalPrzegladuUprawnien)
@@ -945,7 +922,7 @@ class Zasoby
     /**
      * Get interwalPrzegladuUprawnien
      *
-     * @return integer 
+     * @return integer
      */
     public function getInterwalPrzegladuUprawnien()
     {
@@ -956,6 +933,7 @@ class Zasoby
      * Set dataZleceniaOstatniegoPrzegladuAktywnosci
      *
      * @param \DateTime $dataZleceniaOstatniegoPrzegladuAktywnosci
+     *
      * @return Zasoby
      */
     public function setDataZleceniaOstatniegoPrzegladuAktywnosci($dataZleceniaOstatniegoPrzegladuAktywnosci)
@@ -968,7 +946,7 @@ class Zasoby
     /**
      * Get dataZleceniaOstatniegoPrzegladuAktywnosci
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataZleceniaOstatniegoPrzegladuAktywnosci()
     {
@@ -979,6 +957,7 @@ class Zasoby
      * Set interwalPrzegladuAktywnosci
      *
      * @param integer $interwalPrzegladuAktywnosci
+     *
      * @return Zasoby
      */
     public function setInterwalPrzegladuAktywnosci($interwalPrzegladuAktywnosci)
@@ -991,7 +970,7 @@ class Zasoby
     /**
      * Get interwalPrzegladuAktywnosci
      *
-     * @return integer 
+     * @return integer
      */
     public function getInterwalPrzegladuAktywnosci()
     {
@@ -1002,11 +981,15 @@ class Zasoby
      * Set dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
      *
      * @param \DateTime $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
+     *
      * @return Zasoby
      */
-    public function setDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych($dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych)
+    public function setDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych(
+        $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
+    )
     {
-        $this->dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych = $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
+        $this->dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych =
+            $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
 
         return $this;
     }
@@ -1014,7 +997,7 @@ class Zasoby
     /**
      * Get dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych()
     {
@@ -1025,11 +1008,15 @@ class Zasoby
      * Set interwalZmianyHaselKontaAdministracyjnychISerwisowych
      *
      * @param integer $interwalZmianyHaselKontaAdministracyjnychISerwisowych
+     *
      * @return Zasoby
      */
-    public function setInterwalZmianyHaselKontaAdministracyjnychISerwisowych($interwalZmianyHaselKontaAdministracyjnychISerwisowych)
+    public function setInterwalZmianyHaselKontaAdministracyjnychISerwisowych(
+        $interwalZmianyHaselKontaAdministracyjnychISerwisowych
+    )
     {
-        $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych = $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
+        $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych =
+            $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
 
         return $this;
     }
@@ -1037,13 +1024,15 @@ class Zasoby
     /**
      * Get interwalZmianyHaselKontaAdministracyjnychISerwisowych
      *
-     * @return integer 
+     * @return integer
      */
     public function getInterwalZmianyHaselKontaAdministracyjnychISerwisowych()
     {
         return $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych;
     }
-    public function __toString(){
+
+    public function __toString()
+    {
         return $this->getNazwa() ? $this->getNazwa() : "";
     }
 
@@ -1094,10 +1083,12 @@ class Zasoby
     {
         return $this->grupyAD;
     }
-    
-    public function parseZasobGroupName(){
+
+    public function parseZasobGroupName()
+    {
         $ret = $this->getNazwa();
         $ret = preg_replace("/\([^)]+\)/", "", $ret);
+
         return trim($ret);
     }
 
@@ -1108,10 +1099,13 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setWniosekUtworzenieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null)
+    public function setWniosekUtworzenieZasobu(
+        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null
+    )
     {
         $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
         $this->wniosekUtworzenieZasobu->setZasob($this);
+
         return $this;
     }
 
@@ -1133,7 +1127,9 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setWniosekSkasowanieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null)
+    public function setWniosekSkasowanieZasobu(
+        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null
+    )
     {
         $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
 
@@ -1245,13 +1241,14 @@ class Zasoby
     {
         return $this->published;
     }
+
     /**
      * Constructor
      */
     public function __construct()
     {
-        if($this->getWniosekUtworzenieZasobu()){
-           $this->getWniosekUtworzenieZasobu()->setZasob($this); 
+        if ($this->getWniosekUtworzenieZasobu()) {
+            $this->getWniosekUtworzenieZasobu()->setZasob($this);
         }
         $this->wnioskiZmieniajaceZasob = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -1275,7 +1272,9 @@ class Zasoby
      *
      * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
      */
-    public function removeWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    public function removeWnioskiZmieniajaceZasob(
+        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+    )
     {
         $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);
     }
@@ -1458,39 +1457,48 @@ class Zasoby
         return $this->powiernicyWlascicielaZasobu;
     }
 
-    public function getGrupyADdlaPoziomu($poziomDostepu){
+    public function getGrupyADdlaPoziomu($poziomDostepu)
+    {
         $ignoruj = ['nie dotyczy', '[BZ] Bez zmian', 'do wypełnienia przez właściciela zasobu'];
         $grupa = [];
-        if(!in_array($poziomDostepu, $ignoruj)) {
+        if (!in_array($poziomDostepu, $ignoruj)) {
             $grupy = explode(";", $this->getGrupyAd());
 
             $poziomy = str_replace("; ", ";", $this->getPoziomDostepu());
 
             $dostepnePoziomy = explode(";", $poziomy);
 
-            if(strpos($poziomDostepu, ';') !== false){
+            if (strpos($poziomDostepu, ';') !== false) {
                 $wybranePoziomy = explode(';', $poziomDostepu);
 
-                foreach($wybranePoziomy as $wb){
-                    if($wb) {
+                foreach ($wybranePoziomy as $wb) {
+                    if ($wb) {
                         $grupa[] = $this->znajdzPoziomDostepu($wb, $dostepnePoziomy);
                     }
                 }
-            }else {
+            } else {
                 $grupa[] = $this->znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy);
 
             }
         }
+
         return $grupa;
     }
-    protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy){
+
+    protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy)
+    {
         if (!in_array($poziomDostepu, $dostepnePoziomy)) {
-            echo("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '" . $poziomDostepu . "', dostepne poziomy : " . $this->getPoziomDostepu() . "!!!");
+            echo("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
+                $poziomDostepu.
+                "', dostepne poziomy : ".
+                $this->getPoziomDostepu().
+                "!!!");
         }
         $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
 
         //foreach($grupy as $grupa){
         $grupa = isset($grupy[$indexGrupy]) ? trim($grupy[$indexGrupy]) : '';
+
         return $grupa;
     }
 }

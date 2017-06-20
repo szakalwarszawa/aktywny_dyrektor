@@ -4,7 +4,7 @@
 <form class="form-inline">
     <div class="form-group">
         <label  for="form_info">Sekcja</label>
-        <select id="form_info" name="form[info]" class="form-control select2 form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+        <select id="form_info" name="form[info]" class="form-control select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
             <option value=""></option>
             {%for d,g in sekcje%}
             <optgroup label="{{d}}">
@@ -17,14 +17,12 @@
     </div>
     <div class="form-group">
         <label for="form_manager">Przełożony</label>
-        <select id="form_manager" name="form[manager]" class="form-control select2 form-control select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+        <select id="form_manager" name="form[manager]" class="form-control select2" tabindex="-1" aria-hidden="true">
             <option value=""></option>
            {%for s in przelozeni%}
-                <option value="{{s.samaccountname}}">{{s.name}}</option>
+                <option value="{{s.samaccountname}}">{{s.name}} ({{ s.title }})</option>
             {%endfor%}
         </select>
-        
-        
     </div>
     <div class="form-group">
         <label  readonly="" for="form_accountExpires">Data wygaśnięcia konta</label>
@@ -64,7 +62,7 @@
 
 <div class="alert alert-danger acceptUser" id="acceptUser{{obj.id}}">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <h1 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i> 
+    <h1 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i>
         {%if (obj.newUnproccessed == 1) %}
         <i class="fa fa-plus">&nbsp;</i> Nowy użytkownik{%else%}
         <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{%endif%}
@@ -102,7 +100,6 @@
             <tr>
                 <td colspan="8">
                     {%if (obj.newUnproccessed == 1) %}
-                        
                         <h3>Dane w Active Directory</h3>
                         <table class="record_properties table table-striped">
                             <thead>
@@ -114,7 +111,7 @@
                                     <th>Stanowisko</th>
                                     <th>Sekcja</th>
                                 </tr>
-                            {%else%}                                
+                            {%else%}
                                 <tr>
                                     <th colspan="4">Nie znaleziono żadnych pasujących użytkowników w AD</th>
                                 </tr>
@@ -143,10 +140,9 @@
                                 </tr>
                             </tbody>
                         </table>
-                    {%else%}                                      
+                    {% else %}
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Zapisz użytkownika</button>
-                                    
-                    {%endif%}
+                    {% endif %}
                 </td>
             </tr>
         </tbody>
@@ -154,15 +150,15 @@
 </div>
 {%endfor%}
 {%endif %}
-    
-    
- 
+
+
+
 {%if data|length > 0 %}
-{% for obj in data %}   
-    {% for user in obj.users %} 
+{% for obj in data %}
+    {% for user in obj.users %}
     <!-- Modal -->
     <div id="confirmSelection{{user.samaccountname}}{{obj.id}}" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">        
+        <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -178,9 +174,9 @@
                 <div class="modal-body">
                     <div class="row">
                         <div class="alert alert-danger">
-                            <h2>                                                         
+                            <h2>
                                 Akceptujesz przypisanie użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do istniejącego w AD użytkownika '{{user.name}}'
-                                
+
                             </h2>
                         </div>
                         <div class="list-group">
@@ -191,7 +187,7 @@
                               <a class="list-group-item">Nadanie nowych uprawnień w oparciu o nowy departament '{{obj.departament.name}}'</a>
                           {%endif%}
                           {% if obj.nazwisko ~ " " ~obj.imie != user.name %}
-                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{user.name}}' na '{{obj.nazwisko ~ " " ~obj.imie}}'</a>                          
+                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{user.name}}' na '{{obj.nazwisko ~ " " ~obj.imie}}'</a>
                           {%endif%}
                         </div>
                     </div>
@@ -214,7 +210,7 @@
     {%endfor%}
     <!-- Modal -->
     <div id="confirmSelection{{obj.id}}" class="modal fade" role="dialog">
-        <div class="modal-dialog modal-lg">        
+        <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
@@ -225,14 +221,14 @@
                     {%else%}
                         Akceptujesz przypisanie użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do nowej sekcji/departamentu/zmiany stanowiska, zmiana taka będzie skutkować zmianą uprawnień użytkownika!
                     {%endif%}
-                    
+
                     </h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="alert alert-danger">
                             <h2>
-                            
+
                             {%if(obj.newUnproccessed == 1)%}
                             Akceptujesz utworzenie nowego użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' z loginem '{{obj.login}}'
                             {%else%}
@@ -245,13 +241,13 @@
                           {%if(obj.newUnproccessed == 1)%}
                           <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
                           <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{obj.nazwisko ~ " " ~obj.imie}}'</a>      
-                          <a class="list-group-item">Nadanie loginu '{{obj.login}}'</a>     
+                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{obj.nazwisko ~ " " ~obj.imie}}'</a>
+                          <a class="list-group-item">Nadanie loginu '{{obj.login}}'</a>
                           {%else%}
-                          <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>                              
+                          <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
                           <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>                          
-                          {%endif%}                     
+                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>
+                          {%endif%}
                         </div>
                     </div>
                 </div>
@@ -275,22 +271,20 @@
 <script type="text/javascript">
     function save(url, data, manager, id){
         console.log(manager);
-        if(manager == ""){
-            alert("Musisz wybrać przełożonego!");            
+        if(manager === ""){
+            alert("Musisz wybrać przełożonego!");
         }else{
             $.post(url, data, function(result){
                 console.log(result);
-                if(result == "ok"){
-                    //alert('Zapisano.');
+                if(result === "ok"){
                     $("#acceptUser"+id).removeClass('alert-danger').addClass('alert-success');
-                    $('button', $("#acceptUser"+id)).remove();     
+                    $('button', $("#acceptUser"+id)).remove();
                     $('select, input', $("#acceptUser"+id)).prop('disabled', true);
                 }
             });
         }
     }
-    //$("table.tablesorter").tablesorter(); 
-
+    //$("table.tablesorter").tablesorter();
 </script>
 
 {% endblock %}

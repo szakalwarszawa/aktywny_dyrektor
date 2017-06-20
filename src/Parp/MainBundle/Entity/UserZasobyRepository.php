@@ -9,6 +9,7 @@
 namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
 class UserZasobyRepository extends EntityRepository
 {
@@ -29,13 +30,13 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND uz.samaccountname = :samaccountname
               AND uz.importedFromEcm = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
-               
-        
+
+
         return $query->getResult();
     }
     public function findNameByAccountname($samaccountname)
@@ -43,12 +44,12 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND uz.samaccountname = :samaccountname
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
-               
-        
+
+
         return $query->getResult();
     }
     public function findUserZasobyByAccountname($samaccountname)
@@ -56,30 +57,30 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND uz.samaccountname = :samaccountname and uz.czyAktywne = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
         $a1 = $query->getResult();
-        
-        
+
+
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND uz.samaccountname = :samaccountname and uz.czyOdebrane = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
-        $a2 = $query->getResult();    
-        
+        $a2 = $query->getResult();
+
         return array_merge($a1, $a2);
     }
     public function findUsersByZasobId($zasobId){
         global $kernel;
-        
+
         if ('AppCache' == get_class($kernel)) {
             $kernel = $kernel->getKernel();
         }
-        
+
         $ldap = $kernel->getContainer()->get('ldap_service');
         /*
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
@@ -88,8 +89,8 @@ class UserZasobyRepository extends EntityRepository
               AND z.id = :zasobId
               ORDER BY uz.samaccountname ASC
               ')->setParameter('zasobId', $zasobId);
-               
-        
+
+
         $res = $query->getResult();
         */
         $res = $this->getEntityManager()
@@ -105,10 +106,10 @@ class UserZasobyRepository extends EntityRepository
         ->orderBy('uz.samaccountname')
         ->getQuery()
         ->getResult();
-        
+
         foreach($res as $uz){
             //echo $uz->getSamaccountname()."<br>";
-            
+
             $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
             //echo "<pre>";print_r($ADUser); echo "</pre>";
             if(count($ADUser) > 0){
@@ -121,11 +122,11 @@ class UserZasobyRepository extends EntityRepository
         $ktoryWniosekSzukam = $wniosek->getOdebranie() ? "wniosekOdebranie" : "wniosek";
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND uz.'.$ktoryWniosekSzukam.' = :wniosekId
               ORDER BY uz.samaccountname ASC, z.nazwa ASC
               ')->setParameter('wniosekId', $wniosek);
-               
+
         $res = $query->getResult();
         foreach($res as $uz){
             $query2 = $this->getEntityManager()->createQuery('SELECT z FROM  ParpMainBundle:Zasoby z
@@ -139,16 +140,24 @@ class UserZasobyRepository extends EntityRepository
         //print_r($res);die();
         return $res;
     }
-    
+
+    /**
+     * @param string $samaccountname
+     *
+     * @deprecated Należy stosować ->getZasob()
+     *
+     * @return array
+     */
     public function findAktywneDlaOsoby($samaccountname){
+//        throw new MethodNotImplementedException('findAktywneDlaOsoby');
         $query = $this->getEntityManager()->createQuery('
-        SELECT uz FROM ParpMainBundle:UserZasoby uz
+              SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
+              WHERE uz.zasob = z.id
               AND (uz.samaccountname = :samaccountname or 1 = 12) and uz.czyNadane = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
-        $a2 = $query->getResult();    
+        $a2 = $query->getResult();
         return $a2;
     }
 

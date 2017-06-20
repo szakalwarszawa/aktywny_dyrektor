@@ -16,19 +16,19 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserZasoby
 {
-    
+
     /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      * @ORM\PreRemove()
      */
     public function preUpdate(){
-        
+
         //die("preUpdate");
         if($this->wniosek){
             $this->wniosek->ustawPoleZasoby();
         }
-        
+
         if($this->wniosekOdebranie){
             $this->wniosekOdebranie->ustawPoleZasoby();
         }
@@ -40,23 +40,23 @@ class UserZasoby
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      */
-    private $id;
-    
+    protected $id;
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
-    private $deletedAt;
+    protected $deletedAt;
 
-    
+
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $importedFromEcm = false;
+    protected $importedFromEcm = false;
 
     /**
      * @var string
@@ -64,193 +64,193 @@ class UserZasoby
      * @ORM\Column(name="samaccountname", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $samaccountname;
+    protected $samaccountname;
 
     /**
-     * @var integer
+     * @var Zasoby
      *
-     * @ORM\Column(name="zasob_id", type="integer")
+     * @ORM\OneToOne(targetEntity="Parp\MainBundle\Entity\Zasoby")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $zasobId;
-    
+    protected $zasob;
+
     /**
      * @var string
      *
      * @ORM\Column(name="zasobOpis", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $zasobOpis;
+    protected $zasobOpis;
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $loginDoZasobu;
-    
+    protected $loginDoZasobu;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $modul;
-    
+    protected $modul;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $poziomDostepu;
-    
+    protected $poziomDostepu;
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $aktywneOd;
-    
+    protected $aktywneOd;
+
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $bezterminowo;
-    
+    protected $bezterminowo;
+
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $aktywneOdPomijac;
-    
+    protected $aktywneOdPomijac;
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $aktywneDo;
-    
+    protected $aktywneDo;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $kanalDostepu;
-    
+    protected $kanalDostepu;
+
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $uprawnieniaAdministracyjne;
-    
+    protected $uprawnieniaAdministracyjne;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      */
-    private $odstepstwoOdProcedury;
-    
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
-     */
-    private $powodNadania;
-    
-    
+    protected $odstepstwoOdProcedury;
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $powodOdebrania;
-    
-    
+    protected $powodNadania;
+
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $powodOdebrania;
+
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="czy_aktywne", type="boolean")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $czyAktywne;
-    
-    
+    protected $czyAktywne;
+
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="czy_nadane", type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $czyNadane = false; 
-    
+    protected $czyNadane = false;
+
     /**
      * @var boolean
      *
      * @ORM\Column(name="czy_odebrane", type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $czyOdebrane = false;
-    
-    
+    protected $czyOdebrane = false;
+
+
     /**
      * @var boolean
      *
      * @ORM\Column(type="boolean", nullable=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $sumowanieUprawnien = false;
-    
+    protected $sumowanieUprawnien = false;
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasoby")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosek;
-    
-    
+    protected $wniosek;
+
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasobyOdbierane")
      * @ORM\JoinColumn(name="wniosek_odebranie_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosekOdebranie;
-    
-    
+    protected $wniosekOdebranie;
+
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $ktoOdebral;
-    
-    
+    protected $ktoOdebral;
+
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $dataOdebrania;
-    
-    private $_ADUser;
-    
-    
-    
+    protected $dataOdebrania;
+
+    protected $_ADUser;
+
+
+
     /**
      * Set _ADUser
      *
@@ -267,15 +267,15 @@ class UserZasoby
     /**
      * Get _ADUser
      *
-     * @return array 
+     * @return array
      */
     public function getADUser()
     {
         return $this->_ADUser;
     }
-    
-    
-    private $_zasobNazwa;
+
+
+    protected $_zasobNazwa;
     /**
      * Set _zasobNazwa
      *
@@ -292,13 +292,13 @@ class UserZasoby
     /**
      * Get _zasobNazwa
      *
-     * @return string 
+     * @return string
      */
     public function getZasobNazwa()
     {
         return $this->_zasobNazwa;
     }
-    
+
     protected $idd;
     public function get_Idd()
     {
@@ -312,13 +312,13 @@ class UserZasoby
     {
         return $this->idd = $idd;
     }
-    
-    
-    
+
+
+
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -341,7 +341,7 @@ class UserZasoby
     /**
      * Get samaccountname
      *
-     * @return string 
+     * @return string
      */
     public function getSamaccountname()
     {
@@ -368,7 +368,7 @@ class UserZasoby
     /**
      * Get zasobId
      *
-     * @return integer 
+     * @return integer
      */
     public function getZasobId()
     {
@@ -391,7 +391,7 @@ class UserZasoby
     /**
      * Get loginDoZasobu
      *
-     * @return string 
+     * @return string
      */
     public function getLoginDoZasobu()
     {
@@ -417,11 +417,11 @@ class UserZasoby
     /**
      * Get modul
      *
-     * @return string 
+     * @return string
      */
     public function getModul()
     {
-        
+
         if(is_array($this->modul)){
             $modul = implode(";", $this->modul);
         }
@@ -447,7 +447,7 @@ class UserZasoby
     /**
      * Get poziomDostepu
      *
-     * @return string 
+     * @return string
      */
     public function getPoziomDostepu()
     {
@@ -473,7 +473,7 @@ class UserZasoby
     /**
      * Get aktywneOd
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAktywneOd()
     {
@@ -496,7 +496,7 @@ class UserZasoby
     /**
      * Get bezterminowo
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getBezterminowo()
     {
@@ -519,7 +519,7 @@ class UserZasoby
     /**
      * Get aktywneOdPomijac
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getAktywneOdPomijac()
     {
@@ -542,7 +542,7 @@ class UserZasoby
     /**
      * Get aktywneDo
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAktywneDo()
     {
@@ -565,7 +565,7 @@ class UserZasoby
     /**
      * Get kanalDostepu
      *
-     * @return string 
+     * @return string
      */
     public function getKanalDostepu()
     {
@@ -588,7 +588,7 @@ class UserZasoby
     /**
      * Get uprawnieniaAdministracyjne
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getUprawnieniaAdministracyjne()
     {
@@ -611,7 +611,7 @@ class UserZasoby
     /**
      * Get odstepstwoOdProcedury
      *
-     * @return string 
+     * @return string
      */
     public function getOdstepstwoOdProcedury()
     {
@@ -689,7 +689,7 @@ class UserZasoby
     {
         return $this->czyAktywne;
     }
-    
+
 
     /**
      * Set deletedAt
@@ -702,7 +702,7 @@ class UserZasoby
     {
         $this->deletedAt = $deletedAt;
 
-        
+
         return $this;
     }
 
@@ -755,14 +755,14 @@ class UserZasoby
             $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
         if($this->getUprawnieniaAdministracyjne() != "")
             $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
-            
+
         $html = "<div>".$html."</div>";
         if($stripTags)
             $html = strip_tags($html);
         return $html;
     }
-    
-    
+
+
     public function getDaneDoCheckboxRemoveAccess($spacer = "<br>", $stripTags = false){
         $html = "";
         if($this->getModul() != "")
@@ -777,7 +777,7 @@ class UserZasoby
             $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
         if($this->getUprawnieniaAdministracyjne() != "")
             $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
-            
+
         $html = "<div>".$html."</div>";
         if($stripTags)
             $html = strip_tags($html);
@@ -842,7 +842,7 @@ class UserZasoby
     public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
         if($wniosek){
-            $wniosek->addUserZasoby($this);        
+            $wniosek->addUserZasoby($this);
         }
         if($wniosek === null && $this->wniosek != null){
             $this->wniosek->ustawPoleZasoby();
@@ -915,7 +915,7 @@ class UserZasoby
     {
         return $this->zasobOpis;
     }
-    
+
     public function getLsiSql(){
         $sqls = [];
         $moduly = explode(";", $this->getModul());
@@ -933,19 +933,19 @@ class UserZasoby
                 }else{
                     echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby ".$this->getSamaccountname();
                 }
-            }    
+            }
         }
         return $sqls;
     }
     public function podzielUprawnieniaPrzyOdbieraniu($dane){
         $moduly = explode(";", $this->getModul());
         $poziomy = explode(";", $this->getPoziomDostepu());
-        
+
         $modulyKtoreZostaja = array_diff($moduly, $dane['moduly']);
         $poziomyKtoreZostaja = array_diff($poziomy, $dane['poziomy']);
-        
+
         $noweUz = $dane['dane'];
-        
+
         //szukam tych co nie sa odbierane ale pokrywaja sie z nimi poziomami
         foreach($dane['moduly'] as $m){
             foreach($dane['poziomy'] as $p){
@@ -954,29 +954,29 @@ class UserZasoby
                     $noweUz[] = [
                         'odbierane' => 0,
                         'modul' => $m,
-                        'poziom' => $p    
+                        'poziom' => $p
                     ];
                 }
             }
         }
-        
+
         $noweUz[] = [
             'odbierane' => 0,
             'modul' => implode(";", $dane['moduly']),
-            'poziom' => implode(";", $poziomyKtoreZostaja)    
+            'poziom' => implode(";", $poziomyKtoreZostaja)
         ];
         $noweUz[] = [
             'odbierane' => 0,
             'modul' => implode(";", $modulyKtoreZostaja),
-            'poziom' => implode(";", $dane['poziomy']) 
+            'poziom' => implode(";", $dane['poziomy'])
         ];
-        
+
         $ret = [
             'modulyKtoreZostaja' => $modulyKtoreZostaja,
             'poziomyKtoreZostaja' => $poziomyKtoreZostaja,
             'nowe' => $noweUz
         ];
-        
+
         //die('a');
         return $ret;
     }
@@ -1052,4 +1052,26 @@ class UserZasoby
     {
         return $this->dataOdebrania;
     }
+
+    /**
+     * @return Zasoby
+     */
+    public function getZasob()
+    {
+        return $this->zasob;
+    }
+
+    /**
+     * @param int $zasob
+     *
+     * @return UserZasoby
+     */
+    public function setZasob($zasob)
+    {
+        $this->zasob = $zasob;
+
+        return $this;
+    }
+
+
 }

@@ -11,17 +11,17 @@ namespace Parp\MainBundle\Entity;
 class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 {
     public function findByNotHavingRekordIds($ids){
-        
+
         $query = $this->createQueryBuilder('dr')
           ->where('dr.symbolRekordId NOT IN ('.implode(", ", $ids).')')
           ->getQuery();
-        
-        
+
+
         return $query->getResult();
-        
+
     }
     public function findNewPeople(){
-        
+
         if($_SERVER['REMOTE_ADDR'] == "10.10.50.1"){
             $result = $this
                ->createQueryBuilder('e')
@@ -39,10 +39,9 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                ->getQuery()
                ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
         }
-//               var_dump($result);
         return $result;
     }
-    
+
     public function findChangesInMonth($rok, $miesiac){
         $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
         if($miesiac < 12){
@@ -50,7 +49,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         }else{
             $dataEnd = new \Datetime(($rok+1).'-01-01');
         }
-   
+
         $result = $this
            ->createQueryBuilder('e')
            ->select('e')
@@ -62,14 +61,14 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
            ->setParameters([
                'dataStart' => $dataStart,
                'dataEnd' => $dataEnd,
-               
+
            ])
            ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
-    
+
         //var_dump($result);
         return $result;
     }
-    
+
     public function findChangesInMonthByPole($rok, $miesiac, $pole = 'departament'){
         $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
         if($miesiac < 12){
@@ -77,7 +76,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         }else{
             $dataEnd = new \Datetime(($rok+1).'-01-01');
         }
-   
+
         $result = $this
            ->createQueryBuilder('e')
            ->select('e, w.id, w.data, w.version, w.loggedAt')
@@ -89,10 +88,10 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
            ->setParameters([
                'dataStart' => $dataStart,
                'dataEnd' => $dataEnd,
-               
+
            ])
            ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
-    
+
         //var_dump($result);
         return $result;
     }
@@ -121,5 +120,5 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         //var_dump($result);
         return $result;
     }
-    
+
 }

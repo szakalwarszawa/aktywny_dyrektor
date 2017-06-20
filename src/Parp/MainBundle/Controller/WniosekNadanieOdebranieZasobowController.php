@@ -6,6 +6,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
+use Doctrine\ORM\EntityNotFoundException;
 use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
@@ -657,6 +658,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                 $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
 
+                if (null === $mgr) {
+                    throw new EntityNotFoundException('Nie znaleziono w Active Directory przełożonego dla użytkownika');
+                }
+
                 $ADManager = $this->getUserFromAD($mgr);
                 break;
             case 'prezes':
@@ -673,6 +678,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     protected function sendMailToAdminRejestru($msg)
     {
+        die();
         $mails = ['kamil_jakacki@parp.gov.pl'];
 
         $em = $this->getDoctrine()->getManager();
@@ -1778,6 +1784,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $aduser = $ldap->getUserFromAD($samaccountname, null, null, 'nieobecni');
         }
 
+        if (empty($aduser)) {
+            echo "Problem z ".$samaccountname."<br/>";
+            echo "<pre>";
+            var_dump(debug_backtrace(null, 1));
+        }
         return $aduser;
     }
 }

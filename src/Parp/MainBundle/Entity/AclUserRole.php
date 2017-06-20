@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * AclUserRole
  *
  * @ORM\Table(name="acl_user_role")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
  */
@@ -24,14 +24,14 @@ class AclUserRole
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $deletedAt;
-    
+
     /**
      * @var string
      *
@@ -39,7 +39,7 @@ class AclUserRole
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
-    
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="AclRole", inversedBy="users", cascade={"persist"})
