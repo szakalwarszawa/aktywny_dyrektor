@@ -69,7 +69,7 @@ class UserZasoby
     /**
      * @var Zasoby
      *
-     * @ORM\OneToOne(targetEntity="Parp\MainBundle\Entity\Zasoby")
+     * @ORM\ManyToOne(targetEntity="Parp\MainBundle\Entity\Zasoby")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $zasob;
