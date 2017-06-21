@@ -25,6 +25,9 @@ $(document).ready(function(){
 
     $('[data-toggle~="select2"]').select2();
 
+
+    $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
+
     $('a[data-toggle~="tab"]').on( 'shown.bs.tab', function (e) {
         console.log("zmiana taba");
         console.log(e.target.hash);
@@ -57,9 +60,7 @@ $('.tagAjaxInput:not([disabled])').tagit({
     'singleFieldDelimiter': ";",
     'allowDuplicates' : true
 });
-$(document).ready(function(){
-    $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
-});
+
 $('.select2:not([disabled2])').select2({
     dropdownAutoWidth : true,
     width: '100%',
@@ -133,14 +134,5 @@ $('*[data-ajaxload]').bind('hover',function(){
   });
 });
 #}
-
-$(document).ready(function() {
-  $(window).keydown(function(event){
-    if( (event.keyCode == 13) ) {
-      event.preventDefault();
-      return false;
-    }
-  });
-});
 
 </script>
