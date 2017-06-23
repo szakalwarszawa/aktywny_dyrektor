@@ -2,25 +2,15 @@
 
 namespace Parp\MainBundle\Controller;
 
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use APY\DataGridBundle\APYDataGridBundle;
-use APY\DataGridBundle\Grid\Source\Vector;
-use APY\DataGridBundle\Grid\Source\Entity;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Parp\MainBundle\Exception\SecurityTestException;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\Validator\Constraints\DateTime;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 
 /**
  * RaportyIT controller.
- *
  * @Security("has_role('PARP_ADMIN')")
  * @Route("/RaportyIT")
  */
@@ -30,86 +20,94 @@ class RaportyITController extends Controller
     public $brakujaceGrupy = [];
     protected $ldap;
     protected $miesiace = [
-        '1' => 'Styczeń',
-        '2' => 'Luty',
-        '3' => 'Marzec',
-        '4' => 'Kwiecień',
-        '5' => 'Maj',
-        '6' => 'Czerwiec',
-        '7' => 'Lipiec',
-        '8' => 'Sierpień',
-        '9' => 'Wrzesień',
+        '1'  => 'Styczeń',
+        '2'  => 'Luty',
+        '3'  => 'Marzec',
+        '4'  => 'Kwiecień',
+        '5'  => 'Maj',
+        '6'  => 'Czerwiec',
+        '7'  => 'Lipiec',
+        '8'  => 'Sierpień',
+        '9'  => 'Wrzesień',
         '10' => 'Październik',
         '11' => 'Listopad',
         '12' => 'Grudzień',
     ];
+
     /**
-     *
      * @Route("/generujRaport", name="raportIT1")
      * @Template()
+     * @param Request $request
+     * @param int     $rok
+     *
+     * @return array
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @throws SecurityTestException
      */
     public function indexAction(Request $request, $rok = 0)
     {
-        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+        if (!in_array('PARP_ADMIN', $this->getUser()->getRoles(), true)) {
             throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
         }
         $lata = [];
-        for($i = date("Y"); $i > 2003 ; $i--){
+        for ($i = date('Y'); $i > 2003; $i--) {
             $lata[$i] = $i;
         }
         $builder = $this->createFormBuilder(array('csrf_protection' => false))
             ->add('rok', 'choice', array(
-                'required' => true,
-                'label' => 'Wybierz rok do raportu',
+                'required'   => true,
+                'label'      => 'Wybierz rok do raportu',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
                 ),
-                'choices' => $lata,
-                'attr' => array(
+                'choices'    => $lata,
+                'attr'       => array(
                     'class' => 'form-control',
                 ),
             ));
         $builder->add('miesiac', 'choice', array(
-                'required' => true,
-                'label' => 'Wybierz miesiąc do raportu',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'choices' => $this->miesiace,
-                'attr' => array(
-                    'class' => 'form-control',
-                ),
-                'data' => date("n")
-            ));
+            'required'   => true,
+            'label'      => 'Wybierz miesiąc do raportu',
+            'label_attr' => array(
+                'class' => 'col-sm-4 control-label',
+            ),
+            'choices'    => $this->miesiace,
+            'attr'       => array(
+                'class' => 'form-control',
+            ),
+            'data'       => date('n'),
+        ));
         $builder->add('zapisz', 'submit', array(
             'attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             ),
         ));
-        $form = $builder->setMethod('POST')->getForm();
-        
-        
-        
+
+        $form = $builder->getForm();
+
         $form->handleRequest($request);
 
         if ($form->isValid()) {
             $ndata = $form->getData();
 
-            return $this->generujRaport($ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+            return $this->generujRaport($ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(),
+                $this->get('samaccountname_generator'), $this->get('templating'));
             //return $this->generateExcel($data, $rok);
         }
-        
+
         return [
-            'form' => $form->createView()    
+            'form' => $form->createView(),
         ];
     }
 
-    public function generujRaport($ndata, $ldap, $em, $samaccountNameGenerator, $twig){
+    public function generujRaport($ndata, $ldap, $em, $samaccountNameGenerator, $twig)
+    {
         $this->ldap = $ldap;
         $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac'], $em);
 
         $daneZRekorda = [];
-        foreach($daneRekord as $dr){
+        foreach ($daneRekord as $dr) {
             $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
         }
 
@@ -117,36 +115,41 @@ class RaportyITController extends Controller
         $repo = $em->getRepository('ParpMainBundle:DaneRekord');
         $historyRepo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
         $zmianyDep = $repo->findChangesInMonthByPole($ndata['rok'], $ndata['miesiac']);
-        foreach($zmianyDep as $zmiana){
+        foreach ($zmianyDep as $zmiana) {
             $id = $zmiana[0]['id'];
             $wersja = $zmiana['version'];
-            if($wersja > 1){
+            if ($wersja > 1) {
 
                 $wpis = $repo->find($id);
                 //var_dump($wpis);
                 $historyRepo->revert($wpis, $wersja);
                 $wpisNowy = clone $wpis;
                 //var_dump($wpis);
-                $historyRepo->revert($wpis, $wersja-1);
+                $historyRepo->revert($wpis, $wersja - 1);
                 //var_dump($wpis);
                 //die();
-                if($wpisNowy->getDepartament() != $wpis->getDepartament()){
+                if ($wpisNowy->getDepartament() != $wpis->getDepartament()) {
                     //die("zmiana dep!!!!");
-                    $dep1 = $em->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpis->getDepartament());
-                    $dep2 = $em->getRepository('Parp\MainBundle\Entity\Departament')->findOneByNameInRekord($wpisNowy->getDepartament());
+                    $dep1 =
+                        $em->getRepository('Parp\MainBundle\Entity\Departament')
+                            ->findOneByNameInRekord($wpis->getDepartament());
+                    $dep2 =
+                        $em->getRepository('Parp\MainBundle\Entity\Departament')
+                            ->findOneByNameInRekord($wpisNowy->getDepartament());
                     $akcja = "Zmiana departamentu z '".$dep1->getName()."' na '".$dep2->getName()."'";
                     //var_dump($zmiana);
                     $dr = [
-                        'login' => $wpisNowy->getLogin(),
-                        'nazwisko' => $wpisNowy->getNazwisko(),
-                        'imie' => $wpisNowy->getImie(),
-                        'umowa' => $wpisNowy->getUmowa(),
-                        'umowaOd' => $wpisNowy->getUmowaOd(),
-                        'umowaDo' => $wpisNowy->getUmowaDo(),
-                        'dataZmiany' => $zmiana['loggedAt']->format("Y-m-d"),
+                        'login'      => $wpisNowy->getLogin(),
+                        'nazwisko'   => $wpisNowy->getNazwisko(),
+                        'imie'       => $wpisNowy->getImie(),
+                        'umowa'      => $wpisNowy->getUmowa(),
+                        'umowaOd'    => $wpisNowy->getUmowaOd(),
+                        'umowaDo'    => $wpisNowy->getUmowaDo(),
+                        'dataZmiany' => $zmiana['loggedAt']->format('Y-m-d'),
                     ];
 
-                    $daneZRekorda[$wpis->getLogin()] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], $akcja);
+                    $daneZRekorda[$wpis->getLogin()] =
+                        $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], $akcja);
                 }
             }
         }
@@ -156,148 +159,164 @@ class RaportyITController extends Controller
         //var_dump($users); die();
         //$daneAD = [];
         $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
-        foreach($users as $u){
-            if($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */ ){
-                $rok = explode("-", $u['accountexpires'])[0];
+        foreach ($users as $u) {
+            if ($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */) {
+                $rok = explode('-', $u['accountexpires'])[0];
                 $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
 
-                if($u['samaccountname'] == 'leszek_czech'){
+                if ($u['samaccountname'] == 'leszek_czech') {
                     //var_dump($rok,  date("Y"), $u, $dataExpire); die('b');
                 }
 
-                if($rok == date("Y")){
-                    if($rok < 3000 && $dataExpire->format("Y-m") == $ndata['rok']."-".$miesiac){
+                if ($rok == date('Y')) {
+                    if ($rok < 3000 && $dataExpire->format('Y-m') == $ndata['rok'].'-'.$miesiac) {
                         //$akcja = 'Nowa osoba przyszła do pracy';
                         //$dataZmiany = $dr['umowaOd']->format("Y-m-d");
-                        if(!isset($daneZRekorda[$u['samaccountname']])){
+                        if (!isset($daneZRekorda[$u['samaccountname']])) {
                             $danaRekord = $repo->findOneByLogin($u['samaccountname']);
-                            if($danaRekord){
+                            if ($danaRekord) {
                                 $dr = [
-                                    'login' => $danaRekord->getLogin(),
-                                    'nazwisko' => $danaRekord->getNazwisko(),
-                                    'imie' => $danaRekord->getImie(),
-                                    'umowa' => $danaRekord->getUmowa(),
-                                    'umowaOd' => $danaRekord->getUmowaOd(),
-                                    'umowaDo' => $danaRekord->getUmowaDo(),
+                                    'login'      => $danaRekord->getLogin(),
+                                    'nazwisko'   => $danaRekord->getNazwisko(),
+                                    'imie'       => $danaRekord->getImie(),
+                                    'umowa'      => $danaRekord->getUmowa(),
+                                    'umowaOd'    => $danaRekord->getUmowaOd(),
+                                    'umowaDo'    => $danaRekord->getUmowaDo(),
                                     'dataZmiany' => $u['accountexpires'],
                                 ];
-                            }else{
+                            } else {
                                 $rozbite = $samaccountNameGenerator->rozbijFullname($u['name']);
                                 $dr = [
-                                    'login' => $u['samaccountname'],
-                                    'nazwisko' => $rozbite['nazwisko'],
-                                    'imie' => $rozbite['imie'],
-                                    'umowa' => "__Brak danych w REKORD",
-                                    'umowaOd' => "__Brak danych w REKORD",
-                                    'umowaDo' => "__Brak danych w REKORD",
+                                    'login'      => $u['samaccountname'],
+                                    'nazwisko'   => $rozbite['nazwisko'],
+                                    'imie'       => $rozbite['imie'],
+                                    'umowa'      => '__Brak danych w REKORD',
+                                    'umowaOd'    => '__Brak danych w REKORD',
+                                    'umowaDo'    => '__Brak danych w REKORD',
                                     'dataZmiany' => $u['accountexpires'],
                                 ];
                             }
-                            $daneZRekorda[$u['samaccountname']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'], 'wygaszenie konta w AD');
+                            $daneZRekorda[$u['samaccountname']] =
+                                $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'],
+                                    'wygaszenie konta w AD');
                         }
                     }
                 }
             }
         }
+
         //die(); //przeniesc na koniec !!!!!!
 
 
-
-        return $twig->render('ParpMainBundle:RaportyIT:wynik.html.twig', ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac ]);
+        return $twig->render('ParpMainBundle:RaportyIT:wynik.html.twig',
+            ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac]);
     }
 
-    protected function parseManagerDN($dn){
-        if(strstr($dn, "=") !== false) {
+    protected function parseManagerDN($dn)
+    {
+        if (strstr($dn, '=') !== false) {
             //CN=Pokorski Jacek,OU=DAS,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local
             //echo $dn . ".";
-            $p = explode("=", $dn);
-            $p2 = explode(",", $p[1]);
+            $p = explode('=', $dn);
+            $p2 = explode(',', $p[1]);
+
             return $p2[0];
-        }else{
-            return "";
+        } else {
+            return '';
         }
     }
-    protected function zrobRekordZRekorda($dr, $rok, $miesiac, $akcja = ''){
+
+    protected function zrobRekordZRekorda($dr, $rok, $miesiac, $akcja = '')
+    {
         $miesiac = str_pad($miesiac, 2, '0', STR_PAD_LEFT);
         //die($rok."-".$miesiac);
-        $dataZmiany = "";
+        $dataZmiany = '';
         $ldap = $this->ldap;
-        $user = $ldap->getUserFromAD($dr['login'], null, null, 'wszyscyWszyscy' );
+        $user = $ldap->getUserFromAD($dr['login'], null, null, 'wszyscyWszyscy');
         //var_dump($user, $dr); //die();
-        if($akcja == ''){
+        if ($akcja == '') {
             $akcja = '';
             //echo ($dr['umowaOd']->format("Y-m") ."___". $rok."-".$miesiac);
-            if($dr['umowaOd']->format("Y-m") == $rok."-".$miesiac){
+            if ($dr['umowaOd']->format('Y-m') == $rok.'-'.$miesiac) {
                 $akcja = 'Nowa osoba przyszła do pracy';
-                $dataZmiany = $dr['umowaOd']->format("Y-m-d");
-            }
-            else if($dr['umowaDo'] && $dr['umowaDo']->format("Y-m") == $rok."-".$miesiac){
-                $akcja = 'Osoba odeszła z pracy';
-                $dataZmiany = $dr['umowaDo']->format("Y-m-d");
+                $dataZmiany = $dr['umowaOd']->format('Y-m-d');
+            } else {
+                if ($dr['umowaDo'] && $dr['umowaDo']->format('Y-m') == $rok.'-'.$miesiac) {
+                    $akcja = 'Osoba odeszła z pracy';
+                    $dataZmiany = $dr['umowaDo']->format('Y-m-d');
+                }
             }
         }
+
         return [
-            'login' => $dr['login'],
-            'nazwisko' => $dr['nazwisko'],
-            'imie' => $dr['imie'],
+            'login'       => $dr['login'],
+            'nazwisko'    => $dr['nazwisko'],
+            'imie'        => $dr['imie'],
             'departament' => $user[0]['department'],
-            'sekcja' => $user[0]['info'],
-            'stanowisko' => $user[0]['title'],
-            'przelozony' => $this->parseManagerDN($user[0]['manager']),
-            'umowa' => $dr['umowa'],
-            'umowaOd' => $dr['umowaOd'],
-            'umowaDo' => $dr['umowaDo'],
-            'expiry' => $user[0]['accountexpires'],
-            'akcja' => $akcja,
-            'data' => (isset($dr['dataZmiany']) ? $dr['dataZmiany'] : $dataZmiany),
+            'sekcja'      => $user[0]['info'],
+            'stanowisko'  => $user[0]['title'],
+            'przelozony'  => $this->parseManagerDN($user[0]['manager']),
+            'umowa'       => $dr['umowa'],
+            'umowaOd'     => $dr['umowaOd'],
+            'umowaDo'     => $dr['umowaDo'],
+            'expiry'      => $user[0]['accountexpires'],
+            'akcja'       => $akcja,
+            'data'        => (isset($dr['dataZmiany']) ? $dr['dataZmiany'] : $dataZmiany),
         ];
     }
-    protected function getData($rok, $miesiac, $em){
+
+    protected function getData($rok, $miesiac, $em)
+    {
         return $em->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
     }
+
     /**
-     *
      * @Route("/tempTest", name="tempTest")
      * @Template()
+     * @param Request $request
+     * @param int     $rok
      */
     public function tempTestAction(Request $request, $rok = 0)
     {
         die('dzialam');
 
     }
-    protected function makeRowVersion($eNext, $log, &$datyKonca){
+
+    protected function makeRowVersion($eNext, $log, &$datyKonca)
+    {
         $ret = [];
         $grupy = ['departament', 'stanowisko'];
-        foreach($log->getData() as $l => $v) {
-            if(in_array($l, $grupy)) {
+        foreach ($log->getData() as $l => $v) {
+            if (in_array($l, $grupy, true)) {
                 $content = $v;
-                if($l == 'departament'){
-                    $content = isset($this->departamenty[$v]) ? $this->departamenty[$v]->getName() : 'stary departament';
+                if ($l == 'departament') {
+                    $content =
+                        isset($this->departamenty[$v]) ? $this->departamenty[$v]->getName() : 'stary departament';
                 }
                 $group = $l;
                 $dana = [
-                    'id' => \uniqid().$l.''.$log->getId(),
-                    'content' => $content,
+                    'id'        => \uniqid().$l.''.$log->getId(),
+                    'content'   => $content,
                     'kolejnosc' => 1,
-                    'title' => $content,
-                    'start' => $log->getLoggedAt(),
-                    'end' => $datyKonca[$l],
-                    'group' => $group
+                    'title'     => $content,
+                    'start'     => $log->getLoggedAt(),
+                    'end'       => $datyKonca[$l],
+                    'group'     => $group,
                 ];
-                if($this->zakres['min'] == null || $this->zakres['min'] > $log->getLoggedAt()){
+                if ($this->zakres['min'] == null || $this->zakres['min'] > $log->getLoggedAt()) {
                     $this->zakres['min'] = $log->getLoggedAt();
                 }
-                if($this->zakres['max'] == null || $this->zakres['max'] < $datyKonca[$l]){
+                if ($this->zakres['max'] == null || $this->zakres['max'] < $datyKonca[$l]) {
                     $this->zakres['max'] = $datyKonca[$l];
                 }
                 $ret[] = $dana;
                 $datyKonca[$l] = $log->getLoggedAt();
-                if($l == 'departament'){
+                if ($l == 'departament') {
                     $dana['id'] = $dana['id'].md5($content);
                     $dana['type'] = 'background';
                     $dana['className'] = 'tloWykresu'.$this->className++;
                     unset($dana['group']);
-                    if($this->ostatniDepartament == null) {
+                    if ($this->ostatniDepartament == null) {
                         $this->ostatniDepartament = $dana;
                         $this->ostatniDepartament['daneRekord'] = $eNext;
                         $this->ostatniDepartament['departament'] = $this->departamenty[$v]->getShortname();
@@ -308,8 +327,10 @@ class RaportyITController extends Controller
                 }
             }
         }
+
         return $ret;
     }
+
     protected $departamenty = [];
     protected $grupy = [];
     protected $zakres = ['min' => null, 'max' => null];
@@ -321,45 +342,51 @@ class RaportyITController extends Controller
     /**
      * @Route("/raportBss/{login}", name="raportBss")
      * @Template()
+     * @param string $login
+     *
+     * @return \Symfony\Component\HttpFoundation\Response
      */
-    public function raportBssAction($login = 'kamil_jakacki'){
+    public function raportBssAction($login = 'kamil_jakacki')
+    {
         //
         $this->container = $this;
         $dane = $this->raportBssProcesuj($login);
         die('a');
+
         return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', $dane);
     }
 
-    public function raportBssProcesuj($login){
+    public function raportBssProcesuj($login)
+    {
         $now = new \Datetime();
         $datyKonca = [
             'departament' => $now,
-            'sekcja' => $now,
-            'stanowisko' => $now,
+            'sekcja'      => $now,
+            'stanowisko'  => $now,
         ];
         $em = $this->container->getDoctrine()->getManager();
 
-        $this->user = $this->container->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy' )[0];
+        $this->user = $this->container->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy')[0];
 
 
         $this->departamenty = $em->getRepository('ParpMainBundle:Departament')->bierzDepartamentyNowe();
         //pobierz dane zmiany departamentow, stanowisk
         $entity = $em->getRepository('ParpMainBundle:DaneRekord')->findOneByLogin($login);
 
-        if($entity === null){
+        if ($entity === null) {
             $min = new \DateTime('2001-01-01 00:00:00');
             $max = new \DateTime('2101-01-01 00:00:00');
             $dana = [
-                'id' => '54673547623',
-                'content' => 'uprawnienia',
+                'id'        => '54673547623',
+                'content'   => 'uprawnienia',
                 'kolejnosc' => 1,
-                'title' => 'stanowisko',
-                'start' => $min,
-                'end' => $max,
-                'group' => 'stanowisko'
+                'title'     => 'stanowisko',
+                'start'     => $min,
+                'end'       => $max,
+                'group'     => 'stanowisko',
             ];
             $dane = [
-                $dana
+                $dana,
             ];
 
             $this->ostatniDepartament = $dana;
@@ -370,7 +397,7 @@ class RaportyITController extends Controller
             $this->zakres['min'] = $min;
             $this->zakres['max'] = $max;
             //die('tutaj');
-        }else {
+        } else {
 
             $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
             $logs = $repo->getLogEntries($entity);
@@ -383,22 +410,29 @@ class RaportyITController extends Controller
         }
         //var_dump($dane); die();
 
-        foreach($dane as $d){
+        foreach ($dane as $d) {
             $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findDlaOsoby($login, $d['start'], $d['end']);
-            foreach($uzs as $uz){
+            foreach ($uzs as $uz) {
                 $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
-                $do = $uz->getAktywneDo() ? ($uz->getAktywneDo() < $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];
-                $c = ' <a href="'.$this->generateUrl('zasoby_edit', ['id' => $zasob->getId()]).'">'.$zasob->getNazwa().'</a>';
+                $do =
+                    $uz->getAktywneDo() ? ($uz->getAktywneDo() <
+                    $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];
+                $c =
+                    ' <a href="'.
+                    $this->generateUrl('zasoby_edit', ['id' => $zasob->getId()]).
+                    '">'.
+                    $zasob->getNazwa().
+                    '</a>';
                 $dana = [
-                    'id' => \uniqid().'Zasob'.$zasob->getId(),
-                    'content' => $c,
-                    'kolejnosc' => 1,
-                    'title' => $zasob->getNazwa(),
-                    'start' => $uz->getAktywneOd(),
-                    'end' => $do,
-                    'group' => 'zasoby',
+                    'id'         => \uniqid().'Zasob'.$zasob->getId(),
+                    'content'    => $c,
+                    'kolejnosc'  => 1,
+                    'title'      => $zasob->getNazwa(),
+                    'start'      => $uz->getAktywneOd(),
+                    'end'        => $do,
+                    'group'      => 'zasoby',
                     'userzasoby' => $uz,
-                    'zasob' => $zasob
+                    'zasob'      => $zasob,
                 ];
                 $dane[] = $dana;
             }
@@ -407,43 +441,47 @@ class RaportyITController extends Controller
         //var_dump($dane);
         //die();
         return [
-            'login' => $login,
-            'dane' => json_encode($dane),
+            'login'     => $login,
+            'dane'      => json_encode($dane),
             'zakresMin' => $this->zakres['min']->format('Y-m-d'),
             'zakresMax' => $this->zakres['max']->format('Y-m-d'),
         ];
     }
 
-    protected function przygotujDaneRaportuBss(&$dane){
+    protected function przygotujDaneRaportuBss(&$dane)
+    {
         $now = new \Datetime();
-        usort($dane, function($a, $b){
+        usort($dane, function ($a, $b) {
             return $a['start'] < $b['start'];
         });
         $okresNr = 1;
         $okresy = [];
-        for($i = 0; $i < count($dane); $i++){
-            if(
+        for ($i = 0; $i < count($dane); $i++) {
+            if (
                 $dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
                 $dane[$i]['start'] <= $this->ostatniDepartament['end']
-            ){
-                if($this->sumaUprawnien == null){
+            ) {
+                if ($this->sumaUprawnien == null) {
                     $this->sumaUprawnien = [
-                        'id' => 'sumaUprawnien12',
-                        'start' => $this->ostatniDepartament['start'],
-                        'end' => $this->ostatniDepartament['end'],
-                        'content' => 'Suma uprawnień które powinny być obecnie',
+                        'id'        => 'sumaUprawnien12',
+                        'start'     => $this->ostatniDepartament['start'],
+                        'end'       => $this->ostatniDepartament['end'],
+                        'content'   => 'Suma uprawnień które powinny być obecnie',
                         'kolejnosc' => 9,
-                        'title' => '',
-                        'group' => 'suma',
-                        'grupy' => $this->container->get('ldap_service')->getGrupyUsera($this->user, $this->ostatniDepartament['departament'], $this->ostatniDepartament['sekcja'])
+                        'title'     => '',
+                        'group'     => 'suma',
+                        'grupy'     => $this->container->get('ldap_service')
+                            ->getGrupyUsera($this->user, $this->ostatniDepartament['departament'],
+                                $this->ostatniDepartament['sekcja']),
                     ];
                 }
-                if(isset($dane[$i]['group']) && $dane[$i]['group'] == 'zasoby') {
+                if (isset($dane[$i]['group']) && $dane[$i]['group'] == 'zasoby') {
                     $grupy = $dane[$i]['zasob']->getGrupyADdlaPoziomu($dane[$i]['userzasoby']->getPoziomDostepu());
                     //var_dump($grupy);
-                    if($grupy){
+                    if ($grupy) {
                         //var_dump($this->user);
-                        $this->sumaUprawnien['grupy'] = isset($this->sumaUprawnien['grupy']) ? $this->sumaUprawnien['grupy'] : [];
+                        $this->sumaUprawnien['grupy'] =
+                            isset($this->sumaUprawnien['grupy']) ? $this->sumaUprawnien['grupy'] : [];
                         $this->sumaUprawnien['grupy'] = array_merge($grupy, $this->sumaUprawnien['grupy']);
                     }
                     //die();
@@ -461,25 +499,30 @@ class RaportyITController extends Controller
         }
         $this->sumaUprawnien['grupy'] = isset($this->sumaUprawnien['grupy']) ? $this->sumaUprawnien['grupy'] : [];
         $this->sumaUprawnien['grupy'] = array_unique(array_filter($this->sumaUprawnien['grupy']));
-        $this->sumaUprawnien['title'] = implode(", <br>", $this->sumaUprawnien['grupy']);
+        $this->sumaUprawnien['title'] = implode(', <br>', $this->sumaUprawnien['grupy']);
 
         $content = $this->sumaUprawnien['content'].': <br><br>';
         $this->sumaUprawnien['brakujace'] = [];
-        foreach($this->sumaUprawnien['grupy'] as $g){
-            if(!in_array($g, $this->user['memberOf'])){
+        foreach ($this->sumaUprawnien['grupy'] as $g) {
+            if (!in_array($g, $this->user['memberOf'], true)) {
                 $content .= '<span style="color:red"><b>'.$g.'</b></span><br>';
                 $this->sumaUprawnien['brakujace'][] = $g;
-            }else {
+            } else {
                 $content .= $g.'<br>';
             }
         }
-        $content .= '<br><a href="'.$this->generateUrl('nadajGrupy', ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).'" class="btn btn-success" target="_blank">NAPRAW</a>';
+        $content .= '<br><a href="'.
+            $this->generateUrl('nadajGrupy',
+                ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).
+            '" class="btn btn-success" target="_blank">NAPRAW</a>';
 
 
         $this->sumaUprawnien['kolejnosc'] = 11;
         $this->sumaUprawnien['content'] = $content;
-        $this->sumaUprawnien['start'] = is_string($this->sumaUprawnien['start']) ? $this->sumaUprawnien['start'] : $this->sumaUprawnien['start']->format('Y-m-d');
-        $this->sumaUprawnien['end'] = is_string($this->sumaUprawnien['end']) ? $this->sumaUprawnien['end'] :$this->sumaUprawnien['end']->format('Y-m-d');
+        $this->sumaUprawnien['start'] =
+            is_string($this->sumaUprawnien['start']) ? $this->sumaUprawnien['start'] : $this->sumaUprawnien['start']->format('Y-m-d');
+        $this->sumaUprawnien['end'] =
+            is_string($this->sumaUprawnien['end']) ? $this->sumaUprawnien['end'] : $this->sumaUprawnien['end']->format('Y-m-d');
         $this->brakujaceGrupy = $this->sumaUprawnien['grupy'];
         unset($this->sumaUprawnien['grupy']);
 
@@ -487,7 +530,7 @@ class RaportyITController extends Controller
 
         $dane[] = $this->sumaUprawnien;
 
-        usort($dane, function($a, $b){
+        usort($dane, function ($a, $b) {
             return $a['kolejnosc'] > $b['kolejnosc'] && $a['start'] > $b['start'];
         });
 
@@ -497,15 +540,21 @@ class RaportyITController extends Controller
     /**
      * @Route("/nadajGrupy/{login}/{grupy}", name="nadajGrupy")
      * @Template()
+     * @param string $login
+     * @param string $grupy
+     *
+     * @throws \InvalidArgumentException
+     * @throws \LogicException
      */
-    public function nadajGrupyAction($login = 'kamil_jakacki', $grupy = ''){
+    public function nadajGrupyAction($login = 'kamil_jakacki', $grupy = '')
+    {
         $grupy = explode(',', $grupy);
         $entry = new \Parp\MainBundle\Entity\Entry();
         $entry->setFromWhen(new \Datetime());
         $entry->setSamaccountname($login);
         $entry->setMemberOf('+'.implode(',+', $grupy));
         $entry->setCreatedBy($this->getUser()->getUsername());
-        $entry->setOpis("Przywracanie uprawnien za pomoca linku.");
+        $entry->setOpis('Przywracanie uprawnien za pomoca linku.');
         $this->getDoctrine()->getManager()->persist($entry);
         $this->getDoctrine()->getManager()->flush();
         var_dump($login, $grupy, $entry);
@@ -513,18 +562,18 @@ class RaportyITController extends Controller
     }
 
 
-
     /**
      * @Route("/poprawKierownictwo", name="poprawKierownictwo")
      * @Template()
      */
-    public function poprawKierownictwoAction(){
+    public function poprawKierownictwoAction()
+    {
         $dyrs = $this->get('ldap_service')->getZarzad();
         $braki = [];
         $pomin = ['fsdds_fdsf', 'testowy_test'];
-        foreach($dyrs as $d){
-            if(!in_array($d['samaccountname'], $pomin)) {
-                if(strpos($d['useraccountcontrol'], 'ACCOUNTDISABLE') === false){
+        foreach ($dyrs as $d) {
+            if (!in_array($d['samaccountname'], $pomin, true)) {
+                if (strpos($d['useraccountcontrol'], 'ACCOUNTDISABLE') === false) {
                     $this->raportBssAction($d['samaccountname']);
                     $braki[$d['samaccountname']] = $this->sumaUprawnien['brakujace'];
                     $this->nadajGrupyAction($d['samaccountname'], implode(',', $this->sumaUprawnien['brakujace']));
@@ -534,7 +583,8 @@ class RaportyITController extends Controller
                     $this->zakres = ['min' => null, 'max' => null];
                     $this->className = 1;
                     $this->ostatniDepartament = null;
-                    $this->sumaUprawnien = [];$this->user = null;
+                    $this->sumaUprawnien = [];
+                    $this->user = null;
                 }
             }
         }
