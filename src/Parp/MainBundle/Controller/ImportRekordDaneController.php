@@ -934,10 +934,16 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     /**
      * @Route("/przypiszUtworzUzytkownika/{id}/{samaccountname}", name="przypiszUtworzUzytkownika", defaults={})
      * @Method("POST")
+     * @param Request $request
+     * @param         $id
+     * @param         $samaccountname
+     *
+     * @return Response
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
-     * @throws \Doctrine\ORM\OptimisticLockException
      * @throws \LogicException
      * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\OptimisticLockException
      */
     public function przypiszUtworzUzytkownikaAction(Request $request, $id, $samaccountname)
     {
@@ -970,7 +976,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     $nowy = true;
                     $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
                 } else {
-                    if ($userFromAD[0]['name'] != $daneRekord->getNazwisko().' '.$daneRekord->getImie()) {
+                    if ($userFromAD[0]['name'] !== $daneRekord->getNazwisko().' '.$daneRekord->getImie()) {
                         $changeSet['imie'] = 1;
                         $changeSet['nazwisko'] = 1;
                     }
@@ -1040,7 +1046,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     ->findBy(['samaccountname' => $samaccountname]);
 
                 foreach($userzasoby as $uz){
-                    if(!in_array($uz->getZasob()->getAdministratorZasobu(), $administratorzy, true)){
+                    if($uz->getZasob() && !in_array($uz->getZasob()->getAdministratorZasobu(), $administratorzy, true)){
                         $administratorzy[] = $uz->getZasob()->getAdministratorZasobu();
                     }
                 }
