@@ -1,5 +1,5 @@
 <?php
-    
+
 namespace Parp\AuthBundle\Handler;
 
 use Symfony\Component\HttpKernel\HttpKernelInterface;
@@ -43,7 +43,7 @@ class SessionIdleHandler
                 $this->session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
 
                 // Change the route if you are not using FOSUserBundle.
-                $event->setResponse(new RedirectResponse($this->router->generate('fos_user_security_login')));
+                $event->setResponse(new RedirectResponse($this->router->generate('login')));
             }
         }
     }
