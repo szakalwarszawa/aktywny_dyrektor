@@ -16,7 +16,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 
 class LdapImportCommand extends ContainerAwareCommand
 {
-    protected $debug = true;    
+    protected $debug = true;
     
     protected function configure()
     {
@@ -26,10 +26,10 @@ class LdapImportCommand extends ContainerAwareCommand
     
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try{
+        try {
             $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Zaczynam import ous ...                             </comment>', false);
             
-            $this->getContainer()->get('ldap_import')->importOUsAction();   
+            $this->getContainer()->get('ldap_import')->importOUsAction();
             
             
             $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Skonczylem import ous ...                             </comment>', false);
@@ -46,21 +46,16 @@ class LdapImportCommand extends ContainerAwareCommand
             $letters_array = str_split($letters);
             
             $c = new \Parp\SoapBundle\Controller\ImportController();
-            foreach($letters_array as $l){                
+            foreach ($letters_array as $l) {
                 $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Import users na litere "'.$l.'" ...                             </comment>', false);
                 $this->getContainer()->get('ldap_import')->importUsersAction($l);
             }
             
             
             $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Skonczylem import users ...                             </comment>', false);
-            
-            
-        }catch(\Exception $e){
-                
+        } catch (\Exception $e) {
             $output->writeln('<error>Błąd...                             </error>', false);
             $output->writeln('<error>'.$e->getMessage()."</error>", false);
         }
     }
-    
-
 }

@@ -41,10 +41,8 @@ class WniosekStatusController extends Controller
         $tableAlias = $source->getTableAlias();
         //die($co);
         $source->manipulateQuery(
-            function ($query) use ($tableAlias)
-            {
+            function ($query) use ($tableAlias) {
                 $query->addOrderBy($tableAlias . '.nazwaSystemowa', 'ASC');
-                
             }
         );
         $grid = $this->get('grid');

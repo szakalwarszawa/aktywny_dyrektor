@@ -43,12 +43,13 @@ class ExportController extends Controller
     /**
      * @Route("/zasoby/{aktywne}", name="zasobyExcelExport")
      */
-    public function zasobyExcelExportAction($aktywne){
+    public function zasobyExcelExportAction($aktywne)
+    {
         
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
         $mapaOsob = [];
-        foreach($ADUsers as $u){
+        foreach ($ADUsers as $u) {
             $mapaOsob[$u['samaccountname']] = $u['name'];
         }
         
@@ -67,12 +68,11 @@ class ExportController extends Controller
             ]
         ];
         
-        foreach($zasoby as $zasob){
+        foreach ($zasoby as $zasob) {
             $wniosekNr = "";
-            try{
+            try {
                 $wniosekNr = $zasob->getWniosekUtworzenieZasobu() ? $zasob->getWniosekUtworzenieZasobu()->getWniosek()->getNumer() : "";
-            }catch(\Exception $e){
-                
+            } catch (\Exception $e) {
             }
             
             $data[] = [
@@ -103,10 +103,11 @@ class ExportController extends Controller
         $writer->save('php://output');
         die();
     }
-    protected function getNames($oss, $mapaOsob){
+    protected function getNames($oss, $mapaOsob)
+    {
         $osoby = [];
         $os = explode(",", $oss);
-        foreach($os as $o){
+        foreach ($os as $o) {
             $osoby[] = isset($mapaOsob[$o]) ? $mapaOsob[$o] : $o;
         }
         return implode(", ", $osoby);

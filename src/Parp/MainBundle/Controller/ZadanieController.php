@@ -35,11 +35,12 @@ class ZadanieController extends Controller
     public function indexAction()
     {
         $grid = $this->makeGrid(true);
-        $grid2 = $this->makeGrid(false);   
+        $grid2 = $this->makeGrid(false);
         return $this->render('ParpMainBundle:Zadanie:index.html.twig', array('grid' => $grid, 'grid2' => $grid2));
     }
     
-    protected function makeGrid($aktywne){
+    protected function makeGrid($aktywne)
+    {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Zadanie')->findAll();
     
@@ -50,17 +51,18 @@ class ZadanieController extends Controller
         $username = trim($ad[0]['name']);
         //print_r($username);
         $source->manipulateQuery(
-            function ($query) use ($username, $aktywne)
-            {
+            function ($query) use ($username, $aktywne) {
                 $query->andWhere('_a.osoby like :user')->setParameter('user', '%'.$username.'%');
-                if($aktywne)
+                if ($aktywne) {
                     $query->andWhere('_a.dataUkonczenia is null');
-                else
+                } else {
                     $query->andWhere('_a.dataUkonczenia is not null');
-                if($aktywne)    
-                    $query->orderBy("_a.dataDodania","DESC");
-                else
-                    $query->orderBy("_a.dataUkonczenia","DESC");
+                }
+                if ($aktywne) {
+                    $query->orderBy("_a.dataDodania", "DESC");
+                } else {
+                    $query->orderBy("_a.dataUkonczenia", "DESC");
+                }
             }
         );
         
@@ -258,9 +260,8 @@ class ZadanieController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            if(
-                ($entity->getDataUkonczenia() != null && $oldEn->getDataUkonczenia() == null)
-            ){
+            if (($entity->getDataUkonczenia() != null && $oldEn->getDataUkonczenia() == null)
+            ) {
                 //zmiana daty ukonczenie
                 
                 $user = $this->get('security.context')->getToken()->getUser();
@@ -268,16 +269,15 @@ class ZadanieController extends Controller
                 $username = trim($ad[0]['name']);
                 $entity->setUkonczonePrzez($username);
             }
-            if(
-                $entity->getStatus() == "zrealizowany" && $oldEn->getStatus() != "zrealizowany"
-            ){
+            if ($entity->getStatus() == "zrealizowany" && $oldEn->getStatus() != "zrealizowany"
+            ) {
                 //zmiana statusu
                 
                 $user = $this->get('security.context')->getToken()->getUser();
                 $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
                 $username = trim($ad[0]['name']);
                 $entity->setUkonczonePrzez($username);
-                if($entity->getDataUkonczenia() == null){
+                if ($entity->getDataUkonczenia() == null) {
                     $entity->setDataUkonczenia(new \Datetime());
                 }
             }

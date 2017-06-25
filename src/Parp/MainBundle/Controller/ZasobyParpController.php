@@ -43,8 +43,7 @@ class ZasobyParpController extends Controller
             "ParpMainBundle:Zasoby:zasobyUsers.html.twig",
             array(
                 "users" => $res
-            )   
+            )
         );
     }
-    
 }

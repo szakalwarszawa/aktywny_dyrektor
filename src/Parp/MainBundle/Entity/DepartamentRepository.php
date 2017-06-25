@@ -10,13 +10,13 @@ namespace Parp\MainBundle\Entity;
  */
 class DepartamentRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function bierzDepartamentyNowe(){
+    public function bierzDepartamentyNowe()
+    {
         $depsy = $this->findByNowaStruktura(1);
         $ret = [];
-        foreach($depsy as $d){
+        foreach ($depsy as $d) {
             $ret[$d->getNameInRekord()] = $d;
         }
         return $ret;
     }
-
 }

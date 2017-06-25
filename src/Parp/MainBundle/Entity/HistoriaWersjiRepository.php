@@ -10,7 +10,8 @@ namespace Parp\MainBundle\Entity;
  */
 class HistoriaWersjiRepository extends \Gedmo\Loggable\Entity\Repository\LogEntryRepository
 {
-    public function getDoPoprawy(){
+    public function getDoPoprawy()
+    {
         //wybrac wszystkie historia wersji
         // ktore sa na encji WniosekEditor
         // ktorych id jest wiekszy od

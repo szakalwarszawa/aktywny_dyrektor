@@ -31,57 +31,63 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('showFullname', array($this, 'showFullname')),
         );
     }
-    public function showFullname($samaccountname){
-        if($this->sam2name === null){
+    public function showFullname($samaccountname)
+    {
+        if ($this->sam2name === null) {
             $this->sam2name = [];
             //wypelniamy cache ze slownikiem
             $users = $this->ldapService->getAllFromAD();
-            foreach($users as $u){
+            foreach ($users as $u) {
                 $this->sam2name[$u['samaccountname']] = $u['name'];
             }
         }
         return (isset($this->sam2name[$samaccountname]) ? $this->sam2name[$samaccountname] : $samaccountname);
     }
-    public function addSpaces($str){
+    public function addSpaces($str)
+    {
         $sams = explode(",", $str);
         $ret = [];
-        foreach($sams as $s){
+        foreach ($sams as $s) {
             $ret[] = $this->showFullname($s);
         }
         ///$str = str_replace(",", ", ", $str);//old function content
         return implode(", ", $ret);
     }
-    public function zasobyNazwa($zids){
+    public function zasobyNazwa($zids)
+    {
         $arr = explode(",", $zids);
         $ret = "";
-        foreach($arr as $zid){
+        foreach ($arr as $zid) {
             $ret[$zid] = $this->renameService->zasobNazwa($zid);
         }
         return implode(", ", $ret);
     }
-    public function zasobNazwa($zid){
+    public function zasobNazwa($zid)
+    {
         //echo ".$zid.";
         return $this->renameService->zasobNazwa($zid);
     }
     public function toCamelcase($string)
-    {   
+    {
         $out = "";
         $ps = explode("_", $string);
         $i = 0;
-        foreach($ps as $p){
-            if($i++ != 0)
+        foreach ($ps as $p) {
+            if ($i++ != 0) {
                 $out .= ucfirst(strtolower($p));
-            else
+            } else {
                 $out .= (strtolower($p));
+            }
         }
         //$string = strtoupper($string);
 
         return $out;
     }
-    public function datetimeFormat($value){
-        if ($value instanceof \DateTime){
+    public function datetimeFormat($value)
+    {
+        if ($value instanceof \DateTime) {
             $value = $value->format("Y-m-d H:i:s");
-        }else{
+        } else {
             $value = "";
         }
         return $value;
@@ -107,24 +113,25 @@ class StringExtension extends \Twig_Extension
     }
     
     public function getObjectValue($var)
-    {   
-        if ($var instanceof \DateTime ) {
+    {
+        if ($var instanceof \DateTime) {
             $var = $var->format("Y-m-d H:i:s");
         }
         return $var;
     }
     
     public function getMultipleCheckboxLabel($string, $part)
-    {   
+    {
         $e = explode("@@@", $string);
         $ret = $part <= count($e) -1 ? $e[$part] : "";
         return $ret;
     }
-    public function getMultipleCheckboxLabelClasses($string){
+    public function getMultipleCheckboxLabelClasses($string)
+    {
         $cs = $this->getMultipleCheckboxLabel($string, 2);
         $ss = explode(",", $cs);
         $ret = array();
-        foreach($ss as $id){
+        foreach ($ss as $id) {
             $ret[] = "grupaUprawnien".$id;
         }
         return implode(" ", $ret);
@@ -146,7 +153,8 @@ class StringExtension extends \Twig_Extension
     {
         return $this->renameService->actionTitles($var);
     }
-    public function showMultiFieldAsNewLines($str){
+    public function showMultiFieldAsNewLines($str)
+    {
         return "<div class='border'>".str_replace(";", "</div><div class='border'>", $str)."</div>";
     }
 }

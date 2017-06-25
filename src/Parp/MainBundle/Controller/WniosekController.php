@@ -46,10 +46,10 @@ class WniosekController extends Controller
         }
         $typWniosku = $wniosek->getWniosekNadanieOdebranieZasobow() ? 'wniosekONadanieUprawnien' : 'wniosekOUtworzenieZasobu';
         $people = ['viewrs' => [], 'editors' => []];
-        foreach($wniosek->getViewers() as $v){
+        foreach ($wniosek->getViewers() as $v) {
             $people['viewers'][$v->getSamaccountname()] = $v->getSamaccountname();
         }
-        foreach($wniosek->getEditors() as $v){
+        foreach ($wniosek->getEditors() as $v) {
             $people['editors'][$v->getSamaccountname()] = $v->getSamaccountname();
         }
         $dane = [
@@ -60,7 +60,7 @@ class WniosekController extends Controller
         
         $statusyEntities = $em->getRepository('ParpMainBundle:WniosekStatus')->findBy(['typWniosku' => $typWniosku]);
         $statusy = [];
-        foreach($statusyEntities as $e){
+        foreach ($statusyEntities as $e) {
             $statusy[$e->getId()] = $e->getNazwa();
         }
         
@@ -139,20 +139,20 @@ class WniosekController extends Controller
             $wniosek->setLockedBy(null);
             $wniosek->setLockedAt(null);
             
-            foreach($wniosek->getViewers() as $v){
+            foreach ($wniosek->getViewers() as $v) {
                 $em->remove($v);
             }
-            foreach($wniosek->getEditors() as $v){
+            foreach ($wniosek->getEditors() as $v) {
                 $em->remove($v);
             }
-            foreach($dane['viewers'] as $v){
+            foreach ($dane['viewers'] as $v) {
                 $nv = new WniosekViewer();
                 $nv->setSamaccountname($v);
                 $nv->setWniosek($wniosek);
                 $wniosek->addViewer($nv);
                 $em->persist($nv);
             }
-            foreach($dane['editors'] as $v){
+            foreach ($dane['editors'] as $v) {
                 $nv = new WniosekEditor();
                 $nv->setSamaccountname($v);
                 $nv->setWniosek($wniosek);
@@ -163,7 +163,7 @@ class WniosekController extends Controller
             $em->flush();
             return $this->redirect($this->generateUrl(($typWniosku == 'wniosekONadanieUprawnien' ? 'wnioseknadanieodebraniezasobow_show' : 'wniosekutworzeniezasobu_edit'), ['id' => ($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId())]));
             //var_dump($dane);
-            //die('mam dane post');    
+            //die('mam dane post');
         }
         
 
@@ -173,12 +173,13 @@ class WniosekController extends Controller
         );
     }
 
-    private function getUsersFromADWithRole($role){
+    private function getUsersFromADWithRole($role)
+    {
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
-        foreach($ADUsers as &$u){
-            if(in_array($role, $u['roles']) || $role == ""){
+        foreach ($ADUsers as &$u) {
+            if (in_array($role, $u['roles']) || $role == "") {
                 $users[$u['samaccountname']] = $u['name'];
             }
         }

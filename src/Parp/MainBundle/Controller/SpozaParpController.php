@@ -31,7 +31,8 @@ class SpozaParpController extends Controller
      * @Template()
      */
     public function indexAction()
-    {;
+    {
+        ;
         
         $em = $this->getDoctrine()->getManager();
         $wnioski = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findBy(
@@ -41,8 +42,8 @@ class SpozaParpController extends Controller
         );
         
         $wynik = [];
-        foreach($wnioski as $wniosek){
-            foreach($wniosek->getUserZasoby() as $uz){
+        foreach ($wnioski as $wniosek) {
+            foreach ($wniosek->getUserZasoby() as $uz) {
                 $id = $uz->getSamaccountname()." ".$wniosek->getManagerSpozaParp();
                 $wynik[$id] = [
                     'osoba' => $uz->getSamaccountname(),
@@ -52,7 +53,9 @@ class SpozaParpController extends Controller
             }
         }
     
-        echo "<pre>"; print_r($wynik); die();
+        echo "<pre>";
+        print_r($wynik);
+        die();
     
         $source = new Vector($ADUsers);
     
@@ -89,5 +92,5 @@ class SpozaParpController extends Controller
 
         $grid->isReadyForRedirect();
         return $grid->getGridResponse();
-    }    
+    }
 }

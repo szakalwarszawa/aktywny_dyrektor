@@ -18,7 +18,7 @@ class ZadanieType extends AbstractType
         $builder
             //->add('deletedAt')
             ->add('nazwa', 'text', array('attr' => array('readonly' => true)))
-            ->add('status', 'choice' , array(
+            ->add('status', 'choice', array(
                 'choices' => array('utworzone' => 'utworzone', 'zrealizowany' => 'zrealizowany', 'nie zrealizowany' => 'nie zrealizowany')
             ))
             ->add('opis', 'hidden', array('attr' => array('readonly' => true)))
@@ -26,7 +26,7 @@ class ZadanieType extends AbstractType
             ->add('osoby', 'text', array('attr' => array('readonly' => true)))
             //datetime
             ->add(
-                $builder->create('dataDodania','text',array(
+                $builder->create('dataDodania', 'text', array(
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
                         'readonly' => true
@@ -40,7 +40,7 @@ class ZadanieType extends AbstractType
                 ->addModelTransformer($transformer)
             )
             ->add(
-                $builder->create('dataUkonczenia','text',array(
+                $builder->create('dataUkonczenia', 'text', array(
                     //'block_name' => 'custom_name',
                     'attr' => array(
                         'class' => 'form-control datetimepicker',

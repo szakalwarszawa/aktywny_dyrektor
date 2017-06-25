@@ -187,7 +187,6 @@ class ImportRekordDaneController extends Controller
         }
 
         return [];
-
     }
 
 
@@ -352,8 +351,7 @@ class ImportRekordDaneController extends Controller
                 $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
 
                 $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
-                if (
-                    ($d1 !== null) &&
+                if (($d1 !== null) &&
                     (
                         ($dr->getUmowaOd() == null && $d1 != null) ||
                         ($dr->getUmowaOd() != null && $d1 == null) ||
@@ -366,8 +364,7 @@ class ImportRekordDaneController extends Controller
 
                 //var_dump($dr->getUmowaDo());
                 //var_dump($d2);
-                if (
-                (
+                if ((
                     ($dr->getUmowaDo() == null && $d2 != null) ||
                     ($dr->getUmowaDo() != null && $d2 == null) ||
                     ($dr->getUmowaDo() != null &&
@@ -386,9 +383,7 @@ class ImportRekordDaneController extends Controller
                     $changeSet = $uow->getEntityChangeSet($dr);
                     unset($changeSet['lastModifiedAt']);
                     if ($nowy) {
-
                     } else {
-
                     }
                     if (count($changeSet) > 0) {
                         $totalmsg[] = "\n".($nowy ? 'Utworzono dane' : 'Uzupełniono dane ').' dla  '.$dr->getLogin().
@@ -405,7 +400,6 @@ class ImportRekordDaneController extends Controller
                     }
 
                     if ($nowy) {
-
                     } else {
                         if (isset($changeSet['departament'])) {
                             //zmiana departamentu
@@ -417,8 +411,6 @@ class ImportRekordDaneController extends Controller
                             $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
                         }*/
                     }
-
-
                 }
 
                 if ($dr->getLogin() === 'kamil_jakacki') {
@@ -426,7 +418,6 @@ class ImportRekordDaneController extends Controller
                     //die('nie zapisuje bo kamil_jakacki');
                 }
             }
-
         }
         if (count($totalmsg) > 0) {
             $this->addFlash('warning', implode('<br>', $totalmsg));
@@ -452,8 +443,10 @@ class ImportRekordDaneController extends Controller
         }
         $em->flush();
 
-        return $this->render('ParpMainBundle:DaneRekord:showData.html.twig',
-            ['data' => $errors, 'msg' => implode('<br>', $totalmsg), 'saNowi' => $saNowi]);
+        return $this->render(
+            'ParpMainBundle:DaneRekord:showData.html.twig',
+            ['data' => $errors, 'msg' => implode('<br>', $totalmsg), 'saNowi' => $saNowi]
+        );
         //return $this->redirect($this->generateUrl('danerekord'));
     }
 
@@ -487,8 +480,12 @@ class ImportRekordDaneController extends Controller
         if ((isset($changeSet['imie']) || isset($changeSet['nazwisko'])) && !$nowy) {
             //zmiana imienia i nazwiska
             $entry->setCn($this->get('samaccountname_generator')
-                ->generateFullname($dr->getImie(), $dr->getNazwisko(), $poprzednieDane->getImie(),
-                    $poprzednieDane->getNazwisko()));
+                ->generateFullname(
+                    $dr->getImie(),
+                    $dr->getNazwisko(),
+                    $poprzednieDane->getImie(),
+                    $poprzednieDane->getNazwisko()
+                ));
         }
 
         if ($nowy || $dr->getUmowaDo()) {
@@ -506,13 +503,9 @@ class ImportRekordDaneController extends Controller
         if ($department == null) {
             echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
         } else {
-
             if ($nowy || isset($changeSet['departament'])) {
-
-
                 $entry->setDepartment($department->getName());
                 $entry->setGrupyAD($department);
-
             }
 
             //CN=Slawek Chlebowski, OU=BA,OU=Zespoly, OU=PARP Pracownicy, DC=AD,DC=TEST
@@ -531,7 +524,6 @@ class ImportRekordDaneController extends Controller
             }
             //var_dump($entry->getCn(),  $dr->getImie(), $dr->getNazwisko(), $dn);
             $entry->setDistinguishedname($dn);
-
         }
         //$entry->setDivision();//TODO:
         if ($nowy || isset($changeSet['stanowisko'])) {
@@ -581,7 +573,6 @@ class ImportRekordDaneController extends Controller
         $miesiac = 1;
         $rok = 2012;
         die($sql);
-
     }
 
     /**
@@ -667,7 +658,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function departamenty_poprawAction()
+    public function departamentyPoprawAction()
     {
         $sciecha = '';
 
@@ -687,7 +678,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         ->getRepository('ParpMainBundle:Departament')
                         ->findOneByNameInRekord($this->parseValue($row['OPIS'], false));
                 if ($d) {
-
                     $d->setNameInRekord($this->parseValue($row['KOD']));
                     $this->getDoctrine()->getManager()->persist($d);
                 }
@@ -738,7 +728,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     }
 
 
-    protected function my_mb_ucfirst($str)
+    protected function myMbUcfirst($str)
     {
         $fc = mb_strtoupper(mb_substr($str, 0, 1, 'UTF-8'), 'UTF-8');
 
@@ -748,7 +738,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     public function parseValue($v, $fupper = true)
     {
         $v = iconv('WINDOWS-1250', 'UTF-8', $v);
-        $v = $fupper ? $this->my_mb_ucfirst(mb_strtolower($v, 'UTF-8')) : mb_strtolower($v, 'UTF-8');
+        $v = $fupper ? $this->myMbUcfirst(mb_strtolower($v, 'UTF-8')) : mb_strtolower($v, 'UTF-8');
 
         return trim($v);
     }
@@ -756,13 +746,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     public function parseNazwiskoValue($v, $fupper = true)
     {
         $v = iconv('WINDOWS-1250', 'UTF-8', $v);
-        $v = $fupper ? $this->my_mb_ucfirst(mb_strtolower($v, 'UTF-8')) : mb_strtolower($v, 'UTF-8');
+        $v = $fupper ? $this->myMbUcfirst(mb_strtolower($v, 'UTF-8')) : mb_strtolower($v, 'UTF-8');
 
         $ps = explode('-', $v);
         $ret = [];
         foreach ($ps as $p) {
             if (trim($p) !== '') {
-                $ret[] = trim($this->my_mb_ucfirst(mb_strtolower($p, 'UTF-8')));
+                $ret[] = trim($this->myMbUcfirst(mb_strtolower($p, 'UTF-8')));
             }
         }
 
@@ -799,8 +789,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
     protected function executeQueryIbase($sql)
     {
-        if ($db = \ibase_connect('localhost:/var/www/parp/PARP_KP.FDB', 'SYSDBA',
-            'masterkey')
+        if ($db = \ibase_connect(
+            'localhost:/var/www/parp/PARP_KP.FDB',
+            'SYSDBA',
+            'masterkey'
+        )
         ) {
             //echo 'Connected to the database.';
 
@@ -822,9 +815,9 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         }
     }
 
-    function outputCSV($data)
+    public function outputCSV($data)
     {
-        $outputBuffer = fopen('php://output', 'w');
+        $outputBuffer = fopen('php://output', 'bw');
         foreach ($data as $val) {
             fputcsv($outputBuffer, $val, ';');
         }
@@ -891,7 +884,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 'data'       => $data,
                 'przelozeni' => $ldap->getPrzelozeni(),
                 'sekcje'     => $sections,
-            ]);
+            ]
+        );
     }
 
     protected function getUserFromAllAD($dr)
@@ -928,7 +922,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         }
 
         return $ret;
-
     }
 
     /**
@@ -1008,8 +1001,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         ->findOneByName($userFromAD[0]['department']);
                 $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByName($userFromAD[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska =
-                    $ldapService->getGrupyUsera($userFromAD[0], $oldDepartament->getShortname(),
-                        ($section ? $section->getShortname() : ''));
+                    $ldapService->getGrupyUsera(
+                        $userFromAD[0],
+                        $oldDepartament->getShortname(),
+                        ($section ? $section->getShortname() : '')
+                    );
                 $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
             }
 
@@ -1020,8 +1016,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $entry->setDepartment($departament->getName());
             $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByName($dane['form']['info']);
             $grupyNaPodstawieSekcjiOrazStanowiska =
-                $ldapService->getGrupyUsera(['title' => $daneRekord->getStanowisko()], $departament->getShortname(),
-                    ($section ? $section->getShortname() : ''));
+                $ldapService->getGrupyUsera(
+                    ['title' => $daneRekord->getStanowisko()],
+                    $departament->getShortname(),
+                    ($section ? $section->getShortname() : '')
+                );
             $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
 
             if ($dane['form']['accountExpires'] !== '') {
@@ -1045,8 +1044,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $userzasoby = $objectManager->getRepository('ParpMainBundle:UserZasoby')
                     ->findBy(['samaccountname' => $samaccountname]);
 
-                foreach($userzasoby as $uz){
-                    if($uz->getZasob() && !in_array($uz->getZasob()->getAdministratorZasobu(), $administratorzy, true)){
+                foreach ($userzasoby as $uz) {
+                    if ($uz->getZasob() && !in_array($uz->getZasob()->getAdministratorZasobu(), $administratorzy, true)) {
                         $administratorzy[] = $uz->getZasob()->getAdministratorZasobu();
                     }
                 }

@@ -46,7 +46,7 @@ class Engagement
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa zaangażowania musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa zaangażowania musi zawierać maxymalnie do {{ limit }} znaków.") 
+     *      maxMessage = "Nazwa zaangażowania musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
      * @APY\DataGridBundle\Grid\Mapping\Column(field="name", title="Nazwa finansowania")
      */
@@ -63,7 +63,7 @@ class Engagement
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -86,14 +86,15 @@ class Engagement
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
         return $this->name;
     }
 
-    public function __toString(){
+    public function __toString()
+    {
         return $this->name;
     }
     /**
@@ -130,7 +131,7 @@ class Engagement
     /**
      * Get users
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUsers()
     {

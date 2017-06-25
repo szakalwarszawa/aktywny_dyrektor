@@ -4,7 +4,9 @@ namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
+;
 
 
 // ALe można tez wymusic unikalnośc 2 pól na raz
@@ -40,7 +42,7 @@ class Departament
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
-     * 
+     *
      */
     private $id;
     
@@ -179,7 +181,7 @@ class Departament
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -202,7 +204,7 @@ class Departament
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -225,7 +227,7 @@ class Departament
     /**
      * Get shortname
      *
-     * @return string 
+     * @return string
      */
     public function getShortname()
     {
@@ -255,7 +257,8 @@ class Departament
     {
         return $this->deletedAt;
     }
-    public function __toString(){
+    public function __toString()
+    {
         return $this->name;
     }
 

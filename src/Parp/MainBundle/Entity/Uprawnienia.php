@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+
 use APY\DataGridBundle\Grid\Mapping as GRID;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -86,7 +87,7 @@ class Uprawnienia
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -109,7 +110,7 @@ class Uprawnienia
     /**
      * Get opis
      *
-     * @return string 
+     * @return string
      */
     public function getOpis()
     {
@@ -153,7 +154,7 @@ class Uprawnienia
     /**
      * Get grupy
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getGrupy()
     {
@@ -176,7 +177,7 @@ class Uprawnienia
     /**
      * Get czy_sekcja
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getCzySekcja()
     {
@@ -199,13 +200,14 @@ class Uprawnienia
     /**
      * Get czy_edycja
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getCzyEdycja()
     {
         return $this->czy_edycja;
     }
-    public function __toString(){
+    public function __toString()
+    {
         return $this->getOpis();
     }
 
@@ -218,10 +220,10 @@ class Uprawnienia
      */
     public function setGrupyHistoriaZmian($grupyHistoriaZmian = null)
     {
-        if($grupyHistoriaZmian === null){
+        if ($grupyHistoriaZmian === null) {
             $grupyHistoriaZmian = array();
-            foreach($this->getGrupy() as $g){
-                $grupyHistoriaZmian[] = $g->getOpis();    
+            foreach ($this->getGrupy() as $g) {
+                $grupyHistoriaZmian[] = $g->getOpis();
             }
             $grupyHistoriaZmian = implode(",", $grupyHistoriaZmian);
         }
@@ -244,7 +246,8 @@ class Uprawnienia
      * @@ORM\PrePersist()
      * @@ORM\PreUpdate()
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
         //die('a');
         $this->setGrupyHistoriaZmian();
         //die($this->getUprawnieniaHistoriaZmian());

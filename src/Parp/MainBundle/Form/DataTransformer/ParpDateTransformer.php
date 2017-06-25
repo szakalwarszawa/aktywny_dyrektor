@@ -5,7 +5,6 @@ use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Doctrine\Common\Persistence\ObjectManager;
 
-
 class ParpDateTransformer implements DataTransformerInterface
 {
 
@@ -52,8 +51,8 @@ class ParpDateTransformer implements DataTransformerInterface
             return null;
         }
         //echo ".".$datestr;
-        if(strstr($datestr, " ") === false){
-            $d = explode(" ",$datestr);
+        if (strstr($datestr, " ") === false) {
+            $d = explode(" ", $datestr);
             $datestr = $d[0]." 00:00:00";
         }
         $date = \DateTime::createFromFormat($this->input_format, $datestr);

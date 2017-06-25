@@ -30,5 +30,4 @@ class UprawnieniaRepository extends EntityRepository
         
         return $results;
     }
-
 }

@@ -47,30 +47,39 @@ class DevController extends Controller
      */
     public function testAdLib3Action()
     {
-        $samaccountname = "zbigniew_organisciak";
+        $samaccountname = 'zbigniew_organisciak';
         $ldap = $this->get('ldap_service');
-        
-        
-        $ADManager = $ldap->getUserFromAD(null, "Magdalena Warecka");
-        if(count($ADManager) > 0) echo "Magdalena Warecka jest ";
-        $ADManager = $ldap->getUserFromAD(null, "Warecka Magdalena");
-        if(count($ADManager) > 0) echo "Warecka Magdalena jest ";
-        
-        
-        $ADManager = $ldap->getUserFromAD(null, "Marszałek Artur");
-        if(count($ADManager) > 0) echo "Marszałek Artur jest ";
-        $ADManager = $ldap->getUserFromAD(null, "Artur Marszałek");
-        if(count($ADManager) > 0) echo "Artur Marszałek jest ";
+
+
+        $ADManager = $ldap->getUserFromAD(null, 'Magdalena Warecka');
+        if (count($ADManager) > 0) {
+            echo 'Magdalena Warecka jest ';
+        }
+        $ADManager = $ldap->getUserFromAD(null, 'Warecka Magdalena');
+        if (count($ADManager) > 0) {
+            echo 'Warecka Magdalena jest ';
+        }
+
+
+        $ADManager = $ldap->getUserFromAD(null, 'Marszałek Artur');
+        if (count($ADManager) > 0) {
+            echo 'Marszałek Artur jest ';
+        }
+        $ADManager = $ldap->getUserFromAD(null, 'Artur Marszałek');
+        if (count($ADManager) > 0) {
+            echo 'Artur Marszałek jest ';
+        }
         //print_r($ADManager);
         die();
-        
-        
+
+
         $userGroups = $ldap->getAllUserGroupsRecursivlyFromAD($samaccountname);
-        echo "<pre>"; print_r($userGroups); die();
+        echo '<pre>';
+        print_r($userGroups);
         die();
-        
+        die();
     }
-    
+
     /**
      * @Route("/sprawdzPodgrupy/{grupa}", name="sprawdzPodgrupy")
      * @Template()
@@ -93,26 +102,27 @@ class DevController extends Controller
             //'sso' => false,
         );
         $adldap = new \Adldap\Adldap($configuration);
-        
+
         echo("<pre>\n");
-        
+
         $gr = 'SGG-ZZP-PUBLIC-RO';
         $gr = 'INT-BI';
-        
-        $gr = "marcin_lipinski";
-        $group = "*–Umowy-*";
-        
+
+        $gr = 'marcin_lipinski';
+        $group = '*–Umowy-*';
+
         $result = $adldap->group()->find($grupa);
-        print_r($result); 
-        die(); 
-        
-        
-        
+        print_r($result);
+        die();
+
+
+
         $result = $adldap->search()->recursive(true)->where('CN', '=', $gr/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
-        print_r($result); die(); 
+        print_r($result);
+        die();
         /*
         $ldap = $this->get('ldap_service');;
-        
+
         $ret = $ldap->getAllUserGroupsRecursivlyFromADbeasedOnGroup($grupa);
         var_dump($ret); die();
         */
@@ -139,29 +149,30 @@ class DevController extends Controller
             //'sso' => false,
         );
         $adldap = new \Adldap\Adldap($configuration);
-        
+
         echo("<pre>\n");
-        
+
         $gr = 'SGG-ZZP-PUBLIC-RO';
         $gr = 'INT-BI';
-        
-        $gr = "marcin_lipinski";
-        $group = "*–Umowy-*";
-        
+
+        $gr = 'marcin_lipinski';
+        $group = '*–Umowy-*';
+
         $result = $adldap->group()->find($group);
-        ///print_r($result); die(); 
-        
-        
-        
+        ///print_r($result); die();
+
+
+
         $result = $adldap->search()->recursive(false)->where('cn', '=', 'INT Winadmin'/* '=' , 'SGG-ZZP-PUBLIC-RO' */)->get(); //->user()->groups($gr);
-        print_r($result); die();   
+        print_r($result);
+        die();
 /*
             $collection = $ad->user()->find('kamil_jakacki');//infoCollection('kamil_jakacki');
             print_r($collection->memberOf);
             print_r($collection->displayName);
-        
+
 */
-        
+
         //$results = $ad->search()->all();
         die('testAdLib2');
     }
@@ -179,81 +190,82 @@ class DevController extends Controller
           'admin_username'        => 'aktywny_dyrektor',
           'admin_password'        => 'abcd@123',
         ];
-        
+
         // Create a new connection provider.
         $provider = new \Adldap\Connections\Provider($config);
-        
+
         // Construct new Adldap instance.
         $ad = new \Adldap\Adldap();
-        
+
         // Add the provider to Adldap.
         $ad->addProvider('default', $provider);
-        
+
         // Try connecting to the provider.
         try {
             // Connect using the providers name.
             $ad->connect('default');
-        
+
             // Create a new search.
             $search = $provider->search();
-        
-        
+
+
 /*
-        
+
             $marcin = $search->where('samaccountname','=','marcin_lipinski')->get();
-            
+
             echo "<br><pre>"; print_r($marcin); echo "</pre>";
             die();
 */
 
             //"sgg-zzp-public-ro"
-            $grupa = $search->recursive(true)->where('CN', '=' , 'PRAKTYKI-ZID')->get();
-        
-            echo "<br><pre>"; print_r($grupa->all()); echo "</pre>"; die();
+            $grupa = $search->recursive(true)->where('CN', '=', 'PRAKTYKI-ZID')->get();
+
+            echo '<br><pre>';
+            print_r($grupa->all());
+            echo '</pre>';
+            die();
             //echo "<br><pre>"; print_r($grupa); echo "</pre>";
-        
-        
-        
-        
-        
-        
+
+
+
+
+
+
             // Retrieve all groups.
             //$results = $search->groups()->get();
             // This would retrieve all records from AD inside a new Adldap\Objects\Paginator instance.
             $paginator = $search->groups()->paginate(200, 0);
-            
+
             // Returns total number of pages, int
             $paginator->getPages();
-            
+
             // Returns current page number, int
             $paginator->getCurrentPage();
-            
+
             // Returns the amount of entries allowed per page, int
             $paginator->getPerPage();
-            
+
             // Returns all of the results in the entire paginated result
             $results = $paginator->getResults();
-            
+
             // Returns the total amount of retrieved entries, int
             $paginator->count();
 
 
             // Iterate over the results like normal
-            foreach($paginator as $result)
-            {
-                echo "<br><pre>"; print_r($result->getMemberNames()); echo "</pre>";
+            foreach ($paginator as $result) {
+                echo '<br><pre>';
+                print_r($result->getMemberNames());
+                echo '</pre>';
             }
-            
-            //echo "<pre>"; print_r($results); 
+
+            //echo "<pre>"; print_r($results);
             die();
-            
         } catch (\Adldap\Exceptions\Auth\BindException $e) {
-        
             // There was an issue binding / connecting to the server.
-        
         }
     }
-    
+
     /**
      * @Route("/pokazAll", name="pokazAll")
      * @Template()
@@ -263,8 +275,10 @@ class DevController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
         $sqls = [];
-        echo "<pre>"; print_r($ADUsers); die();
-        
+        echo '<pre>';
+        print_r($ADUsers);
+        die();
+
         die();
     }
     /**
@@ -278,18 +292,27 @@ class DevController extends Controller
         $ADUsers = $ldap->getAllFromAD();
         $sqls = [];
         //print_r($ADUsers); die();
-        $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski",
-        "agnieszka_radomska", "agnieszka_promianows"];
-        foreach($ADUsers as $u){
-            $sam = str_replace("'", "", $u['samaccountname']);
-            if(!in_array($sam, $pomijaj)){
+        $pomijaj = [
+            'chuck_norris',
+            'kamil_wirtualny',
+            'ndes-user',
+            'teresa_oneill',
+            'aktywny_dyrektor',
+            'marcin_lipinski',
+            'agnieszka_radomska',
+            'agnieszka_promianows'
+        ];
+        foreach ($ADUsers as $u) {
+            $sam = str_replace("'", '', $u['samaccountname']);
+            if (!in_array($sam, $pomijaj)) {
                 $sqls[] = "INSERT INTO `entry` (`department`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
-    ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
+    ('Biuro Administracji', 'CN=".str_replace("'", '', $u['name']).
+                    ',OU='.$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
             }
         }
-        $sql = implode(" ", $sqls);
+        $sql = implode(' ', $sqls);
         $em = $this->getDoctrine()->getEntityManager();
-        $em->getConnection()->exec( $sql );
+        $em->getConnection()->exec($sql);
 /*
         $connection = $em->getConnection();
         $statement = $connection->prepare();
@@ -297,7 +320,7 @@ class DevController extends Controller
         $statement->execute();
         $results = $statement->fetchAll();
 */
-        
+
         echo implode("\n\n<br><br>", $sqls);
         die();
         die('przeniesWszystkich');
@@ -308,38 +331,40 @@ class DevController extends Controller
      */
     public function usunWszystkichAction()
     {
-        if(in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+        if (in_array('PARP_ADMIN', $this->getUser()->getRoles())) {
             $ldap = $this->get('ldap_service');
             $ldapAdmin = $this->get('ldap_admin_service');
             $ADUsers = $ldap->getAllFromAD();
             $dns = [];
             //print_r($ADUsers); die();
-            $pomijaj = ["chuck_norris", "kamil_wirtualny", "ndes-user", "aktywny_dyrektor", 
+            $pomijaj = [
+                'chuck_norris',
+                'kamil_wirtualny',
+                'ndes-user',
+                'aktywny_dyrektor',
             //"marcin_lipinski",
             ];
-            foreach($ADUsers as $u){
-                $sam = str_replace("'", "", $u['samaccountname']);
-                if(!in_array($sam, $pomijaj)){
+            foreach ($ADUsers as $u) {
+                $sam = str_replace("'", '', $u['samaccountname']);
+                if (!in_array($sam, $pomijaj)) {
                     /*$sqls[] = "INSERT INTO `entry` (`department`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
         ('Biuro Administracji', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
         */
                     $dn = $u['distinguishedname'];//"CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST";
                     $dns[] = $dn;
                     $ldapAdmin->deleteEntity($dn);
-            
                 }
             }
-            $sql = "update entry set daneRekord_id = null;delete from entry; delete from dane_rekord;";
-            
+            $sql = 'update entry set daneRekord_id = null;delete from entry; delete from dane_rekord;';
+
             $em = $this->getDoctrine()->getEntityManager();
-            $em->getConnection()->exec( $sql );
-            echo "wykonal sql";
+            $em->getConnection()->exec($sql);
+            echo 'wykonal sql';
             echo implode("\n\n<br><br>", $dns);
-            
         }
         die('usunWszystkichAction');
     }
-    
+
     /**
      * @Route("/ustawManagera", name="ustawManagera")
      * @Template()
@@ -350,18 +375,19 @@ class DevController extends Controller
         $ADUsers = $ldap->getAllFromAD();
         $sqls = [];
         //print_r($ADUsers); die();
-        $pomijaj = ["ndes-user"];//["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski", "agnieszka_radomska", "agnieszka_promianows"];
-        foreach($ADUsers as $u){
-            $sam = str_replace("'", "", $u['samaccountname']);
-            if(!in_array($sam, $pomijaj)){
+        $pomijaj = ['ndes-user'];//["chuck_norris", "kamil_wirtualny", "ndes-user", "teresa_oneill", "aktywny_dyrektor", "marcin_lipinski", "agnieszka_radomska", "agnieszka_promianows"];
+        foreach ($ADUsers as $u) {
+            $sam = str_replace("'", '', $u['samaccountname']);
+            if (!in_array($sam, $pomijaj)) {
                 $sqls[] = "INSERT INTO `entry` (`manager`, `distinguishedname`, `fromWhen`, `isImplemented`, `samaccountname`) VALUES
-    ('Aleksjew Martyna', 'CN=".str_replace("'", "", $u['name']).",OU=".$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
+    ('Aleksjew Martyna', 'CN=".str_replace("'", '', $u['name']).
+                    ',OU='.$u['description'].",OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST', '2016-07-07 00:00:00', 0, '".$sam."');";
             }
         }
-        $sql = implode(" ", $sqls);
+        $sql = implode(' ', $sqls);
         $em = $this->getDoctrine()->getEntityManager();
-        $em->getConnection()->exec( $sql );
-        
+        $em->getConnection()->exec($sql);
+
         echo implode("\n\n<br><br>", $sqls);
         die();
         die('ustawManagera');
@@ -374,10 +400,9 @@ class DevController extends Controller
     {
         $n = $this->get('renameService')->zasobNazwa($zid);
         die($n);
-        
     }
-    
-    /** 
+
+    /**
      * @Route("/check_user_in_ad/{imienazwisko}", name="check_user_in_ad")
      * @Template()
      */
@@ -385,12 +410,12 @@ class DevController extends Controller
     {
         $ldap = $this->get('ldap_service');
         //$imienazwisko = $this->get('renameService')->fixImieNazwisko($imienazwisko);
-        
+
         $ADManager = $ldap->getUserFromAD(null, $imienazwisko);
-        if(count($ADManager) > 0){
-            echo "<br>added ".$ADManager[0]['name']."<br>";
+        if (count($ADManager) > 0) {
+            echo '<br>added '.$ADManager[0]['name'].'<br>';
             //$where[$ADManager[0]['name']] = $ADManager[0]['name'];
-        }else{
+        } else {
             throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$imienazwisko);
         }
     }
@@ -401,15 +426,15 @@ class DevController extends Controller
     public function checkAccessAction($action)
     {
         $this->get('check_access')->checkAccess($action);
-        
-        
-        
+
+
+
         $u = $this->getUser();
         echo "Array(\n\t[0] => Użytkownik posiada role:\n)\n";
         print_r($u->getRoles());
         //echo "Array(\n\t[0] => Dostep do akcji:\n)\n";
         //print_r($u->getRoles());
-        
+
         die();
     }
 
@@ -421,7 +446,7 @@ class DevController extends Controller
     {
         die('dev');
     }
-    
+
     /**
      * @Route("/addMissingOUs", name="addMissingOUs")
      * @Template()
@@ -429,11 +454,11 @@ class DevController extends Controller
     public function addMissingOUsAction()
     {
         $ls = $this->get('ldap_admin_service');
-        
+
         $ls->syncDepartamentsOUs();
         die('testou');
     }
-    
+
     /**
      * @Route("/testou", name="testou")
      * @Template()
@@ -441,11 +466,12 @@ class DevController extends Controller
     public function testouAction()
     {
         $ls = $this->get('ldap_admin_service');
-        
+
         $u = $ls->getUserFromAD('marcin_lipinski');
-        var_dump($u);die();
-        
-        
+        var_dump($u);
+        die();
+
+
         $ls->syncDepartamentsOUs();
         die('testou');
     }
@@ -459,17 +485,17 @@ class DevController extends Controller
         $em = $this->getDoctrine()->getManager();
         $meta = $em->getMetadataFactory()->getAllMetadata();
         $now = new \Datetime();
-        
-        $username = "undefined";
+
+        $username = 'undefined';
         $securityContext = $this->get('security.context');
         if (null !== $securityContext && null !== $securityContext->getToken() && $securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $username = ($securityContext->getToken()->getUsername());            
+            $username = ($securityContext->getToken()->getUsername());
         }
         $request = $this->get('request');
         $url = $request->getUri();
         //print_r($url);
         $route = $request->get('_route');
-        
+
         foreach ($meta as $m) {
             $all = $em->getRepository($m->getName())->findAll();
             $mn = $m->getName();//str_replace("Parp:MainBundle", "ParpMainBundle", str_replace("\\", ":", $m->getName()));
@@ -480,8 +506,8 @@ class DevController extends Controller
                ->select('e')
                ->getQuery()
                ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
-            
-            foreach($all as $e){
+
+            foreach ($all as $e) {
                 $hw = new HistoriaWersji();
                 $hw->setAction('create');
                 $hw->setLoggedAt($now);
@@ -495,13 +521,13 @@ class DevController extends Controller
                 $hw->setUrl($url);
                 $hw->setRoute($route);
                 $em->persist($hw);
-                
             }
-            
+
             $entities[] = array('name' => $m->getName(), 'count' => count($all));
         }
         $em->flush();
-        echo "<pre>"; print_r($entities);
+        echo '<pre>';
+        print_r($entities);
         die('generujCreateHistoriaWersji');
     }
     /**
@@ -512,41 +538,40 @@ class DevController extends Controller
     {
         $finder = new Finder();
         $finder->files()->in(__DIR__.'/../../../../src/*/*/Entity');
-        
+
         $unrelatedClasses = array();
-        
+
         foreach ($finder as $file) {
-            if(strpos($file->getRelativePathname(), "~") != strlen($file->getRelativePathname()) -1
-            && strstr($file->getRelativePathname(), "Repository") === false
-            && strstr($file->getRelativePathname(), "DateEntityClass") === false
-            && strstr($file->getRelativePathname(), "OrderItemDTO") === false
-            ){
-                $f = str_replace(__DIR__."/..../../src", "", $file->getRealpath());
-                $f = str_replace("/", "\\", $f);            
-                $f = str_replace(".php", "", $f);
-                if($f != '\Parp\MainBundle\Entity\HistoriaWersji'){
+            if (strpos($file->getRelativePathname(), '~') != strlen($file->getRelativePathname()) -1
+            && strstr($file->getRelativePathname(), 'Repository') === false
+            && strstr($file->getRelativePathname(), 'DateEntityClass') === false
+            && strstr($file->getRelativePathname(), 'OrderItemDTO') === false
+            ) {
+                $f = str_replace(__DIR__.'/..../../src', '', $file->getRealpath());
+                $f = str_replace('/', "\\", $f);
+                $f = str_replace('.php', '', $f);
+                if ($f != '\Parp\MainBundle\Entity\HistoriaWersji') {
                     //die($f);
                     $h = file_get_contents($file->getRealpath());
-                    
-                    if(strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")') !== false){
+
+                    if (strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")') !== false) {
                         echo ('mamy zasob Z gedmo '.$file->getRealpath());
-                    }else{
+                    } else {
                         echo('mamy zasob bez gedmo '.$file->getRealpath()."<br>\n");
                         $patterns = array (
-                            '/( \*\/)(\n)(class)/', 
+                            '/( \*\/)(\n)(class)/',
                             '/(     \*\/)(\n)(    private \$)([^i][^d])/'
                         );
                         $replace = array (
-                            ' * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$2$1$2$3', 
+                            ' * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$2$1$2$3',
                             '     * @Gedmo\\Mapping\\Annotation\\Versioned$2$1$2$3$4'
                         );
                         $h = preg_replace($patterns, $replace, $h);
                         file_put_contents($file->getRealpath(), $h);
                     }
                 }
-                
+
                 //print_r($h); die();
-                
             }
         }
         die('generujCreateHistoriaWersji');
@@ -560,28 +585,29 @@ class DevController extends Controller
     public function fixFormsAction()
     {
         $updateFiles = false;
-        
+
         $finder = new Finder();
         $finder->files()->in(__DIR__.'/../../../../src/*/*/Form');
-        
+
         foreach ($finder as $file) {
             // Print the absolute path
             print $file->getRealpath()."\n 1 ";
             $c = file_get_contents($file->getRealpath());
             $deletedAt = true;
-            if(strstr($c, "->add('deletedAt',null,array(") === false){
+            if (strstr($c, "->add('deletedAt',null,array(") === false) {
                 $deletedAt = false;
             }
-            
-            if($deletedAt){
+
+            if ($deletedAt) {
                 $s = array("->add('deletedAt',null,array(");
                 $r = array("->add('deletedAt','hidden',array(");
                 $c = str_replace($s, $r, $c);
-                if($updateFiles)
+                if ($updateFiles) {
                     file_put_contents($file->getRealpath(), $c);
+                }
             }
-            
-            print $file->getRelativePathname()."\n 3 ".($deletedAt ? "ma deleted at" : "NIE MA")." <br/>";
+
+            print $file->getRelativePathname()."\n 3 ".($deletedAt ? 'ma deleted at' : 'NIE MA').' <br/>';
         }
     }
 
@@ -604,47 +630,48 @@ class DevController extends Controller
      */
     public function getUzInfoAction()
     {
-        die("getUzInfo");
+        die('getUzInfo');
     }
-    
-    
+
+
     /**
      * @Route("/membersOf", name="membersOf")
      * @Template()
      */
     public function membersOfAction()
     {
-                
+
         // Example Output
-         
-         
-        print_r($this->get_members("INT-BA")); // Gets all members of 'Test Group'
-        print_r($this->get_members("INT-BI")); // Gets all users in 'Users'
-         
+
+
+        print_r($this->getMembers('INT-BA')); // Gets all members of 'Test Group'
+        print_r($this->getMembers('INT-BI')); // Gets all users in 'Users'
+
 /*
-        print_r($this->get_members(
+        print_r($this->getMembers(
         			array("INT-BI","INT-BA")
         		)); // EXCLUSIVE: Gets only members that belong to BOTH 'Test Group' AND 'Test Group 2'
-         
-        print_r($this->get_members(
+
+        print_r($this->getMembers(
         			array("INT-BI","INT-BA"),TRUE
         		)); // INCLUSIVE: Gets members that belong to EITHER 'Test Group' OR 'Test Group 2'
-        
+
 */
-        //$gs = $this->get('ldap_service')->getMembersOfGroupFromAD("INT-BI"); 
-        die("membersOf");
+        //$gs = $this->get('ldap_service')->getMembersOfGroupFromAD("INT-BI");
+        die('membersOf');
     }
-    
-    protected function get_members($group=FALSE,$inclusive=FALSE) {
+
+    protected function getMembers($group = false, $inclusive = false)
+    {
         // Active Directory server
         $ldap_host = $this->getParameter('ad_host');
-     
+
         // Active Directory DN
-        $ldap_dn_grup = "OU=Grupy,DC=AD,DC=TEST";
-        $ldap_dn_userow = "OU=Parp Pracownicy,DC=AD,DC=TEST";
-     
+        $ldap_dn_grup = 'OU=Grupy,DC=AD,DC=TEST';
+        $ldap_dn_userow = 'OU=Parp Pracownicy,DC=AD,DC=TEST';
+
         // Domain, for purposes of constructing $user
-        $ldap_usr_dom = "@AD.TEST";
+        $ldap_usr_dom = '@AD.TEST';
         //die($ldap_usr_dom);
         $ldap_username = $this->getParameter('ad_user');
         $ldap_password = $this->getParameter('ad_password');
@@ -652,95 +679,109 @@ class DevController extends Controller
         $user = $ldap_username;
         $password = $ldap_password;
         //die("$user $password");
-     
+
         // User attributes we want to keep
         // List of User Object properties:
         // http://www.dotnetactivedirectory.com/Understanding_LDAP_Active_Directory_User_Object_Properties.html
         $keep = array(
-            "name",
-            "mail",
-            "initials",
-            "title",
-            "info",
-            "department",
-            "description",
-            "division",
-            "lastlogon",
-            "samaccountname",
-            "manager",
-            "thumbnailphoto",
-            "accountExpires",
-            "useraccountcontrol",
-            "distinguishedName",
-            "cn",
+            'name',
+            'mail',
+            'initials',
+            'title',
+            'info',
+            'department',
+            'description',
+            'division',
+            'lastlogon',
+            'samaccountname',
+            'manager',
+            'thumbnailphoto',
+            'accountExpires',
+            'useraccountcontrol',
+            'distinguishedName',
+            'cn',
             'memberOf',
             'useraccountcontrol'
         );
-     
+
         // Connect to AD
-        $ldap = ldap_connect($ldap_host) or die("Could not connect to LDAP");
-        ldap_bind($ldap,$user.$ldap_usr_dom,$password) or die("Could not bind to LDAP");
-     
-     	// Begin building query
-     	if($group) $query = "(&"; else $query = "";
-     
-     	$query .= "(objectClass=User)";
-     
-        // Filter by memberOf, if group is set
-        if(is_array($group)) {
-        	// Looking for a members amongst multiple groups
-        		if($inclusive) {
-        			// Inclusive - get users that are in any of the groups
-        			// Add OR operator
-        			$query .= "(|";
-        		} else {
-    				// Exclusive - only get users that are in all of the groups
-    				// Add AND operator
-    				$query .= "(&";
-        		}
-     
-        		// Append each group
-        		foreach($group as $g) $query .= "(memberOf=CN=$g,$ldap_dn_grup)";
-     
-        		$query .= ")";
-        } elseif($group) {
-        	// Just looking for membership of one group
-        	$query .= "(memberOf=CN=$group,$ldap_dn_grup)";
+        $ldap = ldap_connect($ldap_host) or die('Could not connect to LDAP');
+        ldap_bind($ldap, $user.$ldap_usr_dom, $password) or die('Could not bind to LDAP');
+
+        // Begin building query
+        if ($group) {
+            $query = '(&';
+        } else {
+            $query = '';
         }
-     
+
+        $query .= '(objectClass=User)';
+
+        // Filter by memberOf, if group is set
+        if (is_array($group)) {
+            // Looking for a members amongst multiple groups
+            if ($inclusive) {
+                // Inclusive - get users that are in any of the groups
+                // Add OR operator
+                $query .= '(|';
+            } else {
+                // Exclusive - only get users that are in all of the groups
+                // Add AND operator
+                $query .= '(&';
+            }
+
+                // Append each group
+            foreach ($group as $g) {
+                $query .= "(memberOf=CN=$g,$ldap_dn_grup)";
+            }
+
+                $query .= ')';
+        } elseif ($group) {
+            // Just looking for membership of one group
+            $query .= "(memberOf=CN=$group,$ldap_dn_grup)";
+        }
+
         // Close query
-        if($group) $query .= ")"; else $query .= "";
+        if ($group) {
+            $query .= ')';
+        } else {
+            $query .= '';
+        }
      //$query = "cn=$group";
-     
+
      //(&(objectClass=User)(memberOf=CN=myGroup,OU=MyContainer,DC=myOrg,DC=local))
-    	// Uncomment to output queries onto page for debugging
-    	print_r($query);
-     
+        // Uncomment to output queries onto page for debugging
+        print_r($query);
+
         // Search AD
-        $results = ldap_search($ldap,$ldap_dn_userow,$query);
+        $results = ldap_search($ldap, $ldap_dn_userow, $query);
         $entries = ldap_get_entries($ldap, $results);
-     
+
         // Remove first entry (it's always blank)
         array_shift($entries);
-     
+
         $output = array(); // Declare the output array
-     
+
         $i = 0; // Counter
         // Build output array
-        foreach($entries as $u) {
-            foreach($keep as $x) {
-            	// Check for attribute
-        		if(isset($u[$x][0])) $attrval = $u[$x][0]; else $attrval = NULL;
-     
-            	// Append attribute to output array
-            	$output[$i][$x] = $attrval;
+        foreach ($entries as $u) {
+            foreach ($keep as $x) {
+                // Check for attribute
+                if (isset($u[$x][0])) {
+                    $attrval = $u[$x][0];
+                } else {
+                    $attrval = null;
+                }
+
+                // Append attribute to output array
+                $output[$i][$x] = $attrval;
             }
             $i++;
         }
-     
+
         return $output;
     }
- 
+
     /**
      * @Route("/getAdGroups", name="getAdGroups")
      * @Template()
@@ -748,13 +789,12 @@ class DevController extends Controller
     public function getAdGroupsAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-        
-        
+
+
         $exists = $this->get('ldap_service')->checkGroupExistsFromAD(null);
-                
     }
-    
-    
+
+
     /**
      * @Route("/checkAdGroups", name="checkAdGroups")
      * @Template()
@@ -762,35 +802,35 @@ class DevController extends Controller
     public function checkAdGroupsAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-        
+
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
         $ret = array('sa' => array(), 'sa multi' => array(), 'nie ma' => array());
         $retall = array();
         $itek = 0;
-        foreach($zasoby as $z){
-            if($itek++ < 100000){
+        foreach ($zasoby as $z) {
+            if ($itek++ < 100000) {
                 //echo ".".substr($z->getNazwa(), 0, 2).".";
                 //echo($z->parseZasobGroupName());
                 $exists = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName());
-                
-                $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RO");
-                $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-RW");
-                $existsP = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName()."-P");
-                
+
+                $existsRO = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName().'-RO');
+                $existsRW = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName().'-RW');
+                $existsP = $this->get('ldap_service')->checkGroupExistsFromAD($z->parseZasobGroupName().'-P');
+
                 $liczba = ($exists ? 1 : 0) + ($existsRO ? 1 : 0) + ($existsRW ? 1 : 0) + ($existsP ? 1 : 0);
-                
-                
-                
-                if($liczba == 0){
+
+
+
+                if ($liczba == 0) {
                     $ret['nie ma']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."' ani -RO ani -RW ani -P";
-                }else{
-                    if($liczba == 1){
+                } else {
+                    if ($liczba == 1) {
                         $ret['sa']["'".$z->getNazwa()."'"] = "'".$z->parseZasobGroupName()."'";
-                    }else{
-                        $sa = $exists ? "'".$z->parseZasobGroupName()."'" : " ";
-                        $sa .= $existsRO ? "'".$z->parseZasobGroupName()."-RO"."'" : " ";
-                        $sa .= $existsRW ? "'".$z->parseZasobGroupName()."-RW"."'" : " ";
-                        $sa .= $existsP ? "'".$z->parseZasobGroupName()."-P"."'" : " ";
+                    } else {
+                        $sa = $exists ? "'".$z->parseZasobGroupName()."'" : ' ';
+                        $sa .= $existsRO ? "'".$z->parseZasobGroupName().'-RO'."'" : ' ';
+                        $sa .= $existsRW ? "'".$z->parseZasobGroupName().'-RW'."'" : ' ';
+                        $sa .= $existsP ? "'".$z->parseZasobGroupName().'-P'."'" : ' ';
                         $ret['sa multi']["'".$z->getNazwa()."'"] = $sa;
                     }
                 }
@@ -803,50 +843,53 @@ class DevController extends Controller
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">Nie istnieja w AD (pojedyncze grupy) - '.count($ret['nie ma']).':</a>
                       </h4>
                     </div>';
-        $html .= '<div id="collapse1" class="panel-collapse collapse in"><div class="panel-body"><pre>'.print_r($ret['nie ma'], true)."</pre></div></div>";
-        
+        $html .= '<div id="collapse1" class="panel-collapse collapse in"><div class="panel-body"><pre>'.print_r($ret['nie ma'], true).
+            '</pre></div></div>';
+
         $html .= '<div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse3">Istnieja w AD (pojedyncze grupy) - '.count($ret['sa']).':</a>
                       </h4>
                     </div>';
-        $html .= '<div id="collapse3" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa'], true)."</pre></div></div>";
-        
+        $html .= '<div id="collapse3" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa'], true).
+            '</pre></div></div>';
+
         $html .= '<div class="panel panel-default">
                     <div class="panel-heading">
                       <h4 class="panel-title">
                         <a data-toggle="collapse" data-parent="#accordion" href="#collapse4">Istnieja w AD (multi grupy) - '.count($ret['sa multi']).':</a>
                       </h4>
                     </div>';
-        $html .= '<div id="collapse4" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa multi'], true)."</pre></div></div>";
-        
-        $html .= "</div>";        
+        $html .= '<div id="collapse4" class="panel-collapse collapse"><div class="panel-body"><pre>'.print_r($ret['sa multi'], true).
+            '</pre></div></div>';
+
+        $html .= '</div>';
 /*
         echo "</pre><h1>Nie istnieja w AD (SG grupy):</h1><pre>";
-        
+
         print_r($ret['nie ma SG']);
-        
+
         echo "</pre><h1>Istnieja w AD (pojedyncze grupy):</h1><pre>";
-        
+
         print_r($ret['sa SG']);
-        
+
         echo "</pre><h1>Istnieja w AD (SG grupy):</h1><pre>";
-        
+
         print_r($ret['sa']);
 */
-        
-        
-        
-        return array('html' => $html);    
+
+
+
+        return array('html' => $html);
     }
-    protected function parseZasobGroupName(){
-        
+    protected function parseZasobGroupName()
+    {
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * @Route("/fixZasobyWlascicieliAdminow", name="fixZasobyWlascicieliAdminow")
      * @Template()
@@ -856,64 +899,63 @@ class DevController extends Controller
         $em = $this->getDoctrine()->getEntityManager();
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
         $i = 0;
-        foreach($zasoby as $z){
+        foreach ($zasoby as $z) {
             $r = $this->fixLudzi($z->getWlascicielZasobu());
             $z->setWlascicielZasobuEcm($z->getWlascicielZasobu());
             $z->setWlascicielZasobuZgubieni($r['zgubieni']);
             $z->setWlascicielZasobu($r['ludzie']);
-            
+
             $r = $this->fixLudzi($z->getAdministratorZasobu());
             $z->setAdministratorZasobuEcm($z->getAdministratorZasobu());
             $z->setAdministratorZasobuZgubieni($r['zgubieni']);
             $z->setAdministratorZasobu($r['ludzie']);
-            
+
             $r = $this->fixLudzi($z->getAdministratorTechnicznyZasobu());
             $z->setAdministratorTechnicznyZasobuEcm($z->getAdministratorTechnicznyZasobu());
             $z->setAdministratorTechnicznyZasobuZgubieni($r['zgubieni']);
             $z->setAdministratorTechnicznyZasobu($r['ludzie']);
-            
+
             $i++;
-            if($i > 15000)
+            if ($i > 15000) {
                 die('nie doszedl do konca 15000');
+            }
         }
         $em->flush();
-                
     }
-    protected function fixLudzi($ludzie){
-        $pomijaj = ["Aktywny Dyrektor"];
+    protected function fixLudzi($ludzie)
+    {
+        $pomijaj = ['Aktywny Dyrektor'];
         $ret = [];
         $zgubieni = [];
         $ldap = $this->get('ldap_service');
         //przerobic ich na samaccountnames
-        $larr = explode(",", $ludzie);
-        foreach($larr as $l){
+        $larr = explode(',', $ludzie);
+        foreach ($larr as $l) {
             $l = trim($l);
             //na razie pomija ytych z nazwiskami w nawiasach
-            //TODO: poprawich tych z nazwiskami w nawiasach 
-            if(
-                //pomijam puste
-                $l != "" && 
+            //TODO: poprawich tych z nazwiskami w nawiasach
+            if (//pomijam puste
+                $l != '' &&
                 //pomijam ustalone wyzej
-                !in_array($l, $pomijaj) && 
+                !in_array($l, $pomijaj) &&
                 //pomijam te z nazwiskiem w nawiasie
-                //strstr($l, "(") === false && 
+                //strstr($l, "(") === false &&
                 //pomijam loginy (czyli to co juz jest ok)
-                strstr($l, "_") === false
-            ){
-                echo ("Szukam osoby ".$l."<br>");
-                $ADuser = $ldap->getUserFromAD(null, $l); 
-                if(count($ADuser) > 0){
+                strstr($l, '_') === false
+            ) {
+                echo ('Szukam osoby '.$l.'<br>');
+                $ADuser = $ldap->getUserFromAD(null, $l);
+                if (count($ADuser) > 0) {
                     $ret[] = $ADuser[0]['samaccountname'];
-                }else{
+                } else {
                     $zgubieni[] = $l;
-                    echo ("Blad 54367 nie moge znalezc osoby ".$l."<br>");
+                    echo ('Blad 54367 nie moge znalezc osoby '.$l.'<br>');
                 }
-                
             }
         }
-        return ['ludzie' => implode(",", $ret), 'zgubieni' => implode(",", $zgubieni) ];
+        return ['ludzie' => implode(',', $ret), 'zgubieni' => implode(',', $zgubieni) ];
     }
-    
+
     /**
      * @Route("/fixZasobyWlascicieliAdminowNadajMultiRole", name="fixZasobyWlascicieliAdminowNadajMultiRole")
      * @Template()
@@ -922,38 +964,38 @@ class DevController extends Controller
     {
         $em = $this->getDoctrine()->getEntityManager();
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
-        
+
         $rolaWlasciciel = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_WLASCICIEL_ZASOBOW');
         $rolaAdministrator = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_ZASOBOW');
         $rolaAdministratorTechniczny = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_TECHNICZNY_ZASOBOW');
-        
+
         $i = 0;
-        foreach($zasoby as $z){
+        foreach ($zasoby as $z) {
             $this->dodajRole($z->getWlascicielZasobu(), $rolaWlasciciel);
             $this->dodajRole($z->getAdministratorZasobu(), $rolaAdministrator);
-            $this->dodajRole($z->getAdministratorTechnicznyZasobu(), $rolaAdministratorTechniczny);            
+            $this->dodajRole($z->getAdministratorTechnicznyZasobu(), $rolaAdministratorTechniczny);
         }
         $em->flush();
     }
-    
-    protected function dodajRole($ludzie, $rola){
-        
+
+    protected function dodajRole($ludzie, $rola)
+    {
+
         $em = $this->getDoctrine()->getEntityManager();
-        
-        $arr = explode(",", $ludzie);
-        foreach($arr as $l){
+
+        $arr = explode(',', $ludzie);
+        foreach ($arr as $l) {
             $l = trim($l);
-            if($l != ""){
+            if ($l != '') {
                 $ur = new \Parp\MainBundle\Entity\AclUserRole();
                 $ur->setRole($rola);
                 $ur->setSamaccountname($l);
                 $em->persist($ur);
             }
         }
-        
     }
-    
-    
+
+
     /**
      * @Route("/fixLogins", name="fixLogins")
      * @Template()
@@ -962,15 +1004,14 @@ class DevController extends Controller
     {
         $em = $this->getDoctrine()->getEntityManager();
         $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findAll();
-        foreach($dr as $d){
+        foreach ($dr as $d) {
             $login = $this->get('samaccountname_generator')->generateSamaccountname($d->getImie(), $d->getNazwisko(), false);
             $d->setLogin($login);
         }
         $em->flush();
-        
     }
-    
-    
+
+
     /**
      * @Route("/findNamesChangedAndFix", name="findNamesChangedAndFix")
      * @Template()
@@ -978,37 +1019,36 @@ class DevController extends Controller
     public function findNamesChangedAndFixAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-        
+
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
-        
+
         $users = $this->get('ldap_service')->getAllFromAD(true);
         $i = 0;
         $errors = [];
         $zmienilem = [];
-        for($i = 0; $i < count($users); $i++){
+        for ($i = 0; $i < count($users); $i++) {
             unset($users[$i]['thumbnailphoto']);
             $u = $users[$i];
-            if(strstr($u['name'], "(") !== false){
+            if (strstr($u['name'], '(') !== false) {
                 $name = $u['name'];
-                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, "("));
-                $imie = substr($name, strpos($name, ")")+1);
+                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, '('));
+                $imie = substr($name, strpos($name, ')')+1);
                 $u['tylko_nowe_nazwisko'] = $tylko_nowe_nazwisko;
                 $u['imie'] = $imie;
-            }else{
-                
+            } else {
                 $name = $u['name'];
-                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, " "));
-                $imie = substr($name, strpos($name, " ")+1);
+                $tylko_nowe_nazwisko = substr($name, 0, strpos($name, ' '));
+                $imie = substr($name, strpos($name, ' ')+1);
                 $u['tylko_nowe_nazwisko'] = $tylko_nowe_nazwisko;
                 $u['imie'] = $imie;
             }
-            
+
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['nazwisko' => trim($u['tylko_nowe_nazwisko']), 'imie' => trim($u['imie'])]);
-            if(!$dr){
+            if (!$dr) {
                 //echo "<pre>"; print_r($z);
-                $errors[] = ("Nie mam danych rekord dla osoby ".$u['name']);
-            }else{
+                $errors[] = ('Nie mam danych rekord dla osoby '.$u['name']);
+            } else {
                 //echo "<br>zmieniam login dla ".$z['name']." na ".$z['samaccountname'];
                 $zmienilem[$dr->getLogin()] = $u['samaccountname'];
                 $dr->setLogin($u['samaccountname']);
@@ -1016,15 +1056,19 @@ class DevController extends Controller
             //echo "<pre>"; print_r($u); die();
         }
         //echo "<pre>"; print_r($zmienione); die();
-        echo "<pre>"; print_r($errors); echo "</pre>";
-        echo "<pre>"; print_r($zmienilem); echo "</pre>";
-        //echo "<pre>"; print_r($zmienione); echo "</pre>"; 
+        echo '<pre>';
+        print_r($errors);
+        echo '</pre>';
+        echo '<pre>';
+        print_r($zmienilem);
+        echo '</pre>';
+        //echo "<pre>"; print_r($zmienione); echo "</pre>";
         //die();
         $em->flush();
     }
-    
-    
-    
+
+
+
     /**
      * @Route("/checkKrakowiak", name="checkKrakowiak")
      * @Template()
@@ -1032,12 +1076,14 @@ class DevController extends Controller
     public function checkKrakowiakAction()
     {
         $users = $this->get('ldap_service')->getAllFromAD(true);
-        foreach($users as &$u){
+        foreach ($users as &$u) {
             unset($u['thumbnailphoto']);
         }
-        echo "<pre>"; print_r($users); die();
+        echo '<pre>';
+        print_r($users);
+        die();
     }
-    
+
     /**
      * @Route("/getAllUsers", name="getAllUsers")
      * @Template()
@@ -1045,31 +1091,32 @@ class DevController extends Controller
     public function getAllUsersAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-        
+
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
-        
+
         $users = $this->get('ldap_service')->getAllFromAD(false, true);
         $zostaliBezRekorda = [];
         $zostaliZRekorda = [];
-        foreach($users as $u){
+        foreach ($users as $u) {
             $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['login' => trim($u['samaccountname'])]);
-            if($dr){
+            if ($dr) {
                 $zostaliZRekorda[$u['samaccountname']] = $u['name'];
-            }else{
-                
+            } else {
                 $zostaliBezRekorda[$u['samaccountname']] = $u['name'];
             }
-            
         }
-        
-        echo "<pre>"; print_r($zostaliZRekorda); echo "<pre>"; 
-        echo "<pre>"; print_r($zostaliBezRekorda); echo "<pre>"; 
+
+        echo '<pre>';
+        print_r($zostaliZRekorda);
+        echo '<pre>';
+        echo '<pre>';
+        print_r($zostaliBezRekorda);
+        echo '<pre>';
         die();
-        
     }
-    
-    
+
+
     /**
      * @Route("/getAllUsersBySection", name="getAllUsersBySection")
      * @Template()
@@ -1077,20 +1124,20 @@ class DevController extends Controller
     public function getAllUsersBySectionAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-        $pomijac = ["n/d","ND"];
+        $pomijac = ['n/d', 'ND'];
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
         $podzialNaDepISekcje = [];
         $pominieci = [];
         $sekcje = [];
         $users = $this->get('ldap_service')->getAllFromAD(false, false);
-        foreach($users as &$u){
+        foreach ($users as &$u) {
             unset($u['thumbnailphoto']);
             $dep = $this->getOUfromDN($u);
-            if($dep != "" && $u['division'] != "" && !in_array($u['division'], $pomijac)){
+            if ($dep != '' && $u['division'] != '' && !in_array($u['division'], $pomijac)) {
                 $podzialNaDepISekcje[$dep][$u['division']] = $u;
                 $sekcje[$u['division']] = $u['division'];
-            }else{
+            } else {
                 $pominieci[] = $u;
             }
         }
@@ -1099,8 +1146,8 @@ class DevController extends Controller
         print_r($pominieci);
         die();
     }
-    
-    
+
+
     /**
      * @Route("/fixKierownikowSekcji", name="fixKierownikowSekcji")
      * @Template()
@@ -1108,31 +1155,32 @@ class DevController extends Controller
     public function fixKierownikowSekcjiAction()
     {
         $em = $this->getDoctrine()->getEntityManager();
-            
+
         $dr = $em->getRepository('ParpMainBundle:Section')->findAll();
-        foreach($dr as $d){
+        foreach ($dr as $d) {
             $kieroDn = $d->getKierownikDN();
             $ndn = $this->fixKierownikOU($kieroDn, $d->getDepartament()->getShortname());
-            echo ("<br>".$kieroDn."<br>".$ndn);
+            echo ('<br>'.$kieroDn.'<br>'.$ndn);
             $d->setKierownikDN($ndn);
         }
         $em->flush();
     }
-    
-    protected function fixKierownikOU($dn, $depOu){
-        $p = explode(",", $dn);
+
+    protected function fixKierownikOU($dn, $depOu)
+    {
+        $p = explode(',', $dn);
         $ret = [];
-        for($i = 0; $i < count($p); $i++){
-            if($i == 1){
-                $ret[] = "OU=".$depOu;
-            }else{
+        for ($i = 0; $i < count($p); $i++) {
+            if ($i == 1) {
+                $ret[] = 'OU='.$depOu;
+            } else {
                 $ret[] = $p[$i];
             }
         }
-        return implode(",", $ret);
+        return implode(',', $ret);
     }
-    
-    
+
+
     /**
      * @Route("/getAllUsersTable", name="getAllUsersTable")
      * @Template()
@@ -1140,34 +1188,36 @@ class DevController extends Controller
     public function getAllUsersTableAction()
     {
         $users = $this->get('ldap_service')->getAllFromAD(false, false);
-        foreach($users as &$u){
+        foreach ($users as &$u) {
             unset($u['thumbnailphoto']);
             //unset($u['manager']);
             //unset($u['memberOf']);
         }
         //print_r($users); die();
-        
+
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $users]);
     }
-    
-    
+
+
     /**
      * @Route("/testMerge", name="testMerge")
      * @Template()
      */
     public function testMergeAction()
     {
-        $wlasciciel1 = "kamil_jakacki,robertt_muchacki";
-        $wlasciciel2 = "artur_marszalek,andrzej_trocewicz";
-        
-        $a1 = explode(",", $wlasciciel1);
-        $a2 = explode(",", $wlasciciel2);
-        
+        $wlasciciel1 = 'kamil_jakacki,robertt_muchacki';
+        $wlasciciel2 = 'artur_marszalek,andrzej_trocewicz';
+
+        $a1 = explode(',', $wlasciciel1);
+        $a2 = explode(',', $wlasciciel2);
+
         $a3 = array_merge($a1, $a2);
-        
-        echo "<pre>"; print_r($a3); die();
+
+        echo '<pre>';
+        print_r($a3);
+        die();
     }
-    
+
     /**
      * @Route("/fixWlasciciele", name="fixWlasciciele")
      * @Template()
@@ -1175,74 +1225,76 @@ class DevController extends Controller
     public function fixWlascicieleAction()
     {
         $ldap = $this->get('ldap_service');
-        
+
         $em = $this->getDoctrine()->getManager();
         $wynik = [];
-        
+
         $zass = $em->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
         //die(".".count($zass));
-        foreach($zass as $z){
+        foreach ($zass as $z) {
             $w1 = $z->getWlascicielZasobu();
-            $ws1 = explode(",", $w1);
+            $ws1 = explode(',', $w1);
             $w2 = $z->getPowiernicyWlascicielaZasobu();
-            $ws2 = explode(",", $w2);
+            $ws2 = explode(',', $w2);
             $blad = [];
-            
-            if(count($ws1) == 0){
-                $blad[] = "Nie mam wlascicieli zasobu !!!!!";
+
+            if (count($ws1) == 0) {
+                $blad[] = 'Nie mam wlascicieli zasobu !!!!!';
             }
             //wlasciciel jest brany jako pierwszy , chyba ze znajdzie dyra ponizej
             $wlascicielI = 0;
             //szuka dyrektora
-            for($i = 0; $i < count($ws1); $i++){                
+            for ($i = 0; $i < count($ws1); $i++) {
                 $w = $ws1[$i];
                 $u = $ldap->getUserFromAD($w);
-                if($u){
+                if ($u) {
                     $stanowisko = $u[0]['title'];
-                    if(strstr($stanowisko, "yrektor") !== false){
-                        if($wlascicielI != 0){
+                    if (strstr($stanowisko, 'yrektor') !== false) {
+                        if ($wlascicielI != 0) {
                             //mam drugiego dyra!!!
-                            $blad[] = "Mam kilku dyrektorow!!!";
+                            $blad[] = 'Mam kilku dyrektorow!!!';
                         }
                         $wlascicielI = $i;
                     }
-                }else{
-                    $blad[] = "Nie moge znalezc usera w AD ".$w."!!!";
+                } else {
+                    $blad[] = 'Nie moge znalezc usera w AD '.$w.'!!!';
                 }
             }
-            if($wlascicielI == 0){                
-                $blad[] = "Nie znalazlem dyrektora , biore pierwsza osobe!!!";
+            if ($wlascicielI == 0) {
+                $blad[] = 'Nie znalazlem dyrektora , biore pierwsza osobe!!!';
             }
-            
-            
-            
+
+
+
             $wlasciciel = $ws1[$wlascicielI];
             $powiernicy = [];
-            for($i = 0; $i < count($ws1); $i++){
-                if($ws1[$i] != "" && $i == $wlascicielI)
+            for ($i = 0; $i < count($ws1); $i++) {
+                if ($ws1[$i] != '' && $i == $wlascicielI) {
                     $powiernicy[] = $ws1[$i];
+                }
             }
-            for($i = 0; $i < count($ws2); $i++){
-                if($ws2[$i] != "")
+            for ($i = 0; $i < count($ws2); $i++) {
+                if ($ws2[$i] != '') {
                     $powiernicy[] = $ws2[$i];
+                }
             }
-            
+
             $wynik[] = [
                 'zasobId' => $z->getId(),
                 'nazwa' => $z->getNazwa(),
                 'wlascicielOrg' => $z->getWlascicielZasobu(),
                 'powiernicyOrg' => $z->getPowiernicyWlascicielaZasobu(),
                 'wlasciciel' => $wlasciciel,
-                'powiernicy' => implode(",", $powiernicy),
-                'blad' => implode(",", $blad)
+                'powiernicy' => implode(',', $powiernicy),
+                'blad' => implode(',', $blad)
             ];
             $z->setWlascicielZasobu($wlasciciel);
-            $z->setPowiernicyWlascicielaZasobu(implode(",", $powiernicy));
+            $z->setPowiernicyWlascicielaZasobu(implode(',', $powiernicy));
             //echo "<pre>"; $z->getId(); echo "</pre>";
             //echo "<pre>"; print_r($ws1); echo "</pre>";
             //echo "<pre>"; print_r($ws2); echo "</pre>";
         }
-        
+
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
         //die();
     }
@@ -1255,7 +1307,7 @@ class DevController extends Controller
         $ldap = $this->get('ldap_service');
         $dyrs = $ldap->getDyrektorow();
         $ret = [];
-        foreach($dyrs as $d){
+        foreach ($dyrs as $d) {
             $ret[] = [
                 'departament' => $d['department'],
                 'dyrektor' => $d['name'],
@@ -1264,14 +1316,14 @@ class DevController extends Controller
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
-    
+
     /**
      * @Route("/getGrupyDepartamentu/{departament}", name="getGrupyDepartamentu")
      * @Template()
      */
     public function getGrupyDepartamentuAction($departament)
     {
-        $tab = explode(".", $this->container->getParameter('ad_domain'));
+        $tab = explode('.', $this->container->getParameter('ad_domain'));
         $configuration = array(
             //'user_id_key' => 'samaccountname',
             'account_suffix' => '@' . $this->container->getParameter('ad_domain'),
@@ -1289,21 +1341,22 @@ class DevController extends Controller
         );
         //var_dump($configuration);
         $adldap = new \Adldap\Adldap($configuration);
-        $grupa = "SGG-".$departament;
+        $grupa = 'SGG-'.$departament;
         //$g = $adldap->group()->find($grupa);
         //$g = $adldap->group()->search(null, false, "INT-BI");
-        $g = $this->get('ldap_service')->getGroupsFromAD($grupa, "*");
-        
+        $g = $this->get('ldap_service')->getGroupsFromAD($grupa, '*');
+
         $ret = [];
-        foreach($g as $k => $r){
+        foreach ($g as $k => $r) {
             //var_dump(substr($r['name'][0], strlen($r['name'][0]) - 3, 3));
-            if(substr($r['name'][0], strlen($r['name'][0]) - 3, 3) == "-RW")
+            if (substr($r['name'][0], strlen($r['name'][0]) - 3, 3) == '-RW') {
                 $ret[] = $r['name'];
+            }
         }
-        
-        
+
+
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
-        
+
         //var_dump(($g));
     }
     /**
@@ -1313,11 +1366,12 @@ class DevController extends Controller
     public function martynaMiszczykAction()
     {
         $ldap = $this->get('ldap_service');
-        
-        $ADManager = [$ldap->getDyrektoraDepartamentu("BP")];
-        print_r($ADManager); die();
-        
-        
+
+        $ADManager = [$ldap->getDyrektoraDepartamentu('BP')];
+        print_r($ADManager);
+        die();
+
+
         $us = $ldap->getUserFromAD('martyna_miszczyk');
         $ADUser = $us[0];
          $in1 = mb_stripos($ADUser['manager'], '=') + 1;
@@ -1325,9 +1379,11 @@ class DevController extends Controller
         $in3 = (mb_stripos($ADUser['manager'], '=') + 1);
         var_dump($in1, $in2, $in3);
         $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
-        $mancn = str_replace("CN=", "", substr($mgr, 0, stripos($mgr, ',')));
+        $mancn = str_replace('CN=', '', substr($mgr, 0, stripos($mgr, ',')));
         $ADManager = $ldap->getUserFromAD(null, $mgr);
-        echo "<pre>"; print_r($ADManager); die();
+        echo '<pre>';
+        print_r($ADManager);
+        die();
     }
     /**
      * @Route("/testUprawnien", name="testUprawnien")
@@ -1336,11 +1392,10 @@ class DevController extends Controller
     public function testUprawnienAction()
     {
         $ldap = $this->get('ldap_admin_service');
-        
-        die('a');    
-        
+
+        die('a');
     }
-    
+
     /**
      * @Route("/testSekcjiNowych", name="testSekcjiNowych")
      * @Template()
@@ -1350,16 +1405,18 @@ class DevController extends Controller
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $u = $ldap->getUserFromAD('wioletta_skrzypczyns');
-        
+
         $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u[0]['name']);
         $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findBy(
-        ['imie' => $imieNazwisko[1], 
-        //'nazwisko' => $imieNazwisko[0]
-        ]);
-                
-        var_dump($imieNazwisko, $danerekord); die();
+            ['imie' => $imieNazwisko[1],
+            //'nazwisko' => $imieNazwisko[0]
+            ]
+        );
+
+        var_dump($imieNazwisko, $danerekord);
+        die();
     }
-    
+
     /**
      * @Route("/updateDyrektorowZasobow", name="updateDyrektorowZasobow")
      * @Template()
@@ -1368,54 +1425,50 @@ class DevController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
-        $deps = $em->getRepository("ParpMainBundle:Departament")->findByNowaStruktura(1);
+        $deps = $em->getRepository('ParpMainBundle:Departament')->findByNowaStruktura(1);
         $wyniki = [];
-        foreach($deps as $d){
+        foreach ($deps as $d) {
             $dyr = $ldap->getDyrektoraDepartamentu($d->getShortname());
-            if($dyr){
-                if($d->getDyrektor() != $dyr['samaccountname']){
+            if ($dyr) {
+                if ($d->getDyrektor() != $dyr['samaccountname']) {
                     //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>zmiana dyr z ".$d->getDyrektor()." na ".$dyr['samaccountname']];
                     $d->setDyrektor($dyr['samaccountname']);
                     $d->setDyrektorDN($dyr['distinguishedname']);
-                }else{
+                } else {
                     //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>bez zmian  dyr z ".$d->getDyrektor()." na ".$dyr['samaccountname']];
                 }
-                
-            }else{
+            } else {
                 //$wyniki[] = ['id' => $d->getId(), 'msg' => "<br>brak dyra"];
-                
             }
-            $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByKomorkaOrgazniacyjna($d->getName());
-            foreach($zasoby as $z){
-                if($z->getWlascicielZasobu() != $dyr['samaccountname']){
-                    $wyniki[] = ['departament' => $d->getName(), 'zasob_id' => $z->getNazwa(), 
+            $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findByKomorkaOrgazniacyjna($d->getName());
+            foreach ($zasoby as $z) {
+                if ($z->getWlascicielZasobu() != $dyr['samaccountname']) {
+                    $wyniki[] = ['departament' => $d->getName(), 'zasob_id' => $z->getNazwa(),
                     'stary_wlasciciel' => $z->getWlascicielZasobu(),
                     'nowy_wlasciciel' => $dyr['samaccountname'],
-                    'msg' => "zmiana  wlasciciela z ".$z->getWlascicielZasobu()." na ".$dyr['samaccountname']];  
-                    
+                    'msg' => 'zmiana  wlasciciela z '.$z->getWlascicielZasobu().' na '.$dyr['samaccountname']];
+
                     $z->setWlascicielZasobu($dyr['samaccountname']);
-                      
+
                     //
-                }else{
-                    $wyniki[] = ['departament' => $d->getName(), 'zas_id' => $z->getNazwa(), 
+                } else {
+                    $wyniki[] = ['departament' => $d->getName(), 'zas_id' => $z->getNazwa(),
                     'stary_wlasciciel' => $z->getWlascicielZasobu(),
                     'nowy_wlasciciel' => $dyr['samaccountname'],
-                    'msg' => "Bez zmian ".$z->getWlascicielZasobu()." na ".$dyr['samaccountname']]; 
-                    
+                    'msg' => 'Bez zmian '.$z->getWlascicielZasobu().' na '.$dyr['samaccountname']];
                 }
             }
-            
-        } 
+        }
         //$em->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wyniki]);
-        
     }
-    
+
     /**
      * @Route("/updateZasobyDepartamanty", name="updateZasobyDepartamanty")
      * @Template()
      */
-    public function updateZasobyDepartamantyAction(){
+    public function updateZasobyDepartamantyAction()
+    {
         $zamienBiura = [
             4376 =>'Biuro Zarządzania Kadrami',
             4377 =>'Biuro Zarządzania Kadrami',
@@ -1840,127 +1893,122 @@ class DevController extends Controller
             4375 =>'Biuro Zarządzania Jakością',
             3278 =>'Departament  Usług Rozwojowych',
         ];
-        
+
         $em = $this->getDoctrine()->getManager();
         $wynik = [];
-        foreach($zamienBiura as $id => $biuro){
-            $error = "";
+        foreach ($zamienBiura as $id => $biuro) {
+            $error = '';
             $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
-            
-            if($biuro == "???"){
+
+            if ($biuro == '???') {
                 $wynik[] = [
                         'zasob' => $id,
-                        'biuro' => $biuro,    
-                        'error' => "deaktywowano"
+                        'biuro' => $biuro,
+                        'error' => 'deaktywowano'
                     ];
                 $zasob->setPublished(0);
-            }else{
-            
+            } else {
                 $departament = $em->getRepository('ParpMainBundle:Departament')->findOneByName($biuro);
-                if($zasob == null && $departament == null){
+                if ($zasob == null && $departament == null) {
                     $error = "brak zasobu o id $id oraz depatramentu $biuro";
-                }
-                elseif($zasob == null){
+                } elseif ($zasob == null) {
                     $error = "brak zasobu o id $id";
-                }elseif($departament == null){
+                } elseif ($departament == null) {
                     $error = "brak depatramentu $biuro";
-                }else{
+                } else {
                     //OK
-                    if($zasob->getKomorkaOrgazniacyjna() != $departament->getName()){
-                        $error = "Zmiana biura z ".$zasob->getKomorkaOrgazniacyjna()." na $biuro ";
+                    if ($zasob->getKomorkaOrgazniacyjna() != $departament->getName()) {
+                        $error = 'Zmiana biura z '.$zasob->getKomorkaOrgazniacyjna()." na $biuro ";
                         $zasob->setBiuro($departament->getName());
                         $zasob->setKomorkaOrgazniacyjna($departament->getName());
-                    }else{
+                    } else {
                         $error = "biuro bez zmian $id $biuro";
                     }
                 }
-                
-                if($error != ""){
+
+                if ($error != '') {
                     $wynik[] = [
                         'zasob' => $id,
-                        'biuro' => $biuro,    
+                        'biuro' => $biuro,
                         'error' => $error
                     ];
                 }
-                
             }
-            
         }
         //$em->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
     }
-    
+
     /**
      * @Route("/listLogs/{file}", name="listLogs", defaults={"file" : ""})
      * @Template()
      */
-    public function listLogsAction($file = "")
+    public function listLogsAction($file = '')
     {
-        if($file == ""){
+        if ($file == '') {
             //show list
             $finder = new Finder();
-            $finder->files()->in(__DIR__."/../../../../work/logs/");
-            
+            $finder->files()->in(__DIR__.'/../../../../work/logs/');
+
             $links = [];
-            
+
             foreach ($finder as $file) {
-                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl("listLogs", ["file" => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';                
+                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
             }
             sort($links);
-            return new Response('<html><body><ul class="list-group">'.implode("", $links).'</li></body>');
-        }else{
-            
+            return new Response('<html><body><ul class="list-group">'.implode('', $links).'</li></body>');
+        } else {
             //download file
-            $file = __DIR__."/../../../../work/logs/".$file;
+            $file = __DIR__.'/../../../../work/logs/'.$file;
             $fileStr = file_get_contents($file);
             $response = new Response($fileStr);
             //die($response);
             //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
-            
-            return $response;
 
-        } 
+            return $response;
+        }
     }
-    
-    
+
+
     /**
      * @Route("/getAllZablokowaniFromAD", name="getAllZablokowaniFromAD", defaults={})
      * @Template()
      */
-    public function getAllZablokowaniFromADAction(){
+    public function getAllZablokowaniFromADAction()
+    {
         $ldap = $this->get('ldap_service');
         //$us = $ldap->getAllFromADIntW("zablokowane", true);
-        $us = $ldap->getAllFromADIntW("nieobecni", true);
+        $us = $ldap->getAllFromADIntW('nieobecni', true);
         die();
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * @Route("/checkWnioskiDomenowe", name="checkWnioskiDomenowe", defaults={})
      * @Template()
      */
-    public function checkWnioskiDomenoweAction(){
-        
+    public function checkWnioskiDomenoweAction()
+    {
+
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find(11);
-        
-        if($wniosek->getWniosekDomenowy()){
+
+        if ($wniosek->getWniosekDomenowy()) {
             die("domenowy'");
-        }else{
+        } else {
             die("zwykly'");
-            
         }
-        
     }
-    
+
     /**
      * @Route("/fixDIP_DPI", name="getAllZablokowaniFrofixDIP_DPImAD", defaults={})
      * @Template()
      */
-    public function fixDIP_DPIAction(){
+    public function fixDipDpiAction()
+    {
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         //$us = $ldap->getAllFromADIntW("zablokowane", true);
@@ -1969,63 +2017,63 @@ class DevController extends Controller
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
         $dane = [];
-        foreach($us as $u){
+        foreach ($us as $u) {
             $dep =  $em->getRepository('ParpMainBundle:Departament')->findOneBy(['shortname' => $u['description'], 'nowaStruktura' => 1]);
-            if($dep == null || trim($dep->getName()) != trim($u['department'])){
-                $u['error'] = $dep == null ? "Brak depu!!!" : "Skrot i nazwa depu sie nie zgadzaja";
+            if ($dep == null || trim($dep->getName()) != trim($u['department'])) {
+                $u['error'] = $dep == null ? 'Brak depu!!!' : 'Skrot i nazwa depu sie nie zgadzaja';
                 unset($u['thumbnailphoto']);
                 unset($u['memberOf']);
-                $u['desc1'] = ".".trim($u['department']).".";
-                $u['desc2'] = ".".($dep ? trim($dep->getName()) : "brak").".";
-                $u['skrot1'] = ".".($dep ? trim($u['description']) : "brak").".";
-                $u['skrot2'] = ".".($dep ? trim($dep->getShortname()) : "brak").".";
+                $u['desc1'] = '.'.trim($u['department']).'.';
+                $u['desc2'] = '.'.($dep ? trim($dep->getName()) : 'brak').'.';
+                $u['skrot1'] = '.'.($dep ? trim($u['description']) : 'brak').'.';
+                $u['skrot2'] = '.'.($dep ? trim($dep->getShortname()) : 'brak').'.';
                 $dane[] = $u;
-                if($u['samaccountname'] == 'Edyta_Dominiak'){
+                if ($u['samaccountname'] == 'Edyta_Dominiak') {
                     //poprawioamy na DIP
-                    $entry = ["description" => "DRU", "extensionAttribute14" => "DRU"];
-                    
-                    //$ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], $entry);
+                    $entry = ['description' => 'DRU', 'extensionAttribute14' => 'DRU'];
+
+                    //$ldapAdmin->ldapModify($ldapconn, $u['distinguishedname'], $entry);
                     //echo "!!!wrzucam do ad!!!";
                 }
             }
         }
-        
-        
+
+
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
     }
-    
+
     /**
      * @Route("/primaryAddressChange", name="primaryAddressChange", defaults={})
      * @Template()
      */
-    public function primaryAddressChangeAction(){
-        
-        $sam = "kamil_jakacki";
+    public function primaryAddressChangeAction()
+    {
+
+        $sam = 'kamil_jakacki';
         $ldap = $this->get('ldap_admin_service');
-        $ldap->changePrimaryEmail($sam, "kacy@parp.gov.pl");
-        
+        $ldap->changePrimaryEmail($sam, 'kacy@parp.gov.pl');
     }
-    
-    
+
+
     /**
      * @Route("/getAllWithAttribute/{attr}/{attr2}", name="getAllWithAttribute", defaults={"attr2" : ""})
      * @Template()
      */
-    public function getAllWithAttributeAction($attr, $attr2 = ""){
+    public function getAllWithAttributeAction($attr, $attr2 = '')
+    {
         $ldap = $this->get('ldap_service');
         $us = $ldap->getAllFromAD();
         $ret = [];
         $data = [];
-        foreach($us as $u){
-            $k = $u[$attr].($attr2 == "" ? "" : $u[$attr2]);
+        foreach ($us as $u) {
+            $k = $u[$attr].($attr2 == '' ? '' : $u[$attr2]);
             $ret[$k][$attr] = $u[$attr];
-            if($attr2 != ""){
-                
+            if ($attr2 != '') {
                 $ret[$k][$attr2] = $u[$attr2];
             }
             $ret[$k]['users'][] = $u['samaccountname'];
         }
-        foreach($ret as $k => $v){
+        foreach ($ret as $k => $v) {
             $data[] = $v;
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $data]);
@@ -2034,91 +2082,93 @@ class DevController extends Controller
      * @Route("/getAllAll", name="getAllAll")
      * @Template()
      */
-    public function getAllAllAction(){
+    public function getAllAllAction()
+    {
         $ldap = $this->get('ldap_service');
-        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
-        die(count($us).".");
-        
+        $us = $ldap->getAllFromADIntW('wszyscyWszyscy');
+        die(count($us).'.');
     }
-    
-    
+
+
     /**
      * @Route("/testNullDivision", name="testNullDivision", defaults={})
      * @Template()
      */
-    public function testNullDivisionAction(){
-        
-        $sam = "kamil_jakacki";
-        
+    public function testNullDivisionAction()
+    {
+
+        $sam = 'kamil_jakacki';
+
         $ldap = $this->get('ldap_service');
         $ldapAdmin = $this->get('ldap_admin_service');
-        
-        
-        $user = $ldap->getUserFromAD("kamil_jakacki");
-        
+
+
+        $user = $ldap->getUserFromAD('kamil_jakacki');
+
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
-        
-        $sekcja = "Sekcja Rozwoju Oprogramowania";
-        $ldapAdmin->ldap_modify($ldapconn, $user[0]['distinguishedname'], ['initials' => "KJ", 'info' => $sekcja]);
-        
+
+        $sekcja = 'Sekcja Rozwoju Oprogramowania';
+        $ldapAdmin->ldapModify($ldapconn, $user[0]['distinguishedname'], ['initials' => 'KJ', 'info' => $sekcja]);
     }
-    
+
     /**
      * @Route("/getPrzelozeni", name="getPrzelozeni")
      * @Template()
      */
-    public function getPrzelozeniAction(){
+    public function getPrzelozeniAction()
+    {
         $ldap = $this->get('ldap_service');
         $us = $ldap->getPrzelozeni();
         var_dump($us);
-        die(count($us).".");
-        
+        die(count($us).'.');
     }
-    
-    
+
+
     /**
      * @Route("/testMonolog", name="testMonolog")
      * @Template()
      */
-    public function testMonologAction(){
+    public function testMonologAction()
+    {
         $logger = $this->get('logger');
         $logger->critical('I left the oven on!', array(
             'cause' => 'in_hurry',
         ));
         die('aaa');
     }
-    
-    
-    
+
+
+
     /**
      * @Route("/excelExport", name="excelExport")
      * @Template()
      */
-    public function excelExportAction(){
-        
+    public function excelExportAction()
+    {
+
         $ldap = $this->get('ldap_service');
-        // Sięgamy do AD:        
+        // Sięgamy do AD:
         $adusers = $ldap->getAllFromAD();
-        $dajKolumny = ["name", "department", "description", "info", "division", "manager"];
-        $nazwyKolumn = ["name" => "Pracownik", "department" => "Departament", "description" => "Departament skrót", "info" => "Sekcja", "division" => "Sekcja skrót", "manager" => "Przełożony"];
+        $dajKolumny = ['name', 'department', 'description', 'info', 'division', 'manager'];
+        $nazwyKolumn = ['name' => 'Pracownik', 'department' => 'Departament', 'description' => 'Departament skrót', 'info' => 'Sekcja', 'division' => 'Sekcja skrót', 'manager' => 'Przełożony'];
         $kolumny = [];
         $data = [];
         $data[] = $nazwyKolumn;
-        foreach($adusers as $u){
+        foreach ($adusers as $u) {
             $d = [];
-            foreach($dajKolumny as $k1 => $k){
+            foreach ($dajKolumny as $k1 => $k) {
                 $v = $u[$k];
-                if($k == "manager"){
+                if ($k == 'manager') {
                     $v = substr($u['manager'], 0, stripos($u['manager'], ','));
-                    $v = str_replace("CN=", "", $v);
+                    $v = str_replace('CN=', '', $v);
                 }
                 $d[] = $v;
             }
             $data[] = $d;
         }
         //var_dump($data); die();
-        
+
         $phpExcelObject = new \PHPExcel();
         $sheet = $data;
         $phpExcelObject->setActiveSheetIndex(0);
@@ -2127,60 +2177,66 @@ class DevController extends Controller
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="pracownicy.xls"');
         header('Cache-Control: max-age=0');
-        
+
           // Do your stuff here
           $writer = \PHPExcel_IOFactory::createWriter($phpExcelObject, 'Excel5');
-        
+
         $writer->save('php://output');
         die();
     }
-    
-    
+
+
     /**
      * @Route("/testPublishErrors", name="testPublishErrors")
      * @Template()
      */
-    public function testPublishErrorsAction(){
-        
+    public function testPublishErrorsAction()
+    {
+
         $ldap = $this->get('ldap_service');
         $us = $ldap->getUserFromAD('kamil_jakacki');
-        
+
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
-        
-        $g = "SGG-DIP-Wewn-Wsp-RW";
+
+        $g = 'SGG-DIP-Wewn-Wsp-RW';
         $grupa = $ldapAdmin->getGrupa($g);
-        
-        $ldapAdmin->ldap_mod_del($ldapconn, $grupa['distinguishedname'], ['member' => $us[0]['distinguishedname']]);
-        
+
+        $ldapAdmin->ldapModDel($ldapconn, $grupa['distinguishedname'], ['member' => $us[0]['distinguishedname']]);
+
         var_dump($ldapAdmin->lastConnectionErrors);
-        
-        
     }
-    public function writeln($msg){
-        echo "$msg\r\n<br>";    
+    public function writeln($msg)
+    {
+        echo "$msg\r\n<br>";
     }
-    
-    
-    
-    
-    
+
+
+
+
+
     /**
      * @Route("/synchroDyrektorow", name="synchroDyrektorow")
      * @Template()
      */
-    public function synchroDyrektorowAction(){
-        $stanowiska = ["dyrektor", "p.o. dyrektora", "rzecznik beneficjenta parp, dyrektor", "główny księgowy, dyrektor"];
+    public function synchroDyrektorowAction()
+    {
+        $stanowiska = [
+            'dyrektor',
+            'p.o. dyrektora',
+            'rzecznik beneficjenta parp, dyrektor',
+            'główny księgowy, dyrektor'
+        ];
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
-        
+
         $wyniki = [];
         $zmian = 0;
         $em = $this->getDoctrine()->getManager();
-        foreach($ADUsers as $u){
-            if(in_array($u['title'], $stanowiska)){
-                $departament = $em->getRepository("ParpMainBundle:Departament")->findOneByShortname($u['description']);
+        foreach ($ADUsers as $u) {
+            if (in_array($u['title'], $stanowiska)) {
+                $departament = $em->getRepository('ParpMainBundle:Departament')->findOneByShortname($u['description']);
                 $dyrektorZmiana = $departament->getDyrektor() != $u['samaccountname'];
                 $wyniki[$u['description']] = [
                     'description' => $u['description'],
@@ -2190,29 +2246,29 @@ class DevController extends Controller
                     'departament' => $departament->getId(),
                     'dyrektorZmiana' => $dyrektorZmiana
                 ];
-                if($dyrektorZmiana){
+                if ($dyrektorZmiana) {
                     $zmian++;
                     $departament->setDyrektor($u['samaccountname']);
                     $departament->setDyrektorDN($u['distinguishedname']);
-                    $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByBiuro($departament->getName());
+                    $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findByBiuro($departament->getName());
                     //die(count($zasoby).".".$departament->getName());
-                    
                 }
             }
         }
-        if($zmian > 0){
+        if ($zmian > 0) {
             $em->flush();
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => [$wyniki]]);
         //var_dump($wyniki); die();
     }
-    
-    
+
+
     /**
      * @Route("/uprawnieniaLsiAudyt", name="uprawnieniaLsiAudyt")
      * @Template()
      */
-    public function uprawnieniaLsiAudytAction(){
+    public function uprawnieniaLsiAudytAction()
+    {
         //generuje liste sqli z aktualnymi uprawnieniami do lsi
         $em = $this->getDoctrine()->getManager();
         $userZasoby = $em
@@ -2221,89 +2277,91 @@ class DevController extends Controller
             //->join('e.idRelatedEntity', 'r')
             ->where('uz.zasobId = 4420')
             ->andWhere('uz.aktywneOd <= :now and (uz.aktywneDo is null or uz.aktywneDo >= :now)')
-            ->setParameter('now', date("Y-m-d H:i:s"))            
+            ->setParameter('now', date('Y-m-d H:i:s'))
             ->getQuery()
             ->getResult();
         $sqls = [];
-        foreach($userZasoby as $uz){
+        foreach ($userZasoby as $uz) {
             $nSqls = $uz->getLsiSql();
             $sqls = array_merge($sqls, $nSqls);
-        }    
+        }
         //var_dump($sqls);
         //die(count($userZasoby).".");
         $msg = "\n\n-----------------------------------------\n\n".implode(";\n", $sqls);
         $msg = nl2br($msg);
         die($msg);
-        
     }
-    
-    
+
+
     /**
      * @Route("/poprawAtrybut", name="poprawAtrybut")
      * @Template()
      */
-    public function poprawAtrybutAction(){
-        
-        
+    public function poprawAtrybutAction()
+    {
+
+
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
-        
-        $atrybut = "info";
-        $wartosci = ["Nd", "ND", "N/d", "n/d"];
+
+        $atrybut = 'info';
+        $wartosci = ['Nd', 'ND', 'N/d', 'n/d'];
         $nowaWartosc = [];
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
         $wynik = [];
-        foreach($ADUsers as $u){
-            if(in_array(trim($u[$atrybut]), $wartosci)){
+        foreach ($ADUsers as $u) {
+            if (in_array(trim($u[$atrybut]), $wartosci)) {
                 $wynik[] = ['samaccountname' => $u['samaccountname'], $atrybut => $u[$atrybut]];
-                //$ldapAdmin->ldap_modify($ldapconn, $u['distinguishedname'], [$atrybut => $nowaWartosc]);
-                
+                //$ldapAdmin->ldapModify($ldapconn, $u['distinguishedname'], [$atrybut => $nowaWartosc]);
             }
         }
         //var_dump($wynik);
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wynik]);
     }
-    
-    
-    
-    
+
+
+
+
     /**
      * @Route("/naprawSkrotyDepartamentow", name="naprawSkrotyDepartamentow")
      * @Template()
      */
-    public function naprawSkrotyDepartamentowAction(){
+    public function naprawSkrotyDepartamentowAction()
+    {
         $ldap = $this->get('ldap_service');
         $us = $ldap->getAllFromAD();
         $w = [];
-        foreach($us as $u){
+        foreach ($us as $u) {
             $w[$u['description']] = $u['description'];
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => [$w]]);
     }
-    
-    
+
+
     /**
      * @Route("/testNazw", name="testNazw")
      * @Template()
      */
-    public function testNazwAction(){
+    public function testNazwAction()
+    {
         $ldap = $this->get('ldap_service');
-        $searchName = ("Wojtaszek Dariusz");
-        $aduser = $ldap->getUserFromAD(null, $searchName, null, "wszyscyWszyscy");
-        
+        $searchName = ('Wojtaszek Dariusz');
+        $aduser = $ldap->getUserFromAD(null, $searchName, null, 'wszyscyWszyscy');
+
         var_dump($aduser);
         die($searchName);
     }
-    
-    
-    
+
+
+
     /**
      * @Route("/poprawManagerow", name="poprawManagerow")
      * @Template()
      */
-    public function poprawManagerowAction(){
+    public function poprawManagerowAction()
+    {
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $dane = [
@@ -2337,164 +2395,169 @@ class DevController extends Controller
             'magdalena_zwolinska' => 'Wojtaszek Dariusz',
             'joanna_zebrowska' => 'Standziak-Koresh Monika',
         ];
-        foreach($dane as $user => $manager){
+        foreach ($dane as $user => $manager) {
             $entry = new Entry();
             $entry->setSamaccountname($user);
-            if(strstr($manager, "_") !== false){
+            if (strstr($manager, '_') !== false) {
                 //po loginie
-                $mgr = $ldap->getUserFromAD($manager, null, null, "wszyscyWszyscy");
-            }elseif($manager == "nd"){
-                $entry->setManager("BRAK");
-            }else{
-                $mgr = $ldap->getUserFromAD(null, $manager, null, "wszyscyWszyscy");
+                $mgr = $ldap->getUserFromAD($manager, null, null, 'wszyscyWszyscy');
+            } elseif ($manager == 'nd') {
+                $entry->setManager('BRAK');
+            } else {
+                $mgr = $ldap->getUserFromAD(null, $manager, null, 'wszyscyWszyscy');
             }
-            if($mgr){
+            if ($mgr) {
                 $entry->setManager($mgr[0]['distinguishedname']);
             }
             $entry->setFromWhen(new \Datetime());
             $em->persist($entry);
-            
         }
         $em->flush();
     }
-    
-    
+
+
     /**
      * @Route("/poprawPrezes", name="poprawPrezes")
      * @Template()
      */
-    public function poprawPrezesAction(){
-    
+    public function poprawPrezesAction()
+    {
+
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
-        
-        $ldapAdmin->ldap_modify(
-            $ldapconn,  
-            //"CN=Klarecka Patrycja,OU=ZA,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",  
+
+        $ldapAdmin->ldapModify(
+            $ldapconn,
+            //"CN=Klarecka Patrycja,OU=ZA,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
             //"CN=Sankowska-Tecław Joanna,OU=BZK,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
-            "CN=Jakacki Kamil,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local",
-            ['manager' => "CN=Trocewicz Andrzej,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local"/*[]*/]
+            'CN=Jakacki Kamil,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local',
+            ['manager' => 'CN=Trocewicz Andrzej,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local'/*[]*/]
         );
-    
     }
-    
+
     /**
      * @Route("/poprawWniosek1672", name="poprawWniosek1672")
      * @Template()
      */
-    public function poprawWniosek1672Action(){
+    public function poprawWniosek1672Action()
+    {
         $em = $this->getDoctrine()->getManager();
-        $wniosek = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->find(1672);
-        
-        foreach($wniosek->getUserZasoby() as $uz){
-            echo "<br>".$uz->getId();
-            if($uz->getId() == 7223){
-                $uz->setModul("POPW.01.01.01/1;POPW.01.01.02/1;POPW.01.02.00/1;POPW.01.03.01/1;POPW.01.03.01/2;POPW.01.03.02/1;POPW.01.04.00/1;POPW.01.04.00/2;POPW.02.02.00/1");
-                $uz->setPoziomDostepu("ROLE_ADMIN_MERYTORYCZNY;ROLE_EDYCJA_NABOROW;ROLE_EKSPERT;ROLE_IMPORT_WNIOSKOW_XML;ROLE_KARTAPROJEKTU;ROLE_LISTA_NABOROW;ROLE_OCENA_FORMALNA;ROLE_OCENA_MERYTORYCZNA;ROLE_OCENA_MERYTORYCZNA_KONFIGURACJA;ROLE_PRZYDZIELANIE_FORMALNEJ;ROLE_RAPORTY");
-            }else{
+        $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find(1672);
+
+        foreach ($wniosek->getUserZasoby() as $uz) {
+            echo '<br>'.$uz->getId();
+            if ($uz->getId() == 7223) {
+                $uz->setModul('POPW.01.01.01/1;POPW.01.01.02/1;POPW.01.02.00/1;POPW.01.03.01/1;POPW.01.03.01/2;POPW.01.03.02/1;POPW.01.04.00/1;POPW.01.04.00/2;POPW.02.02.00/1');
+                $uz->setPoziomDostepu('ROLE_ADMIN_MERYTORYCZNY;ROLE_EDYCJA_NABOROW;ROLE_EKSPERT;ROLE_IMPORT_WNIOSKOW_XML;ROLE_KARTAPROJEKTU;ROLE_LISTA_NABOROW;ROLE_OCENA_FORMALNA;ROLE_OCENA_MERYTORYCZNA;ROLE_OCENA_MERYTORYCZNA_KONFIGURACJA;ROLE_PRZYDZIELANIE_FORMALNEJ;ROLE_RAPORTY');
+            } else {
                 $em->remove($uz);
             }
         }
         $em->flush();
-        die(count($wniosek->getUserZasoby())."");
+        die(count($wniosek->getUserZasoby()).'');
     }
-    
-    
+
+
     /**
      * @Route("/sprawdzDyrektora/{skrot}", name="sprawdzDyrektora")
      * @Template()
      */
-    public function sprawdzDyrektoraAction($skrot){
+    public function sprawdzDyrektoraAction($skrot)
+    {
         $ldap = $this->get('ldap_service');
         $manager = $ldap->getDyrektoraDepartamentu($skrot);
-        
+
         var_dump($manager);
     }
-    
+
     /**
      * @Route("/cofnijWniosekZasobOKrok/{wid}", name="cofnijWniosekZasobOKrok")
      * @Template()
      */
-    public function cofnijWniosekZasobOKrokAction($wid){
+    public function cofnijWniosekZasobOKrokAction($wid)
+    {
         $manager = $this->getDoctrine()->getManager();
         $wniosek = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($wid);
-        
-        
+
+
         $lastStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 1];
         $newStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 2];
-        
+
         $manager->remove($lastStatus);
         $wniosek->getWniosek()->setStatus($newStatus->getStatus());
         //var_dump($lastStatus);
         $manager->flush();
-        die(".".$wniosek->getWniosek()->getStatus());
+        die('.'.$wniosek->getWniosek()->getStatus());
     }
-    
-    
+
+
     /**
      * @Route("/cofnijWniosekUprawnieniaOKrok/{wid}", name="cofnijWniosekUprawnieniaOKrok")
      * @Template()
      */
-    public function cofnijWniosekUprawnieniaOKrokAction($wid){
+    public function cofnijWniosekUprawnieniaOKrokAction($wid)
+    {
         $manager = $this->getDoctrine()->getManager();
         $wniosek = $manager->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wid);
-        
-        
+
+
         $lastStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 1];
         $newStatus = $wniosek->getWniosek()->getStatusy()[count($wniosek->getWniosek()->getStatusy()) - 2];
-        
+
         $manager->remove($lastStatus);
         $wniosek->getWniosek()->setStatus($newStatus->getStatus());
         //var_dump($lastStatus);
         $manager->flush();
-        
-        die(".".$wniosek->getWniosek()->getStatus());
-        
-    }    
+
+        die('.'.$wniosek->getWniosek()->getStatus());
+    }
     /**
      * @Route("/poprawHistorieZasobow", name="poprawHistorieZasobow")
      * @Template()
      */
-    public function poprawHistorieZasobowAction(){
+    public function poprawHistorieZasobowAction()
+    {
         $manager = $this->getDoctrine()->getManager();
-        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();   
-        foreach($zasoby as $zasob){     
-            $zasob->setWlascicielZasobu($zasob->getWlascicielZasobu()." ");
+        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();
+        foreach ($zasoby as $zasob) {
+            $zasob->setWlascicielZasobu($zasob->getWlascicielZasobu().' ');
         }
         $manager->flush();
-        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();   
-        foreach($zasoby as $zasob){     
-            $zasob->setWlascicielZasobu(str_replace(" ", "", $zasob->getWlascicielZasobu()));
-        }           
+        $zasoby = $manager->getRepository('ParpMainBundle:Zasoby')->findAll();
+        foreach ($zasoby as $zasob) {
+            $zasob->setWlascicielZasobu(str_replace(' ', '', $zasob->getWlascicielZasobu()));
+        }
         $manager->flush();
-        die(".".$zasob->getId());
+        die('.'.$zasob->getId());
     }
 
-    
+
     /**
      * @Route("/zestawieniaPacownikowSpozaPARP", name="zestawieniaPacownikowSpozaPARP")
      * @Template()
      */
-    public function zestawieniaPacownikowSpozaPARPAction(){
-        
+    public function zestawieniaPacownikowSpozaPARPAction()
+    {
+
         $manager = $this->getDoctrine()->getManager();
         $statusy = $manager->getRepository('ParpMainBundle:WniosekStatus')->findByNazwaSystemowa([
-            "07_ROZPATRZONY_POZYTYWNIE", "11_OPUBLIKOWANY"
+            '07_ROZPATRZONY_POZYTYWNIE',
+            '11_OPUBLIKOWANY'
         ]);
         $sql = "select wz,w from ParpMainBundle:WniosekNadanieOdebranieZasobow wz join wz.wniosek w join w.status s 
         where s.nazwaSystemowa in ('07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY')
         and wz.pracownikSpozaParp = 1";
-        
+
         $wnioski = $manager->createQuery($sql)->getResult();
-        
+
         $ret = [];
-        foreach($wnioski as $w){
-            foreach($w->getUserZasoby() as $uz){
-                $zasob = $manager->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
-                $dyrektor = "";
-                foreach($w->getWniosek()->getStatusy() as $hs){
-                    if($hs->getStatus()->getNazwaSystemowa() == "02_EDYCJA_PRZELOZONY"){
+        foreach ($wnioski as $w) {
+            foreach ($w->getUserZasoby() as $uz) {
+                $zasob = $manager->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                $dyrektor = '';
+                foreach ($w->getWniosek()->getStatusy() as $hs) {
+                    if ($hs->getStatus()->getNazwaSystemowa() == '02_EDYCJA_PRZELOZONY') {
                         $dyrektor = $hs->getCreatedBy();
                     }
                 }
@@ -2502,23 +2565,23 @@ class DevController extends Controller
                     'wniosekId' => $w->getId(),
                     'wniosekNumer' => $w->getWniosek()->getNumer(),
                     'osoba' => $uz->getSamaccountname(),
-                    'zasobId' => $zasob->getId(), 
+                    'zasobId' => $zasob->getId(),
                     'zasob' => $zasob->getNazwa(),
-                    'od' => $uz->getAktywneOd()->format("Y-m-d"),
-                    'do' => $uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "" ,
+                    'od' => $uz->getAktywneOd()->format('Y-m-d'),
+                    'do' => $uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '',
                     'odebrane' => $uz->getCzyOdebrane(),
                     'departament' => $w->getWniosek()->getJednostkaOrganizacyjna(),
                     'dyrektor' => $dyrektor
                 ];
             }
         }
-        
-        
+
+
 /*
         $wnioski = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->findBy([
-        
+
         $wnioski = $manager->createQuery($sql)->getResult();
-        
+
         $ret = [];
         foreach($wnioski as $w){
             foreach($w->getUserZasoby() as $uz){
@@ -2533,7 +2596,7 @@ class DevController extends Controller
                     'wniosekId' => $w->getId(),
                     'wniosekNumer' => $w->getWniosek()->getNumer(),
                     'osoba' => $uz->getSamaccountname(),
-                    'zasobId' => $zasob->getId(), 
+                    'zasobId' => $zasob->getId(),
                     'zasob' => $zasob->getNazwa(),
                     'od' => $uz->getAktywneOd()->format("Y-m-d"),
                     'do' => $uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "" ,
@@ -2543,8 +2606,8 @@ class DevController extends Controller
                 ];
             }
         }
-        
-        
+
+
 /*
         $wnioski = $manager->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->findBy([
             'wniosek.status' => $statusy
@@ -2553,7 +2616,7 @@ class DevController extends Controller
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
         //var_dump(count($wnioski)); die();
     }
-    
+
     /**
      * @Route("/listaOsobExpired", name="listaOsobExpired")
      * @Template()
@@ -2565,18 +2628,18 @@ class DevController extends Controller
         $ldap = $this->get('ldap_service');
         $users = $ldap->getAllFromAD('wszyscyWszyscy');
         $ret = [];
-        foreach($users as $u){
-            if($u['accountExpires']){
-                $dateParts = explode("-", $u['accountExpires']);
-                if($dateParts[0] >= 2016){
+        foreach ($users as $u) {
+            if ($u['accountExpires']) {
+                $dateParts = explode('-', $u['accountExpires']);
+                if ($dateParts[0] >= 2016) {
                     unset($u['thumbnailphoto']);
                     unset($u['memberOf']);
                     unset($u['roles']);
-                    
+
                     $expiry = new \Datetime($u['accountExpires']);
-                    $expiry->setTime(23,59);
-                    $u['myExpiry'] = $expiry->format("Y-m-d H:i:s");
-                    
+                    $expiry->setTime(23, 59);
+                    $u['myExpiry'] = $expiry->format('Y-m-d H:i:s');
+
                     $entry = new Entry();
                     $entry->setFromWhen($dzis);
                     $entry->setSamaccountname($u['samaccountname']);
@@ -2594,7 +2657,8 @@ class DevController extends Controller
      * @Route("/getGrupa/{grupa}", name="getGrupa")
      * @Template()
      */
-    public function getGrupaAction($grupa){
+    public function getGrupaAction($grupa)
+    {
         $ldap = $this->get('ldap_service');
         $g = $ldap->getGrupa($grupa);
         var_dump($g);
@@ -2603,35 +2667,36 @@ class DevController extends Controller
      * @Route("/nadajDfk", name="nadajDfk")
      * @Template()
      */
-    public function nadajSGGUMOWYAction($grupa){
+    public function nadajSGGUMOWYAction($grupa)
+    {
         $manager = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $users = $ldap->getAllFromAD();
         $dzis = new \Datetime();
-        foreach($users as $u){
-            if($u['description'] == "DFK"){
-                echo "...dodaje ".$u['samaccountname']."...";
+        foreach ($users as $u) {
+            if ($u['description'] == 'DFK') {
+                echo '...dodaje '.$u['samaccountname'].'...';
                 $entry = new Entry();
                 $entry->setFromWhen($dzis);
                 $entry->setSamaccountname($u['samaccountname']);
-                $entry->setMemberOf("+SGG-UMOWY-RO");
+                $entry->setMemberOf('+SGG-UMOWY-RO');
                 $entry->setIsImplemented(0);
                 $manager->persist($entry);
             }
         }
-        
-        
+
+
         $manager->flush();
-        
     }
-    
+
     /**
      * @Route("/dodacGrupyADDoZasobow", name="dodacGrupyADDoZasobow")
      * @Template()
      */
-    public function dodacGrupyADZexcelaOdAdamaPrzedOdebraniem(){
+    public function dodacGrupyADZexcelaOdAdamaPrzedOdebraniem()
+    {
         $manager = $this->getDoctrine()->getManager();
-        $grupy = [                        
+        $grupy = [
             3283 => ['Administrator ECM'],
             4434 => ['EXT-DRU-infolinia_uslugirozwojowe'],
             3532 => ['SPSS'],
@@ -2730,29 +2795,29 @@ class DevController extends Controller
             4333 => ['SG-WD-DPI-01-RO', 'SG-WD-DPI-01-RW'],
             4334 => ['SG-WD-DPP-KOSMOS-RO', 'SG-WD-DPP-KOSMOS-RW'],
         ];
-        foreach($grupy as $id => $groups){
+        foreach ($grupy as $id => $groups) {
             $zasob = $manager->getRepository('ParpMainBundle:Zasoby')->find($id);
-            if($zasob->getGrupyAD() == ""){
-                $poziomy = explode(";", $zasob->getPoziomDostepu());
-                if(count($poziomy) == count($groups)){
+            if ($zasob->getGrupyAD() == '') {
+                $poziomy = explode(';', $zasob->getPoziomDostepu());
+                if (count($poziomy) == count($groups)) {
                     $nadacGrupy = $groups;
-                }else{
+                } else {
                     $nadacGrupy = [];
-                    for($i =0; $i < count($poziomy); $i++){
+                    for ($i =0; $i < count($poziomy); $i++) {
                         $nadacGrupy[] = $groups[0];
                     }
                 }
-                $nadaje = implode(";", $nadacGrupy);
+                $nadaje = implode(';', $nadacGrupy);
                 $zasob->setGrupyAD($nadaje);
-                
-                echo "<br>zasob ".$zasob->getId()." nie ma grup ".count($poziomy). " ".count($groups). ' nadaje '.$nadaje;
-            }else{
-                echo "<br>zasob ".$zasob->getId()." MA grupy!!!! : ".$zasob->getGrupyAD()." a powinien ".$groups[0];
+
+                echo '<br>zasob '.$zasob->getId().' nie ma grup '.count($poziomy).' '.count($groups). ' nadaje '.$nadaje;
+            } else {
+                echo '<br>zasob '.$zasob->getId().' MA grupy!!!! : '.$zasob->getGrupyAD().' a powinien '.$groups[0];
             }
         }
         //$manager->flush();
     }
-    
+
     /**
      * @Route("/poprawicHurtowo", name="poprawicHurtowo")
      * @Template()
@@ -2765,24 +2830,24 @@ class DevController extends Controller
         $ret = [];
         $users = $ldap->getAllFromAD();
         $dt = new \Datetime();
-        foreach($users as $user){
-            if($user['description'] == 'DPI'){
+        foreach ($users as $user) {
+            if ($user['description'] == 'DPI') {
                 $ret[] = $user;
                  $e = new Entry();
                 $e->setFromWhen($dt);
                 $e->setSamaccountname($user['samaccountname']);
                 //$e->setCreatedBy($this->getUser()->getUsername());
                 //$e->setDivision('SWzRIF');
-        
-                $e->setMemberOf("+SG-DPI-Kalendarz");
+
+                $e->setMemberOf('+SG-DPI-Kalendarz');
                 $manager->persist($e);
             }
         }
-    
+
         //$manager->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
-    
+
     /**
      * @Route("/getDisabled", name="getDisabled")
      * @Template()
@@ -2790,59 +2855,60 @@ class DevController extends Controller
     public function getDisabledAction()
     {
         $ldap = $this->get('ldap_service');
-        
+
         $disabled = $ldap->getAllDisabled();
         var_dump($disabled);
         die();
-    
+
         //$manager->flush();
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $ret]);
     }
-    
-    
+
+
     /**
      * @Route("/renameStartupDepartament", name="renameStartupDepartament")
      * @Template()
      */
-    public function renameStartupDepartamentAction(){
+    public function renameStartupDepartamentAction()
+    {
         $manager = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
-        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
-        
-        foreach($us as $u){
-            
-            if($u['description'] == "DRS" || $u['department'] == "Departament Rozwoju Startapów"){
+        $us = $ldap->getAllFromADIntW('wszyscyWszyscy');
+
+        foreach ($us as $u) {
+            if ($u['description'] == 'DRS' || $u['department'] == 'Departament Rozwoju Startapów') {
                 $e = new Entry();
                 $e->setSamaccountname($u['samaccountname']);
                 $e->setIsImplemented(0);
                 $e->setFromWhen(new \Datetime());
                 $e->setDistinguishedName($u['distinguishedname']);
-                $e->setDepartment("Departament Rozwoju Startupów");
+                $e->setDepartment('Departament Rozwoju Startupów');
                 $manager->persist($e);
             }
         }
         //$manager->flush();
-        
-        die(count($us).".");
-        
+
+        die(count($us).'.');
     }
-    
-    
+
+
     /**
      * @Route("/fixStartupUprawnienia", name="fixStartupUprawnienia")
      * @Template()
      */
-    public function fixStartupUprawnieniaAction(){
+    public function fixStartupUprawnieniaAction()
+    {
         $data = '2017-03-15';
         $manager = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
-        $us = $ldap->getAllFromADIntW("wszyscyWszyscy");
-        
+        $us = $ldap->getAllFromADIntW('wszyscyWszyscy');
+
         $ret = [];
-        
-        foreach($us as $u){
-            
-            if($u['description'] == "DRS" || $u['department'] == "Departament Rozwoju Startapów"|| $u['department'] == "Departament Rozwoju Startupów"){
+
+        foreach ($us as $u) {
+            if ($u['description'] == 'DRS' || $u['department'] == 'Departament Rozwoju Startapów' || $u['department'] ==
+                'Departament Rozwoju Startupów'
+            ) {
                 $e = new Entry();
                 $e->setSamaccountname($u['samaccountname']);
                 $e->setIsImplemented(0);
@@ -2857,62 +2923,64 @@ class DevController extends Controller
         }
         //$manager->flush();
         var_dump($ret);
-        die(count($us).".");
-        
+        die(count($us).'.');
     }
-    
-    protected function parseMemberOf($m){
+
+    protected function parseMemberOf($m)
+    {
         $ms = explode(';', $m);
         $ret = [];
-        foreach($ms as $mm){
+        foreach ($ms as $mm) {
             $ret[] = '+'.$mm;
         }
         return implode(',', $ret);
     }
-    
+
     /**
      * @Route("/textMail231", name="textMail231")
      * @Template()
      */
-    public function textMail231Action(){
+    public function textMail231Action()
+    {
         $dr = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId('3834');
         $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $dr, true);
-        
-        
+
+
         $raportCtrl = new RaportyITController();
-        $html = $raportCtrl->generujRaport(["rok" => date("Y"), "miesiac" => date("m")], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
-        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'html' => $html]);
-        
-        
+        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY, ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'html' => $html]);
     }
-    
-    
+
+
     /**
      * @Route("/sendMail", name="sendMail")
      * @Template()
      */
-    public function sendMailAction(){
+    public function sendMailAction()
+    {
         $raportCtrl = new RaportyITController();
-        $html = $raportCtrl->generujRaport(["rok" => date("Y"), "miesiac" => date("m")], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
-        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
+        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY, ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
     }
-    
-    
+
+
     /**
      * @Route("/sendMail2", name="sendMail2")
      * @Template()
      */
-    public function sendMail2Action(){
-        
-        $html = "JAKIS MAIL TEXT";
-        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY   , ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
+    public function sendMail2Action()
+    {
+
+        $html = 'JAKIS MAIL TEXT';
+        $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY, ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
     }
 
     /**
      * @Route("/test_bss", name="test_bss")
      * @Template()
      */
-    public function test_bssAction(){
+    public function testBssAction()
+    {
         $dane = [
             ['id' => 1, 'content' => 'Biuro Informatyki', 'start' => '2017-01-01', 'end' => '2017-02-01', 'type' => 'background', 'group' => 'departament'],
             ['id' => 2, 'content' => 'Wspierania Oprogramowania', 'start' => '2017-01-01', 'end' => '2017-01-11', 'group' => 'sekcja'],
@@ -2934,7 +3002,8 @@ class DevController extends Controller
      * @Route("/test21", name="test21")
      * @Template()
      */
-    public function test21Action(){
+    public function test21Action()
+    {
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
@@ -2943,42 +3012,44 @@ class DevController extends Controller
         $newdn = 'CN=Grudzień Paweł';
         $newparent = 'OU=Zablokowane,OU=PARP Pracownicy,DC=parp,DC=local';
 
-        $ldapAdmin->ldap_rename($ldapconn, $dn, $newdn, $newparent, true);
+        $ldapAdmin->ldapRename($ldapconn, $dn, $newdn, $newparent, true);
 
 
-        $ldapstatus = $ldapAdmin->ldap_error($ldapconn);
+        $ldapstatus = $ldapAdmin->ldapError($ldapconn);
         //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldap_rename $ldapstatus "."</span> \r\n<br>";
+        echo "<span style='color:".($ldapstatus == 'Success' ? 'green' : 'red')."'>ldapRename $ldapstatus "."</span> \r\n<br>";
     }
 
     /**
      * @Route("/test22", name="test22")
      * @Template()
      */
-    public function test22Action(){
+    public function test22Action()
+    {
         $entry = [];
-        $entry["useraccountcontrol"][0] = 514;
+        $entry['useraccountcontrol'][0] = 514;
         $dn = 'CN=Grudzień Paweł,OU=Zablokowane,OU=PARP Pracownicy,DC=parp,DC=local';
 
         $ldapAdmin = $this->get('ldap_admin_service');
         $ldapAdmin->output = $this;
         $ldapconn = $ldapAdmin->prepareConnection();
-        $ldapAdmin->ldap_modify($ldapconn, $dn, $entry);
+        $ldapAdmin->ldapModify($ldapconn, $dn, $entry);
     }
 
     /**
      * @Route("/fixMissingWniosekEditor", name="fixMissingWniosekEditor")
      * @Template()
      */
-    public function fixMissingWniosekEditorAction(){
+    public function fixMissingWniosekEditorAction()
+    {
 
         $em = $this->getDoctrine()->getManager();
 
         $historie = $em->getRepository('ParpMainBundle:HistoriaWersji')->getDoPoprawy();
 
 
-        foreach($historie as $h){
-            switch($h->getAction()){
+        foreach ($historie as $h) {
+            switch ($h->getAction()) {
                 case 'create':
                     /*
                     $we = new WniosekEditor();
@@ -2996,7 +3067,7 @@ class DevController extends Controller
                             'samaccountname' => $h->getData()['samaccountname']
                         ]
                     );
-                    if($e !== null) {
+                    if ($e !== null) {
                         $e->remove();
                     }
                     break;
@@ -3010,6 +3081,5 @@ class DevController extends Controller
 
 
         die('fixMissingWniosekEditor');
-
     }
-}    
+}

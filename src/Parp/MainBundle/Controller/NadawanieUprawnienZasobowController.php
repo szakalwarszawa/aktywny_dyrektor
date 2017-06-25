@@ -32,7 +32,8 @@ use Parp\MainBundle\Exception\SecurityTestException;
 class NadawanieUprawnienZasobowController extends Controller
 {
 
-    protected function generateRemoveAccessChoices($sams){
+    protected function generateRemoveAccessChoices($sams)
+    {
         //tu zwracamy labelki z separatorem @@@ ktory pokazuje kolejne kolumny (osoba, od, do , modul, funkcja)
         $choices = [];
         $userzasoby = array();
@@ -41,25 +42,26 @@ class NadawanieUprawnienZasobowController extends Controller
         $ids = array();
         $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'wniosekOdebranie' => null, 'czyOdebrane' => false /*  'czyNadane' => true */));
         // tu trzeba przerobic y kluczem byl id UserZasoby a nie Zasoby bo jeden user moze miec kilka pozopmiw dostepu i kazdy mozemy odebrac oddzielnie
-        foreach($uzs as $uu){
-            if(!in_array($uu->getZasobId(), $ids))
+        foreach ($uzs as $uu) {
+            if (!in_array($uu->getZasobId(), $ids)) {
                 $ids[] = $uu->getZasobId();
+            }
             $userzasoby[$uu->getId()] = $uu;
-            $userzasobyOpisy[$uu->getId()] = $uu->getOpisHtml();//nieuzywane 
+            $userzasobyOpisy[$uu->getId()] = $uu->getOpisHtml();//nieuzywane
         }
         $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($ids);
-        foreach($chs as $ch){
+        foreach ($chs as $ch) {
             $zasobyOpisy[$ch->getId()] = $ch;
         }
-        foreach($userzasoby as $uzid => $uz){
+        foreach ($userzasoby as $uzid => $uz) {
             $moduly = explode(";", $uz->getModul());
-            foreach($moduly as $modul){
+            foreach ($moduly as $modul) {
                 $poziomy = explode(";", $uz->getPoziomDostepu());
-                foreach($poziomy as $poziom){
+                foreach ($poziomy as $poziom) {
                     $data = [
-                        $zasobyOpisy[$uz->getZasobId()], 
-                        $uz->getSamaccountname(), 
-                        $uz->getAktywneOd()->format("Y-m-d")." - ".($uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "*"), 
+                        $zasobyOpisy[$uz->getZasobId()],
+                        $uz->getSamaccountname(),
+                        $uz->getAktywneOd()->format("Y-m-d")." - ".($uz->getAktywneDo() ? $uz->getAktywneDo()->format("Y-m-d") : "*"),
                         $modul,
                         $poziom
                     ];
@@ -79,10 +81,10 @@ class NadawanieUprawnienZasobowController extends Controller
     public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
         $zasobyId = "";
-        if($request->getMethod() == "POST"){
-            //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();    
+        if ($request->getMethod() == "POST") {
+            //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();
             $samaccountnames = $request->get('form')['samaccountnames'];
-        }else{        
+        } else {
             $samaccountnames = $request->get('samaccountnames');
             $zasobyId = $request->get('zasobyId');
         }
@@ -90,45 +92,45 @@ class NadawanieUprawnienZasobowController extends Controller
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
-        if($samt == ""){
+        if ($samt == "") {
             $this->get('session')->getFlashBag()->set('warning', 'Nie można znaleźć wybranych użytkowników!');
-            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));    
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));
         }
         //print_r($samt); die();
         $sams = array();
-        foreach($samt as $k=>$v){
-            if($v == 1){
-                
+        foreach ($samt as $k => $v) {
+            if ($v == 1) {
                 $sams[] = $k;
             }
         }
         
         
-        switch($action){
+        switch ($action) {
             case "addResources":
                 $title = "Wybierz zasoby do dodania";
                 $userzasoby = array();
                 $userzasobyOpisy = array();
                 $ids = array();
                 $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, 'czyNadane' => true));
-                foreach($uzs as $uu){
-                    if(!in_array($uu->getZasobId(), $ids))
+                foreach ($uzs as $uu) {
+                    if (!in_array($uu->getZasobId(), $ids)) {
                         $ids[] = $uu->getZasobId();
+                    }
                     $userzasoby[$uu->getZasobId()][] = $uu->getSamaccountname();
                     $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
                 }
                 $chsTemp = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
-                if(!$wniosekId && !in_array("PARP_ADMIN2", $this->getUser()->getRoles())){
+                if (!$wniosekId && !in_array("PARP_ADMIN2", $this->getUser()->getRoles())) {
                     $chs = [];
                     $login = $this->getUser()->getUsername();
-                    foreach($chsTemp as $zasob){
+                    foreach ($chsTemp as $zasob) {
                         $admini = array_merge(explode(",", $zasob->getAdministratorZasobu()), explode(",", $zasob->getAdministratorTechnicznyZasobu()));
                         //echo ".".$zasob->getAdministratorZasobu().".";
-                        if(in_array($login, $admini)){
+                        if (in_array($login, $admini)) {
                             $chs[] = $zasob;
                         }
                     }
-                }else{
+                } else {
                     $chs = $chsTemp;
                 }
                 //var_dump($chs); die();
@@ -139,9 +141,9 @@ class NadawanieUprawnienZasobowController extends Controller
                 //$chs = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findBySamaccountnames($sams);
                 break;
             case "editResources":
-                //tu pobierze userzasobId wczyta go i postem odbije 
+                //tu pobierze userzasobId wczyta go i postem odbije
                 $uzid = $request->get('uzid');
-                $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($uzid);              
+                $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($uzid);
 //                 Array ( [samaccountnames] => {"adam_gregier":1,"andrzej_trocewicz":1,"kamil_jakacki":1} [wniosekId] => 128 [action] => addResources [fromWhen] => 23-06-2016 [powod] => fdsfds [nazwafiltr] => [grupy] => [access] => Array ( [0] => 2170 ) )
 //                 Array ( [samaccountnames] => {"adam_gregier" : 1} [wniosekId] => 128 [action] => editResources [fromWhen] => DateTime Object ( [date] => 2016-06-23 00:00:00 [timezone_type] => 3 [timezone] => Europe/Berlin ) [powod] => vcxvcxv [nazwafiltr] => [grupy] => [access] => Array ( [0] => 1157 ) )
                 
@@ -156,7 +158,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'access' => array($uz->getZasobId()),
                 );
                 //print_r($ndata);
-                return $this->addResourcesToUsersAction($request, $ndata, $wniosekId, $uzid, $uz);   
+                return $this->addResourcesToUsersAction($request, $ndata, $wniosekId, $uzid, $uz);
                 
                 break;
             case "addPrivileges":
@@ -165,9 +167,10 @@ class NadawanieUprawnienZasobowController extends Controller
                 $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
                 $ids = array();
                 $useruprawnienia = array();
-                foreach($uzs as $uu){
-                    if(!in_array($uu->getUprawnienieId(), $ids))
+                foreach ($uzs as $uu) {
+                    if (!in_array($uu->getUprawnienieId(), $ids)) {
                         $ids[] = $uu->getUprawnienieId();
+                    }
                     $useruprawnienia[$uu->getUprawnienieId()][] = $uu->getSamaccountname();
                 }
                 $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findall();//ById($ids);
@@ -177,25 +180,26 @@ class NadawanieUprawnienZasobowController extends Controller
                 $uzs = $this->getDoctrine()->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $sams, 'czyAktywne' => true));
                 $ids = array();
                 $useruprawnienia = array();
-                foreach($uzs as $uu){
-                    if(!in_array($uu->getUprawnienieId(), $ids))
+                foreach ($uzs as $uu) {
+                    if (!in_array($uu->getUprawnienieId(), $ids)) {
                         $ids[] = $uu->getUprawnienieId();
+                    }
                     $useruprawnienia[$uu->getUprawnienieId()][] = $uu->getSamaccountname();
                 }
                 $chs = $this->getDoctrine()->getRepository('ParpMainBundle:Uprawnienia')->findById($ids);
                 break;
         }
         
-        $choicesDescription = array();//niwuzywane 
+        $choicesDescription = array();//niwuzywane
           
-        if($action != "removeResources"){ 
-            $choices = array();    
-            foreach($chs as $ch){
-                if($action == "addResources"){
+        if ($action != "removeResources") {
+            $choices = array();
+            foreach ($chs as $ch) {
+                if ($action == "addResources") {
                     $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
-                    if(isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0){
+                    if (isset($userzasoby[$ch->getId()]) && count($userzasoby[$ch->getId()]) > 0) {
                         $ret = array();
-                        foreach($userzasoby[$ch->getId()] as $u){
+                        foreach ($userzasoby[$ch->getId()] as $u) {
                             $ret[] = $u;//"<span data-toggle='popover' data-content='".$userzasobyOpisy[$ch->getId()][$u]."'>".$u."</span>";
                         }
                         
@@ -204,34 +208,33 @@ class NadawanieUprawnienZasobowController extends Controller
                         $info = (count($userzasoby[$ch->getId()]) > 1 ? "Posiadają : " : "Posiada : ").implode(" ", $ret);
                     }
                     
-                    if($wniosekId == 0){
-                        
+                    if ($wniosekId == 0) {
                         $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
-                    }else{
-                        if($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY"){                    
+                    } else {
+                        if ($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() == "00_TWORZONY") {
                             $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
-                        }else{
+                        } else {
                             //tylko jesli juz jest we wniosku
                             $jest = false;
-                            foreach($wniosek->getUserZasoby() as $uz){
-                                if($uz->getZasobId() == $ch->getId())
+                            foreach ($wniosek->getUserZasoby() as $uz) {
+                                if ($uz->getZasobId() == $ch->getId()) {
                                     $jest = true;
+                                }
                             }
-                            if($jest || $wniosek->getZasobId() == $ch->getId())
+                            if ($jest || $wniosek->getZasobId() == $ch->getId()) {
                                 $choices[$ch->getId()] = $ch->getNazwa();//."@@@".$info;
+                            }
                         }
                     }
-                    
-                }            
-                elseif($action == "addPrivileges" || $action == "removePrivileges"){
+                } elseif ($action == "addPrivileges" || $action == "removePrivileges") {
                     //die(".".count($sams));
                     $info = count($sams) > 1 ? "Nie posiadają" : "Nie posiada";
-                    if(isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0){
+                    if (isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0) {
                         $uss = implode(",", $useruprawnienia[$ch->getId()]);
                         $info = count($sams) > 1 ? "Posiadają : " . (count($useruprawnienia[$ch->getId()]) == count($sams) ? "WSZYSCY" : $uss) : "Posiada";
                     }
                     $gids = array();
-                    foreach($ch->getGrupy() as $g){
+                    foreach ($ch->getGrupy() as $g) {
                         $gids[] = $g->getId();
                     }
                     //print_r($gids); die();
@@ -239,7 +242,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             }
         }
-        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);    
+        return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);
     }
     
     protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action, $wniosekId = 0, $zasobyId = "")
@@ -250,16 +253,16 @@ class NadawanieUprawnienZasobowController extends Controller
         $samaccountnames = json_decode($samaccountnames);
         $users = array();
         
-        foreach($samaccountnames as $sam => $v){
-            if($v){
+        foreach ($samaccountnames as $sam => $v) {
+            if ($v) {
                 //echo " $sam ";
-                if($wniosek && $wniosek->getPracownikSpozaParp()){
+                if ($wniosek && $wniosek->getPracownikSpozaParp()) {
                     //$ADUser = $ldap->getUserFromAD($sam);
                     $users[] = array(
                         'samaccountname' => $sam,
                         'name' => $sam
                     );
-                }else{
+                } else {
                     $ADUser = $ldap->getUserFromAD($sam);
                     $users[] = $ADUser[0];
                 }
@@ -267,7 +270,7 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         $grupys = $this->getDoctrine()->getRepository('ParpMainBundle:GrupyUprawnien')->findAll();
         $grupy = array();
-        foreach($grupys as $g){
+        foreach ($grupys as $g) {
             $grupy[$g->getId()] = $g->getOpis();
         }
         $now = new \Datetime();
@@ -395,38 +398,36 @@ class NadawanieUprawnienZasobowController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            
-    
             $ndata = $form->getData();
             $sams = array();
             $s1 = json_decode($ndata['samaccountnames']);
-            foreach($s1 as $k => $v){
-                if($v){
-                    $sams[] = $k;                    
+            foreach ($s1 as $k => $v) {
+                if ($v) {
+                    $sams[] = $k;
                     $this->get('adcheck_service')->checkIfUserCanBeEdited($k);
                 }
             }
             
             
             
-            switch($ndata['action']){
+            switch ($ndata['action']) {
                 case "addResources":
                     //check privileges - czy jest adminem zasobow
-                    if(!$wniosekId){
+                    if (!$wniosekId) {
                         //jesli bez wniosku sprawdzamy czy jest PARP_ADMIN albo PARP_ADMIN_ZASOBU dla swoich zasobow
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ndata['access']);
                     }
                     
                     
-                    return $this->addResourcesToUsersAction($request, $ndata, $wniosekId);        
+                    return $this->addResourcesToUsersAction($request, $ndata, $wniosekId);
                     break;
                 
                 case "removeResources":
                     //check privileges - czy jest adminem zasobow!!!
-                    if(!$wniosekId){
+                    if (!$wniosekId) {
                         //jesli bez wniosku sprawdzamy czy jest PARP_ADMIN albo PARP_ADMIN_ZASOBU dla swoich zasobow
                         $ids = [];
-                        foreach($ndata['access'] as $a){
+                        foreach ($ndata['access'] as $a) {
                             $ps = explode(";", $a);
                             $userZasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($ps[0]);
 
@@ -435,24 +436,22 @@ class NadawanieUprawnienZasobowController extends Controller
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
                     }
                 
-                    return $this->removeResourcesToUsersAction($request, $ndata, $wniosekId);  
+                    return $this->removeResourcesToUsersAction($request, $ndata, $wniosekId);
                     
                     break;
                 case "addPrivileges":
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
-                    foreach($ndata['access'] as $z){
-                        
-                        foreach($sams as $currentsam){
+                    foreach ($ndata['access'] as $z) {
+                        foreach ($sams as $currentsam) {
                             $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
                             
                             $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
-                            if($suz){
+                            if ($suz) {
                                 $msg = "NIE nadaje userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma !";
                                 $this->addFlash('notice', $msg);
-                                
-                            }else{
+                            } else {
                                 $suz = new UserUprawnienia();
                                 $suz->setSamaccountname($currentsam);
                                 $suz->setOpis($u->getOpis());
@@ -464,7 +463,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $this->getDoctrine()->getManager()->persist($suz);
                                 //$this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Nadaje userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma";
-                                if($u->getGrupaAd() != ""){
+                                if ($u->getGrupaAd() != "") {
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
                                     $msg .= "I dodaje do grupy AD : ".$u->getGrupaAd();
                                     $entry = new Entry($this->getUser()->getUsername());
@@ -481,13 +480,13 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $zmianaupr[] = $u->getOpis();
                             }
                             
-                            if(count($zmianaupr) > 0){
+                            if (count($zmianaupr) > 0) {
                                 $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), array(), $zmianaupr);
                             }
                         }
                     }
                     
-                    if($wniosek){
+                    if ($wniosek) {
                         $wniosek->ustawPoleZasoby();
                     }
                     $this->getDoctrine()->getManager()->flush();
@@ -496,13 +495,11 @@ class NadawanieUprawnienZasobowController extends Controller
                 case "removePrivileges":
                     $powod = $ndata['powod'];
                     //print_r($ndata); die();
-                    foreach($ndata['access'] as $z){
-                        
-                        foreach($sams as $currentsam){
+                    foreach ($ndata['access'] as $z) {
+                        foreach ($sams as $currentsam) {
                             $zmianaupr = array();
                             $suz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $currentsam, 'uprawnienie_id' => $z));
-                            if($suz){
-                                
+                            if ($suz) {
                                 $u = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Uprawnienia')->find($z);
                                 $suz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
                                 $suz->setCzyAktywne(false);
@@ -511,7 +508,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $this->getDoctrine()->getManager()->remove($suz);
                                 $msg = "Odbieram userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma";
                                 
-                                if($u->getGrupaAd() != ""){
+                                if ($u->getGrupaAd() != "") {
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
                                     $msg .= "I wyjmuje z grupy AD : ".$u->getGrupaAd();
                                     $entry = new Entry($this->getUser()->getUsername());
@@ -525,24 +522,24 @@ class NadawanieUprawnienZasobowController extends Controller
                                 
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $u->getOpis();
-                            }else{
+                            } else {
                                 $msg = "NIE odbieram userowi ".$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
                             
-                            if(count($zmianaupr) > 0)
+                            if (count($zmianaupr) > 0) {
                                 $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array());
+                            }
                         }
                     }
                     
-                    if($wniosek){
+                    if ($wniosek) {
                         $wniosek->ustawPoleZasoby();
                     }
                     $this->getDoctrine()->getManager()->flush();
                     return $this->redirect($this->generateUrl('main'));
                     break;
             }
-            
         }
         //print_r($users);
         $tmpl = $wniosek ? 'ParpMainBundle:NadawanieUprawnienZasobow:addRemoveUserAccessByWniosek.html.twig' : 'ParpMainBundle:NadawanieUprawnienZasobow:addRemoveUserAccess.html.twig';
@@ -558,38 +555,40 @@ class NadawanieUprawnienZasobowController extends Controller
             'zasobyId' => $zasobyId
         ));
     }
-    protected function sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($zids){
-        if(!in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles())){
+    protected function sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($zids)
+    {
+        if (!in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles())) {
             die("Nie masz uprawnien by wykonywac ta akcje, musisz byc administratorem zasobow ze specjalna rola!");
         }
         $jestAdminemWszystkichZasobow = true;
         $username = $this->getUser()->getUsername();
         $nieJestAdminem = [];
         $zasoby = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findById($zids);
-        foreach($zasoby as $zasob){
+        foreach ($zasoby as $zasob) {
             $admins = array_merge($zasob->getAdministratorZasobu(), $zasob->getAdministratorTechnicznyZasobu());
             $admini = explode(",", $admins);
             $jestAdminemWszystkichZasobow = $jestAdminemWszystkichZasobow && in_array($username, $admini);
-            if(!in_array($username, $admini)){
+            if (!in_array($username, $admini)) {
                 $nieJestAdminem[] = $zasob->getNazwa();
             }
         }
         
-        if(!$jestAdminemWszystkichZasobow && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+        if (!$jestAdminemWszystkichZasobow && !in_array("PARP_ADMIN", $this->getUser()->getRoles())) {
             $msg = "Nie możesz dodawać/odejmować uprawnień do zasbów których nie jesteś administratorem!!!";
             $msg .= "\r\n<br>Nie jesteś administratorem tych zasobów: ".implode(", ", $nieJestAdminem);
             die($msg);
         }
     }
     
-    protected function removeResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null){
+    protected function removeResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null)
+    {
         
         $wniosek = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         $powod = $ndata['powod'];
         //print_r($ndata); die();
         //grupuje uprawnienia po uzid
         $daneDoZmiany = [];
-        foreach($ndata['access'] as $z){
+        foreach ($ndata['access'] as $z) {
             $data = explode(";", $z);
             $id = $data[0];
             $modul = $data[1];
@@ -603,39 +602,39 @@ class NadawanieUprawnienZasobowController extends Controller
             $daneDoZmiany[$id]['poziomy'][$poziom] = $poziom;
             $daneDoZmiany[$id]['odbiera'][$modul.$poziom] = $modul.$poziom;
         }
-        foreach($daneDoZmiany as $id => $dane){
+        foreach ($daneDoZmiany as $id => $dane) {
             $uz = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($id);
             $uz->setWniosekOdebranie(null);
             $wynik = $uz->podzielUprawnieniaPrzyOdbieraniu($dane);
             
             //var_dump($dane, $wynik); die();
             
-            if(count($wynik['modulyKtoreZostaja']) != 0 && count($wynik['modulyKtoreZostaja']) != 0){
+            if (count($wynik['modulyKtoreZostaja']) != 0 && count($wynik['modulyKtoreZostaja']) != 0) {
                 //ustawiamy te co zostaja jesli sa
                 $uz->setModul($wynik['modulyKtoreZostaja']);
                 $uz->setPoziomdostepu($wynik['poziomyKtoreZostaja']);
-            }else{
+            } else {
                 $this->getDoctrine()->getManager()->remove($uz);
             }
             
-            foreach($wynik['nowe'] as $d){
-                if(trim($d['modul']) != "" && trim($d['poziom']) != ""){
+            foreach ($wynik['nowe'] as $d) {
+                if (trim($d['modul']) != "" && trim($d['poziom']) != "") {
                     $noweUz = clone $uz;
                     $noweUz->setModul($d['modul']);
                     $noweUz->setPoziomdostepu($d['poziom']);
-                    if($d['odbierane']){
+                    if ($d['odbierane']) {
                         $noweUz->setPowodOdebrania($powod);
                         $noweUz->setCzyAktywne(false);
-                        if($wniosek){
+                        if ($wniosek) {
                             $noweUz->setWniosekOdebranie($wniosek);
                             $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
-                        }else{
+                        } else {
                             $noweUz->setKtoOdebral($this->getUser()->getUsername());
                             $noweUz->setCzyOdebrane(true);
                             $noweUz->setAktywneDo(new \Datetime($ndata['fromWhen']));
                             $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
                         }
-                    }else{
+                    } else {
                         $noweUz->setWniosekOdebranie(null);
                     }
                     $this->getDoctrine()->getManager()->persist($noweUz);
@@ -646,19 +645,19 @@ class NadawanieUprawnienZasobowController extends Controller
             //var_dump($uz->getId(), $uz->getModul(), $uz->getPoziomdostepu(), $dane, $wynik);die();
             $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
 
-            $zmianaupr[] = $zasob->getOpis();   
+            $zmianaupr[] = $zasob->getOpis();
         }
         
         
-        if($wniosek){
+        if ($wniosek) {
             $wniosek->ustawPoleZasoby();
         }
         
         $this->getDoctrine()->getManager()->flush();
         
-        if($wniosekId != 0){
+        if ($wniosekId != 0) {
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
-        }else{
+        } else {
             return $this->redirect($this->generateUrl('main'));
         }
         
@@ -713,44 +712,44 @@ class NadawanieUprawnienZasobowController extends Controller
 
         $choicesPoziomDostepu = array();
         $choicesModul = array();
-        $now = new \Datetime();  
-        if($ndata == null){
+        $now = new \Datetime();
+        if ($ndata == null) {
             //die('mam nulla');
             $zids = array();
             //print_r($_POST['form']['userzasoby']);
             //$ndata2 = $form->getData();
-            foreach($_POST['form']['userzasoby'] as $v){
+            foreach ($_POST['form']['userzasoby'] as $v) {
                 $zids[] = $v['zasobId'];
             }
             $fromWhenPars['data'] = $now->format("Y-m-d");
-        }else{
+        } else {
             $samaccountnames = json_decode($ndata['samaccountnames']);
             $ldap = $this->get('ldap_service');
             $users = array();
-            foreach($samaccountnames as $sam => $v){
-                if($v){
-                    if($wniosek && $wniosek->getPracownikSpozaParp()){
+            foreach ($samaccountnames as $sam => $v) {
+                if ($v) {
+                    if ($wniosek && $wniosek->getPracownikSpozaParp()) {
                         //$ADUser = $ldap->getUserFromAD($sam);
                         $users[] = array(
                             'samaccountname' => $sam,
                             'name' => $sam
                         );
-                    }else{
+                    } else {
                         $ADUser = $ldap->getUserFromAD($sam);
                         $users[] = $ADUser[0];
                     }
                 }
-            }                          
+            }
             $samaccountnamesPars['data'] = json_encode($samaccountnames);
             $fromWhenPars['data'] = $ndata['fromWhen'];
             $zids = $ndata['access'];
             $powodPars['data'] = $ndata['powod'];
-            //$userzasobyPars['data'] = array();//$userzasoby;    
+            //$userzasobyPars['data'] = array();//$userzasoby;
         }
         $datauz = array(
             'aktywneOd' => $fromWhenPars['data'],
         );
-        foreach($zids as $v){
+        foreach ($zids as $v) {
             //print_r($v);
             $z = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->find($v);
             
@@ -758,9 +757,9 @@ class NadawanieUprawnienZasobowController extends Controller
             
             
             //echo ".".count($z->getUzytkownicy()).".";
-            if($uzid == 0){
+            if ($uzid == 0) {
                 $uz = new UserZasoby();
-            }else{
+            } else {
                 $uz = $userzasob;
                 
                 $datauz['aktywneDo'] = $userzasob->getAktywneDo();
@@ -772,12 +771,12 @@ class NadawanieUprawnienZasobowController extends Controller
             $uz->setPoziomDostepu($z->getPoziomDostepu());
             $uz->setModul($z->getModulFunkcja());
             $c1 = explode(",", $z->getPoziomDostepu());
-            foreach($c1 as $c){
+            foreach ($c1 as $c) {
                 $c = trim($c);
                 $choicesPoziomDostepu[$c] = $c;
             }
             $c2 = explode(",", $z->getModulFunkcja());
-            foreach($c2 as $c){
+            foreach ($c2 as $c) {
                 $c = trim($c);
                 $choicesModul[$c] = $c;
             }
@@ -797,7 +796,7 @@ class NadawanieUprawnienZasobowController extends Controller
             ->add('samaccountnames', 'hidden', $samaccountnamesPars)
             ->add('fromWhen', 'hidden', $fromWhenPars)
             ->add('powod', 'hidden', $powodPars)
-        ->add('userzasoby','collection', array(
+        ->add('userzasoby', 'collection', array(
             'type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu, true, $datauz),
             'allow_add'    => true,
             'allow_delete'    => true,
@@ -817,7 +816,7 @@ class NadawanieUprawnienZasobowController extends Controller
             ->setMethod('POST')
             ->getForm();
             
-        if($ndata == null){
+        if ($ndata == null) {
             $form->handleRequest($request);
 
             if ($form->isValid()) {
@@ -827,9 +826,10 @@ class NadawanieUprawnienZasobowController extends Controller
                 //tworzy przypisania do zasobow
                 $sams = array();
                 $s1 = json_decode($ndata['samaccountnames']);
-                foreach($s1 as $k => $v){
-                    if($v && $v != "" && $v != "_empty_")
+                foreach ($s1 as $k => $v) {
+                    if ($v && $v != "" && $v != "_empty_") {
                         $sams[] = $k;
+                    }
                 }
                 $msg = "";
                 $msg2 = "";
@@ -837,8 +837,8 @@ class NadawanieUprawnienZasobowController extends Controller
                 $wniosekId = $ndata['wniosekId'];
                 $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
                 //var_dump($ndata); die();
-                foreach($ndata['userzasoby'] as $oz){
-                    foreach($sams as $currentsam){
+                foreach ($ndata['userzasoby'] as $oz) {
+                    foreach ($sams as $currentsam) {
                         $zmianaupr = array();
                         
                         //tu szukal podobnych dla tego zasobu ale teraz po polaczeniu z wnioskiami i nieaktywnymi to trzeba by warunek zwiekszyc
@@ -846,7 +846,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($oz->getZasobId());
                         $admini = explode(",", $zasob->getAdministratorZasobu());
                         //var_dump($this->getUser()->getUsername(), $admini, $this->getUser()->getRoles());
-                        if($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini) && !in_array("PARP_ADMIN", $this->getUser()->getRoles())){
+                        if ($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini) && !in_array("PARP_ADMIN", $this->getUser()->getRoles())) {
                             //jesli bez wniosku
                             //jesli nie admin_zasobu
                             //jesli nie parp_admin
@@ -856,34 +856,34 @@ class NadawanieUprawnienZasobowController extends Controller
                         
                         //print_r($suz);
                         //if($suz == null){
-                            if($oz->get_Idd() > 0){
-                                //die(".".$oz->getIdd());
-                                //$z2 = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
-                                //$this->getDoctrine()->getManager()->remove($z2);
-                                $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
-                                $z->setModul($oz->getModul());
-                                $z->setPoziomDostepu($oz->getPoziomDostepu());
-                                $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
-                                $z->setBezterminowo($oz->getBezterminowo());
-                                $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
-                                if($oz->getAktywneDo() == "" || $oz->getBezterminowo()){
-                                    $z->setAktywneDo(null);
-                                }else{
-                                    $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
-                                }
-                                $z->setKanalDostepu($oz->getKanalDostepu());
-                                $z->setUprawnieniaAdministracyjne($oz->getUprawnieniaAdministracyjne());
-                                $z->setOdstepstwoOdProcedury($oz->getOdstepstwoOdProcedury());
-                            }else{
-                                $z = clone $oz;
-                                $this->getDoctrine()->getManager()->persist($z);
-                                $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
-                                if($oz->getAktywneDo() == "" || $oz->getBezterminowo()){
-                                    $z->setAktywneDo(null);
-                                }else{
-                                    $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
-                                }
+                        if ($oz->get_Idd() > 0) {
+                            //die(".".$oz->getIdd());
+                            //$z2 = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
+                            //$this->getDoctrine()->getManager()->remove($z2);
+                            $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
+                            $z->setModul($oz->getModul());
+                            $z->setPoziomDostepu($oz->getPoziomDostepu());
+                            $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
+                            $z->setBezterminowo($oz->getBezterminowo());
+                            $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
+                            if ($oz->getAktywneDo() == "" || $oz->getBezterminowo()) {
+                                $z->setAktywneDo(null);
+                            } else {
+                                $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
                             }
+                            $z->setKanalDostepu($oz->getKanalDostepu());
+                            $z->setUprawnieniaAdministracyjne($oz->getUprawnieniaAdministracyjne());
+                            $z->setOdstepstwoOdProcedury($oz->getOdstepstwoOdProcedury());
+                        } else {
+                            $z = clone $oz;
+                            $this->getDoctrine()->getManager()->persist($z);
+                            $z->setAktywneOd(new \DateTime($z->getAktywneOd()));
+                            if ($oz->getAktywneDo() == "" || $oz->getBezterminowo()) {
+                                $z->setAktywneDo(null);
+                            } else {
+                                $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                            }
+                        }
                             //die(".".$oz->get_Idd());
                             $z->setCzyAktywne($wniosekId == 0);
                             $z->setCzyNadane(false);
@@ -895,8 +895,9 @@ class NadawanieUprawnienZasobowController extends Controller
                             //\Doctrine\Common\Util\Debug::dump($z);die();
                             
                             $msg = "Dodaje usera ".$currentsam." do zasobu '".$this->get('renameService')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
-                            if($wniosekId == 0)
-                                $this->addFlash('warning', $msg);
+                        if ($wniosekId == 0) {
+                            $this->addFlash('warning', $msg);
+                        }
                             $zmianaupr[] = $zasob->getOpis();
                             //print_r( );
 /*
@@ -908,32 +909,33 @@ class NadawanieUprawnienZasobowController extends Controller
                             //$this->get('session')->getFlashBag()->set('warning', $msg);
                         }
 */
-                        if(count($zmianaupr) > 0 && $wniosekId == 0){
+                        if (count($zmianaupr) > 0 && $wniosekId == 0) {
                             //var_dump($currentsam, $zmianaupr); die();
                             $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                         }
                     }
                 }
-                if($wniosek){
+                if ($wniosek) {
                     $wniosek->ustawPoleZasoby();
                 }
                 $this->getDoctrine()->getManager()->flush();
                 
-                if($wniosek){
+                if ($wniosek) {
                     $wniosek->ustawPoleZasoby();
                 }
                 $this->getDoctrine()->getManager()->flush();
-                if($wniosekId != 0){
+                if ($wniosekId != 0) {
                     return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
-                }else{
+                } else {
                     return $this->redirect($this->generateUrl('main'));
                 }
-            }else{
+            } else {
                 $ndata = $form->getData();
                 print_r($ndata);
                 $ee = array();
-                foreach($form->getErrors() as $e)
+                foreach ($form->getErrors() as $e) {
                     $ee[] = $e->getMessage();
+                }
                 
                 print_r($ee);
                 die('mam blad forma '.count($form->getErrors())." ".$form->getErrorsAsString());
@@ -951,6 +953,4 @@ class NadawanieUprawnienZasobowController extends Controller
         ));
         //print_r($ndata); die();
     }
-    
-        
 }

@@ -18,10 +18,12 @@ class Entry
 
     /**
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
         $d = new \Datetime();
-        if(!$this->getId())
+        if (!$this->getId()) {
             $this->setCreatedAt($d);
+        }
     }
     /**
      * @var integer
@@ -41,7 +43,7 @@ class Entry
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa konta musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa konta musi zawierać maxymalnie do {{ limit }} znaków.") 
+     *      maxMessage = "Nazwa konta musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $samaccountname;
@@ -55,7 +57,7 @@ class Entry
      *      min = 2,
      *      max = 255,
      *      minMessage = "Imię i nazwisko musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Imię i nazwisko musi zawierać maxymalnie do {{ limit }} znaków.") 
+     *      maxMessage = "Imię i nazwisko musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $cn;
@@ -77,7 +79,7 @@ class Entry
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa Biura Departamentu musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa Biura Departamentu musi zawierać maxymalnie do {{ limit }} znaków.") 
+     *      maxMessage = "Nazwa Biura Departamentu musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $department;
@@ -114,7 +116,7 @@ class Entry
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa stanowiska musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.") * 
+     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.") *
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $title;
@@ -128,7 +130,7 @@ class Entry
      *      min = 2,
      *      max = 4,
      *      minMessage = "Inicjały muszą zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Inicjały muszą zawierać maxymalnie do {{ limit }} znaków.")* 
+     *      maxMessage = "Inicjały muszą zawierać maxymalnie do {{ limit }} znaków.")*
      */
     private $initials;
 
@@ -145,7 +147,7 @@ class Entry
      *
      * @ORM\Column(name="fromWhen", type="datetime", nullable=true)
      * @Assert\NotBlank(message = "Data zmiany nie jest wypełniona.");
-     *  
+     *
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $fromWhen;
@@ -163,7 +165,7 @@ class Entry
      *
      * @ORM\Column(name="initialrights", type="string", length=255, nullable=true)
      * @Assert\NotBlank(message = "Nie wybrano uprawnień początkowych")
-     * 
+     *
      */
     private $initialrights;
 
@@ -216,7 +218,7 @@ class Entry
      * @var \DateTime
      *
      * @ORM\Column(name="publishedAt", type="datetime", nullable=true)
-     *  
+     *
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $publishedAt;
@@ -275,7 +277,7 @@ class Entry
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -298,7 +300,7 @@ class Entry
     /**
      * Get cn
      *
-     * @return string 
+     * @return string
      */
     public function getCn()
     {
@@ -321,7 +323,7 @@ class Entry
     /**
      * Get accountExpires
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getAccountExpires()
     {
@@ -344,7 +346,7 @@ class Entry
     /**
      * Get department
      *
-     * @return integer 
+     * @return integer
      */
     public function getDepartment()
     {
@@ -367,7 +369,7 @@ class Entry
     /**
      * Get division
      *
-     * @return integer 
+     * @return integer
      */
     public function getDivision()
     {
@@ -390,7 +392,7 @@ class Entry
     /**
      * Get division
      *
-     * @return integer 
+     * @return integer
      */
     public function getInfo()
     {
@@ -413,7 +415,7 @@ class Entry
     /**
      * Get manager
      *
-     * @return string 
+     * @return string
      */
     public function getManager()
     {
@@ -436,7 +438,7 @@ class Entry
     /**
      * Get title
      *
-     * @return integer 
+     * @return integer
      */
     public function getTitle()
     {
@@ -459,7 +461,7 @@ class Entry
     /**
      * Get distinguishedName
      *
-     * @return string 
+     * @return string
      */
     public function getDistinguishedName()
     {
@@ -482,7 +484,7 @@ class Entry
     /**
      * Get fromWhen
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getFromWhen()
     {
@@ -511,7 +513,7 @@ class Entry
     /**
      * Get isImplemented
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getIsImplemented()
     {
@@ -542,7 +544,7 @@ class Entry
     /**
      * Get samaccountname
      *
-     * @return string 
+     * @return string
      */
     public function getSamaccountname()
     {
@@ -566,7 +568,7 @@ class Entry
     /**
      * Get initials
      *
-     * @return string 
+     * @return string
      */
     public function getInitials()
     {
@@ -592,7 +594,7 @@ class Entry
     /**
      * Get initialrights
      *
-     * @return string 
+     * @return string
      */
     public function getInitialrights()
     {
@@ -648,27 +650,32 @@ class Entry
         return $this->disableDescription;
     }
     
-    public function getRoles(){
+    public function getRoles()
+    {
         return array();
     }
-    public function setRoles(){
+    public function setRoles()
+    {
         return $this;
     }
     
-    public function setGrupyAD($departament, $czyDodaj = "+"){
-        if($departament){
-            $grupy = explode(",",  $departament->getGrupyAD());
+    public function setGrupyAD($departament, $czyDodaj = "+")
+    {
+        if ($departament) {
+            $grupy = explode(",", $departament->getGrupyAD());
             $gr = [];
-            foreach($grupy as $g){
-                if(strlen($g) > 0)
+            foreach ($grupy as $g) {
+                if (strlen($g) > 0) {
                     $gr[] = $czyDodaj.$g;
+                }
             }
             $this->setMemberOf(implode(",", $gr));
         }
     }
-    public function addGrupyAD($grupy, $znak){
+    public function addGrupyAD($grupy, $znak)
+    {
         $grupyJuzSa = explode(",", $this->getMemberOf());
-        foreach($grupy as $g){
+        foreach ($grupy as $g) {
             $grupyJuzSa[] = $znak.$g;
         }
         $this->setMemberOf(implode(",", $grupyJuzSa));
@@ -866,7 +873,8 @@ class Entry
         return $this->activateDeactivated;
     }
     
-    public function getUstawUprawnieniaPoczatkowe(){
+    public function getUstawUprawnieniaPoczatkowe()
+    {
         return true;
     }
     public function setUstawUprawnieniaPoczatkowe($var)

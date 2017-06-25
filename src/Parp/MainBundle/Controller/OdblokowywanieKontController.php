@@ -36,23 +36,23 @@ class OdblokowywanieKontController extends Controller
         $ldap = $this->get('ldap_service');
         // Sięgamy do AD:
         
-        $maDostep = 
+        $maDostep =
             in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
             in_array("PARP_ADMIN", $this->getUser()->getRoles())
         ;
-        if(!$maDostep){
-            throw new \Parp\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');                                
+        if (!$maDostep) {
+            throw new \Parp\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
         }
         $ADUsersTemp = $ldap->getAllFromAD("zablokowane");
         $ADUsers = array();
-        foreach($ADUsersTemp as $u){
+        foreach ($ADUsersTemp as $u) {
                 $ADUsers[] = $u;
         }
         
-        if(count($ADUsers) == 0){
+        if (count($ADUsers) == 0) {
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
-        }    
-        //$grid = $defaultController->getUserGrid($this->get('grid'), $ADUsers, 'zablokowane');        
+        }
+        //$grid = $defaultController->getUserGrid($this->get('grid'), $ADUsers, 'zablokowane');
         $grid = $this->forward('ParpMainBundle:Default:getUserGrid', array(
             'grid'  => $this->get('grid'),
             'ADUsers' => $ADUsers,
@@ -63,7 +63,7 @@ class OdblokowywanieKontController extends Controller
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
         $rowAction2->setColumn('akcje');
         $rowAction2->setRouteParameters(
-                array('samaccountname')
+            array('samaccountname')
         );
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
@@ -71,7 +71,7 @@ class OdblokowywanieKontController extends Controller
         $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
         $rowAction3->setColumn('akcje');
         $rowAction3->setRouteParameters(
-                array('samaccountname')
+            array('samaccountname')
         );
         $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
 
@@ -79,7 +79,7 @@ class OdblokowywanieKontController extends Controller
         $rowAction4 = new RowAction('<i class="fa fa-database"></i> Odblokuj', 'unblock');
         $rowAction4->setColumn('akcje');
         $rowAction4->setRouteParameters(
-                array('samaccountname')
+            array('samaccountname')
         );
         $rowAction4->addAttribute('class', 'btn btn-success btn-xs');
 
@@ -93,7 +93,5 @@ class OdblokowywanieKontController extends Controller
         
 
         return $grid->getGridResponse();
-        
-    }    
-    
+    }
 }

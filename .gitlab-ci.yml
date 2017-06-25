@@ -1,0 +1,108 @@
+cache:
+  untracked: true
+
+variables:
+  GIT_STRATEGY: fetch
+
+before_script:
+  # Set exports for symfony
+#  - export SYMFONY__URL__NAME=$HOSTNAME
+  # Install needed components, which don't exist on the image
+#  - apt-get update -yqq
+#  - apt-get install -yqq git libpq-dev postgresql-client php5-pgsql zip libicu-dev libxml2-dev libldb-dev libldap2-dev
+  - curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.1/install.sh | bash
+  - curl -sL https://deb.nodesource.com/setup_6.x | bash -
+  - apt-get install -yqq zip git nodejs libldap2-dev libldb-dev libxml2-dev
+  - npm install -g bower
+  # Enable installed components
+#  - docker-php-ext-install intl
+#  - docker-php-ext-install pdo_pgsql
+  - docker-php-ext-install soap
+#  - docker-php-ext-install sockets
+  - docker-php-ext-configure ldap --with-libdir=lib/x86_64-linux-gnu/
+  - docker-php-ext-install ldap
+#  - pecl install -o -f redis
+#  - rm -rf /tmp/pear
+#  - echo "extension=redis.so" > /usr/local/etc/php/conf.d/redis.ini
+  # Copy repository to HTML directory for URL tests
+  - cp -r $CI_PROJECT_DIR/* /var/www/html/
+  - cd /var/www/html
+  # Configure timezone
+  - echo 'date.timezone = "Europe/Warsaw"' > /usr/local/etc/php/conf.d/timezone.ini
+  # Install composer
+  - curl -sS https://getcomposer.org/installer | php
+  - php composer.phar --dev -nq --no-progress install
+  # Copy apache configuration so app will work properly
+#  - cat /var/www/html/ci/000-default.conf > /etc/apache2/sites-enabled/000-default.conf
+  # Start apache
+#  - service apache2 start
+
+stages:
+  - test
+#  - review
+
+cache:
+  paths:
+    - vendors/
+
+#variables:
+#  POSTGRES_DB: nice_marmot
+#  POSTGRES_USER: runner
+#  POSTGRES_PASSWORD: ""
+
+#Symfony:
+#  script:
+#    - php bin/symfony_requirements
+
+#PHPUnit:
+#  stage: test
+#  script:
+#    - pecl install xdebug
+#    - docker-php-ext-enable xdebug
+#    - cd /var/www/html
+#    - chmod -R o+w app/cache
+#    - chmod -R o+w app/logs
+#    - php app/console doctrine:schema:drop --force
+#    - php app/console doctrine:schema:update --force
+#    - ./vendor/phpunit/phpunit/phpunit
+
+PHPCS-PSR2:
+  image: php:5.6-apache
+  services:
+#    - postgres:9.4
+#    - redis:latest
+  stage: test
+  cache:
+    paths:
+      - /var/www/html/vendor
+  script:
+#    - ./bin/parallel-lint --blame ./src
+#    - php -dmemory_limit=1G ./app/console lint:twig src
+#    - php -dmemory_limit=1G ./app/console lint:yaml src
+#    - php -dmemory_limit=1G ./app/console lint:yaml app/config
+    - ./bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php --ignore=src/Parp/IntegracjaSl2014Bundle/Mwd/ModelDanych/ src/Parp/
+#    - ./bin/phpmd src/ text cleancode,controversial --suffixes php --ignore-violations-on-exit --exclude src/Parp/IntegracjaSl2014Bundle/Mwd/ModelDanych/
+#
+#PHPMD:
+#  image: php:5.6-apache
+#  services:
+##    - postgres:9.4
+#    - redis:latest
+#  stage: review
+#  dependencies:
+#    - PHPCS-PSR2
+#  script:
+#  allow_failure: true
+
+#
+#PHPCS:
+#  stage: test
+#  script:
+#    - ./bin/phpcs --standard=vendor/leaphub/phpcs-symfony2-standard/leaphub/phpcs/Symfony2/ --extensions=php src/
+#
+#PHPMD:
+#  stage: test
+#  script:
+#    - ./phpmd src/ text cleancode,controversial --suffixes php
+
+#after_script:

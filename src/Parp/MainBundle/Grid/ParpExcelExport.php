@@ -37,12 +37,12 @@ class ParpExcelExport extends Export
         $edata = $data;//array_merge($edata, $data);
         
         //proccess dates
-        foreach($edata as &$d){
-            foreach($d as $k => $v){
-                if(strstr($v, ")") !== false && strstr($v, "(") !== false){
+        foreach ($edata as &$d) {
+            foreach ($d as $k => $v) {
+                if (strstr($v, ")") !== false && strstr($v, "(") !== false) {
                     //mamy cos z nawiasami, sprawdzamy czy to data
                     $date = \DateTime::createFromFormat("Y-m-d (D)", $v);
-                    if($date){
+                    if ($date) {
                         $nv = $date->format("Y-m-d");
                         $d[$k] = $nv;
                     }
@@ -51,7 +51,5 @@ class ParpExcelExport extends Export
         }
         
         die("<pre>".print_r($edata, true));
-        
-        
     }
 }

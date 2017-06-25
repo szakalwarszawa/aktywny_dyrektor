@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+
 use APY\DataGridBundle\Grid\Mapping as GRID;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -78,7 +79,7 @@ class Zastepstwo
      * @ORM\OneToMany(targetEntity="Wniosek", mappedBy="zastepstwo")
      * @@Gedmo\Mapping\Annotation\Versioned
      */
-    private $wniosekHistoriaStatusu; 
+    private $wniosekHistoriaStatusu;
     
     
 

@@ -37,8 +37,8 @@ class UprawnieniaService
         //pobierz nowe uprawnienia
         $grupy = array();
         $up = explode(",", $person->getInitialRights());
-        foreach($up as $kkod){
-            if($kkod != ""){
+        foreach ($up as $kkod) {
+            if ($kkod != "") {
                 $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
                 $grupy[] = $noweUprawnienia;
                 foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
@@ -63,13 +63,9 @@ class UprawnieniaService
         $nadane = array();
 
         foreach ($uprawnienia as $uprawnienie) {
-
             if ($uprawnienie->getCzyEdycja()) {
-
                 if ($uprawnienie->getCzySekcja()) {
-
                     if (mb_strtoupper($section->getShortname() != 'ND')) {
-
                         // tylko w tym wypadku podmieniamy sekcję
                         // jezeli nie to nie wstawiamy nic
 
@@ -86,7 +82,6 @@ class UprawnieniaService
                         $nadane[] = $opis;
                     }
                 } else {
-
                     $userUprawnienia = new UserUprawnienia();
                     $opis = str_replace('[D/B]', $departament->getShortname(), $uprawnienie->getOpis());
                     $userUprawnienia->setOpis($opis);
@@ -98,7 +93,6 @@ class UprawnieniaService
                     $nadane[] = $opis;
                 }
             } else {
-
                 $userUprawnienia = new UserUprawnienia();
                 $userUprawnienia->setOpis($uprawnienie->getOpis());
                 $userUprawnienia->setDataNadania(new \DateTime());
@@ -114,7 +108,7 @@ class UprawnieniaService
 
             $this->wyslij($person, null, $nadane);
         }
-        foreach($grupy as $g){
+        foreach ($grupy as $g) {
             $ug = new UserGrupa();
             $ug->setSamaccountname($person->getSamaccountname());
             $ug->setGrupa($g);
@@ -147,11 +141,10 @@ class UprawnieniaService
         }
 
         if ($czyZmianaGrupyUprawnien === true) {
-
             //pobierz nowe uprawnienia
             $nowe = array();
             $up = explode(",", $person->getInitialRights());
-            foreach($up as $kkod){
+            foreach ($up as $kkod) {
                 $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
                 foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
                     $nowe[] = $uprawnienie->getId();
@@ -160,7 +153,7 @@ class UprawnieniaService
 
             $istniejace = array();
             //pobierz istniejace
-            $istniejaceUprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE));
+            $istniejaceUprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => true));
             foreach ($istniejaceUprawnienia as $uprawnienie) {
                 $istniejace[] = $uprawnienie->getUprawnienieId();
             }
@@ -184,7 +177,7 @@ class UprawnieniaService
             //obsłuz usuniecie
             foreach ($doUsuniecia as $value) {
                 // znajdz uprawnienie uzytkownika
-                $upr = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE, 'uprawnienie_id' => $value));
+                $upr = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => true, 'uprawnienie_id' => $value));
                 $upr->setCzyAktywne(false);
                 $upr->setDataOdebrania(new \DateTime());
                 //echo($upr ->getOpis()) . "\n";
@@ -195,12 +188,10 @@ class UprawnieniaService
             }
 
             foreach ($doDodania as $value) {
-
                 // pobierz ze slownika
                 $upr = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findOneById($value);
 
                 if ($upr->getCzyEdycja()) {
-
                     $ldap = $this->container->get('ldap_service');
                     $userAD = $ldap->getUserFromAD($person->getSamaccountname());
 
@@ -209,7 +200,6 @@ class UprawnieniaService
 
                     if ($upr->getCzySekcja()) {
                         if (mb_strtoupper($shortname != 'ND')) {
-
                             // tylko w tym wypadku podmieniamy sekcję
                             // jezeli nie to nie wstawiamy nic
                             $opis = str_replace('[sekcja]', $shortname, $upr->getOpis());
@@ -249,21 +239,21 @@ class UprawnieniaService
             $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $person->getSamaccountname()));
             $oldgrupy = array();
             $newgrupy = explode(',', $person->getInitialrights());
-            foreach($usergrupa as $g){
-                $oldgrupy[] = $g->getGrupa();                                
+            foreach ($usergrupa as $g) {
+                $oldgrupy[] = $g->getGrupa();
             }
             
             $grupDoUtworzenia = array_diff($newgrupy, $oldgrupy);
             $grupDoSkasowania = array_diff($oldgrupy, $newgrupy);
             
-            foreach($grupDoUtworzenia as $ug){
+            foreach ($grupDoUtworzenia as $ug) {
                 $usergrupa = new UserGrupa();
                 $usergrupa->setGrupa($ug);
-                $usergrupa->setSamaccountname($person->getSamaccountname());            
+                $usergrupa->setSamaccountname($person->getSamaccountname());
                 $this->doctrine->persist($usergrupa);
             }
-            foreach($grupDoSkasowania as $ug){
-                $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));            
+            foreach ($grupDoSkasowania as $ug) {
+                $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));
                 $this->doctrine->remove($usergrupa);
             }
             
@@ -281,11 +271,9 @@ class UprawnieniaService
 */
 
             $this->doctrine->flush();
-                        
         }
 
         if ($czyZmianaDepartamentu === true) {
-
             $nadane = array();
             $odebrane = array();
 
@@ -305,7 +293,7 @@ class UprawnieniaService
             if ($person->getInfo()) {
                 $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
                 $shortname = $section->getShortname();
-            }// jezeli nie zmieniona sekcja pobierz z ldap-a
+            } // jezeli nie zmieniona sekcja pobierz z ldap-a
             else {
                 $ldap = $this->container->get('ldap_service');
                 $userAD = $ldap->getUserFromAD($person->getSamaccountname());
@@ -313,17 +301,15 @@ class UprawnieniaService
             }
             //znajdz te do edycji
             $grupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname()));
-            if($grupa)
+            if ($grupa) {
                 $edytowanlne = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findEdytowalneDlaGrupy($grupa->getGrupa());
-            else
+            } else {
                 $edytowanlne = array();
+            }
 
             foreach ($edytowanlne as $edytowalny) {
-
                 if ($edytowalny->getCzySekcja()) {
-
                     if (mb_strtoupper($shortname != 'ND')) {
-
                         // tylko w tym wypadku podmieniamy sekcję
                         // jezeli nie to nie wstawiamy nic
 
@@ -341,7 +327,6 @@ class UprawnieniaService
                         $nadane[] = $opis;
                     }
                 } else {
-
                     $userUprawnienia = new UserUprawnienia();
                     $opis = str_replace('[D/B]', $departament->getShortname(), $edytowalny->getOpis());
                     $userUprawnienia->setOpis($opis);
@@ -360,10 +345,10 @@ class UprawnieniaService
         } elseif ($czyZmianaSekcji === true) {
             $nadane = array();
             $odebrane = array();
-            // znajdz stare uprawnienie       
+            // znajdz stare uprawnienie
             $uprawnienieuser = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findSekcja($person->getSamaccountname());
             //ustaw stare na niekatualne i wtsaw date
-            if($uprawnienieuser){
+            if ($uprawnienieuser) {
                 $uprawnienieuser->setCzyAktywne(false);
                 $uprawnienieuser->setdataOdebrania(new \DateTime());
     
@@ -388,7 +373,7 @@ class UprawnieniaService
 
                 $opis = $uprawnienie->getOpis();
 
-                //Przydaøoby sie info o biurze 
+                //Przydaøoby sie info o biurze
                 $ldap = $this->container->get('ldap_service');
                 $userAD = $ldap->getUserFromAD($person->getSamaccountname());
                 $opis = str_replace('[sekcja]', $userAD[0]['division'], $opis);
@@ -410,13 +395,14 @@ class UprawnieniaService
         $ldap = $this->container->get('ldap_service');
         $dlaKogo = explode(",", $zadanieDla);
         $mails = array();
-        foreach($dlaKogo as $user){
+        foreach ($dlaKogo as $user) {
             $cn = "CN=".str_replace(" ", "*", trim($user));
             //print_r($cn);
             $userAD = $ldap->getUserFromAD(null, $cn);
             //print_r($userAD);
-            if($userAD && count($userAD) > 0 && $userAD[0]['email'] != "")
+            if ($userAD && count($userAD) > 0 && $userAD[0]['email'] != "") {
                 $mails[] = 'kamil_jakacki@parp.gov.pl'; //$userAD[0]['email'];
+            }
         }
         
         
@@ -447,7 +433,9 @@ class UprawnieniaService
          $this->doctrine->persist($zadanie);
          $this->doctrine->flush();
         $view = $this->container->get('templating')->render(
-                'ParpMainBundle:Default:email.html.twig', array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie));
+            'ParpMainBundle:Default:email.html.twig',
+            array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie)
+        );
 
         $mails[] = 'kamil_jakacki@parp.gov.pl';
         //$mails[] = 'kamil@zapytania.com';
@@ -462,7 +450,7 @@ class UprawnieniaService
 
         //var_dump($view);
 
-        if('kjakacki' == 'WYLACZAM') {
+        if ('kjakacki' == 'WYLACZAM') {
             $this->container->get('mailer')->send($message);
         }
         
@@ -473,5 +461,4 @@ class UprawnieniaService
         
         //die();
     }
-
 }

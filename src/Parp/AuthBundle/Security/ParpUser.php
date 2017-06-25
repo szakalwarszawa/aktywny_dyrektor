@@ -44,13 +44,16 @@ class ParpUser implements UserInterface
     {
     }
     
-    public function getRolesHtml(){
+    public function getRolesHtml()
+    {
         $ret = implode("</li><li class='list-group-item'>", $this->getRoles());
         return "<ul class='list-group'><li class='list-group-item'>".$ret."</li></ul>";
     }
-    public function hasRole($role) {
-        if(in_array($role, $this->getRoles())) return true;
+    public function hasRole($role)
+    {
+        if (in_array($role, $this->getRoles())) {
+            return true;
+        }
         return false;
     }
-
 }

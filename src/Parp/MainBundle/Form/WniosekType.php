@@ -10,7 +10,8 @@ class WniosekType extends AbstractType
 {
     protected $ADUsers;
     
-    public function __construct($ADUsers){
+    public function __construct($ADUsers)
+    {
         $this->ADUsers = $ADUsers;
     }
     /**

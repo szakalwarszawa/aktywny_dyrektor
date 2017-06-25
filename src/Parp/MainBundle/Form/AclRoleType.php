@@ -13,7 +13,8 @@ class AclRoleType extends AbstractType
     protected $ADUsers;
     protected $em;
     
-    public function __construct($ADUsers, $em){
+    public function __construct($ADUsers, $em)
+    {
         $this->ADUsers = $ADUsers;
         $this->em = $em;
     }

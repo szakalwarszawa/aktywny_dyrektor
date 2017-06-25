@@ -25,7 +25,7 @@ class PositionType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
         ;
     }
 
@@ -46,5 +46,4 @@ class PositionType extends AbstractType
     {
         return 'parp_mainbundle_position';
     }
-
 }

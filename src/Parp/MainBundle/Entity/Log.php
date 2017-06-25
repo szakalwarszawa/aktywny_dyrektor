@@ -56,7 +56,7 @@ class Log
      */
     public function __construct()
     {
-        $this->setData(new \Datetime());    
+        $this->setData(new \Datetime());
     }
 
     /**

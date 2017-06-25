@@ -9,7 +9,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="wniosekNumer",uniqueConstraints={
- *     @ORM\UniqueConstraint(name="wniosek_idx", columns={"numer", "rok", "typWniosku"})}) 
+ *     @ORM\UniqueConstraint(name="wniosek_idx", columns={"numer", "rok", "typWniosku"})})
  * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNumerRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
@@ -63,7 +63,7 @@ class WniosekNumer
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNumer")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      */
-    private $wniosek; 
+    private $wniosek;
 
     /**
      * Get id

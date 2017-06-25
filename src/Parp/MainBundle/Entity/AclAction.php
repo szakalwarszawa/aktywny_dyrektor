@@ -46,7 +46,7 @@ class AclAction
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa stanowiska musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.")*
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
@@ -60,7 +60,7 @@ class AclAction
      *      min = 2,
      *      max = 255,
      *      minMessage = "Skrót musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Skrót musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     *      maxMessage = "Skrót musi zawierać maxymalnie do {{ limit }} znaków.")*
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $skrot;

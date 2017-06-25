@@ -19,12 +19,14 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 class ExcelService
 {
     protected $container;
-    public function __construct(Container $container){
+    public function __construct(Container $container)
+    {
         
         $this->container = $container;
     }
     
-    public function generateExcel($data){
+    public function generateExcel($data)
+    {
         $phpExcelObject = $this->container->get('phpexcel')->createPHPExcelObject();
         
         $title = "Raport uprawnien";
@@ -40,16 +42,16 @@ class ExcelService
         $phpExcelObject->setActiveSheetIndex(0);
         $activesheet = $phpExcelObject->getActiveSheet();
         //tutaj wrzucamy dane do excela
-        if(count($data) > 0){
+        if (count($data) > 0) {
             $col = 0;
             //kolumny tworzymy
-            foreach($data[0] as $k => $v){
+            foreach ($data[0] as $k => $v) {
                 $activesheet->setCellValueByColumnAndRow($col++, 1, $k);
             }
             $row = 2;
-            foreach($data as $d){
+            foreach ($data as $d) {
                 $col = 0;
-                foreach($d as $k => $v){
+                foreach ($d as $k => $v) {
                     $activesheet->setCellValueByColumnAndRow($col++, $row, $v);
                 }
                 $row++;
@@ -72,6 +74,4 @@ class ExcelService
         $response->headers->set('Content-Disposition', $dispositionHeader);
         return $response;
     }
-    
-   
-} 
+}

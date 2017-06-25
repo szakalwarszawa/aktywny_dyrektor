@@ -35,7 +35,7 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
                 ->add('nameInRekord', null, array(
                     'required' => false,
                     'read_only' => false,
@@ -45,7 +45,7 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
                 ->add('grupyAD', null, array(
                     'required' => false,
                     'read_only' => false,
@@ -55,7 +55,7 @@ class DepartamentType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control tagAjaxInput',
-            )))
+                )))
             ->add('skroconaNazwaRekord', null, array(
                 'required' => true,
                 'read_only' => false,
@@ -90,7 +90,7 @@ class DepartamentType extends AbstractType
             ->add('save', 'button', array('label' => 'Dodaj Biuro/Departament',
             'attr' => array('class' => 'btn btn-primary'),
 
-        ))*/; 
+        ))*/;
     }
 
     /**
@@ -110,5 +110,4 @@ class DepartamentType extends AbstractType
     {
         return 'parp_mainbundle_departament';
     }
-
 }

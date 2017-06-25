@@ -26,6 +26,7 @@ use Parp\MainBundle\Exception\SecurityTestException;
 use Parp\MainBundle\Entity\Entry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\Grid\Column\TextColumn;
+
 /**
  * BlokowaneKontaController .
  *
@@ -45,19 +46,19 @@ class BlokowaneKontaController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromADIntW($ktorzy);
         
-        if(count($ADUsers) == 0){
+        if (count($ADUsers) == 0) {
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }
         //echo "<pre>"; print_r($ADUsers); die();
         $ctrl = new DefaultController();
-        $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());        
+        $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());
 
         //if($ktorzy == "zablokowane"){
             // Edycja konta
             $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
             $rowAction->setColumn('akcje');
             $rowAction->setRouteParameters(
-                    array('samaccountname', 'ktorzy' => $ktorzy)
+                array('samaccountname', 'ktorzy' => $ktorzy)
             );
             $rowAction->addAttribute('class', 'btn btn-success btn-xs');
     
@@ -88,13 +89,13 @@ class BlokowaneKontaController extends Controller
         $ctrl = new DefaultController();
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
         $departamentRekord = "";
-        if($daneRekord){
+        if ($daneRekord) {
             $departamentRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:Departament")->findOneByNameInRekord($daneRekord->getDepartament());
         }
         $form->handleRequest($request);
         if ($request->getMethod() == "POST") {
-            $data = $request->request->get('form'); 
-            $ctrl = new DefaultController();   
+            $data = $request->request->get('form');
+            $ctrl = new DefaultController();
             
             //var_dump($data);
             $entry = new Entry();
@@ -147,7 +148,7 @@ class BlokowaneKontaController extends Controller
         
         $disabled = $ldap->getAllDisabled();
         
-        for($i = 0; $i < count($disabled); $i++){
+        for ($i = 0; $i < count($disabled); $i++) {
             $d = $disabled[$i];
             $name = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($d['name']);
             $rekordDane = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy(
@@ -165,7 +166,7 @@ class BlokowaneKontaController extends Controller
         
         
         $ctrl = new DefaultController();
-        $grid = $ctrl->getUserGrid($this->get('grid'), $disabled, "nieobecni", $this->getUser()->getRoles());        
+        $grid = $ctrl->getUserGrid($this->get('grid'), $disabled, "nieobecni", $this->getUser()->getRoles());
 
         $grid->hideColumns(['thumbnailphoto', 'daneRekord', 'akcje']);
         
@@ -178,7 +179,7 @@ class BlokowaneKontaController extends Controller
         if ($request->getMethod() == "POST") {
             $postData = $request->request->all();
             var_dump($postData);
-            die("mam post");    
+            die("mam post");
         }
         
         /*
@@ -200,7 +201,6 @@ class BlokowaneKontaController extends Controller
         $keys = array_keys($disabled[0]);
         //unset($keys[count($keys) - 1]);
         //var_dump($keys, $disabled[0]); //die();
-        return $grid->getGridResponse(['ktorzy' => $ktorzy, 'polaAD' => $keys]); 
+        return $grid->getGridResponse(['ktorzy' => $ktorzy, 'polaAD' => $keys]);
     }
-    
 }

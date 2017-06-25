@@ -17,7 +17,8 @@ class ZastepstwoRepository extends EntityRepository
      *
      * @return array
      */
-    public function znajdzZastepstwa($samaccountname){
+    public function znajdzZastepstwa($samaccountname)
+    {
         $qb = $this->_em->createQueryBuilder();
         $now = new \Datetime();
         $qb->select('z')
@@ -35,10 +36,11 @@ class ZastepstwoRepository extends EntityRepository
      *
      * @return array
      */
-    public function znajdzKogoZastepuje($samaccountname){
+    public function znajdzKogoZastepuje($samaccountname)
+    {
         $res = $this->znajdzZastepstwa($samaccountname);
         $ret = [$samaccountname];
-        foreach($res as $z){
+        foreach ($res as $z) {
             $ret[] = $z->getKogoZastepuje();
         }
         return $ret;

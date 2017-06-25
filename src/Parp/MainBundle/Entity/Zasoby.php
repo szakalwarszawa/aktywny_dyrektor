@@ -986,8 +986,8 @@ class Zasoby
      */
     public function setDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych(
         $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
-    )
-    {
+    ) {
+    
         $this->dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych =
             $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
 
@@ -1013,8 +1013,8 @@ class Zasoby
      */
     public function setInterwalZmianyHaselKontaAdministracyjnychISerwisowych(
         $interwalZmianyHaselKontaAdministracyjnychISerwisowych
-    )
-    {
+    ) {
+    
         $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych =
             $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
 
@@ -1101,8 +1101,8 @@ class Zasoby
      */
     public function setWniosekUtworzenieZasobu(
         \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null
-    )
-    {
+    ) {
+    
         $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
         $this->wniosekUtworzenieZasobu->setZasob($this);
 
@@ -1129,8 +1129,8 @@ class Zasoby
      */
     public function setWniosekSkasowanieZasobu(
         \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null
-    )
-    {
+    ) {
+    
         $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
 
         return $this;
@@ -1274,8 +1274,8 @@ class Zasoby
      */
     public function removeWnioskiZmieniajaceZasob(
         \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
-    )
-    {
+    ) {
+    
         $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);
     }
 
@@ -1478,7 +1478,6 @@ class Zasoby
                 }
             } else {
                 $grupa[] = $this->znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy);
-
             }
         }
 

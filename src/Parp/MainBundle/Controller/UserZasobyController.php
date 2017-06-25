@@ -204,12 +204,12 @@ class UserZasobyController extends Controller
         $em = $this->getDoctrine()->getManager();
         $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($entity->getZasobId());
         $p1 = explode(",", $zasob->getModulFunkcja());
-        foreach($p1 as $p){
+        foreach ($p1 as $p) {
             $p = trim($p);
             $choicesModul[$p] = $p;
         }
         $p2 = explode(",", $zasob->getPoziomDostepu());
-        foreach($p2 as $p){
+        foreach ($p2 as $p) {
             $p = trim($p);
             $choicesPoziomDostepu[$p] = $p;
         }

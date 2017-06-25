@@ -42,12 +42,12 @@ class ZasobyController extends Controller
         $source = new Entity('ParpMainBundle:Zasoby');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $aktywne)
-            {
+            function ($query) use ($tableAlias, $aktywne) {
                 $query->leftJoin($tableAlias.'.wniosekUtworzenieZasobu', 'w');
                 $query->andWhere($tableAlias.'.published = '.($aktywne ? "1" : "0"));
                 $query->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)');
-            });
+            }
+        );
         $grid = $this->get('grid');
         $grid->setSource($source);
     
@@ -69,11 +69,9 @@ class ZasobyController extends Controller
         
         $grid->addRowAction($rowAction2);
         
-        if(
-            in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
+        if (in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
             in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles())
-        ){
-            
+        ) {
             $rowAction3 = new RowAction('<i class="fa fa-delete"></i> '.($aktywne ? "Deaktywuj" : "Aktywuj"), 'zasoby_delete');
             $rowAction3->setRouteParameters(array('id', 'published' => ($aktywne ? "0" : "1")));
             $rowAction3->setColumn('akcje');
@@ -88,9 +86,10 @@ class ZasobyController extends Controller
         return $grid->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array('aktywne' => $aktywne));
     }
     
-    protected function sprawdzDostep($zasob){
+    protected function sprawdzDostep($zasob)
+    {
         
-        if($zasob){
+        if ($zasob) {
             $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
             
             
@@ -99,17 +98,15 @@ class ZasobyController extends Controller
                 !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
                 !in_array("PARP_ADMIN_ZASOBOW", $this->getUser()->getRoles()) &&
                 !$this->czyJestWlascicielemLubPowiernikiem;
-        }else{
+        } else {
             $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
         }
         
-        if(
-            $this->niemozeEdytowac
-        ){
+        if ($this->niemozeEdytowac
+        ) {
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
-            throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);            
+            throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);
         }
-        
     }
     /**
      * Creates a new Zasoby entity.
@@ -201,8 +198,8 @@ class ZasobyController extends Controller
         $grupyAd = array();
         $ldap = $this->get('ldap_service');
         $ldap->dodatkoweOpcje = 'ekranEdycji';
-        foreach($grupy as $g){
-            if($g != ""){
+        foreach ($grupy as $g) {
+            if ($g != "") {
                 $grupyAd[$g] = array(
                     'exists' => $ldap->checkGroupExistsFromAD($g),
                     'members' => $ldap->getMembersOfGroupFromAD($g)
@@ -223,16 +220,17 @@ class ZasobyController extends Controller
         );
     }
 
-    private function getUsersFromAD(){
+    private function getUsersFromAD()
+    {
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
-        foreach($ADUsers as $u){
+        foreach ($ADUsers as $u) {
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-            if($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))){
+            if ($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))) {
                 $users[$u['samaccountname']] = $u['name'];
             }
         }
@@ -274,7 +272,7 @@ class ZasobyController extends Controller
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
         $this->sprawdzDostep($entity);
-        if(!in_array('PARP_ADMIN', $this->getUser()->getRoles()) && !in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles()) && !$this->czyJestWlascicielemLubPowiernikiem){
+        if (!in_array('PARP_ADMIN', $this->getUser()->getRoles()) && !in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles()) && !$this->czyJestWlascicielemLubPowiernikiem) {
             die("nie masz uprawnien do edycji zasobow.");
         }
 
@@ -286,7 +284,7 @@ class ZasobyController extends Controller
             $em->flush();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
-        }else{
+        } else {
             die($editForm->getErrorsAsString());
         }
 
@@ -338,12 +336,13 @@ class ZasobyController extends Controller
     }
     
     
-    private function getManagers(){
+    private function getManagers()
+    {
         
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllManagersFromAD();
         $users = array();
-        foreach($ADUsers as $u){
+        foreach ($ADUsers as $u) {
             $users[$u['samaccountname']] = $u['name'];
         }
         return $users;

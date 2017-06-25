@@ -22,14 +22,14 @@ class RoleTransformer implements DataTransformerInterface
         $this->em = $em;
     }
     /**
-     * Transforms an array to a string. 
+     * Transforms an array to a string.
      *
      * @return string
      */
     public function transform($array)
     {
         $ret = [];
-        foreach($array as $a){
+        foreach ($array as $a) {
             $ret[$a->getSamaccountname()] = $a->getSamaccountname();
         }
         //echo "<pre>"; print_r($array); die();
@@ -47,16 +47,15 @@ class RoleTransformer implements DataTransformerInterface
     {
         $ret = [];
         //var_dump($val); die();
-        foreach($val as $k => $v){
-            if(is_int($k)){
+        foreach ($val as $k => $v) {
+            if (is_int($k)) {
                 //nowe
                 $r = null;
-            }else{
+            } else {
                 //stare
                 $r = $this->em->getRepository('ParpMainBundle:AclUserRole')->findOneBy(['samaccountname' => $v, 'role' => $this->data]);
-                
             }
-            if(!$r){
+            if (!$r) {
                 $r = new \Parp\MainBundle\Entity\AclUserRole();
                 $r->setRole($this->data);
                 $r->setSamaccountname($v);

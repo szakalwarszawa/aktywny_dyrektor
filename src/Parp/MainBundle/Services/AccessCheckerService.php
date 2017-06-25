@@ -30,19 +30,19 @@ class AccessCheckerService
         }
     }
     
-    public function checkAccess($actionName){
+    public function checkAccess($actionName)
+    {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
         $action = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclAction')->findOneBySkrot($actionName);
         $ret = true;
-        if($action){
+        if ($action) {
             $ret = false;
-            foreach($action->getRoles() as $r){
+            foreach ($action->getRoles() as $r) {
                 $ret = $ret || in_array($r->getName(), $user->getRoles());
             }
         }
-        if(!$ret){
+        if (!$ret) {
             throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException("Brak uprawnień.");
         }
-        
     }
 }

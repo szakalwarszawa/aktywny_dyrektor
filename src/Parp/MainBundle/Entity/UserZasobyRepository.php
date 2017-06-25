@@ -74,7 +74,8 @@ class UserZasobyRepository extends EntityRepository
 
         return array_merge($a1, $a2);
     }
-    public function findUsersByZasobId($zasobId){
+    public function findUsersByZasobId($zasobId)
+    {
         global $kernel;
 
         if ('AppCache' == get_class($kernel)) {
@@ -97,8 +98,8 @@ class UserZasobyRepository extends EntityRepository
         ->createQueryBuilder()
         ->select('uz, w')
         ->from('ParpMainBundle:UserZasoby', 'uz')
-        ->leftJoin('uz.wniosek','w')
-        ->innerJoin('ParpMainBundle:Zasoby','z')
+        ->leftJoin('uz.wniosek', 'w')
+        ->innerJoin('ParpMainBundle:Zasoby', 'z')
         ->andWhere('z.id = uz.zasobId')
         ->andWhere('(w.id = uz.wniosek or uz.wniosek is null)')
         ->andWhere('z.id = :zasobId')
@@ -107,18 +108,20 @@ class UserZasobyRepository extends EntityRepository
         ->getQuery()
         ->getResult();
 
-        foreach($res as $uz){
+        foreach ($res as $uz) {
             //echo $uz->getSamaccountname()."<br>";
 
             $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
             //echo "<pre>";print_r($ADUser); echo "</pre>";
-            if(count($ADUser) > 0){
+            if (count($ADUser) > 0) {
                 $uz->setADUser($ADUser[0]);
-            }else{}
+            } else {
+            }
         }
         return $res;
     }
-    public function findByWniosekWithZasob($wniosek){
+    public function findByWniosekWithZasob($wniosek)
+    {
         $ktoryWniosekSzukam = $wniosek->getOdebranie() ? "wniosekOdebranie" : "wniosek";
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
@@ -128,14 +131,14 @@ class UserZasobyRepository extends EntityRepository
               ')->setParameter('wniosekId', $wniosek);
 
         $res = $query->getResult();
-        foreach($res as $uz){
+        foreach ($res as $uz) {
             $query2 = $this->getEntityManager()->createQuery('SELECT z FROM  ParpMainBundle:Zasoby z
               WHERE z.id = :zasobId
               ')->setParameter('zasobId', $uz->getZasobId());
               $res2 = $query2->getResult();
-              if(count($res2) > 0){
-                  $uz->setZasobNazwa($res2[0]->getNazwa());
-              }
+            if (count($res2) > 0) {
+                $uz->setZasobNazwa($res2[0]->getNazwa());
+            }
         }
         //print_r($res);die();
         return $res;
@@ -148,7 +151,8 @@ class UserZasobyRepository extends EntityRepository
      *
      * @return array
      */
-    public function findAktywneDlaOsoby($samaccountname){
+    public function findAktywneDlaOsoby($samaccountname)
+    {
 //        throw new MethodNotImplementedException('findAktywneDlaOsoby');
         $query = $this->getEntityManager()->createQuery('
               SELECT uz FROM ParpMainBundle:UserZasoby uz
@@ -162,7 +166,8 @@ class UserZasobyRepository extends EntityRepository
     }
 
 
-    public function findDlaOsoby($samaccountname, $dataStart, $dataEnd){
+    public function findDlaOsoby($samaccountname, $dataStart, $dataEnd)
+    {
         $query = $this->getEntityManager()->createQuery('
         SELECT uz FROM ParpMainBundle:UserZasoby uz
               WHERE uz.aktywneOd >= :dataStart and uz.aktywneOd <= :dataEnd
@@ -174,5 +179,4 @@ class UserZasobyRepository extends EntityRepository
         $a2 = $query->getResult();
         return $a2;
     }
-
 }

@@ -22,7 +22,8 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
  */
 class DevTestController extends Controller
 {
-    public function zrobOuAction(){
+    public function zrobOuAction()
+    {
 
         die('done');
     }
@@ -31,7 +32,8 @@ class DevTestController extends Controller
      * @Route("/zmianyNaPodstawieWypchniecDoAD/{zasob}", name="zmianyNaPodstawieWypchniecDoAD")
      * @Template()
      */
-    public function zmianyNaPodstawieWypchniecDoADAction($zasob){
+    public function zmianyNaPodstawieWypchniecDoADAction($zasob)
+    {
         $wyniki = $this->getNadanieOdebranieUprawnien($zasob, true);
 
 
@@ -39,7 +41,8 @@ class DevTestController extends Controller
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $wyniki]);
     }
-    protected function getNadanieOdebranieUprawnien($zasob, $nadanie){
+    protected function getNadanieOdebranieUprawnien($zasob, $nadanie)
+    {
         $wyniki = [];
         $em = $this->getDoctrine()->getManager();
         $historia = $em->getRepository('ParpMainBundle:Entry')->createQueryBuilder('o')
@@ -50,7 +53,7 @@ class DevTestController extends Controller
             ->getResult();
         //var_dump($historia);
 
-        foreach($historia as $h){
+        foreach ($historia as $h) {
             $wyniki[] = [
                 'data' => $h->getFromWhen(),
                 'zasob' => $zasob,
@@ -64,7 +67,8 @@ class DevTestController extends Controller
      * @Route("/zmianyWgrupieNaPodstawieAS/{zasob}", name="zmianyWgrupieNaPodstawieAS")
      * @Template()
      */
-    public function zmianyWgrupieNaPodstawieASAction($zasob){
+    public function zmianyWgrupieNaPodstawieASAction($zasob)
+    {
         $em = $this->getDoctrine()->getManager();
 
         $historia = $em->getRepository('ParpSoapBundle:ADGroup')->createQueryBuilder('o')
@@ -76,8 +80,8 @@ class DevTestController extends Controller
         //echo (count($historia).' zestawienieDWI');
 
         $zmiany = [];
-        for($i = 0; $i < count($historia); $i++){
-            if(count($zmiany) == 0){
+        for ($i = 0; $i < count($historia); $i++) {
+            if (count($zmiany) == 0) {
                 $zmiany[] = [
                     'data'=>$historia[$i]->getCreatedAt(),
                     'zasob' => $historia[$i]->getName(),
@@ -85,12 +89,12 @@ class DevTestController extends Controller
                     'odeszli' => [],
                     'doszli' => []
                 ];
-            }else{
+            } else {
                 $m1 = $zmiany[count($zmiany) - 1]['members'];
                 $m2 = $this->parseCNNames($historia[$i]->getMember());
                 $d1 = array_diff($m1, $m2);
                 $d2 = array_diff($m2, $m1);
-                if(count($d1) > 0 || count($d2) > 0) {
+                if (count($d1) > 0 || count($d2) > 0) {
                     $zmiany[] = [
                         'data' => $historia[$i]->getCreatedAt(),
                         'zasob' => $historia[$i]->getName(),
@@ -100,7 +104,6 @@ class DevTestController extends Controller
                     ];
                 }
             }
-
         }
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $zmiany]);
         /*
@@ -111,18 +114,19 @@ class DevTestController extends Controller
         return ["<html></html>"];
         */
     }
-    protected function parseCNNames($members){
+    protected function parseCNNames($members)
+    {
         $a = explode(';', $members);
-        foreach($a as &$e){
+        foreach ($a as &$e) {
             $e = $this->parseCNName($e);
         }
         return $a;
     }
-    protected function parseCNName($cn){
+    protected function parseCNName($cn)
+    {
         $ps1 = explode(",", $cn);
         $name = str_replace('CN=', '', $ps1[0]);
         $ou = str_replace('OU=', '', $ps1[1]);
         return $name." / ".$ou;
     }
-
 }

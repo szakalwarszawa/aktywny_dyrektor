@@ -9,8 +9,6 @@ use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Response;
 
-
-
 class DefaultController extends Controller
 {
     /**

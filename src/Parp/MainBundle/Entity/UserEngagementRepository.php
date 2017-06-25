@@ -33,11 +33,10 @@ class UserEngagementRepository extends EntityRepository
         $query = $this->createQueryBuilder('ue')
                 ->where('ue.samaccountname = :samaccountname')
                 ->andWhere('ue.year = :year')
-                ->addOrderBy ('ue.engagement' ,'ASC') ->addOrderBy ('ue.month' ,'ASC')               
+                ->addOrderBy('ue.engagement', 'ASC') ->addOrderBy('ue.month', 'ASC')
                 ->setParameters(array('samaccountname' => $samaccountname, 'year' => $year))
                 ->getQuery();
 
         return $query->getResult();
     }
-
 }

@@ -12,7 +12,8 @@ use Doctrine\ORM\EntityRepository;
  */
 class EntryRepository extends EntityRepository
 {
-    public function findNowaSekcjaTYLKOuzywaneWreorganizacji2016($sam){
+    public function findNowaSekcjaTYLKOuzywaneWreorganizacji2016($sam)
+    {
         $query = $this->createQueryBuilder('e')
                 ->where('e.isImplemented = false')
                 ->andWhere('e.samaccountname like :sam')
@@ -26,7 +27,7 @@ class EntryRepository extends EntityRepository
     public function findByIsImplementedAndFromWhen($ids = "")
     {
         $where = "1 = 1";
-        if($ids != ""){
+        if ($ids != "") {
             $where = 'e.id IN ('.$ids.')';
         }
         $query = $this->createQueryBuilder('e')
@@ -35,14 +36,15 @@ class EntryRepository extends EntityRepository
                 ->andWhere('e.samaccountname != \'\'')
                 ->andWhere($where)
                 //->andWhere('e.memberOf = \'\' or e.memberOf is null')
-                ->addOrderBy('e.id',  'ASC')
+                ->addOrderBy('e.id', 'ASC')
                 ->setParameters(array('date' => new \DateTime()))
                 ->getQuery();
 
         return $query->getResult();
     }
     
-    public function getTempEntriesAsUsers($ldap){
+    public function getTempEntriesAsUsers($ldap)
+    {
         $rets = array();
         /*
             samaccountname: "aktywny_dyrektor",
@@ -60,11 +62,10 @@ useraccountcontrol: "INTERDOMAIN_TRUST_ACCOUNT,NOT_DELEGATED,",
 accountexpires: ""
             */
         $new = $this->findByIsImplementedAndFromWhen();
-        foreach($new as $e){
-            
+        foreach ($new as $e) {
             $ADUser = $ldap->getUserFromAD($e->getSamaccountname());
-            //print_r($ADUser); 
-            if(count($ADUser) == 0){
+            //print_r($ADUser);
+            if (count($ADUser) == 0) {
                 $ret = array();
                 $ret['id'] = $e->getId(); // aktywny_dyrektor
                 $ret['samaccountname'] = $e->getSamaccountname(); // aktywny_dyrektor
@@ -94,7 +95,8 @@ accountexpires: ""
         }
         return $rets;
     }
-    public function findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu($createdBy){
+    public function findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu($createdBy)
+    {
         $query = $this->createQueryBuilder('e')
                 ->select('e.samaccountname')
                 ->where('e.isImplemented = 0')
@@ -104,12 +106,11 @@ accountexpires: ""
                 ->getQuery();
         $ret = $query->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
         $data = [];
-        foreach($ret as $d){
-            if(!in_array($d['samaccountname'], $data)){
+        foreach ($ret as $d) {
+            if (!in_array($d['samaccountname'], $data)) {
                 $data[] = $d['samaccountname'];
             }
         }
         return $data;
     }
-
 }

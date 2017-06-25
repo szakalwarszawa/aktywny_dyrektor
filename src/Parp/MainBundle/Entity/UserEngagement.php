@@ -74,7 +74,7 @@ class UserEngagement
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -97,7 +97,7 @@ class UserEngagement
     /**
      * Get engagement
      *
-     * @return integer 
+     * @return integer
      */
     public function getEngagement()
     {
@@ -121,7 +121,7 @@ class UserEngagement
     /**
      * Get samaccountname
      *
-     * @return string 
+     * @return string
      */
     public function getSamaccountname()
     {
@@ -143,7 +143,7 @@ class UserEngagement
     /**
      * Get year
      *
-     * @return integer 
+     * @return integer
      */
     public function getYear()
     {
@@ -165,7 +165,7 @@ class UserEngagement
     /**
      * Get year
      *
-     * @return integer 
+     * @return integer
      */
     public function getMonth()
     {

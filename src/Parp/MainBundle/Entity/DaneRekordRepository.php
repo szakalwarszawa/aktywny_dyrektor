@@ -10,7 +10,8 @@ namespace Parp\MainBundle\Entity;
  */
 class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findByNotHavingRekordIds($ids){
+    public function findByNotHavingRekordIds($ids)
+    {
 
         $query = $this->createQueryBuilder('dr')
           ->where('dr.symbolRekordId NOT IN ('.implode(", ", $ids).')')
@@ -18,11 +19,11 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 
 
         return $query->getResult();
-
     }
-    public function findNewPeople(){
+    public function findNewPeople()
+    {
 
-        if($_SERVER['REMOTE_ADDR'] == "10.10.50.1"){
+        if ($_SERVER['REMOTE_ADDR'] == "10.10.50.1") {
             $result = $this
                ->createQueryBuilder('e')
                ->select('e')
@@ -30,7 +31,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                ->orderBy("e.newUnproccessed")
                ->getQuery()
                ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
-        }else{
+        } else {
             $result = $this
                ->createQueryBuilder('e')
                ->select('e')
@@ -42,11 +43,12 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         return $result;
     }
 
-    public function findChangesInMonth($rok, $miesiac){
+    public function findChangesInMonth($rok, $miesiac)
+    {
         $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
-        if($miesiac < 12){
+        if ($miesiac < 12) {
             $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
-        }else{
+        } else {
             $dataEnd = new \Datetime(($rok+1).'-01-01');
         }
 
@@ -63,24 +65,25 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                'dataEnd' => $dataEnd,
 
            ])
-           ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+           ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
         //var_dump($result);
         return $result;
     }
 
-    public function findChangesInMonthByPole($rok, $miesiac, $pole = 'departament'){
+    public function findChangesInMonthByPole($rok, $miesiac, $pole = 'departament')
+    {
         $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
-        if($miesiac < 12){
+        if ($miesiac < 12) {
             $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
-        }else{
+        } else {
             $dataEnd = new \Datetime(($rok+1).'-01-01');
         }
 
         $result = $this
            ->createQueryBuilder('e')
            ->select('e, w.id, w.data, w.version, w.loggedAt')
-           ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji','w')
+           ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji', 'w')
            ->where("w.objectId = e.id and w.data like '%\"".$pole."\"%' and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
            and (w.loggedAt >= :dataStart and w.loggedAt < :dataEnd)")
             ->orderBy("e.nazwisko")
@@ -90,14 +93,15 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                'dataEnd' => $dataEnd,
 
            ])
-           ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+           ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
         //var_dump($result);
         return $result;
     }
-    public function findChangesByPoleForUser($login, $pola){
+    public function findChangesByPoleForUser($login, $pola)
+    {
         $where = [];
-        foreach($pola as $pole){
+        foreach ($pola as $pole) {
             $where[] = "w.data like '%\"".$pole."\"%'";
         }
 
@@ -106,7 +110,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         $result = $this
             ->createQueryBuilder('e')
             ->select('e, w.id, w.data, w.version, w.loggedAt')
-            ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji','w')
+            ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji', 'w')
             ->where("w.objectId = e.id and (".implode(' OR ', $where).") and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
            and e.login like :login")
             ->orderBy("e.nazwisko")
@@ -115,10 +119,9 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                 'login' => $login
 
             ])
-            ->getResult( \Doctrine\ORM\Query::HYDRATE_ARRAY );
+            ->getResult(\Doctrine\ORM\Query::HYDRATE_ARRAY);
 
         //var_dump($result);
         return $result;
     }
-
 }

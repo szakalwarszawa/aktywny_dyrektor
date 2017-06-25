@@ -7,9 +7,6 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
-use Parp\MainBundle\Form\Type\NestedComboType;
-use Symfony\Component\Form\CallbackTransformer;
-
 
 class UserZasobyType extends AbstractType
 {
@@ -21,14 +18,14 @@ class UserZasobyType extends AbstractType
 
     public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true, $datauz = null)
     {
-        
+
         $this->transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $this->choicesModul = $choicesModul;
         $this->choicesPoziomDostepu = $choicesPoziomDostepu;
         $this->isSubForm = $isSubForm;
         $this->datauz = $datauz;
     }
-    
+
         /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -87,50 +84,50 @@ class UserZasobyType extends AbstractType
                     'DZ_P' => 'DZ_P - Zdalny, za pomocą komputera będącego własnością PARP',
                     'WR' => 'WR - Wewnętrzny radiowy',
                     'WRK' => 'WRK - Wewnętrzny radiowy i kablowy'
-                    
+
                 ]
             ])
             ->add('uprawnieniaAdministracyjne')
             //->add('odstepstwoOdProcedury', 'text', ['attr' => ['placeholder' => 'Odstępstwo od procedury']])
         ;
 
-        
-        
-        if($this->isSubForm){
+
+
+        if ($this->isSubForm) {
             $builder->addEventListener(
-            FormEvents::PRE_SET_DATA,
-            function(FormEvent $event) use($builder){
-                $form = $event->getForm();
-                $o = $event->getData();
-                $choices = array();
-                if($o){
-                    $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder);
-                    $this->addChoicesFromDictionary($o, $form, "getModul", "modul", $builder);
-                    
+                FormEvents::PRE_SET_DATA,
+                function (FormEvent $event) use ($builder) {
+                    $form = $event->getForm();
+                    $o = $event->getData();
+                    $choices = array();
+                    if ($o) {
+                        $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder);
+                        $this->addChoicesFromDictionary($o, $form, "getModul", "modul", $builder);
+                    }
                 }
-                
-    
-            });
+            );
         }
-
-
     }
-    protected function addChoicesFromDictionary($o, $form, $getter, $fieldName, $builder){
+    protected function addChoicesFromDictionary($o, $form, $getter, $fieldName, $builder)
+    {
         //var_dump($this->datauz);
-        $ch = explode(";", $o->{$getter}());            
+        $ch = explode(";", $o->{$getter}());
         $choices = array("do wypełnienia przez właściciela zasobu" => "do wypełnienia przez właściciela zasobu");
-        foreach($ch as $c){
+        foreach ($ch as $c) {
             $c = trim($c);
-            if($c != "")
+            if ($c != "") {
                 $choices[$c] = $c;
+            }
         }
         //print_r($choices);
-        if(count($choices) == 1){
+        if (count($choices) == 1) {
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
         $this->datauz[$fieldName] = isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "";
 
-            $form->add($fieldName, /* NestedComboType::class */ 'choice',
+            $form->add(
+                $fieldName, /* NestedComboType::class */
+                'choice',
                 array("choices" => $choices,
                         //'attr' => [],
                         'data' => explode(";", $this->datauz[$fieldName]),//potrzebne by zaznaczal przy edycji
@@ -139,11 +136,9 @@ class UserZasobyType extends AbstractType
                         'required' => true,
                         'attr' => ['class' => 'select2 multiwybor '.$fieldName, 'required' => false]
                     )
-            );             
-            
-        
+            );
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */

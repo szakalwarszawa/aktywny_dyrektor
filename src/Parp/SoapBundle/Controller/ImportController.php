@@ -9,7 +9,6 @@ use Symfony\Component\Security\Acl\Exception\Exception;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Symfony\Component\HttpFoundation\Response;
 
-
 /**
  * Import controller.
  *
@@ -22,7 +21,7 @@ class ImportController extends Controller
      */
     public function importUsersAction($letter)
     {
-        $this->get('ldap_import')->importUsersAction($letter);        
+        $this->get('ldap_import')->importUsersAction($letter);
         //die("importUsersAction");
     }
     
@@ -32,7 +31,7 @@ class ImportController extends Controller
      */
     public function importGroupsAction()
     {
-        $this->get('ldap_import')->importGroupsAction();        
+        $this->get('ldap_import')->importGroupsAction();
         //die("importGroupsAction");
     }
     
@@ -41,7 +40,7 @@ class ImportController extends Controller
      */
     public function importOUsAction()
     {
-        $this->get('ldap_import')->importOUsAction();           
-        //die("importOUsAction");        
+        $this->get('ldap_import')->importOUsAction();
+        //die("importOUsAction");
     }
 }

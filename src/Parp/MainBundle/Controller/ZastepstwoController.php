@@ -179,8 +179,7 @@ class ZastepstwoController extends Controller
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
         }
         
-        if(!in_array("PARP_ADMIN", $this->getUser()->getRoles() && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()){
-            
+        if (!in_array("PARP_ADMIN", $this->getUser()->getRoles() && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()) {
             $this->get('session')->getFlashBag()->set('warning', 'Nie masz uprwanień do edycji nie swoich zastępstw.');
             return $this->redirect($this->generateUrl('zastepstwo'));
         }
@@ -292,7 +291,8 @@ class ZastepstwoController extends Controller
     }
     
     
-    private function getUsersFromAD(){
+    private function getUsersFromAD()
+    {
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
 
@@ -300,9 +300,9 @@ class ZastepstwoController extends Controller
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
-        foreach($ADUsers as $u){
+        foreach ($ADUsers as $u) {
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-            if($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))){
+            if ($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))) {
                 $users[$u['samaccountname']] = $u['name'];
             }
         }

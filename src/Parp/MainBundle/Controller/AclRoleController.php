@@ -229,18 +229,18 @@ class AclRoleController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            foreach($originalUsers as $user){
+            foreach ($originalUsers as $user) {
                 $em->remove($user);
             }
             //var_dump(count($editForm->getData()->getUsers())); die();
-            foreach($entity->getUsers() as $user){
+            foreach ($entity->getUsers() as $user) {
                 $em->persist($user);
             }
             $em->flush();
             //die();
             $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('aclrole_edit', array('id' => $id)));
-        }else{
+        } else {
             die('a');
         }
 
@@ -293,16 +293,17 @@ class AclRoleController extends Controller
         ;
     }
     
-    private function getUsersFromAD(){
+    private function getUsersFromAD()
+    {
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = true;//in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
         
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
-        foreach($ADUsers as $u){
+        foreach ($ADUsers as $u) {
             //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-            if($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))){
+            if ($widzi_wszystkich || mb_strtolower(trim($aduser[0]['department'])) == mb_strtolower(trim($u['department']))) {
                 $users[$u['samaccountname']] = $u['name'];
             }
         }

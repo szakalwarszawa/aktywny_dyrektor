@@ -25,52 +25,53 @@ class LdapCommand extends ContainerAwareCommand
     protected $ids = "";
     protected $samaccountname = "console";
     protected $pushErrors = [];
-    
+
     protected function configure()
     {
         $this->setName('parp:ldapsave')->setDescription('Pobiera niezapisane dane z bazy Aktywnego Dyrektora i wprowadza je do Active Directory')
         ->addArgument(
-                'showonly',
-                InputArgument::OPTIONAL,
-                'Tylko pokazuje jakie zmiany by poszly do AD?'
-            )
+            'showonly',
+            InputArgument::OPTIONAL,
+            'Tylko pokazuje jakie zmiany by poszly do AD?'
+        )
         ->addOption(
-                'ids',
-                null,
-                InputOption::VALUE_NONE,
-                'Entry ids to proccess'
-            )
+            'ids',
+            null,
+            InputOption::VALUE_NONE,
+            'Entry ids to proccess'
+        )
         ->addOption(
-                'samaccountname',
-                null,
-                InputOption::VALUE_NONE,
-                'Entry samaccountname who is publishing'
-            )
+            'samaccountname',
+            null,
+            InputOption::VALUE_NONE,
+            'Entry samaccountname who is publishing'
+        )
         ;
     }
-    
+
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        try{
-            if(!$this->getContainer()->get('security.context')->getToken()){
+        try {
+            if (!$this->getContainer()->get('security.context')->getToken()) {
                 $user = new \Parp\AuthBundle\Security\ParpUser("kamil_jakacki", "", "salt", ["PARP_ADMIN"]);
                 // create the authentication token
                 $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
                     $user,
                     null,
                     'main',
-                    $user->getRoles());
+                    $user->getRoles()
+                );
                 // give it to the security context
                 $this->getContainer()->get('security.context')->setToken($token);
             }
-            
+
             $t1 = microtime(true) ;
-            if($input->getOption('ids')){
+            if ($input->getOption('ids')) {
                 $this->ids = $input->getOption('ids');
             }
-            if($input->getOption('samaccountname')){
+            if ($input->getOption('samaccountname')) {
                 $this->samaccountname = $input->getOption('samaccountname');
-            }        
+            }
             $this->showonly = $input->getArgument('showonly');
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
             $output->writeln('<comment>'.$msg.'</comment>', false);
@@ -81,46 +82,45 @@ class LdapCommand extends ContainerAwareCommand
             $ldap = $this->getContainer()->get('ldap_admin_service');
             $ldap_client = $this->getContainer()->get('ldap_service');
             $ldap->output = $output;
-            
+
             $time = date("Y-m-d_H-i-s");
-            if($ldap->pushChanges){
+            if ($ldap->pushChanges) {
                 $output->writeln('<error>                             PUBLIKUJE zmiany do AD...</error>', false);
-                $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";    
-            }else{
+                $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";
+            } else {
                 $output->writeln('<error>                             NIE publikuje zmiany do AD...</error>', false);
                 $logfile = __DIR__."/../../../../work/logs/"."tylko_test_publish_".$time.".html";
             }
-            
-            
+
+
             $output->writeln('<comment>Wczytano usługe ldap_admin_service...                             </comment>', false);
             $uprawnienia = $this->getContainer()->get('uprawnienia_service');
             $output->writeln('<comment>Wczytano usługe uprawnienia_service ...                             </comment>', false);
             $em = $doctrine->getManager();
             $output->writeln('<info> [  OK  ]</info>');
-    
+
             $output->writeln('<comment>Szukam zmian w Aktywnym Dyrektorze...          </comment>', false);
             $zmiany = $doctrine->getRepository('ParpMainBundle:Entry')->findByIsImplementedAndFromWhen($this->ids);
             $output->writeln('<info> [  OK  ]</info>');
-    
+
             if ($zmiany) {
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
-                    
                     $userNowData = $ldap->getUserFromAllAD($zmiana->getSamaccountname());
                     $userNow = $userNowData['user'];
                     $ktorzy = $userNowData['ktorzy'];
-                    
-                    
+
+
                     if ($userNow) {
                         $liczbaZmian = 0;
-                        if($ktorzy == "aktywne"){
+                        if ($ktorzy == "aktywne") {
                             $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
-                        }elseif($ktorzy == "zablokowane"){
+                        } elseif ($ktorzy == "zablokowane") {
                             $output->writeln('<info>Znalazłem następujące zmiany dla ZABLOKOWANEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
-                        }elseif($ktorzy == "nieaktywne"){
-                            $output->writeln('<info>Znalazłem następujące zmiany dla NIEAKTYWNEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');                        
+                        } elseif ($ktorzy == "nieaktywne") {
+                            $output->writeln('<info>Znalazłem następujące zmiany dla NIEAKTYWNEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
                         }
-                        
+
                         if ($zmiana->getAccountExpires()) {
                             $liczbaZmian++;
                             // Wygasza się konto
@@ -182,7 +182,7 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie inicjałów: ' . $zmiana->getInitials());
                             }
                         }
-    
+
                         if ($zmiana->getInitialrights()) {
 /*
                             $liczbaZmian++;
@@ -191,7 +191,7 @@ class LdapCommand extends ContainerAwareCommand
                             $oldg = array();
                             foreach($old as $o)
                                 $oldg[] = $o->getGrupa();
-    
+
                             // jezeli do tej pory nie miał żadnych
                             if ($old) {
                                 $output->writeln('  - Zmiana uprawnień początkowych : ' . implode(",", $oldg) . ' -> ' . $zmiana->getInitialrights());
@@ -202,20 +202,19 @@ class LdapCommand extends ContainerAwareCommand
                         }
                         if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
                             $liczbaZmian++;
-                            
+
                             if ($zmiana->getIsDisabled()) {
                                 $output->writeln('  - Wyłączenie konta w domenie');
-                            }else{
+                            } else {
                                 $output->writeln('  - Włączenie konta w domenie');
                             }
-                            
-                        }else{
+                        } else {
                             $zmiana->setIsDisabled(null);
                         }
-                        
+
                         if ($zmiana->getMemberOf()) {
                             $liczbaZmian++;
-                            $znak = substr($zmiana->getMemberOf(), 0, 1);                 
+                            $znak = substr($zmiana->getMemberOf(), 0, 1);
                             $g = substr($zmiana->getMemberOf(), 1);
                             if ($znak == "+") {
                                 $output->writeln('  - Dodanie do grupy: ' . $g);
@@ -223,20 +222,19 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Usunięciez grupy: ' . $g);
                             }
                         }
-                        
-                        if($liczbaZmian == 0){
+
+                        if ($liczbaZmian == 0) {
                             $output->writeln('<error>Nie ma nic do opublikowania</error>', false);
                             $ldapstatus = "Success";
-                        }else{
-                            
+                        } else {
                             $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
                         }
-                            
+
                         // zmiana uprawnien początkowych nie powduje zadnch zmian w ldap-ie
                         //if (!$zmiana->getInitialrights() && count($zmiany) == 1) {
                             //print_r($zmiana);
-                        if($ldapstatus == "Success"){
-                            if(!$this->showonly){
+                        if ($ldapstatus == "Success") {
+                            if (!$this->showonly) {
                                 $uprawnienia->zmianaUprawnien($zmiana);
                                 $zmiana->setIsImplemented(1);
                                 $zmiana->setLogfile($logfile);
@@ -245,20 +243,19 @@ class LdapCommand extends ContainerAwareCommand
                                 $em->persist($zmiana);
                                 //if($liczbaZmian == 0) echo ("zero zian ");
                             }
-                        }else{
+                        } else {
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getSamaccountname().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
                         }
-    
+
                         // nie znaleziono w ldap tzn ze mamy nowego usera do wstawienia
                     } else {
-    
                         $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()." ".$zmiana->getSamaccountname()."</info>");
-                        
+
                         $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, true);
-                        if($ldapstatus == "Success"){
+                        if ($ldapstatus == "Success") {
                             // nadaj uprawnieznia poczatkowe
-                            if(!$this->showonly){
+                            if (!$this->showonly) {
                                 $uprawnienia->ustawPoczatkowe($zmiana);
                                 $zmiana->setIsImplemented(1);
                                 $zmiana->setLogfile($logfile);
@@ -266,66 +263,66 @@ class LdapCommand extends ContainerAwareCommand
                                 $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
                             }
-                        }else{
+                        } else {
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);
                             $output->writeln('<error>'.$ldapstatus.'</error>', false);
                         }
                     }
                 }
-                if(!$this->showonly && $this->getContainer()->getParameter('pusz_to_ad')){
+                if (!$this->showonly && $this->getContainer()->getParameter('pusz_to_ad')) {
                     $this->proccessErrors($logfile);
                     $em->flush();
                 }
             }
-            
+
             $t2 = microtime(true) ;
             $td = ($t2 - $t1);
                 $output->writeln('<error>Opublikowano, czas : '.$td.' sekund!!!</error>', false);
-            
-            
-            if(!$this->showonly && count($zmiany) > 0){
-                //zapis loga 
+
+
+            if (!$this->showonly && count($zmiany) > 0) {
+                //zapis loga
                 $output2 = clone $output;
                 $converter = new AnsiToHtmlConverter();
                 $msg = ' <link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.$converter->convert($output2->fetch())."</div>"; //"sdadsadsa";
-                
+
                 $fs = new Filesystem();
                 $fs->dumpFile($logfile, $msg);
-            }elseif(count($zmiany) == 0){
+            } elseif (count($zmiany) == 0) {
                 $output->writeln('<error>Nie ma nic do opublikowania!!!</error>', false);
-                
             }
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             $output->writeln('<error>Błąd1...                             </error>', false);
             $output->writeln('<error>'.$e->getMessage()."</error>", false);
             $output->writeln('<error>'.$e->getTraceAsString()."</error>", false);
         }
     }
-    protected function proccessErrors($logfile){
+    protected function proccessErrors($logfile)
+    {
         $przetwarzajOK = [
-            'ldap_mod_add' => [68 /*Already exists*/],
-            'ldap_modify' => [],
-            'ldap_rename' => [],
-            'ldap_mod_del' => [],
+            'ldapModAdd' => [68 /*Already exists*/],
+            'ldapModify' => [],
+            'ldapRename' => [],
+            'ldapModDel' => [],
             'ldap_add' => [68 /*Already exists*/],
-            'ldap_delete' => [],
-            'ldap_delete' => [],
+            'ldapDelete' => [],
+            'ldapDelete' => [],
             'addRemoveMemberOf' => []
         ];
-        
-        foreach($this->pushErrors as $es){
-            foreach($es as $e){
-                if($e){
+
+        foreach ($this->pushErrors as $es) {
+            foreach ($es as $e) {
+                if ($e) {
                     //var_dump($e);
-                    if(in_array($e['errorno'], $przetwarzajOK[$e['function']])){
+                    if (in_array($e['errorno'], $przetwarzajOK[$e['function']])) {
                         //znaczy ze ok i logujemy i zamykamy zgloszenie
                         $e['lastEntry']->setIsImplemented(1);
                         //echo "...ustawiam isImplemented ".$e['lastEntry']->getId();
                         unset($e['lastEntry']);
                         $logfileThis = str_replace(".html", "-".$e['function'].".log", $logfile);
-                        
-                        
-                        
+
+
+
                         //error_log(print_r($e, true), 3, $logfileThis);
                         file_put_contents($logfileThis, print_r($e, true), FILE_APPEND | LOCK_EX);
                     }
@@ -339,35 +336,36 @@ class LdapCommand extends ContainerAwareCommand
             foreach($es as $e){
                 $grouped[$e['function']][$e['error']][] = $e;
             }
-        }        
+        }
         echo "<pre>"; print_r($grouped); echo "</pre>";
         echo "<pre>"; print_r($grouped);
-*/ 
+*/
     }
-    protected function tryToPushChanges($ldap, $zmiana, $output, $isCreating){
+    protected function tryToPushChanges($ldap, $zmiana, $output, $isCreating)
+    {
         $maxConnections = $this->getContainer()->getParameter('maximum_ldap_reconnects');
         $ldapstatus = "";
         $i = 0;
-        do{
-            if($this->showonly){
-                $ldapstatus = "Success";                
-            }else{
-                if($isCreating){
+        do {
+            if ($this->showonly) {
+                $ldapstatus = "Success";
+            } else {
+                if ($isCreating) {
                     $ldapstatus = $ldap->createEntity($zmiana);
-                }else{
+                } else {
                     $ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
                 }
             }
             $i++;
-            if($ldapstatus != "Success"){
+            if ($ldapstatus != "Success") {
                 $ldap->switchServer($ldapstatus);
             }
-        }while($ldapstatus != "Success" && $i < $maxConnections);
-        
-        if(!empty($ldap->lastConnectionErrors))
+        } while ($ldapstatus != "Success" && $i < $maxConnections);
+
+        if (!empty($ldap->lastConnectionErrors)) {
             $this->pushErrors[] = $ldap->lastConnectionErrors;
-        
+        }
+
         return $ldapstatus;
     }
-
 }

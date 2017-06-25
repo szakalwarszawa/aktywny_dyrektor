@@ -76,7 +76,7 @@ class NieobecnosciController extends Controller
                     'OPIS' => '',
                     'RODZAJ' => 'Urlop taryfowy',
                     'GRUPA' => 'UT',
-                    'LABEL' => 'W' 
+                    'LABEL' => 'W'
                 ],
                 [
                     'NAZWISKO' => 'ANTONOWICZ',
@@ -88,7 +88,7 @@ class NieobecnosciController extends Controller
                     'OPIS' => '',
                     'RODZAJ' => 'Urlop taryfowy',
                     'GRUPA' => 'UT',
-                    'LABEL' => 'W' 
+                    'LABEL' => 'W'
                 ],
                 [
                     'NAZWISKO' => 'ANTONOWICZ',
@@ -100,7 +100,7 @@ class NieobecnosciController extends Controller
                     'OPIS' => '',
                     'RODZAJ' => 'Urlop taryfowy',
                     'GRUPA' => 'UT',
-                    'LABEL' => 'W' 
+                    'LABEL' => 'W'
                 ],
                 [
                     'NAZWISKO' => 'ANTONOWICZ',
@@ -112,33 +112,34 @@ class NieobecnosciController extends Controller
                     'OPIS' => '',
                     'RODZAJ' => 'Urlop taryfowy',
                     'GRUPA' => 'UT',
-                    'LABEL' => 'W' 
+                    'LABEL' => 'W'
                 ],
             ]
         ];
         //laczy urlopy jesli sie stykaja i liczy sume dni na koncu
         $this->zlaczOkresy($daneUrlopy);
         
-        $this->dump($daneUrlopy); 
-        die();    
+        $this->dump($daneUrlopy);
+        die();
     }
     
-    protected function zlaczOkresy($daneUrlopy){
+    protected function zlaczOkresy($daneUrlopy)
+    {
         $ret = [];
-        foreach($daneUrlopy as $k => $dni){
+        foreach ($daneUrlopy as $k => $dni) {
             $ret[$k] = [];
-            for($i = 0; $i < count($dni); $i++){
-                if($i == 0){
+            for ($i = 0; $i < count($dni); $i++) {
+                if ($i == 0) {
                     $poprzedni = $dni[$i];
-                }else{
+                } else {
                     //porownujemy obecny z poprzednim
                     $d1 = new \Datetime($poprzedni['DOD']);
                     $d2 = new \Datetime($dni[$i]['ODD']);
                     $diff = $d2->diff($d1);
-                    if($diff->format("%d") == "1"){
+                    if ($diff->format("%d") == "1") {
                         //znaczy ze mamy dzien roznicy
                         $poprzedni['DOD'] = $dni[$i]['DOD'];
-                    }else{
+                    } else {
                         $ret[$k][] = $this->policzDni($poprzedni);
                         $poprzedni = $dni[$i];
                     }
@@ -149,57 +150,63 @@ class NieobecnosciController extends Controller
             }
             $ret[$k][] = $this->policzDni($poprzedni);
         }
-        $this->dump($ret); die();
+        $this->dump($ret);
+        die();
         return $ret;
     }
     
-    protected function policzDni($poprzedni){  
-        $d1 = new \Datetime($poprzedni['ODD']);      
+    protected function policzDni($poprzedni)
+    {
+        $d1 = new \Datetime($poprzedni['ODD']);
         $d2 = new \Datetime($poprzedni['DOD']);
         $diff = $d2->diff($d1);
         $poprzedni['dni'] = $diff->format("%d")+1;
         return $poprzedni;
     }
     
-    protected function grupujUrlopyOsob($dane){
+    protected function grupujUrlopyOsob($dane)
+    {
         $ret = [];
-        foreach($dane as $d){
-            if(!isset($ret[$d['SYMBOL']])){
+        foreach ($dane as $d) {
+            if (!isset($ret[$d['SYMBOL']])) {
                 $ret[$d['SYMBOL']] = [];
             }
             $ret[$d['SYMBOL']][] = $d;
         }
         return $ret;
     }
-    protected function dodajDniWolneIDodatkoweyUrlopy(&$daneUrlopy, $dodatkoweDni){
+    protected function dodajDniWolneIDodatkoweyUrlopy(&$daneUrlopy, $dodatkoweDni)
+    {
         //$this->dump($dodatkoweDni); die();
-        foreach($dodatkoweDni as $k => $dni){
-            if($k == 0){
+        foreach ($dodatkoweDni as $k => $dni) {
+            if ($k == 0) {
                 //normalne dni wolne , dodac do wszystkich
-                foreach($daneUrlopy as &$du){
-                    foreach($dni as $d){
+                foreach ($daneUrlopy as &$du) {
+                    foreach ($dni as $d) {
                         $du[] = $this->ustandaryzujDane($d);
                     }
                 }
-            }else{
-                foreach($dni as $d){
+            } else {
+                foreach ($dni as $d) {
                     $daneUrlopy[$k][] = $this->ustandaryzujDane($d);
                 }
-                
             }
         }
     }
-    protected function sortujDane(&$daneUrlopy){
-        foreach($daneUrlopy as $k => $d){
-            usort($daneUrlopy[$k], 
-                function($a, $b){
+    protected function sortujDane(&$daneUrlopy)
+    {
+        foreach ($daneUrlopy as $k => $d) {
+            usort(
+                $daneUrlopy[$k],
+                function ($a, $b) {
                     return $a['ODD'] > $b['ODD'];
                 }
             );
-        }       
+        }
     }
     
-    protected function ustandaryzujDane($d){
+    protected function ustandaryzujDane($d)
+    {
         $dzien = $d['ROK']."-".\str_pad($d['MIESIAC'], 2, '0', \STR_PAD_LEFT)."-".\str_pad($d['DZIEN'], 2, '0', \STR_PAD_LEFT);
         return [
             'NAZWISKO' => $d['NAZWISKO'],
@@ -211,14 +218,18 @@ class NieobecnosciController extends Controller
             'OPIS' => ($d['SYMBOL'] == "0" ? "Dzien wolny" : "???"),
             'RODZAJ' => ($d['SYMBOL'] == "0" ? "Dzien wolny" : "???"),
             'GRUPA' => 'DW',
-            'LABEL' => 'W',    
+            'LABEL' => 'W',
         ];
     }
     
-    protected function dump($r){
-        echo "<pre>"; print_r($r); echo "</pre>";
+    protected function dump($r)
+    {
+        echo "<pre>";
+        print_r($r);
+        echo "</pre>";
     }
-    protected function getSqlUrlopy(){
+    protected function getSqlUrlopy()
+    {
         $dataKoniec = date('m/d/Y');
         $dataPoczatek = new \Datetime();
         $dataPoczatek->sub(new \DateInterval('P'.$this->ileDni.'D'));
@@ -245,7 +256,8 @@ class NieobecnosciController extends Controller
         //var_dump($dataPoczatek, $dataKoniec, $sql); die();
         return $sql;
     }
-    protected function getSqlDniWolne($rok){
+    protected function getSqlDniWolne($rok)
+    {
         $sql = "with kalendarz as                 
             (
             select 
@@ -307,7 +319,5 @@ left join p_pracownik p on p.symbol = k.symbol
 where k. source  = (select max(source) from kalendarz k2 where k.miesiac = k2.miesiac and k.dzien = k2.dzien) order by k.symbol ";
 
         return $sql;
-
     }
-    
 }

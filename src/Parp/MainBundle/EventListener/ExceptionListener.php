@@ -14,6 +14,7 @@ use Symfony\Component\HttpKernel\Exception\NotFoundHttpException as NotFoundHttp
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException as AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Security;
 use Parp\MainBundle\Exception\SecurityTestException;
+
 class ExceptionListener implements EventSubscriberInterface
 {
 
@@ -113,7 +114,6 @@ class ExceptionListener implements EventSubscriberInterface
                 $odpowiedz = new Response($this->templating->render(':status:lsiParpException.html.twig', array(
                             'wyjatek' => $wyjatek,
                 )));
-
             } else {
                 if ($wyjatek instanceof NotFoundHttpException) {
                     $odpowiedz = new Response($this->templating->render(':status:httpNotFound.html.twig'), 404);

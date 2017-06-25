@@ -17,6 +17,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
@@ -30,7 +31,9 @@ class DefaultController extends Controller
      * @Route("/index/{ktorzy}", name="main", defaults={"ktorzy": "usersFromAd"})
      * @Route("/", name="main_home")
      * @Template()
-     * @throws \LogicException
+     * @param string $ktorzy
+     *
+     * @return Response
      */
     public function indexAction($ktorzy = 'usersFromAd')
     {
@@ -194,7 +197,6 @@ class DefaultController extends Controller
             $grid->addRowAction($rowAction3);
             $grid->addRowAction($rowAction4);
         } elseif ($ktorzy === 'zablokowane2') {
-
             $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
             $rowAction->setColumn('akcje');
             $rowAction->setRouteParameters(
@@ -204,7 +206,6 @@ class DefaultController extends Controller
 
             $grid->addRowAction($rowAction);
         } elseif ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni') {
-
             // Edycja konta
             $rowAction2 =
                 new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
@@ -226,31 +227,45 @@ class DefaultController extends Controller
             $grid->addRowAction($rowAction3);
         }
 
-        if (
-            (in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $roles, true) ||
+        if ((in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $roles, true) ||
                 in_array('PARP_ADMIN', $roles, true))
             && ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni')
         ) {
             $massAction1 =
-                new MassAction('Przypisz dodatkowe zasoby', 'ParpMainBundle:Default:processMassAction', true,
-                    array('action' => 'addResources'));
+                new MassAction(
+                    'Przypisz dodatkowe zasoby',
+                    'ParpMainBundle:Default:processMassAction',
+                    true,
+                    array('action' => 'addResources')
+                );
             $grid->addMassAction($massAction1);
 
             $massAction2 =
-                new MassAction('Odbierz prawa do zasobów', 'ParpMainBundle:Default:processMassAction', true,
-                    array('action' => 'removeResources'));
+                new MassAction(
+                    'Odbierz prawa do zasobów',
+                    'ParpMainBundle:Default:processMassAction',
+                    true,
+                    array('action' => 'removeResources')
+                );
             $grid->addMassAction($massAction2);
         }
         if (in_array('PARP_ADMIN', $roles, true) && ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni')) {
-
             $massAction3 =
-                new MassAction('Przypisz dodatkowe uprawnienia', 'ParpMainBundle:Default:processMassAction', false,
-                    array('action' => 'addPrivileges'));
+                new MassAction(
+                    'Przypisz dodatkowe uprawnienia',
+                    'ParpMainBundle:Default:processMassAction',
+                    false,
+                    array('action' => 'addPrivileges')
+                );
             //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
             $grid->addMassAction($massAction3);
             $massAction4 =
-                new MassAction('Odbierz uprawnienia', 'ParpMainBundle:Default:processMassAction', false,
-                    array('action' => 'removePrivileges'));
+                new MassAction(
+                    'Odbierz uprawnienia',
+                    'ParpMainBundle:Default:processMassAction',
+                    false,
+                    array('action' => 'removePrivileges')
+                );
             //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
             $grid->addMassAction($massAction4);
         }
@@ -272,20 +287,19 @@ class DefaultController extends Controller
 
     /**
      * @Route("/mass", name="mass_action", defaults={"action" : ""})
+     * @param string $action
+     *
      * @return Response
-     * @throws \InvalidArgumentException
+     * @internal param null $primaryKeys
+     * @internal param null $allPrimaryKeys
+     * @internal param null $session
      */
-    function processMassActionAction(
-        $action = '',
-        $primaryKeys = null,
-        $allPrimaryKeys = null,
-        $session = null,
-        $parameters = null
-    )
-    {
+    public function processMassActionAction(
+        $action = ''
+    ) {
+
 
         if (isset($_POST)) {
-
             $array = array_shift($_POST);
             $actiond = '';
             if (isset($array['__action_id'])) {
@@ -309,8 +323,6 @@ class DefaultController extends Controller
             //var_dump($response); die();
             return $response;
             */
-
-
         } else {
             die('a');
         }
@@ -320,11 +332,11 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param $samaccountName
-     * @Route("/user/{samaccountname}/getphoto", name="userGetPhoto")
+     * @param $samaccountname
      *
-     * @throws \UnexpectedValueException
-     * @throws \InvalidArgumentException
+     * @return Response
+     * @internal param $samaccountName
+     * @Route("/user/{samaccountname}/getphoto", name="userGetPhoto")
      */
     public function photoGetAction($samaccountname)
     {
@@ -344,7 +356,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param $samaccountName
+     * @param $samaccountname
+     *
+     * @return array
+     * @internal param $samaccountName
      * @Route("/user/{samaccountname}/photo", name="userPhoto")
      * @Template();
      */
@@ -358,33 +373,40 @@ class DefaultController extends Controller
     /**
      * @Route("/show_uncommited/{id}", name="show_uncommited");
      * @Template();
-     * @throws \InvalidArgumentException
-     * @throws \LogicException
+     * @param $id
+     *
+     * @return Response
      */
-    function show_uncommitedAction($id, Request $request)
+    public function showUncommitedAction($id)
     {
         $entry = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->find($id);
 
         return $this->render('ParpMainBundle:Default:show.html.twig', array(
             'entry' => $entry,
         ));
-
     }
 
     /**
      * @Route("/user/{samaccountname}/edit", name="userEdit")
      * @Route("/user/{id}/edit", name="user_edit")
      * @Template();
-     * @throws \InvalidArgumentException
-     * @throws \LogicException
-     * @throws \UnexpectedValueException
+     * @param         $samaccountname
+     * @param Request $request
+     *
+     * @return Response
+     * @throws \Parp\MainBundle\Exception\SecurityTestException
      */
-    function editAction($samaccountname, Request $request)
+    public function editAction($samaccountname, Request $request)
     {
+        $user = $this->getUser();
 
-        $admin = in_array('PARP_ADMIN', $this->getUser()->getRoles(), true);
-        $kadry1 = in_array('PARP_BZK_1', $this->getUser()->getRoles(), true);
-        $kadry2 = in_array('PARP_BZK_2', $this->getUser()->getRoles(), true);
+        if (null !== $user) {
+            throw new UnsupportedUserException();
+        }
+
+        $admin = in_array('PARP_ADMIN', $user->getRoles(), true);
+        $kadry1 = in_array('PARP_BZK_1', $user->getRoles(), true);
+        $kadry2 = in_array('PARP_BZK_2', $user->getRoles(), true);
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ldap->dodatkoweOpcje = 'ekranEdycji';
@@ -397,8 +419,11 @@ class DefaultController extends Controller
 
             // wyciagnij imie i nazwisko managera z nazwy domenowej
             $ADUser[0]['manager'] =
-                mb_substr($ADUser[0]['manager'], mb_stripos($ADUser[0]['manager'], '=') + 1,
-                    (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1));
+                mb_substr(
+                    $ADUser[0]['manager'],
+                    mb_stripos($ADUser[0]['manager'], '=') + 1,
+                    (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1)
+                );
         }
         $defaultData = $ADUser[0];
         //print_r($defaultData); die();
@@ -506,15 +531,14 @@ class DefaultController extends Controller
 
             $rolesDiff = $roles1 != $roles2;
 
-            if (0 < count($this->array_diff($ndata, $odata)) ||
+            if (0 < count($this->arrayDiff($ndata, $odata)) ||
                 $roznicauprawnien ||
                 $rolesDiff ||
                 $ustawUprawnieniaPoczatkowe
             ) {
-
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
-                $newData = $this->array_diff($ndata, $odata);
+                $newData = $this->arrayDiff($ndata, $odata);
                 if ($rolesDiff) {
                     $roles =
                         $this->getDoctrine()
@@ -531,9 +555,8 @@ class DefaultController extends Controller
                         $this->getDoctrine()->getManager()->persist($us);
                     }
                     $this->get('session')->getFlashBag()->set('warning', 'Role zostały zmienione');
-
                 }
-                if (0 < count($this->array_diff($ndata, $odata)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe) {
+                if (0 < count($this->arrayDiff($ndata, $odata)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe) {
                     //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
 
 
@@ -566,12 +589,10 @@ class DefaultController extends Controller
                 return $this->redirect($this->generateUrl('main'));
             }
         } elseif ($request->isMethod('POST')) {
-
             var_export($this->getErrorMessages($form));
             //var_dump((string) $form->getErrors(true, true));
             var_export((string) $form->getErrors(true));
             die('invalid form '.$form->getErrorsAsString());
-
         }
         $uprawnienia =
             $this->getDoctrine()
@@ -638,8 +659,8 @@ class DefaultController extends Controller
         $wymusUproszczonyFormularz = false,
         $nowy = false,
         $dane_rekord = null
-    )
-    {
+    ) {
+
         // Pobieramy listę stanowisk
         $titlesEntity =
             $that->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
@@ -967,7 +988,7 @@ class DefaultController extends Controller
     {
 
         $ldap = $this->get('ldap_service');
-        $diff = $this->array_diff($ndata, $odata);
+        $diff = $this->arrayDiff($ndata, $odata);
         unset($diff['samaccountname']);
         unset($diff['initials']);
         unset($diff['title']);
@@ -994,7 +1015,6 @@ class DefaultController extends Controller
             //zmiana przelozonego
             if (isset($diff['manager'])) {
                 $entry->setManager($ndata['manager']);
-
             }
             //data wygasniecia
             if (isset($diff['accountExpires'])) {
@@ -1002,7 +1022,6 @@ class DefaultController extends Controller
                 if ($entry->getAccountExpires()) {
                     $entry->setAccountExpires($entry->getAccountExpires()->setTime(23, 59));
                 }
-
             }
             //konto wylaczone
             if (isset($diff['isDisabled'])) {
@@ -1018,17 +1037,15 @@ class DefaultController extends Controller
             //powod wylaczenia
             $msg = 'Zmiany wprowadzono.';
         } else {
-
             $msg = 'Nie było zmian do wprowadzenia.';
         }
 
         $this->get('session')->getFlashBag()->set('warning', $msg);
 
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
-
     }
 
-    function array_diff($a1, $a2)
+    public function arrayDiff($a1, $a2)
     {
         $ret = array();
         foreach ($a1 as $k => $v1) {
@@ -1108,13 +1125,10 @@ class DefaultController extends Controller
                     break;
                 case 'accountExpires':
                     if ($value) {
-
-
                         $entry->setAccountexpires(new \DateTime($value));
                         if ($entry->getAccountExpires()) {
                             $entry->setAccountExpires($entry->getAccountExpires()->setTime(23, 59));
                         }
-
                     } else {
                         $entry->setAccountexpires(new \DateTime('3000-01-01 00:00:00'));
                     }
@@ -1135,9 +1149,7 @@ class DefaultController extends Controller
                 case 'fromWhen':
                     $entry->setFromWhen(new \DateTime($value));
                     break;
-                case 'initialrights'://nieuzywane bo teraz jako array idzie
-
-
+                case 'initialrights':
                     $value = implode(',', $value);
                     $entry->setInitialrights($value);
 
@@ -1175,8 +1187,9 @@ class DefaultController extends Controller
     /**
      * @Route("/user/add", name="userAdd")
      * @Template()
-     * @throws \LogicException
-     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
      * @throws \Parp\MainBundle\Exception\SecurityTestException
      */
     public function addAction(Request $request)
@@ -1248,13 +1261,18 @@ class DefaultController extends Controller
             return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));
         }
 
-        return $this->render('ParpMainBundle:Default:add.html.twig',
-            array('form' => $form->createView(), 'guid' => $this->generateGUID()));
+        return $this->render(
+            'ParpMainBundle:Default:add.html.twig',
+            array('form' => $form->createView(), 'guid' => $this->generateGUID())
+        );
     }
 
     /**
      * @Route("/structure/{samaccountname}", name="structure")
      * @Template()
+     * @param $samaccountname
+     *
+     * @return array
      */
     public function structureAction($samaccountname)
     {
@@ -1282,10 +1300,12 @@ class DefaultController extends Controller
      * @Route("/engage/{samaccountname}/{rok}", name="engageUser")
      * @Route("/engage/{samaccountname}", name="engageUser")
      * @Template()
-     * @throws \InvalidArgumentException
-     * @throws \LogicException
+     * @param Request $request
+     * @param         $samaccountname
+     *
+     * @return array
      */
-    public function engagementAction($samaccountname, $rok = null, Request $request)
+    public function engagementAction(Request $request, $samaccountname)
     {
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
@@ -1305,7 +1325,6 @@ class DefaultController extends Controller
         }
 
         if ($request->getMethod() === 'POST') {
-
             $dane = $this->get('request')->request->all();
             //var_dump($dane);
             $year = !empty($dane['year']) ? $dane['year'] : $year;
@@ -1318,11 +1337,14 @@ class DefaultController extends Controller
                 $last_month = null;
                 //petla po miesiacach
                 foreach ($value_angaz as $key_month => $value_month) {
-
                     $userEngagement =
                         $em->getRepository('ParpMainBundle:UserEngagement')
-                            ->findOneByCryteria($samaccountname, $engagement->getId(),
-                                $this->getMonthFromStr($key_month), $year);
+                            ->findOneByCryteria(
+                                $samaccountname,
+                                $engagement->getId(),
+                                $this->getMonthFromStr($key_month),
+                                $year
+                            );
 
                     // obsluga atomatycznego uzupełniania
                     // czysc przy nowym zaangazowaniu
@@ -1354,8 +1376,10 @@ class DefaultController extends Controller
                 }
             }
 
-            return $this->redirect($this->generateUrl('engageUser',
-                array('samaccountname' => $samaccountname, 'year' => $year)));
+            return $this->redirect($this->generateUrl(
+                'engageUser',
+                array('samaccountname' => $samaccountname, 'year' => $year)
+            ));
         }
 
         $userEngagements =
@@ -1388,7 +1412,6 @@ class DefaultController extends Controller
         );
 
         foreach ($userEngagements as $userEngagement) {
-
             $month = $this->getStrFromMonth($userEngagement->getMonth());
             $percent = $userEngagement->getPercent();
             $percent = !empty($percent) ? $percent : 0;
@@ -1505,7 +1528,9 @@ class DefaultController extends Controller
 
     /**
      * @Route("/suggestinitials", name="suggest_initials", options={"expose"=true})
+     * @param Request $request
      *
+     * @return null|Response
      */
     public function ajaxSuggestInitials(Request $request)
     {
@@ -1513,7 +1538,7 @@ class DefaultController extends Controller
         $ajax = $request->isXMLHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
-        if ((!$ajax) OR (!$post)) {
+        if ((!$ajax) or (!$post)) {
             return null;
         }
         $p = explode(' ', $request->get('cn'));
@@ -1602,6 +1627,9 @@ class DefaultController extends Controller
 
     /**
      * @Route("/findmanager", name="find_manager", options={"expose"=true})
+     * @param Request $request
+     *
+     * @return Response
      * @throws \Exception
      */
     public function ajaxFindManager(Request $request)
@@ -1611,7 +1639,7 @@ class DefaultController extends Controller
         $ajax = $request->isXMLHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
-        if ((!$ajax) OR (!$post)) {
+        if ((!$ajax) or (!$post)) {
             //return null;
         }
 
@@ -1627,7 +1655,6 @@ class DefaultController extends Controller
         $dane = array();
         $i = 0;
         foreach ($ADUsers as $user) {
-
             if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== false) {
                 $dane[$i] = $user['name'];
                 $i++;
@@ -1640,9 +1667,9 @@ class DefaultController extends Controller
     /**
      * @Route("/file_ecm", name="form_file_ecm")
      * @Template()
-     * @throws \Symfony\Component\Validator\Exception\ConstraintDefinitionException
-     * @throws \Symfony\Component\Validator\Exception\InvalidOptionsException
-     * @throws \Symfony\Component\Validator\Exception\MissingOptionsException
+     * @param Request $request
+     *
+     * @return RedirectResponse|Response
      */
     public function formFileEcmAction(Request $request)
     {
@@ -1676,8 +1703,11 @@ class DefaultController extends Controller
             ),
             'mapped'      => false,
         ))
-            ->add('rok', 'text',
-                array('required' => false, 'label' => 'Przy imporcie zaangażowań podaj rok', 'data' => date('Y')))
+            ->add(
+                'rok',
+                'text',
+                array('required' => false, 'label' => 'Przy imporcie zaangażowań podaj rok', 'data' => date('Y'))
+            )
             ->add('wczytaj', 'submit', array(
                 'attr' => array(
                     'class' => 'btn btn-success col-sm-12',
@@ -1688,7 +1718,6 @@ class DefaultController extends Controller
         $form->handleRequest($request);
         if ($request->getMethod() === 'POST') {
             if ($form->isValid()) {
-
                 $file = $form->get('plik')->getData();
                 $name = $file->getClientOriginalName();
 
@@ -1705,7 +1734,6 @@ class DefaultController extends Controller
                             $w[] = "$k : $v";
                         }
                         $msg .= implode(', ', $w);
-
                     }
                     $this->get('session')->getFlashBag()->set('warning', $msg);
 
@@ -1827,7 +1855,6 @@ class DefaultController extends Controller
                     }
                 }
             }
-
         }
         $this->get('doctrine')->getManager()->flush();
 
@@ -1852,7 +1879,7 @@ class DefaultController extends Controller
         */
     }
 
-    protected function getMonthsFromRow($row, $programy)
+    protected function getMonthsFromRow($row)
     {
         $months = array();
         for ($i = 1; $i <= 12; $i++) {
@@ -1860,7 +1887,6 @@ class DefaultController extends Controller
             $val = trim($row[$this->col2month[$i - 1]]);
             $val = $val === '' ? 0 : floatval($val);
             $months[$i] = $val;
-
         }
 
         return $months;
@@ -1961,7 +1987,6 @@ class DefaultController extends Controller
                         }
                     }
                     $em->persist($zasob);
-
                 }
             }
         }
@@ -2047,7 +2072,7 @@ class DefaultController extends Controller
 
                 $dane = explode(';', $wiersz);
                 if ($dane[1] !== '' && $dane[1] !== '') {
-                    $cnname = $this->ldap_escape($dane[1]).'*'.$this->ldap_escape($dane[0]);
+                    $cnname = $this->ldapEscape($dane[1]).'*'.$this->ldapEscape($dane[0]);
                     //echo ".".$wiersz.".<br>";
                     $ADUser = $ldap->getUserFromAD(null, $cnname);
                 }
@@ -2162,7 +2187,6 @@ class DefaultController extends Controller
                     $wynik['utworzono'] += 1;
                 }
                 $em->persist($newUserZasob);
-
             }
         }
 
@@ -2209,7 +2233,7 @@ class DefaultController extends Controller
         return $ret;
     }
 
-    protected function ldap_escape($subject, $dn = false, $ignore = null)
+    protected function ldapEscape($subject, $dn = false, $ignore = null)
     {
 
         // The base array of characters to escape
@@ -2250,9 +2274,11 @@ class DefaultController extends Controller
 
     /**
      * @Route("/resources/{samaccountname}", name="resources")
-     * @throws \LogicException
+     * @param $samaccountname
+     *
+     * @return Response
      */
-    public function showResources($samaccountname, Request $request)
+    public function showResources($samaccountname)
     {
 
         // Sięgamy do AD:
@@ -2263,8 +2289,10 @@ class DefaultController extends Controller
         $userZasoby =
             $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
 
-        return $this->render('ParpMainBundle:Default:resources.html.twig',
-            array('user' => $ADUser[0]['name'], 'zasoby' => $userZasoby));
+        return $this->render(
+            'ParpMainBundle:Default:resources.html.twig',
+            array('user' => $ADUser[0]['name'], 'zasoby' => $userZasoby)
+        );
     }
 
     /**
@@ -2280,10 +2308,11 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param $term
-     * @Route("/user/suggest/", name="userSuggest")
+     * @param Request $request
      *
      * @throws \Exception
+     * @internal param $term
+     * @Route("/user/suggest/", name="userSuggest")
      */
     public function userSuggestAction(Request $request)
     {
@@ -2310,7 +2339,6 @@ class DefaultController extends Controller
         $dane = array();
         $i = 0;
         foreach ($ADUsers as $user) {
-
             if (mb_stripos($user['name'], $imienazwisko, 0, 'UTF-8') !== false) {
                 //$dane[$i] = $user['name'];
                 $dane[$i] = $user['name'];//$this->get('renameService')->fixImieNazwisko($user['name']);
@@ -2325,10 +2353,11 @@ class DefaultController extends Controller
 
 
     /**
-     * @param $term
-     * @Route("/user/suggestLogin/", name="userSuggestLoginAction", options={"expose"=true})
+     * @param Request $request
      *
      * @throws \Exception
+     * @internal param $term
+     * @Route("/user/suggestLogin/", name="userSuggestLoginAction", options={"expose"=true})
      */
     public function userSuggestLoginAction(Request $request)
     {
@@ -2350,6 +2379,4 @@ class DefaultController extends Controller
         $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
         die($login);
     }
-
-
 }

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Annotations\UniqueConstraint;
+
 /**
  * DaneRekord
  *
@@ -319,11 +320,13 @@ class ImportSekcjeUser
         return $this->departamentSkrot;
     }
     
-    public function __construct(){
+    public function __construct()
+    {
         
         $d = new \Datetime();
-        if(!$this->getId())
+        if (!$this->getId()) {
             $this->setCreatedAt($d);
+        }
         
         $this->setLastModifiedAt($d);
     }

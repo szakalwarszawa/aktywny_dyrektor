@@ -30,7 +30,7 @@ class PublishController extends Controller
            '--samaccountname' => $this->getUser()->getUsername(),
            //'--ids' => implode(',', $ids),
         );
-        if($this->getUser()->getUsername() == "kamil_jakacki"){
+        if ($this->getUser()->getUsername() == "kamil_jakacki") {
             //$pars['--ids'] = 9916;
         }
 
@@ -54,5 +54,4 @@ class PublishController extends Controller
         // return new Response(""), if you used NullOutput()
         return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => $showonly, 'content' => $converter->convert($content)));
     }
-    
 }

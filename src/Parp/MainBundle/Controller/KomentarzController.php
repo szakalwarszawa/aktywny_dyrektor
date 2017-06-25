@@ -39,8 +39,7 @@ class KomentarzController extends Controller
         $source = new Entity('ParpMainBundle:Komentarz');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $obiekt, $obiektId)
-            {
+            function ($query) use ($tableAlias, $obiekt, $obiektId) {
                 $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
             }
         );
@@ -144,7 +143,7 @@ class KomentarzController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'returnUrl' => $request->headers->get('referer') 
+            'returnUrl' => $request->headers->get('referer')
         );
     }
 
@@ -236,7 +235,6 @@ class KomentarzController extends Controller
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
         }
         if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
-            
             $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
@@ -277,7 +275,6 @@ class KomentarzController extends Controller
             }
             
             if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
-                
                 $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
                 return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
             }

@@ -10,7 +10,8 @@ namespace Parp\MainBundle\Entity;
  */
 class KomentarzRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function getCommentCount($obiekt, $obiektId){
+    public function getCommentCount($obiekt, $obiektId)
+    {
         $qb = $this->createQueryBuilder('t');
         $qb->select('count(t.id)');
         $qb->where('t.obiekt = :obiekt');

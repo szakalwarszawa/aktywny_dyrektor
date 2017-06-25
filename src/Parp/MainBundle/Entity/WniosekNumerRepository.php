@@ -10,19 +10,20 @@ namespace Parp\MainBundle\Entity;
  */
 class WniosekNumerRepository extends \Doctrine\ORM\EntityRepository
 {
-    public function findNextNumer($typ, $rok){
+    public function findNextNumer($typ, $rok)
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('f')
             ->from('ParpMainBundle:WniosekNumer', 'f')
             ->where('f.typWniosku = :typ')
             ->andWhere('f.rok = :rok')
-            ->addOrderBy('f.numer',  'DESC')
+            ->addOrderBy('f.numer', 'DESC')
             ->setParameters(array('typ' => $typ, 'rok' => $rok));
         $res = $qb->getQuery()->getResult();
-        if(empty($res)){
+        if (empty($res)) {
             $numer = new WniosekNumer();
-            $numer->setNumer(1);            
-        }else{
+            $numer->setNumer(1);
+        } else {
             $numer = new WniosekNumer();
             $numer->setNumer($res[0]->getNumer() + 1);
         }

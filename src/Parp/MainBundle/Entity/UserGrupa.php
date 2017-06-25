@@ -50,7 +50,7 @@ class UserGrupa
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -73,7 +73,7 @@ class UserGrupa
     /**
      * Get samaccountname
      *
-     * @return string 
+     * @return string
      */
     public function getSamaccountname()
     {
@@ -96,7 +96,7 @@ class UserGrupa
     /**
      * Get grupa
      *
-     * @return string 
+     * @return string
      */
     public function getGrupa()
     {

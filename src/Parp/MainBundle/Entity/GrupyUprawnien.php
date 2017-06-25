@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+
 use APY\DataGridBundle\Grid\Mapping as GRID;
 
 use Doctrine\ORM\Mapping as ORM;
@@ -69,7 +70,7 @@ class GrupyUprawnien
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -92,7 +93,7 @@ class GrupyUprawnien
     /**
      * Get kod
      *
-     * @return string 
+     * @return string
      */
     public function getKod()
     {
@@ -115,7 +116,7 @@ class GrupyUprawnien
     /**
      * Get opis
      *
-     * @return string 
+     * @return string
      */
     public function getOpis()
     {
@@ -159,13 +160,14 @@ class GrupyUprawnien
     /**
      * Get uprawnienia
      *
-     * @return \Doctrine\Common\Collections\Collection 
+     * @return \Doctrine\Common\Collections\Collection
      */
     public function getUprawnienia()
     {
         return $this->uprawnienia;
     }
-    public function __toString(){
+    public function __toString()
+    {
         return $this->getOpis();
     }
 
@@ -179,10 +181,10 @@ class GrupyUprawnien
     public function setUprawnieniaHistoriaZmian($uprawnieniaHistoriaZmian = null)
     {
         //die('aa');
-        if($uprawnieniaHistoriaZmian === null){
+        if ($uprawnieniaHistoriaZmian === null) {
             $uprawnieniaHistoriaZmian = array();
-            foreach($this->getUprawnienia() as $g){
-                $uprawnieniaHistoriaZmian[] = $g->getOpis();    
+            foreach ($this->getUprawnienia() as $g) {
+                $uprawnieniaHistoriaZmian[] = $g->getOpis();
             }
             $uprawnieniaHistoriaZmian = implode(",", $uprawnieniaHistoriaZmian);
         }
@@ -205,7 +207,8 @@ class GrupyUprawnien
      * @@ORM\PrePersist()
      * @@ORM\PreUpdate()
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
         $this->setUprawnieniaHistoriaZmian();
         //die($this->getUprawnieniaHistoriaZmian());
     }

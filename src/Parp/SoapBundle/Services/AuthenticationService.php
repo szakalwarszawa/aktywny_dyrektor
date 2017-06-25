@@ -10,7 +10,6 @@ class AuthenticationService
 {
     public function __construct()
     {
-
     }
 
     /**
@@ -25,12 +24,12 @@ class AuthenticationService
      * loginu, hasła. Opcjonalnymi parametrami jest wersja [$version] (domyślnie zero) oraz metoda [$method]
      *
      */
-    public function login($login,$password,$version=0,$method=null)
+    public function login($login, $password, $version = 0, $method = null)
     {
         $loginDetails = array();
 
         $loginDetails["authenticated"] = true;
-        if($loginDetails["authenticated"]){
+        if ($loginDetails["authenticated"]) {
             $loginDetails["username"] = $login;
             $loginDetails["password"] = $password;
             $loginDetails["roles"][] = "ROLE_ADMIN";
@@ -41,8 +40,7 @@ class AuthenticationService
         return $loginDetails;
     }
 
-    public function changePassword($login,$oldPassword,$newPassword,$version=0,$method=null)
+    public function changePassword($login, $oldPassword, $newPassword, $version = 0, $method = null)
     {
-
     }
 }

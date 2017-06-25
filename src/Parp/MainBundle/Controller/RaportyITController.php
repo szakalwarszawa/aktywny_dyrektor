@@ -91,8 +91,13 @@ class RaportyITController extends Controller
         if ($form->isValid()) {
             $ndata = $form->getData();
 
-            return $this->generujRaport($ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(),
-                $this->get('samaccountname_generator'), $this->get('templating'));
+            return $this->generujRaport(
+                $ndata,
+                $this->get('ldap_service'),
+                $this->getDoctrine()->getManager(),
+                $this->get('samaccountname_generator'),
+                $this->get('templating')
+            );
             //return $this->generateExcel($data, $rok);
         }
 
@@ -119,7 +124,6 @@ class RaportyITController extends Controller
             $id = $zmiana[0]['id'];
             $wersja = $zmiana['version'];
             if ($wersja > 1) {
-
                 $wpis = $repo->find($id);
                 //var_dump($wpis);
                 $historyRepo->revert($wpis, $wersja);
@@ -197,8 +201,12 @@ class RaportyITController extends Controller
                                 ];
                             }
                             $daneZRekorda[$u['samaccountname']] =
-                                $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac'],
-                                    'wygaszenie konta w AD');
+                                $this->zrobRekordZRekorda(
+                                    $dr,
+                                    $ndata['rok'],
+                                    $ndata['miesiac'],
+                                    'wygaszenie konta w AD'
+                                );
                         }
                     }
                 }
@@ -208,8 +216,10 @@ class RaportyITController extends Controller
         //die(); //przeniesc na koniec !!!!!!
 
 
-        return $twig->render('ParpMainBundle:RaportyIT:wynik.html.twig',
-            ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac]);
+        return $twig->render(
+            'ParpMainBundle:RaportyIT:wynik.html.twig',
+            ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac]
+        );
     }
 
     protected function parseManagerDN($dn)
@@ -279,7 +289,6 @@ class RaportyITController extends Controller
     public function tempTestAction(Request $request, $rok = 0)
     {
         die('dzialam');
-
     }
 
     protected function makeRowVersion($eNext, $log, &$datyKonca)
@@ -398,7 +407,6 @@ class RaportyITController extends Controller
             $this->zakres['max'] = $max;
             //die('tutaj');
         } else {
-
             $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
             $logs = $repo->getLogEntries($entity);
             $dane = [];
@@ -457,8 +465,7 @@ class RaportyITController extends Controller
         $okresNr = 1;
         $okresy = [];
         for ($i = 0; $i < count($dane); $i++) {
-            if (
-                $dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
+            if ($dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
                 $dane[$i]['start'] <= $this->ostatniDepartament['end']
             ) {
                 if ($this->sumaUprawnien == null) {
@@ -471,8 +478,11 @@ class RaportyITController extends Controller
                         'title'     => '',
                         'group'     => 'suma',
                         'grupy'     => $this->container->get('ldap_service')
-                            ->getGrupyUsera($this->user, $this->ostatniDepartament['departament'],
-                                $this->ostatniDepartament['sekcja']),
+                            ->getGrupyUsera(
+                                $this->user,
+                                $this->ostatniDepartament['departament'],
+                                $this->ostatniDepartament['sekcja']
+                            ),
                     ];
                 }
                 if (isset($dane[$i]['group']) && $dane[$i]['group'] == 'zasoby') {
@@ -492,7 +502,6 @@ class RaportyITController extends Controller
                         $this->sumaUprawnien['start'] = $dane[$i]['start'];
                     }
                 }
-
             }
             $dane[$i]['start'] = $dane[$i]['start']->format('Y-m-d');
             $dane[$i]['end'] = $dane[$i]['end'] ? $dane[$i]['end']->format('Y-m-d') : $now->format('Y-m-d');
@@ -512,8 +521,10 @@ class RaportyITController extends Controller
             }
         }
         $content .= '<br><a href="'.
-            $this->generateUrl('nadajGrupy',
-                ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]).
+            $this->generateUrl(
+                'nadajGrupy',
+                ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]
+            ).
             '" class="btn btn-success" target="_blank">NAPRAW</a>';
 
 
@@ -591,6 +602,4 @@ class RaportyITController extends Controller
         var_dump($braki);
         //$this->getDoctrine()->getManager()->flush();
     }
-
-
 }

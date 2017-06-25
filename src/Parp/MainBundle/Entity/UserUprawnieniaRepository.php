@@ -16,14 +16,14 @@ class UserUprawnieniaRepository extends EntityRepository
     public function findSekcja($samaccountname)
     {
         $query = $this->getEntityManager()->createQuery(
-                        'SELECT uu
+            'SELECT uu
                  FROM ParpMainBundle:UserUprawnienia uu ,ParpMainBundle:Uprawnienia u
                  WHERE uu.uprawnienie_id = u.id 
                  AND uu.czyAktywne = true
                  AND u.czy_sekcja = true
                  AND uu.samaccountname = :samaccountname
                 '
-                )->setParameter('samaccountname', $samaccountname);
+        )->setParameter('samaccountname', $samaccountname);
         $res = $query->getResult();
         return count($res) > 0 ? $res[0] : null; //$query->getOneOrNullResult();
     }
@@ -31,19 +31,20 @@ class UserUprawnieniaRepository extends EntityRepository
     public function findDepartament($samaccountname)
     {
         $query = $this->getEntityManager()->createQuery(
-                        'SELECT uu
+            'SELECT uu
                  FROM ParpMainBundle:UserUprawnienia uu ,ParpMainBundle:Uprawnienia u
                  WHERE uu.uprawnienie_id = u.id 
                  AND uu.czyAktywne = true
                  AND u.czy_edycja = true
                  AND uu.samaccountname = :samaccountname
                 '
-                )->setParameter('samaccountname', $samaccountname);
+        )->setParameter('samaccountname', $samaccountname);
 
         return $query->getResult();
     }
     
-    public function findUsersByUprawnienieId($uprawnienieId){
+    public function findUsersByUprawnienieId($uprawnienieId)
+    {
         global $kernel;
         
         if ('AppCache' == get_class($kernel)) {
@@ -62,7 +63,7 @@ class UserUprawnieniaRepository extends EntityRepository
         
         $res = $query->getResult();
         
-        foreach($res as $uz){
+        foreach ($res as $uz) {
             //echo $uz->getSamaccountname()."<br>";
             
             $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
@@ -71,5 +72,4 @@ class UserUprawnieniaRepository extends EntityRepository
         }
         return $res;
     }
-
 }

@@ -117,7 +117,7 @@ class UserUprawnienia
     /**
      * Get _ADUser
      *
-     * @return array 
+     * @return array
      */
     public function getADUser()
     {
@@ -127,7 +127,7 @@ class UserUprawnienia
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -150,7 +150,7 @@ class UserUprawnienia
     /**
      * Get samaccountname
      *
-     * @return string 
+     * @return string
      */
     public function getSamaccountname()
     {
@@ -173,7 +173,7 @@ class UserUprawnienia
     /**
      * Get opis
      *
-     * @return string 
+     * @return string
      */
     public function getOpis()
     {
@@ -196,7 +196,7 @@ class UserUprawnienia
     /**
      * Get dataNadania
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataNadania()
     {
@@ -219,7 +219,7 @@ class UserUprawnienia
     /**
      * Get dataOdebrania
      *
-     * @return \DateTime 
+     * @return \DateTime
      */
     public function getDataOdebrania()
     {
@@ -242,7 +242,7 @@ class UserUprawnienia
     /**
      * Get czyAktywne
      *
-     * @return boolean 
+     * @return boolean
      */
     public function getCzyAktywne()
     {
@@ -266,7 +266,7 @@ class UserUprawnienia
     /**
      * Get uprawnienie_id
      *
-     * @return integer 
+     * @return integer
      */
     public function getUprawnienieId()
     {

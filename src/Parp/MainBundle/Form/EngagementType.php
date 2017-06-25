@@ -25,7 +25,7 @@ class EngagementType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
         ;
     }
     

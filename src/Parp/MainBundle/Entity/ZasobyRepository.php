@@ -17,7 +17,8 @@ class ZasobyRepository extends EntityRepository
     {
     
         $temps = $this->getRepository("ParpMainBundle:UserZasoby")->findAll();
-        print_r($temps); die();
+        print_r($temps);
+        die();
 /*
         $query = $this->createQueryBuilder('e')
                 ->join('e.userzasoby', 'uz')
@@ -27,7 +28,6 @@ class ZasobyRepository extends EntityRepository
 
         return $query->getResult();    
 */
-        
     }
 
 
@@ -40,6 +40,5 @@ class ZasobyRepository extends EntityRepository
                 ->getQuery();
         $results = $query->getResult();
         return count($results) == 1 ? $results[0] : null;
-
-        
-    }}
+    }
+}

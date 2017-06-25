@@ -57,7 +57,7 @@ class Section
      *      min = 2,
      *      max = 8,
      *      minMessage = "Skrót sekcji zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Skrót sekcji musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     *      maxMessage = "Skrót sekcji musi zawierać maxymalnie do {{ limit }} znaków.")*
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
@@ -94,7 +94,7 @@ class Section
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -117,7 +117,7 @@ class Section
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
@@ -140,7 +140,7 @@ class Section
     /**
      * Get shortname
      *
-     * @return string 
+     * @return string
      */
     public function getShortname()
     {

@@ -349,7 +349,8 @@ class Wniosek
         return $this->numer;
     }
     
-    public function czyWtrakcieTworzenia(){
+    public function czyWtrakcieTworzenia()
+    {
         return $this->numer  == "wniosek w trakcie tworzenia";
     }
     /**
@@ -406,7 +407,7 @@ class Wniosek
      */
     public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
     {
-        if($status){
+        if ($status) {
             $this->status = $status;
             $this->setStatusname($status->__toString());
         }
@@ -471,7 +472,7 @@ class Wniosek
     public function setViewernamesSet()
     {
         $names = array();
-        foreach($this->getViewers() as $v){
+        foreach ($this->getViewers() as $v) {
             $names[] = $v->getSamaccountname();
         }
         $this->setViewernames(implode(",", $names));
@@ -512,7 +513,7 @@ class Wniosek
     public function setEditornamesSet()
     {
         $names = array();
-        foreach($this->getEditors() as $v){
+        foreach ($this->getEditors() as $v) {
             $names[] = $v->getSamaccountname();
         }
         $this->setEditornames(implode(",", $names));
@@ -592,21 +593,21 @@ class Wniosek
     public function getViewersNames()
     {
         $names = [];
-        foreach($this->getViewers() as $v){
+        foreach ($this->getViewers() as $v) {
             $names[$v->getSamaccountname()] = $v->getSamaccountname();
-        }    
+        }
         return implode(", ", $names);
     }
     
     public function getEditorsNames()
     {
-        if(substr($this->getStatus()->getNazwaSystemowa(), 0, 1) == "1"){
-            return "";    
+        if (substr($this->getStatus()->getNazwaSystemowa(), 0, 1) == "1") {
+            return "";
         }
         $names = [];
-        foreach($this->getEditors() as $v){
+        foreach ($this->getEditors() as $v) {
             $names[$v->getSamaccountname()] = $v->getSamaccountname();
-        }    
+        }
         return implode(", ", $names);
     }
 
@@ -642,7 +643,7 @@ class Wniosek
     public function getStatusy()
     {
         $sort = \Doctrine\Common\Collections\Criteria::create();
-        $sort->orderBy(Array(
+        $sort->orderBy(array(
             'createdAt' => \Doctrine\Common\Collections\Criteria::ASC
         ))
         ->where(\Doctrine\Common\Collections\Criteria::expr()->isNull("deletedAt"));
@@ -836,5 +837,4 @@ class Wniosek
         $this->statusy = new \Doctrine\Common\Collections\ArrayCollection();
         $this->ADentries = new \Doctrine\Common\Collections\ArrayCollection();
     }
-
 }

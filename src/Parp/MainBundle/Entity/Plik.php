@@ -1,6 +1,7 @@
 <?php
 
 namespace Parp\MainBundle\Entity;
+
 use APY\DataGridBundle\Grid\Mapping as GRID;
 use Doctrine\ORM\Mapping as ORM;
 
@@ -247,9 +248,9 @@ class Plik
         // move takes the target directory and then the
         // target filename to move to
         $guid = uniqid();
-		//print $this->getFile();
-		$fname = $guid."_".$this->getFile()->getClientOriginalName();
-        $this->getFile()->move($this->getUploadRootDir(),$fname);
+        //print $this->getFile();
+        $fname = $guid."_".$this->getFile()->getClientOriginalName();
+        $this->getFile()->move($this->getUploadRootDir(), $fname);
     
         // set the path property to the filename where you've saved the file
         $this->path = $guid."_".$this->getFile()->getClientOriginalName();
@@ -273,7 +274,8 @@ class Plik
         // when displaying uploaded doc/image in the view.
         return 'upload';
     }
-    public function getFilePath(){
+    public function getFilePath()
+    {
         return $this->getUploadRootDir()."/".$this->getFile();
     }
 

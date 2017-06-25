@@ -46,7 +46,7 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="wniosek.lockedAt", type="date", title="Zablokowano")
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
-    private $wniosek; 
+    private $wniosek;
     
 
     /**
@@ -55,7 +55,7 @@ class WniosekUtworzenieZasobu
      * @ORM\JoinColumn(name="zasob_id", referencedColumnName="id")
      * @GRID\Column(field="zasob.nazwa", title="Zasób")
      */
-    private $zasob; 
+    private $zasob;
     
     
     /**
@@ -65,7 +65,7 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="zmienianyZasob.nazwa", title="Zmieniany zasób", visible=false)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $zmienianyZasob; 
+    private $zmienianyZasob;
     
     
     /**
@@ -702,23 +702,23 @@ class WniosekUtworzenieZasobu
      */
     public function __construct()
     {
-        if(!$this->getId()){
+        if (!$this->getId()) {
             $this->setWniosek(new Wniosek());
             $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
         }
         $this->getWniosek()->setWniosekUtworzenieZasobu($this);
         $this->getZasob()->setWniosekUtworzenieZasobu($this);
-        
     }
     
-    public function getTyp(){
-        if($this->getTypWnioskuDoRejestru()){
+    public function getTyp()
+    {
+        if ($this->getTypWnioskuDoRejestru()) {
             return "nowy";
         }
-        if($this->getTypWnioskuZmianaInformacji()){
+        if ($this->getTypWnioskuZmianaInformacji()) {
             return "zmiana";
         }
-        if($this->getTypWnioskuWycofanie()){
+        if ($this->getTypWnioskuWycofanie()) {
             return "kasowanie";
         }
         return "";

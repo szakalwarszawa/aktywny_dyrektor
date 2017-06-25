@@ -13,7 +13,8 @@ class ZasobyType extends AbstractType
     protected $container;
     protected $zablokujPolaPozaPoziomModul = false;
     
-    public function __construct($container, $nazwaLabel = "Nazwa", $niemozeEdytowac = false, $czyJestWlascicielemLubPowiernikiem = false){
+    public function __construct($container, $nazwaLabel = "Nazwa", $niemozeEdytowac = false, $czyJestWlascicielemLubPowiernikiem = false)
+    {
         $this->container = $container;
         $this->nazwaLabel = $nazwaLabel;
         $this->zablokujPolaPozaPoziomModul = $niemozeEdytowac && $czyJestWlascicielemLubPowiernikiem;
@@ -36,14 +37,14 @@ class ZasobyType extends AbstractType
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel, 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden');
-        if($adminiMulti){
+        if ($adminiMulti) {
             $builder->add($builder->create('wlascicielZasobu', 'choice', array(
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer));
-        }else{
+        } else {
             $builder->add('wlascicielZasobu', 'choice', array(
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => false,
@@ -79,10 +80,10 @@ class ZasobyType extends AbstractType
             ->add('daneOsobowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('komorkaOrgazniacyjna', 'entity', array(
                 'class' => 'Parp\MainBundle\Entity\Departament',
-                'choice_value' => function($dep){
+                'choice_value' => function ($dep) {
                     return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
                 },
-                'query_builder' => function(\Doctrine\ORM\EntityRepository $er) {
+                'query_builder' => function (\Doctrine\ORM\EntityRepository $er) {
                     return $er->createQueryBuilder('u')
                             ->andWhere('u.nowaStruktura = 1')
                             ->orderBy('u.name', 'ASC');
@@ -230,7 +231,6 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text'
                 ))
         ;
-
     }
     
     /**
@@ -239,7 +239,7 @@ class ZasobyType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\Zasoby',            
+            'data_class' => 'Parp\MainBundle\Entity\Zasoby',
             //'inherit_data' => true,
         ));
     }

@@ -4,6 +4,7 @@ namespace Parp\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use APY\DataGridBundle\Grid\Mapping as GRID;
+
 /*,userZasoby.zasobOpis:group_concat:distinct*/
 /**
  * UserZasoby
@@ -237,8 +238,9 @@ class WniosekNadanieOdebranieZasobow
      */
     public function setPracownicySpozaParp($pracownicy)
     {
-        if($this->getPracownikSpozaParp())
+        if ($this->getPracownikSpozaParp()) {
             $this->pracownicy = $pracownicy;
+        }
 
         return $this;
     }
@@ -285,16 +287,18 @@ class WniosekNadanieOdebranieZasobow
      */
     public function getUserZasoby()
     {
-        if($this->getOdebranie())
+        if ($this->getOdebranie()) {
             return $this->userZasobyOdbierane;
-        else
+        } else {
             return $this->userZasoby;
+        }
     }
 
-    public function getJsonSams(){
+    public function getJsonSams()
+    {
         $ar = explode(",", $this->getPracownicy());
         $ars = array();
-        foreach($ar as $a){
+        foreach ($ar as $a) {
             $ars[$a] = 1;
         }
         return json_encode($ars);
@@ -517,20 +521,20 @@ class WniosekNadanieOdebranieZasobow
         return $this->zasoby;
     }
 
-    public function ustawPoleZasoby(){
+    public function ustawPoleZasoby()
+    {
         global $kernel;
-        if ( 'AppCache' == get_class($kernel) )
-        {
-           $kernel = $kernel->getKernel();
+        if ('AppCache' == get_class($kernel)) {
+            $kernel = $kernel->getKernel();
         }
-        $em = $kernel->getContainer()->get( 'doctrine.orm.entity_manager' );
+        $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
         $ret = [];
-        foreach($this->getUserZasoby() as $uz){
+        foreach ($this->getUserZasoby() as $uz) {
             echo "!";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();
         }
-        foreach($this->getUserZasobyOdbierane() as $uz){
+        foreach ($this->getUserZasobyOdbierane() as $uz) {
             echo "$";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();

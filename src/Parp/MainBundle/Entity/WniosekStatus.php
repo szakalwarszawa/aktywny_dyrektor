@@ -5,6 +5,7 @@ namespace Parp\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+
 /**
  * UserZasoby
  *
@@ -296,7 +297,8 @@ class WniosekStatus
         return $this->finished;
     }
     
-    public function __toString(){
+    public function __toString()
+    {
         return $this->getNazwa();
     }
 

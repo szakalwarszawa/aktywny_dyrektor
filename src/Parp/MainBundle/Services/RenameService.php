@@ -23,7 +23,6 @@ class RenameService
     {
         $this->doctrine = $OrmEntity;
         $this->container = $container;
-        
     }
     public function fixImieNazwisko($imienazwisko)
     {
@@ -53,18 +52,19 @@ class RenameService
         return (isset($titles[$var]) ? $titles[$var] : $var);
     }
     
-    public function zasobNazwa($zid){
+    public function zasobNazwa($zid)
+    {
         //echo ".".$zid.".";
         $z = null;
-        try{
+        try {
             $this->doctrine->getFilters()->disable('softdeleteable');
             $z = $this->doctrine->getRepository('ParpMainBundle:Zasoby')->find($zid);
             
             $this->doctrine->getFilters()->enable('softdeleteable');
-        }catch(\Exception $e){
+        } catch (\Exception $e) {
             echo $e->getMessage();
         }
         
-        return $z ? $z->getNazwa() : $zid;    
+        return $z ? $z->getNazwa() : $zid;
     }
 }

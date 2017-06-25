@@ -22,14 +22,15 @@ class UserZasoby
      * @ORM\PreUpdate()
      * @ORM\PreRemove()
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
 
         //die("preUpdate");
-        if($this->wniosek){
+        if ($this->wniosek) {
             $this->wniosek->ustawPoleZasoby();
         }
 
-        if($this->wniosekOdebranie){
+        if ($this->wniosekOdebranie) {
             $this->wniosekOdebranie->ustawPoleZasoby();
         }
     }
@@ -300,10 +301,7 @@ class UserZasoby
     }
 
     protected $idd;
-    public function get_Idd()
-    {
-        return $this->idd;
-    }
+
     public function getIdd()
     {
         return $this->id;
@@ -348,7 +346,8 @@ class UserZasoby
         return $this->samaccountname;
     }
 
-    public function getSamaccountnames(){
+    public function getSamaccountnames()
+    {
         //uzywane przy generaowaniu linka do edycji userZasoby przy wniosku
         return '{"'.$this->samaccountname.'" : 1}';
     }
@@ -406,7 +405,7 @@ class UserZasoby
      */
     public function setModul($modul)
     {
-        if(is_array($modul)){
+        if (is_array($modul)) {
             $modul = implode(";", $modul);
         }
         $this->modul = $modul;
@@ -422,7 +421,7 @@ class UserZasoby
     public function getModul()
     {
 
-        if(is_array($this->modul)){
+        if (is_array($this->modul)) {
             $modul = implode(";", $this->modul);
         }
         return $this->modul;
@@ -436,7 +435,7 @@ class UserZasoby
      */
     public function setPoziomDostepu($poziomDostepu)
     {
-        if(is_array($poziomDostepu)){
+        if (is_array($poziomDostepu)) {
             $poziomDostepu = implode(";", $poziomDostepu);
         }
         $this->poziomDostepu = $poziomDostepu;
@@ -451,7 +450,7 @@ class UserZasoby
      */
     public function getPoziomDostepu()
     {
-        if(is_array($this->poziomDostepu)){
+        if (is_array($this->poziomDostepu)) {
             $this->poziomDostepu = implode(";", $this->poziomDostepu);
         }
         return $this->poziomDostepu;
@@ -739,48 +738,65 @@ class UserZasoby
     {
         return $this->importedFromEcm;
     }
-    public function getOpisHtml($spacer = "<br>", $stripTags = false){
+    public function getOpisHtml($spacer = "<br>", $stripTags = false)
+    {
         $html = "";
-        if($this->getLoginDoZasobu() != "")
+        if ($this->getLoginDoZasobu() != "") {
             $html .= "<b>Login:</b> ".$this->getLoginDoZasobu().$spacer;
-        if($this->getModul() != "")
+        }
+        if ($this->getModul() != "") {
             $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
-        if($this->getPoziomDostepu() != "")
+        }
+        if ($this->getPoziomDostepu() != "") {
             $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
-        if($this->getAktywneOd() != "")
+        }
+        if ($this->getAktywneOd() != "") {
             $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
-        if($this->getAktywneDo() != "")
+        }
+        if ($this->getAktywneDo() != "") {
             $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
-        if($this->getKanalDostepu() != "")
+        }
+        if ($this->getKanalDostepu() != "") {
             $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
-        if($this->getUprawnieniaAdministracyjne() != "")
+        }
+        if ($this->getUprawnieniaAdministracyjne() != "") {
             $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+        }
 
         $html = "<div>".$html."</div>";
-        if($stripTags)
+        if ($stripTags) {
             $html = strip_tags($html);
+        }
         return $html;
     }
 
 
-    public function getDaneDoCheckboxRemoveAccess($spacer = "<br>", $stripTags = false){
+    public function getDaneDoCheckboxRemoveAccess($spacer = "<br>", $stripTags = false)
+    {
         $html = "";
-        if($this->getModul() != "")
+        if ($this->getModul() != "") {
             $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
-        if($this->getPoziomDostepu() != "")
+        }
+        if ($this->getPoziomDostepu() != "") {
             $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
-        if($this->getAktywneOd() != "")
+        }
+        if ($this->getAktywneOd() != "") {
             $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
-        if($this->getAktywneDo() != "")
+        }
+        if ($this->getAktywneDo() != "") {
             $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
-        if($this->getKanalDostepu() != "")
+        }
+        if ($this->getKanalDostepu() != "") {
             $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
-        if($this->getUprawnieniaAdministracyjne() != "")
+        }
+        if ($this->getUprawnieniaAdministracyjne() != "") {
             $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+        }
 
         $html = "<div>".$html."</div>";
-        if($stripTags)
+        if ($stripTags) {
             $html = strip_tags($html);
+        }
         return $html;
     }
 
@@ -841,14 +857,14 @@ class UserZasoby
      */
     public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
-        if($wniosek){
+        if ($wniosek) {
             $wniosek->addUserZasoby($this);
         }
-        if($wniosek === null && $this->wniosek != null){
+        if ($wniosek === null && $this->wniosek != null) {
             $this->wniosek->ustawPoleZasoby();
         }
         $this->wniosek = $wniosek;
-        if($this->wniosek){
+        if ($this->wniosek) {
             $this->wniosek->ustawPoleZasoby();
         }
 
@@ -875,7 +891,7 @@ class UserZasoby
     public function setWniosekOdebranie(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
     {
         $this->wniosekOdebranie = $wniosekOdebranie;
-        if($this->wniosekOdebranie){
+        if ($this->wniosekOdebranie) {
             $this->wniosekOdebranie->ustawPoleZasoby();
         }
 
@@ -916,28 +932,30 @@ class UserZasoby
         return $this->zasobOpis;
     }
 
-    public function getLsiSql(){
+    public function getLsiSql()
+    {
         $sqls = [];
         $moduly = explode(";", $this->getModul());
         $poziomy = explode(";", $this->getPoziomDostepu());
-        foreach($moduly as $m){
-            foreach($poziomy as $p){
+        foreach ($moduly as $m) {
+            foreach ($poziomy as $p) {
                 //echo $m;
                 $naborDane = explode("/", $m);
-                if(count($naborDane) > 1){
+                if (count($naborDane) > 1) {
                     $dzialanie = $naborDane[0];
                     $nabor = $naborDane[1];
                     $rola = $p;
                     $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".$this->getSamaccountname()."', '".$dzialanie."', '".$nabor."', '".$rola."')";
                     $sqls[] = $sql;
-                }else{
+                } else {
                     echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby ".$this->getSamaccountname();
                 }
             }
         }
         return $sqls;
     }
-    public function podzielUprawnieniaPrzyOdbieraniu($dane){
+    public function podzielUprawnieniaPrzyOdbieraniu($dane)
+    {
         $moduly = explode(";", $this->getModul());
         $poziomy = explode(";", $this->getPoziomDostepu());
 
@@ -947,9 +965,9 @@ class UserZasoby
         $noweUz = $dane['dane'];
 
         //szukam tych co nie sa odbierane ale pokrywaja sie z nimi poziomami
-        foreach($dane['moduly'] as $m){
-            foreach($dane['poziomy'] as $p){
-                if(!isset($dane['odbiera'][$m.$p])){
+        foreach ($dane['moduly'] as $m) {
+            foreach ($dane['poziomy'] as $p) {
+                if (!isset($dane['odbiera'][$m.$p])) {
                     //znaczy ze musze utworzyc
                     $noweUz[] = [
                         'odbierane' => 0,
@@ -1072,6 +1090,4 @@ class UserZasoby
 
         return $this;
     }
-
-
 }

@@ -294,7 +294,7 @@ class EngagementController extends Controller
     public function importAction(Request $request)
     {
         $lata = [];
-        for($i = date('Y'); $i < date('Y') + 10; $i++) {
+        for ($i = date('Y'); $i < date('Y') + 10; $i++) {
             $lata[$i] = $i;
         }
 
@@ -320,7 +320,7 @@ class EngagementController extends Controller
             ),
             'mapped' => false,
         ))
-            ->add('rok', 'choice' , ['choices' => $lata])
+            ->add('rok', 'choice', ['choices' => $lata])
             ->add('wczytaj', 'submit', array('attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             )))
@@ -329,7 +329,6 @@ class EngagementController extends Controller
         $form->handleRequest($request);
         if ($request->getMethod() == 'POST') {
             if ($form->isValid()) {
-
                 $file = $form->get('plik')->getData();
                 $name = $file->getClientOriginalName();
                 $this->parsePlik($file, $form);
@@ -360,7 +359,8 @@ class EngagementController extends Controller
         'V' => '12',
     ];
     
-    protected function parsePlik($fileObject, $form){
+    protected function parsePlik($fileObject, $form)
+    {
         $wynik = [];
         $file = $fileObject->getPathname();
         if (!file_exists($file)) {
@@ -370,16 +370,16 @@ class EngagementController extends Controller
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
         
-        for($i = 2; $i < count($sheetData)+1; $i++){
+        for ($i = 2; $i < count($sheetData)+1; $i++) {
             $dane = [];
             $j = 0;
-            foreach($this->mapowanieKolumn as $k => $f){
+            foreach ($this->mapowanieKolumn as $k => $f) {
                 $dana = $sheetData[$i][$k];
 
-                if($f == 'program'){
+                if ($f == 'program') {
                     $dana = $this->parseNazwaProgramu($dana);
                 }
-                if($j > 3){
+                if ($j > 3) {
                     $dana = floatval($dana);
                 }
 
@@ -394,18 +394,17 @@ class EngagementController extends Controller
     {
         $ret = [];
 
-        foreach($dane as $person => $data){
+        foreach ($dane as $person => $data) {
             $programy = [];
 
-            for($i = 1; $i < 13; $i++) {
+            for ($i = 1; $i < 13; $i++) {
                 foreach ($data as $d) {
                     $program = $d['program'];
-                    if(!isset($programy[$program][$i])){
+                    if (!isset($programy[$program][$i])) {
                         $programy[$program][$i] = floatval($d[$i]);
-                    }else{
+                    } else {
                         $programy[$program][$i] += floatval($d[$i]);
                     }
-
                 }
             }
             /*    for($i = 1; $i < 13; $i++) {
@@ -419,11 +418,11 @@ class EngagementController extends Controller
                 $programy[$d['program']] = $d;
             }*/
             $ret[$d['name']] = $programy;
-
         }
         return $ret;
     }
-    protected function parseWyniki($dane, $form){
+    protected function parseWyniki($dane, $form)
+    {
         //var_dump($dane);
         $dane = $this->correctWyniki($dane);
         //echo "<pre>" . print_r($dane, true). "</pre>";
@@ -432,41 +431,40 @@ class EngagementController extends Controller
 
         $programy = [];
         $ps = $em->getRepository('ParpMainBundle:Engagement')->findAll();
-        foreach($ps as $p){
+        foreach ($ps as $p) {
             $programy[$p->getName()] = $p;
         }
 
         $rok = $form->getData()['rok'];
         $bledy = [];
         //var_dump($dane); die();
-        foreach($dane as $id => $d){
-
+        foreach ($dane as $id => $d) {
             //$daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($id);
             $rozbite = $this->get('samaccountname_generator')->rozbijFullname($id);
             $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy([
                 'nazwisko' => $rozbite['nazwisko'],
                 'imie' => $rozbite['imie'],
             ]);
-            if($daneRekord === null){
+            if ($daneRekord === null) {
                 //var_dump($d);
                 $bledy[] = [
                     'error' => 'Brak danych o osobie '.$id,
                     'dane' => $d
                 ];
-            }else {
+            } else {
                 //var_dump($d); die();
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
-                    for($i = 1; $i < 13; $i++){
+                    for ($i = 1; $i < 13; $i++) {
                         $ug = clone $usereng;
                         $ug->setMonth($i);
                         $p = 100*$wpis[$i];
                         $ug->setPercent($p);
-                        if(isset($programy[$program])){
+                        if (isset($programy[$program])) {
                             $program2 = $programy[$program];
-                        }else{
+                        } else {
                             $program2 = new Engagement();
                             $program2->setName($program);
                             $programy[$program] = $program2;
@@ -476,15 +474,14 @@ class EngagementController extends Controller
 
                         $em->persist($ug);
                     }
-
-
                 }
             }
         }
         $em->flush();
         //var_dump($bledy);
     }
-    protected function parseNazwaProgramu($program){
+    protected function parseNazwaProgramu($program)
+    {
         $pattern = ['/[,\d]+%/i', '/[\d]+,[\d]+/i', '/--/'];
         $replacement = ['', '', '-'];
         $program =  preg_replace($pattern, $replacement, $program);
@@ -506,5 +503,4 @@ class EngagementController extends Controller
 */
         return $program;
     }
-
 }

@@ -68,7 +68,8 @@ class HistoriaWersji extends AbstractLogEntry
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
      */
-    public function preUpdate(){
+    public function preUpdate()
+    {
         global $kernel;
         if ('AppCache' == get_class($kernel)) {
             $kernel = $kernel->getKernel();
@@ -107,7 +108,8 @@ class HistoriaWersji extends AbstractLogEntry
         return $this->route;
     }
     
-    public function __construct(){
+    public function __construct()
+    {
         $this->setRoute('ldap_service');
     }
 }

@@ -6,6 +6,7 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\Common\Annotations\UniqueConstraint;
+
 /**
  * DaneRekord
  *
@@ -26,8 +27,9 @@ class DaneRekord
     public function preUpdate()
     {
         $d = new \Datetime();
-        if(!$this->getId())
+        if (!$this->getId()) {
             $this->setCreatedAt($d);
+        }
 
         $this->setLastModifiedAt($d);
     }
@@ -559,7 +561,8 @@ class DaneRekord
         return $this->newUnproccessed;
     }
 
-    public function getImieNazwisko(){
+    public function getImieNazwisko()
+    {
         return $this->getImie()." ".$this->getNazwisko();
     }
 }

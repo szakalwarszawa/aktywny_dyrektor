@@ -28,17 +28,14 @@ class SessionIdleHandler
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST != $event->getRequestType()) {
-
             return;
         }
 
         if ($this->maxIdleTime > 0) {
-
             $this->session->start();
             $lapse = time() - $this->session->getMetadataBag()->getLastUsed();
 
             if ($lapse > $this->maxIdleTime) {
-
                 $this->securityContext->setToken(null);
                 $this->session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
 
@@ -47,5 +44,4 @@ class SessionIdleHandler
             }
         }
     }
-
 }

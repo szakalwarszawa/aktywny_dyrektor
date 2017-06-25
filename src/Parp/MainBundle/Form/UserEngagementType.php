@@ -15,19 +15,19 @@ class UserEngagementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('engagement',null,array(
+            ->add('engagement', null, array(
                 'attr' => array(
                     'class' => 'form-control',
                 )
             ))
-            ->add('percent','text',array(
+            ->add('percent', 'text', array(
                 'attr' => array(
                     'class' => 'slider form-control',
                     'data-slider-min' => '1',
                     'style' => 'width: 400px',
                 )
             ))
-            ->add('submit','submit')
+            ->add('submit', 'submit')
         ;
     }
     

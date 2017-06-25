@@ -86,7 +86,6 @@ class LdapService
             //'sso' => false,
         );
         $this->adldap = new \Adldap\Adldap($configuration);
-
     }
 
     public function getAllManagersFromAD()
@@ -184,15 +183,20 @@ class LdapService
             $userdn = str_replace('OU=Zespoly,', 'OU=Zespoly_2016,', $userdn);
         } else {
             if ($struktura == 'stara') {
-
                 $userdn = str_replace('OU=Zespoly_2016,', 'OU=Zespoly,', $userdn);
             }
         }
         if ($ktorych == 'wszyscyWszyscy') {
             $userdn =
-                str_replace('OU=Zespoly_2016, OU=PARP Pracownicy ,', '',
-                    str_replace('OU=Zespoly_2016,OU=PARP Pracownicy ,',
-                        '', $userdn));
+                str_replace(
+                    'OU=Zespoly_2016, OU=PARP Pracownicy ,',
+                    '',
+                    str_replace(
+                        'OU=Zespoly_2016,OU=PARP Pracownicy ,',
+                        '',
+                        $userdn
+                    )
+                );
             //die($userdn);
         } elseif ($ktorych == 'wszyscy') {
             $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
@@ -224,8 +228,12 @@ class LdapService
         $tmpResults = array();
         foreach ($letters_array as $letter) {
             $search =
-                ldap_search($ldapconn, $userdn, '(&(samaccountname='.$letter.'*)(objectClass=person))',
-                    $this->ADattributes);
+                ldap_search(
+                    $ldapconn,
+                    $userdn,
+                    '(&(samaccountname='.$letter.'*)(objectClass=person))',
+                    $this->ADattributes
+                );
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
         }
@@ -438,7 +446,7 @@ class LdapService
         // Close query
         $query .= ')';
 
-        $ret = $this->paginated_search($query);
+        $ret = $this->paginatedSearch($query);
 
         return $ret;
         /*
@@ -466,7 +474,7 @@ class LdapService
         */
     }
 
-    private function paginated_search($filter, $pageSize = 500)
+    private function paginatedSearch($filter, $pageSize = 500)
     {
         $userdn = $this->useradn.$this->patch;
         $ldap_dn_grupy = 'OU='.$this->_ouWithGroups.$this->patch;
@@ -497,7 +505,6 @@ class LdapService
             $result = array_merge($result, $entries);
 
             ldap_control_paged_result_response($ldapconn, $sr, $cookie);
-
         } while ($cookie !== null && $cookie != '');
 
         return $result;
@@ -749,10 +756,15 @@ class LdapService
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
         } elseif ($ktorych === 'wszyscyWszyscy') {
             $userdn =
-                str_replace('OU=Zespoly_2016, OU=PARP Pracownicy ,', '',
-                    str_replace('OU=Zespoly_2016,OU=PARP Pracownicy ,',
-                        '', $userdn));
-
+                str_replace(
+                    'OU=Zespoly_2016, OU=PARP Pracownicy ,',
+                    '',
+                    str_replace(
+                        'OU=Zespoly_2016,OU=PARP Pracownicy ,',
+                        '',
+                        $userdn
+                    )
+                );
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
         }
@@ -780,7 +792,6 @@ class LdapService
                 $cnname = ldap_escape($cnname);
             }
             $searchString = '(&(name=*'.$cnname.'*)(objectClass=person))';
-
         } elseif ($query) {
             $searchString = '(&('.$query.')(objectClass=person))';
         } else {
@@ -842,7 +853,6 @@ class LdapService
         } elseif ($cnname) {
             $cnname = ldap_escape($cnname);
             $searchString = '(&(name=*'.$cnname.'*)(objectClass=person))';
-
         } elseif ($query) {
             $searchString = '(&('.$query.')(objectClass=person))';
         } else {
@@ -865,7 +875,6 @@ class LdapService
 
         $i = 0;
         foreach ($tmpResults as $tmpResult) {
-
             if (is_array($tmpResult) && isset($tmpResult['samaccountname'])) {
                 $date = new \DateTime();
                 $time = $this->LDAPtoUnix($tmpResult['accountexpires'][0]);
@@ -895,8 +904,10 @@ class LdapService
                 $result[$i]['division'] = isset($tmpResult['division'][0]) ? $tmpResult['division'][0] : '';
                 //$result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $tmpResult["description"][0]);
                 $result[$i]['lastlogon'] =
-                    isset($tmpResult['lastlogon']) ? date('Y-m-d H:i:s',
-                        $tmpResult['lastlogon'][0] / 10000000 - 11644473600) : '';
+                    isset($tmpResult['lastlogon']) ? date(
+                        'Y-m-d H:i:s',
+                        $tmpResult['lastlogon'][0] / 10000000 - 11644473600
+                    ) : '';
                 //$result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]['manager'] = isset($tmpResult['manager'][0]) ? $tmpResult['manager'][0] : '';
                 $result[$i]['thumbnailphoto'] =
@@ -997,12 +1008,12 @@ class LdapService
         return ($ldap_ts / 10000000) - 11644473600;
     }
 
-    protected function UnixtoLDAP($unix_ts)
+    protected function unixToLdap($unix_ts)
     {
         return sprintf('%.0f', ($unix_ts + 11644473600) * 10000000);
     }
 
-    function getGrupa($grupa)
+    public function getGrupa($grupa)
     {
         return $this->adldap->group()->find($grupa);
     }
@@ -1035,13 +1046,11 @@ class LdapService
     public function getAdministratorzyZasobow()
     {
         return $this->getUsersWithRole('PARP_ADMIN_ZASOBOW');
-
     }
 
     public function getAdministratorzyTechniczniZasobow()
     {
         return $this->getUsersWithRole('PARP_ADMIN_TECHNICZNY_ZASOBOW');
-
     }
 
     public function getDyrektorow()
@@ -1324,7 +1333,6 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         $ou = str_replace('OU=', '', $cz[1]);
 
         return $ou;
-
     }
 
     private $stanowiska = [

@@ -46,7 +46,7 @@ class Position
      *      min = 2,
      *      max = 255,
      *      minMessage = "Nazwa stanowiska musi zawierać od {{ limit }} znaków.",
-     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.")* 
+     *      maxMessage = "Nazwa stanowiska musi zawierać maxymalnie do {{ limit }} znaków.")*
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
@@ -55,7 +55,7 @@ class Position
     /**
      * Get id
      *
-     * @return integer 
+     * @return integer
      */
     public function getId()
     {
@@ -78,14 +78,15 @@ class Position
     /**
      * Get name
      *
-     * @return string 
+     * @return string
      */
     public function getName()
     {
         return $this->name;
     }
 
-    public function __toString(){
+    public function __toString()
+    {
         return $this->name;
     }
 

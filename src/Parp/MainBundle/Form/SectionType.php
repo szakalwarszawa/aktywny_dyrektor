@@ -25,7 +25,7 @@ class SectionType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
                 ->add('shortname', null, array(
                     'required' => false,
                     'read_only' => false,
@@ -35,7 +35,7 @@ class SectionType extends AbstractType
                     ),
                     'attr' => array(
                         'class' => 'form-control',
-            )))
+                )))
                 ->add('departament', null, ['attr' => ['class' => 'select2']])
                 ->add('kierownikName', null, ['attr' => ['readonly' => true]])
                 ->add('kierownikDN', null, ['attr' => ['readonly' => true]])
@@ -59,5 +59,4 @@ class SectionType extends AbstractType
     {
         return 'parp_mainbundle_section';
     }
-
 }

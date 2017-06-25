@@ -7,11 +7,12 @@ use Symfony\Component\Form\Exception\TransformationFailedException;
 class StringToArrayTransformer implements DataTransformerInterface
 {
     protected $separator;
-    public function __construct($separator = ","){
+    public function __construct($separator = ",")
+    {
         $this->separator = $separator;
     }
     /**
-     * Transforms an array to a string. 
+     * Transforms an array to a string.
      *
      * @return string
      */

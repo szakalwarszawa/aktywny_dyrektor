@@ -12,7 +12,8 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     protected $entity;
     protected $managerzySpozaPARP;
     
-    public function __construct($ADUsers, $managerzySpozaPARP, $entity){
+    public function __construct($ADUsers, $managerzySpozaPARP, $entity)
+    {
         $this->ADUsers = $ADUsers;
         $this->entity = $entity;
         $this->managerzySpozaPARP = $managerzySpozaPARP;
@@ -27,8 +28,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $builder
             ->add('odebranie', 'hidden');
         //die(". ".$this->entity->getOdebranie());
-        if($this->entity->getOdebranie()){
-            
+        if ($this->entity->getOdebranie()) {
 /*
             $builder->add('dataOdebrania', 'datetime', array(
                     'attr' => array(
@@ -58,15 +58,12 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
             
             ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
             
-            ->add('managerSpozaParp', 'choice',  array(
+            ->add('managerSpozaParp', 'choice', array(
                 'choices' => $this->managerzySpozaPARP,
-                'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2'))
-            )
+                'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2')))
             ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
                 'data_class' => 'Parp\MainBundle\Entity\Wniosek',
-                'label' => false)
-            )
-        ;
+                'label' => false));
     }
     
     /**

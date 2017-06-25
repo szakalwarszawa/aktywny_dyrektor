@@ -50,7 +50,6 @@ class PlikController extends Controller
         if (!file_exists($filePath)) {
             echo($filePath);
             throw $this->createNotFoundException();
-            
         }
         
         // Generate response
@@ -68,7 +67,7 @@ class PlikController extends Controller
         $response->headers->set('Content-length', filesize($filePath));
         
         //print_r($response->headers);
-        //die();  
+        //die();
         // Send headers before outputting anything
         $response->sendHeaders();
         
@@ -106,8 +105,7 @@ class PlikController extends Controller
         $source = new Entity('ParpMainBundle:Plik');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
-            function ($query) use ($tableAlias, $obiekt, $obiektId)
-            {
+            function ($query) use ($tableAlias, $obiekt, $obiektId) {
                 $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
             }
         );
@@ -217,7 +215,7 @@ class PlikController extends Controller
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
-            'returnUrl' => $request->headers->get('referer') 
+            'returnUrl' => $request->headers->get('referer')
         );
     }
 
@@ -340,7 +338,6 @@ class PlikController extends Controller
         $url = $this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId()));
 
         if ($form->isValid()) {
-
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Plik entity.');
             }

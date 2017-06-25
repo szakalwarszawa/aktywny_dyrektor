@@ -87,8 +87,8 @@ class ParpMailerService
         SecurityContext $securityContext,
         $templating,
         $ldap
-    )
-    {
+    ) {
+    
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
         $this->securityContext = $securityContext;
@@ -114,8 +114,8 @@ class ParpMailerService
         $contentHtml,
         $sender = SELF::DEFAULT_SENDER,
         $priority = SELF::DEFAULT_PRIORITY
-    )
-    {
+    ) {
+    
         $mailer = $this->mailer;
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
@@ -263,7 +263,6 @@ class ParpMailerService
         } else {
             $templatki =
                 [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1];//jesli nie w dniu zmiany to znaczy ze 4 dni wczesniej i inny template i tylko jeden
-
         }
         foreach ($templatki as $templatka) {
             switch ($templatka) {
@@ -320,8 +319,6 @@ class ParpMailerService
                 $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, $data);
             }
         }
-
-
     }
 
     public function sendEmailWniosekNadanieOdebranieUprawnien($wniosek, $template)
@@ -415,7 +412,6 @@ class ParpMailerService
             'powod'                              => $wniosek->getPowodZwrotu(),
         ];
         $this->sendEmailByType($template, $data);
-
     }
 
     /**
