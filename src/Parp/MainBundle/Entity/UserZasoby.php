@@ -371,7 +371,7 @@ class UserZasoby
      */
     public function getZasobId()
     {
-        return $this->zasobId;
+        return $this->zasob->getId();
     }
 
     /**

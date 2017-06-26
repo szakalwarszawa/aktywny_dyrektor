@@ -400,31 +400,33 @@ class DefaultController extends Controller
     {
         $user = $this->getUser();
 
-        if (null !== $user) {
+        if (null === $user) {
             throw new UnsupportedUserException();
         }
 
         $admin = in_array('PARP_ADMIN', $user->getRoles(), true);
         $kadry1 = in_array('PARP_BZK_1', $user->getRoles(), true);
         $kadry2 = in_array('PARP_BZK_2', $user->getRoles(), true);
+
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
         $ldap->dodatkoweOpcje = 'ekranEdycji';
 
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
 
-        if (strstr($ADUser[0]['manager'], 'CN=') !== false) {
-            $managerName = substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ','));
+        if (false !== strpos($ADUser[0]['manager'], 'CN=')) {
+            $managerName = substr($ADUser[0]['manager'], 0, strpos($ADUser[0]['manager'], ','));
             $ADManager = $ldap->getUserFromAD(null, $managerName);
 
             // wyciagnij imie i nazwisko managera z nazwy domenowej
             $ADUser[0]['manager'] =
                 mb_substr(
                     $ADUser[0]['manager'],
-                    mb_stripos($ADUser[0]['manager'], '=') + 1,
-                    (mb_stripos($ADUser[0]['manager'], ',OU')) - (mb_stripos($ADUser[0]['manager'], '=') + 1)
+                    mb_strpos($ADUser[0]['manager'], '=') + 1,
+                    (mb_strpos($ADUser[0]['manager'], ',OU')) - (mb_strpos($ADUser[0]['manager'], '=') + 1)
                 );
         }
+
         $defaultData = $ADUser[0];
         //print_r($defaultData); die();
         // pobierz uprawnienia poczatkowe
@@ -432,22 +434,22 @@ class DefaultController extends Controller
             $this->getDoctrine()
                 ->getRepository('ParpMainBundle:UserGrupa')
                 ->findBy(array('samaccountname' => $ADUser[0]['samaccountname']));
+
+        $defaultData['initialrights'] = null;
+
         if (!empty($initialrights)) {
             foreach ($initialrights as $initialright) {
                 $defaultData['initialrights'][] = $initialright->getGrupa();
             }
-
-            //$defaultData['initialrights'] = implode(",", $defaultData['initialrights']);
-        } else {
-            $defaultData['initialrights'] = null;
         }
-        $previousData = $defaultData;
 
+        $previousData = $defaultData;
 
         $zasoby =
             $this->getDoctrine()
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findUserZasobyByAccountname($samaccountname);
+
         for ($i = 0; $i < count($zasoby); $i++) {
             $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
 
@@ -468,77 +470,74 @@ class DefaultController extends Controller
 
         $names = explode(' ', $ADUser[0]['name']);
         //var_dump($names); die();
-        $dane_rekord =
+        $daneRekord =
             $this->getDoctrine()
                 ->getManager()
                 ->getRepository('ParpMainBundle:DaneRekord')
                 ->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
 
 
-        $form = $this->createUserEditForm($this, $defaultData, false, false, $dane_rekord);
-
-
+        $form = $this->createUserEditForm($this, $defaultData, false, false, $daneRekord);
         $form->handleRequest($request);
 
         $ustawUprawnieniaPoczatkowe = $request->isMethod('POST') && $form->get('ustawUprawnieniaPoczatkowe')->getData();
-        //die(" ".$ustawUprawnieniaPoczatkowe);
+
         if ($form->isValid() || $ustawUprawnieniaPoczatkowe) {
-            $ndata = $form->getData();
+            $newData = $form->getData();
+
             if ($kadry1 || $kadry2) {
-                return $this->parseUserKadry($samaccountname, $ndata, $previousData, $ustawUprawnieniaPoczatkowe);
+                return $this->parseUserKadry($samaccountname, $newData, $previousData, $ustawUprawnieniaPoczatkowe);
             } elseif (!$admin) {
                 die('Nie masz uprawnien by edytowac uzytkownikow!!!');
             }
+
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
             //echo ".".$oldSection.".";
-            if ($newSection !== '') {
-                $ns = new \Parp\MainBundle\Entity\Section();
-                $ns->setName($newSection);
-                $ns->setShortName($newSection);
-                $this->getDoctrine()->getManager()->persist($ns);
-                $ndata['info'] = $newSection;
-                unset($ndata['infoNew']);
+            if ('' !== $newSection) {
+                $section = new \Parp\MainBundle\Entity\Section();
+                $section->setName($newSection);
+                $section->setShortName($newSection);
+                $this->getDoctrine()->getManager()->persist($section);
+                $newData['info'] = $newSection;
+                unset($newData['infoNew']);
             }
             //die($newSection);
-            $newrights = $ndata['initialrights'];
-            $odata = $previousData;
+            $newrights = $newData['initialrights'];
+            $oldData = $previousData;
 
-
-            $roznicauprawnien = (($ndata['initialrights'] != $odata['initialrights']));
-            //            var_dump($ndata, $odata, $roznicauprawnien); die();
-            unset($ndata['initialrights']);
-            unset($odata['initialrights']);
-            unset($ndata['memberOf']);
-            unset($odata['memberOf']);
-            unset($ndata['fromWhen']);
-            unset($odata['fromWhen']);
+            $roznicauprawnien = (($newData['initialrights'] != $oldData['initialrights']));
+            unset($newData['initialrights']);
+            unset($oldData['initialrights']);
+            unset($newData['memberOf']);
+            unset($oldData['memberOf']);
+            unset($newData['fromWhen']);
+            unset($oldData['fromWhen']);
 
             //hack by dalo sie puste inicjaly wprowadzic
-            if ($ndata['initials'] === '') {
-                $ndata['initials'] = 'puste';
+            if ('' === $newData['initials']) {
+                $newData['initials'] = 'puste';
             }
             //$ndata['division'] = "";
-            if ($ndata['isDisabled'] == 0) {
-                $ndata['disableDescription'] = $ndata['description'];
+            if (0 === $newData['isDisabled']) {
+                $newData['disableDescription'] = $newData['description'];
             }
 
+            $roles1 = $oldData['roles'];
+            unset($oldData['roles']);
+            $roles2 = $newData['roles'];
+            unset($newData['roles']);
 
-            $roles1 = $odata['roles'];
-            unset($odata['roles']);
-            $roles2 = $ndata['roles'];
-            unset($ndata['roles']);
+            $rolesDiff = $roles1 !== $roles2;
 
-            $rolesDiff = $roles1 != $roles2;
-
-            if (0 < count($this->arrayDiff($ndata, $odata)) ||
+            if (0 < count($this->arrayDiff($newData, $oldData)) ||
                 $roznicauprawnien ||
                 $rolesDiff ||
                 $ustawUprawnieniaPoczatkowe
             ) {
                 //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
-                $newData = $this->arrayDiff($ndata, $odata);
+                $newData = $this->arrayDiff($newData, $oldData);
                 if ($rolesDiff) {
                     $roles =
                         $this->getDoctrine()
@@ -556,7 +555,7 @@ class DefaultController extends Controller
                     }
                     $this->get('session')->getFlashBag()->set('warning', 'Role zostały zmienione');
                 }
-                if (0 < count($this->arrayDiff($ndata, $odata)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe) {
+                if (0 < count($this->arrayDiff($newData, $oldData)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe) {
                     //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
 
 
@@ -644,7 +643,7 @@ class DefaultController extends Controller
             'up2grupaAd'     => $up2grupaAd,
             'pendingEntries' => $pendingEntries,
             'historyEntries' => $historyEntries,
-            'dane_rekord'    => $dane_rekord,
+            'dane_rekord'    => $daneRekord,
             'guid'           => $this->generateGUID()
             //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
         );
@@ -986,7 +985,6 @@ class DefaultController extends Controller
 
     protected function parseUserKadry($samaccountname, $ndata, $odata, $ustawUprawnieniaPoczatkowe)
     {
-
         $ldap = $this->get('ldap_service');
         $diff = $this->arrayDiff($ndata, $odata);
         unset($diff['samaccountname']);
