@@ -371,7 +371,11 @@ class UserZasoby
      */
     public function getZasobId()
     {
-        return $this->zasob->getId();
+        if (null !== $this->zasob) {
+            return $this->zasob->getId();
+        }
+        
+        return null;
     }
 
     /**
