@@ -863,11 +863,11 @@ class NadawanieUprawnienZasobowController extends Controller
 
                         //print_r($suz);
                         //if($suz == null){
-                        if ($oz->get_Idd() > 0) {
+                        if ($oz->getIdd() > 0) {
                             //die(".".$oz->getIdd());
                             //$z2 = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
                             //$this->getDoctrine()->getManager()->remove($z2);
-                            $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
+                            $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->getIdd());
                             $z->setModul($oz->getModul());
                             $z->setPoziomDostepu($oz->getPoziomDostepu());
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
