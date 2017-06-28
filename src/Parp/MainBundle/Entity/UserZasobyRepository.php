@@ -125,7 +125,7 @@ class UserZasobyRepository extends EntityRepository
         $ktoryWniosekSzukam = $wniosek->getOdebranie() ? "wniosekOdebranie" : "wniosek";
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND uz.'.$ktoryWniosekSzukam.' = :wniosekId
               ORDER BY uz.samaccountname ASC, z.nazwa ASC
               ')->setParameter('wniosekId', $wniosek);
@@ -157,7 +157,7 @@ class UserZasobyRepository extends EntityRepository
         $query = $this->getEntityManager()->createQuery('
               SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND (uz.samaccountname = :samaccountname or 1 = 12) and uz.czyNadane = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);

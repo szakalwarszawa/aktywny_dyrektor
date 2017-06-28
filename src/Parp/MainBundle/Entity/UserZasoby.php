@@ -16,7 +16,6 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class UserZasoby
 {
-
     /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
@@ -24,8 +23,6 @@ class UserZasoby
      */
     public function preUpdate()
     {
-
-        //die("preUpdate");
         if ($this->wniosek) {
             $this->wniosek->ustawPoleZasoby();
         }
@@ -68,12 +65,12 @@ class UserZasoby
     protected $samaccountname;
 
     /**
-     * @var Zasoby
+     * @var integer
      *
-     * @ORM\ManyToOne(targetEntity="Parp\MainBundle\Entity\Zasoby")
+     * @ORM\Column(name="zasob_id", type="integer")
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    protected $zasob;
+    protected $zasobId;
 
     /**
      * @var string
@@ -214,7 +211,7 @@ class UserZasoby
     protected $sumowanieUprawnien = false;
 
     /**
-     *
+     * @var WniosekNadanieOdebranieZasobow
      * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasoby")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
@@ -223,7 +220,7 @@ class UserZasoby
 
 
     /**
-     *
+     * @var WniosekNadanieOdebranieZasobow
      * @ORM\ManyToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="userZasobyOdbierane")
      * @ORM\JoinColumn(name="wniosek_odebranie_id", referencedColumnName="id")
      * @Gedmo\Mapping\Annotation\Versioned
@@ -256,7 +253,7 @@ class UserZasoby
      * Set _ADUser
      *
      * @param array $_ADUser
-     * @return array
+     * @return UserZasoby
      */
     public function setADuser($_ADUser)
     {
@@ -371,11 +368,7 @@ class UserZasoby
      */
     public function getZasobId()
     {
-        if (null !== $this->zasob) {
-            return $this->zasob->getId();
-        }
-        
-        return null;
+        return $this->zasobId;
     }
 
     /**
@@ -424,7 +417,6 @@ class UserZasoby
      */
     public function getModul()
     {
-
         if (is_array($this->modul)) {
             $modul = implode(";", $this->modul);
         }
