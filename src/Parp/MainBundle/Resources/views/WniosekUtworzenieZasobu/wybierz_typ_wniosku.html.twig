@@ -18,14 +18,14 @@
                 <th>Wycofanie zasobu</th>
             </tr>
             <tr>
-                <td>{{ form_row(form.typWnioskuDoRejestru) }}</td>
-                <td>{{ form_row(form.typWnioskuZmianaInformacji) }}</td>
-                <td>{{ form_row(form.typWnioskuWycofanie) }}</td>
+                {% if form.typWnioskuDoRejestru is defined %}<td>{{ form_row(form.typWnioskuDoRejestru) }}</td>{% endif %}
+                {% if form.typWnioskuZmianaInformacji is defined %}<td>{{ form_row(form.typWnioskuZmianaInformacji) }}</td>{% endif %}
+                {% if form.typWnioskuWycofanie is defined %}<td>{{ form_row(form.typWnioskuWycofanie) }}</td>{% endif %}
             </tr>
             <tr>
-                <td>{{ form_row(form.typWnioskuDoUruchomienia) }}</td>
-                <td>{{ form_row(form.typWnioskuZmianaWistniejacym) }}</td>
-                <td>{{ form_row(form.typWnioskuWycofanieZinfrastruktury) }}</td>
+                {% if form.typWnioskuDoUruchomienia is defined %}<td>{{ form_row(form.typWnioskuDoUruchomienia) }}</td>{% endif %}
+                {% if form.typWnioskuZmianaWistniejacym is defined %}<td>{{ form_row(form.typWnioskuZmianaWistniejacym) }}</td>{% endif %}
+                {% if form.typWnioskuWycofanieZinfrastruktury is defined %}<td>{{ form_row(form.typWnioskuWycofanieZinfrastruktury) }}</td>{% endif %}
             </tr>
         </table>
         <div class="form-group">
@@ -36,6 +36,5 @@
     <div class="col-sm-12 container">
     
     </div>
-    </form> 
-
+    {{ form_end(form, {'render_rest': false}) }}
 {% endblock %}

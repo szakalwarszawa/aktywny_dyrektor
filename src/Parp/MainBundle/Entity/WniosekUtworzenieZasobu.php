@@ -312,11 +312,11 @@ class WniosekUtworzenieZasobu
     /**
      * Set zasob
      *
-     * @param \Parp\MainBundle\Entity\Zasoby $zasob
+     * @param Zasoby $zasob
      *
      * @return WniosekUtworzenieZasobu
      */
-    public function setZasob(\Parp\MainBundle\Entity\Zasoby $zasob = null)
+    public function setZasob(Zasoby $zasob = null)
     {
         $this->zasob = $zasob;
         //$zasob->setWniosekUtworzenieZasobu($this);
@@ -327,7 +327,7 @@ class WniosekUtworzenieZasobu
     /**
      * Get zasob
      *
-     * @return \Parp\MainBundle\Entity\Zasoby
+     * @return Zasoby
      */
     public function getZasob()
     {
@@ -704,12 +704,15 @@ class WniosekUtworzenieZasobu
     {
         if (!$this->getId()) {
             $this->setWniosek(new Wniosek());
-            $this->setZasob(new \Parp\MainBundle\Entity\Zasoby());
+            $this->setZasob(new Zasoby());
         }
         $this->getWniosek()->setWniosekUtworzenieZasobu($this);
         $this->getZasob()->setWniosekUtworzenieZasobu($this);
     }
-    
+
+    /**
+     * @return string
+     */
     public function getTyp()
     {
         if ($this->getTypWnioskuDoRejestru()) {
@@ -723,7 +726,6 @@ class WniosekUtworzenieZasobu
         }
         return "";
     }
-
 
     /**
      * Set zmienionePola
@@ -752,11 +754,11 @@ class WniosekUtworzenieZasobu
     /**
      * Set zmienianyZasob
      *
-     * @param \Parp\MainBundle\Entity\Zasoby $zmienianyZasob
+     * @param Zasoby $zmienianyZasob
      *
      * @return WniosekUtworzenieZasobu
      */
-    public function setZmienianyZasob(\Parp\MainBundle\Entity\Zasoby $zmienianyZasob = null)
+    public function setZmienianyZasob(Zasoby $zmienianyZasob = null)
     {
         $this->zmienianyZasob = $zmienianyZasob;
 
@@ -766,7 +768,7 @@ class WniosekUtworzenieZasobu
     /**
      * Get zmienianyZasob
      *
-     * @return \Parp\MainBundle\Entity\Zasoby
+     * @return Zasoby
      */
     public function getZmienianyZasob()
     {

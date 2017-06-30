@@ -262,12 +262,25 @@ class WniosekUtworzenieZasobuController extends Controller
      *
      * @return \Symfony\Component\Form\Form The form
      */
-    private function createCreateForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true)
+    private function createCreateForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(new WniosekUtworzenieZasobuType($this->getUsersFromAD(), $this->getManagers(), $entity->getTyp(), $entity, $this), $entity, array(
-            'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
-            'method' => 'POST',
-        ));
+        $form = $this->createForm(
+            new WniosekUtworzenieZasobuType(
+//                $this->getUsersFromAD(),
+//                $this->getManagers(),
+//                $entity->getTyp(),
+//                $entity,
+//                $this
+            ),
+            $entity,
+            array(
+                'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
+                'method' => 'POST',
+//                'ADUsers' => $this->getUsersFromAD(),
+//                'ADManagers' => $this->getManagers(),
+                'container' => $this->container,
+            )
+        );
 
         $form->add('submit', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
         $form->add('submit2', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
@@ -288,11 +301,13 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $entity = new WniosekUtworzenieZasobu();
         $form   = $this->createCreateForm($entity, $entity->getTyp());
+
         return ['form' => $form->createView(),
             'editor' => false,'delta' => [], 'readonly' => false,
             'canUnblock' => false
             ];
     }
+
     protected function ustawTyp($entity, $typ)
     {
         switch ($typ) {
