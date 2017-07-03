@@ -1045,8 +1045,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     ->findBy(['samaccountname' => $samaccountname]);
 
                 foreach ($userzasoby as $uz) {
-                    if ($uz->getZasob() && !in_array($uz->getZasob()->getAdministratorZasobu(), $administratorzy, true)) {
-                        $administratorzy[] = $uz->getZasob()->getAdministratorZasobu();
+                    $zasob = $objectManager->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    if ($uz->getZasobId()
+                        && !in_array($zasob->getAdministratorZasobu(), $administratorzy, true)
+                    ) {
+                        // Pobieramy administratora zasobu
+                        $administratorzy[] = $zasob->getAdministratorZasobu();
                     }
                 }
 

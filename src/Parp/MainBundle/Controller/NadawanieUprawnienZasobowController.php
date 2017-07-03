@@ -852,8 +852,11 @@ class NadawanieUprawnienZasobowController extends Controller
                         $zasob = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Zasoby')->find($oz->getZasobId());
                         $admini = explode(',', $zasob->getAdministratorZasobu());
                         //var_dump($this->getUser()->getUsername(), $admini, $this->getUser()->getRoles());
-                        if ($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini, true) && !in_array('PARP_ADMIN',
-                                $this->getUser()->getRoles(), true)) {
+                        if ($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini, true) && !in_array(
+                            'PARP_ADMIN',
+                            $this->getUser()->getRoles(),
+                            true
+                        )) {
                             //jesli bez wniosku
                             //jesli nie admin_zasobu
                             //jesli nie parp_admin

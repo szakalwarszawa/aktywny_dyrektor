@@ -39,6 +39,6 @@ assetic:
     use_controller: true
     node: /usr/local/bin/node
 swiftmailer:
-    delivery_address: robert_muchacki@parp.gov.pl
+    disable_delivery:  true
 
 

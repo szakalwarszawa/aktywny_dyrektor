@@ -154,7 +154,8 @@ class WniosekUtworzenieZasobuType extends AbstractType
         } elseif ("zmiana" === $typ) {
             if ($entity->getId()) {
                 $builder->add(
-                    'zmienianyZasob', 'text',
+                    'zmienianyZasob',
+                    'text',
                     [
                         'mapped' => false,
                         'attr' => ['readonly' => true],

@@ -1279,16 +1279,13 @@ class DefaultController extends Controller
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
         // Pobieramy naszego przełożonego
-        $mancn = str_replace('CN=', '', substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
-        $ADManager = $ldap->getUserFromAD(null, $mancn);
+        $ADManager = $ldap->getPrzelozony($samaccountname);
 
         // Pobieramy wszystkich jego pracowników (w których występuje jako przełożony)
         $ADWorkers = $ldap->getUserFromAD(null, null, 'manager='.$ADUser[0]['distinguishedname'].'');
 
-        //echo "<pre>";print_r($ADManager); print_r($ADUser); print_r($ADWorkers);die();
-
         return array(
-            'przelozony' => isset($ADManager[0]) ? $ADManager[0] : '',
+            'przelozony' => $ADManager,
             'pracownik'  => $ADUser[0],
             'pracownicy' => $ADWorkers,
         );
