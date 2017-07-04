@@ -1392,6 +1392,27 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         return isset($ADManager[0]) ? $ADManager[0] : '';
     }
 
+    /**
+     * Zwraca przełożonego danego użytkownika jako tablica
+     *
+     * @param $samaccountname
+     * @return array
+     * @throws EntityNotFoundException
+     */
+    public function getPrzelozonyJakoTablica($samaccountname)
+    {
+        $ADUser = $this->getUserFromAD($samaccountname);
+
+        if (!isset($ADUser[0]['manager'])) {
+            throw new EntityNotFoundException('Nie znaleziono przełożonego dla danego użytkownika');
+        }
+
+        $mancn = str_replace('CN=', '', substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
+        $ADManager = $this->getUserFromAD(null, $mancn);
+
+        return $ADManager;
+    }
+
 
     public function getPrzelozeniJakoName()
     {
