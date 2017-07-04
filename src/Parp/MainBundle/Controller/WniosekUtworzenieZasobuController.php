@@ -921,7 +921,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $kom->setObiektId($id);
             $kom->setTytul('Wniosek odbito z powodu:');
             $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUsser()->getUsername());
+            $kom->setSamaccountname($this->getUser()->getUsername());
             $kom->setCreatedAt(new \Datetime());
             $em->persist($kom);
         } else {
@@ -938,7 +938,7 @@ class WniosekUtworzenieZasobuController extends Controller
         } elseif ($isAccepted === 'publish') {
             //przenosi do status 11
 
-            die('Blad 564654 . To nie powinno miec miejsca');
+            throw new \Exception('Niedozwolona operacja.');
             $em->flush();
             // return new Response(""), if you used NullOutput()
             return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:publish.html.twig', array('wniosek' => $wniosek, 'showonly' => $showonly, 'content' => $converter->convert($content)));
@@ -958,8 +958,7 @@ class WniosekUtworzenieZasobuController extends Controller
                             }
                             break;
                         case 'return':
-                            //nie powinno miec miejsca
-                            die('blad 5034 nie powinno miec miejsca');
+                            throw new \Exception('Niedozwolona operacja.');
                             break;
                     }
                     break;
@@ -972,7 +971,7 @@ class WniosekUtworzenieZasobuController extends Controller
                             break;
                         case 'return':
                             //przenosi do status 1
-                            die('blad 45 nie powinno miec miejsca');
+                            throw new \Exception('Niedozwolona operacja.');
                             break;
                     }
                     break;
@@ -1074,11 +1073,9 @@ class WniosekUtworzenieZasobuController extends Controller
         $em->flush();
 
         if ($isAccepted === 'unblock') {
-            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array(
-            )));
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array()));
         } elseif ($wniosek->getWniosek()->getStatus()->getNazwaSystemowa() === '00_TWORZONY_O_ZASOB') {
-            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array(
-            )));
+            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array()));
         }
 
         return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array(

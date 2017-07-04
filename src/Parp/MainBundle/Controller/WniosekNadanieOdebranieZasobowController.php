@@ -664,7 +664,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 //                    throw new EntityNotFoundException('Nie znaleziono w Active Directory przełożonego dla użytkownika');
 //                }
 //
-//                $ADManager = $this->getUserFromAD($mgr);
+                $ADManager = $this->getUserFromAD($mgr);
 //                break;
 //            case 'prezes':
 //                $ADManager = [$ldap->getPrezes()];
