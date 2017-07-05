@@ -1487,7 +1487,7 @@ class Zasoby
     protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy)
     {
         if (!in_array($poziomDostepu, $dostepnePoziomy)) {
-            echo("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
+            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
                 $poziomDostepu.
                 "', dostepne poziomy : ".
                 $this->getPoziomDostepu().

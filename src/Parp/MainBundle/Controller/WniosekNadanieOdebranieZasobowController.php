@@ -904,8 +904,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
 
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($wniosek);
-        //print_r($uzs); die();
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
@@ -1306,7 +1304,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                         $dostepnePoziomy = explode(';', $poziomy);
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            die("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
+                            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
                                 $uz->getPoziomDostepu().
                                 "', dostepne poziomy : ".
                                 $z->getPoziomDostepu().
@@ -1602,8 +1600,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 array('wniosek' => $entity, 'viewer' => 0)
             );
         }
-
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
