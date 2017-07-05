@@ -127,6 +127,7 @@ class OdebranieUprawnienController extends Controller
             die('Nie masz uprawnien by to ogladac!');
         }
     }
+
     public function audytUprawnienUsera($user)
     {
 

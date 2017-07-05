@@ -37,6 +37,7 @@ class WniosekController extends Controller
      */
     public function przekierujAction(Request $request, $id)
     {
+        die('przekieruj action');
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
@@ -124,7 +125,6 @@ class WniosekController extends Controller
         if ($request->getMethod() == "POST") {
             $form->handleRequest($request);
             $dane = $form->getData();
-//            die('.'.$dane['powod']);
             $komentarz = new Komentarz();
             $komentarz->setSamaccountname($this->getUser()->getUsername());
             $komentarz->setCreatedAt(new \Datetime());
@@ -152,6 +152,7 @@ class WniosekController extends Controller
                 $wniosek->addViewer($nv);
                 $em->persist($nv);
             }
+
             foreach ($dane['editors'] as $v) {
                 $nv = new WniosekEditor();
                 $nv->setSamaccountname($v);
@@ -161,9 +162,8 @@ class WniosekController extends Controller
             }
             
             $em->flush();
+
             return $this->redirect($this->generateUrl(($typWniosku == 'wniosekONadanieUprawnien' ? 'wnioseknadanieodebraniezasobow_show' : 'wniosekutworzeniezasobu_edit'), ['id' => ($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId())]));
-            //var_dump($dane);
-            //die('mam dane post');
         }
         
 

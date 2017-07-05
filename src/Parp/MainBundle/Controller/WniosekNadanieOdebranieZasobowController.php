@@ -7,7 +7,9 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
+use Parp\MainBundle\Entity\WniosekEditor;
 use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use Parp\MainBundle\Entity\WniosekViewer;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
 use Parp\MainBundle\Services\ParpMailerService;
@@ -654,9 +656,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         switch ($kogoSzukac) {
             case 'manager':
             case 'prezes':
-            case 'dyrektor':
                 $ADManager = $ldap->getPrzelozonyJakoTablica($ADUser['samaccountname']);
                 break;
+            case 'dyrektor':
             default:
                 $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
                 break;
@@ -739,11 +741,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             echo '<br>setWniosekStatus '.$statusName.'<br>';
         }
 
-        if ($zastepstwo != null) {
-            //var_dump($zastepstwo);
-            //die('Mam zastepstwo');
-        }
-
         $em = $this->getDoctrine()->getManager();
         $status = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($statusName);
         $wniosek->getWniosek()->setStatus($status);
@@ -766,7 +763,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         }
 
-
         if ($statusName == '07_ROZPATRZONY_POZYTYWNIE' && $oldStatus != null && ($czyMaGrupyAD || $czyLsi)) {
             //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
             $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
@@ -774,11 +770,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         } else {
             $es = explode(',', $status->getEditors());
         }
+
         foreach ($es as $e) {
             $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
             //print_r($editors);
         }
-
 
         //kasuje viewerow
         foreach ($wniosek->getWniosek()->getViewers() as $v) {
@@ -792,7 +788,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         //dodaje viewerow
         foreach ($viewers as $v) {
-            $wv = new \Parp\MainBundle\Entity\WniosekViewer();
+            $wv = new WniosekViewer();
             $wv->setWniosek($wniosek->getWniosek());
             $wniosek->getWniosek()->addViewer($wv);
             $wv->setSamaccountname($v);
@@ -804,7 +800,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $wniosek->getWniosek()->setViewernamesSet();
         //dodaje editorow
         foreach ($editors as $v) {
-            $wv = new \Parp\MainBundle\Entity\WniosekEditor();
+//            die('MAM CIĘ');
+            $wv = new WniosekEditor();
             $wv->setWniosek($wniosek->getWniosek());
             $wniosek->getWniosek()->addEditor($wv);
             $wv->setSamaccountname($v);
@@ -874,7 +871,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         ));
 
 
-        $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
@@ -889,7 +885,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 765
             );
         }
-
 
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -986,7 +981,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         } elseif ($isAccepted == 'publish_lsi') {
             $sqls = [];
             foreach ($wniosek->getUserZasoby() as $uz) {
-                $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
                 $moduly = explode(';', $uz->getModul());
                 $poziomy = explode(';', $uz->getPoziomDostepu());
                 foreach ($moduly as $m) {
@@ -1190,7 +1184,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     switch ($isAccepted) {
                         case 'accept':
                             $maBycIbi = false;
-                            foreach ($wniosek->getUSerZasoby() as $uz) {
+                            foreach ($wniosek->getUserZasoby() as $uz) {
                                 $maBycIbi =
                                     $maBycIbi ||
                                     $uz->getUprawnieniaAdministracyjne() ||
@@ -1380,10 +1374,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if ($username === null) {
             $username = $this->getUser()->getUsername();
         }
+
         $em = $this->getDoctrine()->getManager();
         $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($username);
 
-        //print_r($uzs); die();
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
@@ -1392,6 +1386,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'samaccountname' => $zastepstwa,
                 'wniosek'        => $entity->getWniosek(),
             ));
+
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
         $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
                 'samaccountname' => $username,
@@ -1406,7 +1401,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $entity->getWniosek()->setLockedAt(new \Datetime());
             $em->flush();
         }
-        //die(($editor->getId()).".");
+
         $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
                 'samaccountname' => $zastepstwa,
                 'wniosek'        => $entity->getWniosek(),
@@ -1441,12 +1436,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
         //die(count($uzs).">");
         $editor = $access['editor'];
+
         if (substr($entity->getWniosek()->getStatus()->getNazwaSystemowa(), 0, 1) == '1') {
             $editor = false;
         }
-
-        $tab = explode('.', $this->container->getParameter('ad_domain'));
-        $patch = 'OU='.$this->container->getParameter('grupy_ou').',DC='.$tab[0].',DC='.$tab[1];
 
         $grupyAD = [];
         $userGroups = [];
@@ -1479,6 +1472,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'maBycwAD'  => $czyMaByc,
             ];
         }
+        
         $czyLsi = false;
         $userzasobyRozbite = [];
         foreach ($uzs as $uz) {
