@@ -649,33 +649,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     protected function getManagerUseraDoWniosku($ADUser)
     {
         $ldap = $this->get('ldap_service');
+        $kogoSzukac = $ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser);
 
-        return $ldap->getPrzelozonyJakoTablica($ADUser['samaccountname']);
-//
-//        switch ($kogoSzukac) {
-//            case 'manager':
-//                $in1 = mb_stripos($ADUser['manager'], '=') + 1;
-//                $in2 = mb_stripos($ADUser['manager'], ',OU');
-//                $in3 = (mb_stripos($ADUser['manager'], '=') + 1);
-//
-//                $mgr = mb_substr($ADUser['manager'], $in1, ($in2) - $in3);
-//
-//                if (null === $mgr) {
-//                    throw new EntityNotFoundException('Nie znaleziono w Active Directory przełożonego dla użytkownika');
-//                }
-//
-                $ADManager = $this->getUserFromAD($mgr);
-//                break;
-//            case 'prezes':
-//                $ADManager = [$ldap->getPrezes()];
-//                break;
-//            case 'dyrektor':
-//            default:
-//                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
-//                break;
-//        }
-//
-//        return $ADManager;
+        switch ($kogoSzukac) {
+            case 'manager':
+            case 'prezes':
+            case 'dyrektor':
+                $ADManager = $ldap->getPrzelozonyJakoTablica($ADUser['samaccountname']);
+                break;
+            default:
+                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
+                break;
+        }
+
+        return $ADManager;
     }
 
     protected function sendMailToAdminRejestru($msg)

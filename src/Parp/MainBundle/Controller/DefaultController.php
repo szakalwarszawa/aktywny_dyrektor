@@ -659,10 +659,11 @@ class DefaultController extends Controller
         $nowy = false,
         $dane_rekord = null
     ) {
+        $manager = $this->getDoctrine()->getManager();
 
         // Pobieramy listę stanowisk
         $titlesEntity =
-            $that->getDoctrine()->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
         $titles = array();
         foreach ($titlesEntity as $tmp) {
             $titles[$tmp->getName()] = $tmp->getName();
@@ -670,7 +671,7 @@ class DefaultController extends Controller
 
         // Pobieramy listę Biur i Departamentów
         $departmentsEntity =
-            $that->getDoctrine()
+            $manager
                 ->getRepository('ParpMainBundle:Departament')
                 ->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
         $departments = array();
@@ -679,7 +680,7 @@ class DefaultController extends Controller
         }
         // Pobieramy listę Sekcji
         $sectionsEntity =
-            $that->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
             $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : 'bez departamentu';
@@ -688,7 +689,7 @@ class DefaultController extends Controller
 
         // Pobieramy listę Uprawnien
         $rightsEntity =
-            $that->getDoctrine()
+            $manager
                 ->getRepository('ParpMainBundle:GrupyUprawnien')
                 ->findBy(array(), array('opis' => 'asc'));
         $rights = array();
@@ -696,7 +697,7 @@ class DefaultController extends Controller
             $rights[$tmp->getKod()] = $tmp->getOpis();
         }
         $rolesEntity =
-            $that->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
         $roles = array();
         foreach ($rolesEntity as $tmp) {
             $roles[$tmp->getName()] = $tmp->getOpis();
@@ -714,9 +715,9 @@ class DefaultController extends Controller
         $manago = '';
         try {
             if (is_array($defaultData)) {
-                $manago = @$defaultData['manager'];
+                $manago = $defaultData['manager'];
             } else {
-                $manago = @$defaultData->getManager();
+                $manago = $defaultData->getManager();
             }
         } catch (\Exception $e) {
         }
@@ -732,7 +733,7 @@ class DefaultController extends Controller
             $kadry2 = false;
         }
         //var_dump($przelozeni);
-        $builder = $that->createFormBuilder(@$defaultData)
+        $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', 'text', array(
                 'required'   => false,
                 'read_only'  => true,
@@ -904,7 +905,7 @@ class DefaultController extends Controller
                     'disabled' => (!$admin),
                 ),
                 'choices'    => $rights,
-                'data'       => ($nowy ? ['UPP'] : @$defaultData['initialrights']),
+                'data'       => ($nowy ? ['UPP'] : $defaultData['initialrights']),
 
                 //'data' => (@$defaultData["initialrights"]),
                 'multiple'   => true,
