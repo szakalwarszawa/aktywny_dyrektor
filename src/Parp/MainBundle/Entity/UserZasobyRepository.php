@@ -30,7 +30,7 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname
               AND uz.importedFromEcm = 1
               ORDER BY z.nazwa ASC
@@ -44,7 +44,7 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
@@ -57,7 +57,7 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname and uz.czyAktywne = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
@@ -66,7 +66,7 @@ class UserZasobyRepository extends EntityRepository
 
         $query = $this->getEntityManager()->createQuery('SELECT uz.id, uz.samaccountname,z.nazwa, z.opis, z.id as zid FROM ParpMainBundle:UserZasoby uz
               JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasob = z.id
+              WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname and uz.czyOdebrane = 1
               ORDER BY z.nazwa ASC
               ')->setParameter('samaccountname', $samaccountname);
