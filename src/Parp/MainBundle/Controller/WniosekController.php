@@ -37,7 +37,6 @@ class WniosekController extends Controller
      */
     public function przekierujAction(Request $request, $id)
     {
-        die('przekieruj action');
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
