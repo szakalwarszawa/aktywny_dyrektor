@@ -33,6 +33,13 @@ class RaportyITController extends Controller
         '11' => 'Listopad',
         '12' => 'Grudzień',
     ];
+    protected $departamenty = [];
+    protected $grupy = [];
+    protected $zakres = ['min' => null, 'max' => null];
+    protected $className = 1;
+    protected $ostatniDepartament = null;
+    protected $sumaUprawnien = [];
+    protected $user = null;
 
     /**
      * @Route("/generujRaport", name="raportIT1")
@@ -158,19 +165,14 @@ class RaportyITController extends Controller
             }
         }
 
-
         $users = $ldap->getAllFromADIntW('wszyscyWszyscy');
         //var_dump($users); die();
         //$daneAD = [];
         $miesiac = str_pad($ndata['miesiac'], 2, '0', STR_PAD_LEFT);
         foreach ($users as $u) {
-            if ($u['accountExpires'] /* && $u['samaccountname'] == "leszek_czech" */) {
+            if ($u['accountExpires']) {
                 $rok = explode('-', $u['accountexpires'])[0];
                 $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
-
-                if ($u['samaccountname'] == 'leszek_czech') {
-                    //var_dump($rok,  date("Y"), $u, $dataExpire); die('b');
-                }
 
                 if ($rok == date('Y')) {
                     if ($rok < 3000 && $dataExpire->format('Y-m') == $ndata['rok'].'-'.$miesiac) {
@@ -213,9 +215,6 @@ class RaportyITController extends Controller
             }
         }
 
-        //die(); //przeniesc na koniec !!!!!!
-
-
         return $twig->render(
             'ParpMainBundle:RaportyIT:wynik.html.twig',
             ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac]
@@ -225,8 +224,6 @@ class RaportyITController extends Controller
     protected function parseManagerDN($dn)
     {
         if (strstr($dn, '=') !== false) {
-            //CN=Pokorski Jacek,OU=DAS,OU=Zespoly_2016,OU=PARP Pracownicy,DC=parp,DC=local
-            //echo $dn . ".";
             $p = explode('=', $dn);
             $p2 = explode(',', $p[1]);
 
@@ -280,17 +277,6 @@ class RaportyITController extends Controller
         return $em->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
     }
 
-    /**
-     * @Route("/tempTest", name="tempTest")
-     * @Template()
-     * @param Request $request
-     * @param int     $rok
-     */
-    public function tempTestAction(Request $request, $rok = 0)
-    {
-        die('dzialam');
-    }
-
     protected function makeRowVersion($eNext, $log, &$datyKonca)
     {
         $ret = [];
@@ -339,14 +325,6 @@ class RaportyITController extends Controller
 
         return $ret;
     }
-
-    protected $departamenty = [];
-    protected $grupy = [];
-    protected $zakres = ['min' => null, 'max' => null];
-    protected $className = 1;
-    protected $ostatniDepartament = null;
-    protected $sumaUprawnien = [];
-    protected $user = null;
 
     /**
      * @Route("/raportBss/{login}", name="raportBss")
@@ -570,36 +548,5 @@ class RaportyITController extends Controller
         $this->getDoctrine()->getManager()->flush();
         var_dump($login, $grupy, $entry);
         //die();
-    }
-
-
-    /**
-     * @Route("/poprawKierownictwo", name="poprawKierownictwo")
-     * @Template()
-     */
-    public function poprawKierownictwoAction()
-    {
-        $dyrs = $this->get('ldap_service')->getZarzad();
-        $braki = [];
-        $pomin = ['fsdds_fdsf', 'testowy_test'];
-        foreach ($dyrs as $d) {
-            if (!in_array($d['samaccountname'], $pomin, true)) {
-                if (strpos($d['useraccountcontrol'], 'ACCOUNTDISABLE') === false) {
-                    $this->raportBssAction($d['samaccountname']);
-                    $braki[$d['samaccountname']] = $this->sumaUprawnien['brakujace'];
-                    $this->nadajGrupyAction($d['samaccountname'], implode(',', $this->sumaUprawnien['brakujace']));
-                    //var_dump($braki); die();
-                    $this->departamenty = [];
-                    $this->grupy = [];
-                    $this->zakres = ['min' => null, 'max' => null];
-                    $this->className = 1;
-                    $this->ostatniDepartament = null;
-                    $this->sumaUprawnien = [];
-                    $this->user = null;
-                }
-            }
-        }
-        var_dump($braki);
-        //$this->getDoctrine()->getManager()->flush();
     }
 }
