@@ -40,9 +40,9 @@ class DefaultController extends Controller
         //$this->get('check_access')->checkAccess('USER_MANAGEMENT');
 
         $ldap = $this->get('ldap_service');
-        $ldap->dodatkoweOpcje = 'ekranEdycji';
-        // Sięgamy do AD:
+        $ldap->setDodatkoweOpcje('ekranEdycji');
 
+        // Sięgamy do AD:
         if ($ktorzy === 'usersFromAd' || $ktorzy === 'usersFromAdFull') {
             $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
             $widzi_wszystkich =
@@ -60,7 +60,6 @@ class DefaultController extends Controller
                     $ADUsers[] = $u;//['name'];
                 }
             }
-            //$ADUsers;
         } else {
             $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);
         }
@@ -398,19 +397,19 @@ class DefaultController extends Controller
      */
     public function editAction($samaccountname, Request $request)
     {
-        $user = $this->getUser();
+        $currentUser = $this->getUser();
 
-        if (null === $user) {
+        if (null === $currentUser) {
             throw new UnsupportedUserException();
         }
 
-        $admin = in_array('PARP_ADMIN', $user->getRoles(), true);
-        $kadry1 = in_array('PARP_BZK_1', $user->getRoles(), true);
-        $kadry2 = in_array('PARP_BZK_2', $user->getRoles(), true);
+        $admin = in_array('PARP_ADMIN', $currentUser->getRoles(), true);
+        $kadry1 = in_array('PARP_BZK_1', $currentUser->getRoles(), true);
+        $kadry2 = in_array('PARP_BZK_2', $currentUser->getRoles(), true);
 
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
-        $ldap->dodatkoweOpcje = 'ekranEdycji';
+        $ldap->setDodatkoweOpcje('ekranEdycji');
 
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
 

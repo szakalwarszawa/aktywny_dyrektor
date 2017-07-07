@@ -12,7 +12,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 class LdapService
 {
 
-    public $dodatkoweOpcje = 'ekranEdycji';
+    protected $dodatkoweOpcje = 'ekranEdycji';
     protected $securityContext;
     protected $ad_host;
     protected $ad_domain;
@@ -918,15 +918,18 @@ class LdapService
                 $result[$i]['cn'] = $tmpResult['cn'][0];
                 $result[$i]['memberOf'] = $this->parseMemberOf($tmpResult);
                 //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
-                $roles = [];
-                if ($this->dodatkoweOpcje == 'ekranEdycji') {
+
+                if ('ekranEdycji' === $this->dodatkoweOpcje) {
                     $roles =
                         $this->container->get('doctrine')
                             ->getRepository('ParpMainBundle:AclUserRole')
-                            ->findBySamaccountname($tmpResult['samaccountname'][0]);
+                            ->findBy([
+                                'samaccountname' => $tmpResult['samaccountname'][0]
+                            ]);
+
                     $rs = array();
-                    foreach ($roles as $r) {
-                        $rs[] = $r->getRole()->getName();
+                    foreach ($roles as $role) {
+                        $rs[] = $role->getRole()->getName();
                     }
                     $result[$i]['roles'] = $rs;
                 }
@@ -1442,5 +1445,21 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         }
 
         return $ret;
+    }
+
+    /**
+     * @param string $dodatkoweOpcje
+     */
+    public function setDodatkoweOpcje($dodatkoweOpcje)
+    {
+        $this->dodatkoweOpcje = $dodatkoweOpcje;
+    }
+
+    /**
+     * @return string
+     */
+    public function getDodatkoweOpcje()
+    {
+        return $this->dodatkoweOpcje;
     }
 }

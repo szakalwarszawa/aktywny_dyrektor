@@ -197,7 +197,8 @@ class ZasobyController extends Controller
         $grupy = explode(",", $entity->getGrupyAD());
         $grupyAd = array();
         $ldap = $this->get('ldap_service');
-        $ldap->dodatkoweOpcje = 'ekranEdycji';
+        $ldap->setDodatkoweOpcje('ekranEdycji');
+
         foreach ($grupy as $g) {
             if ($g != "") {
                 $grupyAd[$g] = array(
