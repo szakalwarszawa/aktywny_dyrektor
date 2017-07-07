@@ -1386,7 +1386,7 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         $ADUser = $this->getUserFromAD($samaccountname);
 
         if (!isset($ADUser[0]['manager'])) {
-            throw new EntityNotFoundException('Nie znaleziono przełożonego dla danego użytkownika');
+            throw new EntityNotFoundException('Nie znaleziono przełożonego dla użytkownika '.$samaccountname);
         }
 
         $mancn = str_replace('CN=', '', substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
