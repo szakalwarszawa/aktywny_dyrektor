@@ -120,7 +120,7 @@ class DepartamentController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Departament został utworzony.');
+            $this->addFlash('warning', 'Departament został utworzony.');
                 return $this->redirect($this->generateUrl('departament'));
         }
 
@@ -260,7 +260,7 @@ class DepartamentController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('departament_edit', array('id' => $id)));
         }
 

@@ -90,7 +90,7 @@ class UserZasobyController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'UserZasoby został utworzony.');
+            $this->addFlash('warning', 'UserZasoby został utworzony.');
                 return $this->redirect($this->generateUrl('userzasoby'));
         }
 
@@ -247,7 +247,7 @@ class UserZasobyController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('userzasoby_edit', array('id' => $id)));
         }
 

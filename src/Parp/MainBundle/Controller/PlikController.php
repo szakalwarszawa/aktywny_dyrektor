@@ -169,7 +169,7 @@ class PlikController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Plik został załączony.');
+            $this->addFlash('warning', 'Plik został załączony.');
                 return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
         }
 
@@ -313,7 +313,7 @@ class PlikController extends Controller
         if ($editForm->isValid()) {
             $entity->upload();
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('plik_edit', array('id' => $id)));
         }
 

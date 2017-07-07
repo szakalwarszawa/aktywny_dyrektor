@@ -7,6 +7,7 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
+use Parp\MainBundle\Entity\UserZasoby;
 use Parp\MainBundle\Entity\WniosekEditor;
 use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use Parp\MainBundle\Entity\WniosekViewer;
@@ -247,7 +248,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $entity->ustawPoleZasoby();
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
+            $this->addFlash('warning', 'Wniosek został utworzony.');
             //return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
 
 
@@ -401,7 +402,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entity->ustawPoleZasoby();
         $em->flush();
 
-        $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
+        $this->addFlash('warning', 'Wniosek został utworzony.');
         $prs = explode(',', $entity->getPracownicy());
         $pr = array();
         foreach ($prs as $p) {
@@ -924,6 +925,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE', true);
             if ($wniosek->getOdebranie()) {
+                /** @var UserZasoby $uz */
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $cloneuz = clone $uz;//robimy klony by pozostal slad we wniosku na co byl skladany
                     $uz->setWniosekOdebranie(null);//zdejmujemy wniosek z uz do ktorych byl przypisany
@@ -931,7 +933,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $cloneuz->setWniosek(null);//zeby nie bylo dubli przy oryginalnym wniosku
                     $em->persist($cloneuz);
                 }
-                //die('zabieram uz');
             }
         } elseif ($isAccepted == 'publish') {
             //przenosi do status 11
@@ -1285,11 +1286,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                         $dostepnePoziomy = explode(';', $poziomy);
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
-                                $uz->getPoziomDostepu().
-                                "', dostepne poziomy : ".
-                                $z->getPoziomDostepu().
-                                '!!!');
+                            throw new \Exception("Niewłaściwy poziom dostepu dla zasobu '".$uz->getNazwa().
+                                "', wybrany poziom to '". $uz->getPoziomDostepu()."', dostepne poziomy: ". $dostepnePoziomy);
+//                            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
+//                                $uz->getPoziomDostepu().
+//                                "', dostepne poziomy : ".
+//                                $z->getPoziomDostepu().
+//                                '!!!');
                         }
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
@@ -1658,7 +1661,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $entity->ustawPoleZasoby();
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
 
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));
         }
@@ -1688,7 +1691,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
             }
 
-            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został skasowany.');
+            $this->addFlash('warning', 'Wniosek został skasowany.');
             $em->remove($entity);
             $em->flush();
         }

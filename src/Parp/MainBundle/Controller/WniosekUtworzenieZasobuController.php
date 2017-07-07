@@ -240,7 +240,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $this->setWniosekStatus($entity, '00_TWORZONY_O_ZASOB', false);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został utworzony.');
+            $this->addFlash('warning', 'Wniosek został utworzony.');
                 return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', ['id' => $entity->getId()]));
         } else {
             $er = $form->getErrorsAsString();
@@ -589,7 +589,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
         if ($editForm->isValid() && $editForm->isSubmitted()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
 
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         } else {
@@ -671,7 +671,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
             }
 
-            $this->get('session')->getFlashBag()->set('warning', 'Wniosek został skasowany.');
+            $this->addFlash('warning', 'Wniosek został skasowany.');
             $em->remove($entity);
             $em->flush();
         }

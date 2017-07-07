@@ -93,7 +93,7 @@ class EngagementController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Engagement został utworzony.');
+            $this->addFlash('warning', 'Engagement został utworzony.');
                 return $this->redirect($this->generateUrl('engagement'));
         }
 
@@ -233,7 +233,7 @@ class EngagementController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('engagement_edit', array('id' => $id)));
         }
 

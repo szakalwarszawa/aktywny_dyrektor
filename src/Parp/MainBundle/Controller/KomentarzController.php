@@ -95,7 +95,7 @@ class KomentarzController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Komentarz został utworzony.');
+            $this->addFlash('warning', 'Komentarz został utworzony.');
                 return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_show", array('id' => $entity->getObiektId())));
         }
 
@@ -235,7 +235,7 @@ class KomentarzController extends Controller
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
         }
         if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
-            $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
+            $this->addFlash('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
 
@@ -245,7 +245,7 @@ class KomentarzController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
 
@@ -275,7 +275,7 @@ class KomentarzController extends Controller
             }
             
             if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
-                $this->get('session')->getFlashBag()->set('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
+                $this->addFlash('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
                 return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
             }
             $em->remove($entity);

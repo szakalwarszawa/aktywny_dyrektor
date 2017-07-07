@@ -90,7 +90,7 @@ class SectionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Section został utworzony.');
+            $this->addFlash('warning', 'Section został utworzony.');
                 return $this->redirect($this->generateUrl('section'));
         }
 
@@ -230,7 +230,7 @@ class SectionController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('section_edit', array('id' => $id)));
         }
 

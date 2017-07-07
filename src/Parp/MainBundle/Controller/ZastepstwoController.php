@@ -90,7 +90,7 @@ class ZastepstwoController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Zastepstwo został utworzony.');
+            $this->addFlash('warning', 'Zastepstwo został utworzony.');
                 return $this->redirect($this->generateUrl('zastepstwo'));
         }
 
@@ -180,7 +180,7 @@ class ZastepstwoController extends Controller
         }
         
         if (!in_array("PARP_ADMIN", $this->getUser()->getRoles() && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()) {
-            $this->get('session')->getFlashBag()->set('warning', 'Nie masz uprwanień do edycji nie swoich zastępstw.');
+            $this->addFlash('warning', 'Nie masz uprwanień do edycji nie swoich zastępstw.');
             return $this->redirect($this->generateUrl('zastepstwo'));
         }
         
@@ -237,7 +237,7 @@ class ZastepstwoController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zastepstwo_edit', array('id' => $id)));
         }
 

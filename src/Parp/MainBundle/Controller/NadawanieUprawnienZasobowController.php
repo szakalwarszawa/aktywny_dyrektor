@@ -93,7 +93,7 @@ class NadawanieUprawnienZasobowController extends Controller
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
         if ($samt == '') {
-            $this->get('session')->getFlashBag()->set('warning', 'Nie można znaleźć wybranych użytkowników!');
+            $this->addFlash('warning', 'Nie można znaleźć wybranych użytkowników!');
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));
         }
         //print_r($samt); die();
@@ -916,7 +916,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $msg2 = ( "!!! pomijamy usera ".$currentsam." i zasob ".$oz->getZasobId()." bo juz go ma !");
                             $this->addFlash('notice', $msg2);
 
-                            //$this->get('session')->getFlashBag()->set('warning', $msg);
+                            //$this->addFlash('warning', $msg);
                         }
 */
                         if (count($zmianaupr) > 0 && $wniosekId == 0) {

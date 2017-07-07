@@ -129,7 +129,7 @@ class ZasobyController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Zasoby został utworzony.');
+            $this->addFlash('warning', 'Zasoby został utworzony.');
                 return $this->redirect($this->generateUrl('zasoby'));
         }
 
@@ -283,7 +283,7 @@ class ZasobyController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
         } else {
             die($editForm->getErrorsAsString());

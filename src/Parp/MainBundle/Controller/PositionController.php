@@ -90,7 +90,7 @@ class PositionController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Stanowisko zostało utworzone.');
+            $this->addFlash('warning', 'Stanowisko zostało utworzone.');
                 return $this->redirect($this->generateUrl('position'));
         }
 
@@ -230,7 +230,7 @@ class PositionController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('position_edit', array('id' => $id)));
         }
 

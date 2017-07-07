@@ -120,7 +120,7 @@ class ZadanieController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'Zadanie został utworzony.');
+            $this->addFlash('warning', 'Zadanie został utworzony.');
                 return $this->redirect($this->generateUrl('zadanie'));
         }
 
@@ -282,7 +282,7 @@ class ZadanieController extends Controller
                 }
             }
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zadanie_edit', array('id' => $id)));
         }
 

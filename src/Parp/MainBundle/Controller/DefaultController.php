@@ -7,7 +7,9 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Vector;
+use Parp\MainBundle\Entity\AclUserRole;
 use Parp\MainBundle\Entity\Entry;
+use Parp\MainBundle\Entity\Section;
 use Parp\MainBundle\Entity\UserEngagement;
 use Parp\MainBundle\Entity\UserZasoby;
 use Parp\MainBundle\Entity\Zasoby;
@@ -398,6 +400,7 @@ class DefaultController extends Controller
     public function editAction($samaccountname, Request $request)
     {
         $currentUser = $this->getUser();
+        $manager = $this->getDoctrine()->getManager();
 
         if (null === $currentUser) {
             throw new UnsupportedUserException();
@@ -414,8 +417,7 @@ class DefaultController extends Controller
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
 
         if (false !== strpos($ADUser[0]['manager'], 'CN=')) {
-            $managerName = substr($ADUser[0]['manager'], 0, strpos($ADUser[0]['manager'], ','));
-            $ADManager = $ldap->getUserFromAD(null, $managerName);
+            $ADManager = $ldap->getPrzelozony($samaccountname);
 
             // wyciagnij imie i nazwisko managera z nazwy domenowej
             $ADUser[0]['manager'] =
@@ -427,12 +429,14 @@ class DefaultController extends Controller
         }
 
         $defaultData = $ADUser[0];
-        //print_r($defaultData); die();
+
         // pobierz uprawnienia poczatkowe
         $initialrights =
-            $this->getDoctrine()
+            $manager
                 ->getRepository('ParpMainBundle:UserGrupa')
-                ->findBy(array('samaccountname' => $ADUser[0]['samaccountname']));
+                ->findBy([
+                    'samaccountname' => $ADUser[0]['samaccountname']
+                ]);
 
         $defaultData['initialrights'] = null;
 
@@ -445,7 +449,7 @@ class DefaultController extends Controller
         $previousData = $defaultData;
 
         $zasoby =
-            $this->getDoctrine()
+            $manager
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findUserZasobyByAccountname($samaccountname);
 
@@ -470,8 +474,7 @@ class DefaultController extends Controller
         $names = explode(' ', $ADUser[0]['name']);
         //var_dump($names); die();
         $daneRekord =
-            $this->getDoctrine()
-                ->getManager()
+            $manager
                 ->getRepository('ParpMainBundle:DaneRekord')
                 ->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
 
@@ -491,12 +494,12 @@ class DefaultController extends Controller
             }
 
             $newSection = $form->get('infoNew')->getData();
-            $oldSection = $form->get('info')->getData();
+//            $oldSection = $form->get('info')->getData();
             //echo ".".$oldSection.".";
             if ('' !== $newSection) {
-                $section = new \Parp\MainBundle\Entity\Section();
+                $section = new Section();
                 $section->setName($newSection);
-                $section->setShortName($newSection);
+                $section->setShortname($newSection);
                 $this->getDoctrine()->getManager()->persist($section);
                 $newData['info'] = $newSection;
                 unset($newData['infoNew']);
@@ -506,12 +509,15 @@ class DefaultController extends Controller
             $oldData = $previousData;
 
             $roznicauprawnien = (($newData['initialrights'] != $oldData['initialrights']));
-            unset($newData['initialrights']);
-            unset($oldData['initialrights']);
-            unset($newData['memberOf']);
-            unset($oldData['memberOf']);
-            unset($newData['fromWhen']);
-            unset($oldData['fromWhen']);
+
+            unset(
+                $newData['initialrights'],
+                $oldData['initialrights'],
+                $newData['memberOf'],
+                $oldData['memberOf'],
+                $newData['fromWhen'],
+                $oldData['fromWhen']
+            );
 
             //hack by dalo sie puste inicjaly wprowadzic
             if ('' === $newData['initials']) {
@@ -534,57 +540,68 @@ class DefaultController extends Controller
                 $rolesDiff ||
                 $ustawUprawnieniaPoczatkowe
             ) {
-                //  Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
+                // Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
                 // Tworzymy nowy wpis w bazie danych
                 $newData = $this->arrayDiff($newData, $oldData);
                 if ($rolesDiff) {
                     $roles =
-                        $this->getDoctrine()
+                        $manager
                             ->getRepository('ParpMainBundle:AclUserRole')
-                            ->findBySamaccountname($samaccountname);
+                            ->findBy([
+                               'samaccountname' => $samaccountname
+                            ]);
+
                     foreach ($roles as $r) {
-                        $this->getDoctrine()->getManager()->remove($r);
+                        $manager->remove($r);
                     }
                     foreach ($roles2 as $r) {
-                        $role = $this->getDoctrine()->getRepository('ParpMainBundle:AclRole')->findOneByName($r);
-                        $us = new \Parp\MainBundle\Entity\AclUserRole();
+                        $role = $manager->getRepository('ParpMainBundle:AclRole')->findOneByName($r);
+                        $us = new AclUserRole();
                         $us->setSamaccountname($samaccountname);
                         $us->setRole($role);
-                        $this->getDoctrine()->getManager()->persist($us);
+                        $manager->persist($us);
                     }
-                    $this->get('session')->getFlashBag()->set('warning', 'Role zostały zmienione');
+                    $this->addFlash('warning', 'Role zostały zmienione');
                 }
-                if (0 < count($this->arrayDiff($newData, $oldData)) || $roznicauprawnien || $ustawUprawnieniaPoczatkowe) {
-                    //sprawdzamy tu by dalo sie zarzadzac uprawnieniami !!!
 
-
+                if (true === $roznicauprawnien ||
+                    true === $ustawUprawnieniaPoczatkowe ||
+                    0 < count($this->arrayDiff($newData, $oldData))) {
+                    //sprawdzamy tu by dalo sie zarzadzac uprawnieniami!
                     $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
-                    $this->get('session')->getFlashBag()->set('warning', 'Zmiany do AD zostały wprowadzone');
+
                     $entry = new Entry($this->getUser()->getUsername());
-                    $entry->setSamaccountname($samaccountname);
-                    $entry->setDistinguishedName($previousData['distinguishedname']);
+                    $entry
+                        ->setSamaccountname($samaccountname)
+                        ->setDistinguishedName($previousData['distinguishedname'])
+                    ;
+
                     if (($roznicauprawnien)) {
                         $value = implode(',', $newrights);
                         $entry->setInitialrights($value);
                     }
+
                     $this->parseUserFormData($newData, $entry);
+
                     if ($roznicauprawnien ||
                         isset($newData['department']) ||
                         isset($newData['info']) ||
-                        $ustawUprawnieniaPoczatkowe
+                        true === $ustawUprawnieniaPoczatkowe
                     ) {
-                        //print_r($newrights); die();
-                        $this->nadajUprawnieniaPocztakowe($ADUser, $entry, $newData);
+                        $this->nadajUprawnieniaPoczatkowe($ADUser, $entry, $newData);
                     }
+
                     if (!$entry->getFromWhen()) {
                         $entry->setFromWhen(new \DateTime('today'));
                     }
-                    $this->getDoctrine()->getManager()->persist($entry);
+
+                    $manager->persist($entry);
+                    $this->addFlash('warning', 'Zmiany do AD zostały wprowadzone');
                 }
 
-                $this->getDoctrine()->getManager()->flush();
+                $manager->flush();
 
-                return $this->redirect($this->generateUrl('main'));
+                return $this->redirectToRoute('main');
             }
         } elseif ($request->isMethod('POST')) {
             var_export($this->getErrorMessages($form));
@@ -593,25 +610,22 @@ class DefaultController extends Controller
             die('invalid form '.$form->getErrorsAsString());
         }
         $uprawnienia =
-            $this->getDoctrine()
-                ->getManager()
+            $manager
                 ->getRepository('ParpMainBundle:UserUprawnienia')
                 ->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
         $historyEntries =
-            $this->getDoctrine()
-                ->getManager()
+            $manager
                 ->getRepository('ParpMainBundle:Entry')
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
         $pendingEntries =
-            $this->getDoctrine()
-                ->getManager()
+            $manager
                 ->getRepository('ParpMainBundle:Entry')
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
+
         $up2grupaAd = array();
         foreach ($uprawnienia as $u) {
             $up =
-                $this->getDoctrine()
-                    ->getManager()
+                $manager
                     ->getRepository('ParpMainBundle:Uprawnienia')
                     ->find($u->getUprawnienieId());
             if ($up->getGrupaAd()) {
@@ -619,7 +633,6 @@ class DefaultController extends Controller
             }
         }
         $grupyAd = $ADUser[0]['memberOf'];
-
 
         $userGroupsTemp = $ldap->getAllUserGroupsRecursivlyFromAD($ADUser[0]['samaccountname']);
         $userGroups = [];
@@ -643,14 +656,20 @@ class DefaultController extends Controller
             'pendingEntries' => $pendingEntries,
             'historyEntries' => $historyEntries,
             'dane_rekord'    => $daneRekord,
-            'guid'           => $this->generateGUID()
-            //'manager' => isset($ADManager[0]) ? $ADManager[0] : "",
+            'guid'           => $this->generateGUID(),
         );
 
-        //echo "<pre>"; print_r($tplData); die();
         return $this->render($tmpl, $tplData);
     }
 
+    /**
+     * @param $that
+     * @param $defaultData
+     * @param bool $wymusUproszczonyFormularz
+     * @param bool $nowy
+     * @param null $dane_rekord
+     * @return mixed
+     */
     public function createUserEditForm(
         $that,
         $defaultData,
@@ -1027,7 +1046,7 @@ class DefaultController extends Controller
                 $entry->setDisableDescription($ndata['disableDescription']);
             }
             if ($ustawUprawnieniaPoczatkowe) {
-                $this->nadajUprawnieniaPocztakowe($aduser, $entry, $ndata);
+                $this->nadajUprawnieniaPoczatkowe($aduser, $entry, $ndata);
             }
 
             $this->getDoctrine()->getManager()->persist($entry);
@@ -1038,7 +1057,7 @@ class DefaultController extends Controller
             $msg = 'Nie było zmian do wprowadzenia.';
         }
 
-        $this->get('session')->getFlashBag()->set('warning', $msg);
+        $this->addFlash('warning', $msg);
 
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
     }
@@ -1057,7 +1076,14 @@ class DefaultController extends Controller
         return $ret;
     }
 
-    private function nadajUprawnieniaPocztakowe($ADUser, $entry, $newData)
+    /**
+     * FIXME: Zupełnie do przerobienia na model usługowy
+     *
+     * @param $ADUser
+     * @param $entry
+     * @param $newData
+     */
+    private function nadajUprawnieniaPoczatkowe($ADUser, $entry, $newData)
     {
         $raportCtrl = new RaportyITController();
         $raportCtrl->container = $this;
@@ -1078,8 +1104,10 @@ class DefaultController extends Controller
             $ADUser[0]['memberOf']; //teraz czyscimy wszystko a nie tylko to co powinien miec w podstawowych
         //$this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
         //var_dump($ADUser[0]['memberOf'], $grupyNaPodstawieSekcjiOrazStanowiska); die();
+
         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
         $entry->addGrupyAD($grupDoNadania, '+');
+
         if (isset($newData['department'])) {
             $department =
                 $this->getDoctrine()
@@ -1087,6 +1115,7 @@ class DefaultController extends Controller
                     ->findOneByName($newData['department']);
             $dep = $department->getShortname();
         }
+
         if (isset($newData['info'])) {
             $section =
                 $this->getDoctrine()
@@ -1100,8 +1129,7 @@ class DefaultController extends Controller
         $grupyNaPodstawieSekcjiOrazStanowiska =
             $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
-        //var_dump($entry); die();
-        //die();
+//        var_dump($entry); die();
         //}
     }
 
@@ -1219,7 +1247,7 @@ class DefaultController extends Controller
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
             if ($newSection !== '') {
-                $ns = new \Parp\MainBundle\Entity\Section();
+                $ns = new Section();
                 $ns->setName($newSection);
                 $ns->setShortName($newSection);
                 $this->getDoctrine()->getManager()->persist($ns);
@@ -1730,7 +1758,7 @@ class DefaultController extends Controller
                         }
                         $msg .= implode(', ', $w);
                     }
-                    $this->get('session')->getFlashBag()->set('warning', $msg);
+                    $this->addFlash('warning', $msg);
 
                     return $this->redirect($this->generateUrl('main'));
                 }
@@ -2288,18 +2316,6 @@ class DefaultController extends Controller
             'ParpMainBundle:Default:resources.html.twig',
             array('user' => $ADUser[0]['name'], 'zasoby' => $userZasoby)
         );
-    }
-
-    /**
-     * @Route("/test", name="test")
-     * @throws \InvalidArgumentException
-     * @throws \LogicException
-     */
-    public function test()
-    {
-        $em = $this->getDoctrine()->getManager();
-        $userEngagements = $em->getRepository('ParpMainBundle:UserUprawnienia')->findSekcja('lolek_lolek');
-        var_dump($userEngagements);
     }
 
     /**

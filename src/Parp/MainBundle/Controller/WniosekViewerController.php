@@ -90,7 +90,7 @@ class WniosekViewerController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'WniosekNadanieOdebranieZasobowViewer został utworzony.');
+            $this->addFlash('warning', 'WniosekNadanieOdebranieZasobowViewer został utworzony.');
                 return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobowviewer'));
         }
 
@@ -230,7 +230,7 @@ class WniosekViewerController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobowviewer_edit', array('id' => $id)));
         }
 

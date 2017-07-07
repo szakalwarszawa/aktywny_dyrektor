@@ -90,7 +90,7 @@ class GrupyUprawnienController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'GrupyUprawnien został utworzony.');
+            $this->addFlash('warning', 'GrupyUprawnien został utworzony.');
                 return $this->redirect($this->generateUrl('grupyuprawnien'));
         }
 
@@ -231,7 +231,7 @@ class GrupyUprawnienController extends Controller
         if ($editForm->isValid()) {
             $entity->setUprawnieniaHistoriaZmian();
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('grupyuprawnien_edit', array('id' => $id)));
         }
 

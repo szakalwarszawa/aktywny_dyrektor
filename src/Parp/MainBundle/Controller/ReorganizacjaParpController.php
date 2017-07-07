@@ -655,7 +655,7 @@ class ReorganizacjaParpController extends Controller
                 }
                 if ($ret) {
                     $msg = 'Plik został wczytany poprawnie.';
-                    $this->get('session')->getFlashBag()->set('warning', $msg);
+                    $this->addFlash('warning', $msg);
                     return $this->redirect($this->generateUrl('importujSekcje'));
                 }
             }

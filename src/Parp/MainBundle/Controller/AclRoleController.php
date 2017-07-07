@@ -90,7 +90,7 @@ class AclRoleController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'AclRole został utworzony.');
+            $this->addFlash('warning', 'AclRole został utworzony.');
                 return $this->redirect($this->generateUrl('aclrole'));
         }
 
@@ -238,7 +238,7 @@ class AclRoleController extends Controller
             }
             $em->flush();
             //die();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('aclrole_edit', array('id' => $id)));
         } else {
             die('a');
