@@ -36,7 +36,7 @@ class WniosekNadanieOdebranieZasobow
 
 
     /**
-     *
+     * @var Wniosek
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
      * @ORM\JoinColumn(name="wniosek_id", referencedColumnName="id")
      * @GRID\Column(field="wniosek.numer", title="Numer")
@@ -47,8 +47,6 @@ class WniosekNadanieOdebranieZasobow
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
     private $wniosek;
-
-
 
     /**
      * @var boolean
@@ -69,7 +67,7 @@ class WniosekNadanieOdebranieZasobow
 
 
     /**
-     * @var string
+     * @var UserZasoby[]
      *
      * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="wniosek")
      * @@Gedmo\Mapping\Annotation\Versioned
@@ -281,7 +279,7 @@ class WniosekNadanieOdebranieZasobow
     }
 
     /**
-     * Get userZasoby
+     * Get userZasoby[]
      *
      * @return \Doctrine\Common\Collections\Collection
      */
@@ -333,11 +331,11 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param Wniosek $wniosek
      *
      * @return Wniosek
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
         $wniosek->setWniosekNadanieOdebranieZasobow($this);
@@ -347,7 +345,7 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return Wniosek
      */
     public function getWniosek()
     {

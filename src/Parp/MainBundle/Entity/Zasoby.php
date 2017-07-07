@@ -1487,11 +1487,8 @@ class Zasoby
     protected function znajdzPoziomDostepu($poziomDostepu, $dostepnePoziomy)
     {
         if (!in_array($poziomDostepu, $dostepnePoziomy)) {
-            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
-                $poziomDostepu.
-                "', dostepne poziomy : ".
-                $this->getPoziomDostepu().
-                "!!!");
+            throw new \Exception("Niewłaściwy poziom dostepu dla zasobu '".$this->getNazwa().
+                "', wybrany poziom to '". $poziomDostepu."', dostepne poziomy: ". $this->getPoziomDostepu());
         }
         $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
 

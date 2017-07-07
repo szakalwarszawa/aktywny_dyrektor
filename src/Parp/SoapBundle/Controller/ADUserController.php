@@ -90,7 +90,7 @@ class ADUserController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'ADUser został utworzony.');
+            $this->addFlash('warning', 'ADUser został utworzony.');
                 return $this->redirect($this->generateUrl('aduser'));
         }
 
@@ -230,7 +230,7 @@ class ADUserController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('aduser_edit', array('id' => $id)));
         }
 

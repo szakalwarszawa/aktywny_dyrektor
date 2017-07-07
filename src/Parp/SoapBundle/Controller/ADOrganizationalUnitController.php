@@ -90,7 +90,7 @@ class ADOrganizationalUnitController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'ADOrganizationalUnit został utworzony.');
+            $this->addFlash('warning', 'ADOrganizationalUnit został utworzony.');
                 return $this->redirect($this->generateUrl('adorganizationalunit'));
         }
 
@@ -230,7 +230,7 @@ class ADOrganizationalUnitController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('adorganizationalunit_edit', array('id' => $id)));
         }
 

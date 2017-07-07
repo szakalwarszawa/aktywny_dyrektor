@@ -222,12 +222,17 @@
         </div>
     </div>  
     
-    <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/userForm.js') }}"></script>
     
     <script>
         console.log('{{user.description}}');
         $('#form_info option').attr('disabled', true);
         $('#form_info optgroup[label={{user.description}}] option').attr('disabled', false);
+
+        {# Z nieznanych mi przyczyn, pod FF nie wybiera właściwie wartości pola z sekcją, stąd poniższe obejście #}
+        $(document).ready(function() {
+            $('#form_info').val("Samodzielne stanowisko do spraw administracyjnych").trigger("change");
+        });
     </script>
 
 {%endblock%}

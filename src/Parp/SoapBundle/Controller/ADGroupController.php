@@ -90,7 +90,7 @@ class ADGroupController extends Controller
             $em->persist($entity);
             $em->flush();
 
-            $this->get('session')->getFlashBag()->set('warning', 'ADGroup został utworzony.');
+            $this->addFlash('warning', 'ADGroup został utworzony.');
                 return $this->redirect($this->generateUrl('adgroup'));
         }
 
@@ -230,7 +230,7 @@ class ADGroupController extends Controller
 
         if ($editForm->isValid()) {
             $em->flush();
-            $this->get('session')->getFlashBag()->set('warning', 'Zmiany zostały zapisane');
+            $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('adgroup_edit', array('id' => $id)));
         }
 
