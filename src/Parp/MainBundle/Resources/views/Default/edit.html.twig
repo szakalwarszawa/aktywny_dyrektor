@@ -48,7 +48,7 @@
                     </tr>
                 </table>
                 {% else %}
-                    Nie ma jeszcze zainportowanych danych z systemu rekord
+                    Nie ma jeszcze zaimportowanych danych z systemu rekord
                 {% endif %}
             </div>
             <div id="zasoby" class="tab-pane fade">
@@ -389,8 +389,8 @@
             {%if(userGroups|length > 0)%}
             <div id="grupyAD" class="tab-pane fade">
                 <ul class="list-group">
-                    {% for g in userGroups %}
-                        <li class="list-group-item">{{g}}</li>
+                    {% for group in userGroups %}
+                        <li class="list-group-item">{{ group }}</li>
                     {%endfor%}
                 </ul> 
             </div>
@@ -404,8 +404,12 @@
     <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
     <script>
         function zaznaczUstawieniePoczatkowych(){
-
             $('#form_ustawUprawnieniaPoczatkowe').attr('checked', true);
         }
+
+        {# Z nieznanych mi przyczyn, pod FF nie wybiera właściwie wartości pola z sekcją. #}
+        $(document).ready(function() {
+            $('#form_info').val("{{ user.info }}");
+        });
     </script>
 {% endblock %}

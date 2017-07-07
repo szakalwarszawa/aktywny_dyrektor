@@ -493,17 +493,17 @@ class DefaultController extends Controller
                 die('Nie masz uprawnien by edytowac uzytkownikow!!!');
             }
 
-            $newSection = $form->get('infoNew')->getData();
+            $sekcja = $form->get('info')->getData();
 //            $oldSection = $form->get('info')->getData();
-            //echo ".".$oldSection.".";
-            if ('' !== $newSection) {
-                $section = new Section();
-                $section->setName($newSection);
-                $section->setShortname($newSection);
-                $this->getDoctrine()->getManager()->persist($section);
-                $newData['info'] = $newSection;
-                unset($newData['infoNew']);
-            }
+//            //echo ".".$oldSection.".";
+//            if ('' !== $newSection) {
+//                $section = new Section();
+//                $section->setName($newSection);
+//                $section->setShortName($newSection);
+//                $this->getDoctrine()->getManager()->persist($section);
+//                $newData['info'] = $newSection;
+//                unset($newData['infoNew']);
+//            }
             //die($newSection);
             $newrights = $newData['initialrights'];
             $oldData = $previousData;
@@ -699,7 +699,9 @@ class DefaultController extends Controller
         // Pobieramy listę Sekcji
         $sectionsEntity =
             $manager->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
+
         $sections = array();
+
         foreach ($sectionsEntity as $tmp) {
             $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : 'bez departamentu';
             $sections[$dep][$tmp->getName()] = $tmp->getName();
@@ -750,7 +752,7 @@ class DefaultController extends Controller
             $kadry1 = true;
             $kadry2 = false;
         }
-        //var_dump($przelozeni);
+
         $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', 'text', array(
                 'required'   => false,
@@ -797,9 +799,10 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                     'onchange' => 'zaznaczUstawieniePoczatkowych()',
+                    'data-toggle' => 'select2',
                 ),
                 //'data' => @$defaultData["title"],
                 'choices'    => $titles,
@@ -825,12 +828,13 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'disabled' => (!$admin && !$kadry1 && !$kadry2 && !$pracownikTymczasowy),
                     'onchange' => 'zaznaczUstawieniePoczatkowych()',
+                    'data-toggle' => 'select2',
                 ),
                 'choices'    => $sections,
-                //'data' => @$defaultData['info'],
+                'data' => isset($defaultData['info']) ?  $defaultData['info'] : '',
             ))
             ->add('department', 'choice', array(
                 'required'   => false,
@@ -840,9 +844,10 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                     'onchange' => 'zaznaczUstawieniePoczatkowych()',
+                    'data-toggle' => 'select2',
                 ),
                 'choices'    => $departments,
                 //'data' => @$defaultData["department"],
@@ -855,8 +860,9 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'readonly' => (!$admin && !$kadry1 && !$kadry2),
+                    'data-toggle' => 'select2',
 
                     //'disabled' => (!$admin && !$kadry1 && !$kadry2)
 
@@ -919,8 +925,9 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'disabled' => (!$admin),
+                    'data-toggle' => 'select2',
                 ),
                 'choices'    => $rights,
                 'data'       => ($nowy ? ['UPP'] : $defaultData['initialrights']),
@@ -937,9 +944,10 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select2',
+                    'class'    => 'form-control',
                     'readonly' => (!$admin),
                     'disabled' => (!$admin),
+                    'data-toggle' => 'select2',
                 ),
                 'choices'    => $roles,
                 //'data' => (@$defaultData["initialrights"]),
@@ -954,8 +962,9 @@ class DefaultController extends Controller
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
-                    'class'    => 'form-control select21',
+                    'class'    => 'form-control',
                     'disabled' => (!$admin && !$kadry1 && !$kadry2),
+                    'data-toggle' => 'select2',
                 ),
                 'choices'    => array(
                     '0' => 'NIE',
@@ -996,8 +1005,7 @@ class DefaultController extends Controller
                 ),
             ));
         }
-        $form = $builder->setMethod('POST')
-            ->getForm();
+        $form = $builder->setMethod('POST')->getForm();
 
         return $form;
     }
