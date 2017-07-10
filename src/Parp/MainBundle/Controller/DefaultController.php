@@ -664,7 +664,7 @@ class DefaultController extends Controller
 
     /**
      * @param $that
-     * @param $defaultData
+     * @param array|Entry $defaultData
      * @param bool $wymusUproszczonyFormularz
      * @param bool $nowy
      * @param null $dane_rekord
@@ -736,8 +736,10 @@ class DefaultController extends Controller
         try {
             if (is_array($defaultData)) {
                 $manago = $defaultData['manager'];
+                $info = isset($defaultData['info']) ?  $defaultData['info'] : '';
             } else {
                 $manago = $defaultData->getManager();
+                $info   = $defaultData->getInfo();
             }
         } catch (\Exception $e) {
         }
@@ -834,7 +836,7 @@ class DefaultController extends Controller
                     'data-toggle' => 'select2',
                 ),
                 'choices'    => $sections,
-                'data' => isset($defaultData['info']) ?  $defaultData['info'] : '',
+                'data' => $info,
             ))
             ->add('department', 'choice', array(
                 'required'   => false,
@@ -1254,14 +1256,14 @@ class DefaultController extends Controller
 
             $newSection = $form->get('infoNew')->getData();
             $oldSection = $form->get('info')->getData();
-            if ($newSection !== '') {
-                $ns = new Section();
-                $ns->setName($newSection);
-                $ns->setShortName($newSection);
-                $this->getDoctrine()->getManager()->persist($ns);
-                $entry->setInfo($newSection);
-                //unset($ndata['infoNew']);
-            }
+//            if ($newSection !== '') {
+//                $ns = new Section();
+//                $ns->setName($newSection);
+//                $ns->setShortName($newSection);
+//                $this->getDoctrine()->getManager()->persist($ns);
+//                $entry->setInfo($newSection);
+//                //unset($ndata['infoNew']);
+//            }
             // perform some action, such as saving the task to the database
             // utworz distinguishedname
             $tab = explode('.', $this->container->getParameter('ad_domain'));
