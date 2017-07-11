@@ -66,18 +66,20 @@ class SectionController extends Controller
         $grid->addRowAction($rowAction3);
     
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
-
 
         $grid->isReadyForRedirect();
+
         return $grid->getGridResponse();
     }
+
     /**
      * Creates a new Section entity.
      *
      * @Route("/", name="section_create")
      * @Method("POST")
      * @Template("ParpMainBundle:Section:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -143,6 +145,9 @@ class SectionController extends Controller
      * @Route("/{id}", name="section_show")
      * @Method("GET")
      * @Template()
+     * @param int $id
+     *
+     * @return array
      */
     public function showAction($id)
     {
@@ -151,7 +156,7 @@ class SectionController extends Controller
         $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Section entity.');
+            throw $this->createNotFoundException('Nie ma sekcji o takim identyfikatorze.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -168,6 +173,8 @@ class SectionController extends Controller
      * @Route("/{id}/edit", name="section_edit")
      * @Method("GET")
      * @Template()
+     * @param $id
+     * @return array
      */
     public function editAction($id)
     {
@@ -203,16 +210,29 @@ class SectionController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add(
+            'submit',
+            'submit',
+            array(
+                'label' => 'Zapisz zmiany',
+                'attr' => array(
+                    'class' => 'btn btn-success'
+                )
+            )
+        );
 
         return $form;
     }
+
     /**
      * Edits an existing Section entity.
      *
      * @Route("/{id}", name="section_update")
      * @Method("PUT")
      * @Template("ParpMainBundle:Section:edit.html.twig")
+     * @param Request $request
+     * @param $id
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, $id)
     {
@@ -240,11 +260,15 @@ class SectionController extends Controller
             'delete_form' => $deleteForm->createView(),
         );
     }
+
     /**
      * Deletes a Section entity.
      *
      * @Route("/{id}", name="section_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, $id)
     {
@@ -278,7 +302,7 @@ class SectionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('section_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Section','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array('label' => 'Usuń sekcję','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

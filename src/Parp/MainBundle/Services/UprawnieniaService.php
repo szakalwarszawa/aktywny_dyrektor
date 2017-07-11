@@ -32,7 +32,6 @@ class UprawnieniaService
 
     public function ustawPoczatkowe($person)
     {
-        return ;
         $uprawnienia = array();
         //pobierz nowe uprawnienia
         $grupy = array();
@@ -93,11 +92,14 @@ class UprawnieniaService
                     $nadane[] = $opis;
                 }
             } else {
+                $opis = str_replace('[sekcja]', $section->getShortname(), $uprawnienie->getOpis());
+                $opis = str_replace('[D/B]', $departament->getShortname(), $opis);
+
                 $userUprawnienia = new UserUprawnienia();
                 $userUprawnienia->setOpis($uprawnienie->getOpis());
                 $userUprawnienia->setDataNadania(new \DateTime());
                 $userUprawnienia->setCzyAktywne(true);
-                $userUprawnienia->setSamaccountname($person->getSamaccountname());
+                $userUprawnienia->setSamaccountname($person->get    Samaccountname());
                 $userUprawnienia->setUprawnienieId($uprawnienie->getId());
 
                 $nadane[] = $opis;
