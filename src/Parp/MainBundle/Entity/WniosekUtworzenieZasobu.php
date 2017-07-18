@@ -33,7 +33,6 @@ class WniosekUtworzenieZasobu
     */
     private $deletedAt;
     
-    
     /**
      *
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
@@ -48,7 +47,6 @@ class WniosekUtworzenieZasobu
      */
     private $wniosek;
     
-
     /**
      *
      * @ORM\OneToOne(targetEntity="Zasoby", mappedBy="wniosekUtworzenieZasobu")
@@ -56,8 +54,7 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="zasob.nazwa", title="Zasób")
      */
     private $zasob;
-    
-    
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Zasoby", inversedBy="wnioskiZmieniajaceZasob")
@@ -66,8 +63,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zmienianyZasob;
-    
-    
+
     /**
      * @var boolean
      *
@@ -75,7 +71,6 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zrealizowany = false;
-    
     
     /**
      * @var string
@@ -92,8 +87,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $login;
-    
-    
+
     /**
      * @var string
      *
@@ -101,7 +95,6 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $stanowisko;
-    
     
     /**
      * @var string
@@ -111,7 +104,6 @@ class WniosekUtworzenieZasobu
      */
     private $telefon;
     
-    
     /**
      * @var string
      *
@@ -119,7 +111,6 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nrpokoju;
-    
     
     /**
      * @var string
@@ -129,7 +120,6 @@ class WniosekUtworzenieZasobu
      */
     private $email;
     
-    
     /**
      * @var string
      *
@@ -138,7 +128,6 @@ class WniosekUtworzenieZasobu
      */
     private $departament;
     
-    
     /**
      * @var string
      *
@@ -146,7 +135,6 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $proponowanaNazwa;
-    
     
     /**
      * @var boolean
@@ -199,7 +187,6 @@ class WniosekUtworzenieZasobu
      */
     private $typWnioskuWycofanieZinfrastruktury = false;
 
-
     /**
      * @var string
      *
@@ -207,8 +194,6 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $powodZwrotu;
-    
-    
 
     /**
      * @var string
@@ -217,8 +202,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zmienionePola;
-    
-    
+
     /**
      * @var boolean
      *

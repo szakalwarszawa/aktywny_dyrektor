@@ -1095,12 +1095,12 @@ class Zasoby
     /**
      * Set wniosekUtworzenieZasobu
      *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
+     * @param WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
      *
      * @return Zasoby
      */
     public function setWniosekUtworzenieZasobu(
-        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null
+        WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null
     ) {
     
         $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
@@ -1112,7 +1112,9 @@ class Zasoby
     /**
      * Get wniosekUtworzenieZasobu
      *
-     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     * @var WniosekUtworzenieZasobu
+     *
+     * @return WniosekUtworzenieZasobu
      */
     public function getWniosekUtworzenieZasobu()
     {
@@ -1123,12 +1125,12 @@ class Zasoby
     /**
      * Set wniosekSkasowanieZasobu
      *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu
+     * @param WniosekUtworzenieZasobu $wniosekSkasowanieZasobu
      *
      * @return Zasoby
      */
     public function setWniosekSkasowanieZasobu(
-        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null
+        WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null
     ) {
     
         $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
@@ -1139,7 +1141,7 @@ class Zasoby
     /**
      * Get wniosekSkasowanieZasobu
      *
-     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     * @return WniosekUtworzenieZasobu
      */
     public function getWniosekSkasowanieZasobu()
     {
@@ -1256,11 +1258,11 @@ class Zasoby
     /**
      * Add wnioskiZmieniajaceZasob
      *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     * @param WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
      *
      * @return Zasoby
      */
-    public function addWnioskiZmieniajaceZasob(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
+    public function addWnioskiZmieniajaceZasob(WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob)
     {
         $this->wnioskiZmieniajaceZasob[] = $wnioskiZmieniajaceZasob;
 
@@ -1270,10 +1272,10 @@ class Zasoby
     /**
      * Remove wnioskiZmieniajaceZasob
      *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+     * @param WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
      */
     public function removeWnioskiZmieniajaceZasob(
-        \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
+        WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
     ) {
     
         $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);

@@ -2,34 +2,9 @@
 
 namespace Parp\MainBundle\Controller;
 
-use Parp\MainBundle\Entity\Engagement;
-use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Entity\UserEngagement;
-use Parp\MainBundle\Entity\UserUprawnienia;
-use Parp\MainBundle\Form\EngagementType;
-use Parp\MainBundle\Form\UserEngagementType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use APY\DataGridBundle\APYDataGridBundle;
-use APY\DataGridBundle\Grid\Source\Vector;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
-use APY\DataGridBundle\Grid\Action\MassAction;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\File;
-use Parp\MainBundle\Entity\UserZasoby;
-use Parp\MainBundle\Form\UserZasobyType;
 use Parp\MainBundle\Entity\Zasoby;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use Parp\MainBundle\Entity\HistoriaWersji;
-use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 /**
  * Export controller.
@@ -38,56 +13,59 @@ use Symfony\Component\HttpFoundation\ResponseHeaderBag;
  */
 class ExportController extends Controller
 {
-    
-    
+
+
     /**
      * @Route("/zasoby/{aktywne}", name="zasobyExcelExport")
+     * @param $aktywne
      */
     public function zasobyExcelExportAction($aktywne)
     {
-        
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromAD();
         $mapaOsob = [];
+
         foreach ($ADUsers as $u) {
             $mapaOsob[$u['samaccountname']] = $u['name'];
         }
         
-        
-        $em = $this->getDoctrine()->getManager();
-        $zasoby = $em->getRepository("ParpMainBundle:Zasoby")->findByPublished($aktywne);
-        $data =[
+        $manager = $this->getDoctrine()->getManager();
+
+        /** @var Zasoby[] $zasoby */
+        $zasoby = $manager->getRepository("ParpMainBundle:Zasoby")->findBy([
+            'published' => $aktywne,
+        ]);
+
+        $data = [
             [
                 'Id',
                 'Nazwa',
-                'Opis',
                 'Właściciel',
+                'Powiernicy właściciela',
                 'Administrator',
-                'Aktywny',
-                'Wniosek'
+                'Użytkownicy',
+                'Dane osobowe',
+                'Komórka organizacyjna',
+                'Miejsce instalacji',
+                'Opis',
             ]
         ];
         
         foreach ($zasoby as $zasob) {
-            $wniosekNr = "";
-            try {
-                $wniosekNr = $zasob->getWniosekUtworzenieZasobu() ? $zasob->getWniosekUtworzenieZasobu()->getWniosek()->getNumer() : "";
-            } catch (\Exception $e) {
-            }
-            
             $data[] = [
-                'id' => $zasob->getId(),
-                'nazwa' => $zasob->getNazwa(),
-                'opis' => $zasob->getOpisZasobu(),
-                'wlasciciel' => $this->getNames($zasob->getWlascicielZasobu(), $mapaOsob),
-                'administrator' => $this->getNames($zasob->getAdministratorZasobu(), $mapaOsob),
-                'aktywny' => $zasob->getPublished(),
-                'wniosek' => $wniosekNr
+                'Id' => $zasob->getId(),
+                'Nazwa' => $zasob->getNazwa(),
+                'Właściciel' => $this->getNames($zasob->getWlascicielZasobu(), $mapaOsob),
+                'Powiernicy właściciela' => $this->getNames($zasob->getPowiernicyWlascicielaZasobu(), $mapaOsob),
+                'Administrator' => $this->getNames($zasob->getAdministratorZasobu(), $mapaOsob),
+                'Użytkownicy' => $this->getNames($zasob->getUzytkownicy(), $mapaOsob),
+                'Dane osobowe' => $zasob->getDaneOsobowe(),
+                'Komórka organizacyjna' => $zasob->getKomorkaOrgazniacyjna(),
+                'Miejsce instalacji' => $zasob->getMiejsceInstalacji(),
+                'Opis' =>  $zasob->getOpisZasobu(),
             ];
         }
-        
-        //var_dump($data); die();
-        
+
         $phpExcelObject = new \PHPExcel();
         $sheet = $data;
         $phpExcelObject->setActiveSheetIndex(0);
@@ -103,6 +81,12 @@ class ExportController extends Controller
         $writer->save('php://output');
         die();
     }
+
+    /**
+     * @param $oss
+     * @param $mapaOsob
+     * @return string
+     */
     protected function getNames($oss, $mapaOsob)
     {
         $osoby = [];
