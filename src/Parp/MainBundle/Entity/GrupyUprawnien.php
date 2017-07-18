@@ -158,6 +158,8 @@ class GrupyUprawnien
     }
 
     /**
+     * @var Uprawnienia[]
+     *
      * Get uprawnienia
      *
      * @return \Doctrine\Common\Collections\Collection

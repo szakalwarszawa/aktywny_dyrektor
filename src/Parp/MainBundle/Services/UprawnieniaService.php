@@ -9,6 +9,7 @@
 namespace Parp\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
+use Parp\MainBundle\Entity\Entry;
 use Symfony\Component\DependencyInjection\Container;
 use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Entity\UserGrupa;
@@ -30,15 +31,18 @@ class UprawnieniaService
         }
     }
 
-    public function ustawPoczatkowe($person)
+    /**
+     * @param Entry $person
+     */
+    public function ustawPoczatkowe(Entry $person)
     {
         $uprawnienia = array();
         //pobierz nowe uprawnienia
         $grupy = array();
-        $up = explode(",", $person->getInitialRights());
+        $up = explode(",", $person->getInitialrights());
         foreach ($up as $kkod) {
             if ($kkod != "") {
-                $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
+                $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(['kod' => $kkod]);
                 $grupy[] = $noweUprawnienia;
                 foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
                     $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
@@ -55,8 +59,12 @@ class UprawnieniaService
         */
 
         // znajdz biuro i sekcje
-        $departament = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
-        $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
+        $departament = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy([
+            'name' => $person->getDepartment()
+        ]);
+        $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneBy([
+            'name' => $person->getInfo(),
+        ]);
 
         //echo $person->getSamaccountname();
         $nadane = array();
@@ -99,7 +107,7 @@ class UprawnieniaService
                 $userUprawnienia->setOpis($uprawnienie->getOpis());
                 $userUprawnienia->setDataNadania(new \DateTime());
                 $userUprawnienia->setCzyAktywne(true);
-                $userUprawnienia->setSamaccountname($person->get    Samaccountname());
+                $userUprawnienia->setSamaccountname($person->getSamaccountname());
                 $userUprawnienia->setUprawnienieId($uprawnienie->getId());
 
                 $nadane[] = $opis;
