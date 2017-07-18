@@ -40,6 +40,9 @@ class BlokowaneKontaController extends Controller
      * @Route("/lista/{ktorzy}", name="lista_oblokowania", defaults={"ktorzy" : "zablokowane"})
      * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
      * @Template()
+     * @param Request $request
+     * @param string $ktorzy
+     * @return Response
      */
     public function listaAction(Request $request, $ktorzy = "zablokowane" /* nieobecni */)
     {
@@ -72,13 +75,17 @@ class BlokowaneKontaController extends Controller
         
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
-    
+
     /**
      * Lists all zablokowane konta entities.
      *
      * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock_user")
      * @Template()
      * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
+     * @param Request $request
+     * @param $ktorzy
+     * @param $samaccountname
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function unblockAction(Request $request, $ktorzy, $samaccountname)
     {
@@ -133,14 +140,16 @@ class BlokowaneKontaController extends Controller
         
         return $dane;
     }
-    
-    
+
+
     /**
      * Lists all zablokowane konta entities.
      *
      * @Route("/kontaDisabledPrzenies", name="kontaDisabledPrzenies")
      * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
      * @Template()
+     * @param Request $request
+     * @return
      */
     public function kontaDisabledPrzeniesAction(Request $request)
     {

@@ -677,7 +677,7 @@ class DefaultController extends Controller
         $nowy = false,
         $dane_rekord = null
     ) {
-        $manager = $this->getDoctrine()->getManager();
+        $manager = $that->getDoctrine()->getManager();
 
         // Pobieramy listę stanowisk
         $titlesEntity =
@@ -754,6 +754,8 @@ class DefaultController extends Controller
             $kadry1 = true;
             $kadry2 = false;
         }
+
+        $initialRights = isset($defaultData['initialrights']) ?: [];
 
         $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', 'text', array(
@@ -932,7 +934,7 @@ class DefaultController extends Controller
                     'data-toggle' => 'select2',
                 ),
                 'choices'    => $rights,
-                'data'       => ($nowy ? ['UPP'] : $defaultData['initialrights']),
+                'data'       => ($nowy ? ['UPP'] : $initialRights),
 
                 //'data' => (@$defaultData["initialrights"]),
                 'multiple'   => true,
