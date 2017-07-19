@@ -37,14 +37,13 @@ class BlokowaneKontaController extends Controller
     /**
      * Lists all zablokowane konta entities.
      *
-     * @Route("/lista/{ktorzy}", name="lista_oblokowania", defaults={"ktorzy" : "zablokowane"})
+     * @Route("/lista/{ktorzy}", name="lista_odblokowania", defaults={"ktorzy" : "zablokowane"})
      * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
      * @Template()
-     * @param Request $request
      * @param string $ktorzy
      * @return Response
      */
-    public function listaAction(Request $request, $ktorzy = "zablokowane" /* nieobecni */)
+    public function listaAction($ktorzy = "zablokowane" /* nieobecni */)
     {
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromADIntW($ktorzy);
@@ -52,27 +51,24 @@ class BlokowaneKontaController extends Controller
         if (count($ADUsers) == 0) {
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }
-        //echo "<pre>"; print_r($ADUsers); die();
+
+        /**
+         * FIXME: Poniższe trzeba zmienić na właściwe tworzenie grida użytkowników, np. poprzez zastosowanie modelu
+         * FIXME: usługowego.
+         */
         $ctrl = new DefaultController();
         $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());
 
-        //if($ktorzy == "zablokowane"){
-            // Edycja konta
-            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
-            $rowAction->setColumn('akcje');
-            $rowAction->setRouteParameters(
-                array('samaccountname', 'ktorzy' => $ktorzy)
-            );
-            $rowAction->addAttribute('class', 'btn btn-success btn-xs');
-    
-            $grid->addRowAction($rowAction);
-        //}
+        $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+        $rowAction->setColumn('akcje');
+        $rowAction->setRouteParameters(
+            array('samaccountname', 'ktorzy' => $ktorzy)
+        );
+        $rowAction->addAttribute('class', 'btn btn-success btn-xs');
+
+        $grid->addRowAction($rowAction);
         $grid->isReadyForRedirect();
-        //var_dump($rowAction2);
-        
-        //print_r($users);
-        //die();
-        
+
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
 
@@ -92,37 +88,34 @@ class BlokowaneKontaController extends Controller
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, $ktorzy);
-        $daneRekord = $em->getRepository("ParpMainBundle:DaneRekord")->findOneByLogin($samaccountname);
+        $daneRekord = $em->getRepository("ParpMainBundle:DaneRekord")->findOneBy([
+            'login' => $samaccountname
+        ]);
+
         $ctrl = new DefaultController();
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
         $departamentRekord = "";
         if ($daneRekord) {
-            $departamentRekord = $this->getDoctrine()->getManager()->getRepository("ParpMainBundle:Departament")->findOneByNameInRekord($daneRekord->getDepartament());
+            $departamentRekord = $em->getRepository("ParpMainBundle:Departament")->findOneBy([
+                'nameInRekord' => $daneRekord->getDepartament()
+            ]);
         }
         $form->handleRequest($request);
-        if ($request->getMethod() == "POST") {
+        if ($request->getMethod() === "POST") {
             $data = $request->request->get('form');
             $ctrl = new DefaultController();
             
-            //var_dump($data);
             $entry = new Entry();
-            $entry->setSamaccountname($samaccountname);
+            $entry->setSamaccountname($samaccountname)
+                ->setActivateDeactivated(true)
+                ->setIsDisabled(0)
+                ->setFromWhen(new \Datetime())
+                ->setDistinguishedName($ADUser[0]['distinguishedname'])
+                ->setCreatedBy($this->getUser()->getUsername());
+
             $ctrl->parseUserFormData($data, $entry);
             
-            //var_dump($entry); die();
-            //dodac flage ze odblokowanie
-            //dodac metode w ldapAdmin ktora przeniesie z odblokowanych
-            $entry->setActivateDeactivated(true);
-            $entry->setIsDisabled(0);
-            $entry->setFromWhen(new \Datetime());
-            
-            //$aduser = $this->get('ldap_service')->getUserFromAD(null, "", null, $ktorzy);
-            
-            //$cn =  $daneRekord->getNazwisko(). " " . $daneRekord->getImie();
-            //$entry->setCn($cn);
-            $entry->setDistinguishedname($ADUser[0]['distinguishedname']);
-            
-            $entry->setCreatedBy($this->getUser()->getUsername());
+
             $em->persist($entry);
             $em->flush();
             
@@ -136,8 +129,7 @@ class BlokowaneKontaController extends Controller
             'form' => $form->createView(),
             'departamentRekord' => $departamentRekord
         ];
-        //print_r($dane); die();
-        
+
         return $dane;
     }
 

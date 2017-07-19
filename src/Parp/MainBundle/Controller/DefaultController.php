@@ -6,6 +6,7 @@ use APY\DataGridBundle\Grid\Action\MassAction;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
+use APY\DataGridBundle\Grid\Grid;
 use APY\DataGridBundle\Grid\Source\Vector;
 use Parp\MainBundle\Entity\AclUserRole;
 use Parp\MainBundle\Entity\Entry;
@@ -85,7 +86,14 @@ class DefaultController extends Controller
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
     }
 
-    public function getUserGrid($grid, $ADUsers, $ktorzy, $roles)
+    /**
+     * @param Grid $grid
+     * @param $ADUsers
+     * @param $ktorzy
+     * @param $roles
+     * @return Grid
+     */
+    public function getUserGrid(Grid $grid, $ADUsers, $ktorzy, $roles)
     {
         $source = new Vector($ADUsers);
         $source->setId('samaccountname');
@@ -417,8 +425,6 @@ class DefaultController extends Controller
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
 
         if (false !== strpos($ADUser[0]['manager'], 'CN=')) {
-            $ADManager = $ldap->getPrzelozony($samaccountname);
-
             // wyciagnij imie i nazwisko managera z nazwy domenowej
             $ADUser[0]['manager'] =
                 mb_substr(
