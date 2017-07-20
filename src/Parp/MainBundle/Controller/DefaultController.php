@@ -743,9 +743,11 @@ class DefaultController extends Controller
             if (is_array($defaultData)) {
                 $manago = $defaultData['manager'];
                 $info = isset($defaultData['info']) ?  $defaultData['info'] : '';
+                $initialRights = isset($defaultData['initialrights']) ? $defaultData['initialrights'] : null;
             } else {
                 $manago = $defaultData->getManager();
                 $info   = $defaultData->getInfo();
+                $initialRights = $defaultData->getInitialrights();
             }
         } catch (\Exception $e) {
         }
@@ -761,7 +763,6 @@ class DefaultController extends Controller
             $kadry2 = false;
         }
 
-        $initialRights = isset($defaultData['initialrights']) ?: [];
 
         $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', 'text', array(
@@ -2319,7 +2320,7 @@ class DefaultController extends Controller
      *
      * @return Response
      */
-    public function showResources($samaccountname)
+    public function showResourcesAction($samaccountname)
     {
 
         // Sięgamy do AD:
@@ -2340,7 +2341,6 @@ class DefaultController extends Controller
      * @param Request $request
      *
      * @throws \Exception
-     * @internal param $term
      * @Route("/user/suggest/", name="userSuggest")
      */
     public function userSuggestAction(Request $request)
