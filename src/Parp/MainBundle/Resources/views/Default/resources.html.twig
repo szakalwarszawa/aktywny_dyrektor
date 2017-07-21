@@ -2,25 +2,39 @@
 
 {% block body %}
 
-    <div class="col-sm-8">
+    <div class="col-sm-12">
         <h3>{{ user }}</h3>
 
         {% if zasoby|length > 0 %}
             <table class="table table-hover">
                 <thead>
                     <tr>
-                        <th>Lp.</th>
+                        <th class="col-sm-1">Lp.</th>
                         <th>Nazwa zasobu</th>
                         <th>Opis zasobu</th>
+                        <th>Jest</th>
+                        <th>Powinno być</th>
                     </tr>
                 </thead>
                 {% set n = 1 %}
                 <tbody>
                     {% for row in zasoby %}
-                        <tr>
+                        <tr {% if row.poziomDostepuNapraw | length > 0 %}class="bg-danger"{% endif %}>
                             <td>{{ n }}</td>
                             <td>{{ row.nazwa  }}</td>
                             <td>{{ row.opis  }}</td>
+
+                            {% for poziomDostepuNapraw in row.poziomDostepuNapraw %}
+                                <td><li>[{{ poziomDostepuNapraw.jest }}]</li></td>
+                                <td>
+                                    {% if poziomDostepuNapraw.powinno_byc %}
+                                        {% for powinnoByc in poziomDostepuNapraw.powinno_byc %}
+                                            <li>[{{ powinnoByc }}]</li>
+                                        {% endfor %}
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+
                         </tr>
                         {% set n = n + 1 %}
                     {% endfor %}

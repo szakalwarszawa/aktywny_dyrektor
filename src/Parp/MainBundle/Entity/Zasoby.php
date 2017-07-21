@@ -1495,6 +1495,7 @@ class Zasoby
         $indexGrupy = array_search($poziomDostepu, $dostepnePoziomy);
 
         //foreach($grupy as $grupa){
+        $grupy = [];
         $grupa = isset($grupy[$indexGrupy]) ? trim($grupy[$indexGrupy]) : '';
 
         return $grupa;

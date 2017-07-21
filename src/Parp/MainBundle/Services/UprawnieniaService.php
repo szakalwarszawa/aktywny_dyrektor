@@ -9,6 +9,7 @@
 namespace Parp\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityNotFoundException;
 use Parp\MainBundle\Entity\Entry;
 use Symfony\Component\DependencyInjection\Container;
 use Parp\MainBundle\Entity\UserUprawnienia;
@@ -471,4 +472,94 @@ class UprawnieniaService
         
         //die();
     }
+
+    /**
+     * Zwraca false, jeżeli co najmniej jeden nadany poziom dostępu nie jest prawidłowy.
+     *
+     * @param string $uprawnieniaString
+     * @param int    $zasob
+     *
+     * @return bool
+     *
+     * @throws EntityNotFoundException
+     */
+    public function sprawdzPrawidlowoscPoziomuDostepu($uprawnieniaString, $zasob, $pokazRoznice = true)
+    {
+        $uprawnienia = $this->zwrocUprawnieniaJakoTablica($uprawnieniaString);
+
+        $manager = $this->getDoctrine();
+
+        $zasob = $manager->getRepository('ParpMainBundle:Zasoby')->find($zasob);
+
+        if (null === $zasob) {
+            throw new EntityNotFoundException('Nie ma zasobu o takim ID');
+        }
+
+        $poziomyDostepu = $this->zwrocUprawnieniaJakoTablica($zasob->getPoziomDostepu());
+        $roznice = [];
+
+        $i = 0;
+        foreach ($uprawnienia as $item) {
+            if (!in_array($item, $poziomyDostepu)) {
+                if (true === $pokazRoznice) {
+                    $roznice[$i]['jest'] = $item;
+                    $roznice[$i]['powinno_byc'] = $poziomyDostepu;
+                    $i++;
+                } else {
+                    return true;
+                }
+            }
+        }
+
+        return count($roznice) > 0 ? $roznice : false;
+    }
+
+    /**
+     * Zwraca tablicę uprawnień
+     *
+     * @param $uprawnienia
+     * @return array
+     */
+    private function zwrocUprawnieniaJakoTablica($uprawnienia)
+    {
+        return explode(';', $uprawnienia) ;
+    }
+
+    /**
+     * @return EntityManager
+     */
+    private function getDoctrine()
+    {
+        return $this->doctrine;
+    }
+
+    /**
+     * @param EntityManager $doctrine
+     * @return UprawnieniaService
+     */
+    private function setDoctrine($doctrine)
+    {
+        $this->doctrine = $doctrine;
+        return $this;
+    }
+
+    /**
+     * @return Container
+     */
+    private function getContainer()
+    {
+        return $this->container;
+    }
+
+    /**
+     * @param Container $container
+     * @return UprawnieniaService
+     */
+    private function setContainer($container)
+    {
+        $this->container = $container;
+        return $this;
+    }
+
+
 }

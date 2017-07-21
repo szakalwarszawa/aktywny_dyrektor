@@ -2322,14 +2322,24 @@ class DefaultController extends Controller
      */
     public function showResourcesAction($samaccountname)
     {
-
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
+        $uprawnieniaService = $this->get('uprawnienia_service');
+
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
         // Pobieramy listę zasobow
         $userZasoby =
-            $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->findNameByAccountname($samaccountname);
+            $this
+                ->getDoctrine()
+                ->getRepository('ParpMainBundle:UserZasoby')
+                ->findNameByAccountname($samaccountname);
+
+        $i = 0;
+        foreach ($userZasoby as $zasob) {
+            $userZasoby[$i]['poziomDostepuNapraw'] = $uprawnieniaService->sprawdzPrawidlowoscPoziomuDostepu($zasob['poziomDostepu'], $zasob['zid'], true);
+            $i++;
+        }
 
         return $this->render(
             'ParpMainBundle:Default:resources.html.twig',
