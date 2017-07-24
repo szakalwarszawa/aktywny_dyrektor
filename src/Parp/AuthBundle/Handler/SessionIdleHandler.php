@@ -9,6 +9,10 @@ use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
+/**
+ * Class SessionIdleHandler
+ * @package Parp\AuthBundle\Handler
+ */
 class SessionIdleHandler
 {
 
@@ -17,6 +21,13 @@ class SessionIdleHandler
     protected $router;
     protected $maxIdleTime;
 
+    /**
+     * SessionIdleHandler constructor.
+     * @param SessionInterface $session
+     * @param SecurityContextInterface $securityContext
+     * @param RouterInterface $router
+     * @param int $maxIdleTime
+     */
     public function __construct(SessionInterface $session, SecurityContextInterface $securityContext, RouterInterface $router, $maxIdleTime = 0)
     {
         $this->session = $session;
@@ -25,6 +36,9 @@ class SessionIdleHandler
         $this->maxIdleTime = $maxIdleTime;
     }
 
+    /**
+     * @param GetResponseEvent $event
+     */
     public function onKernelRequest(GetResponseEvent $event)
     {
         if (HttpKernelInterface::MASTER_REQUEST != $event->getRequestType()) {
