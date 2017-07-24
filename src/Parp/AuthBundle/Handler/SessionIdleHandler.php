@@ -40,7 +40,7 @@ class SessionIdleHandler
                 $this->session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
 
                 // Change the route if you are not using FOSUserBundle.
-                $event->setResponse(new RedirectResponse($this->router->generate('login')));
+                $event->setResponse(new RedirectResponse($this->router->generate('main_home')));
             }
         }
     }
