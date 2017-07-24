@@ -2408,7 +2408,7 @@ class DefaultController extends Controller
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findNameByAccountname($samaccountname);
 
-        if ($this->isGranted('ROLE_ADMIN')) {
+        if ($this->isGranted('PARP_ADMIN')) {
             $i = 0;
             foreach ($userZasoby as $zasob) {
                 $userZasoby[$i]['poziomDostepuNapraw'] = $uprawnieniaService->sprawdzPrawidlowoscPoziomuDostepu($zasob['poziomDostepu'], $zasob['zid'], true);
