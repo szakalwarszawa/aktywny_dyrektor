@@ -15,20 +15,31 @@ use Symfony\Component\DependencyInjection\Container;
 use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Entity\UserGrupa;
 use Parp\MainBundle\Services\RedmineConnectService;
+use Symfony\Component\HttpFoundation\Request;
 
+/**
+ * Class UprawnieniaService
+ * @package Parp\MainBundle\Services
+ */
 class UprawnieniaService
 {
 
     protected $doctrine;
     protected $container;
 
+    /**
+     * UprawnieniaService constructor.
+     * @param EntityManager $OrmEntity
+     * @param Container $container
+     */
     public function __construct(EntityManager $OrmEntity, Container $container)
     {
-        $this->doctrine = $OrmEntity;
-        $this->container = $container;
+        $this->setDoctrine($OrmEntity);
+        $this->setContainer($container);
+
         if (PHP_SAPI == 'cli') {
             $this->container->enterScope('request');
-            $this->container->set('request', new \Symfony\Component\HttpFoundation\Request(), 'request');
+            $this->container->set('request', new Request(), 'request');
         }
     }
 
@@ -50,9 +61,8 @@ class UprawnieniaService
                 }
             }
         }
-        
-        
-        
+
+
         /*
         $poczatkowe = $person->getInitialrights();
         $grupa = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneByKod($poczatkowe);
@@ -130,14 +140,96 @@ class UprawnieniaService
         $this->wyslij($person);
     }
 
+    /**
+     * @param $person
+     * @param null $odebrane
+     * @param null $nadane
+     * @param string $obiekt
+     * @param int $obiektId
+     * @param string $zadanieDla
+     * @param null $wniosek
+     */
+    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil', $wniosek = null)
+    {
+        //$zadanieDla = "Lipiński Marcin";
+        $ldap = $this->container->get('ldap_service');
+        $dlaKogo = explode(",", $zadanieDla);
+        $mails = array();
+        foreach ($dlaKogo as $user) {
+            $cn = "CN=" . str_replace(" ", "*", trim($user));
+            //print_r($cn);
+            $userAD = $ldap->getUserFromAD(null, $cn);
+            //print_r($userAD);
+            if ($userAD && count($userAD) > 0 && $userAD[0]['email'] != "") {
+                $mails[] = 'kamil_jakacki@parp.gov.pl'; //$userAD[0]['email'];
+            }
+        }
+
+
+        //print_r ($mails);
+
+        //$view = $this->container->get('templating')->render(
+        //'BatchingBundle:Default:email.html.twig', array('content' => $content)
+        //);
+        /*
+          $uprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')
+          ->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE), array('uprawnienie_id' => 'asc'));
+
+          $dane = array();
+          foreach ($uprawnienia as $uprawnienie) {
+          //echo $uprawnienie->getOpis();
+          $dane[] = $uprawnienie->getOpis();
+          }
+         */
+        $o1 = (count($nadane) > 0 ? " nadanie " : "") . (count($nadane) > 0 && count($odebrane) > 0 ? " i " : "") . (count($odebrane) > 0 ? " odebranie " : "");
+        $opis = $obiekt . ($obiektId != 0 ? " o id : " . $obiektId : "") . " dla użytkownika " . (is_array($person) ? $person['cn'] : $person->getCn());
+        $zadanie = new \Parp\MainBundle\Entity\Zadanie();
+        $zadanie->setNazwa("Nowe zadanie o " . $o1 . " dot. " . $opis);
+        $zadanie->setOsoby($zadanieDla);
+        $zadanie->setDataDodania(new \Datetime());
+        $zadanie->setObiekt($obiekt);
+        $zadanie->setObiektId($obiektId);
+        $zadanie->setStatus('utworzone');
+        $this->doctrine->persist($zadanie);
+        $this->doctrine->flush();
+        $view = $this->container->get('templating')->render(
+            'ParpMainBundle:Default:email.html.twig',
+            array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie)
+        );
+
+        $mails[] = 'kamil_jakacki@parp.gov.pl';
+        //$mails[] = 'kamil@zapytania.com';
+
+        $message = \Swift_Message::newInstance()
+            ->setSubject('Zmiana uprawnień')
+            ->setFrom('intranet@parp.gov.pl')
+            //->setFrom("kamikacy@gmail.com")
+            ->setTo($mails)
+            ->setBody($view)
+            ->setContentType("text/html");
+
+        //var_dump($view);
+
+        if ('kjakacki' == 'WYLACZAM') {
+            $this->container->get('mailer')->send($message);
+        }
+
+
+        $zadanie->setOpis($view);
+        $this->doctrine->persist($zadanie);
+        $this->doctrine->flush();
+
+        //die();
+    }
+
+    /**
+     * @param $person
+     */
     public function zmianaUprawnien($person)
     {
         $czyZmianaSekcji = false;
         $czyZmianaDepartamentu = false;
         $czyZmianaGrupyUprawnien = false;
-
-        //pobierz aktualne  uprawnienia
-        $uprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')->findBy(array('samaccountname' => $person->getSamaccountname()));
 
         // sprawdz czy nastapiła zmina sekcji i biura
         if ($person->getInitialRights()) {
@@ -253,10 +345,10 @@ class UprawnieniaService
             foreach ($usergrupa as $g) {
                 $oldgrupy[] = $g->getGrupa();
             }
-            
+
             $grupDoUtworzenia = array_diff($newgrupy, $oldgrupy);
             $grupDoSkasowania = array_diff($oldgrupy, $newgrupy);
-            
+
             foreach ($grupDoUtworzenia as $ug) {
                 $usergrupa = new UserGrupa();
                 $usergrupa->setGrupa($ug);
@@ -267,19 +359,18 @@ class UprawnieniaService
                 $usergrupa = $this->doctrine->getRepository('ParpMainBundle:UserGrupa')->findOneBy(array('samaccountname' => $person->getSamaccountname(), 'grupa' => $ug));
                 $this->doctrine->remove($usergrupa);
             }
-            
-                
-                
-/*
-            if ($usergrupa) {
-                $usergrupa->setGrupa($person->getInitialrights());
-            } else {
-                $usergrupa = new UserGrupa();
-                $usergrupa->setGrupa($person->getInitialrights());
-                $usergrupa->setSamaccountname($person->getSamaccountname());
-            }
-            $this->doctrine->persist($usergrupa);
-*/
+
+
+            /*
+                        if ($usergrupa) {
+                            $usergrupa->setGrupa($person->getInitialrights());
+                        } else {
+                            $usergrupa = new UserGrupa();
+                            $usergrupa->setGrupa($person->getInitialrights());
+                            $usergrupa->setSamaccountname($person->getSamaccountname());
+                        }
+                        $this->doctrine->persist($usergrupa);
+            */
 
             $this->doctrine->flush();
         }
@@ -362,9 +453,9 @@ class UprawnieniaService
             if ($uprawnienieuser) {
                 $uprawnienieuser->setCzyAktywne(false);
                 $uprawnienieuser->setdataOdebrania(new \DateTime());
-    
+
                 $odebrane[] = $uprawnienieuser->getOpis();
-    
+
                 $this->doctrine->persist($uprawnienieuser);
             }
 
@@ -400,84 +491,11 @@ class UprawnieniaService
         }
     }
 
-    public function wyslij($person, $odebrane = null, $nadane = null, $obiekt = "Uprawnienia", $obiektId = 0, $zadanieDla = 'Jakacki Kamil', $wniosek = null)
-    {
-        //$zadanieDla = "Lipiński Marcin";
-        $ldap = $this->container->get('ldap_service');
-        $dlaKogo = explode(",", $zadanieDla);
-        $mails = array();
-        foreach ($dlaKogo as $user) {
-            $cn = "CN=".str_replace(" ", "*", trim($user));
-            //print_r($cn);
-            $userAD = $ldap->getUserFromAD(null, $cn);
-            //print_r($userAD);
-            if ($userAD && count($userAD) > 0 && $userAD[0]['email'] != "") {
-                $mails[] = 'kamil_jakacki@parp.gov.pl'; //$userAD[0]['email'];
-            }
-        }
-        
-        
-        //print_r ($mails);
-        
-        //$view = $this->container->get('templating')->render(
-        //'BatchingBundle:Default:email.html.twig', array('content' => $content)
-        //);
-        /*
-          $uprawnienia = $this->doctrine->getRepository('ParpMainBundle:UserUprawnienia')
-          ->findBy(array('samaccountname' => $person->getSamaccountname(), 'czyAktywne' => TRUE), array('uprawnienie_id' => 'asc'));
-
-          $dane = array();
-          foreach ($uprawnienia as $uprawnienie) {
-          //echo $uprawnienie->getOpis();
-          $dane[] = $uprawnienie->getOpis();
-          }
-         */
-         $o1 = (count($nadane) > 0 ? " nadanie " : "").(count($nadane) > 0 && count($odebrane) > 0 ? " i " : "").(count($odebrane) > 0 ? " odebranie " : "");
-         $opis = $obiekt.($obiektId != 0 ? " o id : ".$obiektId : "")." dla użytkownika ".(is_array($person) ? $person['cn'] : $person->getCn());
-         $zadanie = new \Parp\MainBundle\Entity\Zadanie();
-         $zadanie->setNazwa("Nowe zadanie o ".$o1." dot. ".$opis);
-         $zadanie->setOsoby($zadanieDla);
-         $zadanie->setDataDodania(new \Datetime());
-         $zadanie->setObiekt($obiekt);
-         $zadanie->setObiektId($obiektId);
-         $zadanie->setStatus('utworzone');
-         $this->doctrine->persist($zadanie);
-         $this->doctrine->flush();
-        $view = $this->container->get('templating')->render(
-            'ParpMainBundle:Default:email.html.twig',
-            array('odebrane' => $odebrane, 'person' => $person, 'nadane' => $nadane, 'zadanie' => $zadanie)
-        );
-
-        $mails[] = 'kamil_jakacki@parp.gov.pl';
-        //$mails[] = 'kamil@zapytania.com';
-
-        $message = \Swift_Message::newInstance()
-                ->setSubject('Zmiana uprawnień')
-                ->setFrom('intranet@parp.gov.pl')
-                //->setFrom("kamikacy@gmail.com")
-                ->setTo($mails)
-                ->setBody($view)
-                ->setContentType("text/html");
-
-        //var_dump($view);
-
-        if ('kjakacki' == 'WYLACZAM') {
-            $this->container->get('mailer')->send($message);
-        }
-        
-        
-        $zadanie->setOpis($view);
-         $this->doctrine->persist($zadanie);
-         $this->doctrine->flush();
-        
-        //die();
-    }
-
     /**
      * Zwraca false, jeżeli co najmniej jeden nadany poziom dostępu nie jest prawidłowy.
      *
      * @param string $uprawnieniaString
-     * @param int    $zasob
+     * @param int $zasob
      *
      * @return bool
      *
@@ -520,9 +538,9 @@ class UprawnieniaService
      * @param $uprawnienia
      * @return array
      */
-    private function zwrocUprawnieniaJakoTablica($uprawnienia)
+    public function zwrocUprawnieniaJakoTablica($uprawnienia)
     {
-        return explode(';', $uprawnienia) ;
+        return explode(';', $uprawnienia);
     }
 
     /**

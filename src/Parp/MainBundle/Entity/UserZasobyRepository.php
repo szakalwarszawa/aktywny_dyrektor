@@ -11,9 +11,18 @@ namespace Parp\MainBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
+/**
+ * Class UserZasobyRepository
+ * @package Parp\MainBundle\Entity
+ */
 class UserZasobyRepository extends EntityRepository
 {
 
+    /**
+     * @param $samaccountname
+     * @param $zasob
+     * @return mixed
+     */
     public function findByAccountnameAndResource($samaccountname, $zasob)
     {
         $query = $this->createQueryBuilder('uz')
@@ -25,6 +34,10 @@ class UserZasobyRepository extends EntityRepository
         return $query->getOneOrNullResult();
     }
 
+    /**
+     * @param $samaccountname
+     * @return array
+     */
     public function findByAccountnameAndEcm($samaccountname)
     {
 
@@ -39,6 +52,11 @@ class UserZasobyRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    /**
+     * @param $samaccountname
+     * @return array
+     */
     public function findNameByAccountname($samaccountname)
     {
 
@@ -54,6 +72,11 @@ class UserZasobyRepository extends EntityRepository
 
         return $query->getResult();
     }
+
+    /**
+     * @param $samaccountname
+     * @return array
+     */
     public function findUserZasobyByAccountname($samaccountname)
     {
 
@@ -76,6 +99,11 @@ class UserZasobyRepository extends EntityRepository
 
         return array_merge($a1, $a2);
     }
+
+    /**
+     * @param $zasobId
+     * @return array
+     */
     public function findUsersByZasobId($zasobId)
     {
         global $kernel;
@@ -122,6 +150,11 @@ class UserZasobyRepository extends EntityRepository
         }
         return $res;
     }
+
+    /**
+     * @param $wniosek
+     * @return array
+     */
     public function findByWniosekWithZasob($wniosek)
     {
         $ktoryWniosekSzukam = $wniosek->getOdebranie() ? "wniosekOdebranie" : "wniosek";
@@ -168,6 +201,12 @@ class UserZasobyRepository extends EntityRepository
     }
 
 
+    /**
+     * @param $samaccountname
+     * @param $dataStart
+     * @param $dataEnd
+     * @return array
+     */
     public function findDlaOsoby($samaccountname, $dataStart, $dataEnd)
     {
         $query = $this->getEntityManager()->createQuery('

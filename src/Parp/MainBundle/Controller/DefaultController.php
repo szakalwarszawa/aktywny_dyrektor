@@ -24,6 +24,10 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
 
+/**
+ * Class DefaultController
+ * @package Parp\MainBundle\Controller
+ */
 class DefaultController extends Controller
 {
 
@@ -1021,6 +1025,13 @@ class DefaultController extends Controller
         return $form;
     }
 
+    /**
+     * @param $samaccountname
+     * @param $ndata
+     * @param $odata
+     * @param $ustawUprawnieniaPoczatkowe
+     * @return RedirectResponse
+     */
     protected function parseUserKadry($samaccountname, $ndata, $odata, $ustawUprawnieniaPoczatkowe)
     {
         $ldap = $this->get('ldap_service');
@@ -1081,6 +1092,11 @@ class DefaultController extends Controller
         return $this->redirect($this->generateUrl('userEdit', array('samaccountname' => $samaccountname)));
     }
 
+    /**
+     * @param $a1
+     * @param $a2
+     * @return array
+     */
     public function arrayDiff($a1, $a2)
     {
         $ret = array();
@@ -1152,6 +1168,10 @@ class DefaultController extends Controller
         //}
     }
 
+    /**
+     * @param $newData
+     * @param $entry
+     */
     public function parseUserFormData($newData, &$entry)
     {
         foreach ($newData as $key => $value) {
@@ -1203,6 +1223,10 @@ class DefaultController extends Controller
         }
     }
 
+    /**
+     * @param \Symfony\Component\Form\Form $form
+     * @return array
+     */
     private function getErrorMessages(\Symfony\Component\Form\Form $form)
     {
         $errors = array();
@@ -1224,6 +1248,9 @@ class DefaultController extends Controller
         return $errors;
     }
 
+    /**
+     * @return false|string
+     */
     protected function generateGUID()
     {
         return date('YmdhIs');
@@ -1528,6 +1555,10 @@ class DefaultController extends Controller
         );
     }
 
+    /**
+     * @param $month
+     * @return mixed
+     */
     protected function getMonthFromStr($month)
     {
         $tab = array(
@@ -1548,6 +1579,10 @@ class DefaultController extends Controller
         return $tab[$month];
     }
 
+    /**
+     * @param $month
+     * @return mixed
+     */
     protected function getStrFromMonth($month)
     {
         $tab = array(
@@ -1787,6 +1822,10 @@ class DefaultController extends Controller
         return $this->render('ParpMainBundle:Default:formfileecm.html.twig', array('form' => $form->createView()));
     }
 
+    /**
+     * @param $file
+     * @return array|bool
+     */
     protected function wczytajPlik($file)
     {
         $dane = file_get_contents($file->getPathname());
@@ -1820,6 +1859,10 @@ class DefaultController extends Controller
         return $ret;
     }
 
+    /**
+     * @param $file
+     * @return bool
+     */
     protected function wczytajPlikZaangazowania($file)
     {
 
@@ -1921,6 +1964,10 @@ class DefaultController extends Controller
         */
     }
 
+    /**
+     * @param $row
+     * @return array
+     */
     protected function getMonthsFromRow($row)
     {
         $months = array();
@@ -1934,6 +1981,10 @@ class DefaultController extends Controller
         return $months;
     }
 
+    /**
+     * @param $imienazwisko
+     * @return mixed
+     */
     protected function findUserByName($imienazwisko)
     {
         foreach ($this->ADUsers as $user) {
@@ -1943,6 +1994,10 @@ class DefaultController extends Controller
         }
     }
 
+    /**
+     * @param $file
+     * @return bool
+     */
     protected function wczytajPlikZasoby($file)
     {
         //$dane = file_get_contents($file->getPathname());
@@ -2038,6 +2093,10 @@ class DefaultController extends Controller
         return true;
     }
 
+    /**
+     * @param $file
+     * @return string
+     */
     public function poprawPlikCsv($file)
     {
         $dane = file_get_contents($file->getPathname());
@@ -2069,6 +2128,10 @@ class DefaultController extends Controller
         return $out;
     }
 
+    /**
+     * @param $file
+     * @return array
+     */
     protected function wczytajPlikZasobyUser($file)
     {
         $wynik = array('utworzono' => 0, 'zmieniono' => 0, 'nie zmieniono' => 0, 'skasowano' => 0);
@@ -2244,6 +2307,10 @@ class DefaultController extends Controller
         return $wynik;
     }
 
+    /**
+     * @param $list
+     * @return array
+     */
     protected function parseMultiRowsUserZasoby($list)
     {
         $ret = array();
@@ -2275,6 +2342,12 @@ class DefaultController extends Controller
         return $ret;
     }
 
+    /**
+     * @param $subject
+     * @param bool $dn
+     * @param null $ignore
+     * @return mixed|string
+     */
     protected function ldapEscape($subject, $dn = false, $ignore = null)
     {
 
@@ -2335,10 +2408,12 @@ class DefaultController extends Controller
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findNameByAccountname($samaccountname);
 
-        $i = 0;
-        foreach ($userZasoby as $zasob) {
-            $userZasoby[$i]['poziomDostepuNapraw'] = $uprawnieniaService->sprawdzPrawidlowoscPoziomuDostepu($zasob['poziomDostepu'], $zasob['zid'], true);
-            $i++;
+        if ($this->isGranted('ROLE_ADMIN')) {
+            $i = 0;
+            foreach ($userZasoby as $zasob) {
+                $userZasoby[$i]['poziomDostepuNapraw'] = $uprawnieniaService->sprawdzPrawidlowoscPoziomuDostepu($zasob['poziomDostepu'], $zasob['zid'], true);
+                $i++;
+            }
         }
 
         return $this->render(

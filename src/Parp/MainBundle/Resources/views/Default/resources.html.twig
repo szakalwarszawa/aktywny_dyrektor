@@ -12,29 +12,38 @@
                         <th class="col-sm-1">Lp.</th>
                         <th>Nazwa zasobu</th>
                         <th>Opis zasobu</th>
+                        {% if row.poziomDostepuNapraw is defined %}
                         <th>Jest</th>
                         <th>Powinno być</th>
+                        {% endif %}
                     </tr>
                 </thead>
                 {% set n = 1 %}
                 <tbody>
                     {% for row in zasoby %}
-                        <tr {% if row.poziomDostepuNapraw | length > 0 %}class="bg-danger"{% endif %}>
+                        <tr {% if row.poziomDostepuNapraw is defined and row.poziomDostepuNapraw | length > 0 %}class="bg-danger"{% endif %}>
                             <td>{{ n }}</td>
                             <td>{{ row.nazwa  }}</td>
                             <td>{{ row.opis  }}</td>
-
+                            {% if row.poziomDostepuNapraw is defined  %}
                             {% for poziomDostepuNapraw in row.poziomDostepuNapraw %}
                                 <td><li>[{{ poziomDostepuNapraw.jest }}]</li></td>
                                 <td>
                                     {% if poziomDostepuNapraw.powinno_byc %}
                                         {% for powinnoByc in poziomDostepuNapraw.powinno_byc %}
-                                            <li>[{{ powinnoByc }}]</li>
+                                            {% if powinnoByc | length > 0 %}
+                                            <li><a href="{{ path('uprawnienia_zamien',
+                                                {
+                                                    'obecnyPoziomDostepuIdB64': row.id|base64Encode|url_encode,
+                                                    'obecnyPoziomDostepuB64': poziomDostepuNapraw.jest|base64Encode|url_encode ,
+                                                    'nowyPoziomDostepuB64': powinnoByc|base64Encode|url_encode
+                                                }) }}">[{{ powinnoByc }}]</a></li>
+                                            {% endif %}
                                         {% endfor %}
                                     {% endif %}
                                 </td>
                             {% endfor %}
-
+                            {% endif %}
                         </tr>
                         {% set n = n + 1 %}
                     {% endfor %}

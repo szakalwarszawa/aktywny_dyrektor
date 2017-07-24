@@ -1,18 +1,31 @@
 <?php
-// src/Parp/MainBundle/Twig/AppExtension.php
+
 namespace Parp\MainBundle\Twig;
 
+/**
+ * Class StringExtension
+ * @package Parp\MainBundle\Twig
+ */
 class StringExtension extends \Twig_Extension
 {
     protected $renameService;
     protected $ldapService;
     protected $sam2name = null;
+
+    /**
+     * StringExtension constructor.
+     * @param \Parp\MainBundle\Services\RenameService $renameService
+     * @param \Parp\SoapBundle\Services\LdapService $ldapService
+     */
     public function __construct(\Parp\MainBundle\Services\RenameService $renameService, \Parp\SoapBundle\Services\LdapService $ldapService)
     {
         $this->renameService = $renameService;
         $this->ldapService = $ldapService;
     }
-    
+
+    /**
+     * @return array
+     */
     public function getFilters()
     {
         return array(
@@ -29,8 +42,15 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
             new \Twig_SimpleFilter('showMultiFieldAsNewLines', array($this, 'showMultiFieldAsNewLines')),
             new \Twig_SimpleFilter('showFullname', array($this, 'showFullname')),
+            new \Twig_SimpleFilter('base64Decode', array($this, 'base64DecodeFilter')),
+            new \Twig_SimpleFilter('base64Encode', array($this, 'base64EncodeFilter')),
         );
     }
+
+    /**
+     * @param $samaccountname
+     * @return mixed
+     */
     public function showFullname($samaccountname)
     {
         if ($this->sam2name === null) {
@@ -43,6 +63,11 @@ class StringExtension extends \Twig_Extension
         }
         return (isset($this->sam2name[$samaccountname]) ? $this->sam2name[$samaccountname] : $samaccountname);
     }
+
+    /**
+     * @param $str
+     * @return string
+     */
     public function addSpaces($str)
     {
         $sams = explode(",", $str);
@@ -53,6 +78,11 @@ class StringExtension extends \Twig_Extension
         ///$str = str_replace(",", ", ", $str);//old function content
         return implode(", ", $ret);
     }
+
+    /**
+     * @param $zids
+     * @return string
+     */
     public function zasobyNazwa($zids)
     {
         $arr = explode(",", $zids);
@@ -62,11 +92,21 @@ class StringExtension extends \Twig_Extension
         }
         return implode(", ", $ret);
     }
+
+    /**
+     * @param $zid
+     * @return mixed
+     */
     public function zasobNazwa($zid)
     {
         //echo ".$zid.";
         return $this->renameService->zasobNazwa($zid);
     }
+
+    /**
+     * @param $string
+     * @return string
+     */
     public function toCamelcase($string)
     {
         $out = "";
@@ -83,6 +123,11 @@ class StringExtension extends \Twig_Extension
 
         return $out;
     }
+
+    /**
+     * @param $value
+     * @return string
+     */
     public function datetimeFormat($value)
     {
         if ($value instanceof \DateTime) {
@@ -92,6 +137,11 @@ class StringExtension extends \Twig_Extension
         }
         return $value;
     }
+
+    /**
+     * @param $var
+     * @return mixed
+     */
     public function gridTitles($var)
     {
         $ret = $var;
@@ -111,7 +161,11 @@ class StringExtension extends \Twig_Extension
         
         return $ret;
     }
-    
+
+    /**
+     * @param $var
+     * @return string
+     */
     public function getObjectValue($var)
     {
         if ($var instanceof \DateTime) {
@@ -119,13 +173,23 @@ class StringExtension extends \Twig_Extension
         }
         return $var;
     }
-    
+
+    /**
+     * @param $string
+     * @param $part
+     * @return string
+     */
     public function getMultipleCheckboxLabel($string, $part)
     {
         $e = explode("@@@", $string);
         $ret = $part <= count($e) -1 ? $e[$part] : "";
         return $ret;
     }
+
+    /**
+     * @param $string
+     * @return string
+     */
     public function getMultipleCheckboxLabelClasses($string)
     {
         $cs = $this->getMultipleCheckboxLabel($string, 2);
@@ -136,25 +200,59 @@ class StringExtension extends \Twig_Extension
         }
         return implode(" ", $ret);
     }
-    
+
+    /**
+     * @return string
+     */
     public function getName()
     {
         return 'app_extension';
     }
-    
-    
+
+
+    /**
+     * @param $var
+     * @return mixed
+     */
     public function objectTitles($var)
     {
         return $this->renameService->objectTitles($var);
     }
-    
-    
+
+
+    /**
+     * @param $var
+     * @return mixed
+     */
     public function actionTitles($var)
     {
         return $this->renameService->actionTitles($var);
     }
+
+    /**
+     * @param $str
+     * @return string
+     */
     public function showMultiFieldAsNewLines($str)
     {
         return "<div class='border'>".str_replace(";", "</div><div class='border'>", $str)."</div>";
+    }
+
+    /**
+     * @param $txt
+     * @return string
+     */
+    public function base64EncodeFilter($txt)
+    {
+        return base64_encode($txt);
+    }
+
+    /**
+     * @param $txt
+     * @return bool|string
+     */
+    public function base64DecodeFilter($txt)
+    {
+        return base64_decode($txt);
     }
 }

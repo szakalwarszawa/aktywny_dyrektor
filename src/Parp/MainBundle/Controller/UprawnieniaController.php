@@ -2,13 +2,13 @@
 
 namespace Parp\MainBundle\Controller;
 
+use Doctrine\ORM\EntityNotFoundException;
+use Parp\MainBundle\Entity\UserZasoby;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use APY\DataGridBundle\APYDataGridBundle;
-use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
@@ -33,9 +33,6 @@ class UprawnieniaController extends Controller
      */
     public function indexAction()
     {
-        $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Uprawnienia')->findAll();
-    
         $source = new Entity('ParpMainBundle:Uprawnienia');
     
         $grid = $this->get('grid');
@@ -60,24 +57,22 @@ class UprawnieniaController extends Controller
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
     
-       
-    
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
-
-
         $grid->isReadyForRedirect();
+
         return $grid->getGridResponse();
     }
+
     /**
      * Creates a new Uprawnienia entity.
      *
      * @Route("/", name="uprawnienia_create")
      * @Method("POST")
      * @Template("ParpMainBundle:Uprawnienia:new.html.twig")
+     * @param Request $request
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function createAction(Request $request)
     {
@@ -143,6 +138,8 @@ class UprawnieniaController extends Controller
      * @Route("/{id}", name="uprawnienia_show")
      * @Method("GET")
      * @Template()
+     * @param $id
+     * @return array
      */
     public function showAction($id)
     {
@@ -168,6 +165,8 @@ class UprawnieniaController extends Controller
      * @Route("/{id}/edit", name="uprawnienia_edit")
      * @Method("GET")
      * @Template()
+     * @param $id
+     * @return array
      */
     public function editAction($id)
     {
@@ -208,12 +207,16 @@ class UprawnieniaController extends Controller
 
         return $form;
     }
+
     /**
      * Edits an existing Uprawnienia entity.
      *
      * @Route("/{id}", name="uprawnienia_update")
      * @Method("PUT")
      * @Template("ParpMainBundle:Uprawnienia:edit.html.twig")
+     * @param Request $request
+     * @param $id
+     * @return array|\Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function updateAction(Request $request, $id)
     {
@@ -242,11 +245,15 @@ class UprawnieniaController extends Controller
             'delete_form' => $deleteForm->createView(),
         );
     }
+
     /**
      * Deletes a Uprawnienia entity.
      *
      * @Route("/{id}", name="uprawnienia_delete")
      * @Method("DELETE")
+     * @param Request $request
+     * @param $id
+     * @return \Symfony\Component\HttpFoundation\RedirectResponse
      */
     public function deleteAction(Request $request, $id)
     {
@@ -280,8 +287,60 @@ class UprawnieniaController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('uprawnienia_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Uprawnienia','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', 'submit', array(
+                'label' => 'Skasuj Uprawnienia',
+                'attr' => array('class' => 'btn btn-danger'
+                )
+            ))
             ->getForm()
         ;
+    }
+
+    /**
+     * @Route("/zamien/{obecnyPoziomDostepuIdB64}/{obecnyPoziomDostepuB64}/{nowyPoziomDostepuB64}", name="uprawnienia_zamien")
+     *
+     * @param $obecnyPoziomDostepuB64
+     * @param $nowyPoziomDostepuB64
+     */
+    public function zamienPoziomDostepuAction($obecnyPoziomDostepuIdB64, $obecnyPoziomDostepuB64, $nowyPoziomDostepuB64)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        $obecnyUserZasobId = $this->stringUnCode($obecnyPoziomDostepuIdB64);
+        $obecnyPoziomDostepuString = $this->stringUnCode($obecnyPoziomDostepuB64);
+        $nowyPoziomDostepuString = $this->stringUnCode($nowyPoziomDostepuB64);
+
+        /** @var UserZasoby $obecnyPoziomDostepu */
+        $obecnyUserZasob= $manager->getRepository('ParpMainBundle:UserZasoby')->find($obecnyUserZasobId);
+
+        if (null === $obecnyUserZasob) {
+            throw new EntityNotFoundException('Nie ma UserZasobu o takim identyfikatorze!');
+        }
+
+        $obecnePoziomyDostepu = array_unique(
+            $uprawnieniaService->zwrocUprawnieniaJakoTablica($obecnyUserZasob->getPoziomDostepu())
+        );
+
+        $poziomDoPodmiany = array_search($obecnyPoziomDostepuString, $obecnePoziomyDostepu);
+        // Najpierw minimalizujemy - jest kłopot z wielością tej samej wartości
+
+        $obecnePoziomyDostepu[$poziomDoPodmiany] = $nowyPoziomDostepuString;
+
+        $nowePoziomyDostepu = implode(';', array_unique($obecnePoziomyDostepu));
+
+        $obecnyUserZasob->setPoziomDostepu($nowePoziomyDostepu);
+
+        $manager->flush();
+
+        return $this->redirectToRoute('resources', ['samaccountname' => $obecnyUserZasob->getSamaccountname()]);
+    }
+
+    /**
+     * @param string $string
+     * @return string
+     */
+    private function stringUnCode($string)
+    {
+        return base64_decode(urldecode($string));
     }
 }
