@@ -40,6 +40,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $this->logger = $this->get('logger');
     }
 
+    /**
+     * @param $msg
+     * @param $data
+     */
     protected function logg($msg, $data)
     {
         if (!$this->logger) {
@@ -91,6 +95,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
     }
 
+    /**
+     * @param $ktore
+     * @return \APY\DataGridBundle\Grid\Grid|object
+     */
     protected function generateGrid($ktore)
     {
         $em = $this->getDoctrine()->getManager();
@@ -288,6 +296,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         );
     }
 
+    /**
+     * @param $role
+     * @return array
+     */
     private function getUsersFromADWithRole($role)
     {
         $ldap = $this->get('ldap_service');
@@ -304,6 +316,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
 
 
+    /**
+     * @return array
+     */
     private function getUsersFromAD()
     {
         $ldap = $this->get('ldap_service');
@@ -337,6 +352,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return $users;
     }
 
+    /**
+     * @return array
+     */
     protected function getManagerzySpozaPARP()
     {
         $ldap = $this->get('ldap_service');
@@ -417,6 +435,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         )));
     }
 
+    /**
+     * @param $odebranie
+     * @return WniosekNadanieOdebranieZasobow
+     */
     protected function createEmptyWniosek($odebranie)
     {
         $ldap = $this->get('ldap_service');
@@ -474,6 +496,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         );
     }
 
+    /**
+     * @param $wniosek
+     * @param $where
+     * @param $who
+     */
     protected function addViewersEditors($wniosek, &$where, $who)
     {
         if ($this->debug) {
@@ -649,9 +676,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
     }
 
+    /**
+     * @param $ADUser
+     * @return array
+     */
     protected function getManagerUseraDoWniosku($ADUser)
     {
         $ldap = $this->get('ldap_service');
+        $manager = $this->getDoctrine()->getManager();
+
         $kogoSzukac = $ldap->kogoBracJakoManageraDlaUseraDoWniosku($ADUser);
 
         switch ($kogoSzukac) {
@@ -661,13 +694,25 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case 'dyrektor':
             default:
-                $ADManager = [$ldap->getDyrektoraDepartamentu($ADUser['description'])];
+                $skrotDepartamentu = $manager->getRepository('ParpMainBundle:Departament')
+                    ->findOneBy([
+                        'name' => $ADUser['department']
+                    ]);
+
+                if (null === $skrotDepartamentu) {
+                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla '.$ADUser['department']);
+                }
+
+                $ADManager = [$ldap->getDyrektoraDepartamentu($skrotDepartamentu->getShortname())];
                 break;
         }
 
         return $ADManager;
     }
 
+    /**
+     * @param $msg
+     */
     protected function sendMailToAdminRejestru($msg)
     {
         die();
@@ -693,6 +738,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $this->container->get('mailer')->send($message);
     }
 
+    /**
+     * @param $wniosek
+     * @param $statusName
+     * @param $rejected
+     * @param null $oldStatus
+     */
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null)
     {
         $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
@@ -828,6 +879,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $em->persist($sh);
     }
 
+    /**
+     * @param $wniosek
+     * @return null
+     */
     protected function sprawdzCzyDzialaZastepstwo($wniosek)
     {
         $ret = $this->checkAccess($wniosek);
@@ -1372,6 +1427,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
     }
 
+    /**
+     * @param $entity
+     * @param bool $onlyEditors
+     * @param null $username
+     * @return array
+     */
     protected function checkAccess($entity, $onlyEditors = false, $username = null)
     {
         if ($username === null) {

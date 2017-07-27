@@ -1119,7 +1119,7 @@ class LdapService
             }
         }
 
-        throw new EntityNotFoundException('Nie znaleziono dyrektora departamentu '.$skrot);
+        throw new EntityNotFoundException('Nie znaleziono dyrektora departamentu o nazwie '.$skrot);
     }
 
     public function kogoBracJakoManageraDlaUseraDoWniosku($user)
