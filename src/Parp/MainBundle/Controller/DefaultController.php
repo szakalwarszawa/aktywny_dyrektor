@@ -10,16 +10,21 @@ use APY\DataGridBundle\Grid\Grid;
 use APY\DataGridBundle\Grid\Source\Vector;
 use Parp\MainBundle\Entity\AclUserRole;
 use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Entity\Section;
 use Parp\MainBundle\Entity\UserEngagement;
 use Parp\MainBundle\Entity\UserZasoby;
 use Parp\MainBundle\Entity\Zasoby;
+use Parp\MainBundle\Exception\SecurityTestException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -30,7 +35,6 @@ use Symfony\Component\Validator\Constraints\NotBlank;
  */
 class DefaultController extends Controller
 {
-
     protected $col2month = array('G', 'I', 'K', 'M', 'O', 'Q', 'S', 'U', 'W', 'Y', 'AA', 'AC');
     protected $ADUsers = array();
 
@@ -82,9 +86,9 @@ class DefaultController extends Controller
             return $grid->getExportResponse();
         }
 
-        if ($grid->isReadyForRedirect()) {
-            //return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
-        }
+//        if ($grid->isReadyForRedirect()) {
+//            //return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
+//        }
 
         //return $grid->getGridResponse(['ktorzy' => $ktorzy]);
         return $grid->getGridResponse(['ktorzy' => $ktorzy]);
@@ -171,7 +175,7 @@ class DefaultController extends Controller
 
 
         // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
+        $actionsColumn = new ActionsColumn(null, 'Działania');
         $grid->addColumn($actionsColumn);
 
         // Zdejmujemy filtr
@@ -307,11 +311,7 @@ class DefaultController extends Controller
      * @internal param null $allPrimaryKeys
      * @internal param null $session
      */
-    public function processMassActionAction(
-        $action = ''
-    ) {
-
-
+    public function processMassActionAction($action = '') {
         if (isset($_POST)) {
             $array = array_shift($_POST);
             $actiond = '';
@@ -336,9 +336,8 @@ class DefaultController extends Controller
             //var_dump($response); die();
             return $response;
             */
-        } else {
-            die('a');
         }
+
         $url = $this->generateUrl('wnioseknadanieodebraniezasobow');
 
         return new RedirectResponse($url);
@@ -374,7 +373,6 @@ class DefaultController extends Controller
      * @return array
      * @internal param $samaccountName
      * @Route("/user/{samaccountname}/photo", name="userPhoto")
-     * @Template();
      */
     public function photoAction($samaccountname)
     {
@@ -385,7 +383,6 @@ class DefaultController extends Controller
 
     /**
      * @Route("/show_uncommited/{id}", name="show_uncommited");
-     * @Template();
      * @param $id
      *
      * @return Response
@@ -402,12 +399,11 @@ class DefaultController extends Controller
     /**
      * @Route("/user/{samaccountname}/edit", name="userEdit")
      * @Route("/user/{id}/edit", name="user_edit")
-     * @Template();
      * @param         $samaccountname
      * @param Request $request
      *
      * @return Response
-     * @throws \Parp\MainBundle\Exception\SecurityTestException
+     * @throws SecurityTestException
      */
     public function editAction($samaccountname, Request $request)
     {
@@ -565,7 +561,9 @@ class DefaultController extends Controller
                         $manager->remove($r);
                     }
                     foreach ($roles2 as $r) {
-                        $role = $manager->getRepository('ParpMainBundle:AclRole')->findOneByName($r);
+                        $role = $manager
+                            ->getRepository('ParpMainBundle:AclRole')
+                            ->findOneBy(['name' => $r]);
                         $us = new AclUserRole();
                         $us->setSamaccountname($samaccountname);
                         $us->setRole($role);
@@ -585,7 +583,7 @@ class DefaultController extends Controller
                         ->setSamaccountname($samaccountname)
                         ->setDistinguishedName($previousData['distinguishedname'])
                     ;
-                    
+
                     if (true === $roznicauprawnien && true === $ustawUprawnieniaPoczatkowe) {
                         $value = implode(',', $newrights);
                         $entry->setInitialrights($value);
@@ -1051,10 +1049,10 @@ class DefaultController extends Controller
         //var_dump($ndata, $odata, $diff); die();
         if (count($diff) > 0) {
             $aduser = $ldap->getUserFromAD($samaccountname);
-            $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+            $entry = new Entry($this->getUser()->getUsername());
             $entry->setFromWhen(new \Datetime());
             $entry->setSamaccountname($samaccountname);
-            $entry->setDistinguishedname($aduser[0]['distinguishedname']);
+            $entry->setDistinguishedName($aduser[0]['distinguishedname']);
 
             //zmiana sekcji
             if (isset($diff['info'])) {
@@ -1133,7 +1131,7 @@ class DefaultController extends Controller
             $this->getDoctrine()
                 ->getManager()
                 ->getRepository('ParpMainBundle:Section')
-                ->findOneByShortname(trim($ADUser[0]['division']));
+                ->findOneBy(['shortname' => trim($ADUser[0]['division'])]);
         $sec = $section ? $section->getShortname() : '';
         //odbiera stare
         $grupyNaPodstawieSekcjiOrazStanowiska =
@@ -1148,7 +1146,7 @@ class DefaultController extends Controller
             $department =
                 $this->getDoctrine()
                     ->getRepository('ParpMainBundle:Departament')
-                    ->findOneByName($newData['department']);
+                    ->findOneBy(['name' => $newData['department']]);
             $dep = $department->getShortname();
         }
 
@@ -1157,7 +1155,7 @@ class DefaultController extends Controller
                 $this->getDoctrine()
                     ->getManager()
                     ->getRepository('ParpMainBundle:Section')
-                    ->findOneByName($newData['info']);
+                    ->findOneBy(['name' => $newData['info']]);
             $sec = $section->getShortname();
         }
         //if(in_array("UPP", $newrights) || isset($newData['department']) || isset($newData['info'])){
@@ -1225,10 +1223,10 @@ class DefaultController extends Controller
     }
 
     /**
-     * @param \Symfony\Component\Form\Form $form
+     * @param Form $form
      * @return array
      */
-    private function getErrorMessages(\Symfony\Component\Form\Form $form)
+    private function getErrorMessages(Form $form)
     {
         $errors = array();
 
@@ -1263,7 +1261,7 @@ class DefaultController extends Controller
      * @param Request $request
      *
      * @return RedirectResponse|Response
-     * @throws \Parp\MainBundle\Exception\SecurityTestException
+     * @throws SecurityTestException
      */
     public function addAction(Request $request)
     {
@@ -1271,7 +1269,7 @@ class DefaultController extends Controller
             in_array('PARP_ADMIN', $this->getUser()->getRoles(), true) ||
             in_array('PARP_BZK_2', $this->getUser()->getRoles(), true);
         if (!$mozeTuByc) {
-            throw new \Parp\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by tworzyć użytkowników!');
+            throw new SecurityTestException('Nie masz uprawnień by tworzyć użytkowników!');
         }
         // Sięgamy do AD:
         // $ldap = $this->get('ldap_service');
@@ -1291,8 +1289,8 @@ class DefaultController extends Controller
             $this->get('adcheck_service')->checkIfUserCanBeEdited($entry->getSamaccountname());
 
 
-            $newSection = $form->get('infoNew')->getData();
-            $oldSection = $form->get('info')->getData();
+//            $newSection = $form->get('infoNew')->getData();
+//            $oldSection = $form->get('info')->getData();
 //            if ($newSection !== '') {
 //                $ns = new Section();
 //                $ns->setName($newSection);
@@ -1308,7 +1306,7 @@ class DefaultController extends Controller
             $department =
                 $this->getDoctrine()
                     ->getRepository('ParpMainBundle:Departament')
-                    ->findOneByName($entry->getDepartment());
+                    ->findOneBy(['name' => $entry->getDepartment()]);
             //print_r($form->get('department')->getData());die();
             $distinguishedname = 'CN='.$entry->getCn().', OU='.$department->getShortname().','.$ou.', DC='.$tab[0].
                 ',DC='.$tab[1];
@@ -1324,8 +1322,9 @@ class DefaultController extends Controller
                 //die(".".$d->format("Y-m-d h:I:s"));
             }
 
-            $value = implode(',', $entry->getInitialrights());
-            $entry->setInitialrights($value);
+            // FIXME: Tu wydaje mi się że coś jest nie tak.
+//            $value = implode(',', [$entry->getInitialrights()]);
+//            $entry->setInitialrights($value);
 
             //print_r($entry);
             $em->persist($entry);
@@ -1369,11 +1368,10 @@ class DefaultController extends Controller
     /**
      * @Route("/engage/{samaccountname}/{rok}", name="engageUser")
      * @Route("/engage/{samaccountname}", name="engageUser")
-     * @Template()
      * @param Request $request
      * @param         $samaccountname
      *
-     * @return array
+     * @return array|RedirectResponse
      */
     public function engagementAction(Request $request, $samaccountname)
     {
@@ -1548,7 +1546,7 @@ class DefaultController extends Controller
             'engagements'     => $engagements,
             'userEngagements' => $userEngagements,
             'samaccountname'  => $samaccountname,
-            'user'            => @$ADUser[0],
+            'user'            => $ADUser[0],
             'dane'            => $dane,
             'year'            => $year,
             'sumy'            => $sumy,
@@ -1588,17 +1586,17 @@ class DefaultController extends Controller
     {
         $tab = array(
             1 => 'sty',
-            'lut',
-            'mar',
-            'kwi',
-            'maj',
-            'cze',
-            'lip',
-            'sie',
-            'wrz',
-            'paz',
-            'lis',
-            'gru',
+            2 => 'lut',
+            3 => 'mar',
+            4 => 'kwi',
+            5 => 'maj',
+            6 => 'cze',
+            7 => 'lip',
+            8 => 'sie',
+            9 => 'wrz',
+            10 => 'paz',
+            11 => 'lis',
+            12 => 'gru',
         );
 
         return $tab[$month];
@@ -1613,7 +1611,7 @@ class DefaultController extends Controller
     public function ajaxSuggestInitials(Request $request)
     {
         $post = ($request->getMethod() === 'POST');
-        $ajax = $request->isXMLHttpRequest();
+        $ajax = $request->isXmlHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
         if ((!$ajax) or (!$post)) {
@@ -1714,11 +1712,11 @@ class DefaultController extends Controller
     {
 
         $post = ($request->getMethod() === 'POST');
-        $ajax = $request->isXMLHttpRequest();
+        $ajax = $request->isXmlHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
         if ((!$ajax) or (!$post)) {
-            //return null;
+            throw new MethodNotAllowedHttpException(['POST'], 'Dopuszczalne tylko POST oraz wywołanie AJAX');
         }
 
         $imienazwisko = $request->get('imienazwisko', null);
@@ -1752,7 +1750,7 @@ class DefaultController extends Controller
     public function formFileEcmAction(Request $request)
     {
 
-        $form = $this->createFormBuilder()->add('plik', 'file', array(
+        $form = $this->createFormBuilder()->add('plik', FileType::class, array(
             'required'    => false,
             'label_attr'  => array(
                 'class' => 'col-sm-4 control-label',
@@ -1783,10 +1781,10 @@ class DefaultController extends Controller
         ))
             ->add(
                 'rok',
-                'text',
+                TextType::class,
                 array('required' => false, 'label' => 'Przy imporcie zaangażowań podaj rok', 'data' => date('Y'))
             )
-            ->add('wczytaj', 'submit', array(
+            ->add('wczytaj', SubmitType::class, array(
                 'attr' => array(
                     'class' => 'btn btn-success col-sm-12',
                 ),
@@ -1894,7 +1892,7 @@ class DefaultController extends Controller
             //pomijamy pierwszy rzad
             if ($row['A'] !== 'D/B') {
                 $pr = trim($row['F']);
-                $userdane[$row['B']][$pr] = $this->getMonthsFromRow($row, $programy);
+                $userdane[$row['B']][$pr] = $this->getMonthsFromRow($row);
             }
         }
         //print_r($programy);
@@ -1925,11 +1923,10 @@ class DefaultController extends Controller
                             if ($ue == null) {
                                 //print_r($pars);
                                 //die('a');
-                                $ue = new \Parp\MainBundle\Entity\UserEngagement();
+                                $ue = new UserEngagement();
                                 $this->get('doctrine')->getManager()->persist($ue);
-                            } else {
-                                //die('b');
                             }
+
                             $ue->setSamaccountname($pars['samaccountname']);
                             $ue->setPercent($proc * 100);
                             $ue->setEngagement($programy[$prog]);
@@ -1993,6 +1990,8 @@ class DefaultController extends Controller
                 return $user;
             }
         }
+
+        return null;
     }
 
     /**
@@ -2059,14 +2058,16 @@ class DefaultController extends Controller
                 if ($dane[1] !== '' && $dane[1] !== '') {
                     // znajdz zasob
                     $zasob =
-                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa(trim($dane[0]));
+                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneBy(['name' => trim($dane[0])]);
                     if (!$zasob) {
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
                         $zasob = new Zasoby();
-                        $zasob->setOpis(trim($dane[8]));
-                        $zasob->setBiuro(trim($dane[6]));
-                        $zasob->setNazwa(trim($dane[0]));
+                        $zasob
+                            ->setOpis(trim($dane[8]))
+                            ->setBiuro(trim($dane[6]))
+                            ->setNazwa(trim($dane[0]))
+                        ;
                     }
                     foreach ($dane as $k => $v) {
                         $v = trim($v);
@@ -2185,7 +2186,7 @@ class DefaultController extends Controller
                 if ($dane[1] !== '' && $dane[1] !== '' && !empty($ADUser)) {
                     // znajdz zasob
                     $zasob =
-                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa(trim($dane[2]));
+                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneBy(['name' => trim($dane[2])]);
                     if (!$zasob) {
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
@@ -2433,7 +2434,7 @@ class DefaultController extends Controller
     {
 
         $post = ($request->getMethod() === 'POST');
-        $ajax = $request->isXMLHttpRequest();
+        $ajax = $request->isXmlHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
         /*
@@ -2477,7 +2478,7 @@ class DefaultController extends Controller
     public function userSuggestLoginAction(Request $request)
     {
         $post = ($request->getMethod() === 'POST');
-        $ajax = $request->isXMLHttpRequest();
+        $ajax = $request->isXmlHttpRequest();
 
         // Sprawdzenie, czy akcja została wywołana prawidłowym trybem.
         /*

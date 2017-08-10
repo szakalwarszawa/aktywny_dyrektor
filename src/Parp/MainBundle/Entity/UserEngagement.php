@@ -84,7 +84,7 @@ class UserEngagement
     /**
      * Set engagement
      *
-     * @param integer $engagement
+     * @param Engagement $engagement
      * @return UserEngagement
      */
     public function setEngagement($engagement)
