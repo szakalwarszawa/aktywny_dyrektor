@@ -2,12 +2,14 @@
 
 namespace Parp\MainBundle\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 
 /**
  * RaportyIT controller.
@@ -47,7 +49,7 @@ class RaportyITController extends Controller
      * @param Request $request
      * @param int     $rok
      *
-     * @return array
+     * @return array|Response
      * @throws \LogicException
      * @throws \InvalidArgumentException
      * @throws SecurityTestException
@@ -98,14 +100,16 @@ class RaportyITController extends Controller
         if ($form->isValid()) {
             $ndata = $form->getData();
 
-            return $this->generujRaport(
+
+            $raport = $this->generujRaport(
                 $ndata,
                 $this->get('ldap_service'),
                 $this->getDoctrine()->getManager(),
                 $this->get('samaccountname_generator'),
                 $this->get('templating')
             );
-            //return $this->generateExcel($data, $rok);
+
+            return new Response($raport);
         }
 
         return [
@@ -113,7 +117,15 @@ class RaportyITController extends Controller
         ];
     }
 
-    public function generujRaport($ndata, $ldap, $em, $samaccountNameGenerator, $twig)
+    /**
+     * @param $ndata
+     * @param $ldap
+     * @param $em
+     * @param $samaccountNameGenerator
+     * @param $twig
+     * @return mixed
+     */
+    public function generujRaport($ndata, $ldap,EntityManager $em, $samaccountNameGenerator, $twig)
     {
         $this->ldap = $ldap;
         $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac'], $em);
@@ -123,7 +135,6 @@ class RaportyITController extends Controller
             $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
         }
 
-        $zmianyDepartamentow = [];
         $repo = $em->getRepository('ParpMainBundle:DaneRekord');
         $historyRepo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
         $zmianyDep = $repo->findChangesInMonthByPole($ndata['rok'], $ndata['miesiac']);
@@ -221,6 +232,10 @@ class RaportyITController extends Controller
         );
     }
 
+    /**
+     * @param $dn
+     * @return string
+     */
     protected function parseManagerDN($dn)
     {
         if (strstr($dn, '=') !== false) {
@@ -233,6 +248,13 @@ class RaportyITController extends Controller
         }
     }
 
+    /**
+     * @param $dr
+     * @param $rok
+     * @param $miesiac
+     * @param string $akcja
+     * @return array
+     */
     protected function zrobRekordZRekorda($dr, $rok, $miesiac, $akcja = '')
     {
         $miesiac = str_pad($miesiac, 2, '0', STR_PAD_LEFT);
@@ -272,11 +294,23 @@ class RaportyITController extends Controller
         ];
     }
 
+    /**
+     * @param $rok
+     * @param $miesiac
+     * @param $em
+     * @return mixed
+     */
     protected function getData($rok, $miesiac, $em)
     {
         return $em->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
     }
 
+    /**
+     * @param $eNext
+     * @param $log
+     * @param $datyKonca
+     * @return array
+     */
     protected function makeRowVersion($eNext, $log, &$datyKonca)
     {
         $ret = [];
@@ -343,6 +377,10 @@ class RaportyITController extends Controller
         return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', $dane);
     }
 
+    /**
+     * @param $login
+     * @return array
+     */
     public function raportBssProcesuj($login)
     {
         $now = new \Datetime();
@@ -434,6 +472,10 @@ class RaportyITController extends Controller
         ];
     }
 
+    /**
+     * @param $dane
+     * @return array
+     */
     protected function przygotujDaneRaportuBss(&$dane)
     {
         $now = new \Datetime();
