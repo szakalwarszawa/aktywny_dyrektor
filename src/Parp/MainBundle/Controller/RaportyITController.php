@@ -120,12 +120,12 @@ class RaportyITController extends Controller
     /**
      * @param $ndata
      * @param $ldap
-     * @param $em
+     * @param EntityManager $em
      * @param $samaccountNameGenerator
      * @param $twig
      * @return mixed
      */
-    public function generujRaport($ndata, $ldap,EntityManager $em, $samaccountNameGenerator, $twig)
+    public function generujRaport($ndata, $ldap, EntityManager $em, $samaccountNameGenerator, $twig)
     {
         $this->ldap = $ldap;
         $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac'], $em);

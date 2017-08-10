@@ -492,7 +492,7 @@ class DefaultController extends Controller
         $form = $this->createUserEditForm($this, $defaultData, false, false, $daneRekord);
         $form->handleRequest($request);
 
-        $ustawUprawnieniaPoczatkowe = $request->isMethod('POST') && $form->get('ustawUprawnieniaPoczatkowe')->getData();
+        $ustawUprawnieniaPoczatkowe = $request->isMethod('POST') && true === $form->get('ustawUprawnieniaPoczatkowe')->getData();
 
         if ($form->isValid() || $ustawUprawnieniaPoczatkowe) {
             $newData = $form->getData();
@@ -503,7 +503,7 @@ class DefaultController extends Controller
                 die('Nie masz uprawnien by edytowac uzytkownikow!!!');
             }
 
-            $sekcja = $form->get('info')->getData();
+//            $sekcja = $form->get('info')->getData();
 //            $oldSection = $form->get('info')->getData();
 //            //echo ".".$oldSection.".";
 //            if ('' !== $newSection) {
@@ -585,17 +585,17 @@ class DefaultController extends Controller
                         ->setSamaccountname($samaccountname)
                         ->setDistinguishedName($previousData['distinguishedname'])
                     ;
-
-                    if (($roznicauprawnien)) {
+                    
+                    if (true === $roznicauprawnien && true === $ustawUprawnieniaPoczatkowe) {
                         $value = implode(',', $newrights);
                         $entry->setInitialrights($value);
                     }
 
                     $this->parseUserFormData($newData, $entry);
 
-                    if ($roznicauprawnien ||
+                    if (($roznicauprawnien ||
                         isset($newData['department']) ||
-                        isset($newData['info']) ||
+                        isset($newData['info'])) &&
                         true === $ustawUprawnieniaPoczatkowe
                     ) {
                         $this->nadajUprawnieniaPoczatkowe($ADUser, $entry, $newData);
@@ -606,6 +606,7 @@ class DefaultController extends Controller
                     }
 
                     $manager->persist($entry);
+
                     $this->addFlash('warning', 'Zmiany do AD zostały wprowadzone');
                 }
 
