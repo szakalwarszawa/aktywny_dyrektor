@@ -175,7 +175,7 @@ class DefaultController extends Controller
 
 
         // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn(null, 'Działania');
+        $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
 
         // Zdejmujemy filtr
@@ -2410,7 +2410,7 @@ class DefaultController extends Controller
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findNameByAccountname($samaccountname);
 
-        if ($this->isGranted('PARP_ADMIN')) {
+        if (in_array('PARP_ADMIN', $this->getUser()->getRoles(), true)) {
             $i = 0;
             foreach ($userZasoby as $zasob) {
                 $userZasoby[$i]['poziomDostepuNapraw'] = $uprawnieniaService->sprawdzPrawidlowoscPoziomuDostepu($zasob['poziomDostepu'], $zasob['zid'], true);
