@@ -39,23 +39,23 @@ Liczba rekordów: {{daneZRekorda|length}}
                                     {% for k, v in value %}
                                         {{k}} : {{ v|raw }}<br>
                                     {% endfor %}
-                                {% else %}                                
+                                {% else %}
                                     {{ value|raw }}
                                 {% endif %}
                             {% endif %}
-                        
+
                         </td>
-                    {% endfor %}                   
+                    {% endfor %}
                 </tr>
             {%endfor%}
     </tbody>
 </table>
 {%endif %}
-    
-<script type="text/javascript">
-    
-    $("table.tablesorter").tablesorter(); 
 
-</script>
+    <a href="{{ path('raport_it_generuj_xls') }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i> Zapisz raport jako XLS</a>
+
+    <script type="text/javascript">
+        $("table.tablesorter").tablesorter();
+    </script>
 
 {% endblock %}

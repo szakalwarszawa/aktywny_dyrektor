@@ -72,6 +72,7 @@ class ExcelService
         $response->headers->set('Pragma', 'public');
         $response->headers->set('Cache-Control', 'maxage=1');
         $response->headers->set('Content-Disposition', $dispositionHeader);
+
         return $response;
     }
 }

@@ -2,14 +2,18 @@
 
 namespace Parp\MainBundle\Controller;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Common\Persistence\ObjectManager;
+use Parp\MainBundle\Entity\Entry;
 use Parp\MainBundle\Exception\SecurityTestException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Exception\InvalidArgumentException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * RaportyIT controller.
@@ -47,24 +51,25 @@ class RaportyITController extends Controller
      * @Route("/generujRaport", name="raportIT1")
      * @Template()
      * @param Request $request
-     * @param int     $rok
      *
-     * @return array|Response
+     * @return array|string
      * @throws \LogicException
      * @throws \InvalidArgumentException
      * @throws SecurityTestException
      */
-    public function indexAction(Request $request, $rok = 0)
+    public function indexAction(Request $request)
     {
         if (!in_array('PARP_ADMIN', $this->getUser()->getRoles(), true)) {
-            throw new SecurityTestException('Nie masz dostępu do tej części aplikacji', 999);
+            throw new AccessDeniedException('Nie masz dostępu do tej części aplikacji');
         }
+
         $lata = [];
         for ($i = date('Y'); $i > 2003; $i--) {
             $lata[$i] = $i;
         }
-        $builder = $this->createFormBuilder(array('csrf_protection' => false))
-            ->add('rok', 'choice', array(
+
+        $builder = $this->createFormBuilder()
+            ->add('rok', ChoiceType::class, array(
                 'required'   => true,
                 'label'      => 'Wybierz rok do raportu',
                 'label_attr' => array(
@@ -74,8 +79,8 @@ class RaportyITController extends Controller
                 'attr'       => array(
                     'class' => 'form-control',
                 ),
-            ));
-        $builder->add('miesiac', 'choice', array(
+            ))
+            ->add('miesiac', ChoiceType::class, array(
             'required'   => true,
             'label'      => 'Wybierz miesiąc do raportu',
             'label_attr' => array(
@@ -86,8 +91,8 @@ class RaportyITController extends Controller
                 'class' => 'form-control',
             ),
             'data'       => date('n'),
-        ));
-        $builder->add('zapisz', 'submit', array(
+            ))
+            ->add('zapisz', SubmitType::class, array(
             'attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             ),
@@ -100,16 +105,18 @@ class RaportyITController extends Controller
         if ($form->isValid()) {
             $ndata = $form->getData();
 
-
             $raport = $this->generujRaport(
-                $ndata,
-                $this->get('ldap_service'),
-                $this->getDoctrine()->getManager(),
-                $this->get('samaccountname_generator'),
-                $this->get('templating')
+                $ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator')
             );
 
-            return new Response($raport);
+            return $this->render(
+                'ParpMainBundle:RaportyIT:wynik.html.twig',
+                [
+                    'daneZRekorda' => $raport,
+                    'rok' => $ndata['rok'],
+                    'miesiac' => $ndata['miesiac']
+                ]
+            );
         }
 
         return [
@@ -118,14 +125,63 @@ class RaportyITController extends Controller
     }
 
     /**
+     * Akcja, która na podstawie miesiąca oraz roku generuje raport do pliku XLS
+     *
+     * @Route("/generujRaport/XLS/{miesiac}/{rok}", name="raport_it_generuj_xls")
+     * @param int $miesiac
+     * @param int $rok
+     * @return \Symfony\Component\HttpFoundation\StreamedResponse
+     */
+    public function generujExcelAction($miesiac = null, $rok = null)
+    {
+        $data = new \DateTime();
+        $rok = null === $rok ? $data->format('Y') : $rok;
+        $miesiac = null === $miesiac ? $data->format('m') : $miesiac;
+
+        if ($miesiac < 1 || $miesiac > 12) {
+            throw new InvalidArgumentException('Miesiąc musi być z zakresu 1 <> 12');
+        }
+
+        if ($rok < 2006 || $rok > 2025) {
+            throw new InvalidArgumentException('Rok musi być z zakresu 2006 <> 2025');
+        }
+
+        $raport = $this->generujRaport(
+            ['rok' => $rok, 'miesiac' => $miesiac], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator')
+        );
+
+        // Trzeba spłaszczyć tablicę, aby była "zjadalna" przez Excela
+        $excelData = [];
+        $i = 0;
+        foreach ($raport as $item) {
+            $excelData[$i]['login'] = $item['login'];
+            $excelData[$i]['nazwisko'] = $item['nazwisko'];
+            $excelData[$i]['imie'] = $item['imie'];
+            $excelData[$i]['departament'] = $item['departament'];
+            $excelData[$i]['sekcja'] = $item['sekcja'];
+            $excelData[$i]['stanowisko'] = $item['stanowisko'];
+            $excelData[$i]['przelozony'] = $item['przelozony'];
+            $excelData[$i]['umowa'] = $item['umowa'];
+            $excelData[$i]['umowaOd'] = ($item['umowaOd']);
+            $excelData[$i]['umowaDo'] = ($item['umowaDo']);
+            $excelData[$i]['expiry'] = $item['expiry'];
+            $excelData[$i]['akcja'] = $item['akcja'];
+            $excelData[$i]['data'] = $item['data'];
+            $i++;
+        }
+
+        return $this->get('excel_service')->generateExcel($excelData);
+       }
+
+    /**
      * @param $ndata
      * @param $ldap
-     * @param EntityManager $em
+     * @param ObjectManager $em
      * @param $samaccountNameGenerator
-     * @param $twig
      * @return mixed
+     * @internal param $twig
      */
-    public function generujRaport($ndata, $ldap, EntityManager $em, $samaccountNameGenerator, $twig)
+    public function generujRaport($ndata, $ldap, ObjectManager $em, $samaccountNameGenerator)
     {
         $this->ldap = $ldap;
         $daneRekord = $this->getData($ndata['rok'], $ndata['miesiac'], $em);
@@ -226,10 +282,7 @@ class RaportyITController extends Controller
             }
         }
 
-        return $twig->render(
-            'ParpMainBundle:RaportyIT:wynik.html.twig',
-            ['daneZRekorda' => $daneZRekorda, 'rok' => $ndata['rok'], 'miesiac' => $miesiac]
-        );
+        return $daneZRekorda;
     }
 
     /**
@@ -362,7 +415,6 @@ class RaportyITController extends Controller
 
     /**
      * @Route("/raportBss/{login}", name="raportBss")
-     * @Template()
      * @param string $login
      *
      * @return \Symfony\Component\HttpFoundation\Response
@@ -372,7 +424,6 @@ class RaportyITController extends Controller
         //
         $this->container = $this;
         $dane = $this->raportBssProcesuj($login);
-        die('a');
 
         return $this->render('ParpMainBundle:Dev:wykresBss.html.twig', $dane);
     }
@@ -418,7 +469,6 @@ class RaportyITController extends Controller
             $this->ostatniDepartament['daneRekord'] = [];
             $this->ostatniDepartament['departament'] = $this->user['description'];
             $this->ostatniDepartament['sekcja'] = $this->user['division'];
-            $this->user['title'] = $this->user['title'];
             $this->zakres['min'] = $min;
             $this->zakres['max'] = $max;
             //die('tutaj');
@@ -482,8 +532,6 @@ class RaportyITController extends Controller
         usort($dane, function ($a, $b) {
             return $a['start'] < $b['start'];
         });
-        $okresNr = 1;
-        $okresy = [];
         for ($i = 0; $i < count($dane); $i++) {
             if ($dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
                 $dane[$i]['start'] <= $this->ostatniDepartament['end']
@@ -570,7 +618,6 @@ class RaportyITController extends Controller
 
     /**
      * @Route("/nadajGrupy/{login}/{grupy}", name="nadajGrupy")
-     * @Template()
      * @param string $login
      * @param string $grupy
      *
@@ -580,7 +627,7 @@ class RaportyITController extends Controller
     public function nadajGrupyAction($login = 'kamil_jakacki', $grupy = '')
     {
         $grupy = explode(',', $grupy);
-        $entry = new \Parp\MainBundle\Entity\Entry();
+        $entry = new Entry();
         $entry->setFromWhen(new \Datetime());
         $entry->setSamaccountname($login);
         $entry->setMemberOf('+'.implode(',+', $grupy));

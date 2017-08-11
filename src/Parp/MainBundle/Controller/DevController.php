@@ -2947,7 +2947,7 @@ class DevController extends Controller
 
 
         $raportCtrl = new RaportyITController();
-        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'));
         $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY, ['odbiorcy' => ['kamil_jakacki@parp.gov.pl', 'kacy@parp.gov.pl'], 'html' => $html]);
     }
 
@@ -2959,7 +2959,7 @@ class DevController extends Controller
     public function sendMailAction()
     {
         $raportCtrl = new RaportyITController();
-        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'), $this->get('templating'));
+        $html = $raportCtrl->generujRaport(['rok' => date('Y'), 'miesiac' => date('m')], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator'));
         $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_RAPORTZBIORCZY, ['odbiorcy' => ['kamil_jakacki', 'kacy'], 'html' => $html]);
     }
 
