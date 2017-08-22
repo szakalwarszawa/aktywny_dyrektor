@@ -11,6 +11,7 @@ namespace Parp\MainBundle\Services;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
 use Parp\MainBundle\Entity\Entry;
+use Parp\MainBundle\Entity\Zadanie;
 use Symfony\Component\DependencyInjection\Container;
 use Parp\MainBundle\Entity\UserUprawnienia;
 use Parp\MainBundle\Entity\UserGrupa;
@@ -23,8 +24,9 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UprawnieniaService
 {
-
+    /** @var EntityManager $doctrine */
     protected $doctrine;
+    /** @var Container $container */
     protected $container;
 
     /**
@@ -56,8 +58,10 @@ class UprawnieniaService
             if ($kkod != "") {
                 $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(['kod' => $kkod]);
                 $grupy[] = $noweUprawnienia;
-                foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
-                    $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
+                if (null !== $noweUprawnienia) {
+                    foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
+                        $uprawnienia[$uprawnienie->getId()] = $uprawnienie;
+                    }
                 }
             }
         }
@@ -183,7 +187,7 @@ class UprawnieniaService
          */
         $o1 = (count($nadane) > 0 ? " nadanie " : "") . (count($nadane) > 0 && count($odebrane) > 0 ? " i " : "") . (count($odebrane) > 0 ? " odebranie " : "");
         $opis = $obiekt . ($obiektId != 0 ? " o id : " . $obiektId : "") . " dla użytkownika " . (is_array($person) ? $person['cn'] : $person->getCn());
-        $zadanie = new \Parp\MainBundle\Entity\Zadanie();
+        $zadanie = new Zadanie();
         $zadanie->setNazwa("Nowe zadanie o " . $o1 . " dot. " . $opis);
         $zadanie->setOsoby($zadanieDla);
         $zadanie->setDataDodania(new \Datetime());
@@ -294,7 +298,7 @@ class UprawnieniaService
 
             foreach ($doDodania as $value) {
                 // pobierz ze slownika
-                $upr = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findOneById($value);
+                $upr = $this->doctrine->getRepository('ParpMainBundle:Uprawnienia')->findOneBy(['id' => $value]);
 
                 if ($upr->getCzyEdycja()) {
                     $ldap = $this->container->get('ldap_service');
