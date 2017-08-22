@@ -17,6 +17,8 @@ class PublishController extends Controller
 
     /**
      * @Route("/publish/{showonly}", name="publish", defaults={"showonly" : 1})
+     * @param boolean $showonly
+     * @return Response
      */
     public function publishAction($showonly)
     {
@@ -30,10 +32,6 @@ class PublishController extends Controller
            '--samaccountname' => $this->getUser()->getUsername(),
            //'--ids' => implode(',', $ids),
         );
-        if ($this->getUser()->getUsername() == "kamil_jakacki") {
-            //$pars['--ids'] = 9916;
-        }
-
 
         $input = new ArrayInput($pars);
         
@@ -48,9 +46,7 @@ class PublishController extends Controller
         $content = $output->fetch();
         
         $converter = new AnsiToHtmlConverter();
-        
-        
-        
+
         // return new Response(""), if you used NullOutput()
         return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => $showonly, 'content' => $converter->convert($content)));
     }

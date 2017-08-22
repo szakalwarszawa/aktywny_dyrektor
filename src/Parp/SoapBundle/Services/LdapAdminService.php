@@ -13,6 +13,10 @@ use Parp\MainBundle\Exception\SecurityTestException;
 //use Memcached;
 use Memcached;
 
+/**
+ * Class LdapAdminService
+ * @package Parp\SoapBundle\Services
+ */
 class LdapAdminService
 {
     public $pushChanges = false;
@@ -35,6 +39,13 @@ class LdapAdminService
     public $lastEntry = null;
     public $output;
 
+    /**
+     * LdapAdminService constructor.
+     * @param SecurityContextInterface $securityContext
+     * @param Container $container
+     * @param EntityManager $OrmEntity
+     * @throws SecurityTestException
+     */
     public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
     {
         //var_dump($securityContext->isGranted('PARP_ADMIN')); //->getToken()->getRoles()); die();
@@ -97,6 +108,9 @@ class LdapAdminService
         //die('a');
     }
 
+    /**
+     * @param string $error
+     */
     public function switchServer($error = '')
     {
         $prevHost = $this->ad_host;
@@ -112,6 +126,11 @@ class LdapAdminService
             $this->output->writeln('<error>'.$msg.'</error>');
         }
     }
+
+    /**
+     * @param $samaccountname
+     * @return array
+     */
     public function getUserFromAllAD($samaccountname)
     {
         $ktorzy = 'aktywne';
@@ -131,6 +150,13 @@ class LdapAdminService
         }
         return ['user' => $userNow, 'ktorzy' => $ktorzy];
     }
+
+    /**
+     * @param null $samaccountname
+     * @param null $cnname
+     * @param null $query
+     * @return array|null
+     */
     public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
     {
         $maxConnections = $this->container->getParameter('maximum_ldap_reconnects');
@@ -151,6 +177,14 @@ class LdapAdminService
         } while ($ldapstatus !== 'Success' && $i < $maxConnections);
         return $result;
     }
+
+    /**
+     * @param null $samaccountname
+     * @param null $cnname
+     * @param null $query
+     * @return array
+     * @throws \Exception
+     */
     public function getUserFromADInt($samaccountname = null, $cnname = null, $query = null)
     {
         $ldapconn = ldap_connect($this->ad_host, $this->port);
@@ -230,6 +264,10 @@ class LdapAdminService
         return $result;
     }
 
+    /**
+     * @param $res
+     * @return array
+     */
     protected function parseMemberOf($res)
     {
         $ret = array();
@@ -243,6 +281,12 @@ class LdapAdminService
         }
         return $ret;
     }
+
+    /**
+     * @param $ldapUser
+     * @param $person
+     * @return string
+     */
     public function saveEntity($ldapUser, $person)
     {
         $this->lastEntryId = $person->getId();
@@ -491,10 +535,23 @@ class LdapAdminService
         //$this->doctrine->flush();
         return $ldapstatus;
     }
+
+    /**
+     * @param $grupa
+     * @return array|bool
+     */
     public function getGrupa($grupa)
     {
         return $this->adldap->group()->find($grupa);
     }
+
+    /**
+     * @param $person
+     * @param $userAD
+     * @param $dn
+     * @param $userdn
+     * @param $ldapconn
+     */
     public function addRemoveMemberOf($person, &$userAD, $dn, $userdn, $ldapconn)
     {
         if ($person->getMemberOf() !== '') {
@@ -559,6 +616,10 @@ class LdapAdminService
         //die('a');
     }
 
+    /**
+     * @param $newPassword
+     * @return mixed
+     */
     public function pwdEncryption($newPassword)
     {
 
@@ -572,6 +633,10 @@ class LdapAdminService
         return $userdata;
     }
 
+    /**
+     * @param $name
+     * @param $samaccountname
+     */
     public function sendMailAboutNewUser($name, $samaccountname)
     {
         $mails = ['kamil_jakacki@parp.gov.pl', 'marcin_lipinski@parp.gov.pl'];
@@ -587,6 +652,11 @@ class LdapAdminService
         //var_dump($view);
         $this->container->get('mailer')->send($message);
     }
+
+    /**
+     * @param $person
+     * @return string
+     */
     public function createEntity($person)
     {
         $this->lastEntryId = $person->getId();
@@ -734,11 +804,19 @@ class LdapAdminService
         return $ldapstatus;
     }
 
+    /**
+     * @param $ldap_ts
+     * @return float|int
+     */
     protected function LDAPtoUnix($ldap_ts)
     {
         return ($ldap_ts / 10000000) - 11644473600;
     }
 
+    /**
+     * @param $unix_ts
+     * @return string
+     */
     protected function unixToLdap($unix_ts)
     {
         return sprintf('%.0f', ($unix_ts + 11644473600) * 10000000);
@@ -798,7 +876,9 @@ class LdapAdminService
     }
 
 
-
+    /**
+     * @param $dn
+     */
     public function deleteEntity($dn)
     {
         $ldapconn = ldap_connect($this->ad_host, $this->port);
@@ -815,6 +895,9 @@ class LdapAdminService
         $this->ldapDelete($ldapconn, $dn);
     }
 
+    /**
+     * @return resource
+     */
     public function prepareConnection()
     {
         $ldapconn = ldap_connect($this->ad_host, $this->port);
@@ -834,6 +917,10 @@ class LdapAdminService
         return $ldapconn;
     }
 
+    /**
+     * @param $sam
+     * @param $email
+     */
     public function changePrimaryEmail($sam, $email)
     {
 
@@ -845,6 +932,11 @@ class LdapAdminService
 
 
     /////////tutaj funkcje opakowajace wypychanie do AD
+
+    /**
+     * @param $link_identifier
+     * @param $funcname
+     */
     public function zalogujBlad($link_identifier, $funcname)
     {
         $this->lastConnectionErrors[] = [
@@ -856,6 +948,12 @@ class LdapAdminService
         ];
     }
     //zmienia atrybuty usera poza departamentem i grupami dostepu
+
+    /**
+     * @param $link_identifier
+     * @param $dn
+     * @param $entry
+     */
     public function ldapModify($link_identifier, $dn, $entry)
     {
         $poszlo = false;
@@ -881,6 +979,14 @@ class LdapAdminService
     }
 
     //zmienia DN userowi , czyli departament
+
+    /**
+     * @param $link_identifier
+     * @param $dn
+     * @param $newrdn
+     * @param $newparent
+     * @param $deleteoldrdn
+     */
     public function ldapRename($link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn)
     {
         $poszlo = false;
@@ -905,6 +1011,12 @@ class LdapAdminService
     }
 
     //dodaje usera do grupy w AD
+
+    /**
+     * @param $link_identifier
+     * @param $dn
+     * @param $entry
+     */
     public function ldapModAdd($link_identifier, $dn, $entry)
     {
         $poszlo = false;
@@ -931,6 +1043,12 @@ class LdapAdminService
     }
 
     //usuwa usera z grupy w AD
+
+    /**
+     * @param $link_identifier
+     * @param $dn
+     * @param $entry
+     */
     public function ldapModDel($link_identifier, $dn, $entry)
     {
         $poszlo = false;
@@ -956,6 +1074,12 @@ class LdapAdminService
     }
 
     //dodaje usera do AD
+
+    /**
+     * @param $linkIdentifier
+     * @param $dn
+     * @param $entry
+     */
     public function ldapAdd($linkIdentifier, $dn, $entry)
     {
         $poszlo = false;
@@ -980,6 +1104,11 @@ class LdapAdminService
         $this->zalogujBlad($linkIdentifier, 'ldapAdd');
     }
     //kasuje usera z AD
+
+    /**
+     * @param $linkIdentifier
+     * @param $dn
+     */
     public function ldapDelete($linkIdentifier, $dn)
     {
         if ($this->pushChanges) {
@@ -993,15 +1122,29 @@ class LdapAdminService
 
         $this->zalogujBlad($linkIdentifier, 'ldapDelete');
     }
+
+    /**
+     * @param $ldapconn
+     * @return string
+     */
     public function ldapError($ldapconn)
     {
         return ldap_error($ldapconn);
     }
+
+    /**
+     * @param $ldapconn
+     * @return int
+     */
     public function ldapErrno($ldapconn)
     {
         return ldap_errno($ldapconn);
     }
 
+    /**
+     * @param $stanowisko
+     * @return mixed
+     */
     public function mapowanieStanowisk($stanowisko)
     {
         $mapa = [

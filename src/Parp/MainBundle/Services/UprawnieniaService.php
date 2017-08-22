@@ -223,9 +223,9 @@ class UprawnieniaService
     }
 
     /**
-     * @param $person
+     * @param Entry $person
      */
-    public function zmianaUprawnien($person)
+    public function zmianaUprawnien(Entry $person)
     {
         $czyZmianaSekcji = false;
         $czyZmianaDepartamentu = false;
@@ -249,8 +249,10 @@ class UprawnieniaService
             $up = explode(",", $person->getInitialRights());
             foreach ($up as $kkod) {
                 $noweUprawnienia = $this->doctrine->getRepository('ParpMainBundle:GrupyUprawnien')->findOneBy(array('kod' => $kkod));
-                foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
-                    $nowe[] = $uprawnienie->getId();
+                if (null !== $noweUprawnienia) {
+                    foreach ($noweUprawnienia->getUprawnienia() as $uprawnienie) {
+                        $nowe[] = $uprawnienie->getId();
+                    }
                 }
             }
 

@@ -168,6 +168,10 @@ class GrupyUprawnien
     {
         return $this->uprawnienia;
     }
+
+    /**
+     * @return string
+     */
     public function __toString()
     {
         return $this->getOpis();

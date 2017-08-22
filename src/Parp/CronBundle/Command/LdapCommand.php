@@ -9,15 +9,22 @@
 
 namespace Parp\CronBundle\Command;
 
+use LogicException;
+use Parp\AuthBundle\Security\ParpUser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\Filesystem\Exception\IOExceptionInterface;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
+/**
+ * Class LdapCommand
+ * @package Parp\CronBundle\Command
+ */
 class LdapCommand extends ContainerAwareCommand
 {
     protected $debug = true;
@@ -49,13 +56,30 @@ class LdapCommand extends ContainerAwareCommand
         ;
     }
 
+    /**
+     * Executes the current command.
+     *
+     * This method is not abstract because you can use this class
+     * as a concrete class. In this case, instead of defining the
+     * execute() method, you set the code to execute by passing
+     * a Closure to the setCode() method.
+     *
+     * @param InputInterface  $input  An InputInterface instance
+     * @param OutputInterface $output An OutputInterface instance
+     *
+     * @return null|int null or 0 if everything went fine, or an error code
+     *
+     * @throws LogicException When this abstract method is not implemented
+     *
+     * @see setCode()
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
             if (!$this->getContainer()->get('security.context')->getToken()) {
-                $user = new \Parp\AuthBundle\Security\ParpUser("kamil_jakacki", "", "salt", ["PARP_ADMIN"]);
+                $user = new ParpUser("kamil_jakacki", "", "salt", ["PARP_ADMIN"]);
                 // create the authentication token
-                $token = new \Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken(
+                $token = new UsernamePasswordToken(
                     $user,
                     null,
                     'main',
@@ -69,11 +93,13 @@ class LdapCommand extends ContainerAwareCommand
             if ($input->getOption('ids')) {
                 $this->ids = $input->getOption('ids');
             }
+
             if ($input->getOption('samaccountname')) {
                 $this->samaccountname = $input->getOption('samaccountname');
             }
+
             $this->showonly = $input->getArgument('showonly');
-            $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
+            $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)": "Publikowanie zmian do AD";
             $output->writeln('<comment>'.$msg.'</comment>', false);
 
             $output->writeln('<comment>Wczytuję usługi ...                             </comment>', false);
@@ -110,7 +136,6 @@ class LdapCommand extends ContainerAwareCommand
                     $userNow = $userNowData['user'];
                     $ktorzy = $userNowData['ktorzy'];
 
-
                     if ($userNow) {
                         $liczbaZmian = 0;
                         if ($ktorzy == "aktywne") {
@@ -139,7 +164,7 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['info']) {
                                 $output->writeln('  - Zmiana sekcji: ' . $userNow[0]['info'] . ' -> ' . $zmiana->getInfo());
                             } else {
-                                $output->writeln('  - Nadanie sekcji: ' . ($zmiana->getInfo() == null ? "n/d" : ""));
+                                $output->writeln('  - Nadanie sekcji: ' . ($zmiana->getInfo() == null ? "n/d": ""));
                             }
                         }
                         if ($zmiana->getDivision() != null) {
@@ -147,13 +172,13 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['division']) {
                                 $output->writeln('  - Zmiana skrótu sekcji: ' . $userNow[0]['division'] . ' -> ' . $zmiana->getDivision());
                             } else {
-                                $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d" : ""));
+                                $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d": ""));
                             }
                         }
                         if ($zmiana->getCn()) {
                             $liczbaZmian++;
                             if ($userNow[0]['cn']) {
-                                $output->writeln('  - Zmiana imienia i nazwiska : ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
+                                $output->writeln('  - Zmiana imienia i nazwiska: ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
                             } else {
                                 $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn().$zmiana->getId());
                             }
@@ -161,7 +186,7 @@ class LdapCommand extends ContainerAwareCommand
                         if ($zmiana->getManager()) {
                             $liczbaZmian++;
                             if ($userNow[0]['manager']) {
-                                $output->writeln('  - Zmiana przełożonego : ' . $userNow[0]['manager'] . ' -> ' . $zmiana->getManager());
+                                $output->writeln('  - Zmiana przełożonego: ' . $userNow[0]['manager'] . ' -> ' . $zmiana->getManager());
                             } else {
                                 $output->writeln('  - Nadanie przełożonego: ' . $zmiana->getManager());
                             }
@@ -169,7 +194,7 @@ class LdapCommand extends ContainerAwareCommand
                         if ($zmiana->getTitle()) {
                             $liczbaZmian++;
                             if ($userNow[0]['title']) {
-                                $output->writeln('  - Zmiana stanowiska : ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
+                                $output->writeln('  - Zmiana stanowiska: ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
                             } else {
                                 $output->writeln('  - Nadanie stanowiska: ' . $zmiana->getTitle());
                             }
@@ -177,14 +202,13 @@ class LdapCommand extends ContainerAwareCommand
                         if ($zmiana->getInitials() && $zmiana->getInitials() != "puste") {
                             $liczbaZmian++;
                             if ($userNow[0]['initials']) {
-                                $output->writeln('  - Zmiana inicjałów : ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
+                                $output->writeln('  - Zmiana inicjałów: ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
                             } else {
                                 $output->writeln('  - Nadanie inicjałów: ' . $zmiana->getInitials());
                             }
                         }
 
                         if ($zmiana->getInitialrights()) {
-/*
                             $liczbaZmian++;
                             // pobierzmy stare
                             $old = $em->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $zmiana->getSamaccountname()));
@@ -194,11 +218,10 @@ class LdapCommand extends ContainerAwareCommand
 
                             // jezeli do tej pory nie miał żadnych
                             if ($old) {
-                                $output->writeln('  - Zmiana uprawnień początkowych : ' . implode(",", $oldg) . ' -> ' . $zmiana->getInitialrights());
+                                $output->writeln('  - Zmiana uprawnień początkowych: ' . implode(",", $oldg) . ' -> ' . $zmiana->getInitialrights());
                             } else {
-                                $output->writeln('  - Nadanie uprawnień początkowych : ' . $zmiana->getInitialrights());
+                                $output->writeln('  - Nadanie uprawnień początkowych: ' . $zmiana->getInitialrights());
                             }
-*/
                         }
                         if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
                             $liczbaZmian++;
@@ -227,6 +250,7 @@ class LdapCommand extends ContainerAwareCommand
                             $output->writeln('<error>Nie ma nic do opublikowania</error>', false);
                             $ldapstatus = "Success";
                         } else {
+                            $ldapstatus = "Success";
                             $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, $output, false);
                         }
 
@@ -277,22 +301,28 @@ class LdapCommand extends ContainerAwareCommand
 
             $t2 = microtime(true) ;
             $td = ($t2 - $t1);
-                $output->writeln('<error>Opublikowano, czas : '.$td.' sekund!!!</error>', false);
+                $output->writeln('<comment>Czas operacji: '.$td.' sekund.</comment>', false);
 
 
             if (!$this->showonly && count($zmiany) > 0) {
                 //zapis loga
-                $output2 = clone $output;
+//                $output2 = clone $output;
+                $output2 = new BufferedOutput(
+                    OutputInterface::VERBOSITY_NORMAL,
+                    true // true for decorated
+                );
                 $converter = new AnsiToHtmlConverter();
-                $msg = ' <link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.$converter->convert($output2->fetch())."</div>"; //"sdadsadsa";
+                $msg = '<link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.
+                    $converter->convert($output2->fetch()).
+                    "</div>"; //"sdadsadsa";
 
                 $fs = new Filesystem();
                 $fs->dumpFile($logfile, $msg);
             } elseif (count($zmiany) == 0) {
-                $output->writeln('<error>Nie ma nic do opublikowania!!!</error>', false);
+                $output->writeln('<info>Nie ma nic do opublikowania!</info>', false);
             }
         } catch (\Exception $e) {
-            $output->writeln('<error>Błąd1...                             </error>', false);
+            $output->writeln('<error>Błąd...                             </error>', false);
             $output->writeln('<error>'.$e->getMessage()."</error>", false);
             $output->writeln('<error>'.$e->getTraceAsString()."</error>", false);
         }
@@ -313,7 +343,7 @@ class LdapCommand extends ContainerAwareCommand
         foreach ($this->pushErrors as $es) {
             foreach ($es as $e) {
                 if ($e) {
-                    //var_dump($e);
+                    var_dump($e);
                     if (in_array($e['errorno'], $przetwarzajOK[$e['function']])) {
                         //znaczy ze ok i logujemy i zamykamy zgloszenie
                         $e['lastEntry']->setIsImplemented(1);
