@@ -408,7 +408,7 @@ class DefaultController extends Controller
     public function editAction($samaccountname, Request $request)
     {
         $currentUser = $this->getUser();
-        $manager = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
         if (null === $currentUser) {
             throw new UnsupportedUserException();
@@ -438,7 +438,7 @@ class DefaultController extends Controller
 
         // pobierz uprawnienia poczatkowe
         $initialrights =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:UserGrupa')
                 ->findBy([
                     'samaccountname' => $ADUser[0]['samaccountname']
@@ -455,7 +455,7 @@ class DefaultController extends Controller
         $previousData = $defaultData;
 
         $zasoby =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:UserZasoby')
                 ->findUserZasobyByAccountname($samaccountname);
 
@@ -480,7 +480,7 @@ class DefaultController extends Controller
         $names = explode(' ', $ADUser[0]['name']);
         //var_dump($names); die();
         $daneRekord =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:DaneRekord')
                 ->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
 
@@ -551,23 +551,23 @@ class DefaultController extends Controller
                 $newData = $this->arrayDiff($newData, $oldData);
                 if ($rolesDiff) {
                     $roles =
-                        $manager
+                        $entityManager
                             ->getRepository('ParpMainBundle:AclUserRole')
                             ->findBy([
                                'samaccountname' => $samaccountname
                             ]);
 
                     foreach ($roles as $r) {
-                        $manager->remove($r);
+                        $entityManager->remove($r);
                     }
                     foreach ($roles2 as $r) {
-                        $role = $manager
+                        $role = $entityManager
                             ->getRepository('ParpMainBundle:AclRole')
                             ->findOneBy(['name' => $r]);
                         $us = new AclUserRole();
                         $us->setSamaccountname($samaccountname);
                         $us->setRole($role);
-                        $manager->persist($us);
+                        $entityManager->persist($us);
                     }
                     $this->addFlash('warning', 'Role zostały zmienione');
                 }
@@ -603,12 +603,12 @@ class DefaultController extends Controller
                         $entry->setFromWhen(new \DateTime('today'));
                     }
 
-                    $manager->persist($entry);
+                    $entityManager->persist($entry);
 
                     $this->addFlash('warning', 'Zmiany do AD zostały wprowadzone');
                 }
 
-                $manager->flush();
+                $entityManager->flush();
 
                 return $this->redirectToRoute('main');
             }
@@ -619,22 +619,22 @@ class DefaultController extends Controller
             die('invalid form '.$form->getErrorsAsString());
         }
         $uprawnienia =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:UserUprawnienia')
                 ->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
         $historyEntries =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:Entry')
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
         $pendingEntries =
-            $manager
+            $entityManager
                 ->getRepository('ParpMainBundle:Entry')
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
 
         $up2grupaAd = array();
         foreach ($uprawnienia as $u) {
             $up =
-                $manager
+                $entityManager
                     ->getRepository('ParpMainBundle:Uprawnienia')
                     ->find($u->getUprawnienieId());
             if ($up->getGrupaAd()) {
