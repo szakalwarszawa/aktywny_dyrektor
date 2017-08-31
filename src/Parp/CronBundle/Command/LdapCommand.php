@@ -240,9 +240,9 @@ class LdapCommand extends ContainerAwareCommand
                             $znak = substr($zmiana->getMemberOf(), 0, 1);
                             $g = substr($zmiana->getMemberOf(), 1);
                             if ($znak == "+") {
-                                $output->writeln('  - Dodanie do grupy: ' . $g);
+                                $output->writeln('  - Dodanie do grup: ' . $g);
                             } else {
-                                $output->writeln('  - Usunięciez grupy: ' . $g);
+                                $output->writeln('  - Usunięcie z grup: ' . $g);
                             }
                         }
 
