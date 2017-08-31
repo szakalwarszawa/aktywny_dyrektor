@@ -8,6 +8,7 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Grid;
 use APY\DataGridBundle\Grid\Source\Vector;
+use Doctrine\ORM\EntityNotFoundException;
 use Parp\MainBundle\Entity\AclUserRole;
 use Parp\MainBundle\Entity\Entry;
 use Parp\MainBundle\Entity\UserEngagement;
@@ -44,7 +45,7 @@ class DefaultController extends Controller
      * @Template()
      * @param string $ktorzy
      *
-     * @return Response
+     * @return Export[]|Response
      */
     public function indexAction($ktorzy = 'usersFromAd')
     {
@@ -2494,5 +2495,41 @@ class DefaultController extends Controller
         $parts = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($imienazwisko);
         $login = $this->get('samaccountname_generator')->generateSamaccountname($parts[1], $parts[0], true);
         die($login);
+    }
+
+    /**
+     * Usuwa zbędny wpis ze zmian oczekujących na implementację do AD
+     *
+     * @Route("/delete_pending/{id}", name="delete_pending")
+     *
+     * @param int $id
+     *
+     * @return RedirectResponse
+     * @throws EntityNotFoundException
+     */
+    public function deletePendingAction($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $entry = $entityManager->getRepository('ParpMainBundle:Entry')->find($id);
+
+        if (null === $entry) {
+            throw new EntityNotFoundException('Nie ma takiego wpisu w bazie.');
+        }
+
+//        try {
+            $entityManager->remove($entry);
+            $entityManager->flush();
+
+            $this->addFlash('notice', 'Usunięto oczekujący wpis');
+//        } catch (\Exception $exception) {
+//            $this->addFlash('warning', 'Nie udało się usunąć oczekujący wpis');
+//        }
+
+        $url = $this->generateUrl('userEdit', ['samaccountname' => $entry->getSamaccountname()]);
+
+        return $this->redirect(
+            sprintf('%s#%s', $url, '#czekajaceAD')
+        );
     }
 }

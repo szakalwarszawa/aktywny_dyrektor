@@ -142,7 +142,7 @@
                         <table class="table table-hover" id="oczekujaceTable">
                             <thead>
                                 <tr>
-                                    <th>Lp.</th>
+                                    <th class="col-xs-1">Lp.</th>
                                     <th>Imię i nazwisko</th>
                                     <th>Inicjały</th>
                                     <th>Departament</th>
@@ -176,6 +176,7 @@
                                         <td>{{row.initialrights}}</td>
                                         <td>{{row.distinguishedName}}</td>
                                         <td>{{row.fromWhen|date}}</td>
+                                        <td><a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a></td>
                                     </tr>
                                     {% set n = n + 1 %}
                                 {%endif%}
