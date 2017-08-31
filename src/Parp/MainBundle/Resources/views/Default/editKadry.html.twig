@@ -176,7 +176,6 @@
                                         <td>{{row.initialrights}}</td>
                                         <td>{{row.distinguishedName}}</td>
                                         <td>{{row.fromWhen|date}}</td>
-                                        <td><a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a></td>
                                     </tr>
                                     {% set n = n + 1 %}
                                 {%endif%}
