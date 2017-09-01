@@ -95,22 +95,26 @@ class UprawnieniaService
                         $opis = str_replace('[D/B]', $departament->getShortname(), $opis);
 
                         $userUprawnienia = new UserUprawnienia();
-                        $userUprawnienia->setOpis($opis);
-                        $userUprawnienia->setDataNadania(new \DateTime());
-                        $userUprawnienia->setCzyAktywne(true);
-                        $userUprawnienia->setSamaccountname($person->getSamaccountname());
-                        $userUprawnienia->setUprawnienieId($uprawnienie->getId());
+                        $userUprawnienia
+                            ->setOpis($opis)
+                            ->setDataNadania(new \DateTime())
+                            ->setCzyAktywne(true)
+                            ->setSamaccountname($person->getSamaccountname())
+                            ->setUprawnienieId($uprawnienie->getId())
+                        ;
 
                         $nadane[] = $opis;
                     }
                 } else {
                     $userUprawnienia = new UserUprawnienia();
                     $opis = str_replace('[D/B]', $departament->getShortname(), $uprawnienie->getOpis());
-                    $userUprawnienia->setOpis($opis);
-                    $userUprawnienia->setDataNadania(new \DateTime());
-                    $userUprawnienia->setCzyAktywne(true);
-                    $userUprawnienia->setSamaccountname($person->getSamaccountname());
-                    $userUprawnienia->setUprawnienieId($uprawnienie->getId());
+                    $userUprawnienia
+                        ->setOpis($opis)
+                        ->setDataNadania(new \DateTime())
+                        ->setCzyAktywne(true)
+                        ->setSamaccountname($person->getSamaccountname())
+                        ->setUprawnienieId($uprawnienie->getId())
+                    ;
 
                     $nadane[] = $opis;
                 }
@@ -119,11 +123,13 @@ class UprawnieniaService
                 $opis = str_replace('[D/B]', $departament->getShortname(), $opis);
 
                 $userUprawnienia = new UserUprawnienia();
-                $userUprawnienia->setOpis($uprawnienie->getOpis());
-                $userUprawnienia->setDataNadania(new \DateTime());
-                $userUprawnienia->setCzyAktywne(true);
-                $userUprawnienia->setSamaccountname($person->getSamaccountname());
-                $userUprawnienia->setUprawnienieId($uprawnienie->getId());
+                $userUprawnienia
+                    ->setOpis($uprawnienie->getOpis())
+                    ->setDataNadania(new \DateTime())
+                    ->setCzyAktywne(true)
+                    ->setSamaccountname($person->getSamaccountname())
+                    ->setUprawnienieId($uprawnienie->getId())
+                ;
 
                 $nadane[] = $opis;
             }

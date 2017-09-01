@@ -495,7 +495,6 @@ class LdapAdminService
             }
         }
 
-
         //zmiana kontenera - obsługujemy nie modyfikacja
         // zmiana departamentu musi byc ostnia operacją ponieważ zmienimi rownież
         // kontener pracownika. Jezeli zmodyfikujemy go wczecniej to pozowatłe operacje mogą
@@ -675,127 +674,126 @@ class LdapAdminService
         $ldap_password = $this->AdminPass;
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+        try {
+            $accountExpires = $person->getAccountExpires();
+            $dn = $person->getDistinguishedName();
 
-        $accountExpires = $person->getAccountExpires();
-        $dn = $person->getDistinguishedName();
+            $entry = array();
+            $entry['cn'] = $person->getCn();
+            if (!empty($accountExpires)) {
+                $entry['accountExpires'] = $this->unixToLdap($accountExpires->getTimestamp());
+            }
 
-        $entry = array();
-        $entry['cn'] = $person->getCn();
-        if (!empty($accountExpires)) {
-            $entry['accountExpires'] = $this->unixToLdap($accountExpires->getTimestamp());
-        } else {
-           // $entry['accountExpires'] = 0;
-        }
+            $manager = $person->getManager();
+            if (!empty($manager)) {
+                // znajdz sciezke przelozonego
+                $cn = $manager;
+                $searchString = '(&(cn=' . $cn . ')(objectClass=person))';
 
-        $manager = $person->getManager();
-        if (!empty($manager)) {
-            // znajdz sciezke przelozonego
-            $cn = $manager;
-            $searchString = '(&(cn='. $cn .')(objectClass=person))';
+                $search = ldap_search($ldapconn, $userdn, $searchString, array(
+                    'name',
+                    'initials',
+                    'title',
+                    'info',
+                    'department',
+                    'description',
+                    'division',
+                    'lastlogon',
+                    'samaccountname',
+                    'manager',
+                    'thumbnailphoto',
+                    'accountExpires',
+                    'useraccountcontrol',
+                    'distinguishedName',
+                ));
+                $tmpResults = ldap_get_entries($ldapconn, $search);
+                $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
+            }
+            $tab = explode(' ', $entry['cn']);
+            $entry['sn'] = count($tab) > 0 ? $tab[0] : '';
+            $entry['givenName'] = $tab[1];
 
-            $search = ldap_search($ldapconn, $userdn, $searchString, array(
-                'name',
-                'initials',
-                'title',
-                'info',
-                'department',
-                'description',
-                'division',
-                'lastlogon',
-                'samaccountname',
-                'manager',
-                'thumbnailphoto',
-                'accountExpires',
-                'useraccountcontrol',
-                'distinguishedName',
-            ));
-            $tmpResults = ldap_get_entries($ldapconn, $search);
-            $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
-        }
-        $tab = explode(' ', $entry['cn']);
-        $entry['sn'] = count($tab) > 0 ? $tab[0] : '';
-        $entry['givenName'] = $tab[1];
-
-        $entry['name'] = $entry['cn'];
-        $entry['displayName'] = $entry['cn'];
-        $entry['userPrincipalName'] = $person->getSamaccountname() . $this->ad_domain;
-        $entry['department'] = $person->getDepartment();
-        $entry['division'] = $person->getDivision();
-        $entry['title'] = $person->getTitle();
-        $entry['distinguishedname'] = $person->getDistinguishedname();
-        $entry['initials'] = $person->getInitials();
-        $entry['samaccountname'] = $person->getSamaccountname();
-        $entry['objectClass']['0'] = 'top';
-        $entry['objectClass']['1'] = 'person';
-        $entry['objectClass']['2'] = 'organizationalPerson';
-        $entry['objectClass']['3'] = 'user';
-        $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
-        $entry['streetAddress'] = 'ul. Pańska 81/83';
-        $entry['wWWHomePage'] = 'www.parp.gov.pl';
-        $entry['co'] = 'Poland';
-        $entry['c'] = 'PL';
-        $entry['l'] = 'Warszawa';
-        $entry['postalCode'] = '00-834';
-        //tu dopisac pozostale atrybuty
-        foreach ($entry as $k => $v) {
-            if (!is_array($v)) {
-                if (strlen($v) == 0) {
-                    //wywalamy puste wartosci do invalid syntax
-                    if ($person->getId() == 4581) {
-                        echo('usuwam '.$k.' '.$v);
+            $entry['name'] = $entry['cn'];
+            $entry['displayName'] = $entry['cn'];
+            $entry['userPrincipalName'] = $person->getSamaccountname() . $this->ad_domain;
+            $entry['department'] = $person->getDepartment();
+            $entry['division'] = $person->getDivision();
+            $entry['title'] = $person->getTitle();
+            $entry['distinguishedname'] = $person->getDistinguishedname();
+            $entry['initials'] = $person->getInitials();
+            $entry['samaccountname'] = $person->getSamaccountname();
+            $entry['objectClass']['0'] = 'top';
+            $entry['objectClass']['1'] = 'person';
+            $entry['objectClass']['2'] = 'organizationalPerson';
+            $entry['objectClass']['3'] = 'user';
+            $entry['company'] = 'Polska Agencja Rozwoju Przedsiębiorczości';
+            $entry['streetAddress'] = 'ul. Pańska 81/83';
+            $entry['wWWHomePage'] = 'www.parp.gov.pl';
+            $entry['co'] = 'Poland';
+            $entry['c'] = 'PL';
+            $entry['l'] = 'Warszawa';
+            $entry['postalCode'] = '00-834';
+            //tu dopisac pozostale atrybuty
+            foreach ($entry as $k => $v) {
+                if (!is_array($v)) {
+                    if (strlen($v) == 0) {
+                        //wywalamy puste wartosci do invalid syntax
+                        if ($person->getId() == 4581) {
+                            echo('usuwam ' . $k . ' ' . $v);
+                        }
+                        unset($entry[$k]);
                     }
-                    unset($entry[$k]);
                 }
             }
-        }
 
 
-        // if (empty($accountExpires)) {
-        $entry['useraccountcontrol'] = 544; // włączenie konta i wymuszenie zmiany hasla
-        //$entry["info"] = "aaa";//$person->getInfo();
-        $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
-        if ($section) {
-            $entry['division'] = $section->getName();//$section->getShortname();
-        } else {
-            $entry['division'] = 'n/d';
+            // if (empty($accountExpires)) {
+            $entry['useraccountcontrol'] = 544; // włączenie konta i wymuszenie zmiany hasla
+            //$entry["info"] = "aaa";//$person->getInfo();
+            $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
+            if ($section) {
+                $entry['division'] = $section->getName();//$section->getShortname();
+            } else {
+                $entry['division'] = 'n/d';
+            }
+            $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
+            //print_r(".".$person->getId());
+            //die();
+            if (!empty($description)) {
+                $entry['description'] = $description->getShortname();
+                $entry['extensionAttribute14'] = $description->getShortname();
+            }
+            $newuser_plaintext_password = 'F4UCorsair';
+            //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
+            if ($this->debug) {
+                echo '<pre>';
+                print_r($dn);
+                print_r($entry);
+                echo '</pre>';
+                die();
+            }
+            $this->ldapAdd($ldapconn, $dn, $entry);
+            if ($description !== null) {
+                $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
+                //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
+                $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
+                $data = [['memberOf' => []]];
+                $this->addRemoveMemberOf($person, $data, $dn, $userdn, $ldapconn);
+            }
+            //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
+
+            $this->sendMailAboutNewUser($entry['name'], $entry['samaccountname']);
+        } catch (\Exception $exception) {
+
         }
-        $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
-        //print_r(".".$person->getId());
-        //die();
-        if (!empty($description)) {
-            $entry['description'] = $description->getShortname();
-            $entry['extensionAttribute14'] = $description->getShortname();
-        }
-        $newuser_plaintext_password = 'F4UCorsair';
-        //$entry['userPassword'] = '{MD5}' . base64_encode(pack('H*',md5($newuser_plaintext_password)));
-        if ($this->debug) {
-            echo '<pre>';
-            print_r($dn);
-            print_r($entry);
-            echo '</pre>';
-            die();
-        }
-        $this->ldapAdd($ldapconn, $dn, $entry);
+
         $ldapstatus = $this->ldapError($ldapconn);
-        if ($description === null) {
-            //var_dump($person);
-        } else {
-            $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($entry, $description->getShortname(), $userAD[0]['division']);
-            //print_r($grupyNaPodstawieSekcjiOrazStanowiska); die();
-            $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
-            $data = [['memberOf' => []]];
-            $this->addRemoveMemberOf($person, $data, $dn, $userdn, $ldapconn);
-        }
-        //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
-        $ldapstatus = $this->ldapError($ldapconn);
 
         if ($this->debug) {
-            die('koniec bo debug '.$ldapstatus);
+            die('koniec bo debug ' . $ldapstatus);
         }
 
         ldap_unbind($ldapconn);
-
-        $this->sendMailAboutNewUser($entry['name'], $entry['samaccountname']);
 
         //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
@@ -855,14 +853,13 @@ class LdapAdminService
                     $info = ldap_get_entries($ldapconn, $sr);
                     ldap_free_result($sr);
                 } catch (\Exception $e) {
-                    $info['count'] == 0;
                     echo 'dodaje biuro '.$dep->getOuAD().', '.$userdn.'!!!!';
                 }
                 if ($info['count'] > 0) {
                 } else {
                     echo 'dodaje biuro !!!!';
                     $ldapstatus2 = $this->ldapError($ldapconn);
-                    $res = $this->ldapAdd($ldapconn, $dep->getOuAD().', '.$userdn, array(
+                    $this->ldapAdd($ldapconn, $dep->getOuAD().', '.$userdn, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'
