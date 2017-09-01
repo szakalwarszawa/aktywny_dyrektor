@@ -228,6 +228,7 @@ class LdapAdminService
             'cn',
             'memberOf'
         ));
+
         $tmpResults = ldap_get_entries($ldapconn, $search);
 
         $ldapstatus = $this->ldapError($ldapconn);
@@ -337,7 +338,7 @@ class LdapAdminService
                 $entry['manager'] = [];
             } elseif (strstr($manager, 'CN=') === false) {
                 // znajdz sciezke przelozonego
-                $cn = $manager;
+                $cn = preg_quote($manager);
                 $searchString = '(&(cn='. $cn .')(objectClass=person))';
 
                 $search = ldap_search($ldapconn, $userdn, $searchString, array(
@@ -365,7 +366,6 @@ class LdapAdminService
                 $entry['manager'] = $person->getManager();
             }
         }
-        //var_dump($person->getManager(), $entry); die();
         if ($person->getTitle()) {
             $entry['title'] = $this->mapowanieStanowisk($person->getTitle());
         }
@@ -382,9 +382,6 @@ class LdapAdminService
                 $entry['initials'] = $person->getInitials();
             }
         }
-
-
-
 
         //$department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($person->getDepartment()), 'nowaStruktura' => true]);
@@ -709,6 +706,7 @@ class LdapAdminService
                 $tmpResults = ldap_get_entries($ldapconn, $search);
                 $entry['manager'] = $tmpResults[0]['distinguishedname'][0];
             }
+
             $tab = explode(' ', $entry['cn']);
             $entry['sn'] = count($tab) > 0 ? $tab[0] : '';
             $entry['givenName'] = $tab[1];

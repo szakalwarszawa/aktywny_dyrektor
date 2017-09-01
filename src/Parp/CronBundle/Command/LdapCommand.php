@@ -336,14 +336,12 @@ class LdapCommand extends ContainerAwareCommand
             'ldapModDel' => [],
             'ldap_add' => [68 /*Already exists*/],
             'ldapDelete' => [],
-            'ldapDelete' => [],
             'addRemoveMemberOf' => []
         ];
 
         foreach ($this->pushErrors as $es) {
             foreach ($es as $e) {
                 if ($e) {
-                    var_dump($e);
                     if (in_array($e['errorno'], $przetwarzajOK[$e['function']])) {
                         //znaczy ze ok i logujemy i zamykamy zgloszenie
                         $e['lastEntry']->setIsImplemented(1);
