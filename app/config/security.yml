@@ -1,7 +1,7 @@
 security:
     erase_credentials:    true
     encoders:
-        Parp\AuthBundle\Security\ParpUser:
+        ParpV1\AuthBundle\Security\ParpUser:
             algorithm:   plaintext
 
     role_hierarchy:

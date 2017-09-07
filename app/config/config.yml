@@ -73,7 +73,7 @@ doctrine:
                 type: annotation
                 alias: GedmoLoggable
                 is_bundle: false
-                #prefix: Parp\MainBundle\Entity #Gedmo\Loggable\Entity
+                #prefix: ParpV1\MainBundle\Entity #Gedmo\Loggable\Entity
                 prefix: Gedmo\Loggable\Entity
                 #dir: "%kernel.root_dir%/../src/Parp/MainBundle/Entity" #"%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
                 dir: "%kernel.root_dir%/../vendor/gedmo/doctrine-extensions/lib/Gedmo/Loggable/Entity"        
