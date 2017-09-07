@@ -9,11 +9,11 @@ use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\DependencyInjection\ContainerInterface as Container;
-use Parp\AppBundle\Exception\LsiException;
+use ParpV1\AppBundle\Exception\LsiException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException as NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException as AccessDeniedHttpException;
 use Symfony\Component\Security\Core\Security;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 
 class ExceptionListener implements EventSubscriberInterface
 {

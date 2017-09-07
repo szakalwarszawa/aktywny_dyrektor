@@ -3,8 +3,8 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Doctrine\Common\Persistence\ObjectManager;
-use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;

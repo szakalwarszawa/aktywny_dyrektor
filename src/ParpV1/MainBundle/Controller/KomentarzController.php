@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Komentarz;
-use Parp\MainBundle\Form\KomentarzType;
+use ParpV1\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Form\KomentarzType;
 
 /**
  * Komentarz controller.

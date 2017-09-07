@@ -2,7 +2,7 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use Parp\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Entity\Komentarz;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -15,13 +15,13 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\WniosekUtworzenieZasobu;
-use Parp\MainBundle\Form\WniosekUtworzenieZasobuType;
+use ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu;
+use ParpV1\MainBundle\Form\WniosekUtworzenieZasobuType;
 use Symfony\Component\Serializer\Serializer;
 use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
-use Parp\MainBundle\Services\ParpMailerService;
+use ParpV1\MainBundle\Services\ParpMailerService;
 
 use Symfony\Component\HttpFoundation\Response;
 

@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Position;
-use Parp\MainBundle\Form\PositionType;
+use ParpV1\MainBundle\Entity\Position;
+use ParpV1\MainBundle\Form\PositionType;
 
 /**
  * Position controller.

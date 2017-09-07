@@ -2,12 +2,12 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use Parp\MainBundle\Entity\Engagement;
-use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Entity\UserEngagement;
-use Parp\MainBundle\Entity\UserUprawnienia;
-use Parp\MainBundle\Form\EngagementType;
-use Parp\MainBundle\Form\UserEngagementType;
+use ParpV1\MainBundle\Entity\Engagement;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\UserEngagement;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
+use ParpV1\MainBundle\Form\EngagementType;
+use ParpV1\MainBundle\Form\UserEngagementType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
@@ -21,13 +21,13 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
-use Parp\MainBundle\Entity\UserZasoby;
-use Parp\MainBundle\Form\UserZasobyType;
-use Parp\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Form\UserZasobyType;
+use ParpV1\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use APY\DataGridBundle\Grid\Column\TextColumn;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 
 class NadawanieUprawnienZasobowController extends Controller
 {

@@ -9,7 +9,7 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 //use Memcached;
 use Memcached;
 

@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\AclAction;
-use Parp\MainBundle\Form\AclActionType;
+use ParpV1\MainBundle\Entity\AclAction;
+use ParpV1\MainBundle\Form\AclActionType;
 
 /**
  * AclAction controller.

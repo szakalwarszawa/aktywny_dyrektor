@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\SoapBundle\Entity\ADOrganizationalUnit;
-use Parp\SoapBundle\Form\ADOrganizationalUnitType;
+use ParpV1\SoapBundle\Entity\ADOrganizationalUnit;
+use ParpV1\SoapBundle\Form\ADOrganizationalUnitType;
 
 /**
  * ADOrganizationalUnit controller.

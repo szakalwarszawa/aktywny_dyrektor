@@ -14,7 +14,7 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 
 /**
  * RaportyKadrowe controller.

@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\WniosekStatus;
-use Parp\MainBundle\Form\WniosekStatusType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use ParpV1\MainBundle\Form\WniosekStatusType;
 
 /**
  * WniosekStatus controller.

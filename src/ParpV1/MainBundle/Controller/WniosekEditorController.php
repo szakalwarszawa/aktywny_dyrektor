@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor;
-use Parp\MainBundle\Form\WniosekNadanieOdebranieZasobowEditorType;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor;
+use ParpV1\MainBundle\Form\WniosekNadanieOdebranieZasobowEditorType;
 
 /**
  * WniosekNadanieOdebranieZasobowEditor controller.

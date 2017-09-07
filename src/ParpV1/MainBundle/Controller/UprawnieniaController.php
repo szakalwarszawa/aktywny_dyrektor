@@ -3,7 +3,7 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
-use Parp\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\UserZasoby;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Uprawnienia;
-use Parp\MainBundle\Form\UprawnieniaType;
+use ParpV1\MainBundle\Entity\Uprawnienia;
+use ParpV1\MainBundle\Form\UprawnieniaType;
 
 /**
  * Uprawnienia controller.

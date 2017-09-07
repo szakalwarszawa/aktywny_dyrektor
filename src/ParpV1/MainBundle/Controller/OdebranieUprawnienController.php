@@ -15,9 +15,9 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\DaneRekord;
-use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Form\DaneRekordType;
+use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Form\DaneRekordType;
 
 /**
  * Wiadomosc controller.

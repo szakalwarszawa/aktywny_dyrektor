@@ -4,7 +4,7 @@ namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Parp\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\Zasoby;
 
 /**
  * Export controller.

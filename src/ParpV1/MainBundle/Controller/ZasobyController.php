@@ -13,10 +13,10 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-use Parp\MainBundle\Grid\ParpExcelExport;
-use Parp\MainBundle\Entity\Zasoby;
-use Parp\MainBundle\Form\ZasobyType;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Grid\ParpExcelExport;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Form\ZasobyType;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 
 /**
  * Zasoby controller.

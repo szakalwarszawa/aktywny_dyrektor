@@ -10,12 +10,12 @@ namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityNotFoundException;
-use Parp\MainBundle\Entity\Entry;
-use Parp\MainBundle\Entity\Zadanie;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\Zadanie;
 use Symfony\Component\DependencyInjection\Container;
-use Parp\MainBundle\Entity\UserUprawnienia;
-use Parp\MainBundle\Entity\UserGrupa;
-use Parp\MainBundle\Services\RedmineConnectService;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
+use ParpV1\MainBundle\Entity\UserGrupa;
+use ParpV1\MainBundle\Services\RedmineConnectService;
 use Symfony\Component\HttpFoundation\Request;
 
 /**

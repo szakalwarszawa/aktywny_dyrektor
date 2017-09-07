@@ -2,7 +2,7 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use Parp\MainBundle\Services\ParpMailerService;
+use ParpV1\MainBundle\Services\ParpMailerService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;

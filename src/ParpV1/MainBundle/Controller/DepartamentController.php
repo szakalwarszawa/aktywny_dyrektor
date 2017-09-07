@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Departament;
-use Parp\MainBundle\Form\DepartamentType;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Form\DepartamentType;
 
 /**
  * Departament controller.

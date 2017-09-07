@@ -10,7 +10,7 @@
 namespace ParpV1\CronBundle\Command;
 
 use LogicException;
-use Parp\AuthBundle\Security\ParpUser;
+use ParpV1\AuthBundle\Security\ParpUser;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;

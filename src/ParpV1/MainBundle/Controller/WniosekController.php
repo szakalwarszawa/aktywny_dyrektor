@@ -14,11 +14,11 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Wniosek;
-use Parp\MainBundle\Entity\WniosekViewer;
-use Parp\MainBundle\Entity\WniosekEditor;
-use Parp\MainBundle\Entity\Komentarz;
-use Parp\MainBundle\Form\WniosekType;
+use ParpV1\MainBundle\Entity\Wniosek;
+use ParpV1\MainBundle\Entity\WniosekViewer;
+use ParpV1\MainBundle\Entity\WniosekEditor;
+use ParpV1\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Form\WniosekType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**

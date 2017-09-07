@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\SoapBundle\Entity\ADGroup;
-use Parp\SoapBundle\Form\ADGroupType;
+use ParpV1\SoapBundle\Entity\ADGroup;
+use ParpV1\SoapBundle\Form\ADGroupType;
 
 /**
  * ADGroup controller.

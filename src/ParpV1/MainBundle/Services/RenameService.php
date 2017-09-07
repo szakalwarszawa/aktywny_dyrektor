@@ -10,9 +10,9 @@ namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\Container;
-use Parp\MainBundle\Entity\UserUprawnienia;
-use Parp\MainBundle\Entity\UserGrupa;
-use Parp\MainBundle\Services\RedmineConnectService;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
+use ParpV1\MainBundle\Entity\UserGrupa;
+use ParpV1\MainBundle\Services\RedmineConnectService;
 
 class RenameService
 {

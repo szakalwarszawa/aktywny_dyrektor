@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Zadanie;
-use Parp\MainBundle\Form\ZadanieType;
+use ParpV1\MainBundle\Entity\Zadanie;
+use ParpV1\MainBundle\Form\ZadanieType;
 use Symfony\Component\Security\Core\SecurityContext;
 
 /**

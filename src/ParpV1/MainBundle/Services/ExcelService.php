@@ -10,10 +10,10 @@ namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\Container;
-use Parp\MainBundle\Entity\UserUprawnienia;
-use Parp\MainBundle\Entity\UserGrupa;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
+use ParpV1\MainBundle\Entity\UserGrupa;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Parp\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 
 class ExcelService

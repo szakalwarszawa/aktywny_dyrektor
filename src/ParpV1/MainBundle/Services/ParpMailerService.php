@@ -3,7 +3,7 @@
 namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
-use Parp\MainBundle\Entity\Email;
+use ParpV1\MainBundle\Entity\Email;
 use Symfony\Component\Security\Core\SecurityContext;
 use Symfony\Component\Validator\Exception\ValidatorException;
 

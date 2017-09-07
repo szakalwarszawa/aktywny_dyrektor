@@ -2,7 +2,7 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use Parp\MainBundle\Entity\UserEngagement;
+use ParpV1\MainBundle\Entity\UserEngagement;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -17,8 +17,8 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
 
-use Parp\MainBundle\Entity\Engagement;
-use Parp\MainBundle\Form\EngagementType;
+use ParpV1\MainBundle\Entity\Engagement;
+use ParpV1\MainBundle\Form\EngagementType;
 
 /**
  * Engagement controller.

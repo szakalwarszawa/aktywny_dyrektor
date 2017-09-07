@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\UserZasoby;
-use Parp\MainBundle\Form\UserZasobyType;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Form\UserZasobyType;
 
 /**
  * UserZasoby controller.

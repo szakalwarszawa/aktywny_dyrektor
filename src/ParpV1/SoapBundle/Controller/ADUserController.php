@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\SoapBundle\Entity\ADUser;
-use Parp\SoapBundle\Form\ADUserType;
+use ParpV1\SoapBundle\Entity\ADUser;
+use ParpV1\SoapBundle\Form\ADUserType;
 
 /**
  * ADUser controller.

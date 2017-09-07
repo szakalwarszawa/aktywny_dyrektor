@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\AclRole;
-use Parp\MainBundle\Form\AclRoleType;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Form\AclRoleType;
 
 /**
  * AclRole controller.

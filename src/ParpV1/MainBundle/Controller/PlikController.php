@@ -14,8 +14,8 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 
-use Parp\MainBundle\Entity\Plik;
-use Parp\MainBundle\Form\PlikType;
+use ParpV1\MainBundle\Entity\Plik;
+use ParpV1\MainBundle\Form\PlikType;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
