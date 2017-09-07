@@ -11,7 +11,7 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
  * Class SessionIdleHandler
- * @package Parp\AuthBundle\Handler
+ * @package ParpV1\AuthBundle\Handler
  */
 class SessionIdleHandler
 {

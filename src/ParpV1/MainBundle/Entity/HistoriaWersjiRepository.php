@@ -19,8 +19,8 @@ class HistoriaWersjiRepository extends \Gedmo\Loggable\Entity\Repository\LogEntr
         $qb = $em->createQueryBuilder();
 
         $qb->select(array('h'))
-            ->from('Parp\MainBundle\Entity\HistoriaWersji', 'h')
-            ->where('h.objectClass = \'Parp\MainBundle\Entity\WniosekEditor\'')
+            ->from('ParpV1\MainBundle\Entity\HistoriaWersji', 'h')
+            ->where('h.objectClass = \'ParpV1\MainBundle\Entity\WniosekEditor\'')
             ->andWhere('h.loggedAt > \'2017-05-17 07:55:00\'')
             ->andWhere('h.loggedAt < \'2017-05-17 12:00:00\'')
             ->orderBy('h.id', 'ASC');

@@ -40,7 +40,7 @@ class LdapImportService
         foreach ($ADUsers as $adu) {
             $u = null; //$em->getRepository("ParpSoapBundle:ADUser")->findOneBySamaccountname($adu['samaccountname']);
             if (!$u) {
-                $u = new \Parp\SoapBundle\Entity\ADUser();
+                $u = new \ParpV1\SoapBundle\Entity\ADUser();
             }
             foreach ($adu as $k => $v) {
                 $set = "set".ucfirst($k);
@@ -88,7 +88,7 @@ class LdapImportService
             if (is_array($adg)) {
                 $g = $u = null; //$em->getRepository("ParpSoapBundle:ADGroup")->findOneByCn($adg['cn'][0]);
                 if (!$g) {
-                    $g = new \Parp\SoapBundle\Entity\ADGroup();
+                    $g = new \ParpV1\SoapBundle\Entity\ADGroup();
                 }
                 foreach ($adg as $k => $valarr) {
                     if (!in_array($k, $pomijajPola)) {
@@ -144,7 +144,7 @@ class LdapImportService
             if (is_array($adou)) {
                 $g = $u = null; //$em->getRepository("ParpSoapBundle:ADOrganizationalUnit")->findOneByDn($adou['dn']);
                 if (!$g) {
-                    $g = new \Parp\SoapBundle\Entity\ADOrganizationalUnit();
+                    $g = new \ParpV1\SoapBundle\Entity\ADOrganizationalUnit();
                 }
                 foreach ($adou as $k => $valarr) {
                     $set = "set".ucfirst($k);

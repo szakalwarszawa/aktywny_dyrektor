@@ -29,7 +29,7 @@ class AclActionType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\AclAction'
+            'data_class' => 'ParpV1\MainBundle\Entity\AclAction'
         ));
     }
 

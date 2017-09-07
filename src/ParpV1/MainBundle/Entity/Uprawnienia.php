@@ -10,11 +10,11 @@ use Doctrine\ORM\Mapping as ORM;
  * Uprawnienia
  *
  * @ORM\Table(name="uprawnienia")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UprawnieniaRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\UprawnieniaRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis, grupaAd, grupy.opis:group_concat", groupBy={"id"})
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Uprawnienia
 {
@@ -128,10 +128,10 @@ class Uprawnienia
     /**
      * Add grupy
      *
-     * @param \Parp\MainBundle\Entity\GrupyUprawnien $grupy
+     * @param \ParpV1\MainBundle\Entity\GrupyUprawnien $grupy
      * @return Uprawnienia
      */
-    public function addGrupy(\Parp\MainBundle\Entity\GrupyUprawnien $grupy)
+    public function addGrupy(\ParpV1\MainBundle\Entity\GrupyUprawnien $grupy)
     {
         $this->grupy[] = $grupy;
         $grupy->addUprawnienie($uprawnienia);
@@ -142,9 +142,9 @@ class Uprawnienia
     /**
      * Remove grupy
      *
-     * @param \Parp\MainBundle\Entity\GrupyUprawnien $grupy
+     * @param \ParpV1\MainBundle\Entity\GrupyUprawnien $grupy
      */
-    public function removeGrupy(\Parp\MainBundle\Entity\GrupyUprawnien $grupy)
+    public function removeGrupy(\ParpV1\MainBundle\Entity\GrupyUprawnien $grupy)
     {
         $grupy->removeUprawnienie($uprawnienia);
         $this->grupy->removeElement($grupy);

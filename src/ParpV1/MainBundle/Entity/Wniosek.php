@@ -9,10 +9,10 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Wniosek
 {
@@ -401,11 +401,11 @@ class Wniosek
     /**
      * Set status
      *
-     * @param \Parp\MainBundle\Entity\WniosekStatus $status
+     * @param \ParpV1\MainBundle\Entity\WniosekStatus $status
      *
      * @return WniosekStatus
      */
-    public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
+    public function setStatus(\ParpV1\MainBundle\Entity\WniosekStatus $status = null)
     {
         if ($status) {
             $this->status = $status;
@@ -417,7 +417,7 @@ class Wniosek
     /**
      * Get status
      *
-     * @return \Parp\MainBundle\Entity\WniosekStatus
+     * @return \ParpV1\MainBundle\Entity\WniosekStatus
      */
     public function getStatus()
     {
@@ -534,11 +534,11 @@ class Wniosek
     /**
      * Add child
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $child
+     * @param \ParpV1\MainBundle\Entity\Wniosek $child
      *
      * @return Wniosek
      */
-    public function addChild(\Parp\MainBundle\Entity\Wniosek $child)
+    public function addChild(\ParpV1\MainBundle\Entity\Wniosek $child)
     {
         $this->children[] = $child;
 
@@ -548,9 +548,9 @@ class Wniosek
     /**
      * Remove child
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $child
+     * @param \ParpV1\MainBundle\Entity\Wniosek $child
      */
-    public function removeChild(\Parp\MainBundle\Entity\Wniosek $child)
+    public function removeChild(\ParpV1\MainBundle\Entity\Wniosek $child)
     {
         $this->children->removeElement($child);
     }
@@ -568,11 +568,11 @@ class Wniosek
     /**
      * Set parent
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $parent
+     * @param \ParpV1\MainBundle\Entity\Wniosek $parent
      *
      * @return Wniosek
      */
-    public function setParent(\Parp\MainBundle\Entity\Wniosek $parent = null)
+    public function setParent(\ParpV1\MainBundle\Entity\Wniosek $parent = null)
     {
         $this->parent = $parent;
 
@@ -582,7 +582,7 @@ class Wniosek
     /**
      * Get parent
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getParent()
     {
@@ -614,11 +614,11 @@ class Wniosek
     /**
      * Add statusy
      *
-     * @param \Parp\MainBundle\Entity\WniosekHistoriaStatusow $statusy
+     * @param \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow $statusy
      *
      * @return Wniosek
      */
-    public function addStatusy(\Parp\MainBundle\Entity\WniosekHistoriaStatusow $statusy)
+    public function addStatusy(\ParpV1\MainBundle\Entity\WniosekHistoriaStatusow $statusy)
     {
         $this->statusy[] = $statusy;
 
@@ -628,9 +628,9 @@ class Wniosek
     /**
      * Remove statusy
      *
-     * @param \Parp\MainBundle\Entity\WniosekHistoriaStatusow $statusy
+     * @param \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow $statusy
      */
-    public function removeStatusy(\Parp\MainBundle\Entity\WniosekHistoriaStatusow $statusy)
+    public function removeStatusy(\ParpV1\MainBundle\Entity\WniosekHistoriaStatusow $statusy)
     {
         $this->statusy->removeElement($statusy);
     }
@@ -654,11 +654,11 @@ class Wniosek
     /**
      * Add editor
      *
-     * @param \Parp\MainBundle\Entity\WniosekEditor $editor
+     * @param \ParpV1\MainBundle\Entity\WniosekEditor $editor
      *
      * @return Wniosek
      */
-    public function addEditor(\Parp\MainBundle\Entity\WniosekEditor $editor)
+    public function addEditor(\ParpV1\MainBundle\Entity\WniosekEditor $editor)
     {
         $this->editors[] = $editor;
 
@@ -668,9 +668,9 @@ class Wniosek
     /**
      * Remove editor
      *
-     * @param \Parp\MainBundle\Entity\WniosekEditor $editor
+     * @param \ParpV1\MainBundle\Entity\WniosekEditor $editor
      */
-    public function removeEditor(\Parp\MainBundle\Entity\WniosekEditor $editor)
+    public function removeEditor(\ParpV1\MainBundle\Entity\WniosekEditor $editor)
     {
         $this->editors->removeElement($editor);
     }
@@ -688,11 +688,11 @@ class Wniosek
     /**
      * Add viewer
      *
-     * @param \Parp\MainBundle\Entity\WniosekViewer $viewer
+     * @param \ParpV1\MainBundle\Entity\WniosekViewer $viewer
      *
      * @return Wniosek
      */
-    public function addViewer(\Parp\MainBundle\Entity\WniosekViewer $viewer)
+    public function addViewer(\ParpV1\MainBundle\Entity\WniosekViewer $viewer)
     {
         $this->viewers[] = $viewer;
 
@@ -702,9 +702,9 @@ class Wniosek
     /**
      * Remove viewer
      *
-     * @param \Parp\MainBundle\Entity\WniosekViewer $viewer
+     * @param \ParpV1\MainBundle\Entity\WniosekViewer $viewer
      */
-    public function removeViewer(\Parp\MainBundle\Entity\WniosekViewer $viewer)
+    public function removeViewer(\ParpV1\MainBundle\Entity\WniosekViewer $viewer)
     {
         $this->viewers->removeElement($viewer);
     }
@@ -723,11 +723,11 @@ class Wniosek
     /**
      * Set wniosekNadanieOdebranieZasobow
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+     * @param \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
      *
      * @return Wniosek
      */
-    public function setWniosekNadanieOdebranieZasobow(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow = null)
+    public function setWniosekNadanieOdebranieZasobow(\ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow = null)
     {
         $this->wniosekNadanieOdebranieZasobow = $wniosekNadanieOdebranieZasobow;
 
@@ -737,7 +737,7 @@ class Wniosek
     /**
      * Get wniosekNadanieOdebranieZasobow
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     * @return \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow
      */
     public function getWniosekNadanieOdebranieZasobow()
     {
@@ -747,11 +747,11 @@ class Wniosek
     /**
      * Set wniosekUtworzenieZasobu
      *
-     * @param \Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
+     * @param \ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
      *
      * @return Wniosek
      */
-    public function setWniosekUtworzenieZasobu(\Parp\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null)
+    public function setWniosekUtworzenieZasobu(\ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null)
     {
         $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
 
@@ -761,7 +761,7 @@ class Wniosek
     /**
      * Get wniosekUtworzenieZasobu
      *
-     * @return \Parp\MainBundle\Entity\WniosekUtworzenieZasobu
+     * @return \ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu
      */
     public function getWniosekUtworzenieZasobu()
     {
@@ -771,11 +771,11 @@ class Wniosek
     /**
      * Set wniosekNumer
      *
-     * @param \Parp\MainBundle\Entity\WniosekNumer $wniosekNumer
+     * @param \ParpV1\MainBundle\Entity\WniosekNumer $wniosekNumer
      *
      * @return Wniosek
      */
-    public function setWniosekNumer(\Parp\MainBundle\Entity\WniosekNumer $wniosekNumer = null)
+    public function setWniosekNumer(\ParpV1\MainBundle\Entity\WniosekNumer $wniosekNumer = null)
     {
         $this->wniosekNumer = $wniosekNumer;
 
@@ -785,7 +785,7 @@ class Wniosek
     /**
      * Get wniosekNumer
      *
-     * @return \Parp\MainBundle\Entity\WniosekNumer
+     * @return \ParpV1\MainBundle\Entity\WniosekNumer
      */
     public function getWniosekNumer()
     {
@@ -795,11 +795,11 @@ class Wniosek
     /**
      * Add aDentry
      *
-     * @param \Parp\MainBundle\Entity\Entry $aDentry
+     * @param \ParpV1\MainBundle\Entity\Entry $aDentry
      *
      * @return Wniosek
      */
-    public function addADentry(\Parp\MainBundle\Entity\Entry $aDentry)
+    public function addADentry(\ParpV1\MainBundle\Entity\Entry $aDentry)
     {
         $this->ADentries[] = $aDentry;
 
@@ -809,9 +809,9 @@ class Wniosek
     /**
      * Remove aDentry
      *
-     * @param \Parp\MainBundle\Entity\Entry $aDentry
+     * @param \ParpV1\MainBundle\Entity\Entry $aDentry
      */
-    public function removeADentry(\Parp\MainBundle\Entity\Entry $aDentry)
+    public function removeADentry(\ParpV1\MainBundle\Entity\Entry $aDentry)
     {
         $this->ADentries->removeElement($aDentry);
     }

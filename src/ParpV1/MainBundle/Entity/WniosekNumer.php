@@ -10,10 +10,10 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *
  * @ORM\Table(name="wniosekNumer",uniqueConstraints={
  *     @ORM\UniqueConstraint(name="wniosek_idx", columns={"numer", "rok", "typWniosku"})})
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNumerRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekNumerRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekNumer
 {
@@ -174,11 +174,11 @@ class WniosekNumer
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosek
      *
      * @return WniosekNumer
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -188,7 +188,7 @@ class WniosekNumer
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {

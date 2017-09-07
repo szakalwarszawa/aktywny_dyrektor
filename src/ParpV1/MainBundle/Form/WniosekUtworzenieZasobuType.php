@@ -9,7 +9,7 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 /**
  * Class WniosekUtworzenieZasobuType
- * @package Parp\MainBundle\Form
+ * @package ParpV1\MainBundle\Form
  */
 class WniosekUtworzenieZasobuType extends AbstractType
 {
@@ -47,7 +47,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
         $builder
             ->add('wniosekDomenowy', 'checkbox', $atrs)
             ->add('wniosek', new WniosekType($ADUsers), array(
-                'label' => false, 'data_class' => 'Parp\MainBundle\Entity\Wniosek'))
+                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek'))
             //->add('deletedAt')
             ->add('imienazwisko', 'text', ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
             ->add('login', 'text', ['attr' => ['readonly' => true]])
@@ -145,7 +145,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
         if ($typ == "nowy" || $typ == "") {
             $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
-                'label' => false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true,
+                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
 
                 'cascade_validation' => true,
             ));
@@ -165,7 +165,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
             } else {
                 $builder->add('zmienianyZasob', 'entity', array(
                     'mapped' => true,
-                    'label' => "Wybierz zasób", 'class' => 'Parp\MainBundle\Entity\Zasoby',
+                    'label' => "Wybierz zasób", 'class' => 'ParpV1\MainBundle\Entity\Zasoby',
                     'attr' => ['class' => 'select2', 'style' => "width:100%"],
                     'query_builder' => function ($er) {
                         return $er->createQueryBuilder('u')
@@ -175,7 +175,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 ));
             }
             $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
-                'label' => false, 'data_class' => 'Parp\MainBundle\Entity\Zasoby', 'by_reference' => true,
+                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
 
             ));
         } elseif ("kasowanie" === $typ) {
@@ -188,7 +188,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                             ->andWhere('u.published = 1');
                         //->orderBy('u.name', 'ASC');//->findByPublished(1);
                     },
-                    'label' => "Wybierz zasób do skasowania", 'class' => 'Parp\MainBundle\Entity\Zasoby',
+                    'label' => "Wybierz zasób do skasowania", 'class' => 'ParpV1\MainBundle\Entity\Zasoby',
                 'attr' => ['class' => 'select2', 'style' => "width:100%"]
                 ]
             );
@@ -204,7 +204,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'Parp\MainBundle\Entity\WniosekUtworzenieZasobu',
+            'data_class' => 'ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu',
             'ADUsers' => null,
             'ADManagers' => null,
             'hideCheckboxes' => false,

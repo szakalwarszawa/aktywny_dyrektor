@@ -20,7 +20,7 @@ class WniosekType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
         
             ->add('numer', 'text', array(
@@ -63,7 +63,7 @@ class WniosekType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\Wniosek'
+            'data_class' => 'ParpV1\MainBundle\Entity\Wniosek'
         ));
     }
 

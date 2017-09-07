@@ -25,7 +25,7 @@ class WniosekStatusType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa')
             ->add('typWniosku', 'choice', ['choices' => ['wniosekONadanieUprawnien' => 'wniosek o Nadanie Uprawnień', 'wniosekOUtworzenieZasobu' => 'wniosek o utworzenie zasobu']])
@@ -60,7 +60,7 @@ class WniosekStatusType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\WniosekStatus'
+            'data_class' => 'ParpV1\MainBundle\Entity\WniosekStatus'
         ));
     }
 

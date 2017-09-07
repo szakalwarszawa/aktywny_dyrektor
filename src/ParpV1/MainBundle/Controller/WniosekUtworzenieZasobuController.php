@@ -350,7 +350,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
 
-        $status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
+        $status = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
 
         $entity = new WniosekUtworzenieZasobu();
         //var_dump($typ1, $typ2); die();
@@ -370,7 +370,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity->setLogin($ADUser[0]['samaccountname']);
         $entity->setDepartament($ADUser[0]['department']);
         $entity->setStanowisko($ADUser[0]['title']);
-        $departament = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
+        $departament = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
         if ($entity->getZasob()) {
             $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
         }
@@ -465,7 +465,7 @@ class WniosekUtworzenieZasobuController extends Controller
     protected function obliczZmienionePola($entity)
     {
         $em = $this->getDoctrine()->getManager();
-        $metadata = $em->getClassMetadata("Parp\\MainBundle\\Entity\\Zasoby");
+        $metadata = $em->getClassMetadata("ParpV1\\MainBundle\\Entity\\Zasoby");
         $z1 = array();
         $z2 = array();
         foreach ($metadata->getFieldNames() as $fm) {
@@ -833,7 +833,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         //dodaje viewerow
         foreach ($viewers as $v) {
-            $wv = new \Parp\MainBundle\Entity\WniosekViewer();
+            $wv = new \ParpV1\MainBundle\Entity\WniosekViewer();
             $wv->setWniosek($wniosek->getWniosek());
             $wniosek->getWniosek()->addViewer($wv);
             $wv->setSamaccountname($v);
@@ -845,7 +845,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $wniosek->getWniosek()->setViewernamesSet();
         //dodaje editorow
         foreach ($editors as $v) {
-            $wv = new \Parp\MainBundle\Entity\WniosekEditor();
+            $wv = new \ParpV1\MainBundle\Entity\WniosekEditor();
             $wv->setWniosek($wniosek->getWniosek());
             $wniosek->getWniosek()->addEditor($wv);
             $wv->setSamaccountname($v);
@@ -858,7 +858,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $wniosek->getWniosek()->setEditornamesSet();
 
         //wstawia historie statusow
-        $sh = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
+        $sh = new \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow();
         $sh->setZastepstwo($zastepstwo);
         $sh->setWniosek($wniosek->getWniosek());
         $wniosek->getWniosek()->addStatusy($sh);

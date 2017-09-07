@@ -45,7 +45,7 @@ class LdapImportCommand extends ContainerAwareCommand
             $letters = "abcdefghijklmnopqrstuvwxyz";
             $letters_array = str_split($letters);
             
-            $c = new \Parp\SoapBundle\Controller\ImportController();
+            $c = new \ParpV1\SoapBundle\Controller\ImportController();
             foreach ($letters_array as $l) {
                 $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Import users na litere "'.$l.'" ...                             </comment>', false);
                 $this->getContainer()->get('ldap_import')->importUsersAction($l);

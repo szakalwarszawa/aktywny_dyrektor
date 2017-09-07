@@ -12,7 +12,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @ORM\Table(name="acl_user_role")
  * @ORM\Entity(repositoryClass="")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class AclUserRole
 {
@@ -109,11 +109,11 @@ class AclUserRole
     /**
      * Set role
      *
-     * @param \Parp\MainBundle\Entity\AclRole $role
+     * @param \ParpV1\MainBundle\Entity\AclRole $role
      *
      * @return AclUserRole
      */
-    public function setRole(\Parp\MainBundle\Entity\AclRole $role = null)
+    public function setRole(\ParpV1\MainBundle\Entity\AclRole $role = null)
     {
         $this->role = $role;
 
@@ -123,7 +123,7 @@ class AclUserRole
     /**
      * Get role
      *
-     * @return \Parp\MainBundle\Entity\AclRole
+     * @return \ParpV1\MainBundle\Entity\AclRole
      */
     public function getRole()
     {

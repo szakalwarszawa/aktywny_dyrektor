@@ -99,7 +99,7 @@ class ExceptionListener implements EventSubscriberInterface
 */
 
                 $em = $this->kernel->getContainer()->get('doctrine')->getEntityManager();
-                $uprawnienia = $userData->getRoles();//$em->getRepository('Parp\UzytkownikBundle\Entity\Uzytkownik')->findOneById($userId)->getRoles();
+                $uprawnienia = $userData->getRoles();//$em->getRepository('ParpV1\UzytkownikBundle\Entity\Uzytkownik')->findOneById($userId)->getRoles();
             }
 
             $wyjatek = $event->getException();

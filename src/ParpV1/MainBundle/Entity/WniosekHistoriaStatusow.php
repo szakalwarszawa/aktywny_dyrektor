@@ -9,10 +9,10 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_historia_statusow")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekHistoriaStatusowRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekHistoriaStatusowRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status,createdBy,createdAt,statusName")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekHistoriaStatusow
 {
@@ -260,11 +260,11 @@ class WniosekHistoriaStatusow
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosek
      *
      * @return WniosekHistoriaStatusow
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -274,7 +274,7 @@ class WniosekHistoriaStatusow
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {
@@ -284,11 +284,11 @@ class WniosekHistoriaStatusow
     /**
      * Set status
      *
-     * @param \Parp\MainBundle\Entity\WniosekStatus $status
+     * @param \ParpV1\MainBundle\Entity\WniosekStatus $status
      *
      * @return WniosekHistoriaStatusow
      */
-    public function setStatus(\Parp\MainBundle\Entity\WniosekStatus $status = null)
+    public function setStatus(\ParpV1\MainBundle\Entity\WniosekStatus $status = null)
     {
         $this->status = $status;
 
@@ -298,7 +298,7 @@ class WniosekHistoriaStatusow
     /**
      * Get status
      *
-     * @return \Parp\MainBundle\Entity\WniosekStatus
+     * @return \ParpV1\MainBundle\Entity\WniosekStatus
      */
     public function getStatus()
     {
@@ -308,11 +308,11 @@ class WniosekHistoriaStatusow
     /**
      * Set zastepstwo
      *
-     * @param \Parp\MainBundle\Entity\Zastepstwo $zastepstwo
+     * @param \ParpV1\MainBundle\Entity\Zastepstwo $zastepstwo
      *
      * @return WniosekHistoriaStatusow
      */
-    public function setZastepstwo(\Parp\MainBundle\Entity\Zastepstwo $zastepstwo = null)
+    public function setZastepstwo(\ParpV1\MainBundle\Entity\Zastepstwo $zastepstwo = null)
     {
         $this->zastepstwo = $zastepstwo;
 
@@ -322,7 +322,7 @@ class WniosekHistoriaStatusow
     /**
      * Get zastepstwo
      *
-     * @return \Parp\MainBundle\Entity\Zastepstwo
+     * @return \ParpV1\MainBundle\Entity\Zastepstwo
      */
     public function getZastepstwo()
     {

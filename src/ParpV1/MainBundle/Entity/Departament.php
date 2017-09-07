@@ -21,7 +21,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *
  * @ORM\Table(name="departament")
  * a@Gedmo\Loggable
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DepartamentRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\DepartamentRepository")
  * @UniqueEntity(
  *     fields={"name"},
  *     errorPath="name",
@@ -32,7 +32,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     message="Skrót Biura/Departamentu musi być unikalny")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Departament
 {
@@ -369,11 +369,11 @@ class Departament
     /**
      * Add section
      *
-     * @param \Parp\MainBundle\Entity\Section $section
+     * @param \ParpV1\MainBundle\Entity\Section $section
      *
      * @return Departament
      */
-    public function addSection(\Parp\MainBundle\Entity\Section $section)
+    public function addSection(\ParpV1\MainBundle\Entity\Section $section)
     {
         $this->sections[] = $section;
 
@@ -383,9 +383,9 @@ class Departament
     /**
      * Remove section
      *
-     * @param \Parp\MainBundle\Entity\Section $section
+     * @param \ParpV1\MainBundle\Entity\Section $section
      */
-    public function removeSection(\Parp\MainBundle\Entity\Section $section)
+    public function removeSection(\ParpV1\MainBundle\Entity\Section $section)
     {
         $this->sections->removeElement($section);
     }

@@ -20,7 +20,7 @@ use Symfony\Component\HttpFoundation\Request;
 
 /**
  * Class UprawnieniaService
- * @package Parp\MainBundle\Services
+ * @package ParpV1\MainBundle\Services
  */
 class UprawnieniaService
 {

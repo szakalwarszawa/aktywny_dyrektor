@@ -320,7 +320,7 @@ class ImportRekordDaneController extends Controller
                 $poprzednieDane = null;
                 if ($dr === null) {
                     $nowy = true;
-                    $dr = new \Parp\MainBundle\Entity\DaneRekord();
+                    $dr = new \ParpV1\MainBundle\Entity\DaneRekord();
                     $dr->setCreatedBy($this->getUser()->getUsername());
                     $dr->setCreatedAt($d);
                     $dr->setNewUnproccessed(1);
@@ -711,7 +711,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         foreach ($rows as $row) {
             if ($row['KOD'] > 500 && $row['KOD'] < 600) {
-                $dep = new \Parp\MainBundle\Entity\Departament();
+                $dep = new \ParpV1\MainBundle\Entity\Departament();
                 $n = ($this->parseValue($row['OPIS']));
                 print_r($n);
                 $dep->setName($n);

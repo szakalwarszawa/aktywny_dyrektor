@@ -8,10 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
  * UserZasoby
  *
  * @ORM\Table(name="komentarz", indexes={@ORM\Index(name="obiekt_id_idx", columns={"obiektId"})})
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\KomentarzRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\KomentarzRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,createdAt,tytul,opis")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Komentarz
 {

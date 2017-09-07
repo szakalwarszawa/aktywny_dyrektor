@@ -4,7 +4,7 @@ namespace ParpV1\MainBundle\Twig;
 
 /**
  * Class StringExtension
- * @package Parp\MainBundle\Twig
+ * @package ParpV1\MainBundle\Twig
  */
 class StringExtension extends \Twig_Extension
 {
@@ -14,10 +14,10 @@ class StringExtension extends \Twig_Extension
 
     /**
      * StringExtension constructor.
-     * @param \Parp\MainBundle\Services\RenameService $renameService
-     * @param \Parp\SoapBundle\Services\LdapService $ldapService
+     * @param \ParpV1\MainBundle\Services\RenameService $renameService
+     * @param \ParpV1\SoapBundle\Services\LdapService $ldapService
      */
-    public function __construct(\Parp\MainBundle\Services\RenameService $renameService, \Parp\SoapBundle\Services\LdapService $ldapService)
+    public function __construct(\ParpV1\MainBundle\Services\RenameService $renameService, \ParpV1\SoapBundle\Services\LdapService $ldapService)
     {
         $this->renameService = $renameService;
         $this->ldapService = $ldapService;

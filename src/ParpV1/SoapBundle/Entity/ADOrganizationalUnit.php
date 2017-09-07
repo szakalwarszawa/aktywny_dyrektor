@@ -10,14 +10,14 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="ad_ou")
- * @ORM\Entity(repositoryClass="Parp\SoapBundle\Entity\ADOrganizationalUnitRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\SoapBundle\Entity\ADOrganizationalUnitRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,ou")
  * @UniqueEntity(
  *     fields={"dn"},
  *     errorPath="dn",
  *     message="Samaccountname musi być unikalna")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class ADOrganizationalUnit
 {
@@ -582,11 +582,11 @@ class ADOrganizationalUnit
     /**
      * Add aDUser
      *
-     * @param \Parp\SoapBundle\Entity\ADUser $aDUser
+     * @param \ParpV1\SoapBundle\Entity\ADUser $aDUser
      *
      * @return ADOrganizationalUnit
      */
-    public function addADUser(\Parp\SoapBundle\Entity\ADUser $aDUser)
+    public function addADUser(\ParpV1\SoapBundle\Entity\ADUser $aDUser)
     {
         $this->ADUsers[] = $aDUser;
 
@@ -596,9 +596,9 @@ class ADOrganizationalUnit
     /**
      * Remove aDUser
      *
-     * @param \Parp\SoapBundle\Entity\ADUser $aDUser
+     * @param \ParpV1\SoapBundle\Entity\ADUser $aDUser
      */
-    public function removeADUser(\Parp\SoapBundle\Entity\ADUser $aDUser)
+    public function removeADUser(\ParpV1\SoapBundle\Entity\ADUser $aDUser)
     {
         $this->ADUsers->removeElement($aDUser);
     }

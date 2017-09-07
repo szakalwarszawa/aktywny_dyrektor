@@ -14,7 +14,7 @@ class ZadanieType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\ParpDateTransformer();
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\ParpDateTransformer();
         $builder
             //->add('deletedAt')
             ->add('nazwa', 'text', array('attr' => array('readonly' => true)))
@@ -66,7 +66,7 @@ class ZadanieType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\Zadanie'
+            'data_class' => 'ParpV1\MainBundle\Entity\Zadanie'
         ));
     }
 

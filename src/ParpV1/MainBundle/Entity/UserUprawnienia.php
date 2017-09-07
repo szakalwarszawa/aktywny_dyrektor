@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * UserUprawnienia
  *
  * @ORM\Table(name="useruprawnienia")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserUprawnieniaRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\UserUprawnieniaRepository")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class UserUprawnienia
 {

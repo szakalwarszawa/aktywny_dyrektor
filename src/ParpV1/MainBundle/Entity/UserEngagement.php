@@ -8,9 +8,9 @@ use Doctrine\ORM\Mapping as ORM;
  * UserEngagement
  *
  * @ORM\Table(name="userengagement")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserEngagementRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\UserEngagementRepository")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class UserEngagement
 {

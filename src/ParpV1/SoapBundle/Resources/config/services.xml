@@ -6,7 +6,7 @@
 
     <!--
     <parameters>
-        <parameter key="parp_soap.example.class">Parp\SoapBundle\Example</parameter>
+        <parameter key="parp_soap.example.class">ParpV1\SoapBundle\Example</parameter>
     </parameters>
 
     <services>

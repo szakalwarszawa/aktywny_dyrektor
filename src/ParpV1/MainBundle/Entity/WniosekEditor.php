@@ -8,10 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_editor")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekEditorRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekEditorRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekEditor
 {
@@ -110,11 +110,11 @@ class WniosekEditor
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosek
      *
      * @return WniosekEditor
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -124,7 +124,7 @@ class WniosekEditor
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {

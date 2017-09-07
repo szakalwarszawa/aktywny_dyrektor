@@ -14,7 +14,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * @ORM\Entity
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname, departament.name, departament.shortname, kierownikName")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Section
 {
@@ -222,11 +222,11 @@ class Section
     /**
      * Set departament
      *
-     * @param \Parp\MainBundle\Entity\Departament $departament
+     * @param \ParpV1\MainBundle\Entity\Departament $departament
      *
      * @return Section
      */
-    public function setDepartament(\Parp\MainBundle\Entity\Departament $departament = null)
+    public function setDepartament(\ParpV1\MainBundle\Entity\Departament $departament = null)
     {
         $this->departament = $departament;
 
@@ -236,7 +236,7 @@ class Section
     /**
      * Get departament
      *
-     * @return \Parp\MainBundle\Entity\Departament
+     * @return \ParpV1\MainBundle\Entity\Departament
      */
     public function getDepartament()
     {

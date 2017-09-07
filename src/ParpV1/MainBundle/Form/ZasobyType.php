@@ -31,7 +31,7 @@ class ZasobyType extends AbstractType
         
         $admini = $ldap->getAdministratorzyZasobow();
         
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             //->add('id')
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel, 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
@@ -79,7 +79,7 @@ class ZasobyType extends AbstractType
             ))
             ->add('daneOsobowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('komorkaOrgazniacyjna', 'entity', array(
-                'class' => 'Parp\MainBundle\Entity\Departament',
+                'class' => 'ParpV1\MainBundle\Entity\Departament',
                 'choice_value' => function ($dep) {
                     return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
                 },
@@ -239,7 +239,7 @@ class ZasobyType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\Zasoby',
+            'data_class' => 'ParpV1\MainBundle\Entity\Zasoby',
             //'inherit_data' => true,
         ));
     }

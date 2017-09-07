@@ -35,7 +35,7 @@ class ZasobyParpController extends Controller
     {
         
         $em = $this->getDoctrine()->getManager();
-        $res = $em->getRepository('Parp\MainBundle\Entity\UserZasoby')->findUsersByZasobId($zasobId);
+        $res = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($zasobId);
         
         //print_r($res[0]->getADUser()); die();
         

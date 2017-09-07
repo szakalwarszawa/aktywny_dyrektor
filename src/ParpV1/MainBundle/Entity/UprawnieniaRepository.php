@@ -19,7 +19,7 @@ class UprawnieniaRepository extends EntityRepository
         $qb = $em->createQueryBuilder();
 
         $qb->select(array('u', 'g'))
-                ->from('Parp\MainBundle\Entity\Uprawnienia', 'u')
+                ->from('ParpV1\MainBundle\Entity\Uprawnienia', 'u')
                 ->leftJoin('u.grupy', 'g')
                 ->where('g.kod = :kod')
                 ->andWhere('u.czy_edycja = true')

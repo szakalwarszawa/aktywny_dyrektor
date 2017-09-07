@@ -56,7 +56,7 @@ class RoleTransformer implements DataTransformerInterface
                 $r = $this->em->getRepository('ParpMainBundle:AclUserRole')->findOneBy(['samaccountname' => $v, 'role' => $this->data]);
             }
             if (!$r) {
-                $r = new \Parp\MainBundle\Entity\AclUserRole();
+                $r = new \ParpV1\MainBundle\Entity\AclUserRole();
                 $r->setRole($this->data);
                 $r->setSamaccountname($v);
                 $this->data->addUser($r);

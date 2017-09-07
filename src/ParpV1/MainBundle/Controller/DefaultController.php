@@ -32,7 +32,7 @@ use Symfony\Component\Validator\Constraints\NotBlank;
 
 /**
  * Class DefaultController
- * @package Parp\MainBundle\Controller
+ * @package ParpV1\MainBundle\Controller
  */
 class DefaultController extends Controller
 {
@@ -1843,7 +1843,7 @@ class DefaultController extends Controller
             $em = $this->getDoctrine()->getManager();
 
             //!!! tego sie pozbywam
-            //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+            //$query = $em->createQuery('delete from ParpV1\MainBundle\Entity\UserZasoby');
             //$numDeleted = $query->execute();
 
             $pierwszyWiersz = explode(';', $list[0]);
@@ -2007,7 +2007,7 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
-        $query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby');
+        $query = $em->createQuery('delete from ParpV1\MainBundle\Entity\UserZasoby');
         $numDeleted = $query->execute();
         $wiersz2getter = array(
             1  => 'WlascicielZasobu',
@@ -2157,7 +2157,7 @@ class DefaultController extends Controller
         $ldap = $this->get('ldap_service');
 
         $em = $this->getDoctrine()->getManager();
-        //$query = $em->createQuery('delete from Parp\MainBundle\Entity\UserZasoby uz where uz.importedFromEcm = 1');
+        //$query = $em->createQuery('delete from ParpV1\MainBundle\Entity\UserZasoby uz where uz.importedFromEcm = 1');
         //$numDeleted = $query->execute();
         $wiersz2getter = array(
             3  => 'LoginDoZasobu',

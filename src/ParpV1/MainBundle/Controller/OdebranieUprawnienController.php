@@ -103,7 +103,7 @@ class OdebranieUprawnienController extends Controller
         if (count($userAD) > 0 && $userAD[0]['description'] == 'BI') {
             $em = $this->getDoctrine()->getManager();
             if ($samaccountname == '') {
-                $log = new \Parp\MainBundle\Entity\Log();
+                $log = new \ParpV1\MainBundle\Entity\Log();
                 $log->setLogin($this->getUser()->getUsername());
                 $log->setUrl('/powitalna');
                 $log->setDescription('Odczytano wiadomość powitalną.');

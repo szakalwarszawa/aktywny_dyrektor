@@ -553,7 +553,7 @@ class ReorganizacjaParpController extends Controller
                     'grupy' => $grupy
                     ]
                     ];
-                    $e = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+                    $e = new \ParpV1\MainBundle\Entity\Entry($this->getUser()->getUsername());
                     $e->setFromWhen(new \Datetime());
                     $e->setSamaccountname($login);
                     $e->setDistinguishedname($aduser[0]['distinguishedname']);
@@ -724,7 +724,7 @@ class ReorganizacjaParpController extends Controller
                             'zmiany' => '',
                             'info' => 'NIE ZNALAZL ZASOBU!!!!'
                         ];
-                        $zasob = new \Parp\MainBundle\Entity\Zasoby();
+                        $zasob = new \ParpV1\MainBundle\Entity\Zasoby();
                         $em->persist($zasob);
                     }
 
@@ -807,7 +807,7 @@ class ReorganizacjaParpController extends Controller
             if ($i > 1 && $row['D'] != "" && $row['E'] != "") {
                 $importSekcjeArr = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $row['E'], 'departament' =>$row['C']]);
                 if (count($importSekcjeArr) == 0) {
-                    $importSekcje = new \Parp\MainBundle\Entity\ImportSekcjeUser();
+                    $importSekcje = new \ParpV1\MainBundle\Entity\ImportSekcjeUser();
                 } else {
                     $importSekcje = $importSekcjeArr[0];
                 }
@@ -1299,7 +1299,7 @@ class ReorganizacjaParpController extends Controller
                 }
 
                 //mamy osobe do poprawy
-                $entry = new \Parp\MainBundle\Entity\Entry();
+                $entry = new \ParpV1\MainBundle\Entity\Entry();
                 $entry->setSamaccountname($u['samaccountname']);
                 $entry->setDistinguishedname($u['distinguishedname']);
                 $entry->setFromWhen(new \Datetime());
@@ -1591,7 +1591,7 @@ class ReorganizacjaParpController extends Controller
                 if (count($aduser) > 0 && $w['samaccountname'] != "!!!") {
                     $zmian = 0;
                     echo "<br>zmiany dla ".$w['name']." ".$w['samaccountname']."<br>";
-                    $zmiany = new \Parp\MainBundle\Entity\Entry();
+                    $zmiany = new \ParpV1\MainBundle\Entity\Entry();
                     $sekcja = $em->getRepository('ParpMainBundle:Section')->findOneBy(
                         ['name' => $w['info']]
                     );
@@ -1672,7 +1672,7 @@ class ReorganizacjaParpController extends Controller
                 if ($d['dbSekcja'] == 0) {
                     $short = $this->getSekcjaShortname($d['info']);
                     echo "<br>tworze sekcje ".$d['info']." ze skrotem $short<br>";
-                    $s = new \Parp\MainBundle\Entity\Section();
+                    $s = new \ParpV1\MainBundle\Entity\Section();
 
                     $s->setShortname($short);
                     $s->setName($d['info']);

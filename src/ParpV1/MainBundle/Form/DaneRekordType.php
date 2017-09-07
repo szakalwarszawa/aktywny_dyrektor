@@ -33,7 +33,7 @@ class DaneRekordType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\DaneRekord'
+            'data_class' => 'ParpV1\MainBundle\Entity\DaneRekord'
         ));
     }
 

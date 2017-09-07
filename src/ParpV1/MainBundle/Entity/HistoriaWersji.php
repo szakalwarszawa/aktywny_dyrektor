@@ -17,7 +17,7 @@ use Gedmo\Loggable\Entity\MappedSuperclass\AbstractLogEntry;
  *      @ORM\Index(name="log_version_lookup_idx", columns={"object_id", "object_class", "version"})
  *  }
  * )
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\HistoriaWersjiRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\HistoriaWersjiRepository")
  * @ORM\HasLifecycleCallbacks
  */
 class HistoriaWersji extends AbstractLogEntry

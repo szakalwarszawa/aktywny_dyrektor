@@ -13,7 +13,7 @@ use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 
 /**
  * Class UserZasobyRepository
- * @package Parp\MainBundle\Entity
+ * @package ParpV1\MainBundle\Entity
  */
 class UserZasobyRepository extends EntityRepository
 {

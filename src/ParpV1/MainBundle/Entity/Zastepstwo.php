@@ -9,10 +9,10 @@ use Doctrine\ORM\Mapping as ORM;
  * Zastepstwo
  *
  * @ORM\Table(name="zastepstwo")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\ZastepstwoRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\ZastepstwoRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis, ktoZastepuje, kogoZastepuje, dataOd, dataDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Zastepstwo
 {
@@ -192,11 +192,11 @@ class Zastepstwo
     /**
      * Set wniosekHistoriaStatusu
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
      *
      * @return Zastepstwo
      */
-    public function setWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu = null)
+    public function setWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu = null)
     {
         $this->wniosekHistoriaStatusu = $wniosekHistoriaStatusu;
 
@@ -206,7 +206,7 @@ class Zastepstwo
     /**
      * Get wniosekHistoriaStatusu
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosekHistoriaStatusu()
     {
@@ -223,11 +223,11 @@ class Zastepstwo
     /**
      * Add wniosekHistoriaStatusu
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
      *
      * @return Zastepstwo
      */
-    public function addWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    public function addWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
     {
         $this->wniosekHistoriaStatusu[] = $wniosekHistoriaStatusu;
 
@@ -237,9 +237,9 @@ class Zastepstwo
     /**
      * Remove wniosekHistoriaStatusu
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
      */
-    public function removeWniosekHistoriaStatusu(\Parp\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    public function removeWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
     {
         $this->wniosekHistoriaStatusu->removeElement($wniosekHistoriaStatusu);
     }

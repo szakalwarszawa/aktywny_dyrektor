@@ -15,7 +15,7 @@ use Memcached;
 
 /**
  * Class LdapAdminService
- * @package Parp\SoapBundle\Services
+ * @package ParpV1\SoapBundle\Services
  */
 class LdapAdminService
 {

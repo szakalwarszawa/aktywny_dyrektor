@@ -10,8 +10,8 @@ use Symfony\Component\Validator\Constraints as Assert;
  *
  * @ORM\Table(name="entry")
  * @ORM\HasLifecycleCallbacks
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\EntryRepository")
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\EntryRepository")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Entry
 {
@@ -684,11 +684,11 @@ class Entry
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosek
      *
      * @return Entry
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -698,7 +698,7 @@ class Entry
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {
@@ -804,11 +804,11 @@ class Entry
     /**
      * Set daneRekord
      *
-     * @param \Parp\MainBundle\Entity\DaneRekord $daneRekord
+     * @param \ParpV1\MainBundle\Entity\DaneRekord $daneRekord
      *
      * @return Entry
      */
-    public function setDaneRekord(\Parp\MainBundle\Entity\DaneRekord $daneRekord = null)
+    public function setDaneRekord(\ParpV1\MainBundle\Entity\DaneRekord $daneRekord = null)
     {
         $this->daneRekord = $daneRekord;
 
@@ -818,7 +818,7 @@ class Entry
     /**
      * Get daneRekord
      *
-     * @return \Parp\MainBundle\Entity\DaneRekord
+     * @return \ParpV1\MainBundle\Entity\DaneRekord
      */
     public function getDaneRekord()
     {

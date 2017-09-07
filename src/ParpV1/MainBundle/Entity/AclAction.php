@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     message="Skrót musi być unikalny")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, skrot")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class AclAction
 {
@@ -199,11 +199,11 @@ class AclAction
     /**
      * Add role
      *
-     * @param \Parp\MainBundle\Entity\AclRole $role
+     * @param \ParpV1\MainBundle\Entity\AclRole $role
      *
      * @return AclAction
      */
-    public function addRole(\Parp\MainBundle\Entity\AclRole $role)
+    public function addRole(\ParpV1\MainBundle\Entity\AclRole $role)
     {
         $this->roles[] = $role;
         $role->addAction($this);
@@ -214,9 +214,9 @@ class AclAction
     /**
      * Remove role
      *
-     * @param \Parp\MainBundle\Entity\AclRole $role
+     * @param \ParpV1\MainBundle\Entity\AclRole $role
      */
-    public function removeRole(\Parp\MainBundle\Entity\AclRole $role)
+    public function removeRole(\ParpV1\MainBundle\Entity\AclRole $role)
     {
         $this->roles->removeElement($role);
         $role->removeAction($this);

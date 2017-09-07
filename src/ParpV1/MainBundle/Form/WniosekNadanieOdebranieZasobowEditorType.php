@@ -27,7 +27,7 @@ class WniosekNadanieOdebranieZasobowEditorType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor'
+            'data_class' => 'ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor'
         ));
     }
 

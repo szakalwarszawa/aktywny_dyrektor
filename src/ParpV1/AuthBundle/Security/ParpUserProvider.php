@@ -161,6 +161,6 @@ class ParpUserProvider implements UserProviderInterface
     public function supportsClass($class)
     {
 
-        return $class === 'Parp\AuthBundle\Security\ParpUser';
+        return $class === 'ParpV1\AuthBundle\Security\ParpUser';
     }
 }

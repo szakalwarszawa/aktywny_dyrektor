@@ -9,10 +9,10 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_utworzenie_zasobu")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekUtworzenieZasobuRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekUtworzenieZasobuRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,typWnioskuZmianaInformacji,typWnioskuWycofanie,wniosek.status.nazwa,typWnioskuDoRejestru,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,zasob.nazwa,zmienianyZasob.nazwa,wniosek.editornames", groupBy={"id"})
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekUtworzenieZasobu
 {
@@ -272,11 +272,11 @@ class WniosekUtworzenieZasobu
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wniosek
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosek
      *
      * @return WniosekUtworzenieZasobu
      */
-    public function setWniosek(\Parp\MainBundle\Entity\Wniosek $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\Wniosek $wniosek = null)
     {
         $this->wniosek = $wniosek;
 
@@ -286,7 +286,7 @@ class WniosekUtworzenieZasobu
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\Wniosek
+     * @return \ParpV1\MainBundle\Entity\Wniosek
      */
     public function getWniosek()
     {

@@ -6,7 +6,7 @@
 
     <!--
     <parameters>
-        <parameter key="parp_main.example.class">Parp\MainBundle\Example</parameter>
+        <parameter key="parp_main.example.class">ParpV1\MainBundle\Example</parameter>
     </parameters>
 
     <services>

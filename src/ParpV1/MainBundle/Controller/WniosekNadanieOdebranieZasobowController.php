@@ -117,7 +117,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                 //$query->addSelect('group_concat(z.nazwa) zasobek');
                 $query->leftJoin($tableAlias.'.userZasoby', 'uz');
-                //$query->leftJoin('Parp\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
+                //$query->leftJoin('ParpV1\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
                 $query->leftJoin($tableAlias.'.wniosek', 'w');
                 $query->leftJoin('w.viewers', 'v');
                 $query->leftJoin('w.editors', 'e');
@@ -454,7 +454,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
 
         $this->setWniosekStatus($entity, '00_TWORZONY', false);
-        //$status = $this->getDoctrine()->getManager()->getRepository('Parp\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
+        //$status = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY');
         //$entity->getWniosek()->setStatus($status);
         $entity->setOdebranie($odebranie);
 
@@ -482,7 +482,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $status =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('Parp\MainBundle\Entity\WniosekStatus')
+                ->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')
                 ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);
@@ -866,7 +866,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $wniosek->getWniosek()->setEditornamesSet();
 
         //wstawia historie statusow
-        $sh = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
+        $sh = new \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow();
         $sh->setZastepstwo($zastepstwo);
         $sh->setWniosek($wniosek->getWniosek());
         $wniosek->getWniosek()->addStatusy($sh);
@@ -949,7 +949,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $txt = $request->get('powodZwrotu');
             $wniosek->setPowodZwrotu($txt);
 
-            $kom = new \Parp\MainBundle\Entity\Komentarz();
+            $kom = new \ParpV1\MainBundle\Entity\Komentarz();
             $kom->setObiekt('WniosekNadanieOdebranieZasobow');
             $kom->setObiektId($id);
             $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
@@ -1110,7 +1110,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     }
 
                                     // Fixme: To powinno być zrobione przy pomocy `__clone()`
-                                    $wn = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
+                                    $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
                                     $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
                                     $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
                                     $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
@@ -1195,7 +1195,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         echo '<br><br>Tworzy nowy wniosek dla zasobu '.$z->getZasobId().
                                             '<br><br>';
                                     }
-                                    $wn = new \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
+                                    $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
                                     $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
                                     $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
                                     $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
@@ -1370,7 +1370,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 //print_r($aduser); die();
                             }
                             if (!$wniosek->getPracownikSpozaParp()) {
-                                $entry = new \Parp\MainBundle\Entity\Entry($this->getUser()->getUsername());
+                                $entry = new \ParpV1\MainBundle\Entity\Entry($this->getUser()->getUsername());
                                 $entry->setWniosek($wniosek->getWniosek());
                                 $entry->setFromWhen(new \Datetime());
                                 $entry->setSamaccountname($aduser[0]['samaccountname']);
@@ -1813,7 +1813,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $newDate = $newDate->add(new \Dateinterval('PT' . (int)(($interval->i/2)*60+($interval->s/2)) . 'S'));
                     //var_dump($interval->i, $nextStatus->getCreatedAt(), $lastStatus->getCreatedAt(), $newDate);
                     $ns = $em->getRepository("ParpMainBundle:WniosekStatus")->findOneByNazwaSystemowa("04_EDYCJA_IBI");
-                    $status = new \Parp\MainBundle\Entity\WniosekHistoriaStatusow();
+                    $status = new \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow();
                     $status->setStatus($ns);
                     $status->setWniosek($wniosek->getWniosek());
                     $wniosek->getWniosek()->addStatusy($status);

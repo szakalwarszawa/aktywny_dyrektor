@@ -210,7 +210,7 @@ class ZasobyController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $em = $this->getDoctrine()->getManager();
-        $uzs = $em->getRepository('Parp\MainBundle\Entity\UserZasoby')->findUsersByZasobId($id);
+        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($id);
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),

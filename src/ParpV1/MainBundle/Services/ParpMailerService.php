@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Exception\ValidatorException;
  * Klasa ParpMailerService.
  * Klasa odpowiada za obsługę wychodzących wiadomości e-mail.
  *
- * @package Parp\MainBundle\Services
+ * @package ParpV1\MainBundle\Services
  */
 class ParpMailerService
 {

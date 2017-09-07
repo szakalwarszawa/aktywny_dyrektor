@@ -23,7 +23,7 @@ use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 
 /**
  * Class LdapCommand
- * @package Parp\CronBundle\Command
+ * @package ParpV1\CronBundle\Command
  */
 class LdapCommand extends ContainerAwareCommand
 {

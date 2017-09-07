@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     message="Nazwa zaangażowania musi być unikalna")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Engagement
 {
@@ -108,10 +108,10 @@ class Engagement
     /**
      * Add users
      *
-     * @param \Parp\MainBundle\Entity\UserEngagement $users
+     * @param \ParpV1\MainBundle\Entity\UserEngagement $users
      * @return Engagement
      */
-    public function addUser(\Parp\MainBundle\Entity\UserEngagement $users)
+    public function addUser(\ParpV1\MainBundle\Entity\UserEngagement $users)
     {
         $this->users[] = $users;
 
@@ -121,9 +121,9 @@ class Engagement
     /**
      * Remove users
      *
-     * @param \Parp\MainBundle\Entity\UserEngagement $users
+     * @param \ParpV1\MainBundle\Entity\UserEngagement $users
      */
-    public function removeUser(\Parp\MainBundle\Entity\UserEngagement $users)
+    public function removeUser(\ParpV1\MainBundle\Entity\UserEngagement $users)
     {
         $this->users->removeElement($users);
     }

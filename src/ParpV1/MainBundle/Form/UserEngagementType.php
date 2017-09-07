@@ -37,7 +37,7 @@ class UserEngagementType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\UserEngagement'
+            'data_class' => 'ParpV1\MainBundle\Entity\UserEngagement'
         ));
     }
 

@@ -27,7 +27,7 @@ class GrupyUprawnienType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\GrupyUprawnien'
+            'data_class' => 'ParpV1\MainBundle\Entity\GrupyUprawnien'
         ));
     }
 

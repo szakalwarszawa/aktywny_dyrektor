@@ -10,14 +10,14 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="ad_user")
- * @ORM\Entity(repositoryClass="Parp\SoapBundle\Entity\ADUserRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\SoapBundle\Entity\ADUserRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname")
  * @UniqueEntity(
  *     fields={"samaccountname"},
  *     errorPath="samaccountname",
  *     message="Samaccountname musi być unikalna")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class ADUser
 {
@@ -737,11 +737,11 @@ class ADUser
     /**
      * Add aDGroup
      *
-     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     * @param \ParpV1\SoapBundle\Entity\ADGroup $aDGroup
      *
      * @return ADUser
      */
-    public function addADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    public function addADGroup(\ParpV1\SoapBundle\Entity\ADGroup $aDGroup)
     {
         $this->ADGroups[] = $aDGroup;
 
@@ -751,9 +751,9 @@ class ADUser
     /**
      * Remove aDGroup
      *
-     * @param \Parp\SoapBundle\Entity\ADGroup $aDGroup
+     * @param \ParpV1\SoapBundle\Entity\ADGroup $aDGroup
      */
-    public function removeADGroup(\Parp\SoapBundle\Entity\ADGroup $aDGroup)
+    public function removeADGroup(\ParpV1\SoapBundle\Entity\ADGroup $aDGroup)
     {
         $this->ADGroups->removeElement($aDGroup);
     }
@@ -771,11 +771,11 @@ class ADUser
     /**
      * Add aDOU
      *
-     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     * @param \ParpV1\SoapBundle\Entity\ADOrganizationalUnit $aDOU
      *
      * @return ADUser
      */
-    public function addADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    public function addADOU(\ParpV1\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
     {
         $this->ADOUs[] = $aDOU;
 
@@ -785,9 +785,9 @@ class ADUser
     /**
      * Remove aDOU
      *
-     * @param \Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU
+     * @param \ParpV1\SoapBundle\Entity\ADOrganizationalUnit $aDOU
      */
-    public function removeADOU(\Parp\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
+    public function removeADOU(\ParpV1\SoapBundle\Entity\ADOrganizationalUnit $aDOU)
     {
         $this->ADOUs->removeElement($aDOU);
     }

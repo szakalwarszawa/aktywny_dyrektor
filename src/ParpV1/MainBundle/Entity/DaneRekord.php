@@ -12,11 +12,11 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  *
  * @ORM\Table(name="dane_rekord", uniqueConstraints={@ORM\UniqueConstraint(name="imie_naziwsko", columns={"imie", "nazwisko", "symbolRekordId"})})
  * a@Gedmo\Loggable
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\DaneRekordRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\DaneRekordRepository")
  * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, symbolRekordId, login, imie, nazwisko, departament, stanowisko, umowa, umowaOd, umowaDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class DaneRekord
 {
@@ -506,11 +506,11 @@ class DaneRekord
     /**
      * Add entry
      *
-     * @param \Parp\MainBundle\Entity\Entry $entry
+     * @param \ParpV1\MainBundle\Entity\Entry $entry
      *
      * @return DaneRekord
      */
-    public function addEntry(\Parp\MainBundle\Entity\Entry $entry)
+    public function addEntry(\ParpV1\MainBundle\Entity\Entry $entry)
     {
         $this->entries[] = $entry;
 
@@ -520,9 +520,9 @@ class DaneRekord
     /**
      * Remove entry
      *
-     * @param \Parp\MainBundle\Entity\Entry $entry
+     * @param \ParpV1\MainBundle\Entity\Entry $entry
      */
-    public function removeEntry(\Parp\MainBundle\Entity\Entry $entry)
+    public function removeEntry(\ParpV1\MainBundle\Entity\Entry $entry)
     {
         $this->entries->removeElement($entry);
     }

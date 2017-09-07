@@ -14,7 +14,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Entity
  * @ORM\HasLifecycleCallbacks()
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class GrupyUprawnien
 {
@@ -134,10 +134,10 @@ class GrupyUprawnien
     /**
      * Add uprawnienia
      *
-     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienia
+     * @param \ParpV1\MainBundle\Entity\Uprawnienia $uprawnienia
      * @return GrupyUprawnien
      */
-    public function addUprawnienie(\Parp\MainBundle\Entity\Uprawnienia $uprawnienia)
+    public function addUprawnienie(\ParpV1\MainBundle\Entity\Uprawnienia $uprawnienia)
     {
         $this->uprawnienia[] = $uprawnienia;
         $this->setUprawnieniaHistoriaZmian();
@@ -148,9 +148,9 @@ class GrupyUprawnien
     /**
      * Remove uprawnienia
      *
-     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienia
+     * @param \ParpV1\MainBundle\Entity\Uprawnienia $uprawnienia
      */
-    public function removeUprawnienie(\Parp\MainBundle\Entity\Uprawnienia $uprawnienia)
+    public function removeUprawnienie(\ParpV1\MainBundle\Entity\Uprawnienia $uprawnienia)
     {
         
         $this->uprawnienia->removeElement($uprawnienia);
@@ -246,11 +246,11 @@ class GrupyUprawnien
     /**
      * Add uprawnienium
      *
-     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienium
+     * @param \ParpV1\MainBundle\Entity\Uprawnienia $uprawnienium
      *
      * @return GrupyUprawnien
      */
-    public function addUprawnienium(\Parp\MainBundle\Entity\Uprawnienia $uprawnienium)
+    public function addUprawnienium(\ParpV1\MainBundle\Entity\Uprawnienia $uprawnienium)
     {
         $this->uprawnienia[] = $uprawnienium;
 
@@ -260,9 +260,9 @@ class GrupyUprawnien
     /**
      * Remove uprawnienium
      *
-     * @param \Parp\MainBundle\Entity\Uprawnienia $uprawnienium
+     * @param \ParpV1\MainBundle\Entity\Uprawnienia $uprawnienium
      */
-    public function removeUprawnienium(\Parp\MainBundle\Entity\Uprawnienia $uprawnienium)
+    public function removeUprawnienium(\ParpV1\MainBundle\Entity\Uprawnienia $uprawnienium)
     {
         $this->uprawnienia->removeElement($uprawnienium);
     }

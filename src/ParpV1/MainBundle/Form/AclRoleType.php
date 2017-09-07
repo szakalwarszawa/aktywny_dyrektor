@@ -24,7 +24,7 @@ class AclRoleType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\RoleTransformer($this->em, $builder->getData());
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\RoleTransformer($this->em, $builder->getData());
         $builder
             //->add('deletedAt')
             ->add('name')
@@ -48,7 +48,7 @@ class AclRoleType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\AclRole'
+            'data_class' => 'ParpV1\MainBundle\Entity\AclRole'
         ));
     }
 

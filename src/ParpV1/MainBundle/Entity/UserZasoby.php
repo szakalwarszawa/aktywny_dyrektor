@@ -8,11 +8,11 @@ use Doctrine\ORM\Mapping as ORM;
  * UserZasoby
  *
  * @ORM\Table(name="userzasoby")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\UserZasobyRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\UserZasobyRepository")
  * @ORM\HasLifecycleCallbacks
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,zasobId")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class UserZasoby
 {
@@ -847,11 +847,11 @@ class UserZasoby
     /**
      * Set wniosek
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek
+     * @param \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek
      *
      * @return UserZasoby
      */
-    public function setWniosek(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
+    public function setWniosek(\ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosek = null)
     {
         if ($wniosek) {
             $wniosek->addUserZasoby($this);
@@ -870,7 +870,7 @@ class UserZasoby
     /**
      * Get wniosek
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     * @return \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow
      */
     public function getWniosek()
     {
@@ -880,11 +880,11 @@ class UserZasoby
     /**
      * Set wniosekOdebranie
      *
-     * @param \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie
+     * @param \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie
      *
      * @return UserZasoby
      */
-    public function setWniosekOdebranie(\Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
+    public function setWniosekOdebranie(\ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow $wniosekOdebranie = null)
     {
         $this->wniosekOdebranie = $wniosekOdebranie;
         if ($this->wniosekOdebranie) {
@@ -897,7 +897,7 @@ class UserZasoby
     /**
      * Get wniosekOdebranie
      *
-     * @return \Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow
+     * @return \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow
      */
     public function getWniosekOdebranie()
     {

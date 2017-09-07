@@ -17,7 +17,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     message="Nazwa stanowiska musi być unikalna")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, opis")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class AclRole
 {
@@ -146,11 +146,11 @@ class AclRole
     /**
      * Add action
      *
-     * @param \Parp\MainBundle\Entity\AclAction $action
+     * @param \ParpV1\MainBundle\Entity\AclAction $action
      *
      * @return AclRole
      */
-    public function addAction(\Parp\MainBundle\Entity\AclAction $action)
+    public function addAction(\ParpV1\MainBundle\Entity\AclAction $action)
     {
         $this->actions[] = $action;
 
@@ -160,9 +160,9 @@ class AclRole
     /**
      * Remove action
      *
-     * @param \Parp\MainBundle\Entity\AclAction $action
+     * @param \ParpV1\MainBundle\Entity\AclAction $action
      */
-    public function removeAction(\Parp\MainBundle\Entity\AclAction $action)
+    public function removeAction(\ParpV1\MainBundle\Entity\AclAction $action)
     {
         $this->actions->removeElement($action);
     }
@@ -180,11 +180,11 @@ class AclRole
     /**
      * Add user
      *
-     * @param \Parp\MainBundle\Entity\AclUserRole $user
+     * @param \ParpV1\MainBundle\Entity\AclUserRole $user
      *
      * @return AclRole
      */
-    public function addUser(\Parp\MainBundle\Entity\AclUserRole $user)
+    public function addUser(\ParpV1\MainBundle\Entity\AclUserRole $user)
     {
         $this->users[] = $user;
 
@@ -194,9 +194,9 @@ class AclRole
     /**
      * Remove user
      *
-     * @param \Parp\MainBundle\Entity\AclUserRole $user
+     * @param \ParpV1\MainBundle\Entity\AclUserRole $user
      */
-    public function removeUser(\Parp\MainBundle\Entity\AclUserRole $user)
+    public function removeUser(\ParpV1\MainBundle\Entity\AclUserRole $user)
     {
         $this->users->removeElement($user);
     }

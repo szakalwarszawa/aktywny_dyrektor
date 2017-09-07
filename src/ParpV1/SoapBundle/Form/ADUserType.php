@@ -41,7 +41,7 @@ class ADUserType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\SoapBundle\Entity\ADUser'
+            'data_class' => 'ParpV1\SoapBundle\Entity\ADUser'
         ));
     }
 

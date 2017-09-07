@@ -10,14 +10,14 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_status")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekStatusRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekStatusRepository")
   * @UniqueEntity(
  *     fields={"nazwaSystemowa"},
  *     errorPath="nazwaSystemowa",
  *     message="Nazwa systemowa musi być unikalna")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,typWniosku,nazwaSystemowa,viewers,editors")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekStatus
 {
@@ -329,11 +329,11 @@ class WniosekStatus
     /**
      * Add wnioski
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wnioski
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wnioski
      *
      * @return WniosekStatus
      */
-    public function addWnioski(\Parp\MainBundle\Entity\Wniosek $wnioski)
+    public function addWnioski(\ParpV1\MainBundle\Entity\Wniosek $wnioski)
     {
         $this->wnioski[] = $wnioski;
 
@@ -343,9 +343,9 @@ class WniosekStatus
     /**
      * Remove wnioski
      *
-     * @param \Parp\MainBundle\Entity\Wniosek $wnioski
+     * @param \ParpV1\MainBundle\Entity\Wniosek $wnioski
      */
-    public function removeWnioski(\Parp\MainBundle\Entity\Wniosek $wnioski)
+    public function removeWnioski(\ParpV1\MainBundle\Entity\Wniosek $wnioski)
     {
         $this->wnioski->removeElement($wnioski);
     }

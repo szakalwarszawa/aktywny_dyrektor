@@ -192,7 +192,7 @@ class RaportyITController extends Controller
         }
 
         $repo = $em->getRepository('ParpMainBundle:DaneRekord');
-        $historyRepo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji');
+        $historyRepo = $em->getRepository('ParpV1\MainBundle\Entity\HistoriaWersji');
         $zmianyDep = $repo->findChangesInMonthByPole($ndata['rok'], $ndata['miesiac']);
         foreach ($zmianyDep as $zmiana) {
             $id = $zmiana[0]['id'];
@@ -209,10 +209,10 @@ class RaportyITController extends Controller
                 if ($wpisNowy->getDepartament() != $wpis->getDepartament()) {
                     //die("zmiana dep!!!!");
                     $dep1 =
-                        $em->getRepository('Parp\MainBundle\Entity\Departament')
+                        $em->getRepository('ParpV1\MainBundle\Entity\Departament')
                             ->findOneByNameInRekord($wpis->getDepartament());
                     $dep2 =
-                        $em->getRepository('Parp\MainBundle\Entity\Departament')
+                        $em->getRepository('ParpV1\MainBundle\Entity\Departament')
                             ->findOneByNameInRekord($wpisNowy->getDepartament());
                     $akcja = "Zmiana departamentu z '".$dep1->getName()."' na '".$dep2->getName()."'";
                     //var_dump($zmiana);
@@ -473,7 +473,7 @@ class RaportyITController extends Controller
             $this->zakres['max'] = $max;
             //die('tutaj');
         } else {
-            $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
+            $repo = $em->getRepository('ParpV1\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
             $logs = $repo->getLogEntries($entity);
             $dane = [];
             foreach ($logs as $log) {

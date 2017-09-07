@@ -180,7 +180,7 @@ class UprawnieniaController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-        $uzs = $em->getRepository('Parp\MainBundle\Entity\UserUprawnienia')->findUsersByUprawnienieId($id);
+        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserUprawnienia')->findUsersByUprawnienieId($id);
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),

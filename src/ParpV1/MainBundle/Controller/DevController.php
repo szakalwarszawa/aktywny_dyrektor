@@ -550,11 +550,11 @@ class DevController extends Controller
                 $f = str_replace(__DIR__.'/..../../src', '', $file->getRealpath());
                 $f = str_replace('/', "\\", $f);
                 $f = str_replace('.php', '', $f);
-                if ($f != '\Parp\MainBundle\Entity\HistoriaWersji') {
+                if ($f != '\ParpV1\MainBundle\Entity\HistoriaWersji') {
                     //die($f);
                     $h = file_get_contents($file->getRealpath());
 
-                    if (strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")') !== false) {
+                    if (strstr($h, '@Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")') !== false) {
                         echo ('mamy zasob Z gedmo '.$file->getRealpath());
                     } else {
                         echo('mamy zasob bez gedmo '.$file->getRealpath()."<br>\n");
@@ -563,7 +563,7 @@ class DevController extends Controller
                             '/(     \*\/)(\n)(    private \$)([^i][^d])/'
                         );
                         $replace = array (
-                            ' * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="Parp\\MainBundle\\Entity\\HistoriaWersji")$2$1$2$3',
+                            ' * @Gedmo\\Mapping\\Annotation\\Loggable(logEntryClass="ParpV1\\MainBundle\\Entity\\HistoriaWersji")$2$1$2$3',
                             '     * @Gedmo\\Mapping\\Annotation\\Versioned$2$1$2$3$4'
                         );
                         $h = preg_replace($patterns, $replace, $h);
@@ -617,7 +617,7 @@ class DevController extends Controller
      */
     public function groupConcatAction()
     {
-        $sql = "select group_concat(e.samaccountname) from Parp\\MainBundle\\Entity\\Entry e";
+        $sql = "select group_concat(e.samaccountname) from ParpV1\\MainBundle\\Entity\\Entry e";
         $em = $this->getDoctrine()->getEntityManager();
         $result= $em->createQuery($sql)->getResult();
         \Doctrine\Common\Util\Debug::dump($result);
@@ -987,7 +987,7 @@ class DevController extends Controller
         foreach ($arr as $l) {
             $l = trim($l);
             if ($l != '') {
-                $ur = new \Parp\MainBundle\Entity\AclUserRole();
+                $ur = new \ParpV1\MainBundle\Entity\AclUserRole();
                 $ur->setRole($rola);
                 $ur->setSamaccountname($l);
                 $em->persist($ur);

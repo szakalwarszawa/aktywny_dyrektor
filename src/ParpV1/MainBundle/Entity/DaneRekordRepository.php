@@ -83,8 +83,8 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         $result = $this
            ->createQueryBuilder('e')
            ->select('e, w.id, w.data, w.version, w.loggedAt')
-           ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji', 'w')
-           ->where("w.objectId = e.id and w.data like '%\"".$pole."\"%' and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
+           ->innerJoin('ParpV1\MainBundle\Entity\HistoriaWersji', 'w')
+           ->where("w.objectId = e.id and w.data like '%\"".$pole."\"%' and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
            and (w.loggedAt >= :dataStart and w.loggedAt < :dataEnd)")
             ->orderBy("e.nazwisko")
            ->getQuery()
@@ -110,8 +110,8 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         $result = $this
             ->createQueryBuilder('e')
             ->select('e, w.id, w.data, w.version, w.loggedAt')
-            ->innerJoin('Parp\MainBundle\Entity\HistoriaWersji', 'w')
-            ->where("w.objectId = e.id and (".implode(' OR ', $where).") and w.objectClass = 'Parp\MainBundle\Entity\DaneRekord'
+            ->innerJoin('ParpV1\MainBundle\Entity\HistoriaWersji', 'w')
+            ->where("w.objectId = e.id and (".implode(' OR ', $where).") and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
            and e.login like :login")
             ->orderBy("e.nazwisko")
             ->getQuery()

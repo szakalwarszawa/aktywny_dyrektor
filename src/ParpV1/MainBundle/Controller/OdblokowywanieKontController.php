@@ -41,7 +41,7 @@ class OdblokowywanieKontController extends Controller
             in_array("PARP_ADMIN", $this->getUser()->getRoles())
         ;
         if (!$maDostep) {
-            throw new \Parp\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
+            throw new \ParpV1\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
         }
         $ADUsersTemp = $ldap->getAllFromAD("zablokowane");
         $ADUsers = array();

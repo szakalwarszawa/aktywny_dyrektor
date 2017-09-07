@@ -31,9 +31,9 @@ class VersionController extends Controller
 
     protected function getObjectHistory($repository, $id)
     {
-        $className = "Parp\\MainBundle\\Entity\\".$repository;
+        $className = "ParpV1\\MainBundle\\Entity\\".$repository;
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
+        $repo = $em->getRepository('ParpV1\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
         $entity = $em->find($className, $id);
         //var_dump($entity, $repository, $id);
         
@@ -64,7 +64,7 @@ class VersionController extends Controller
         $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','WniosekNadanieOdebranieZasobow','WniosekHistoriaStatusow', 'Zasob');
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
-        $className = "Parp\\MainBundle\\Entity\\".$repository;
+        $className = "ParpV1\\MainBundle\\Entity\\".$repository;
         $entity = $em->getRepository($className)->find($id);
         $entities = $this->getObjectHistory($repository, $id);
         $pid = $entity->getWniosek()->getParent() ? $entity->getWniosek()->getParent()->getWniosekNadanieOdebranieZasobow()->getId() : 0;
@@ -145,9 +145,9 @@ class VersionController extends Controller
      */
     public function versionsAction($repository, $id, $bundle = "MainBundle")
     {
-        $className = "Parp\\".$bundle."\\Entity\\".$repository;
+        $className = "ParpV1\\".$bundle."\\Entity\\".$repository;
         $em = $this->getDoctrine()->getManager();
-        $repo = $em->getRepository('Parp\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
+        $repo = $em->getRepository('ParpV1\MainBundle\Entity\HistoriaWersji'); // we use default log entry class
         $entity = $em->find($className, $id);
         $logs = $repo->getLogEntries($entity);
         //$logs = array_reverse($logs);

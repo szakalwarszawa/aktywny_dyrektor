@@ -6,7 +6,7 @@
 
     <!--
     <parameters>
-        <parameter key="parp_cron.example.class">Parp\CronBundle\Example</parameter>
+        <parameter key="parp_cron.example.class">ParpV1\CronBundle\Example</parameter>
     </parameters>
 
     <services>

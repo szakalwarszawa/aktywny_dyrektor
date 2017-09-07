@@ -10,10 +10,10 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * UserZasoby
  *
  * @ORM\Table(name="wniosek_nadanie_odebranie_zasobow")
- * @ORM\Entity(repositoryClass="Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobowRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,wniosek.numer,wniosek.status.nazwa,odebranie,wniosek.createdBy,wniosek.createdAt,wniosek.lockedBy,pracownicy,wniosek.editornames,zasoby", groupBy={"id", "wniosek.numer", "wniosek.status.nazwa", "wniosek.createdBy", "wniosek.createdAt", "wniosek.lockedBy", "wniosek.editornames"})
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="Parp\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class WniosekNadanieOdebranieZasobow
 {
@@ -256,11 +256,11 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Add userZasoby
      *
-     * @param \Parp\MainBundle\Entity\UserZasoby $userZasoby
+     * @param \ParpV1\MainBundle\Entity\UserZasoby $userZasoby
      *
      * @return WniosekNadanieOdebranieZasobow
      */
-    public function addUserZasoby(\Parp\MainBundle\Entity\UserZasoby $userZasoby)
+    public function addUserZasoby(\ParpV1\MainBundle\Entity\UserZasoby $userZasoby)
     {
         $this->userZasoby[] = $userZasoby;
         $this->ustawPoleZasoby();
@@ -270,9 +270,9 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Remove userZasoby
      *
-     * @param \Parp\MainBundle\Entity\UserZasoby $userZasoby
+     * @param \ParpV1\MainBundle\Entity\UserZasoby $userZasoby
      */
-    public function removeUserZasoby(\Parp\MainBundle\Entity\UserZasoby $userZasoby)
+    public function removeUserZasoby(\ParpV1\MainBundle\Entity\UserZasoby $userZasoby)
     {
         $this->userZasoby->removeElement($userZasoby);
         $this->ustawPoleZasoby();
@@ -462,11 +462,11 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Add userZasobyOdbierane
      *
-     * @param \Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane
+     * @param \ParpV1\MainBundle\Entity\UserZasoby $userZasobyOdbierane
      *
      * @return WniosekNadanieOdebranieZasobow
      */
-    public function addUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
+    public function addUserZasobyOdbierane(\ParpV1\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
     {
         $this->userZasobyOdbierane[] = $userZasobyOdbierane;
         $this->ustawPoleZasoby();
@@ -477,9 +477,9 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Remove userZasobyOdbierane
      *
-     * @param \Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane
+     * @param \ParpV1\MainBundle\Entity\UserZasoby $userZasobyOdbierane
      */
-    public function removeUserZasobyOdbierane(\Parp\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
+    public function removeUserZasobyOdbierane(\ParpV1\MainBundle\Entity\UserZasoby $userZasobyOdbierane)
     {
         $this->userZasobyOdbierane->removeElement($userZasobyOdbierane);
         $this->ustawPoleZasoby();

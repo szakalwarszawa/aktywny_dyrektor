@@ -19,7 +19,7 @@ class UserZasobyType extends AbstractType
     public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true, $datauz = null)
     {
 
-        $this->transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $this->transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $this->choicesModul = $choicesModul;
         $this->choicesPoziomDostepu = $choicesPoziomDostepu;
         $this->isSubForm = $isSubForm;
@@ -145,7 +145,7 @@ class UserZasobyType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\UserZasoby'
+            'data_class' => 'ParpV1\MainBundle\Entity\UserZasoby'
         ));
     }
 

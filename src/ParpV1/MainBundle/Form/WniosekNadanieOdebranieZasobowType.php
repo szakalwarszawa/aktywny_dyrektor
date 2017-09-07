@@ -24,7 +24,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \Parp\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('odebranie', 'hidden');
         //die(". ".$this->entity->getOdebranie());
@@ -61,8 +61,8 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
             ->add('managerSpozaParp', 'choice', array(
                 'choices' => $this->managerzySpozaPARP,
                 'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2')))
-            ->add('wniosek', new \Parp\MainBundle\Form\WniosekType($this->ADUsers), array(
-                'data_class' => 'Parp\MainBundle\Entity\Wniosek',
+            ->add('wniosek', new \ParpV1\MainBundle\Form\WniosekType($this->ADUsers), array(
+                'data_class' => 'ParpV1\MainBundle\Entity\Wniosek',
                 'label' => false));
     }
     
@@ -72,7 +72,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     public function setDefaultOptions(OptionsResolverInterface $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'Parp\MainBundle\Entity\WniosekNadanieOdebranieZasobow'
+            'data_class' => 'ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow'
         ));
     }
 
