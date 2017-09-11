@@ -2,6 +2,7 @@
 
 namespace ParpV1\MainBundle\Controller;
 
+use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\Engagement;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\UserEngagement;
@@ -144,8 +145,10 @@ class NadawanieUprawnienZasobowController extends Controller
                 //tu pobierze userzasobId wczyta go i postem odbije
                 $uzid = $request->get('uzid');
                 $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($uzid);
-//                 Array ( [samaccountnames] => {"adam_gregier":1,"andrzej_trocewicz":1,"kamil_jakacki":1} [wniosekId] => 128 [action] => addResources [fromWhen] => 23-06-2016 [powod] => fdsfds [nazwafiltr] => [grupy] => [access] => Array ( [0] => 2170 ) )
-//                 Array ( [samaccountnames] => {"adam_gregier" : 1} [wniosekId] => 128 [action] => editResources [fromWhen] => DateTime Object ( [date] => 2016-06-23 00:00:00 [timezone_type] => 3 [timezone] => Europe/Berlin ) [powod] => vcxvcxv [nazwafiltr] => [grupy] => [access] => Array ( [0] => 1157 ) )
+
+                if (null === $uz) {
+                    throw new EntityNotFoundException('Nie ma zasobu o id '.$uzid);
+                }
 
                 $ndata = array(
                     'samaccountnames' => $uz->getSamaccountnames(),
@@ -157,7 +160,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'grupy' => '',
                     'access' => array($uz->getZasobId()),
                 );
-                //print_r($ndata);
+
                 return $this->addResourcesToUsersAction($request, $ndata, $wniosekId, $uzid, $uz);
 
                 break;
