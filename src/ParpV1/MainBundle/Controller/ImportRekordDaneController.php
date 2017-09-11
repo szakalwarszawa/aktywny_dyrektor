@@ -206,7 +206,6 @@ class ImportRekordDaneController extends Controller
         $this->dataGraniczna = date('Y-m-d');
         //$this->dataGraniczna = "2016-09-01";//date("Y-m-d");
 
-
         //$this->dataGraniczna = "2016-08-20";//temp
         $mapowanieDepartamentowPrezesow = [
             '15'   => '400', //Prezes - stary uklad !!!! moje oznaczenie 400 , musze dogadac z kadrami !!!
@@ -220,7 +219,6 @@ class ImportRekordDaneController extends Controller
             ['2942'/*krakowiak*/, '3753'/*pocztowska*/, '3126' /*Sługocka-morawska*/, '3798' /*Stasińska*/];
 
 
-        $sciecha = '';
         $sql = $this->getSqlDoImportu();
         $rows = $this->executeQuery($sql);
         $em = $this->getDoctrine()->getManager();
@@ -235,47 +233,8 @@ class ImportRekordDaneController extends Controller
             $data[$in][] = $row;
         }
         $totalmsg = [];
-        $ldap = $this->get('ldap_service');
 
         $rekordIds = [];
-        /*
-                $data["KAMIL JAKACKI"][] = [
-                    'SYMBOL' => '3834',
-                    'STANOWISKO' => 'starszy specjalista',
-                    'DEPARTAMENT' => '526',
-                    'IMIE' => 'KAMIL',
-                    'NAZWISKO' => 'JAKACKI',
-                    'UMOWA' => 'Na czas nieokreślony',
-                    'UMOWAOD' => '2016-03-24x 00:00:00',
-                    'UMOWADO' => NULL,
-                ];
-        */
-        //temp by sprawdzic czy utworzy dubla mnie
-        /*
-                $data["KAMIL JAKACKI1"][] = [
-                    'SYMBOL' => '777774',
-                    'STANOWISKO' => 'starszy specjalista',
-                    'DEPARTAMENT' => '504',
-                    'IMIE' => 'KAMIL',
-                    'NAZWISKO' => 'JAKACKI',
-                    'UMOWA' => 'Na czas nieokreślony',
-                    'UMOWAOD' => '2016-01-01',
-                    'UMOWADO' => NULL,
-                ];
-
-
-                $data["ROBERT MUCHACKI"][] = [
-                    'SYMBOL' => '777774',
-                    'STANOWISKO' => 'starszy specjalista',
-                    'DEPARTAMENT' => '504',
-                    'IMIE' => 'ROBERT',
-                    'NAZWISKO' => 'MUCHACKI',
-                    'UMOWA' => 'Na czas nieokreślony',
-                    'UMOWAOD' => '2016-01-01',
-                    'UMOWADO' => NULL,
-                ];
-        */
-
 
         foreach ($data as $in => $d) {
             if (count($d) > 1) {
@@ -320,23 +279,23 @@ class ImportRekordDaneController extends Controller
                 $poprzednieDane = null;
                 if ($dr === null) {
                     $nowy = true;
-                    $dr = new \ParpV1\MainBundle\Entity\DaneRekord();
-                    $dr->setCreatedBy($this->getUser()->getUsername());
-                    $dr->setCreatedAt($d);
-                    $dr->setNewUnproccessed(1);
+                    $dr = new DaneRekord();
+                    $dr
+                        ->setCreatedBy($this->getUser()->getUsername())
+                        ->setCreatedAt($d)
+                        ->setNewUnproccessed(1)
+                    ;
+
                     $em->persist($dr);
                     $saNowi = true;
-                    $poprzednieDane = clone $dr;
-                } else {
-                    $poprzednieDane = clone $dr;
                 }
 
-                //print_r($row['SYMBOL']);
-                //print_r($dr->getNazwisko());
-                //print_r($poprzednieDane->getNazwisko());
+                $poprzednieDane = clone $dr;
 
-                $dr->setImie($this->parseValue($row['IMIE']));
-                $dr->setNazwisko($this->parseNazwiskoValue($row['NAZWISKO']));
+                $dr
+                    ->setImie($this->parseValue($row['IMIE']))
+                    ->setNazwisko($this->parseNazwiskoValue($row['NAZWISKO']))
+                ;
                 if ($nowy) {
                     $login =
                         $this->get('samaccountname_generator')
@@ -345,10 +304,12 @@ class ImportRekordDaneController extends Controller
                     //$this->sendMailAboutNewUser($dr->getNazwisko()." ".$dr->getImie(), $login);
                 }
 
-                $dr->setDepartament($this->parseValue($row['DEPARTAMENT']));
-                $dr->setStanowisko($this->parseValue($row['STANOWISKO'], false));
-                $dr->setUmowa($this->parseValue($row['UMOWA'], false));
-                $dr->setSymbolRekordId($this->parseValue($row['SYMBOL'], false));
+                $dr
+                    ->setDepartament($this->parseValue($row['DEPARTAMENT']))
+                    ->setStanowisko($this->parseValue($row['STANOWISKO'], false))
+                    ->setUmowa($this->parseValue($row['UMOWA'], false))
+                    ->setSymbolRekordId($this->parseValue($row['SYMBOL'], false))
+                ;
 
                 $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
                 if (($d1 !== null) &&
@@ -362,8 +323,6 @@ class ImportRekordDaneController extends Controller
                 }
                 $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
 
-                //var_dump($dr->getUmowaDo());
-                //var_dump($d2);
                 if ((
                     ($dr->getUmowaDo() == null && $d2 != null) ||
                     ($dr->getUmowaDo() != null && $d2 == null) ||
@@ -382,14 +341,11 @@ class ImportRekordDaneController extends Controller
                 if (1 == 1 && ($uow->isEntityScheduled($dr) || $nowy)) {
                     $changeSet = $uow->getEntityChangeSet($dr);
                     unset($changeSet['lastModifiedAt']);
-                    if ($nowy) {
-                    } else {
-                    }
+
                     if (count($changeSet) > 0) {
                         $totalmsg[] = "\n".($nowy ? 'Utworzono dane' : 'Uzupełniono dane ').' dla  '.$dr->getLogin().
                             ' .';
                     }
-
 
                     if ((isset($changeSet['departament']) || isset($changeSet['stanowisko'])) && !$nowy) {
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
@@ -399,32 +355,18 @@ class ImportRekordDaneController extends Controller
                         $imported[] = $dr;
                     }
 
-                    if ($nowy) {
-                    } else {
+                    if (false === $nowy) {
                         if (isset($changeSet['departament'])) {
                             //zmiana departamentu
                             $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
                         }
-                        /*
-                        if(isset($changeSet['stanowisko']){
-                            //zmiana departamentu
-                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
-                        }*/
                     }
-                }
-
-                if ($dr->getLogin() === 'kamil_jakacki') {
-                    //var_dump($changeSet);
-                    //die('nie zapisuje bo kamil_jakacki');
                 }
             }
         }
         if (count($totalmsg) > 0) {
             $this->addFlash('warning', implode('<br>', $totalmsg));
         }
-        //echo "<pre>"; print_r($imported);
-        //die();
-
 
         //teraz powinien sprawdzac czy ktos mi nie zniknal
         $drs = $em->getRepository('ParpMainBundle:DaneRekord')->findByNotHavingRekordIds($rekordIds);
@@ -436,10 +378,6 @@ class ImportRekordDaneController extends Controller
             $sql = $this->getSqlDoUzupelnienieDanychOZwolnionych($ids);
 
             $rowsZwolnieni = $this->executeQuery($sql);
-            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($ids);echo "</pre>";
-            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($drs);echo "</pre>";
-            //echo "<pre>"; \Doctrine\Common\Util\Debug::dump($rowsZwolnieni);echo "</pre>";
-            //die("mam zwolnienie pracownika!!!");
         }
         $em->flush();
 
