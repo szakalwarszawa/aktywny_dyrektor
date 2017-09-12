@@ -60,15 +60,11 @@ class ADUserController extends Controller
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
     
-       
-    
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
     
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
     
-
-
         $grid->isReadyForRedirect();
         return $grid->getGridResponse();
     }

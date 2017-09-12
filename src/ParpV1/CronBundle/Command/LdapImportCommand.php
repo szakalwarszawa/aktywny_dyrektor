@@ -9,6 +9,7 @@
 
 namespace ParpV1\CronBundle\Command;
 
+use ParpV1\SoapBundle\Controller\ImportController;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -20,7 +21,9 @@ class LdapImportCommand extends ContainerAwareCommand
     
     protected function configure()
     {
-        $this->setName('parp:ldapimport')->setDescription('Pobiera dane z bazy Active Directory (users, ous i groups) i wprowadza je do Aktywnego Dyrektora')
+        $this
+            ->setName('parp:ldapimport')
+            ->setDescription('Pobiera dane z bazy Active Directory (users, ous i groups) i wprowadza je do Aktywnego Dyrektora')
         ;
     }
     
@@ -45,7 +48,6 @@ class LdapImportCommand extends ContainerAwareCommand
             $letters = "abcdefghijklmnopqrstuvwxyz";
             $letters_array = str_split($letters);
             
-            $c = new \ParpV1\SoapBundle\Controller\ImportController();
             foreach ($letters_array as $l) {
                 $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Import users na litere "'.$l.'" ...                             </comment>', false);
                 $this->getContainer()->get('ldap_import')->importUsersAction($l);
