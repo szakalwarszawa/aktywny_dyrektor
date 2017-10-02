@@ -168,15 +168,24 @@ class ParpMailerService
         return $sent;
     }
 
-    protected function getUserMail($login)
+    public function getUserMail($login)
     {
-        $email = $login.'@parp.gov.pl';
+        if (strpos($login, ',')) {
+            $explode = explode(',', $login);
 
-        if (filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            return $email;
+            // Nieprawidłowy adres e-mail - sprawdzamy, czy nie jest to np. tablica wielu loginów
+            // jeżeli tak - rekurencyjnie odpalamy i zwracamy
+            $emails = [];
+            foreach ($explode as $item) {
+                $emails[] = $this->getUserMail($item);
+            }
+
+            return implode(';', $emails);
         }
 
-        throw new ValidatorException('Nieprawidłowy adres e-mail: '.$email);
+        $email = $login.'@parp.gov.pl';
+
+        return $email;
     }
 
     protected function getManagerLoginFromDN($manager)
