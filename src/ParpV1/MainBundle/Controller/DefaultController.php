@@ -1371,7 +1371,7 @@ class DefaultController extends Controller
      * @Route("/engage/{samaccountname}", name="engageUser")
      * @param Request $request
      * @param         $samaccountname
-     *
+     * @Template()
      * @return array|RedirectResponse
      */
     public function engagementAction(Request $request, $samaccountname)
