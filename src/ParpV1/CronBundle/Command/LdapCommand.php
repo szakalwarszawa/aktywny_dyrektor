@@ -306,11 +306,11 @@ class LdapCommand extends ContainerAwareCommand
 
             if (!$this->showonly && count($zmiany) > 0) {
                 //zapis loga
-//                $output2 = clone $output;
-                $output2 = new BufferedOutput(
-                    OutputInterface::VERBOSITY_NORMAL,
-                    true // true for decorated
-                );
+                $output2 = clone $output;
+//                $output2 = new BufferedOutput(
+//                    OutputInterface::VERBOSITY_NORMAL,
+//                    true // true for decorated
+//                );
                 $converter = new AnsiToHtmlConverter();
                 $msg = '<link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.
                     $converter->convert($output2->fetch()).
