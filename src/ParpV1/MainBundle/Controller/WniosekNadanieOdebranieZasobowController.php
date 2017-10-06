@@ -1341,13 +1341,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                         $dostepnePoziomy = explode(';', $poziomy);
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            throw new \Exception("Niewłaściwy poziom dostepu dla zasobu '".$uz->getNazwa().
-                                "', wybrany poziom to '". $uz->getPoziomDostepu()."', dostepne poziomy: ". $dostepnePoziomy);
-//                            throw new \Exception("Nie wybrano odpowiedniego poziomu dostepu, wybrany poziom '".
-//                                $uz->getPoziomDostepu().
-//                                "', dostepne poziomy : ".
-//                                $z->getPoziomDostepu().
-//                                '!!!');
+                            throw new \Exception('Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() . '\', wybrany poziom to \'' .
+                            $uz->getPoziomDostepu() . '\', dostepne poziomy: ' . $dostepnePoziomy);
                         }
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
@@ -1536,7 +1531,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'maBycwAD'  => $czyMaByc,
             ];
         }
-        
+
         $czyLsi = false;
         $userzasobyRozbite = [];
         foreach ($uzs as $uz) {
