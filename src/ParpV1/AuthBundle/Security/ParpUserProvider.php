@@ -127,7 +127,7 @@ class ParpUserProvider implements UserProviderInterface
         $idSrodowiska = $this->idSrodowiska;
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = '@'.$this->ad_domain;
-        $userdn = $this->ad_ou.',DC=parp,DC=local';
+        $userdn = $this->ad_ou.',DC='.$this->ad_dc1.',DC='.$this->ad_dc2;
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
 
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
