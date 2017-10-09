@@ -24,6 +24,8 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Validator\Validation;
+use Symfony\Component\Validator\Constraints\Email;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -520,7 +522,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case 'podmiot':
                 //
                 foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $where[$u->getSamaccountname()] = $u->getSamaccountname();
+                    $adres = $u->getSamaccountname() . '@parp.gov.pl';
+                    if ($this->isValidEmail($adres)) {
+                        $where[$u->getSamaccountname()] = $u->getSamaccountname();
+                    }
+
                     if ($this->debug) {
                         echo '<br>added '.$u->getSamaccountname().'<br>';
                     }
@@ -838,6 +844,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $wniosek->getWniosek()->removeEditor($v);
             $em->remove($v);
         }
+
         //dodaje viewerow
         foreach ($viewers as $v) {
             $wv = new WniosekViewer();
@@ -850,6 +857,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $em->persist($wv);
         }
         $wniosek->getWniosek()->setViewernamesSet();
+
         //dodaje editorow
         foreach ($editors as $v) {
 //            die('MAM CIĘ');
@@ -862,7 +870,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
             $em->persist($wv);
         }
-
         $wniosek->getWniosek()->setEditornamesSet();
 
         //wstawia historie statusow
@@ -1849,4 +1856,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         return $aduser;
     }
+
+    /**
+     * Prywatna funkcja zwraca info czy podany tekst jest poprawnym adresem email
+     *
+     * @param string $text
+     *
+     * @return bolean
+     */
+    private function isValidEmail($text)
+    {
+        $validator = Validation::createValidator();
+        $violations = $validator->validate($text,  new Email(array('strict' => true)));
+
+        return (0 !== count($violations)) ? false : true;
+    }
+
 }

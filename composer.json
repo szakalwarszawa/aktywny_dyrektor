@@ -27,7 +27,8 @@
         "sensiolabs/ansi-to-html": "^1.1",
         "adldap/adldap": "5.0.*@dev",
         "liuggio/excelbundle": "*",
-        "friendsofsymfony/jsrouting-bundle": "^1.6"
+        "friendsofsymfony/jsrouting-bundle": "^1.6",
+        "egulias/email-validator": "^1.2"
     },
     "minimum-stability": "stable",
     "scripts": {
