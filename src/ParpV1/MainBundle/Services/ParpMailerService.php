@@ -88,7 +88,7 @@ class ParpMailerService
         $templating,
         $ldap
     ) {
-    
+
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
         $this->securityContext = $securityContext;
@@ -115,30 +115,19 @@ class ParpMailerService
         $sender = SELF::DEFAULT_SENDER,
         $priority = SELF::DEFAULT_PRIORITY
     ) {
-    
+
         $mailer = $this->mailer;
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
-
-        if (is_array($recipient)) {
-            for ($i = 0; $i < count($recipient); $i++) {
-                if (strstr($recipient[$i], '@') === false) {
-                    $recipient[$i] = $this->getUserMail($recipient[$i]);
-                }
-            }
-        } else {
-            if (strstr($recipient, '@') === false) {
-                $recipient = $this->getUserMail($recipient);
-            }
-        }
+        $recipientArray= $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
             ->setFrom($sender)
             ->setSender($sender)
-            ->setTo($recipient)
+            ->setTo($recipientArray)
             ->setBody($contentTxt, 'text/plain')// ->setId(time().'.'.md5($recipient.time()).'.'.$recipientForId)
         ;
 
@@ -586,5 +575,34 @@ class ParpMailerService
     protected function formatDateForDisplay($dt)
     {
         return $dt ? $dt->format('Y-m-d') : '';
+    }
+
+
+    /**
+     * Funkcja przebudowuje dane na poprawną tablicę lub string z adresami/adresem email
+     *
+     * @param array|string $recipient
+     *
+     * @return array|string
+     */
+    protected function getRecipient($recipient)
+    {
+        if (is_array($recipient)) {
+            $recipientArr = [];
+            for ($i = 0; $i < count($recipient); $i++) {
+                if (strstr($recipient[$i], '@') === false) {
+                    $line = $this->getUserMail($recipient[$i]);
+                    $recipientArr = array_merge($recipientArr, explode(';', $line));
+                }
+            }
+
+            return $recipientArr;
+        } else {
+            if (strstr($recipient, '@') === false) {
+                $recipient = $this->getUserMail($recipient);
+            }
+
+            return $recipient;
+        }
     }
 }
