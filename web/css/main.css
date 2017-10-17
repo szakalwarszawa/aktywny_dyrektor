@@ -132,3 +132,7 @@ table{
 #historia .JColResizer{
     table-layout: auto;
 }
+
+.wiersz-odebranie {
+    background-color:#ffdede !important;
+}
