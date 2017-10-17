@@ -140,3 +140,7 @@ table{
 .wiersz-cito {
     background-color:#ffbe4e !important;
 }
+
+.grid-filter-select-query-from {
+    width: 165px;
+}
