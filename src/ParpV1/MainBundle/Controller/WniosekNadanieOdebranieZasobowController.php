@@ -174,7 +174,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
+        
+        // dodanie spacji umożliwiających łamanie tekstu
+        $grid->getColumn('pracownicy')->manipulateRenderCell(
+                function ($value, $row, $router) {
+            return str_replace(array(";", ","), ', ', $value);
+        }
+        );
 
+        // dodanie spacji umożliwiających łamanie tekstu
+        $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
+                function ($value, $row, $router) {
+            return str_replace(array(";", ","), ', ', $value);
+        }
+        );
 
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
