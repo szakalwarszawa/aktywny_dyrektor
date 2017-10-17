@@ -42,7 +42,7 @@ class WniosekNadanieOdebranieZasobow
      * @GRID\Column(field="wniosek.numer", title="Numer")
      * @GRID\Column(field="wniosek.status.nazwa", title="Status", filter="select")
      * @GRID\Column(field="wniosek.createdBy", title="Utworzony przez")
-     * @GRID\Column(field="wniosek.createdAt", type="date", title="Utworzono")
+     * @GRID\Column(field="wniosek.createdAt", type="date", format="Y-m-d", title="Utworzono")
      * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez", visible=false)
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
