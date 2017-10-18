@@ -132,3 +132,15 @@ table{
 #historia .JColResizer{
     table-layout: auto;
 }
+
+.wiersz-odebranie {
+    background-color:#ffdede !important;
+}
+
+.wiersz-cito {
+    background-color:#ffbe4e !important;
+}
+
+.grid-filter-select-query-from {
+    width: 165px;
+}

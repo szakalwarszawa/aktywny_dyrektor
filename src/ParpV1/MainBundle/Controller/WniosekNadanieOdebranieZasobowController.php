@@ -165,16 +165,45 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //die($query->getDQL());
             }
         );
-        $grid = $this->get('grid');
+        
+        // kolorowanie wierszy
+        $source->manipulateRow(
+            function ($row)
+            {
+                if ($row->getField('odebranie') == '1') {
+                    $row->setClass('wiersz-odebranie'); 
+                }
 
+                if ($row->getField('wniosek.createdBy') == 'magdalena_warecka' && $this->getUser()->getUsername() == 'marcin_lipinski') {
+                    $row->setClass('wiersz-cito'); // dla Marcina ;)
+                }
+                return $row;
+            }
+        );
+        
+        $grid = $this->get('grid');
 
         $grid->setSource($source);
         //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));
         //$grid->addColumn($kolumnaZasobNazwa);
+        
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
+        
+        // dodanie spacji umożliwiających łamanie tekstu
+        $grid->getColumn('pracownicy')->manipulateRenderCell(
+                function ($value, $row, $router) {
+            return str_replace(array(";", ","), ', ', $value);
+        }
+        );
 
+        // dodanie spacji umożliwiających łamanie tekstu
+        $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
+                function ($value, $row, $router) {
+            return str_replace(array(";", ","), ', ', $value);
+        }
+        );
 
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
