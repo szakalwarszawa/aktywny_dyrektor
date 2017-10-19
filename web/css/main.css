@@ -144,3 +144,7 @@ table{
 .grid-filter-select-query-from {
     width: 165px;
 }
+
+.aaa .tab-content {
+    margin-top: 15px;
+}
