@@ -1950,13 +1950,17 @@ class DevController extends Controller
             $finder = new Finder();
             $finder->files()->in(__DIR__.'/../../../../work/logs/');
 
-            $links = [];
+            //$links = [];
+            $links2 = [];
 
             foreach ($finder as $file) {
-                $links[] = '<li class="list-group-item"><a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
+                //$links[] = '<li class="list-group-item"><a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
+                $links2[] = ['link' => '<a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'">'.$file->getRelativePathname().'</a>'];
             }
-            sort($links);
-            return new Response('<html><body><ul class="list-group">'.implode('', $links).'</li></body>');
+            //sort($links);
+            sort($links2);
+            //return new Response('<html><body><ul class="list-group">'.implode('', $links).'</li></body>');
+            return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $links2, 'title' => 'Logi z wypychania do AD']);
         } else {
             //download file
             $file = __DIR__.'/../../../../work/logs/'.$file;
@@ -1965,7 +1969,8 @@ class DevController extends Controller
             //die($response);
             //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
 
-            return $response;
+            //return $response;
+            return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => 0, 'content' => $response));
         }
     }
 
