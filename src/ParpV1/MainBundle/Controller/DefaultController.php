@@ -467,7 +467,7 @@ class DefaultController extends Controller
             $zasoby[$i]['modul'] = $uz->getModul();
             $zasoby[$i]['loginDoZasobu'] = $uz->getLoginDoZasobu();
             $zasoby[$i]['poziomDostepu'] = $uz->getPoziomDostepu();
-            $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd()->format('Y-m-d');
+            $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd() ? $uz->getAktywneOd()->format('Y-m-d') : '';
             $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '';
             $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
             $zasoby[$i]['powodOdebrania'] = $uz->getPowodOdebrania();
