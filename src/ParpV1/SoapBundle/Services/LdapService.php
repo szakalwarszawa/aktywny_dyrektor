@@ -1283,10 +1283,12 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 'nowaStruktura' => 1,
             ]);
         //var_dump($departament);
-        $grupyDepartamentowe = explode(';', $departament->getGrupyAD());
-        foreach ($grupyDepartamentowe as $grupaDep) {
-            if ($grupaDep != '') {
-                $grupy[] = $grupaDep;
+        if ($departament->getGrupyAD()) {
+            $grupyDepartamentowe = explode(';', $departament->getGrupyAD());
+            foreach ($grupyDepartamentowe as $grupaDep) {
+                if ($grupaDep != '') {
+                    $grupy[] = $grupaDep;
+                }
             }
         }
         $sekcyjne = [
