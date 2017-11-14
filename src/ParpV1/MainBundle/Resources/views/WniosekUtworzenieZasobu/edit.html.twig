@@ -314,7 +314,10 @@
                 </div>
             </div>  
         </div>
-      {{ form_row(form._token) }}
+      {#      {{ form_row(form._token) }}#}
+        <div style="display:none;">
+        {{ form_rest(form) }}  
+        </div>
      </form>
     </div>
      
