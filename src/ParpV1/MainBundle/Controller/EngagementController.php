@@ -38,38 +38,38 @@ class EngagementController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Engagement')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:Engagement');
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'engagement_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'engagement_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -332,6 +332,9 @@ class EngagementController extends Controller
                 $file = $form->get('plik')->getData();
                 $name = $file->getClientOriginalName();
                 $this->parsePlik($file, $form);
+
+                $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+                return $this->redirectToRoute('engagement_import');
             }
         }
 
@@ -339,7 +342,7 @@ class EngagementController extends Controller
             'form' => $form->createView()
         ];
     }
-    
+
     protected $mapowanieKolumn = [
         'B' => 'name',
         'C' => 'etat',
@@ -358,7 +361,7 @@ class EngagementController extends Controller
         'U' => '11',
         'V' => '12',
     ];
-    
+
     protected function parsePlik($fileObject, $form)
     {
         $wynik = [];
@@ -369,7 +372,7 @@ class EngagementController extends Controller
         $objPHPExcel = \PHPExcel_IOFactory::load($file);
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
-        
+
         for ($i = 2; $i < count($sheetData)+1; $i++) {
             $dane = [];
             $j = 0;
@@ -458,7 +461,22 @@ class EngagementController extends Controller
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
-                        $ug = clone $usereng;
+                        $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
+                                $daneRekord->getLogin(),
+                                $pr->getId(),
+                                $i,
+                                $rok
+                        );
+//                        var_dump($daneRekord->getLogin());
+//                        var_dump($program);
+//                        var_dump($i);
+//                        var_dump($rok);
+//                        var_dump($ug);die();
+
+                        if (null == $ug) {
+                            $ug = clone $usereng;
+                        }
                         $ug->setMonth($i);
                         $p = 100*$wpis[$i];
                         $ug->setPercent($p);
