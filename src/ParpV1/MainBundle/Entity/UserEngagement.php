@@ -23,7 +23,7 @@ class UserEngagement
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -70,6 +70,30 @@ class UserEngagement
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $year;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="kto_usunal", type="string", length=255)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ktoUsunal;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $kiedyUsuniety;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="czy_nowy", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $czyNowy;
 
     /**
      * Get id
@@ -219,5 +243,74 @@ class UserEngagement
     public function getPercent()
     {
         return $this->percent;
+    }
+
+    /**
+     * Get ktoUsunal
+     *
+     * @return string
+     */
+    function getKtoUsunal()
+    {
+        return $this->ktoUsunal;
+    }
+
+    /**
+     * Set kiedyUsuniety
+     *
+     * @param string $ktoUsunal
+     *
+     * return UserEngagement
+     */
+    function setKtoUsunal($ktoUsunal)
+    {
+        $this->ktoUsunal = $ktoUsunal;
+    }
+
+    /**
+     * Get kiedyUsuniety
+     *
+     * @return \DateTime
+     */
+    function getKiedyUsuniety()
+    {
+        return $this->kiedyUsuniety;
+    }
+
+    /**
+     * Set kiedyUsuniety
+     *
+     * @param \DateTime $kiedyUsuniety
+     *
+     * return UserEngagement
+     */
+    function setKiedyUsuniety(\DateTime $kiedyUsuniety = null)
+    {
+        $this->kiedyUsuniety = $kiedyUsuniety;
+
+        return $this;
+    }
+
+    /**
+     * Get czyNowy
+     *
+     * @return boolean
+     */
+    public function getCzyNowy()
+    {
+        return $this->czyNowy;
+    }
+
+    /**
+     * Set czyNowy
+     *
+     * @param boolean $czyNowy
+     *
+     * @return UserEngagement
+     */
+    public function setCzyNowy($czyNowy)
+    {
+        $this->czyNowy = $czyNowy;
+        return $this;
     }
 }
