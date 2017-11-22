@@ -104,9 +104,17 @@
                             <td>
                                 <input {% if row2['historia'] is not empty %} style="background-color: rgb(255,255,0)" {% endif %}
                                     name="angaz[{{ key }}][{{key2}}]" class="{{ key2 }} float" size="4" value="{{row2['procent']}}"/>
+                                {% if row2['historia'] is not empty %} 
+                                <span class="dropdown_zmiany red-tooltip" style="width: 300px;" data-toggle="popover" title="Zmiany zaangażowania:" data-content="
+                                {% for zmiana in row2['historia'] %}
+                                    {{ zmiana.kiedyUsuniety | date('Y.m.d') }} 
+                                    {{ zmiana.percent }}% 
+                                    {{ zmiana.ktoUsunal }}<br />
+                                {% endfor %}" data-placement="left">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><b class="caret"></b></a>
+                                {% endif %}
                             </td>
                         {% endfor%}
-
                     </tr>
                 {%endfor%}
 

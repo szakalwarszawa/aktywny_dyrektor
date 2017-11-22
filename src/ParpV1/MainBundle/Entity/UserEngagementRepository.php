@@ -41,10 +41,10 @@ class UserEngagementRepository extends EntityRepository
                 ->andWhere('ue.ktoUsunal IS NOT NULL')
                 ->addOrderBy('ue.kiedyUsuniety', 'DESC')
                 ->setParameters(array('samaccountname' => $samaccountname, 'engagement' => $engagement, 'month' => $month, 'year' => $year))
-                ->setMaxResults(1)
+//                ->setMaxResults(1)
                 ->getQuery();
 
-        return $query->getOneOrNullResult();
+        return $query->getResult();
     }
 
     public function findBySamaccountnameAndYear($samaccountname = null, $year = null)

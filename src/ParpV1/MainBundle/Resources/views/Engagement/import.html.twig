@@ -1,6 +1,11 @@
 {% extends '::base.html.twig' %}
 {% block body %}
 
+    <div class="row">
+        <a class="btn btn-primary" href="{{ path('engagement') }}">
+            <i class="fa fa-list"></i> Wróć do listy Zaangażowań
+        </a>
+    </div>
     <div class="row" style="height:20px;">
         <div class="col-md-2 col-md-offset-4">
             <div id="ajaxSpinnerContainer">
