@@ -5,7 +5,7 @@
     <a href="{{ path('userEdit', {samaccountname: samaccountname})}}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{samaccountname}}</a>
     <h3>Zaangażowanie dla {{ samaccountname }}:</h3>
     <form method="post" name="formularz">
-        <div class="btn-group" data-toggle="buttons">      
+        <div class="btn-group" data-toggle="buttons">
             {% for y in 2008..2020 %}
 
                 {% if year|default('')|length>0 %}
@@ -16,7 +16,7 @@
                     <label class="btn btn-primary {% if y == "now"|date("Y") %}active{% endif %}">
                         <input type="radio" name="year" value="{{y}}"> {{ y }}
                     </label>
-                {% endif %}    
+                {% endif %}
 
             {% endfor %}
         </div>
@@ -102,7 +102,8 @@
                         <th>{{ key }}</th>
                             {% for key2, row2 in row %}
                             <td>
-                                <input name="angaz[{{ key }}][{{key2}}]" class="{{ key2 }} float" size="4" value="{{row2}}"/>
+                                <input {% if row2['historia'] is not empty %} style="background-color: rgb(255,255,0)" {% endif %}
+                                    name="angaz[{{ key }}][{{key2}}]" class="{{ key2 }} float" size="4" value="{{row2['procent']}}"/>
                             </td>
                         {% endfor%}
 
@@ -418,5 +419,10 @@
             val = val.replace(/[aZ]/g, "")
             $(this).val(val);
         })
+
+        $(document).ready(function(){
+            $('[data-toggle="tooltip"]').tooltip();
+        });
+
     </script>
 {% endblock %}

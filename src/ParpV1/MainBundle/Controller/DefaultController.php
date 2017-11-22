@@ -1453,10 +1453,10 @@ class DefaultController extends Controller
                             $userEngagement->setKiedyUsuniety(new \DateTime());
                             $userEngagement->setKtoUsunal($this->getUser()->getUsername());
 
+                            $em->persist($ue);
+                            $em->persist($userEngagement);
                         }
 
-                        $em->persist($ue);
-                        $em->persist($userEngagement);
                         $em->flush();
                     }
                 }
@@ -1468,8 +1468,8 @@ class DefaultController extends Controller
             ));
         }
 
-        $userEngagements =
-            $em->getRepository('ParpMainBundle:UserEngagement')->findBySamaccountnameAndYear($samaccountname, $year);
+        $userEngagementsRepo = $em->getRepository('ParpMainBundle:UserEngagement');
+        $userEngagements = $userEngagementsRepo->findBySamaccountnameAndYear($samaccountname, $year);
 
         $dane = array();
         foreach ($userEngagements as $userEngagement) {
@@ -1478,7 +1478,14 @@ class DefaultController extends Controller
             $engagement = (string) $userEngagement->getEngagement();
             $month = $this->getStrFromMonth($userEngagement->getMonth());
             $percent = $userEngagement->getPercent();
-            $dane[$engagement][$month] = $percent;
+            $dane[$engagement][$month]['procent'] = $percent;
+
+            $dane[$engagement][$month]['historia'] = $userEngagementsRepo->findOneNieaktywneByCryteria(
+                    $samaccountname,
+                    $userEngagement->getEngagement()->getId(),
+                    $userEngagement->getMonth(),
+                    $userEngagement->getYear()
+            );
         }
 
         // policz sumy

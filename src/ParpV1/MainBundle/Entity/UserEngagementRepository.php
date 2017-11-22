@@ -29,6 +29,24 @@ class UserEngagementRepository extends EntityRepository
         return $query->getOneOrNullResult();
     }
 
+    public function findOneNieaktywneByCryteria($samaccountname = null, $engagement = null, $month = null, $year = null)
+    {
+
+        $query = $this->createQueryBuilder('ue')
+                ->where('ue.samaccountname = :samaccountname')
+                ->andWhere('ue.month = :month')
+                ->andWhere('ue.year = :year')
+                ->andWhere('ue.engagement = :engagement')
+                ->andWhere('ue.kiedyUsuniety IS NOT NULL')
+                ->andWhere('ue.ktoUsunal IS NOT NULL')
+                ->addOrderBy('ue.kiedyUsuniety', 'DESC')
+                ->setParameters(array('samaccountname' => $samaccountname, 'engagement' => $engagement, 'month' => $month, 'year' => $year))
+                ->setMaxResults(1)
+                ->getQuery();
+
+        return $query->getOneOrNullResult();
+    }
+
     public function findBySamaccountnameAndYear($samaccountname = null, $year = null)
     {
 
