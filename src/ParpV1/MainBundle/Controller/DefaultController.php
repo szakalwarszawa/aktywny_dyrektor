@@ -1432,13 +1432,30 @@ class DefaultController extends Controller
                         //$percent = (!empty($value_month)) ? $value_month : null;
                         //$userEngagement->setPercent($percent);
                         $userEngagement->setPercent($last_month);
+                        $userEngagement->setCzyNowy(true);
 
                         $em->persist($userEngagement);
                         $em->flush();
                     } else {
                         //$percent = (!empty($value_month)) ? $value_month : null;
                         //$userEngagement->setPercent($percent);
-                        $userEngagement->setPercent($last_month);
+                        //$userEngagement->setPercent($last_month);
+                        //$em->persist($userEngagement);
+                        //$em->flush();
+
+                        if((int)$userEngagement->getPercent() !== (int)$last_month){
+                            $ue = clone $userEngagement;
+                            $ue->setId(null);
+                            $ue->setCzyNowy(true);
+                            $ue->setPercent($last_month);
+
+                            $userEngagement->setCzyNowy(false);
+                            $userEngagement->setKiedyUsuniety(new \DateTime());
+                            $userEngagement->setKtoUsunal($this->getUser()->getUsername());
+
+                        }
+
+                        $em->persist($ue);
                         $em->persist($userEngagement);
                         $em->flush();
                     }

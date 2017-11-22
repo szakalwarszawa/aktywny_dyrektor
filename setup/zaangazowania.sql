@@ -1,0 +1,2 @@
+ALTER TABLE userengagement ADD kto_usunal VARCHAR(255) DEFAULT NULL, ADD kiedy_usuniety DATETIME DEFAULT NULL, ADD czy_nowy TINYINT(1) DEFAULT NULL;
+ALTER TABLE userengagement CHANGE percent percent INT DEFAULT NULL;

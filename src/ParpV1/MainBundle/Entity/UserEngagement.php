@@ -50,7 +50,7 @@ class UserEngagement
     /**
      * @var float
      *
-     * @ORM\Column(name="percent", type="float",nullable=true)
+     * @ORM\Column(name="percent", type="integer",nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $percent;
@@ -74,24 +74,27 @@ class UserEngagement
     /**
      * @var string
      *
-     * @ORM\Column(name="kto_usunal", type="string", length=255)
+     * @ORM\Column(name="kto_usunal", type="string", length=255, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
      */
     private $ktoUsunal;
 
     /**
      * @var \DateTime
      *
-     * @ORM\Column(type="datetime", nullable=true)
+     * @ORM\Column(name="kiedy_usuniety", type="datetime", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
      */
     private $kiedyUsuniety;
 
     /**
      * @var boolean
      *
-     * @ORM\Column(type="czy_nowy", nullable=true)
+     * @ORM\Column(name="czy_nowy", type="boolean", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
      */
     private $czyNowy;
 
@@ -104,6 +107,21 @@ class UserEngagement
     {
         return $this->id;
     }
+
+    /**
+     * Set id
+     *
+     * @param integer $id
+     * 
+     * @return UserEngagement
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
 
     /**
      * Set engagement

@@ -21,6 +21,8 @@ class UserEngagementRepository extends EntityRepository
                 ->andWhere('ue.month = :month')
                 ->andWhere('ue.year = :year')
                 ->andWhere('ue.engagement = :engagement')
+                ->andWhere('ue.kiedyUsuniety IS NULL')
+                ->andWhere('ue.ktoUsunal IS NULL')
                 ->setParameters(array('samaccountname' => $samaccountname, 'engagement' => $engagement, 'month' => $month, 'year' => $year))
                 ->getQuery();
 
@@ -33,6 +35,8 @@ class UserEngagementRepository extends EntityRepository
         $query = $this->createQueryBuilder('ue')
                 ->where('ue.samaccountname = :samaccountname')
                 ->andWhere('ue.year = :year')
+                ->andWhere('ue.kiedyUsuniety IS NULL')
+                ->andWhere('ue.ktoUsunal IS NULL')
                 ->addOrderBy('ue.engagement', 'ASC') ->addOrderBy('ue.month', 'ASC')
                 ->setParameters(array('samaccountname' => $samaccountname, 'year' => $year))
                 ->getQuery();
