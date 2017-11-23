@@ -473,13 +473,27 @@ class EngagementController extends Controller
 //                        var_dump($i);
 //                        var_dump($rok);
 //                        var_dump($ug);die();
-
                         if (null == $ug) {
                             $ug = clone $usereng;
+                            $ug->setMonth($i);
+                            $p = 100 * $wpis[$i];
+                            $ug->setPercent($p);
+                            $ug->setCzyNowy(true);
+                        } elseif ((int) $ug->getPercent() != (int) (100 * $wpis[$i])) {
+                            $ugnew = clone $usereng;
+                            $ugnew->setId(null);
+                            $ugnew->setMonth($i);
+                            $p = 100 * $wpis[$i];
+                            $ugnew->setPercent($p);
+                            $ugnew->setEngagement($pr);
+                            $ugnew->setCzyNowy(true);
+
+                            $ug->setCzyNowy(false);
+                            $ug->setKiedyUsuniety(new \DateTime());
+                            $ug->setKtoUsunal($this->getUser()->getUsername());
+                            $em->persist($ugnew);
                         }
-                        $ug->setMonth($i);
-                        $p = 100*$wpis[$i];
-                        $ug->setPercent($p);
+
                         if (isset($programy[$program])) {
                             $program2 = $programy[$program];
                         } else {
@@ -491,6 +505,7 @@ class EngagementController extends Controller
                         $ug->setEngagement($program2);
 
                         $em->persist($ug);
+
                     }
                 }
             }
@@ -498,6 +513,7 @@ class EngagementController extends Controller
         $em->flush();
         //var_dump($bledy);
     }
+
     protected function parseNazwaProgramu($program)
     {
         $pattern = ['/[,\d]+%/i', '/[\d]+,[\d]+/i', '/--/'];
