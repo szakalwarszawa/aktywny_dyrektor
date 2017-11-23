@@ -273,6 +273,10 @@
                 </div>
             </div>
           {#  {{ form_end(form) }}   #}
+          <div style="display:none;">
+            {{ form_rest(form) }}  
+          </div>
+     </form>
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
                     {%if(entity.id > 0) %}
@@ -315,10 +319,6 @@
             </div>  
         </div>
       {#      {{ form_row(form._token) }}#}
-        <div style="display:none;">
-        {{ form_rest(form) }}  
-        </div>
-     </form>
     </div>
      
  
