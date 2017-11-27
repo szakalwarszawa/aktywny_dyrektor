@@ -1026,7 +1026,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
     /**
      * @Route("/usunUzytkownikaZKolejki/{id}", name="usunUzytkownikaZKolejki", defaults={})
-     * @Method("DELETE")
+     * @Method("POST")
      * @param Request $request
      * @param         $id
      *
@@ -1039,7 +1039,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      */
     public function usunUzytkownikaZKolejkiAction(Request $request, $id)
     {
-        
+        /* do popranwienia - dokończenia */
+        return new Response($id);
     }
     
     public function sendMailAboutNewUser($name, $samaccountname)

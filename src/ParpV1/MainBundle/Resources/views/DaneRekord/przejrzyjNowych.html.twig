@@ -151,7 +151,7 @@
         {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, wybierz akcję poniżej</h4>{% endif %}
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
 {#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>#}
-        <a href="#" onclick="usun({{obj.id}})" class="btn btn-warning" data-dismiss="modal">Usuń uzytkownika z kolejki importu</a>
+        <a href="#" onclick="usun{{obj.id}}()" class="btn btn-warning" data-dismiss="modal">Usuń uzytkownika z kolejki importu</a>
     {% endif %}
     </div>
 </div>
@@ -212,6 +212,16 @@
             var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
             save(url, form, manager, {{obj.id}});
+        }
+        function usun{{obj.id}}(){
+            var url = "{{path('usunUzytkownikaZKolejki', {id: obj.id})}}";
+            $.ajax({
+                url: url,
+                type: 'POST',
+                success: function(result) {
+                    alert("Usuwam z kolejki rekord ID:"+result);
+                }
+            });
         }
     </script>
     {%endfor%}
@@ -290,12 +300,7 @@
         }
     }
     
-    function usun(idRekoduKolejki){
-            {#var url = "{{path('usunUzytkownikaZKolejki', {id: obj.id})}}";
-            var form = $('form', $("#delUser{{obj.id}}")).serialize();
-            save(url, form, manager, {{obj.id}});#}
-            alert('Usuwam z kolejki rekord ID:'+idRekoduKolejki);
-    }
+    
     //$("table.tablesorter").tablesorter();
 </script>
 
