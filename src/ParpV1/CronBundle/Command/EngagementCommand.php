@@ -12,9 +12,9 @@ class EngagementCommand extends ContainerAwareCommand
     protected function configure()
     {
         $this
-                ->setName('parp:engagement')
-                ->setDescription('Wysyła maile o zmianie zaangażowań pracowników do opowiednich osób')
-                ->setHelp('Wysyła maile o zmianie zaangażowań pracowników do opowiednich osób');
+            ->setName('parp:engagement')
+            ->setDescription('Wysyła maile o zmianie zaangażowań pracowników do opowiednich osób')
+            ->setHelp('Wysyła maile o zmianie zaangażowań pracowników do opowiednich osób');
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -26,8 +26,36 @@ class EngagementCommand extends ContainerAwareCommand
 
         $userEngagements = $em->getRepository('ParpMainBundle:UserEngagement')->findByCzyNowy(true);
 
+        $xx = $ldap->getPrzelozonyPracownika('tomasz_bonczak');
+
+        // sprawdz czy ma zastepstwo
+        $zastepstwo = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($xx['samaccountname']);
+
+        var_dump(empty($zastepstwo));
+        // jezeli nie dyrektor to dodaj adres Pani(Przerobic na grupę) - POWIERNIK_ZARZADU
+
+        // dodaj pracowników grup HelpDesk BI, KOMP
+
+        // wyslij maila - nowa metoda w usłudze parp.mailer chyba
+
+        var_dump($xx['samaccountname']);
+
         if (!empty($userEngagements)) {
- echo count($userEngagements);
+            foreach ($userEngagements as $userEngagement) {
+
+                $date = new \DateTime();
+                $date->setDate($userEngagement->getYear(), $userEngagement->getMonth(), 1);
+                $date->setTime(0, 0, 0);
+
+                $today = new \DateTime();
+
+                if($date <= $today){
+                       $user = $ldap->getUserFromAD($userEngagement->getSamaccountname());
+                       //$user = $users[$userEngagement->getSamaccountname()];
+                       var_dump($user);
+                }
+
+            }
         }
     }
 
