@@ -62,12 +62,12 @@
 
 <div class="alert alert-danger acceptUser" id="acceptUser{{obj.id}}">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <h1 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i>
+    <h3 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i>
         {%if (obj.newUnproccessed == 1) %}
         <i class="fa fa-plus">&nbsp;</i> Nowy użytkownik{%else%}
         <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{%endif%}
-    </h1>
-    <h3>Dane zaimportowane z systemu REKORD</h3>
+    </h3>
+    <h4>Dane zaimportowane z systemu REKORD</h4>
     <table class="record_properties table table-striped">
         <thead>
             <tr>
@@ -98,9 +98,8 @@
                 </td>
             </tr>
             <tr>
-                <td colspan="8">
-                    {%if (obj.newUnproccessed == 1) %}
-                        <h3>Dane w Active Directory</h3>
+                {% if (obj.newUnproccessed == 1) %}
+                    <td colspan="8"><h3>Dane w Active Directory</h3>
                         <table class="record_properties table table-striped">
                             <thead>
                             {% if (obj.users|length > 0) %}
@@ -110,10 +109,11 @@
                                     <th>Departament</th>
                                     <th>Stanowisko</th>
                                     <th>Sekcja</th>
+                                    <th>Akcje</th>
                                 </tr>
                             {%else%}
                                 <tr>
-                                    <th colspan="4">Nie znaleziono żadnych pasujących użytkowników w AD</th>
+                                    <th colspan="6">Nie znaleziono żadnych pasujących użytkowników w AD</th>
                                 </tr>
                             {% endif %}
                             </thead>
@@ -125,28 +125,35 @@
                                         <td>{{user.department}}</td>
                                         <td>{{user.title}}</td>
                                         <td>{{user.info}}</td>
-                                    </tr>
-                                    <tr>
-                                        <td colspan="5">
-                                            <button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmSelection{{user.samaccountname}}{{obj.id}}">Przypisz do tego użytkownika</button>
-                                        </td>
+                                        <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmSelection{{user.samaccountname}}{{obj.id}}">Przypisz do tego użytkownika</button></td>
                                     </tr>
                                 {%endfor%}
-                                <tr>
-                                    <td colspan="5">
-                                        {% if (obj.users|length > 0) %}<h2>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, utwórz nowe konto w AD za pomocą przycisku poniżej</h2>{%endif%}
+                                {# <tr>
+                                    <td colspan="6">
+                                        {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, utwórz nowe konto w AD za pomocą przycisku poniżej</h4>{%endif%}
                                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
                                     </td>
-                                </tr>
+                                </tr> #}
                             </tbody>
                         </table>
-                    {% else %}
+                    </td>
+                {% else %}
+                    <td colspan="1">
                         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Zapisz użytkownika</button>
-                    {% endif %}
-                </td>
+                    </td>
+                    <td colspan="7"></td>
+                {% endif %}
             </tr>
         </tbody>
     </table>
+    <div>
+    {% if (obj.newUnproccessed == 1) %}
+        {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, wybierz akcję poniżej</h4>{% endif %}
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
+{#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>#}
+        <a href="#" onclick="usun({{obj.id}})" class="btn btn-warning" data-dismiss="modal">Usuń uzytkownika z kolejki importu</a>
+    {% endif %}
+    </div>
 </div>
 {%endfor%}
 {%endif %}
@@ -281,6 +288,13 @@
                 $('select, input', $("#acceptUser"+id)).prop('disabled', true);
             });
         }
+    }
+    
+    function usun(idRekoduKolejki){
+            {#var url = "{{path('usunUzytkownikaZKolejki', {id: obj.id})}}";
+            var form = $('form', $("#delUser{{obj.id}}")).serialize();
+            save(url, form, manager, {{obj.id}});#}
+            alert('Usuwam z kolejki rekord ID:'+idRekoduKolejki);
     }
     //$("table.tablesorter").tablesorter();
 </script>

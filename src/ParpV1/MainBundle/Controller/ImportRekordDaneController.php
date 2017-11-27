@@ -1024,6 +1024,24 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         return new Response();
     }
 
+    /**
+     * @Route("/usunUzytkownikaZKolejki/{id}", name="usunUzytkownikaZKolejki", defaults={})
+     * @Method("DELETE")
+     * @param Request $request
+     * @param         $id
+     *
+     * @return Response
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function usunUzytkownikaZKolejkiAction(Request $request, $id)
+    {
+        
+    }
+    
     public function sendMailAboutNewUser($name, $samaccountname)
     {
         $mails = ['kamil_jakacki@parp.gov.pl', 'marcin_lipinski@parp.gov.pl'];
