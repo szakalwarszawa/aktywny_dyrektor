@@ -36,6 +36,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
                ->createQueryBuilder('e')
                ->select('e')
                ->andWhere("e.newUnproccessed > 0")
+               ->andWhere("e.newUnproccessed < 7 ")
                ->orderBy("e.newUnproccessed")
                ->getQuery()
                ->getResult(/* \Doctrine\ORM\Query::HYDRATE_ARRAY */);
@@ -56,7 +57,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
            ->createQueryBuilder('e')
            ->select('e')
            ->andWhere("
-            (e.umowaOd >= :dataStart and e.umowaOd < :dataEnd) or 
+            (e.umowaOd >= :dataStart and e.umowaOd < :dataEnd) or
             (e.umowaDo >= :dataStart and e.umowaDo < :dataEnd)")
             ->orderBy("e.nazwisko")
            ->getQuery()

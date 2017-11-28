@@ -151,11 +151,14 @@
         {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, wybierz akcję poniżej</h4>{% endif %}
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
 {#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>#}
-        <a href="#" onclick="usun{{obj.id}}()" class="btn btn-warning" data-dismiss="modal">Usuń uzytkownika z kolejki importu</a>
+        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>
     {% endif %}
     </div>
 </div>
 {%endfor%}
+    <div class="pagerfanta">
+    {{ pagerfanta(data, 'twitter_bootstrap3_translated') }}
+    </div>
 {%endif %}
 
 
@@ -219,6 +222,7 @@
                 url: url,
                 type: 'POST',
                 success: function(result) {
+                    $('#acceptUser{{obj.id}}').hide();
                     alert("Usuwam z kolejki rekord ID:"+result);
                 }
             });
@@ -275,6 +279,39 @@
             </div>
         </div>
     </div>
+    <!-- modal usun -->
+    <div id="deleteSelection{{obj.id}}" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">
+                         Usunięcie użytkownika z kolejki importu
+                    </h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="alert alert-danger">
+                            <h2>
+                            Akceptujesz usunięcie użytkownika z kolejki importu!
+                            </h2>
+                        </div>
+                        <div class="list-group">
+                          <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
+                          <a class="list-group-item">Usunięcie użytkownika {{obj.nazwisko ~ " " ~obj.imie}} z kolejki importu</a>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                    <a href="#" onclick="usun{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Usuń <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- koniec modal usun -->
     <script>
         function zapisz{{obj.id}}(){
             var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)})}}";
@@ -299,8 +336,8 @@
             });
         }
     }
-    
-    
+
+
     //$("table.tablesorter").tablesorter();
 </script>
 

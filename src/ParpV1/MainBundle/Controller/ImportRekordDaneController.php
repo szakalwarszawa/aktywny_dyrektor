@@ -15,6 +15,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
+
 /**
  * Klaster controller.
  * @Route("/import_rekord")
@@ -80,39 +83,39 @@ class ImportRekordDaneController extends Controller
         $sql = "SELECT
             p.SYMBOL,
             COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
+            p.IMIE as imie,
+            p.NAZWISKO as nazwisko,
             departament.OPIS as departamentNazwa,
             departament.KOD  departament,
             stanowisko.OPIS stanowisko,
             rodzaj.NAZWA umowa,
             MIN(umowa.DATA_OD) as UMOWAOD,
             MAX(umowa.DATA_DO) as UMOWADO
-            
+
             from P_PRACOWNIK p
-            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND 
+            join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND
                 (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND 
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND
                 (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND 
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND
                 (umowa.DATA_DO is NULL OR umowa.DATA_DO >= '".$this->dataGraniczna."')
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
-            p.NAZWISKO, 
+
+            GROUP BY
+
+            p.SYMBOL,
+            p.IMIE,
+            p.NAZWISKO,
             departament.OPIS,
             departament.KOD ,
             stanowisko.OPIS,
             rodzaj.NAZWA,
             umowa.DATA_OD,
             umowa.DATA_DO
-            
-            ORDER BY 
+
+            ORDER BY
             p.NAZWISKO, p.IMIE
             ";
 
@@ -127,26 +130,26 @@ class ImportRekordDaneController extends Controller
         $sql = 'SELECT
             p.SYMBOL,
             COUNT(*) as ile,
-            p.IMIE as imie, 
-            p.NAZWISKO as nazwisko, 
+            p.IMIE as imie,
+            p.NAZWISKO as nazwisko,
             rodzaj.NAZWA umowa,
             MIN(umowa.DATA_OD) as UMOWAOD,
             MAX(umowa.DATA_DO) as UMOWADO
-            
+
             from P_PRACOWNIK p
-            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL 
+            join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
             where p.SYMBOL IN ('.implode(', ', $ids).')
-            GROUP BY 
-            
-            p.SYMBOL,       
-            p.IMIE, 
+            GROUP BY
+
+            p.SYMBOL,
+            p.IMIE,
             p.NAZWISKO,
             rodzaj.NAZWA,
             umowa.DATA_OD,
             umowa.DATA_DO
-            
-            ORDER BY 
+
+            ORDER BY
             p.NAZWISKO, p.IMIE
             ';
 
@@ -567,7 +570,7 @@ class ImportRekordDaneController extends Controller
 
         $sql = 'select rdb$relation_name
 from rdb$relations
-where rdb$view_blr is null 
+where rdb$view_blr is null
 and (rdb$system_flag is null or rdb$system_flag = 0);';
 
 
@@ -602,7 +605,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         $sql = 'SELECT
         *            from P_MPRACY p
-            
+
             ';
 
         //$rows = $this->executeQueryIbase($sql);
@@ -641,7 +644,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         $sql = 'SELECT
         *            from P_MPRACY p
-            
+
             ';
 
         //$rows = $this->executeQueryIbase($sql);
@@ -780,7 +783,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      * @throws \UnexpectedValueException
      * @throws \InvalidArgumentException
      */
-    public function przejrzyjnowychAction()
+    public function przejrzyjnowychAction(Request $request)
     {
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
@@ -816,14 +819,28 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             $sections[$dep][$tmp->getName()] = $tmp->getName();
         }
 
-        return $this->render(
-            'ParpMainBundle:DaneRekord:przejrzyjNowych.html.twig',
-            [
-                'data'       => $data,
-                'przelozeni' => $ldap->getPrzelozeni(),
-                'sekcje'     => $sections,
-            ]
-        );
+        $adapter = new ArrayAdapter($data);
+        $page = (int)($request->query->get('page') == null ?  1 : $request->query->get('page'));
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage(5);
+        $pagerfanta->setCurrentPage($page);
+
+        return $this->render('ParpMainBundle:DaneRekord:przejrzyjNowych.html.twig', [
+                    'data' => $pagerfanta,
+                    //'data' => $data,
+                    'przelozeni' => $ldap->getPrzelozeni(),
+                    'sekcje' => $sections,
+        ]);
+
+//        return $this->render(
+//            'ParpMainBundle:DaneRekord:przejrzyjNowych.html.twig',
+//            [
+//                'data'       => $data,
+//                'przelozeni' => $ldap->getPrzelozeni(),
+//                'sekcje'     => $sections,
+//                'my_pager' => $pagerfanta,
+//            ]
+//        );
     }
 
     protected function getUserFromAllAD($dr)
@@ -1039,10 +1056,18 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      */
     public function usunUzytkownikaZKolejkiAction(Request $request, $id)
     {
-        /* do popranwienia - dokończenia */
+        $id = (int) $id;
+        $em = $this->getDoctrine()->getManager();
+        $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+
+        // 7 - nieaktywne, nieobsługiwane rekordy
+        $daneRekord->setNewUnproccessed(7);
+        $em->persist($daneRekord);
+        $em->flush();
+
         return new Response($id);
     }
-    
+
     public function sendMailAboutNewUser($name, $samaccountname)
     {
         $mails = ['kamil_jakacki@parp.gov.pl', 'marcin_lipinski@parp.gov.pl'];
