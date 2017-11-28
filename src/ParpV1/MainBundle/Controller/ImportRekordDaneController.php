@@ -14,9 +14,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Klaster controller.
@@ -1043,6 +1043,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
     /**
      * @Route("/usunUzytkownikaZKolejki/{id}", name="usunUzytkownikaZKolejki", defaults={})
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_1')")
      * @Method("POST")
      * @param Request $request
      * @param         $id
