@@ -274,6 +274,7 @@ class UserZasoby
 
 
     protected $_zasobNazwa;
+
     /**
      * Set _zasobNazwa
      *
@@ -297,19 +298,6 @@ class UserZasoby
         return $this->_zasobNazwa;
     }
 
-    protected $idd;
-
-    public function getIdd()
-    {
-        return $this->id;
-    }
-    public function setIdd($idd)
-    {
-        return $this->idd = $idd;
-    }
-
-
-
     /**
      * Get id
      *
@@ -319,6 +307,21 @@ class UserZasoby
     {
         return $this->id;
     }
+   
+    /**
+     * Set id
+     *
+     * @param integer $id
+     * @return UserZasoby
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+        
+        return $this;
+    }
+    
+    
 
     /**
      * Set samaccountname
