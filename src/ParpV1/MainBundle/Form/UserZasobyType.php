@@ -36,7 +36,7 @@ class UserZasobyType extends AbstractType
         $d1 = $this->datauz ? $this->datauz['aktywneOd'] : $now->format("d-m-Y");
         //print_r($this->datauz);
         $builder
-            ->add('idd', 'hidden')
+            ->add('id', 'hidden')
             ->add('samaccountname', 'hidden')
             ->add('zasobNazwa', 'hidden')
             ->add('zasobId', 'hidden')
