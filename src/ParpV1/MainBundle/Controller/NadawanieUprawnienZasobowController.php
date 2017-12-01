@@ -681,7 +681,7 @@ class NadawanieUprawnienZasobowController extends Controller
     public function addResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null)
     {
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
-        //print_r($ndata); die();
+//        print_r($ndata); die();
         $action = $uzid == 0 ? 'addResources' : 'editResources';
         $samaccountnamesPars = array(
             'required' => false,
@@ -867,13 +867,11 @@ class NadawanieUprawnienZasobowController extends Controller
                             throw new SecurityTestException('Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!');
                         }
 
-                        //print_r($suz);
                         //if($suz == null){
-                        if ($oz->getIdd() > 0) {
-                            //die(".".$oz->getIdd());
-                            //$z2 = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->get_Idd());
+                        if ($oz->getId() > 0) {
+                            //$z2 = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->getId());
                             //$this->getDoctrine()->getManager()->remove($z2);
-                            $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->getIdd());
+                            $z = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:UserZasoby')->find($oz->getId());
                             $z->setModul($oz->getModul());
                             $z->setPoziomDostepu($oz->getPoziomDostepu());
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
@@ -897,7 +895,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
                             }
                         }
-                            //die(".".$oz->get_Idd());
+                            //die(".".$oz->getId());
                             $z->setCzyAktywne($wniosekId == 0);
                             $z->setCzyNadane(false);
                             $z->setWniosek($wniosek);
