@@ -1443,7 +1443,7 @@ class DefaultController extends Controller
                         //$em->persist($userEngagement);
                         //$em->flush();
 
-                        if((int)$userEngagement->getPercent() !== (int)$last_month){
+                        if ((int) $userEngagement->getPercent() !== (int) $last_month) {
                             $ue = clone $userEngagement;
                             $ue->setId(null);
                             $ue->setCzyNowy(true);

@@ -497,7 +497,6 @@ class ParpMailerService
             case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3:
                 $wymaganePola = array_merge($wymaganePola, ['stare_stanowisko', 'nowe_stanowisko', 'data_zmiany']);
                 break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA:
             case ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE3:
             case ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE4:
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_zmiany']);
@@ -529,6 +528,10 @@ class ParpMailerService
                 break;
             case ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE:
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_zwrocenia', 'numer_wniosku', 'powod']);
+                break;
+            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA:
+                $wymaganePola = array_merge($wymaganePola, ['departament']);
+                unset($wymaganePola[1]);
                 break;
         }
 
