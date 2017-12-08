@@ -1432,14 +1432,31 @@ class DefaultController extends Controller
                         //$percent = (!empty($value_month)) ? $value_month : null;
                         //$userEngagement->setPercent($percent);
                         $userEngagement->setPercent($last_month);
+                        $userEngagement->setCzyNowy(true);
 
                         $em->persist($userEngagement);
                         $em->flush();
                     } else {
                         //$percent = (!empty($value_month)) ? $value_month : null;
                         //$userEngagement->setPercent($percent);
-                        $userEngagement->setPercent($last_month);
-                        $em->persist($userEngagement);
+                        //$userEngagement->setPercent($last_month);
+                        //$em->persist($userEngagement);
+                        //$em->flush();
+
+                        if ((int) $userEngagement->getPercent() !== (int) $last_month) {
+                            $ue = clone $userEngagement;
+                            $ue->setId(null);
+                            $ue->setCzyNowy(true);
+                            $ue->setPercent($last_month);
+
+                            $userEngagement->setCzyNowy(false);
+                            $userEngagement->setKiedyUsuniety(new \DateTime());
+                            $userEngagement->setKtoUsunal($this->getUser()->getUsername());
+
+                            $em->persist($ue);
+                            $em->persist($userEngagement);
+                        }
+
                         $em->flush();
                     }
                 }
@@ -1451,8 +1468,8 @@ class DefaultController extends Controller
             ));
         }
 
-        $userEngagements =
-            $em->getRepository('ParpMainBundle:UserEngagement')->findBySamaccountnameAndYear($samaccountname, $year);
+        $userEngagementsRepo = $em->getRepository('ParpMainBundle:UserEngagement');
+        $userEngagements = $userEngagementsRepo->findBySamaccountnameAndYear($samaccountname, $year);
 
         $dane = array();
         foreach ($userEngagements as $userEngagement) {
@@ -1461,7 +1478,14 @@ class DefaultController extends Controller
             $engagement = (string) $userEngagement->getEngagement();
             $month = $this->getStrFromMonth($userEngagement->getMonth());
             $percent = $userEngagement->getPercent();
-            $dane[$engagement][$month] = $percent;
+            $dane[$engagement][$month]['procent'] = $percent;
+
+            $dane[$engagement][$month]['historia'] = $userEngagementsRepo->findOneNieaktywneByCryteria(
+                    $samaccountname,
+                    $userEngagement->getEngagement()->getId(),
+                    $userEngagement->getMonth(),
+                    $userEngagement->getYear()
+            );
         }
 
         // policz sumy

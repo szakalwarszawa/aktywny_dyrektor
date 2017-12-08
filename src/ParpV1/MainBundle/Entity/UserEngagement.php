@@ -23,7 +23,7 @@ class UserEngagement
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -50,7 +50,7 @@ class UserEngagement
     /**
      * @var float
      *
-     * @ORM\Column(name="percent", type="float",nullable=true)
+     * @ORM\Column(name="percent", type="integer",nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $percent;
@@ -72,6 +72,33 @@ class UserEngagement
     private $year;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="kto_usunal", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $ktoUsunal;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="kiedy_usuniety", type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $kiedyUsuniety;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="czy_nowy", type="boolean", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     */
+    private $czyNowy;
+
+    /**
      * Get id
      *
      * @return integer
@@ -80,6 +107,21 @@ class UserEngagement
     {
         return $this->id;
     }
+
+    /**
+     * Set id
+     *
+     * @param integer $id
+     * 
+     * @return UserEngagement
+     */
+    public function setId($id)
+    {
+        $this->id = $id;
+
+        return $this;
+    }
+
 
     /**
      * Set engagement
@@ -219,5 +261,74 @@ class UserEngagement
     public function getPercent()
     {
         return $this->percent;
+    }
+
+    /**
+     * Get ktoUsunal
+     *
+     * @return string
+     */
+    function getKtoUsunal()
+    {
+        return $this->ktoUsunal;
+    }
+
+    /**
+     * Set kiedyUsuniety
+     *
+     * @param string $ktoUsunal
+     *
+     * return UserEngagement
+     */
+    function setKtoUsunal($ktoUsunal)
+    {
+        $this->ktoUsunal = $ktoUsunal;
+    }
+
+    /**
+     * Get kiedyUsuniety
+     *
+     * @return \DateTime
+     */
+    function getKiedyUsuniety()
+    {
+        return $this->kiedyUsuniety;
+    }
+
+    /**
+     * Set kiedyUsuniety
+     *
+     * @param \DateTime $kiedyUsuniety
+     *
+     * return UserEngagement
+     */
+    function setKiedyUsuniety(\DateTime $kiedyUsuniety = null)
+    {
+        $this->kiedyUsuniety = $kiedyUsuniety;
+
+        return $this;
+    }
+
+    /**
+     * Get czyNowy
+     *
+     * @return boolean
+     */
+    public function getCzyNowy()
+    {
+        return $this->czyNowy;
+    }
+
+    /**
+     * Set czyNowy
+     *
+     * @param boolean $czyNowy
+     *
+     * @return UserEngagement
+     */
+    public function setCzyNowy($czyNowy)
+    {
+        $this->czyNowy = $czyNowy;
+        return $this;
     }
 }

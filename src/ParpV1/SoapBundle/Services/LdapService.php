@@ -24,7 +24,6 @@ class LdapService
     public $adldapSeparate;
     protected $_userCache = null;
     protected $zmianyDoWypchniecia = null;
-
     protected $ADattributes = array(
         'name',
         'initials',
@@ -43,7 +42,7 @@ class LdapService
         'distinguishedName',
         'cn',
         'memberOf'
-        //"extensionAttribute14"
+            //"extensionAttribute14"
     );
 
     public function __construct(SecurityContextInterface $securityContext, Container $container)
@@ -51,7 +50,7 @@ class LdapService
         $this->securityContext = $securityContext;
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
-        $this->ad_domain = '@'.$this->container->getParameter('ad_domain');
+        $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
 
         $tab = explode('.', $this->container->getParameter('ad_domain'));
 
@@ -59,31 +58,31 @@ class LdapService
 
         $this->useradn = $this->container->getParameter('ad_ou');
         if ($env === 'prod') {
-            $this->patch = ',DC='.$tab[0].',DC='.$tab[1];
+            $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         } else {
             //$this->patch = ',OU=Test ,DC=' . $tab[0] . ',DC=' . $tab[1];
-            $this->patch = ' ,DC='.$tab[0].',DC='.$tab[1];
+            $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
         //die($this->patch);
 
         $configuration = array(
             //'user_id_key' => 'samaccountname',
-            'account_suffix'     => $this->ad_domain,
+            'account_suffix' => $this->ad_domain,
             //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
-            'base_dn'            => 'DC='.$tab[0].',DC='.$tab[1],
+            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
             'domain_controllers' => array(
                 $this->container->getParameter('ad_host'),
                 $this->container->getParameter('ad_host2'),
                 $this->container->getParameter('ad_host3'),
             ),
-            'admin_username'     => $this->container->getParameter('ad_user'),
-            'admin_password'     => $this->container->getParameter('ad_password'),
+            'admin_username' => $this->container->getParameter('ad_user'),
+            'admin_password' => $this->container->getParameter('ad_password'),
             //'real_primarygroup' => true,
             //'use_ssl' => false,
             //'use_tls' => false,
             //'recursive_groups' => true,
-            'ad_port'            => '389',
-            //'sso' => false,
+            'ad_port' => '389',
+                //'sso' => false,
         );
         $this->adldap = new \Adldap\Adldap($configuration);
     }
@@ -149,27 +148,27 @@ class LdapService
 //        } else {
 
             /* wylaczam na czas odbierania uprawnien, bo zamula
-            $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
-            */
+              $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
+             */
         }
 
         /* wylaczam na czas odbierania uprawnien, bo zamula
-        $zmiany = [];
-        foreach($this->zmianyDoWypchniecia as $z){
-            $zmiany[$z->getSamaccountname()][] = $z;
-        }
-        foreach($this->_userCache as &$u){
-            if(isset($zmiany[$u['samaccountname']])){
-                //mamy zmiany
-                $noweAttr = $this->parseZmianyUsera($u, $zmiany);
-                foreach($noweAttr as $k => $v){
-                    if($v instanceof \Datetime)
-                        $v = $v->format("Y-m-d h:I");
-                    $u[$k] = $v." (".$u[$k].")";
-                }
-            }
-        }
-        */
+          $zmiany = [];
+          foreach($this->zmianyDoWypchniecia as $z){
+          $zmiany[$z->getSamaccountname()][] = $z;
+          }
+          foreach($this->_userCache as &$u){
+          if(isset($zmiany[$u['samaccountname']])){
+          //mamy zmiany
+          $noweAttr = $this->parseZmianyUsera($u, $zmiany);
+          foreach($noweAttr as $k => $v){
+          if($v instanceof \Datetime)
+          $v = $v->format("Y-m-d h:I");
+          $u[$k] = $v." (".$u[$k].")";
+          }
+          }
+          }
+         */
 
         return $this->_userCache;
     }
@@ -177,7 +176,7 @@ class LdapService
     public function getAllFromADIntW($ktorych = 'aktywni', $justDump = false, $struktura = null)
     {
         //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         if ($struktura == '2016') {
             $userdn = str_replace('OU=Zespoly,', 'OU=Zespoly_2016,', $userdn);
@@ -187,16 +186,11 @@ class LdapService
             }
         }
         if ($ktorych == 'wszyscyWszyscy') {
-            $userdn =
-                str_replace(
-                    'OU=Zespoly_2016, OU=PARP Pracownicy ,',
-                    '',
-                    str_replace(
-                        'OU=Zespoly_2016,OU=PARP Pracownicy ,',
-                        '',
-                        $userdn
+            $userdn = str_replace(
+                    'OU=Zespoly_2016, OU=PARP Pracownicy ,', '', str_replace(
+                            'OU=Zespoly_2016,OU=PARP Pracownicy ,', '', $userdn
                     )
-                );
+            );
             //die($userdn);
         } elseif ($ktorych == 'wszyscy') {
             $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
@@ -220,20 +214,16 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         $letters = 'abcdefghijklmnopqrstuvwxyz';
         $letters_array = str_split($letters);
 
         $tmpResults = array();
         foreach ($letters_array as $letter) {
-            $search =
-                ldap_search(
-                    $ldapconn,
-                    $userdn,
-                    '(&(samaccountname='.$letter.'*)(objectClass=person))',
-                    $this->ADattributes
-                );
+            $search = ldap_search(
+                    $ldapconn, $userdn, '(&(samaccountname=' . $letter . '*)(objectClass=person))', $this->ADattributes
+            );
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
         }
@@ -256,7 +246,7 @@ class LdapService
     public function getAllDisabled()
     {
         //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         //$userdn = str_replace("OU=Zespoly_2016, OU=PARP Pracownicy ,", "", str_replace("OU=Zespoly_2016,OU=PARP Pracownicy ,", "", $userdn));
 
@@ -274,15 +264,15 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         $letters = 'abcdefghijklmnopqrstuvwxyz';
         $letters_array = str_split($letters);
 
         $tmpResults = array();
         foreach ($letters_array as $letter) {
-            $search = ldap_search($ldapconn, $userdn, '(&(samaccountname='.$letter.
-                '*)(objectClass=person)(|(userAccountControl=514)(userAccountControl=66050)))', $this->ADattributes);
+            $search = ldap_search($ldapconn, $userdn, '(&(samaccountname=' . $letter .
+                    '*)(objectClass=person)(|(userAccountControl=514)(userAccountControl=66050)))', $this->ADattributes);
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
         }
@@ -307,8 +297,8 @@ class LdapService
     {
 
         $group = $group ? ldap_escape($group) : $group;
-        $userdn = $this->useradn.$this->patch;
-        $ldap_dn_grupy = 'OU='.$this->_ouWithGroups.$this->patch;
+        $userdn = $this->useradn . $this->patch;
+        $ldap_dn_grupy = 'OU=' . $this->_ouWithGroups . $this->patch;
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn) {
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -322,7 +312,7 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         // Begin building query
         if ($group) {
@@ -368,7 +358,7 @@ class LdapService
         try {
             $search = ldap_search($ldapconn, $userdn, $query, $this->ADattributes);
         } catch (\Exception $e) {
-            die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage().' ');
+            die("Blad wyszukiwania w AD, szukano <br>'" . $query . "' <br><br>" . $e->getMessage() . ' ');
         }
 
 
@@ -380,13 +370,12 @@ class LdapService
         return $result;
     }
 
-
     public function getOUsFromAD($ou)
     {
 
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
@@ -394,9 +383,9 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
         $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
 
 
@@ -450,34 +439,34 @@ class LdapService
 
         return $ret;
         /*
-                $letters = "abcdefghijklmnopqrstuvwxyz1234567890-_";
-                $letters_array = str_split($letters);
+          $letters = "abcdefghijklmnopqrstuvwxyz1234567890-_";
+          $letters_array = str_split($letters);
 
-                $tmpResults = array();
-                if($group){
+          $tmpResults = array();
+          if($group){
 
-                }else{
-                    //jesli bierzemy wszystko to w iteracji po kloei literkami alfabetu bo wystepuja blad:
-                    //Warning: ldap_search(): Partial search results returned: Sizelimit exceeded
-                    foreach ($letters_array as $letter) {
-                        foreach ($letters_array as $letter2) {
-                            foreach ($letters_array as $letter3) {
-                                echo ".szukam literki $letter$letter2$letter3 ...";
-                                $results = $this->getGroupsFromADint($letter.$letter2.$letter3, "*");
-                                $tmpResults = array_merge($tmpResults, $results);
-                            }
-                        }
-                    }
-                }
+          }else{
+          //jesli bierzemy wszystko to w iteracji po kloei literkami alfabetu bo wystepuja blad:
+          //Warning: ldap_search(): Partial search results returned: Sizelimit exceeded
+          foreach ($letters_array as $letter) {
+          foreach ($letters_array as $letter2) {
+          foreach ($letters_array as $letter3) {
+          echo ".szukam literki $letter$letter2$letter3 ...";
+          $results = $this->getGroupsFromADint($letter.$letter2.$letter3, "*");
+          $tmpResults = array_merge($tmpResults, $results);
+          }
+          }
+          }
+          }
 
-                return $tmpResults;
-        */
+          return $tmpResults;
+         */
     }
 
     private function paginatedSearch($filter, $pageSize = 500)
     {
-        $userdn = $this->useradn.$this->patch;
-        $ldap_dn_grupy = 'OU='.$this->_ouWithGroups.$this->patch;
+        $userdn = $this->useradn . $this->patch;
+        $ldap_dn_grupy = 'OU=' . $this->_ouWithGroups . $this->patch;
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
 
@@ -491,7 +480,7 @@ class LdapService
 
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         $cookie = '';
         $result = [];
         $result['count'] = 0;
@@ -512,8 +501,8 @@ class LdapService
 
     public function getGroupsFromADint($group, $wilcardSearch = '')
     {
-        $userdn = $this->useradn.$this->patch;
-        $ldap_dn_grupy = 'OU='.$this->_ouWithGroups.$this->patch;
+        $userdn = $this->useradn . $this->patch;
+        $ldap_dn_grupy = 'OU=' . $this->_ouWithGroups . $this->patch;
         $ldapconn = ldap_connect($this->ad_host);
         if (!$ldapconn) {
             throw new Exception('Brak połączenia z serwerem domeny!');
@@ -527,7 +516,7 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         // Begin building query
         $query = '(&';
@@ -543,7 +532,7 @@ class LdapService
         try {
             $search = ldap_search($ldapconn, $ldap_dn_grupy, $query);
         } catch (\Exception $e) {
-            die("Blad wyszukiwania w AD, szukano <br>'".$query."' <br><br>".$e->getMessage().' ');
+            die("Blad wyszukiwania w AD, szukano <br>'" . $query . "' <br><br>" . $e->getMessage() . ' ');
         }
 
         $results = ldap_get_entries($ldapconn, $search);
@@ -551,7 +540,6 @@ class LdapService
 
         return $results;
     }
-
 
     public function getAllUserGroupsRecursivlyFromAD($samaccountname)
     {
@@ -563,16 +551,16 @@ class LdapService
             $ldap_password = $this->container->getParameter('ad_password');
             $ldapdomain = $this->ad_domain;
             $userDN = ldap_escape($user[0]['distinguishedname']);
-            $searchDN = 'OU='.$this->_ouWithGroups.$this->patch; //"DC=parp,DC=local";
+            $searchDN = 'OU=' . $this->_ouWithGroups . $this->patch; //"DC=parp,DC=local";
             $ldapconn = ldap_connect($this->ad_host);
             ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
             ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
             ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-            $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
-            $groupToFind = 'SG-ZZP-Public-RO';//"INT_BI";
-            $filter = '(memberof:1.2.840.113556.1.4.1941:='.$groupToFind.')';
+            $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+            $groupToFind = 'SG-ZZP-Public-RO'; //"INT_BI";
+            $filter = '(memberof:1.2.840.113556.1.4.1941:=' . $groupToFind . ')';
             //$filter = "(samaccountname=".$groupToFind.")";
-            $filter = '(&(objectclass=*)(member:1.2.840.113556.1.4.1941:='.$userDN.'))';
+            $filter = '(&(objectclass=*)(member:1.2.840.113556.1.4.1941:=' . $userDN . '))';
             $search = ldap_search($ldapconn, $searchDN, $filter, array('dn'), 1);
             $items = ldap_get_entries($ldapconn, $search);
             //echo "<pre>"; print_r($items);print_r($userDN); die();
@@ -588,16 +576,16 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
         $ldapdomain = $this->ad_domain;
-        $searchDN = 'OU='.$this->_ouWithGroups.$this->patch; //"DC=parp,DC=local";
+        $searchDN = 'OU=' . $this->_ouWithGroups . $this->patch; //"DC=parp,DC=local";
         $ldapconn = ldap_connect($this->ad_host);
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
         //$groupToFind = "SG-ZZP-Public-RO";//"INT_BI";
         //$filter = "(memberof:1.2.840.113556.1.4.1941:=".$groupToFind.")";
         //$filter = "(samaccountname=".$groupToFind.")";
-        $filter = '(&(objectclass=*)(member:1.2.840.113556.1.4.1941:='.$groupToFind.'))';
+        $filter = '(&(objectclass=*)(member:1.2.840.113556.1.4.1941:=' . $groupToFind . '))';
         $search = ldap_search($ldapconn, $searchDN, $filter, array('dn'), 1);
         $items = ldap_get_entries($ldapconn, $search);
 
@@ -748,23 +736,18 @@ class LdapService
     {
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         if ($ktorych === 'aktywni') {
             //nic nie zmieniamy
         } elseif ($ktorych === 'zablokowane') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
         } elseif ($ktorych === 'wszyscyWszyscy') {
-            $userdn =
-                str_replace(
-                    'OU=Zespoly_2016, OU=PARP Pracownicy ,',
-                    '',
-                    str_replace(
-                        'OU=Zespoly_2016,OU=PARP Pracownicy ,',
-                        '',
-                        $userdn
+            $userdn = str_replace(
+                    'OU=Zespoly_2016, OU=PARP Pracownicy ,', '', str_replace(
+                            'OU=Zespoly_2016,OU=PARP Pracownicy ,', '', $userdn
                     )
-                );
+            );
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
         }
@@ -776,10 +759,10 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         if ($samaccountname) {
-            $searchString = '(&(samaccountname='.$samaccountname.')(objectClass=person))';
+            $searchString = '(&(samaccountname=' . $samaccountname . ')(objectClass=person))';
         } elseif ($cnname) {
             if (false !== strpos($cnname, '*')) {
                 $ps = explode('*', $cnname);
@@ -791,9 +774,9 @@ class LdapService
             } else {
                 $cnname = ldap_escape($cnname);
             }
-            $searchString = '(&(name=*'.$cnname.'*)(objectClass=person))';
+            $searchString = '(&(name=*' . $cnname . '*)(objectClass=person))';
         } elseif ($query) {
-            $searchString = '(&('.$query.')(objectClass=person))';
+            $searchString = '(&(' . $query . ')(objectClass=person))';
         } else {
             $searchString = '(&(samaccountname=)(objectClass=person))';
         }
@@ -805,25 +788,25 @@ class LdapService
         $result = $this->parseResults($tmpResults);
         if (count($result) > 0) {
             /* wylaczam na czas odbierania uprawnien, bo zamula
-            //dodaje zmiany do wypchniecia
-            $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findBy(
-                ['isImplemented' => 0, 'samaccountname' => $result[0]['samaccountname']], ['samaccountname' => 'ASC', 'id' => 'ASC']
-            );
+              //dodaje zmiany do wypchniecia
+              $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findBy(
+              ['isImplemented' => 0, 'samaccountname' => $result[0]['samaccountname']], ['samaccountname' => 'ASC', 'id' => 'ASC']
+              );
 
-            $zmiany = [];
-            foreach($this->zmianyDoWypchniecia as $z){
-                $zmiany[$z->getSamaccountname()][] = $z;
-            }
-            $u = &$result[0];
-            if(isset($zmiany[$u['samaccountname']])){
-                //mamy zmiany
-                $noweAttr = $this->parseZmianyUsera($u, $zmiany);
-                foreach($noweAttr as $k => $v){
-                    $u[$k."inAD"] = $u[$k];
-                    $u[$k] = $v;
-                }
-            }
-            */
+              $zmiany = [];
+              foreach($this->zmianyDoWypchniecia as $z){
+              $zmiany[$z->getSamaccountname()][] = $z;
+              }
+              $u = &$result[0];
+              if(isset($zmiany[$u['samaccountname']])){
+              //mamy zmiany
+              $noweAttr = $this->parseZmianyUsera($u, $zmiany);
+              foreach($noweAttr as $k => $v){
+              $u[$k."inAD"] = $u[$k];
+              $u[$k] = $v;
+              }
+              }
+             */
         }
         return $result;
     }
@@ -832,7 +815,7 @@ class LdapService
     {
         $ldapconn = ldap_connect($this->ad_host);
         $ldapdomain = $this->ad_domain;
-        $userdn = $this->useradn.$this->patch;
+        $userdn = $this->useradn . $this->patch;
 
         $userdn = str_replace('OU=Zespoly,', '', $userdn);
         //die($userdn);
@@ -846,15 +829,15 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         if ($samaccountname) {
-            $searchString = '(&(samaccountname='.$samaccountname.')(objectClass=person))';
+            $searchString = '(&(samaccountname=' . $samaccountname . ')(objectClass=person))';
         } elseif ($cnname) {
             $cnname = ldap_escape($cnname);
-            $searchString = '(&(name=*'.$cnname.'*)(objectClass=person))';
+            $searchString = '(&(name=*' . $cnname . '*)(objectClass=person))';
         } elseif ($query) {
-            $searchString = '(&('.$query.')(objectClass=person))';
+            $searchString = '(&(' . $query . ')(objectClass=person))';
         } else {
             $searchString = '(&(samaccountname=)(objectClass=person))';
         }
@@ -881,16 +864,14 @@ class LdapService
                 $date->setTimestamp($time);
                 $result[$i]['isDisabled'] = $tmpResult['useraccountcontrol'][0] == '546' ? 1 : 0;
                 $result[$i]['samaccountname'] = $tmpResult['samaccountname'][0];
-                $result[$i]['accountExpires'] =
-                    $date->format('Y') > 2000 && $date->format('Y') < 3000 ? $date->format('Y-m-d') : '';
+                $result[$i]['accountExpires'] = $date->format('Y') > 2000 && $date->format('Y') < 3000 ? $date->format('Y-m-d') : '';
                 if (isset($tmpResult['accountexpires'][0])) {
                     if ($tmpResult['accountexpires'][0] == 9223372036854775807 ||
-                        $tmpResult['accountexpires'][0] == 0
+                            $tmpResult['accountexpires'][0] == 0
                     ) {
                         $result[$i]['accountexpires'] = '';
                     } else {
-                        $result[$i]['accountexpires'] =
-                            date('Y-m-d H:i:s', $tmpResult['accountexpires'][0] / 10000000 - 11644473600);
+                        $result[$i]['accountexpires'] = date('Y-m-d H:i:s', $tmpResult['accountexpires'][0] / 10000000 - 11644473600);
                     }
                 }
 
@@ -903,29 +884,24 @@ class LdapService
                 $result[$i]['description'] = isset($tmpResult['description'][0]) ? $tmpResult['description'][0] : '';
                 $result[$i]['division'] = isset($tmpResult['division'][0]) ? $tmpResult['division'][0] : '';
                 //$result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $tmpResult["description"][0]);
-                $result[$i]['lastlogon'] =
-                    isset($tmpResult['lastlogon']) ? date(
-                        'Y-m-d H:i:s',
-                        $tmpResult['lastlogon'][0] / 10000000 - 11644473600
-                    ) : '';
+                $result[$i]['lastlogon'] = isset($tmpResult['lastlogon']) ? date(
+                                'Y-m-d H:i:s', $tmpResult['lastlogon'][0] / 10000000 - 11644473600
+                        ) : '';
                 //$result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]['manager'] = isset($tmpResult['manager'][0]) ? $tmpResult['manager'][0] : '';
-                $result[$i]['thumbnailphoto'] =
-                    isset($tmpResult['thumbnailphoto'][0]) ? $tmpResult['thumbnailphoto'][0] : '';
-                $result[$i]['useraccountcontrol'] =
-                    isset($tmpResult['useraccountcontrol'][0]) ? $this->getAccountControl($tmpResult['useraccountcontrol'][0]) : '';
+                $result[$i]['thumbnailphoto'] = isset($tmpResult['thumbnailphoto'][0]) ? $tmpResult['thumbnailphoto'][0] : '';
+                $result[$i]['useraccountcontrol'] = isset($tmpResult['useraccountcontrol'][0]) ? $this->getAccountControl($tmpResult['useraccountcontrol'][0]) : '';
                 $result[$i]['distinguishedname'] = $tmpResult['distinguishedname'][0];
                 $result[$i]['cn'] = $tmpResult['cn'][0];
                 $result[$i]['memberOf'] = $this->parseMemberOf($tmpResult);
                 //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
 
                 if ('ekranEdycji' === $this->dodatkoweOpcje) {
-                    $roles =
-                        $this->container->get('doctrine')
+                    $roles = $this->container->get('doctrine')
                             ->getRepository('ParpMainBundle:AclUserRole')
                             ->findBy([
-                                'samaccountname' => $tmpResult['samaccountname'][0]
-                            ]);
+                        'samaccountname' => $tmpResult['samaccountname'][0]
+                    ]);
 
                     $rs = array();
                     foreach ($roles as $role) {
@@ -944,7 +920,6 @@ class LdapService
 
         return $result;
     }
-
 
     protected function parseMemberOf($res)
     {
@@ -977,9 +952,9 @@ class LdapService
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
 
-        $ldapbind = ldap_bind($ldapconn, $ldap_username.$ldapdomain, $ldap_password);
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
-        $userdn = 'OU='.$OU.','.$this->useradn.$this->patch;
+        $userdn = 'OU=' . $OU . ',' . $this->useradn . $this->patch;
         $result = null;
         try {
             $search = ldap_search($ldapconn, $userdn, '(&(samaccountname=*)(objectClass=person))', array(
@@ -1001,6 +976,7 @@ class LdapService
                 }
             }
         } catch (\Exception $e) {
+
         }
 
         return $result;
@@ -1020,7 +996,6 @@ class LdapService
     {
         return $this->adldap->group()->find($grupa);
     }
-
 
     public function getUsersWithRole($role)
     {
@@ -1059,8 +1034,7 @@ class LdapService
     public function getDyrektorow()
     {
         //$users = $this->getAllFromAD();
-        $deps =
-            $this->container->get('doctrine')
+        $deps = $this->container->get('doctrine')
                 ->getManager()
                 ->getRepository('ParpMainBundle:Departament')
                 ->findByNowaStruktura(1);
@@ -1073,21 +1047,21 @@ class LdapService
         }
 
         /*
-                $ret = [];
-                foreach($users as $u){
-                    if(
-                        mb_strtolower(trim($u['title'])) == "dyrektor" ||
-                        mb_strtolower(trim($u['title'])) == "p.o. dyrektora" ||
-                        mb_strtolower(trim($u['title'])) == "po dyrektora"
+          $ret = [];
+          foreach($users as $u){
+          if(
+          mb_strtolower(trim($u['title'])) == "dyrektor" ||
+          mb_strtolower(trim($u['title'])) == "p.o. dyrektora" ||
+          mb_strtolower(trim($u['title'])) == "po dyrektora"
 
-                    ){
-                        unset($u['thumbnailphoto']);
-                        unset($u['memberOf']);
-                        unset($u['roles']);
-                        $ret[] = $u;
-                    }
-                }
-        */
+          ){
+          unset($u['thumbnailphoto']);
+          unset($u['memberOf']);
+          unset($u['roles']);
+          $ret[] = $u;
+          }
+          }
+         */
 
         return $ret;
     }
@@ -1095,14 +1069,14 @@ class LdapService
     public function getPrezes()
     {
         /*
-                $users = $this->getAllFromAD();
-                $ret = [];
-                foreach($users as $u){
-                    if(mb_strtolower(trim($u['title'])) == "prezes"){
-                        $ret = $u;
-                    }
-                }
-        */
+          $users = $this->getAllFromAD();
+          $ret = [];
+          foreach($users as $u){
+          if(mb_strtolower(trim($u['title'])) == "prezes"){
+          $ret = $u;
+          }
+          }
+         */
         $user = $this->getUserFromAD('patrycja_klarecka');
         $ret = $user[0];
 
@@ -1119,7 +1093,7 @@ class LdapService
             }
         }
 
-        throw new EntityNotFoundException('Nie znaleziono dyrektora departamentu o nazwie '.$skrot);
+        throw new EntityNotFoundException('Nie znaleziono dyrektora departamentu o nazwie ' . $skrot);
     }
 
     public function kogoBracJakoManageraDlaUseraDoWniosku($user)
@@ -1182,16 +1156,16 @@ class LdapService
         $stanowisko = mb_strtolower(trim($user['title']));
 
         /*
-        Prezesa PARP	[UPr]	PARP	członkostwo w grupie INT Olimp [send];
-członkostwo w grupie INT Prezesi [send];
-wysyłanie do grupy INT Dyrektorzy;
-wysyłanie do grupy INT-Zastepcy-Dyrektorow;
-        */
+          Prezesa PARP	[UPr]	PARP	członkostwo w grupie INT Olimp [send];
+          członkostwo w grupie INT Prezesi [send];
+          wysyłanie do grupy INT Dyrektorzy;
+          wysyłanie do grupy INT-Zastepcy-Dyrektorow;
+         */
         $pomijajSekcje = ['ND', '', 'n/d', ''];
         $grupy = [
             'SGG-(skrót D/B)-Wewn-Wsp-RW',
             'Pracownicy'
-            //, 'SGG-(skrót D/B)-Public-RO'
+                //, 'SGG-(skrót D/B)-Public-RO'
         ];
         if (!in_array($sekcja, $pomijajSekcje, true)) {
             //die('1');
@@ -1202,11 +1176,11 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
             case 'zastępca prezesa':
             case 'zastępca prezesa (p.o.)':
                 /*
-członkostwo w grupie INT Olimp [send];
-członkostwo w grupie INT Prezesi [send];
-wysyłanie do grupy INT Dyrektorzy;
-wysyłanie do grupy INT-Zastepcy-Dyrektorow;
-                */
+                  członkostwo w grupie INT Olimp [send];
+                  członkostwo w grupie INT Prezesi [send];
+                  wysyłanie do grupy INT Dyrektorzy;
+                  wysyłanie do grupy INT-Zastepcy-Dyrektorow;
+                 */
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 $grupy[] = 'INT Olimp';
@@ -1239,7 +1213,6 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 $grupy[] = 'SG-BI-VPN-Access';
                 $grupy[] = 'SG-Dyrektorzy';
                 //SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW
-
                 //$grupy[] = 'SG-OLIMP';
                 break;
             case 'zastępca dyrektora':
@@ -1277,11 +1250,10 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         }
 
         $em = $this->container->get('doctrine')->getManager();
-        $departament =
-            $em->getRepository('ParpMainBundle:Departament')->findOneBy([
-                'shortname'     => $depshortname,
-                'nowaStruktura' => 1,
-            ]);
+        $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy([
+            'shortname' => $depshortname,
+            'nowaStruktura' => 1,
+        ]);
         //var_dump($departament);
         if (null!==$departament && !empty($departament->getGrupyAD())) {
             $grupyDepartamentowe = explode(';', $departament->getGrupyAD());
@@ -1304,14 +1276,14 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
 
         $pomijajSekcje = ['', 'n/d', 'BRAK'];
         if (in_array($stanowisko, $this->stanowiskaDyrektorzy, true) ||
-            in_array($stanowisko, $this->stanowiskaWiceDyrektorzy, true)
+                in_array($stanowisko, $this->stanowiskaWiceDyrektorzy, true)
         ) {
             //przeleciec rekurencyjnie wszystkich podwladnych
             $sekcje = $this->getSekcjePodwladnych($user);
             foreach ($sekcje as $s) {
                 if ($s != '') {
                     if (!in_array($s, $pomijajSekcje, true)) {
-                        $grupaDoDodania = 'SGG-'.$depshortname.'-Wewn-'.$s.'-RW';
+                        $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $s . '-RW';
                         if (!in_array($grupaDoDodania, $grupy, true)) {
                             $grupy[] = $grupaDoDodania;
                         }
@@ -1319,8 +1291,8 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
                 }
             }
             if (in_array('PARP_ADMIN', $this->container->get('security.context')
-                ->getToken()
-                ->getUser()->getRoles(), true)) {
+                                    ->getToken()
+                                    ->getUser()->getRoles(), true)) {
                 //var_dump(($grupy));
             }
 
@@ -1330,7 +1302,6 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
 
         return $grupy;
     }
-
 
     public function getOUfromDN($u)
     {
@@ -1388,7 +1359,7 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
         $ADUser = $this->getUserFromAD($samaccountname);
 
         if (!isset($ADUser[0]['manager'])) {
-            throw new EntityNotFoundException('Nie znaleziono przełożonego dla użytkownika '.$samaccountname);
+            throw new EntityNotFoundException('Nie znaleziono przełożonego dla użytkownika ' . $samaccountname);
         }
 
         $mancn = str_replace('CN=', '', substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
@@ -1417,7 +1388,6 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
 
         return $ADManager;
     }
-
 
     public function getPrzelozeniJakoName()
     {
@@ -1464,4 +1434,27 @@ wysyłanie do grupy INT-Zastepcy-Dyrektorow;
     {
         return $this->dodatkoweOpcje;
     }
+
+    /**
+     * Funkcja zwraca przełozonego pracownika
+     * Dla "zwykłych" pracowników znajduje dyrektora, od dyrektora
+     * zwraca bezpośredniego przełożonego
+     *
+     * @param strin $samaccountname
+     * @return array
+     */
+    public function getPrzelozonyPracownika($samaccountname)
+    {
+        $pracownik = $this->getUserFromAD($samaccountname)[0];
+
+        $zarzad = $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+
+        if (in_array($pracownik['title'], $zarzad)) {
+            return $pracownik;
+        }
+        $przelozony = $this->getPrzelozony($samaccountname);
+
+        return $this->getPrzelozonyPracownika($przelozony['samaccountname']);
+    }
+
 }
