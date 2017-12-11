@@ -14,7 +14,9 @@
     <div class="btn-group">
         <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
         <a class="btn btn-primary btn-xs" href="{{ path('engagement_new') }}">Dodaj zaangażowanie</a>
+        {% if is_granted(expression('"PARP_IMPORT_ZAANGAZOWANIE" in roles')) %}
         <a class="btn btn-warning btn-xs" href="{{ path('engagement_import') }}">Importuj zaangażowania pracowników z pliku</a>
+        {% endif %}
     </div>
 </center>
 
