@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 use ParpV1\MainBundle\Entity\Engagement;
 use ParpV1\MainBundle\Form\EngagementType;
@@ -289,6 +290,7 @@ class EngagementController extends Controller
      * Import excel engagement
      *
      * @Route("/import", name="engagement_import")
+     * @Security("has_role('PARP_IMPORT_ZAANGAZOWANIE')")
      * @Template()
      */
     public function importAction(Request $request)
