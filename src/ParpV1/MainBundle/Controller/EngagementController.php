@@ -333,9 +333,16 @@ class EngagementController extends Controller
             if ($form->isValid()) {
                 $file = $form->get('plik')->getData();
                 $name = $file->getClientOriginalName();
-                $this->parsePlik($file, $form);
+                $bledy = $this->parsePlik($file, $form);
 
-                $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+
+                if (empty($bledy)) {
+                    $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+                }
+
+                foreach($bledy as $blad){
+                    $this->get('session')->getFlashBag()->add('warning', $blad['error']);
+                }
                 return $this->redirectToRoute('engagement_import');
             }
         }
@@ -393,7 +400,11 @@ class EngagementController extends Controller
             }
             $wynik[$dane['name']][] = $dane;
         }
-        $this->parseWyniki($wynik, $form);
+
+        $bledy = $this->parseWyniki($wynik, $form);
+
+        return $bledy;
+
     }
     protected function correctWyniki($dane)
     {
@@ -451,11 +462,13 @@ class EngagementController extends Controller
                 'imie' => $rozbite['imie'],
             ]);
             if ($daneRekord === null) {
-                //var_dump($d);
-                $bledy[] = [
-                    'error' => 'Brak danych o osobie '.$id,
-                    'dane' => $d
-                ];
+                // błędy o braku danych z rekorda przykrywają te z braku zaangazowań
+                // a nie wiem czy są/bedą potrzebne
+                //$bledy[] = [
+                //    'error' => 'Brak danych o osobie '.$id,
+                //    'dane' => $d
+                //];
+
             } else {
                 //var_dump($d); die();
                 $usereng = new UserEngagement();
@@ -464,6 +477,15 @@ class EngagementController extends Controller
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
                         $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        if (null == $pr) {
+                            var_dump($pr);
+                            $bledy[] = [
+                                'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
+                                'dane' => $program
+                            ];
+
+                            break;
+                        }
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                                 $daneRekord->getLogin(),
                                 $pr->getId(),
@@ -509,11 +531,24 @@ class EngagementController extends Controller
                         $em->persist($ug);
 
                     }
+                    if(!empty($bledy)){
+                        break;
+                    }
                 }
+
+            }
+            if (!empty($bledy)) {
+                break;
             }
         }
+
+        if (!empty($bledy)) {
+            return $bledy;
+        }
+
         $em->flush();
-        //var_dump($bledy);
+
+        return $bledy;
     }
 
     protected function parseNazwaProgramu($program)
