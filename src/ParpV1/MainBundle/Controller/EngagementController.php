@@ -392,7 +392,10 @@ class EngagementController extends Controller
                     $dana = $this->parseNazwaProgramu($dana);
                 }
                 if ($j > 3) {
+                    //var_dump($dana);
                     $dana = floatval($dana);
+                    
+                    $dana = (int) round($dana * 10000);
                 }
 
                 $dane[$f] = $dana;
@@ -416,10 +419,16 @@ class EngagementController extends Controller
             for ($i = 1; $i < 13; $i++) {
                 foreach ($data as $d) {
                     $program = $d['program'];
+                    //if (!isset($programy[$program][$i])) {
+                    //    $programy[$program][$i] = floatval($d[$i]);
+                    //} else {
+                    //    $programy[$program][$i] += floatval($d[$i]);
+                    //}
+
                     if (!isset($programy[$program][$i])) {
-                        $programy[$program][$i] = floatval($d[$i]);
+                        $programy[$program][$i] = ($d[$i]);
                     } else {
-                        $programy[$program][$i] += floatval($d[$i]);
+                        $programy[$program][$i] += ($d[$i]);
                     }
                 }
             }
@@ -470,7 +479,9 @@ class EngagementController extends Controller
                 //];
 
             } else {
-                //var_dump($d); die();
+
+                if($daneRekord->getLogin() == 'nela_tomas'){
+
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
@@ -478,7 +489,6 @@ class EngagementController extends Controller
                     for ($i = 1; $i < 13; $i++) {
                         $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
                         if (null == $pr) {
-                            var_dump($pr);
                             $bledy[] = [
                                 'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
                                 'dane' => $program
@@ -486,28 +496,26 @@ class EngagementController extends Controller
 
                             break;
                         }
+
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                                 $daneRekord->getLogin(),
                                 $pr->getId(),
                                 $i,
                                 $rok
                         );
-//                        var_dump($daneRekord->getLogin());
-//                        var_dump($program);
-//                        var_dump($i);
-//                        var_dump($rok);
-//                        var_dump($ug);die();
+
                         if (null == $ug) {
                             $ug = clone $usereng;
                             $ug->setMonth($i);
-                            $p = 100 * $wpis[$i];
+                            $p = $wpis[$i];
                             $ug->setPercent($p);
                             $ug->setCzyNowy(true);
-                        } elseif ((int) $ug->getPercent() != (int) (100 * $wpis[$i])) {
+                            $ug->setEngagement($pr);
+                        } elseif ($ug->getPercent() != $wpis[$i]) {
                             $ugnew = clone $usereng;
                             $ugnew->setId(null);
                             $ugnew->setMonth($i);
-                            $p = 100 * $wpis[$i];
+                            $p = $wpis[$i];
                             $ugnew->setPercent($p);
                             $ugnew->setEngagement($pr);
                             $ugnew->setCzyNowy(true);
@@ -517,7 +525,7 @@ class EngagementController extends Controller
                             $ug->setKtoUsunal($this->getUser()->getUsername());
                             $em->persist($ugnew);
                         }
-
+/*
                         if (isset($programy[$program])) {
                             $program2 = $programy[$program];
                         } else {
@@ -527,7 +535,7 @@ class EngagementController extends Controller
                             $em->persist($program2);
                         }
                         $ug->setEngagement($program2);
-
+*/
                         $em->persist($ug);
 
                     }
@@ -535,7 +543,7 @@ class EngagementController extends Controller
                         break;
                     }
                 }
-
+            }
             }
             if (!empty($bledy)) {
                 break;

@@ -1431,7 +1431,7 @@ class DefaultController extends Controller
                         $userEngagement->setMonth($this->getMonthFromStr($key_month));
                         //$percent = (!empty($value_month)) ? $value_month : null;
                         //$userEngagement->setPercent($percent);
-                        $userEngagement->setPercent($last_month);
+                        $userEngagement->setPercentFormat($last_month);
                         $userEngagement->setCzyNowy(true);
 
                         $em->persist($userEngagement);
@@ -1443,11 +1443,11 @@ class DefaultController extends Controller
                         //$em->persist($userEngagement);
                         //$em->flush();
 
-                        if ((int) $userEngagement->getPercent() !== (int) $last_month) {
+                        if ((int) $userEngagement->getPercentFormat() !== (int) ($last_month)) {
                             $ue = clone $userEngagement;
                             $ue->setId(null);
                             $ue->setCzyNowy(true);
-                            $ue->setPercent($last_month);
+                            $ue->setPercentFormat($last_month);
 
                             $userEngagement->setCzyNowy(false);
                             $userEngagement->setKiedyUsuniety(new \DateTime());
@@ -1477,7 +1477,7 @@ class DefaultController extends Controller
             // zbuduj tablice z danymi
             $engagement = (string) $userEngagement->getEngagement();
             $month = $this->getStrFromMonth($userEngagement->getMonth());
-            $percent = $userEngagement->getPercent();
+            $percent = $userEngagement->getPercentFormat();
             $dane[$engagement][$month]['procent'] = $percent;
 
             $dane[$engagement][$month]['historia'] = $userEngagementsRepo->findOneNieaktywneByCryteria(
@@ -1506,7 +1506,7 @@ class DefaultController extends Controller
 
         foreach ($userEngagements as $userEngagement) {
             $month = $this->getStrFromMonth($userEngagement->getMonth());
-            $percent = $userEngagement->getPercent();
+            $percent = $userEngagement->getPercentFormat();
             $percent = !empty($percent) ? $percent : 0;
 
             switch ($month) {

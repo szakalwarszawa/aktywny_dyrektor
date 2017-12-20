@@ -61,6 +61,7 @@ class EngagementCommand extends ContainerAwareCommand
         }
 
         if (!empty($userEngagements)) {
+            $kontaUzyte = []; // aby unuknąc wysyłania wielu mailii dotyczącej zmian u jednej osoby
             foreach ($userEngagements as $userEngagement) {
                 $konta = [];
 
@@ -72,24 +73,25 @@ class EngagementCommand extends ContainerAwareCommand
 
                 if ($date <= $today) {
                     $user = $ldap->getUserFromAD($userEngagement->getSamaccountname())[0];
+                    if (!in_array($user['samaccountname'], $kontaUzyte)) {
+                        // jezeli zarząd dadaj powierników, jeżeli nie, to tylko przełożonego(dyrektora)
+                        if ($this->czyZarzad($user)) {
+                            $konta = array_merge($konta, $powiernicy);
+                        } else {
+                            $przelozony = $ldap->getPrzelozonyPracownika($user['samaccountname']);
+                            $konta[] = $przelozony['samaccountname'];
+                        }
+                        // dodaj pozostale grupy
+                        $konta = array_merge($konta, $adresyDo);
+                        $data['odbiorcy'] = $konta;
+                        $data['login'] = $user['samaccountname'];
+                        $data['departament'] = $user['department'];
+                        $data['data_zmiany'] = $today->format('Y-m-d');
+                        $data['rok'] = $userEngagement->getYear();
 
-                    // jezeli zarząd dadaj powierników, jeżeli nie, to tylko przełożonego(dyrektora)
-                    if ($this->czyZarzad($user)) {
-                        $konta = array_merge($konta, $powiernicy);
-                    } else {
-                        $przelozony = $ldap->getPrzelozonyPracownika($user['samaccountname']);
-                        $konta[] = $przelozony['samaccountname'];
+                        $mailer->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA, $data);
+                        $kontaUzyte[] = $user['samaccountname'];
                     }
-
-                    // dodaj pozostale grupy
-                    $konta = array_merge($konta, $adresyDo);
-                    $data['odbiorcy'] = $konta;
-                    $data['login'] = $user['samaccountname'];
-                    $data['departament'] = $user['department'];
-                    $data['data_zmiany'] = $today->format('Y-m-d');
-
-                    $mailer->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA, $data);
-
                     $userEngagement->setCzyNowy(false);
                     $em->persist($userEngagement);
                 }
