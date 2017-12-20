@@ -120,6 +120,15 @@ class ParpMailerService
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
+        
+        // umożiwia testowanie wysyłki maili ze środowiska testowego, 
+        if ($this->container->getParameter('id_srodowiska') == 'test') { // lub wszystkie poza produkcją: != 'produkcja'
+            $odbiorcy = implode(", ", $this->getRecipient($recipient));
+            $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
+            $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
+            $recipient = array('pawel_fedoruk','tomasz_bonczak','jaroslaw_bednarczyk');
+        }
+        
         $recipientArray= $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */
