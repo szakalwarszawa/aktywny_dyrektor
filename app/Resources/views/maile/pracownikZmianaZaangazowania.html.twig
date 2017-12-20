@@ -1,1 +1,2 @@
 W związku ze zmianą zaangażowania przez <b>{{ login }}</b> z <b>{{ departament }}</b>, <b>{{ data_zmiany|date }}</b> należy potwierdzić zmianę zaangażowania pracownika i przejąć Jego sprzęt.
+Ze zmianami zaangażowania pracownika można się zapoznać uruchamiając link:  <a href="{{ path('engageUser', {'samaccountname': login, 'rok': rok}) }}">{{ login }}</a>
