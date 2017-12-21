@@ -50,7 +50,7 @@ class EngagementCommand extends ContainerAwareCommand
         }
 
         $powiernicy = [];
-        $grupaPowiernikZarzadu = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_KOMP');
+        $grupaPowiernikZarzadu = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_POWIERNIK_ZARZADU');
         if (!empty($grupaPowiernikZarzadu->getUsers())) {
             foreach ($grupaPowiernikZarzadu->getUsers() as $user) {
                 $samaccountname = $user->getSamaccountname();
@@ -109,7 +109,7 @@ class EngagementCommand extends ContainerAwareCommand
      */
     protected function czyZarzad($user)
     {
-        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa', 'główny księgowy,dyrektor'];
         if (in_array($user['title'], $stanowiska)) {
             return true;
         }
