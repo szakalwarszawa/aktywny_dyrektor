@@ -394,7 +394,7 @@ class EngagementController extends Controller
                 if ($j > 3) {
                     //var_dump($dana);
                     $dana = floatval($dana);
-                    
+
                     $dana = (int) round($dana * 10000);
                 }
 
@@ -480,8 +480,6 @@ class EngagementController extends Controller
 
             } else {
 
-                if($daneRekord->getLogin() == 'nela_tomas'){
-
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
@@ -543,7 +541,7 @@ class EngagementController extends Controller
                         break;
                     }
                 }
-            }
+
             }
             if (!empty($bledy)) {
                 break;
