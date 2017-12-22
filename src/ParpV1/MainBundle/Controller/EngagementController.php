@@ -333,9 +333,16 @@ class EngagementController extends Controller
             if ($form->isValid()) {
                 $file = $form->get('plik')->getData();
                 $name = $file->getClientOriginalName();
-                $this->parsePlik($file, $form);
+                $bledy = $this->parsePlik($file, $form);
 
-                $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+
+                if (empty($bledy)) {
+                    $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+                }
+
+                foreach($bledy as $blad){
+                    $this->get('session')->getFlashBag()->add('warning', $blad['error']);
+                }
                 return $this->redirectToRoute('engagement_import');
             }
         }
@@ -385,7 +392,10 @@ class EngagementController extends Controller
                     $dana = $this->parseNazwaProgramu($dana);
                 }
                 if ($j > 3) {
+                    //var_dump($dana);
                     $dana = floatval($dana);
+
+                    $dana = (int) round($dana * 10000);
                 }
 
                 $dane[$f] = $dana;
@@ -393,7 +403,11 @@ class EngagementController extends Controller
             }
             $wynik[$dane['name']][] = $dane;
         }
-        $this->parseWyniki($wynik, $form);
+
+        $bledy = $this->parseWyniki($wynik, $form);
+
+        return $bledy;
+
     }
     protected function correctWyniki($dane)
     {
@@ -405,10 +419,16 @@ class EngagementController extends Controller
             for ($i = 1; $i < 13; $i++) {
                 foreach ($data as $d) {
                     $program = $d['program'];
+                    //if (!isset($programy[$program][$i])) {
+                    //    $programy[$program][$i] = floatval($d[$i]);
+                    //} else {
+                    //    $programy[$program][$i] += floatval($d[$i]);
+                    //}
+
                     if (!isset($programy[$program][$i])) {
-                        $programy[$program][$i] = floatval($d[$i]);
+                        $programy[$program][$i] = ($d[$i]);
                     } else {
-                        $programy[$program][$i] += floatval($d[$i]);
+                        $programy[$program][$i] += ($d[$i]);
                     }
                 }
             }
@@ -451,41 +471,49 @@ class EngagementController extends Controller
                 'imie' => $rozbite['imie'],
             ]);
             if ($daneRekord === null) {
-                //var_dump($d);
-                $bledy[] = [
-                    'error' => 'Brak danych o osobie '.$id,
-                    'dane' => $d
-                ];
+                // błędy o braku danych z rekorda przykrywają te z braku zaangazowań
+                // a nie wiem czy są/bedą potrzebne
+                //$bledy[] = [
+                //    'error' => 'Brak danych o osobie '.$id,
+                //    'dane' => $d
+                //];
+
             } else {
-                //var_dump($d); die();
+
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
                         $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        if (null == $pr) {
+                            $bledy[] = [
+                                'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
+                                'dane' => $program
+                            ];
+
+                            break;
+                        }
+
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                                 $daneRekord->getLogin(),
                                 $pr->getId(),
                                 $i,
                                 $rok
                         );
-//                        var_dump($daneRekord->getLogin());
-//                        var_dump($program);
-//                        var_dump($i);
-//                        var_dump($rok);
-//                        var_dump($ug);die();
+
                         if (null == $ug) {
                             $ug = clone $usereng;
                             $ug->setMonth($i);
-                            $p = 100 * $wpis[$i];
+                            $p = $wpis[$i];
                             $ug->setPercent($p);
                             $ug->setCzyNowy(true);
-                        } elseif ((int) $ug->getPercent() != (int) (100 * $wpis[$i])) {
+                            $ug->setEngagement($pr);
+                        } elseif ($ug->getPercent() != $wpis[$i]) {
                             $ugnew = clone $usereng;
                             $ugnew->setId(null);
                             $ugnew->setMonth($i);
-                            $p = 100 * $wpis[$i];
+                            $p = $wpis[$i];
                             $ugnew->setPercent($p);
                             $ugnew->setEngagement($pr);
                             $ugnew->setCzyNowy(true);
@@ -495,7 +523,7 @@ class EngagementController extends Controller
                             $ug->setKtoUsunal($this->getUser()->getUsername());
                             $em->persist($ugnew);
                         }
-
+/*
                         if (isset($programy[$program])) {
                             $program2 = $programy[$program];
                         } else {
@@ -505,15 +533,28 @@ class EngagementController extends Controller
                             $em->persist($program2);
                         }
                         $ug->setEngagement($program2);
-
+*/
                         $em->persist($ug);
 
                     }
+                    if(!empty($bledy)){
+                        break;
+                    }
                 }
+
+            }
+            if (!empty($bledy)) {
+                break;
             }
         }
+
+        if (!empty($bledy)) {
+            return $bledy;
+        }
+
         $em->flush();
-        //var_dump($bledy);
+
+        return $bledy;
     }
 
     protected function parseNazwaProgramu($program)

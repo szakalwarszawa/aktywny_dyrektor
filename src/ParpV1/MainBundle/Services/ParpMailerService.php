@@ -73,6 +73,8 @@ class ParpMailerService
     private $templating;
 
     private $ldap;
+    
+    private $idSrodowiska;
 
     /**
      * EmailerService constructor.
@@ -86,7 +88,8 @@ class ParpMailerService
         \Swift_Mailer $mailer,
         SecurityContext $securityContext,
         $templating,
-        $ldap
+        $ldap,
+        $idSrodowiska
     ) {
 
         $this->entityManager = $entityManager;
@@ -94,6 +97,7 @@ class ParpMailerService
         $this->securityContext = $securityContext;
         $this->templating = $templating;
         $this->ldap = $ldap;
+        $this->idSrodowiska = $idSrodowiska;
     }
 
     /**
@@ -120,6 +124,15 @@ class ParpMailerService
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
+        
+        // umożiwia testowanie wysyłki maili ze środowiska testowego, 
+        if ($this->idSrodowiska == 'test') { // lub wszystkie poza produkcją: != 'produkcja'
+            $odbiorcy = implode(", ", $this->getRecipient($recipient));
+            $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
+            $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
+            $recipient = array('pawel_fedoruk','tomasz_bonczak','jaroslaw_bednarczyk');
+        }
+        
         $recipientArray= $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */

@@ -108,7 +108,7 @@
                                 <span class="dropdown_zmiany red-tooltip" style="width: 300px;" data-toggle="popover" title="Zmiany zaangażowania:" data-content="
                                 {% for zmiana in row2['historia'] %}
                                     {{ zmiana.kiedyUsuniety | date('Y.m.d') }} 
-                                    {{ zmiana.percent }}% 
+                                    {{ zmiana.percentFormat }}% 
                                     {{ zmiana.ktoUsunal }}<br />
                                 {% endfor %}" data-placement="left">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><b class="caret"></b></a>

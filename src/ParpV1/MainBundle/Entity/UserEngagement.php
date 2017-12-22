@@ -28,7 +28,7 @@ class UserEngagement
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
-    */
+     */
     private $deletedAt;
 
     /**
@@ -48,7 +48,7 @@ class UserEngagement
     private $engagement;
 
     /**
-     * @var float
+     * @var int
      *
      * @ORM\Column(name="percent", type="integer",nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
@@ -112,7 +112,7 @@ class UserEngagement
      * Set id
      *
      * @param integer $id
-     * 
+     *
      * @return UserEngagement
      */
     public function setId($id)
@@ -121,7 +121,6 @@ class UserEngagement
 
         return $this;
     }
-
 
     /**
      * Set engagement
@@ -145,7 +144,6 @@ class UserEngagement
     {
         return $this->engagement;
     }
-
 
     /**
      * Set samaccountname
@@ -213,7 +211,6 @@ class UserEngagement
     {
         return $this->month;
     }
-
 
     /**
      * Set deletedAt
@@ -331,4 +328,29 @@ class UserEngagement
         $this->czyNowy = $czyNowy;
         return $this;
     }
+
+    /**
+     * Funckcja zwraca zformatowane procrnty
+     *
+     * @return float
+     */
+    public function getPercentFormat()
+    {
+        return $this->percent / 100;
+    }
+
+    /**
+     * Zapisuje zformatowane procentydo bazy
+     *
+     * @param int percent
+     *
+     * @return UserEngagement
+     */
+    public function setPercentFormat($percent)
+    {
+        $this->setPercent($percent*100);
+
+        return $this;
+    }
+
 }

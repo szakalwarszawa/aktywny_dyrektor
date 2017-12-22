@@ -50,7 +50,7 @@ class EngagementCommand extends ContainerAwareCommand
         }
 
         $powiernicy = [];
-        $grupaPowiernikZarzadu = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_KOMP');
+        $grupaPowiernikZarzadu = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_POWIERNIK_ZARZADU');
         if (!empty($grupaPowiernikZarzadu->getUsers())) {
             foreach ($grupaPowiernikZarzadu->getUsers() as $user) {
                 $samaccountname = $user->getSamaccountname();
@@ -61,6 +61,7 @@ class EngagementCommand extends ContainerAwareCommand
         }
 
         if (!empty($userEngagements)) {
+            $kontaUzyte = []; // aby unuknąc wysyłania wielu mailii dotyczącej zmian u jednej osoby
             foreach ($userEngagements as $userEngagement) {
                 $konta = [];
 
@@ -71,27 +72,31 @@ class EngagementCommand extends ContainerAwareCommand
                 $today = new \DateTime();
 
                 if ($date <= $today) {
-                    $user = $ldap->getUserFromAD($userEngagement->getSamaccountname())[0];
-
-                    // jezeli zarząd dadaj powierników, jeżeli nie, to tylko przełożonego(dyrektora)
-                    if ($this->czyZarzad($user)) {
-                        $konta = array_merge($konta, $powiernicy);
-                    } else {
-                        $przelozony = $ldap->getPrzelozonyPracownika($user['samaccountname']);
-                        $konta[] = $przelozony['samaccountname'];
+                    $userArray = $ldap->getUserFromAD($userEngagement->getSamaccountname());
+                    if (!empty($userArray)) {
+                        $user = $userArray[0];
+                        if (!in_array($user['samaccountname'], $kontaUzyte)) {
+                            // jezeli zarząd dadaj powierników, jeżeli nie, to tylko przełożonego(dyrektora)
+                            if ($this->czyZarzad($user)) {
+                                $konta = array_merge($konta, $powiernicy);
+                            } else {
+                                $przelozony = $ldap->getPrzelozonyPracownika($user['samaccountname']);
+                                $konta[] = $przelozony['samaccountname'];
+                            }
+                            // dodaj pozostale grupy
+                            $konta = array_merge($konta, $adresyDo);
+                            $data['odbiorcy'] = $konta;
+                            $data['login'] = $user['samaccountname'];
+                            $data['departament'] = $user['department'];
+                            $data['data_zmiany'] = $today->format('Y-m-d');
+                            $data['rok'] = $userEngagement->getYear();
+    
+                            $mailer->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA, $data);
+                            $kontaUzyte[] = $user['samaccountname'];
+                        }
+                        $userEngagement->setCzyNowy(false);
+                        $em->persist($userEngagement);
                     }
-
-                    // dodaj pozostale grupy
-                    $konta = array_merge($konta, $adresyDo);
-                    $data['odbiorcy'] = $konta;
-                    $data['login'] = $user['samaccountname'];
-                    $data['departament'] = $user['department'];
-                    $data['data_zmiany'] = $today->format('Y-m-d');
-
-                    $mailer->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA, $data);
-
-                    $userEngagement->setCzyNowy(false);
-                    $em->persist($userEngagement);
                 }
             }
             $em->flush();
@@ -107,7 +112,7 @@ class EngagementCommand extends ContainerAwareCommand
      */
     protected function czyZarzad($user)
     {
-        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa', 'główny księgowy,dyrektor'];
         if (in_array($user['title'], $stanowiska)) {
             return true;
         }
