@@ -139,13 +139,13 @@ class ZgloszenieController extends Controller
         $opis = $formularz['opis'];
         $kategoria = 22; # Zgłoszone przez użytkownika
         $uri = strip_tags($formularz['uri']);
-        
+
 //		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
         $odpowiedz_tmp = $this->get('parp.redmine')->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, $uri, true, null, null, null, $email, $telefon, $imie_nazwisko);
 
         if (preg_match('~\{(?:[^{}]|(?R))*\}~', $odpowiedz_tmp, $odpowiedz_json)) {
             $odpowiedz = json_decode($odpowiedz_json[0], true);
-                
+
             $this->get('parp.redmine')->dodajNotatke($odpowiedz['issue']['id']);
 
             $request->getSession()->getFlashBag()->add(
@@ -171,7 +171,7 @@ class ZgloszenieController extends Controller
     public function zgloszeniaAction()
     {
 //var_dump($this->getUser()); die();
-    
+
         $ad = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
 
         $userId = $ad[0]['samaccountname']; //$this->getUser()->getName();
@@ -185,7 +185,7 @@ class ZgloszenieController extends Controller
             'zgloszenia' => $zgloszenia['issues'],
         );
     }
-    
+
     /**
      * @Route("/zgloszenie/nowe", name="nowe_zgloszenie")
      *
@@ -265,19 +265,19 @@ class ZgloszenieController extends Controller
                 ->add('sciezka', 'hidden', array(
                     'empty_data' => ''))
                 ->getForm();
-        
+
         // jezeli adres powrotny raz ustwiony to go nie zmieniamy
         $sciezka = $form->get('sciezka')->getData();
         if (empty($sciezka)) {
             $form->get('sciezka')->setData($this->getRequest()->headers->get('referer'));
         }
-        
+
         $form->handleRequest($request);
-        
+
         if ($form->isValid()) {
             $data = $form->getData();
             $this->wyslijZgloszenie($data);
-            
+
             /* 2270 - niby zawsze powinien być referer jeżeli mamy błąd - ale jak widać w zgłoszniu nie koniecznie.
              * Wywalało "Cannot redirect to an empty URL."
              * Dlatego kierujemy na domową gdy empty
@@ -286,7 +286,7 @@ class ZgloszenieController extends Controller
             if (empty($path)) {
                 $path = $this->generateUrl('home');
             }
-            
+
             return $this->redirect($path);
         }
 
@@ -303,7 +303,7 @@ class ZgloszenieController extends Controller
         $podmiot = $formularz['podmiot'];
         $temat = $formularz['temat'];
         $opis = $formularz['opis'];
-        $kategoria = 11; # Zgłoszone przez użytkownika
+        $kategoria = 22; # Zgłoszone przez użytkownika
         $email = $formularz['email'];
         $telefon = $formularz['telefon'];
         $uri = strip_tags($formularz['uri']);
