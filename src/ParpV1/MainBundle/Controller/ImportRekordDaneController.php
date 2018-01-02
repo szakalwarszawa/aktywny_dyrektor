@@ -968,8 +968,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $this->getDoctrine()
                     ->getRepository('ParpMainBundle:Departament')
                     ->findOneByNameInRekord($daneRekord->getDepartament());
-            $entry->setDepartment($departament->getName());
             $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByName($dane['form']['info']);
+            if (null === $departament) {
+                $departament = $section->getDepartament();
+            }
+
+            $entry->setDepartment($departament->getName());
             $grupyNaPodstawieSekcjiOrazStanowiska =
                 $ldapService->getGrupyUsera(
                     ['title' => $daneRekord->getStanowisko()],
@@ -1021,12 +1025,14 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']
+                $manager = ($dane['form']['manager'] !== '') ? $dane['form']['manager'] : '';
                 $now = new \Datetime();
                 $dane = [
                     'imie_nazwisko'                       => $daneRekord->getImie().' '.$daneRekord->getNazwisko(),
                     'login'                               => $daneRekord->getLogin(),
                     'departament'                         => $departament->getName(),
-                    'data_nadania_uprawnien_poczatkowych' => $now,
+                    'data_nadania_uprawnien_poczatkowych' => $now->format('Y-m-d'),
+                    'odbiorcy'                            => [$manager],
                 ];
 
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEIMPORT, $dane);
