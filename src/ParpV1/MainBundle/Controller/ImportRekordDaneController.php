@@ -6,6 +6,7 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use Doctrine\DBAL\Driver\PDOException;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
@@ -806,7 +807,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     'newUnproccessed',
                 ]);
             $d['users'] = $users;
-            $d['departament'] = $departament;
+            
+            $d['departament'] = (null != $departament)? $departament : new Departament();
             $data[] = $d;
         }
 
