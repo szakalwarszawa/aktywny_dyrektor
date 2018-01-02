@@ -807,7 +807,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     'newUnproccessed',
                 ]);
             $d['users'] = $users;
-            
             $d['departament'] = (null != $departament)? $departament : new Departament();
             $data[] = $d;
         }
