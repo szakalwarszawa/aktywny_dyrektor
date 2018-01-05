@@ -136,14 +136,14 @@ class RedmineConnectService
         $temat,
         $opis,
         $kategoria,
-        $uri = null,
+        $uri = "",
         $czy_prywatna = true,
-        $komunikat_systemowy = null,
-        $zgloszenie_id = null,
-        $podmiot = null,
-        $email = null,
-        $telefon = null,
-        $imie_nazwisko = null
+        $komunikat_systemowy = "",
+        $zgloszenie_id = "",
+        $podmiot = "",
+        $email = "",
+        $telefon = "",
+        $imie_nazwisko = ""
     ) {
         if ($zgloszenie_id) {
             $zgloszenie_id = '/' . $zgloszenie_id;
