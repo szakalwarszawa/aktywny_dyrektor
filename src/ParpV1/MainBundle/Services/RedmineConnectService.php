@@ -274,6 +274,9 @@ class RedmineConnectService
         $request = $this->container->get('request')->headers->all();
         $browser = $this->container->get('request')->headers->get('User-Agent');
 
+        // usuniecie danych sesji ze zgloszenia:
+        unset($request['cookie']);
+        
         $tresc = '<b>IP</b> : ' . $clientIP . "<br/>";
         $tresc .= '<b>path</b> : ' . $path . "<br/>";
         $tresc .= '<b>request</b> : ' . print_r($request, true) . "<br/>";
