@@ -80,7 +80,8 @@ PHPCS-PSR2:
 #    - php -dmemory_limit=1G ./app/console lint:twig src
 #    - php -dmemory_limit=1G ./app/console lint:yaml src
 #    - php -dmemory_limit=1G ./app/console lint:yaml app/config
-    - ./bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php --ignore=src/Parp/IntegracjaSl2014Bundle/Mwd/ModelDanych/ src/Parp/
+    - ./bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/ParpV1/
+#    - ./bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php --ignore=src/Parp/IntegracjaSl2014Bundle/Mwd/ModelDanych/ src/Parp/
 #    - ./bin/phpmd src/ text cleancode,controversial --suffixes php --ignore-violations-on-exit --exclude src/Parp/IntegracjaSl2014Bundle/Mwd/ModelDanych/
 #
 #PHPMD:
