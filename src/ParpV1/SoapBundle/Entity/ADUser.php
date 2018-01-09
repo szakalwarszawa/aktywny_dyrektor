@@ -5,6 +5,7 @@ namespace ParpV1\SoapBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use APY\DataGridBundle\Grid\Mapping as GRID;
+use JMS\Serializer\Annotation as JMS;
 
 /**
  * UserZasoby
@@ -18,6 +19,8 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  *     message="Samaccountname musi być unikalna")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class ADUser
 {
@@ -27,9 +30,12 @@ class ADUser
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -42,10 +48,13 @@ class ADUser
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $samaccountname;
-    
-    
+
+
     /**
      * @var boolean
      *
@@ -53,7 +62,7 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $isDisabled;
-    
+
     /**
      * @var string
      *
@@ -61,71 +70,95 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $accountExpires;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $name;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $email;
-                
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $initials;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $title;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $info;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $description;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $department;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $division;
-    
+
     /**
      * @var string
      *
@@ -133,15 +166,18 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $lastlogon;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $manager;
-    
+
     /**
      * @var string
      *
@@ -149,7 +185,7 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $thumbnailphoto;
-    
+
     /**
      * @var string
      *
@@ -157,15 +193,18 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $useraccountcontrol;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(type="text", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $distinguishedname;
-    
+
     /**
      * @var string
      *
@@ -173,7 +212,7 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $cn;
-    
+
     /**
      * @var string
      *
@@ -181,8 +220,8 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     //private $memberOf;
-    
-    
+
+
     /**
      * @var string
      *
@@ -190,7 +229,7 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     //private $roles;
-    
+
     /**
      * @var string
      *
@@ -198,8 +237,8 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $memberOfNames;
-    
-    
+
+
     /**
      * @var string
      *
@@ -207,8 +246,8 @@ class ADUser
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $rolesNames;
-    
-    
+
+
     /**
      * @ORM\ManyToMany(targetEntity="ADGroup", mappedBy="ADUsers")
      * @ORM\JoinTable(name="aduser_adgroup")
@@ -216,7 +255,7 @@ class ADUser
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADGroups;
-    
+
     /**
      * @ORM\ManyToMany(targetEntity="ADOrganizationalUnit", mappedBy="ADUsers")
      * @ORM\JoinTable(name="aduser_adou")
@@ -224,8 +263,8 @@ class ADUser
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADOUs;
-    
-    
+
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=false)

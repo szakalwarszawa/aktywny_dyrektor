@@ -31,6 +31,9 @@ security:
         import_rekord2:
                 pattern:  ^/import_rekord2
                 security: false
+        rest_api:
+                pattern:  ^/api
+                security: false
         secured_area:
             pattern:    ^/
             anonymous: false

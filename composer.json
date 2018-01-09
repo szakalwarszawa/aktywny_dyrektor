@@ -28,7 +28,10 @@
         "adldap/adldap": "5.0.*@dev",
         "liuggio/excelbundle": "*",
         "friendsofsymfony/jsrouting-bundle": "^1.6",
-        "egulias/email-validator": "^1.2"
+        "egulias/email-validator": "^1.2",
+        "jms/serializer-bundle": "^2.3",
+        "friendsofsymfony/rest-bundle": "^2.3",
+        "nelmio/api-doc-bundle": "^2.13"
     },
     "minimum-stability": "stable",
     "scripts": {

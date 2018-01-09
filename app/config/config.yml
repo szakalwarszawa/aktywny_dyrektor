@@ -106,3 +106,17 @@ monolog:
 #             token: xoxp-34457439059-34607661924-86615147411-9f028a340fcb90fa1fec34d7d6b9e5b9
 #             icon_emoji: :ghost:
 #             level: critical
+nelmio_api_doc:
+    sandbox:
+        accept_type: "application/json"
+        body_format:
+            default_format: "json"
+
+fos_rest:
+    param_fetcher_listener: true
+    body_listener: true
+    routing_loader:
+            default_format: json
+            include_format: false
+    view:
+        view_response_listener: true
