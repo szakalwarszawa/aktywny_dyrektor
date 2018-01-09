@@ -5,9 +5,7 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
-
-;
-
+use JMS\Serializer\Annotation as JMS;
 
 // ALe można tez wymusic unikalnośc 2 pól na raz
 //@UniqueEntity(
@@ -33,6 +31,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
+ *
+ * @JMS\ExclusionPolicy("all")
  */
 class Departament
 {
@@ -43,9 +43,11 @@ class Departament
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
      *
+     * @JMS\Expose
+     * @JMS\Type("integer")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -64,6 +66,9 @@ class Departament
      *      minMessage = "Nazwa Biura/Departamentu musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa Biura/Departamentu musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $name;
 
@@ -78,6 +83,9 @@ class Departament
      *      minMessage = "Skrót Biura/Departamentu musi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Skrót Biura/Departamentu musi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $shortname;
 
@@ -92,10 +100,14 @@ class Departament
      *      minMessage = "Nazwa Biura/Departamentu w Systemie Rekodmusi zawierać od {{ limit }} znaków.",
      *      maxMessage = "Nazwa Biura/Departamentu w Systemie Rekodmusi zawierać maxymalnie do {{ limit }} znaków.")
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
+     * @JMS\SerializedName("nameInRekord")
      */
     private $nameInRekord;
-    
-    
+
+
     /**
      * @var string
      *
@@ -104,7 +116,7 @@ class Departament
      */
     private $skroconaNazwaRekord;
 
-    
+
     /**
      * @var string
      *
@@ -112,9 +124,9 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $grupyAD;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -122,8 +134,8 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $ouAD;
-    
-    
+
+
     /**
      * @var boolean
      *
@@ -131,10 +143,10 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nowaStruktura = 1;
-    
-    
-    
-    
+
+
+
+
     /**
      * @var string
      *
@@ -142,17 +154,20 @@ class Departament
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $sections;
-    
-    
+
+
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     *
+     * @JMS\Expose
+     * @JMS\Type("string")
      */
     private $dyrektor;
-    
-    
+
+
     /**
      * @var string
      *
@@ -160,7 +175,7 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $dyrektorDN;
-    
+
     /**
      * @var string
      *
@@ -168,8 +183,8 @@ class Departament
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $viceDyrektor;
-    
-    
+
+
     /**
      * @var string
      *
