@@ -152,12 +152,16 @@ class RedmineConnectService
         $adres = $this->redmine_protokol . '://' . $this->redmine_serwer . '/issues' . $zgloszenie_id . '.json';
         $id_srodowiska = $this->container->getParameter('id_srodowiska');
 
+        $tracker_id = 1;
+        if ($kategoria == 22) $tracker_id = 5;
+
         // Składamy tablicę z danymi
         $data = array();
         $data['issue'] = array(
             'project_id' => $this->redmine_projekt,
             'subject' => substr($temat, 0, 254),
             'priority_id' => '4',
+            'tracker_id'  => $tracker_id,
             'description' => $opis,
             'category_id' => $kategoria, # 21 - Zgłoszone przez system; 22 - Zgłoszone przez użytkownika
             'custom_fields' => array(
