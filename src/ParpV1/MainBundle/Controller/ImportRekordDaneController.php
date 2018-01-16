@@ -408,7 +408,7 @@ class ImportRekordDaneController extends Controller
     {
         $ldap = $this->get('ldap_service');
 
-        $entry = new Entry($this->getUser()->getUsername());
+        $entry = (null !== $this->getUser()) ? new Entry($this->getUser()->getUsername()) : new Entry();
         $em->persist($entry);
 
         $entry->setDaneRekord($dr);
