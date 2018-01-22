@@ -248,9 +248,16 @@ class NadawanieUprawnienZasobowController extends Controller
         return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);
     }
 
-    protected function addRemoveAccessToUsers(Request $request, $samaccountnames, $choices, $title, $action, $wniosekId = 0, $zasobyId = ''
-    )
-    {
+    protected function addRemoveAccessToUsers(
+        Request $request,
+        $samaccountnames,
+        $choices,
+        $title,
+        $action,
+        $wniosekId = 0,
+        $zasobyId = ''
+    ) {
+    
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         //print_r($samaccountnames);
         $ldap = $this->get('ldap_service');

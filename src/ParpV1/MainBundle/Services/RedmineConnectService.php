@@ -153,7 +153,9 @@ class RedmineConnectService
         $id_srodowiska = $this->container->getParameter('id_srodowiska');
 
         $tracker_id = 1;
-        if ($kategoria == 22) $tracker_id = 5;
+        if ($kategoria == 22) {
+            $tracker_id = 5;
+        }
 
         // Składamy tablicę z danymi
         $data = array();

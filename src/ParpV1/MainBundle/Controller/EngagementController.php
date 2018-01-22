@@ -340,7 +340,7 @@ class EngagementController extends Controller
                     $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
                 }
 
-                foreach($bledy as $blad){
+                foreach ($bledy as $blad) {
                     $this->get('session')->getFlashBag()->add('warning', $blad['error']);
                 }
                 return $this->redirectToRoute('engagement_import');
@@ -496,10 +496,10 @@ class EngagementController extends Controller
                         }
 
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
-                                $daneRekord->getLogin(),
-                                $pr->getId(),
-                                $i,
-                                $rok
+                            $daneRekord->getLogin(),
+                            $pr->getId(),
+                            $i,
+                            $rok
                         );
 
                         if (null == $ug) {
@@ -537,7 +537,7 @@ class EngagementController extends Controller
                         $em->persist($ug);
 
                     }
-                    if(!empty($bledy)){
+                    if (!empty($bledy)) {
                         break;
                     }
                 }

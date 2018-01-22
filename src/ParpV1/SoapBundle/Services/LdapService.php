@@ -187,9 +187,13 @@ class LdapService
         }
         if ($ktorych == 'wszyscyWszyscy') {
             $userdn = str_replace(
-                    'OU=Zespoly_2016, OU=PARP Pracownicy ,', '', str_replace(
-                            'OU=Zespoly_2016,OU=PARP Pracownicy ,', '', $userdn
-                    )
+                'OU=Zespoly_2016, OU=PARP Pracownicy ,',
+                '',
+                str_replace(
+                    'OU=Zespoly_2016,OU=PARP Pracownicy ,',
+                    '',
+                    $userdn
+                )
             );
             //die($userdn);
         } elseif ($ktorych == 'wszyscy') {
@@ -222,7 +226,10 @@ class LdapService
         $tmpResults = array();
         foreach ($letters_array as $letter) {
             $search = ldap_search(
-                    $ldapconn, $userdn, '(&(samaccountname=' . $letter . '*)(objectClass=person))', $this->ADattributes
+                $ldapconn,
+                $userdn,
+                '(&(samaccountname=' . $letter . '*)(objectClass=person))',
+                $this->ADattributes
             );
             $results = ldap_get_entries($ldapconn, $search);
             $tmpResults = array_merge($tmpResults, $results);
@@ -744,9 +751,13 @@ class LdapService
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
         } elseif ($ktorych === 'wszyscyWszyscy') {
             $userdn = str_replace(
-                    'OU=Zespoly_2016, OU=PARP Pracownicy ,', '', str_replace(
-                            'OU=Zespoly_2016,OU=PARP Pracownicy ,', '', $userdn
-                    )
+                'OU=Zespoly_2016, OU=PARP Pracownicy ,',
+                '',
+                str_replace(
+                    'OU=Zespoly_2016,OU=PARP Pracownicy ,',
+                    '',
+                    $userdn
+                )
             );
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
@@ -885,8 +896,9 @@ class LdapService
                 $result[$i]['division'] = isset($tmpResult['division'][0]) ? $tmpResult['division'][0] : '';
                 //$result[$i]["disableDescription"] = str_replace("Konto wyłączone bo: ", "", $tmpResult["description"][0]);
                 $result[$i]['lastlogon'] = isset($tmpResult['lastlogon']) ? date(
-                                'Y-m-d H:i:s', $tmpResult['lastlogon'][0] / 10000000 - 11644473600
-                        ) : '';
+                    'Y-m-d H:i:s',
+                    $tmpResult['lastlogon'][0] / 10000000 - 11644473600
+                ) : '';
                 //$result[$i]["division"] = isset($tmpResult["division"][0]) ? $tmpResult["division"][0] : "";
                 $result[$i]['manager'] = isset($tmpResult['manager'][0]) ? $tmpResult['manager'][0] : '';
                 $result[$i]['thumbnailphoto'] = isset($tmpResult['thumbnailphoto'][0]) ? $tmpResult['thumbnailphoto'][0] : '';
@@ -901,7 +913,7 @@ class LdapService
                             ->getRepository('ParpMainBundle:AclUserRole')
                             ->findBy([
                         'samaccountname' => $tmpResult['samaccountname'][0]
-                    ]);
+                            ]);
 
                     $rs = array();
                     foreach ($roles as $role) {
@@ -1456,5 +1468,4 @@ class LdapService
 
         return $this->getPrzelozonyPracownika($przelozony['samaccountname']);
     }
-
 }

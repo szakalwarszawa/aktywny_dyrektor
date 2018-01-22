@@ -590,6 +590,4 @@ class UprawnieniaService
         $this->container = $container;
         return $this;
     }
-
-
 }
