@@ -407,7 +407,6 @@ class EngagementController extends Controller
         $bledy = $this->parseWyniki($wynik, $form);
 
         return $bledy;
-
     }
     protected function correctWyniki($dane)
     {
@@ -477,9 +476,7 @@ class EngagementController extends Controller
                 //    'error' => 'Brak danych o osobie '.$id,
                 //    'dane' => $d
                 //];
-
             } else {
-
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
@@ -535,13 +532,11 @@ class EngagementController extends Controller
                         $ug->setEngagement($program2);
 */
                         $em->persist($ug);
-
                     }
                     if (!empty($bledy)) {
                         break;
                     }
                 }
-
             }
             if (!empty($bledy)) {
                 break;

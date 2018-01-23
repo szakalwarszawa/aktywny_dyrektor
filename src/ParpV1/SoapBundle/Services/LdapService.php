@@ -988,7 +988,6 @@ class LdapService
                 }
             }
         } catch (\Exception $e) {
-
         }
 
         return $result;
