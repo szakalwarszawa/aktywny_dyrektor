@@ -67,7 +67,8 @@ class UserZasobyRepository extends EntityRepository
               WHERE uz.zasobId = z.id
               AND uz.samaccountname = :samaccountname
               ORDER BY z.nazwa ASC
-              ')->setParameter('samaccountname', $samaccountname);
+              '
+        )->setParameter('samaccountname', $samaccountname);
 
 
         return $query->getResult();

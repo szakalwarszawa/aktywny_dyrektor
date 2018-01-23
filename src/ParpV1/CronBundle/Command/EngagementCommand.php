@@ -119,5 +119,4 @@ class EngagementCommand extends ContainerAwareCommand
 
         return false;
     }
-
 }

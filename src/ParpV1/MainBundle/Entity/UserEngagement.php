@@ -265,7 +265,7 @@ class UserEngagement
      *
      * @return string
      */
-    function getKtoUsunal()
+    public function getKtoUsunal()
     {
         return $this->ktoUsunal;
     }
@@ -277,7 +277,7 @@ class UserEngagement
      *
      * return UserEngagement
      */
-    function setKtoUsunal($ktoUsunal)
+    public function setKtoUsunal($ktoUsunal)
     {
         $this->ktoUsunal = $ktoUsunal;
     }
@@ -287,7 +287,7 @@ class UserEngagement
      *
      * @return \DateTime
      */
-    function getKiedyUsuniety()
+    public function getKiedyUsuniety()
     {
         return $this->kiedyUsuniety;
     }
@@ -299,7 +299,7 @@ class UserEngagement
      *
      * return UserEngagement
      */
-    function setKiedyUsuniety(\DateTime $kiedyUsuniety = null)
+    public function setKiedyUsuniety(\DateTime $kiedyUsuniety = null)
     {
         $this->kiedyUsuniety = $kiedyUsuniety;
 
@@ -352,5 +352,4 @@ class UserEngagement
 
         return $this;
     }
-
 }

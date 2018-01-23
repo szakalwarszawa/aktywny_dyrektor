@@ -340,7 +340,7 @@ class EngagementController extends Controller
                     $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
                 }
 
-                foreach($bledy as $blad){
+                foreach ($bledy as $blad) {
                     $this->get('session')->getFlashBag()->add('warning', $blad['error']);
                 }
                 return $this->redirectToRoute('engagement_import');
@@ -407,7 +407,6 @@ class EngagementController extends Controller
         $bledy = $this->parseWyniki($wynik, $form);
 
         return $bledy;
-
     }
     protected function correctWyniki($dane)
     {
@@ -477,9 +476,7 @@ class EngagementController extends Controller
                 //    'error' => 'Brak danych o osobie '.$id,
                 //    'dane' => $d
                 //];
-
             } else {
-
                 $usereng = new UserEngagement();
                 $usereng->setSamaccountname($daneRekord->getLogin());
                 $usereng->setYear($rok);
@@ -496,10 +493,10 @@ class EngagementController extends Controller
                         }
 
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
-                                $daneRekord->getLogin(),
-                                $pr->getId(),
-                                $i,
-                                $rok
+                            $daneRekord->getLogin(),
+                            $pr->getId(),
+                            $i,
+                            $rok
                         );
 
                         if (null == $ug) {
@@ -535,13 +532,11 @@ class EngagementController extends Controller
                         $ug->setEngagement($program2);
 */
                         $em->persist($ug);
-
                     }
-                    if(!empty($bledy)){
+                    if (!empty($bledy)) {
                         break;
                     }
                 }
-
             }
             if (!empty($bledy)) {
                 break;

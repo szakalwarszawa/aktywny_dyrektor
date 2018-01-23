@@ -96,7 +96,7 @@ class RaportyITController extends Controller
             'attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             ),
-        ));
+            ));
 
         $form = $builder->getForm();
 
@@ -106,7 +106,10 @@ class RaportyITController extends Controller
             $ndata = $form->getData();
 
             $raport = $this->generujRaport(
-                $ndata, $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator')
+                $ndata,
+                $this->get('ldap_service'),
+                $this->getDoctrine()->getManager(),
+                $this->get('samaccountname_generator')
             );
 
             return $this->render(
@@ -147,7 +150,10 @@ class RaportyITController extends Controller
         }
 
         $raport = $this->generujRaport(
-            ['rok' => $rok, 'miesiac' => $miesiac], $this->get('ldap_service'), $this->getDoctrine()->getManager(), $this->get('samaccountname_generator')
+            ['rok' => $rok, 'miesiac' => $miesiac],
+            $this->get('ldap_service'),
+            $this->getDoctrine()->getManager(),
+            $this->get('samaccountname_generator')
         );
 
         // Trzeba spłaszczyć tablicę, aby była "zjadalna" przez Excela
@@ -171,7 +177,7 @@ class RaportyITController extends Controller
         }
 
         return $this->get('excel_service')->generateExcel($excelData);
-       }
+    }
 
     /**
      * @param $ndata

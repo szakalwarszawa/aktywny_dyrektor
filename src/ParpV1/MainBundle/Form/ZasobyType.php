@@ -230,7 +230,7 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'widget' => 'single_text'
                 ))
-        ;
+            ;
     }
     
     /**

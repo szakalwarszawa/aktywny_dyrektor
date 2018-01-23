@@ -213,8 +213,9 @@ class LdapCommand extends ContainerAwareCommand
                             // pobierzmy stare
                             $old = $em->getRepository('ParpMainBundle:UserGrupa')->findBy(array('samaccountname' => $zmiana->getSamaccountname()));
                             $oldg = array();
-                            foreach($old as $o)
+                            foreach ($old as $o) {
                                 $oldg[] = $o->getGrupa();
+                            }
 
                             // jezeli do tej pory nie miał żadnych
                             if ($old) {

@@ -168,10 +168,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         // kolorowanie wierszy
         $source->manipulateRow(
-            function ($row)
-            {
+            function ($row) {
+            
                 if ($row->getField('odebranie') == '1') {
-                    $row->setClass('wiersz-odebranie'); 
+                    $row->setClass('wiersz-odebranie');
                 }
 
                 if ($row->getField('wniosek.createdBy') == 'magdalena_warecka' && $this->getUser()->getUsername() == 'marcin_lipinski') {
@@ -193,16 +193,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         
         // dodanie spacji umożliwiających łamanie tekstu
         $grid->getColumn('pracownicy')->manipulateRenderCell(
-                function ($value, $row, $router) {
-            return str_replace(array(";", ","), ', ', $value);
-        }
+            function ($value, $row, $router) {
+                    return str_replace(array(";", ","), ', ', $value);
+            }
         );
 
         // dodanie spacji umożliwiających łamanie tekstu
         $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
-                function ($value, $row, $router) {
-            return str_replace(array(";", ","), ', ', $value);
-        }
+            function ($value, $row, $router) {
+                    return str_replace(array(";", ","), ', ', $value);
+            }
         );
 
         // Zdejmujemy filtr
@@ -1896,9 +1896,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function isValidEmail($text)
     {
         $validator = Validation::createValidator();
-        $violations = $validator->validate($text,  new Email(array('strict' => true)));
+        $violations = $validator->validate($text, new Email(array('strict' => true)));
 
         return (0 !== count($violations)) ? false : true;
     }
-
 }

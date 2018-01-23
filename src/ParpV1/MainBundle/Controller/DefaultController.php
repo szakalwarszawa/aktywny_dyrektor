@@ -312,7 +312,8 @@ class DefaultController extends Controller
      * @internal param null $allPrimaryKeys
      * @internal param null $session
      */
-    public function processMassActionAction($action = '') {
+    public function processMassActionAction($action = '')
+    {
         if (isset($_POST)) {
             $array = array_shift($_POST);
             $actiond = '';
@@ -1481,10 +1482,10 @@ class DefaultController extends Controller
             $dane[$engagement][$month]['procent'] = $percent;
 
             $dane[$engagement][$month]['historia'] = $userEngagementsRepo->findOneNieaktywneByCryteria(
-                    $samaccountname,
-                    $userEngagement->getEngagement()->getId(),
-                    $userEngagement->getMonth(),
-                    $userEngagement->getYear()
+                $samaccountname,
+                $userEngagement->getEngagement()->getId(),
+                $userEngagement->getMonth(),
+                $userEngagement->getYear()
             );
         }
 
