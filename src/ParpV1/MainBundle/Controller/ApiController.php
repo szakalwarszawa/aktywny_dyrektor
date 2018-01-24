@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -18,9 +19,9 @@ use ParpV1\MainBundle\Entity\Departament;
  */
 class ApiController extends Controller
 {
-
     /**
-     * @Route("/departament")
+     * @Route("/departaments")
+     *
      * @Method({"GET"})
      *
      * @ApiDoc(
@@ -38,11 +39,11 @@ class ApiController extends Controller
         $response = new Response();
 
         if (empty($departamenty)) {
-            $response->headers->set('Content-Type', 'application/json');
+
+            $response = new JsonResponse(array(
+                'komunikat' => 'Nie znaleziono departamentów.',
+            ));
             $response->setStatusCode(404);
-            $response->setContent(json_encode(array(
-                'komunikat' => 'Nie znaleziono departamentów',
-            )));
 
             return $response;
         }
@@ -59,16 +60,16 @@ class ApiController extends Controller
             $departamentyArr[] = $dapartamentArr;
         }
 
-        $response->setContent(json_encode(array(
+        $response = new JsonResponse(array(
             'departaments' => $departamentyArr,
-        )));
-        $response->headers->set('Content-Type', 'application/json');
+        ));
 
         return $response;
     }
 
     /**
-     * @Route("/user")
+     * @Route("/users")
+     *
      * @Method({"GET"})
      *
      * @ApiDoc(
@@ -86,11 +87,10 @@ class ApiController extends Controller
         $response = new Response();
 
         if (empty($usersFromAD)) {
-            $response->headers->set('Content-Type', 'application/json');
+            $response = new JsonResponse(array(
+                'komunikat' => 'Nie znaleziono użytkowników.',
+            ));
             $response->setStatusCode(404);
-            $response->setContent(json_encode(array(
-                'komunikat' => 'Nie znaleziono użytkowników',
-            )));
 
             return $response;
         }
@@ -108,16 +108,16 @@ class ApiController extends Controller
             $users[] = $user;
         }
 
-        $response->setContent(json_encode(array(
+        $response = new JsonResponse(array(
             'users' => $users,
-        )));
-        $response->headers->set('Content-Type', 'application/json');
+        ));
 
         return $response;
     }
 
     /**
-     * @Route("/user/{samacountname}")
+     * @Route("/users/{samacountname}")
+     *
      * @Method({"GET"})
      *
      * @ApiDoc(
@@ -138,11 +138,10 @@ class ApiController extends Controller
         $response = new Response();
 
         if (empty($userFromLdap)) {
-            $response->headers->set('Content-Type', 'application/json');
+            $response = new JsonResponse(array(
+                'komunikat' => 'Nie znaleziono uzytkownika o podanym \"samaccountname\".',
+            ));
             $response->setStatusCode(404);
-            $response->setContent(json_encode(array(
-                'komunikat' => 'Nie znaleziono uzytkownika o podanym samaccountname',
-            )));
 
             return $response;
         }
@@ -156,10 +155,10 @@ class ApiController extends Controller
         unset($user['useraccountcontrol']);
         unset($user['memberOf']);
         unset($user['roles']);
-        $response->setContent(json_encode(array(
+
+        $response = new JsonResponse(array(
             'user' => $user
-        )));
-        $response->headers->set('Content-Type', 'application/json');
+        ));
 
         return $response;
     }
