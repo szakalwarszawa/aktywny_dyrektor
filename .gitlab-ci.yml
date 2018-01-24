@@ -18,8 +18,9 @@ build:
     artifacts:
         untracked: true
         paths:
-            - internal/
-            - wwwroot/
+            - vendor/
+            - web/
+            - bin/
 
 cs_psr2:
     # https://github.com/squizlabs/PHP_CodeSniffer
@@ -30,4 +31,4 @@ cs_psr2:
         - apk update
         - apk add php5
         - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./internal/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/ParpV1/
+        - ./bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/ParpV1/
