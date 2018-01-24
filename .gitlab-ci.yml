@@ -14,7 +14,7 @@ build:
         - curl -sS https://getcomposer.org/installer | php
         - php -d memory_limit=3G composer.phar global require hirak/prestissimo
         - php -d memory_limit=3G composer.phar install --prefer-dist --no-progress --no-interaction
-        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer" --prefer-dist --no-progress
+        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.0.0" --prefer-dist --no-progress
     artifacts:
         untracked: true
         paths:
