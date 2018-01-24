@@ -12,9 +12,9 @@ build:
         - ln -sf /usr/bin/php5 /usr/bin/php
         - php --ini
         - curl -sS https://getcomposer.org/installer | php
-        - php -d memory_limit=2G composer.phar global require hirak/prestissimo
-        - php -d memory_limit=2G composer.phar install --prefer-dist --no-progress --no-interaction
-        - php -d memory_limit=2G composer.phar require "squizlabs/php_codesniffer" --prefer-dist --no-progress
+        - php -d memory_limit=3G composer.phar global require hirak/prestissimo
+        - php -d memory_limit=3G composer.phar install --prefer-dist --no-progress --no-interaction
+        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer" --prefer-dist --no-progress
     artifacts:
         untracked: true
         paths:
@@ -25,6 +25,7 @@ cs_psr2:
     # https://github.com/squizlabs/PHP_CodeSniffer
     image: alpine:3.7
     stage: test
+    allow_failure: true
     script:
         - apk update
         - apk add php5
