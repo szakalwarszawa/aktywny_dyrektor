@@ -13,7 +13,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
 {
     /**
      * @var string
-     * 
+     *
      * @JMS\Expose
      * @JMS\Type("string")
      */
@@ -21,7 +21,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
 
     /**
      * @var string
-     * 
+     *
      * @JMS\Expose
      * @JMS\Type("string")
      */
@@ -29,7 +29,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
 
     /**
      * @var string
-     * 
+     *
      * @JMS\Expose
      * @JMS\Type("string")
      */
@@ -37,7 +37,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
 
     /**
      * @var string
-     * 
+     *
      * @JMS\Expose
      * @JMS\Type("string")
      */
@@ -45,7 +45,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
 
     /**
      * @var string
-     * 
+     *
      * @JMS\Expose
      * @JMS\Type("string")
      */

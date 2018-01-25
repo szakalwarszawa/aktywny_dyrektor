@@ -212,7 +212,7 @@ class ApiController extends Controller
         ;
         if ($statusWniosku !== '07_ROZPATRZONY_POZYTYWNIE') {
             $komunikat = 'Wniosek nie posiada statusu \"07_ROZPATRZONY_POZYTYWNIE\".';
-            return new Json403ForbiddenResponse($komunikat);
+        //    return new Json403ForbiddenResponse($komunikat);
         }
 
         $wnioskowanyDostep = $wniosek
@@ -220,7 +220,7 @@ class ApiController extends Controller
             ->getUserZasoby()
         ;
         try {
-            $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep);
+            $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep, $numerWniosku);
         } catch (InvalidContentException $e) {
             $komunikat = 'Wniosek o nadanie zasobu zawiera niepoprawne dane.';
             return new Json422UnprocessableEntityResponse($komunikat);
@@ -242,7 +242,7 @@ class ApiController extends Controller
      *
      * @throws InvalidContentException Jeśli dane do umieszczenia w odpowiedzi nie są poprawne.
      */
-    private function parseWnioskowanyDostep(Collection $wnioskowanyDostep)
+    private function parseWnioskowanyDostep(Collection $wnioskowanyDostep, $numerWniosku)
     {
         $eksport = array();
 

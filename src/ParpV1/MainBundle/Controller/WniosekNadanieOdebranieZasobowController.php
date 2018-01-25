@@ -413,8 +413,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
-
-
         $form =
             $this->createForm(new WniosekNadanieOdebranieZasobowType(
                 $this->getUsersFromAD(),
@@ -475,7 +473,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $this->getUserFromAD($this->getUser()->getUsername());
 
-
         $entity = new WniosekNadanieOdebranieZasobow();
         $entity->getWniosek()->setCreatedAt(new \Datetime());
         $entity->getWniosek()->setLockedAt(new \Datetime());
@@ -500,12 +497,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function newAction($odebranie = 0)
     {
-        if ($this->getParameter('pusz_to_ad') == true &&
-            $odebranie == 1
-        ) {   // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
-            //die("Na razie to jeszcze nie jest wlaczone");
+        if ($this->getParameter('pusz_to_ad') == true && $odebranie == 1) {
+            // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
         }
-        //var_dump($this->getUser());
 
         $ldap = $this->get('ldap_service');
         $ADUser = $this->getUserFromAD($this->getUser()->getUsername());
