@@ -2,17 +2,12 @@
 
 namespace ParpV1\MainBundle\Api\Response;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use ParpV1\MainBundle\Api\Response\JsonApiResponse;
 
-class Json403ForbiddenResponse
+class Json403ForbiddenResponse extends JsonApiResponse
 {
-    public function __construct($message = "Forbidden resource.")
+    public function __construct($data = "Forbidden", $status = 403, $headers = array())
     {
-        $response = new JsonResponse(array(
-            'komunikat' => $message,
-        ));
-        $response->setStatusCode(403);
-
-        return $response;
+        parent::__construct($data, $status, $headers);
     }
 }

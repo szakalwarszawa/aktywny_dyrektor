@@ -2,17 +2,12 @@
 
 namespace ParpV1\MainBundle\Api\Response;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use ParpV1\MainBundle\Api\Response\JsonApiResponse;
 
-class Json422UnprocessableEntityResponse
+class Json422UnprocessableEntityResponse extends JsonApiResponse
 {
-    public function __construct($message = "Resource is unprocessable.")
+    public function __construct($data = "Unprocessable Entity", $status = 422, $headers = array())
     {
-        $response = new JsonResponse(array(
-            'komunikat' => $message,
-        ));
-        $response->setStatusCode(422);
-
-        return $response;
+        parent::__construct($data, $status, $headers);
     }
 }

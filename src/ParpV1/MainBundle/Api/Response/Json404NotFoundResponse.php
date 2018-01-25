@@ -2,17 +2,12 @@
 
 namespace ParpV1\MainBundle\Api\Response;
 
-use Symfony\Component\HttpFoundation\JsonResponse;
+use ParpV1\MainBundle\Api\Response\JsonApiResponse;
 
-class Json404NotFoundResponse
+class Json404NotFoundResponse extends JsonApiResponse
 {
-    public function __construct($message = "Resource not found.")
+    public function __construct($data = "Not Found", $status = 404, $headers = array())
     {
-        $response = new JsonResponse(array(
-            'komunikat' => $message,
-        ));
-        $response->setStatusCode(404);
-
-        return $response;
+        parent::__construct($data, $status, $headers);
     }
 }

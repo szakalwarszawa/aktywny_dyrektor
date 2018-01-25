@@ -12,8 +12,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Doctrine\ORM\EntityNotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use ParpV1\MainBundle\Entity\Departament;
+
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use ParpV1\MainBundle\Entity\Wniosek;
+
 use ParpV1\MainBundle\Api\Type\UprawnienieLsi1420;
 use ParpV1\MainBundle\Api\Response\Json404NotFoundResponse;
+use ParpV1\MainBundle\Api\Response\Json403ForbiddenResponse;
 use ParpV1\MainBundle\Api\Response\Json422UnprocessableEntityResponse;
 
 /**
@@ -151,7 +156,7 @@ class ApiController extends Controller
     /**
      * Zwraca odpowiedź zawierającą JSON z uprawnieniami do dodania w LSI1420.
      *
-     * @Route("/uprawnieniaLsi1420/{numerWniosku}")
+     * @Route("/uprawnieniaLsi1420/{numerWniosku}", requirements={"numerWniosku"=".+"})
      *
      * @Method({"GET"})
      *
@@ -188,47 +193,58 @@ class ApiController extends Controller
 
         $wniosek = $entityManager
             ->getRepository(WniosekNadanieOdebranieZasobow::class)
-            ->find($numerWniosku)
+            ->findOneByNumerWniosku($numerWniosku)
+        ;
+
+        $wniosek = $entityManager
+            ->getRepository(Wniosek::class)
+            ->findOneByNumer($numerWniosku)
         ;
         if (null === $wniosek) {
             return new Json404NotFoundResponse('Nie znaleziono wniosku o nadanie uprawnień w LSI1420.');
         }
-
-        $status = $wniosek
-            ->getWniosek()
+        $statusWniosku = $wniosek
             ->getStatus()
             ->getNazwaSystemowa()
         ;
-        if ($status !== '07_ROZPATRZONY_POZYTYWNIE') {
+        if ($statusWniosku !== '07_ROZPATRZONY_POZYTYWNIE') {
             $komunikat = 'Wniosek nie posiada statusu \"07_ROZPATRZONY_POZYTYWNIE\".';
-            return new Json404NotFoundResponse($komunikat);
+            return new Json403ForbiddenResponse($komunikat);
         }
 
         $eksport = array();
-        $wnioskowanyDostep = $wniosek->getWniosek()->getUserZasoby();
+        $wnioskowanyDostep = $wniosek
+            ->getWniosekNadanieOdebranieZasobow()
+            ->getUserZasoby()
+        ;
+
         foreach ($wnioskowanyDostep as $dostep) {
+            var_dump($dostep);
             $nabory = explode(';', $dostep->getModul());
             $uprawnienia = explode(';', $dostep->getPoziomDostepu());
             $userName = $dostep->getSamaccountname();
 
             foreach ($nabory as $nabor) {
+                
                 $naborArr = array_filter(explode('/', $nabor));
-                $dzialanie = $naborArr[0];
-                $nrNaboru = $naborArr[1];
-
-                foreach ($uprawnienia as $role) {
-                    $uprawnienieLsi1420 = new UprawnienieLsi1420(
-                        $numerWniosku,
-                        $userName,
-                        $role,
-                        $dzialanie,
-                        $nrNaboru
-                    );
-                    if (false === $uprawnienieLsi1420->isValid()) {
-                        $komunikat = 'Wniosek o nadanie uprawnień w LSI1420 zawiera niepoprawne dane.';
-                        return new Json422UnprocessableEntityResponse($komunikat);
+                if (count($naborArr) >= 2) {
+                    $dzialanie = $naborArr[0];
+                    $nrNaboru = $naborArr[1];
+    
+                    foreach ($uprawnienia as $role) {
+                        $uprawnienieLsi1420 = new UprawnienieLsi1420(
+                            $numerWniosku,
+                            $userName,
+                            $role,
+                            $dzialanie,
+                            $nrNaboru
+                        );
+                        if (false === $uprawnienieLsi1420->isValid()) {
+                            $komunikat = 'Wniosek o nadanie uprawnień w LSI1420 zawiera niepoprawne dane.';
+                            return new Json422UnprocessableEntityResponse($komunikat);
+                        }
+                        $eksport[] = $uprawnienieLsi1420;
                     }
-                    $eksport[] = $uprawnienieLsi1420;
                 }
             }
         }
