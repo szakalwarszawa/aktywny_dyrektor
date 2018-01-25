@@ -32,7 +32,7 @@ use ParpV1\MainBundle\Api\Exception\InvalidContentException;
 class ApiController extends Controller
 {
     /**
-     * @Route("/departaments")
+     * @Route("/departaments")  
      *
      * @Method({"GET"})
      *
@@ -193,12 +193,6 @@ class ApiController extends Controller
     public function eksportUprawnienDlsLsi1420Action(Request $request, $numerWniosku)
     {
         $entityManager = $this->getDoctrine()->getManager();
-
-        $wniosek = $entityManager
-            ->getRepository(WniosekNadanieOdebranieZasobow::class)
-            ->findOneByNumerWniosku($numerWniosku)
-        ;
-
         $wniosek = $entityManager
             ->getRepository(Wniosek::class)
             ->findOneByNumer($numerWniosku)
