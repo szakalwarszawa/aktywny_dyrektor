@@ -12,9 +12,9 @@ build:
         - ln -sf /usr/bin/php5 /usr/bin/php
         - php --ini
         - curl -sS https://getcomposer.org/installer | php
-        - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-progress
-        - php -d memory_limit=3G composer.phar install --prefer-dist --no-progress --no-interaction
-        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" --prefer-dist --no-progress
+        - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
+        - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
+        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "asm89/twig-lint" --prefer-dist --no-suggest --no-progress --no-scripts
     artifacts:
         untracked: true
         paths:
@@ -23,7 +23,6 @@ build:
             - bin/
 
 cs_psr2:
-    # https://github.com/squizlabs/PHP_CodeSniffer
     image: alpine:3.7
     stage: test
     allow_failure: true
@@ -32,3 +31,14 @@ cs_psr2:
         - apk add php5
         - ln -sf /usr/bin/php5 /usr/bin/php
         - ./bin/phpcs -n --report=full --colors --standard=PSR2 --extensions=php src/ParpV1/
+
+lint_twig:
+    image: alpine:3.7
+    stage: test
+    allow_failure: true
+    script:
+        - apk update
+        - apk add php5 php5-ctype
+        - ln -sf /usr/bin/php5 /usr/bin/php
+        - ./bin/twig-lint lint app/Resources/views/
+        - ./bin/twig-lint lint src/ParpV1/
