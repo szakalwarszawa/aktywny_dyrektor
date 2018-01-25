@@ -9,13 +9,17 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Doctrine\ORM\EntityNotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Api\Type\UprawnienieLsi1420;
+use ParpV1\MainBundle\Api\Response\Json404NotFoundResponse;
+use ParpV1\MainBundle\Api\Response\Json422UnprocessableEntityResponse;
 
 /**
  * Api controller.
  *
- * @Route("/api")
+ * @Route("/api/v1")
  */
 class ApiController extends Controller
 {
@@ -34,18 +38,13 @@ class ApiController extends Controller
      */
     public function getDepartamentAction()
     {
-        $em = $this->getDoctrine()->getManager();
-        $departamenty = $em->getRepository(Departament::class)->findBy(['nowaStruktura' => '1']);
-        $response = new Response();
-
+        $entityManager = $this->getDoctrine()->getManager();
+        $departamenty = $entityManager
+            ->getRepository(Departament::class)
+            ->findBy(['nowaStruktura' => '1'])
+        ;
         if (empty($departamenty)) {
-
-            $response = new JsonResponse(array(
-                'komunikat' => 'Nie znaleziono departamentów.',
-            ));
-            $response->setStatusCode(404);
-
-            return $response;
+            return new Json404NotFoundResponse('Nie znaleziono departamentów.');
         }
 
         $departamentyArr = [];
@@ -84,15 +83,8 @@ class ApiController extends Controller
     {
         $ldap = $this->container->get('ldap_service');
         $usersFromAD = $ldap->getAllFromAD();
-        $response = new Response();
-
         if (empty($usersFromAD)) {
-            $response = new JsonResponse(array(
-                'komunikat' => 'Nie znaleziono użytkowników.',
-            ));
-            $response->setStatusCode(404);
-
-            return $response;
+            return new Json404NotFoundResponse('Nie znaleziono użytkowników.');
         }
 
         $users = [];
@@ -135,15 +127,8 @@ class ApiController extends Controller
     {
         $ldap = $this->container->get('ldap_service');
         $userFromLdap = $ldap->getUserFromAD($samacountname);
-        $response = new Response();
-
         if (empty($userFromLdap)) {
-            $response = new JsonResponse(array(
-                'komunikat' => 'Nie znaleziono uzytkownika o podanym \"samaccountname\".',
-            ));
-            $response->setStatusCode(404);
-
-            return $response;
+            return new Json404NotFoundResponse('Nie znaleziono uzytkownika o podanym \"samaccountname\".');
         }
 
         $user = $userFromLdap[0];
@@ -161,5 +146,97 @@ class ApiController extends Controller
         ));
 
         return $response;
+    }
+
+    /**
+     * Zwraca odpowiedź zawierającą JSON z uprawnieniami do dodania w LSI1420.
+     *
+     * @Route("/uprawnieniaLsi1420/{numerWniosku}")
+     *
+     * @Method({"GET"})
+     *
+     * @ApiDoc(
+     *      description="Returns a collection of ParpV1\MainBundle\Api\Type\UprawnienieLsi1420",
+     *      parameters={
+     *          {
+     *              "name"="numerWniosku",
+     *              "dataType"="string",
+     *              "required"=true,
+     *              "description"="Numer wniosku o nadanie uprawnień w LSI1420."
+     *          }
+     *      },
+     *      output={
+     *          "collection"=true,
+     *          "collectionName"="uprawnieniaLsi1420",
+     *          "class"="ParpV1\MainBundle\Api\Type\UprawnienieLsi1420"
+     *      },
+     *      statusCodes={
+     *          200="Returned when successful",
+     *          404="Returned when the collection is empty",
+     *          422="Returned when resource can not be processed"
+     *      }
+     * )
+     *
+     * @param Request $request
+     * @param string $numerWniosku
+     *
+     * @return JsonResponse
+     */
+    public function eksportUprawnienDlsLsi1420Action(Request $request, $numerWniosku)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $wniosek = $entityManager
+            ->getRepository(WniosekNadanieOdebranieZasobow::class)
+            ->find($numerWniosku)
+        ;
+        if (null === $wniosek) {
+            return new Json404NotFoundResponse('Nie znaleziono wniosku o nadanie uprawnień w LSI1420.');
+        }
+
+        $status = $wniosek
+            ->getWniosek()
+            ->getStatus()
+            ->getNazwaSystemowa()
+        ;
+        if ($status !== '07_ROZPATRZONY_POZYTYWNIE') {
+            $komunikat = 'Wniosek nie posiada statusu \"07_ROZPATRZONY_POZYTYWNIE\".';
+            return new Json404NotFoundResponse($komunikat);
+        }
+
+        $eksport = array();
+        $wnioskowanyDostep = $wniosek->getWniosek()->getUserZasoby();
+        foreach ($wnioskowanyDostep as $dostep) {
+            $nabory = explode(';', $dostep->getModul());
+            $uprawnienia = explode(';', $dostep->getPoziomDostepu());
+            $userName = $dostep->getSamaccountname();
+
+            foreach ($nabory as $nabor) {
+                $naborArr = array_filter(explode('/', $nabor));
+                $dzialanie = $naborArr[0];
+                $nrNaboru = $naborArr[1];
+
+                foreach ($uprawnienia as $role) {
+                    $uprawnienieLsi1420 = new UprawnienieLsi1420(
+                        $numerWniosku,
+                        $userName,
+                        $role,
+                        $dzialanie,
+                        $nrNaboru
+                    );
+                    if (false === $uprawnienieLsi1420->isValid()) {
+                        $komunikat = 'Wniosek o nadanie uprawnień w LSI1420 zawiera niepoprawne dane.';
+                        return new Json422UnprocessableEntityResponse($komunikat);
+                    }
+                    $eksport[] = $uprawnienieLsi1420;
+                }
+            }
+        }
+
+        if (empty($eksport)) {
+            return new Json404NotFoundResponse('Nie znaleziono uprawnień do nadania w LSI1420.');
+        }
+
+        return new JsonResponse($eksport);
     }
 }
