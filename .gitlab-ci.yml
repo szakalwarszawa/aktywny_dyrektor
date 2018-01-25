@@ -32,7 +32,7 @@ cs_psr2:
         - ln -sf /usr/bin/php5 /usr/bin/php
         - ./bin/phpcs -n --report=full --colors --standard=PSR2 --extensions=php src/ParpV1/
 
-lint_cs_twig:
+lint_twig:
     image: alpine:3.7
     stage: test
     allow_failure: true
