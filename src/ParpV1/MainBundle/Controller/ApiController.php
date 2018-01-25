@@ -198,15 +198,17 @@ class ApiController extends Controller
             ->findOneByNumer($numerWniosku)
         ;
         if (null === $wniosek) {
-            return new Json404NotFoundResponse('Nie znaleziono wniosku o nadanie uprawnień w LSI1420.');
+            return new Json404NotFoundResponse('Nie znaleziono wniosku o nadanie uprawnień.');
         }
+
         $statusWniosku = $wniosek
             ->getStatus()
             ->getNazwaSystemowa()
         ;
+
         if ($statusWniosku !== '07_ROZPATRZONY_POZYTYWNIE') {
-            $komunikat = 'Wniosek nie posiada statusu \"07_ROZPATRZONY_POZYTYWNIE\".';
-        //    return new Json403ForbiddenResponse($komunikat);
+            $komunikat = 'Wniosek o nadanie uprawnień nie posiada statusu "07_ROZPATRZONY_POZYTYWNIE".';
+            return new Json403ForbiddenResponse($komunikat);
         }
 
         $wnioskowanyDostep = $wniosek
@@ -216,12 +218,12 @@ class ApiController extends Controller
         try {
             $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep, $numerWniosku);
         } catch (InvalidContentException $e) {
-            $komunikat = 'Wniosek o nadanie zasobu zawiera niepoprawne dane.';
+            $komunikat = 'Wniosek o nadanie uprawnień zawiera niepoprawne dane.';
             return new Json422UnprocessableEntityResponse($komunikat);
         }
 
         if (empty($eksport)) {
-            return new Json404NotFoundResponse('Nie znaleziono uprawnień do nadania w LSI1420.');
+            return new Json404NotFoundResponse('We wniosku nie znaleziono uprawnień do nadania.');
         }
 
         return new JsonResponse($eksport);
@@ -245,28 +247,31 @@ class ApiController extends Controller
                 throw InvalidContentException('Oczekiwano kolekcji obiektów UserZasoby.');
             }
 
-            $nabory = explode(';', $dostep->getModul());
-            $uprawnienia = explode(';', $dostep->getPoziomDostepu());
-            $userName = $dostep->getSamaccountname();
+            $zasob = trim((string) $dostep->getZasobOpis());
+            if ($zasob === 'LSI1420') {
+                $nabory = explode(';', $dostep->getModul());
+                $uprawnienia = explode(';', $dostep->getPoziomDostepu());
+                $userName = $dostep->getSamaccountname();
 
-            foreach ($nabory as $nabor) {
-                $naborArr = array_filter(explode('/', $nabor));
-                if (count($naborArr) >= 2) {
-                    $dzialanie = $naborArr[0];
-                    $nrNaboru = $naborArr[1];
-    
-                    foreach ($uprawnienia as $role) {
-                        $uprawnienieLsi1420 = new UprawnienieLsi1420(
-                            $numerWniosku,
-                            $userName,
-                            $role,
-                            $dzialanie,
-                            $nrNaboru
-                        );
-                        if (false === $uprawnienieLsi1420->isValid()) {
-                            throw new InvalidContentException('Nie podano wszystkich wymaganych informacji.');
+                foreach ($nabory as $nabor) {
+                    $naborArr = array_filter(explode('/', $nabor));
+                    if (count($naborArr) >= 2) {
+                        $dzialanie = $naborArr[0];
+                        $nrNaboru = $naborArr[1];
+        
+                        foreach ($uprawnienia as $role) {
+                            $uprawnienieLsi1420 = new UprawnienieLsi1420(
+                                $numerWniosku,
+                                $userName,
+                                $role,
+                                $dzialanie,
+                                $nrNaboru
+                            );
+                            if (false === $uprawnienieLsi1420->isValid()) {
+                                throw new InvalidContentException('Dane uprawnienia nie są pełne.');
+                            }
+                            $eksport[] = $uprawnienieLsi1420;
                         }
-                        $eksport[] = $uprawnienieLsi1420;
                     }
                 }
             }
