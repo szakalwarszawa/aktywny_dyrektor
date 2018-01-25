@@ -68,7 +68,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $zastepstwa =
             $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
 
-        if ($grid->isReadyForRedirect()) { // || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
             if ($grid->isReadyForExport()) {
                 return $grid->getExportResponse();
             }

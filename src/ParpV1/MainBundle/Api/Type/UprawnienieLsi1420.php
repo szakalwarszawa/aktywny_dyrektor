@@ -108,7 +108,8 @@ class UprawnienieLsi1420 implements \JsonSerializable
      *
      * @return string
      */
-    private function sanitize($input) {
+    private function sanitize($input)
+    {
         return trim((string) $input);
     }
 }
