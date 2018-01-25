@@ -9,17 +9,20 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityNotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use ParpV1\MainBundle\Entity\Departament;
 
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Wniosek;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 use ParpV1\MainBundle\Api\Type\UprawnienieLsi1420;
 use ParpV1\MainBundle\Api\Response\Json404NotFoundResponse;
 use ParpV1\MainBundle\Api\Response\Json403ForbiddenResponse;
 use ParpV1\MainBundle\Api\Response\Json422UnprocessableEntityResponse;
+use ParpV1\MainBundle\Api\Exception\InvalidContentException;
 
 /**
  * Api controller.
@@ -212,20 +215,47 @@ class ApiController extends Controller
             return new Json403ForbiddenResponse($komunikat);
         }
 
-        $eksport = array();
         $wnioskowanyDostep = $wniosek
             ->getWniosekNadanieOdebranieZasobow()
             ->getUserZasoby()
         ;
+        try {
+            $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep);
+        } catch (InvalidContentException $e) {
+            $komunikat = 'Wniosek o nadanie zasobu zawiera niepoprawne dane.';
+            return new Json422UnprocessableEntityResponse($komunikat);
+        }
+
+        if (empty($eksport)) {
+            return new Json404NotFoundResponse('Nie znaleziono uprawnień do nadania w LSI1420.');
+        }
+
+        return new JsonResponse($eksport);
+    }
+
+    /**
+     * Tworzy z kolekcji obiektów tablicę danych z uprawnieniami do wysłania do LSI1420.
+     *
+     * @param Collection Kolekcja obiektów UserZasoby.
+     *
+     * @return array
+     *
+     * @throws InvalidContentException Jeśli dane do umieszczenia w odpowiedzi nie są poprawne.
+     */
+    private function parseWnioskowanyDostep(Collection $wnioskowanyDostep)
+    {
+        $eksport = array();
 
         foreach ($wnioskowanyDostep as $dostep) {
-            var_dump($dostep);
+            if (! $dostep instanceof UserZasoby) {
+                throw InvalidContentException('Oczekiwano kolekcji obiektów UserZasoby.');
+            }
+
             $nabory = explode(';', $dostep->getModul());
             $uprawnienia = explode(';', $dostep->getPoziomDostepu());
             $userName = $dostep->getSamaccountname();
 
             foreach ($nabory as $nabor) {
-                
                 $naborArr = array_filter(explode('/', $nabor));
                 if (count($naborArr) >= 2) {
                     $dzialanie = $naborArr[0];
@@ -240,8 +270,7 @@ class ApiController extends Controller
                             $nrNaboru
                         );
                         if (false === $uprawnienieLsi1420->isValid()) {
-                            $komunikat = 'Wniosek o nadanie uprawnień w LSI1420 zawiera niepoprawne dane.';
-                            return new Json422UnprocessableEntityResponse($komunikat);
+                            throw new InvalidContentException('Nie podano wszystkich wymaganych informacji.');
                         }
                         $eksport[] = $uprawnienieLsi1420;
                     }
@@ -249,10 +278,6 @@ class ApiController extends Controller
             }
         }
 
-        if (empty($eksport)) {
-            return new Json404NotFoundResponse('Nie znaleziono uprawnień do nadania w LSI1420.');
-        }
-
-        return new JsonResponse($eksport);
+        return $eksport;
     }
 }
