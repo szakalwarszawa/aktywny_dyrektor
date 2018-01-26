@@ -23,8 +23,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
 
         $builder->add('shortname', null, array(
             'required' => false,
@@ -35,8 +34,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
 
         $builder->add('nameInRekord', null, array(
             'required' => false,
@@ -47,8 +45,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
 
         $builder->add('grupyAD', null, array(
             'required' => false,
@@ -59,8 +56,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control tagAjaxInput',
-            ))
-        );
+        )));
 
         $builder->add('skroconaNazwaRekord', null, array(
             'required' => true,
@@ -71,8 +67,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
 
         $builder->add('dyrektor', null, array(
             'required' => true,
@@ -83,8 +78,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
 
         $builder->add('dyrektorDN', null, array(
             'required' => true,
@@ -95,8 +89,7 @@ class DepartamentType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
     }
 
     /**

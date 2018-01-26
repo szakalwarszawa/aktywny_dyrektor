@@ -23,8 +23,7 @@ class PositionType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
     }
 
     /**

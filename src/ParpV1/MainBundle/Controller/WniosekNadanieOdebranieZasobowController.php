@@ -73,7 +73,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
 
-        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )     
+        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
         if ($grid->isReadyForRedirect()) {
             if ($grid->isReadyForExport()) {
                 return $grid->getExportResponse();

@@ -15,7 +15,7 @@ class EngagementType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder->add('name', null, array(
-           'required' => false,
+            'required' => false,
             'read_only' => false,
             'label' => 'Nazwa źródła finansowania',
             'label_attr' => array(
@@ -23,8 +23,7 @@ class EngagementType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-            ))
-        );
+        )));
     }
 
     /**
