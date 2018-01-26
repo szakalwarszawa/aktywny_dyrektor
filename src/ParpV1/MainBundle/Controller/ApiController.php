@@ -13,11 +13,9 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityNotFoundException;
 use Nelmio\ApiDocBundle\Annotation\ApiDoc;
 use ParpV1\MainBundle\Entity\Departament;
-
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Wniosek;
 use ParpV1\MainBundle\Entity\UserZasoby;
-
 use ParpV1\MainBundle\Api\Type\UprawnienieLsi1420;
 use ParpV1\MainBundle\Api\Response\Json404NotFoundResponse;
 use ParpV1\MainBundle\Api\Response\Json403ForbiddenResponse;
@@ -32,7 +30,7 @@ use ParpV1\MainBundle\Api\Exception\InvalidContentException;
 class ApiController extends Controller
 {
     /**
-     * @Route("/departaments")  
+     * @Route("/departaments")
      *
      * @Method({"GET"})
      *
