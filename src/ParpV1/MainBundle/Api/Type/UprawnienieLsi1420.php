@@ -92,6 +92,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
         $this->uprawnienie = $this->sanitize($uprawnienie);
         $this->dzialanie = $this->sanitize($dzialanie);
         $this->numerNaboru = $this->sanitize($numerNaboru);
+        $this->operacja = $this->sanitize($operacja);
     }
 
     /**
@@ -105,6 +106,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
             'uprawnienie' => $this->uprawnienie,
             'dzialanie' => $this->dzialanie,
             'numer_naboru' => $this->numerNaboru,
+            'operacja' => $this->operacja,
         );
     }
 
@@ -123,7 +125,14 @@ class UprawnienieLsi1420 implements \JsonSerializable
             empty($this->numerNaboru)
         ;
 
-        return $emptyData ? false : true;
+        $unknownOperacja = !in_array($this->operacja, array(
+            self::GRANT_PRIVILAGE,
+            self::REVOKE_PRIVILAGE,
+        ));
+
+        $isValid = ($emptyData || $unknownOperacja) ? false : true;
+
+        return $isValid;
     }
 
     /**
