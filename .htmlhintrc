@@ -5,7 +5,7 @@
     "attr-value-not-empty": false,
     "attr-no-duplication": true,
     "attr-unsafe-chars": true,
-    "doctype-first": true,   
+    "doctype-first": false,   
     "doctype-html5": true,
     "inline-style-disabled": true,
     "inline-script-disabled": true,
