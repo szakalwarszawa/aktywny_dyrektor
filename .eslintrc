@@ -1,0 +1,13 @@
+{
+  "plugins": [
+    "html"
+  ],
+  "extends": [
+    "eslint:recommended",
+    "idiomatic"
+  ],
+  "env": {
+    "browser": true,
+    "jquery": true
+  }
+}
