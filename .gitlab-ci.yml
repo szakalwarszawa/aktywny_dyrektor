@@ -64,5 +64,5 @@ lint_html:
     script:
         - apk update
         - apk add nodejs
-        - node_modules/.bin/htmlhint --rulesdir .htmlhintrc src/ParpV1/**/*.{htm,html,html.twig}
-        - node_modules/.bin/htmlhint --rulesdir .htmlhintrc app/Resources/views/**/*.{htm,html,html.twig}
+        - node_modules/.bin/htmlhint --rulesdir .htmlhintrc --format compact src/ParpV1/**/*.{htm,html,html.twig}
+        - node_modules/.bin/htmlhint --rulesdir .htmlhintrc --format compact app/Resources/views/**/*.{htm,html,html.twig}
