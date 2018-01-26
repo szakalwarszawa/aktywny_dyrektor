@@ -16,6 +16,10 @@ build:
         - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
         - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
         - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "asm89/twig-lint" --prefer-dist --no-suggest --no-progress --no-scripts
+        - apk add nodejs nodejs-npm
+        - npm init -y
+        - npm install eslint eslint-plugin-html eslint-config-idiomatic htmlhint
+
     artifacts:
         untracked: true
         paths:
@@ -42,6 +46,16 @@ lint_twig:
         - ln -sf /usr/bin/php5 /usr/bin/php
         - ./bin/twig-lint lint app/Resources/views/
         - ./bin/twig-lint lint src/ParpV1/
+
+lint_js:
+    image: alpine:3.7
+    stage: optional
+    allow_failure: true
+    script:
+        - apk update
+        - apk add nodejs
+        - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color src/ParpV1/
+        - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color app/Resources/views/
 
 lint_html:
     image: alpine:3.7
