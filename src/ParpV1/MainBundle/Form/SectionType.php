@@ -23,7 +23,7 @@ class SectionType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-        )));
+            )));
 
         $builder->add('shortname', null, array(
             'required' => false,
@@ -34,7 +34,7 @@ class SectionType extends AbstractType
             ),
             'attr' => array(
                 'class' => 'form-control',
-        )));
+            )));
 
         $builder->add('departament', null, ['attr' => ['class' => 'select2']]);
         $builder->add('kierownikName', null, ['attr' => ['readonly' => true]]);
