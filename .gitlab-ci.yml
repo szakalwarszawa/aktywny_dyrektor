@@ -1,6 +1,7 @@
 stages:
     - build
     - test
+    - optional
 
 build:
     image: alpine:3.7
@@ -25,7 +26,6 @@ build:
 cs_psr2:
     image: alpine:3.7
     stage: test
-    allow_failure: true
     script:
         - apk update
         - apk add php5
@@ -34,7 +34,7 @@ cs_psr2:
 
 lint_twig:
     image: alpine:3.7
-    stage: test
+    stage: optional
     allow_failure: true
     script:
         - apk update
