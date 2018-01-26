@@ -8,27 +8,24 @@ use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 
 class EngagementType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-       
-        $builder
-                ->add('name', null, array(
-                    'required' => false,
-                    'read_only' => false,
-                    'label' => 'Nazwa źródła finansowania',
-                    'label_attr' => array(
-                        'class' => 'col-sm-2 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control',
-                    )))
-        ;
+        $builder->add('name', null, array(
+            'required' => false,
+            'read_only' => false,
+            'label' => 'Nazwa źródła finansowania',
+            'label_attr' => array(
+                'class' => 'col-sm-2 control-label',
+            ),
+            'attr' => array(
+                'class' => 'form-control',
+            )));
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
