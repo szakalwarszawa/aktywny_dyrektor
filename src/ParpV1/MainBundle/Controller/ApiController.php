@@ -265,7 +265,8 @@ class ApiController extends Controller
                                 $userName,
                                 $role,
                                 $dzialanie,
-                                $nrNaboru
+                                $nrNaboru,
+                                UprawnienieLsi1420::GRANT_PRIVILAGE
                             );
                             if (false === $uprawnienieLsi1420->isValid()) {
                                 throw new InvalidContentException('Dane uprawnienia nie są pełne.');

@@ -12,6 +12,20 @@ use JMS\Serializer\Annotation as JMS;
 class UprawnienieLsi1420 implements \JsonSerializable
 {
     /**
+     * Nazwa operacji nadania uprawnienia.
+     *
+     * @var string
+     */
+    const GRANT_PRIVILAGE = 'grant';
+
+    /**
+     * Nazwa operacji odebrania uprawnienia.
+     *
+     * @var string
+     */
+    const REVOKE_PRIVILAGE = 'revoke';
+
+    /**
      * @var string
      *
      * @JMS\Expose
@@ -52,6 +66,11 @@ class UprawnienieLsi1420 implements \JsonSerializable
     public $numerNaboru;
 
     /**
+     * @var string
+     */
+    public $operacja;
+
+    /**
      * Konstruktor.
      *
      * @param string $wniosek
@@ -60,8 +79,14 @@ class UprawnienieLsi1420 implements \JsonSerializable
      * @param string $dzialanie
      * @param string $numerNaboru
      */
-    public function __construct($wniosek, $uzytkownik, $uprawnienie, $dzialanie, $numerNaboru)
-    {
+    public function __construct(
+        $wniosek,
+        $uzytkownik,
+        $uprawnienie,
+        $dzialanie,
+        $numerNaboru,
+        $operacja = self::GRANT_PRIVILAGE
+    ) {
         $this->wniosek = $this->sanitize($wniosek);
         $this->uzytkownik = $this->sanitize($uzytkownik);
         $this->uprawnienie = $this->sanitize($uprawnienie);
