@@ -42,3 +42,13 @@ lint_twig:
         - ln -sf /usr/bin/php5 /usr/bin/php
         - ./bin/twig-lint lint app/Resources/views/
         - ./bin/twig-lint lint src/ParpV1/
+
+lint_html:
+    image: alpine:3.7
+    stage: optional
+    allow_failure: true
+    script:
+        - apk update
+        - apk add nodejs
+        - node_modules/.bin/htmlhint --config .htmlhintrc src/ParpV1/**/*.{htm,html,html.twig}
+        - node_modules/.bin/htmlhint --config .htmlhintrc app/Resources/views/**/*.{htm,html,html.twig}
