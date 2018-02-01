@@ -66,6 +66,22 @@ class UprawnienieLsi1420 implements \JsonSerializable
     public $numerNaboru;
 
     /**
+     * @var boolean
+     *
+     * @JMS\Expose
+     * @JMS\Type("boolean")
+     */
+    public $bezterminowo;
+
+    /**
+     * @var \DateTime
+     *
+     * @JMS\Expose
+     * @JMS\Type("DateTime<'Y-m-d'>")
+     */
+    public $aktywneDo;
+
+    /**
      * @var string
      */
     public $operacja;
@@ -78,6 +94,9 @@ class UprawnienieLsi1420 implements \JsonSerializable
      * @param string $uprawnienie
      * @param string $dzialanie
      * @param string $numerNaboru
+     * @param string $operacja
+     * @param bool $bezterminowo
+     * @param \DateTime $aktywneDo
      */
     public function __construct(
         $wniosek,
@@ -85,14 +104,19 @@ class UprawnienieLsi1420 implements \JsonSerializable
         $uprawnienie,
         $dzialanie,
         $numerNaboru,
-        $operacja = self::GRANT_PRIVILAGE
+        $operacja = self::GRANT_PRIVILAGE,
+        $bezterminowo = true,
+        $aktywneDo = null
     ) {
-        $this->wniosek = $this->sanitize($wniosek);
-        $this->uzytkownik = $this->sanitize($uzytkownik);
-        $this->uprawnienie = $this->sanitize($uprawnienie);
-        $this->dzialanie = $this->sanitize($dzialanie);
-        $this->numerNaboru = $this->sanitize($numerNaboru);
-        $this->operacja = $this->sanitize($operacja);
+        $this->wniosek = $this->sanitizeStr($wniosek);
+        $this->uzytkownik = $this->sanitizeStr($uzytkownik);
+        $this->uprawnienie = $this->sanitizeStr($uprawnienie);
+        $this->dzialanie = $this->sanitizeStr($dzialanie);
+        $this->numerNaboru = $this->sanitizeStr($numerNaboru);
+        $this->operacja = $this->sanitizeStr($operacja);
+        $this->bezterminowo = $this->sanitizeBool($bezterminowo);
+
+        $this->setAktywneDo($aktywneDo);
     }
 
     /**
@@ -100,7 +124,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
      */
     public function jsonSerialize()
     {
-        return array(
+        $serialize = array(
             'wniosek' => $this->wniosek,
             'uzytkownik' => $this->uzytkownik,
             'uprawnienie' => $this->uprawnienie,
@@ -108,6 +132,15 @@ class UprawnienieLsi1420 implements \JsonSerializable
             'numer_naboru' => $this->numerNaboru,
             'operacja' => $this->operacja,
         );
+
+        if ($this->dzialanie === self::GRANT_PRIVILAGE) {
+            $serialize = array_merge($serialize, array(
+                'bezterminowo' => $this->$bezterminowo,
+                'aktywne_do' => $this->$aktywneDo,
+            ));
+        }
+
+        return $serialize;
     }
 
     /**
@@ -130,20 +163,68 @@ class UprawnienieLsi1420 implements \JsonSerializable
             self::REVOKE_PRIVILAGE,
         ));
 
-        $isValid = ($emptyData || $unknownOperacja) ? false : true;
+        $inconsistentTermin = (
+            ($this->dzialanie === self::GRANT_PRIVILAGE) && 
+            in_array($this->bezterminowo, array(false, null)) &&
+            (! $this->aktywneDo instanceof \DateTime)
+        );
+
+        $isValid = ($emptyData || $unknownOperacja || $inconsistentTermin) ? false : true;
 
         return $isValid;
     }
 
     /**
-     * Czyści parametry wejściowe.
+     * Czyści parametry wejściowe dla ciągów tekstowych.
      *
      * @param mixed $input
      *
      * @return string
      */
-    private function sanitize($input)
+    private function sanitizeStr($input)
     {
         return trim((string) $input);
+    }
+
+    /**
+     * Czyści parametry wejściowe dla wartości logicznych.
+     *
+     * @param mixed $input
+     *
+     * @return bool
+     */
+    private function sanitizeBool($input)
+    {
+        $inputStr = trim((string) $input);
+        if (in_array($inputStr, array(0, "false", false, "NIE", "nie", "N", "n", ""))) {
+            $input = false;
+        } elseif (in_array($inputStr, array(1, "true", true, "TAK", "tak", "T", "t"))) {
+            $input = true;
+        } else {
+            $input = false;
+        }
+
+        return $input;
+    }
+
+    /**
+     * Mutator daty, do której ma obowiązywać uprawnienie.
+     *
+     * @param mixed $aktywneDo
+     *
+     * @return UprawnienieLsi1420
+     */
+    public function setAktywneDo($aktywneDo)
+    {
+        if ($aktywneDo instanceof \DateTime) {
+            $aktywneDo->setTime(0, 0, 0);
+            $this->aktywneDo = $aktywneDo;
+            $this->bezterminowo = false;
+        } else {
+            $this->aktywneDo = null;
+            $this->bezterminowo = true;
+        }
+
+        return $this;
     }
 }
