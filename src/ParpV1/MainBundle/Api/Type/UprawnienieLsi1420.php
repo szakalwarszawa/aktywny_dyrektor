@@ -164,7 +164,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
         ));
 
         $inconsistentTermin = (
-            ($this->dzialanie === self::GRANT_PRIVILAGE) && 
+            ($this->dzialanie === self::GRANT_PRIVILAGE) &&
             in_array($this->bezterminowo, array(false, null)) &&
             (! $this->aktywneDo instanceof \DateTime)
         );
