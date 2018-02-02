@@ -135,8 +135,8 @@ class UprawnienieLsi1420 implements \JsonSerializable
 
         if ($this->operacja === self::GRANT_PRIVILAGE) {
             $serialize = array_merge($serialize, array(
-                'bezterminowo' => $this->$bezterminowo,
-                'aktywne_do' => $this->$aktywneDo,
+                'bezterminowo' => $this->bezterminowo,
+                'aktywne_do' => $this->aktywneDo,
             ));
         }
 
