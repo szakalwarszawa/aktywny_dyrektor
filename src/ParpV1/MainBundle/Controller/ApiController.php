@@ -251,7 +251,7 @@ class ApiController extends Controller
                 $uprawnienia = explode(';', $dostep->getPoziomDostepu());
                 $userName = $dostep->getSamaccountname();
                 $bezterminowo = $dostep->getBezterminowo();
-                $aktywneDo = $dostep->getAktywneOd();
+                $aktywneDo = $dostep->getAktywneDo();
 
                 foreach ($nabory as $nabor) {
                     $naborArr = array_filter(explode('/', $nabor));
