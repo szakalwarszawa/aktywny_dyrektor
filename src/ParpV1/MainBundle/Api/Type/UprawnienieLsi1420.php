@@ -133,7 +133,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
             'operacja' => $this->operacja,
         );
 
-        if ($this->dzialanie === self::GRANT_PRIVILAGE) {
+        if ($this->operacja === self::GRANT_PRIVILAGE) {
             $serialize = array_merge($serialize, array(
                 'bezterminowo' => $this->$bezterminowo,
                 'aktywne_do' => $this->$aktywneDo,
