@@ -250,6 +250,8 @@ class ApiController extends Controller
                 $nabory = explode(';', $dostep->getModul());
                 $uprawnienia = explode(';', $dostep->getPoziomDostepu());
                 $userName = $dostep->getSamaccountname();
+                $bezterminowo = $dostep->getBezterminowo();
+                $aktywneDo = $dostep->getAktywneDo();
 
                 foreach ($nabory as $nabor) {
                     $naborArr = array_filter(explode('/', $nabor));
@@ -264,7 +266,9 @@ class ApiController extends Controller
                                 $role,
                                 $dzialanie,
                                 $nrNaboru,
-                                UprawnienieLsi1420::GRANT_PRIVILAGE
+                                UprawnienieLsi1420::GRANT_PRIVILAGE,
+                                $bezterminowo,
+                                $aktywneDo
                             );
                             if (false === $uprawnienieLsi1420->isValid()) {
                                 throw new InvalidContentException('Dane uprawnienia nie są pełne.');
