@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\SoapBundle\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -10,11 +11,11 @@ use Symfony\Component\Security\Core\SecurityContextInterface;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Exception\SecurityTestException;
-//use Memcached;
 use Memcached;
 
 /**
  * Class LdapAdminService
+ *
  * @package ParpV1\SoapBundle\Services
  */
 class LdapAdminService
@@ -63,8 +64,6 @@ class LdapAdminService
         // Attempting fix from http://www.php.net/manual/en/ref.ldap.php#77553
         putenv('LDAPTLS_REQCERT=never');
 
-
-
         $this->doctrine = $OrmEntity;
         $this->securityContext = $securityContext;
         $this->container = $container;
@@ -100,12 +99,8 @@ class LdapAdminService
             'ad_port' => '389',
             //'sso' => false,
         );
-        //var_dump($configuration);
+
         $this->adldap = new \Adldap\Adldap($configuration);
-
-
-
-        //die('a');
     }
 
     /**
@@ -129,6 +124,7 @@ class LdapAdminService
 
     /**
      * @param $samaccountname
+     *
      * @return array
      */
     public function getUserFromAllAD($samaccountname)
@@ -155,6 +151,7 @@ class LdapAdminService
      * @param null $samaccountname
      * @param null $cnname
      * @param null $query
+     *
      * @return array|null
      */
     public function getUserFromAD($samaccountname = null, $cnname = null, $query = null)
@@ -182,7 +179,9 @@ class LdapAdminService
      * @param null $samaccountname
      * @param null $cnname
      * @param null $query
+     *
      * @return array
+     *
      * @throws \Exception
      */
     public function getUserFromADInt($samaccountname = null, $cnname = null, $query = null)
@@ -267,6 +266,7 @@ class LdapAdminService
 
     /**
      * @param $res
+     *
      * @return array
      */
     protected function parseMemberOf($res)
@@ -286,6 +286,7 @@ class LdapAdminService
     /**
      * @param $ldapUser
      * @param $person
+     *
      * @return string
      */
     public function saveEntity($ldapUser, $person)
@@ -312,16 +313,15 @@ class LdapAdminService
         $dn = $ldapUser;
         //zmieniamy ze jednak bierze dn z aktualnego usera
 
-
         $userNowData = $this->getUserFromAllAD($person->getSamaccountname());
         $userAD = $userNowData['user'];
         $ktorzy = $userNowData['ktorzy'];
         $dn = $userAD[0]['distinguishedname'];
         $entry = array();
 
-
         if ($person->getAccountExpires()) {
-            if ($person->getAccountExpires()->format('Y') == 2000) {//jesli rok 2000 znaczy ze mamy wynullowac date konca
+            // Dla roku 2000 data wygaśnięcia jest zerowana.
+            if ($person->getAccountExpires()->format('Y') == 2000) {
                 $entry['accountExpires'] = 0;
             } else {
                 $d = $this->unixToLdap($person->getAccountExpires()->getTimestamp());
@@ -338,7 +338,8 @@ class LdapAdminService
                 $entry['manager'] = [];
             } elseif (strstr($manager, 'CN=') === false) {
                 // znajdz sciezke przelozonego
-                $cn = preg_quote($manager);
+                $cn = preg_replace('/\\\\-/', '-', preg_quote($manager));
+                
                 $searchString = '(&(cn='. $cn .')(objectClass=person))';
 
                 $search = ldap_search($ldapconn, $userdn, $searchString, array(
@@ -458,7 +459,6 @@ class LdapAdminService
             }
         }
 
-
         if ($person->getIsDisabled() !== null || $person->getActivateDeactivated()) {
             $entry['useraccountcontrol'][0] = $person->getIsDisabled() ? 514 : 512; //546 : 544;
             $sn = 'Konto aktywowane';
@@ -524,7 +524,6 @@ class LdapAdminService
         }
         ldap_unbind($ldapconn);
 
-
         //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
         //$this->doctrine->persist($person);
@@ -534,6 +533,7 @@ class LdapAdminService
 
     /**
      * @param $grupa
+     *
      * @return array|bool
      */
     public function getGrupa($grupa)
@@ -606,14 +606,13 @@ class LdapAdminService
                         }
                     }
                 }
-                //return ;
             }
         }
-        //die('a');
     }
 
     /**
      * @param $newPassword
+     *
      * @return mixed
      */
     public function pwdEncryption($newPassword)
@@ -626,11 +625,13 @@ class LdapAdminService
             $newPassw .= "{$newPassword{$i}}\000";
         }
         $userdata['unicodePwd'] = $newPassw;
+
         return $userdata;
     }
 
     /**
      * @param $name
+     *
      * @param $samaccountname
      */
     public function sendMailAboutNewUser($name, $samaccountname)
@@ -645,12 +646,12 @@ class LdapAdminService
                 ->setBody($view)
                 ->setContentType('text/html');
 
-        //var_dump($view);
         $this->container->get('mailer')->send($message);
     }
 
     /**
      * @param $person
+     *
      * @return string
      */
     public function createEntity($person)
@@ -710,7 +711,6 @@ class LdapAdminService
             $tab = explode(' ', $entry['cn']);
             $entry['sn'] = count($tab) > 0 ? $tab[0] : '';
             $entry['givenName'] = $tab[1];
-
             $entry['name'] = $entry['cn'];
             $entry['displayName'] = $entry['cn'];
             $entry['userPrincipalName'] = $person->getSamaccountname() . $this->ad_domain;
@@ -743,7 +743,6 @@ class LdapAdminService
                     }
                 }
             }
-
 
             // if (empty($accountExpires)) {
             $entry['useraccountcontrol'] = 544; // włączenie konta i wymuszenie zmiany hasla
@@ -802,6 +801,7 @@ class LdapAdminService
 
     /**
      * @param $ldap_ts
+     *
      * @return float|int
      */
     protected function LDAPtoUnix($ldap_ts)
@@ -811,6 +811,7 @@ class LdapAdminService
 
     /**
      * @param $unix_ts
+     *
      * @return string
      */
     protected function unixToLdap($unix_ts)
@@ -825,7 +826,6 @@ class LdapAdminService
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
         $userdn = str_replace('OU=Zespoly,', '', $userdn);
-//        die($userdn);
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
@@ -833,7 +833,6 @@ class LdapAdminService
         $ldap_password = $this->AdminPass;
 
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
-
 
         $em = $this->container->get('doctrine')->getManager();
         $deps = $em->getRepository('ParpMainBundle:Departament')->findByNowaStruktura(1);
@@ -867,9 +866,9 @@ class LdapAdminService
                 }
             }
         }
+
         ldap_unbind($ldapconn);
     }
-
 
     /**
      * @param $dn
@@ -885,8 +884,8 @@ class LdapAdminService
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
         $ldap_username = $this->AdminUser;
         $ldap_password = $this->AdminPass;
-
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+
         $this->ldapDelete($ldapconn, $dn);
     }
 
@@ -899,6 +898,7 @@ class LdapAdminService
         if (!$ldapconn) {
             throw new Exception('Brak połączenia z serwerem domeny!');
         }
+
         $ldapdomain = $this->ad_domain;
         $userdn = $this->useradn . $this->patch;
 
@@ -907,8 +907,8 @@ class LdapAdminService
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
         $ldap_username = $this->AdminUser;
         $ldap_password = $this->AdminPass;
-
         $ldapbind = ldap_bind($ldapconn, $this->AdminUser . $ldapdomain, $this->AdminPass);
+
         return $ldapconn;
     }
 
@@ -918,18 +918,13 @@ class LdapAdminService
      */
     public function changePrimaryEmail($sam, $email)
     {
-
-        //die('zmieniam email dla '.$sam.'  '.$email);
-
         $this->adldap->exchange()->addAddress($sam, $email, true);
         $this->adldap->exchange()->primaryAddress($sam, $email);
     }
 
-
-    /////////tutaj funkcje opakowajace wypychanie do AD
-
     /**
      * @param $link_identifier
+     *
      * @param $funcname
      */
     public function zalogujBlad($link_identifier, $funcname)
@@ -942,7 +937,6 @@ class LdapAdminService
             'lastEntry' => $this->lastEntry
         ];
     }
-    //zmienia atrybuty usera poza departamentem i grupami dostepu
 
     /**
      * @param $link_identifier
@@ -961,6 +955,7 @@ class LdapAdminService
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
+
         if (!$this->pushChanges || !$poszlo) {
             $data = [];
             foreach ($entry as $k => $v) {
@@ -970,10 +965,9 @@ class LdapAdminService
             $this->output->writeln('<error>dn: '.$dn.'</error>');
             $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
         }
+
         $this->zalogujBlad($link_identifier, 'ldapModify');
     }
-
-    //zmienia DN userowi , czyli departament
 
     /**
      * @param $link_identifier
@@ -1001,11 +995,8 @@ class LdapAdminService
             $this->output->writeln('<error>deleteoldrdn: '.$deleteoldrdn.'</error>');
         }
 
-
         $this->zalogujBlad($link_identifier, 'ldapRename');
     }
-
-    //dodaje usera do grupy w AD
 
     /**
      * @param $link_identifier
@@ -1033,11 +1024,8 @@ class LdapAdminService
             $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
         }
 
-
         $this->zalogujBlad($link_identifier, 'ldapModAdd');
     }
-
-    //usuwa usera z grupy w AD
 
     /**
      * @param $link_identifier
@@ -1068,8 +1056,6 @@ class LdapAdminService
         $this->zalogujBlad($link_identifier, 'ldapModDel');
     }
 
-    //dodaje usera do AD
-
     /**
      * @param $linkIdentifier
      * @param $dn
@@ -1098,7 +1084,6 @@ class LdapAdminService
 
         $this->zalogujBlad($linkIdentifier, 'ldapAdd');
     }
-    //kasuje usera z AD
 
     /**
      * @param $linkIdentifier
@@ -1113,7 +1098,6 @@ class LdapAdminService
             $this->output->writeln('<error>wykonuje funkcje ldapDelete</error>');
             $this->output->writeln('<error>dn: '.$dn.'</error>');
         }
-
 
         $this->zalogujBlad($linkIdentifier, 'ldapDelete');
     }
@@ -1148,10 +1132,6 @@ class LdapAdminService
         if (isset($mapa[$stanowisko])) {
             $stanowisko = $mapa[$stanowisko];
         }
-
-
-        //die('.'.$stanowisko.'.');
-
 
         return $stanowisko;
     }

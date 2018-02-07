@@ -316,13 +316,17 @@ class EngagementController extends Controller
                 new File(array(
                     'maxSize' => 1024 * 1024 * 10,
                     'maxSizeMessage' => 'Przekroczono rozmiar wczytywanego pliku',
-                    'mimeTypes' => array('text/csv', 'text/plain', 'application/vnd.ms-excel', 'application/msexcel', 'application/xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'),
-                    'mimeTypesMessage' => 'Niewłaściwy typ plku. Proszę wczytac plik z rozszerzeniem csv'
+                    'mimeTypes' => array('text/csv', 'text/plain', 'application/vnd.ms-excel', 'application/msexcel', 'application/xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/octet-stream'),
+                    'mimeTypesMessage' => 'Niewłaściwy typ pliku. Proszę wczytac plik z rozszerzeniem csv'
                 )),
             ),
             'mapped' => false,
         ))
             ->add('rok', 'choice', ['choices' => $lata])
+            ->add('dodanieZaangazowan', 'checkbox', array(
+                'required' => false,
+                'label'      => 'Dodaj do słownika brakujące zaangażowania'
+                ))
             ->add('wczytaj', 'submit', array('attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             )))
@@ -337,11 +341,11 @@ class EngagementController extends Controller
 
 
                 if (empty($bledy)) {
-                    $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+                    $this->addFlash('notice', 'Plik został wczytany');
                 }
 
                 foreach ($bledy as $blad) {
-                    $this->get('session')->getFlashBag()->add('warning', $blad['error']);
+                    $this->addFlash('warning', $blad['error']);
                 }
                 return $this->redirectToRoute('engagement_import');
             }
@@ -482,19 +486,29 @@ class EngagementController extends Controller
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
-                        $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
-                        if (null == $pr) {
-                            $bledy[] = [
-                                'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
-                                'dane' => $program
-                            ];
-
-                            break;
+                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        if (null == $zaangazownie) {
+                            if ($form->getData()['dodanieZaangazowan']) {
+                                $program2 = new Engagement();
+                                $program2->setName($program);
+                                $em->persist($program2);
+                                $em->flush();
+                                $this->addFlash('warning', 'W słowniku brak zaangażownia o nazwie (utworzono nowe): ' . $program2);
+                            } else {
+                                $bledy[] = [
+                                    'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
+                                    'dane' => $program
+                                ];
+                                break;
+//                                continue;
+                            }
                         }
 
+                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                             $daneRekord->getLogin(),
-                            $pr->getId(),
+                            $zaangazownie->getId(),
                             $i,
                             $rok
                         );
@@ -505,14 +519,14 @@ class EngagementController extends Controller
                             $p = $wpis[$i];
                             $ug->setPercent($p);
                             $ug->setCzyNowy(true);
-                            $ug->setEngagement($pr);
+                            $ug->setEngagement($zaangazownie);
                         } elseif ($ug->getPercent() != $wpis[$i]) {
                             $ugnew = clone $usereng;
                             $ugnew->setId(null);
                             $ugnew->setMonth($i);
                             $p = $wpis[$i];
                             $ugnew->setPercent($p);
-                            $ugnew->setEngagement($pr);
+                            $ugnew->setEngagement($zaangazownie);
                             $ugnew->setCzyNowy(true);
 
                             $ug->setCzyNowy(false);

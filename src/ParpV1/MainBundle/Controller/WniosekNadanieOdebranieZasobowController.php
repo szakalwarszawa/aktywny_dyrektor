@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Constraints\Email;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
+ *
  * @Route("/wnioseknadanieodebraniezasobow")
  */
 class WniosekNadanieOdebranieZasobowController extends Controller
@@ -56,7 +57,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
+     *
      * @Route("/index/{ktore}", name="wnioseknadanieodebraniezasobow", defaults={"ktore" : "oczekujace"})
+     *
      * @Template()
      */
     public function indexAction($ktore = 'oczekujace')
@@ -65,24 +68,27 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $grid = $this->generateGrid($ktore); //"wtoku");
         //$grid2 = $this->generateGrid("oczekujace");
         //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa =
-            $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+        $zastepstwa = $em
+            ->getRepository('ParpMainBundle:Zastepstwo')
+            ->znajdzZastepstwa($this->getUser()->getUsername())
+        ;
 
-        if ($grid->isReadyForRedirect()) { // || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
+        if ($grid->isReadyForRedirect()) {
             if ($grid->isReadyForExport()) {
                 return $grid->getExportResponse();
             }
 
             /*
-                        if ($grid2->isReadyForExport())
-                        {
-                            return $grid2->getExportResponse();
-                        }
+                if ($grid2->isReadyForExport())
+                {
+                    return $grid2->getExportResponse();
+                }
 
-                        if ($grid3->isReadyForExport())
-                        {
-                            return $grid3->getExportResponse();
-                        }
+                if ($grid3->isReadyForExport())
+                {
+                    return $grid3->getExportResponse();
+                }
             */
 
             // Url is the same for the grids
@@ -99,17 +105,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     /**
      * @param $ktore
+     *
      * @return \APY\DataGridBundle\Grid\Grid|object
      */
     protected function generateGrid($ktore)
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
-        $zastepstwa =
-            $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em
+            ->getRepository('ParpMainBundle:Zastepstwo')
+            ->znajdzKogoZastepuje($this->getUser()->getUsername())
+        ;
         $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobow');
         $tableAlias = $source->getTableAlias();
-        //die($co);
         $sam = $this->getUser()->getUsername();
 
 
@@ -413,8 +421,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
-
-
         $form =
             $this->createForm(new WniosekNadanieOdebranieZasobowType(
                 $this->getUsersFromAD(),
@@ -475,7 +481,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $this->getUserFromAD($this->getUser()->getUsername());
 
-
         $entity = new WniosekNadanieOdebranieZasobow();
         $entity->getWniosek()->setCreatedAt(new \Datetime());
         $entity->getWniosek()->setLockedAt(new \Datetime());
@@ -500,12 +505,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function newAction($odebranie = 0)
     {
-        if ($this->getParameter('pusz_to_ad') == true &&
-            $odebranie == 1
-        ) {   // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
-            //die("Na razie to jeszcze nie jest wlaczone");
+        if ($this->getParameter('pusz_to_ad') == true && $odebranie == 1) {
+            // $odebranie == 1 /*&& !in_array("PARP_ADMIN", $this->getUser()->getRoles())*/){
         }
-        //var_dump($this->getUser());
 
         $ldap = $this->get('ldap_service');
         $ADUser = $this->getUserFromAD($this->getUser()->getUsername());

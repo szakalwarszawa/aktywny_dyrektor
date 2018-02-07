@@ -9,6 +9,7 @@ use Symfony\Component\Validator\Exception\ValidatorException;
 
 /**
  * Klasa ParpMailerService.
+ *
  * Klasa odpowiada za obsługę wychodzących wiadomości e-mail.
  *
  * @package ParpV1\MainBundle\Services
@@ -126,7 +127,7 @@ class ParpMailerService
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
         
         // umożiwia testowanie wysyłki maili ze środowiska testowego,
-        if ($this->idSrodowiska == 'test') { // lub wszystkie poza produkcją: != 'produkcja'
+        if ($this->idSrodowiska == 'test') {
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
             $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
@@ -212,12 +213,11 @@ class ParpMailerService
             'data_zmiany'   => $now,
         ];
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1, $dane);
-        $dane['odbiorcy'] =
-            [
-                $user['samaccountname'],
-//                $this->getManagerLoginFromDN($user['manager']),
-                ParpMailerService::EMAIL_DO_AUMS_AD,
-            ];
+        $dane['odbiorcy'] = [
+            $user['samaccountname'],
+            // $this->getManagerLoginFromDN($user['manager']),
+            ParpMailerService::EMAIL_DO_AUMS_AD,
+        ];
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2, $dane);
     }
 
@@ -235,12 +235,11 @@ class ParpMailerService
         ];
         $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1, $dane);
-        $dane['odbiorcy'] =
-            [
-                $user['samaccountname'],
-//                $this->getManagerLoginFromDN($user['manager']),
-                ParpMailerService::EMAIL_DO_AUMS_AD,
-            ];
+        $dane['odbiorcy'] = [
+            $user['samaccountname'],
+            // $this->getManagerLoginFromDN($user['manager']),
+            ParpMailerService::EMAIL_DO_AUMS_AD,
+        ];
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2, $dane);
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3, $dane);
     }
@@ -319,13 +318,12 @@ class ParpMailerService
             }
 
             foreach ($zasoby as $zasob) {
-                $data['odbiorcy'] =
-                    [
-                        $zasob->getAdministratorZasobu(),
-                        $daneRekord->getLogin(),
-                        $nowyDep->getDyrektor(),
-                        $staryDep->getDyrektor(),
-                    ];
+                $data['odbiorcy'] = [
+                    $zasob->getAdministratorZasobu(),
+                    $daneRekord->getLogin(),
+                    $nowyDep->getDyrektor(),
+                    $staryDep->getDyrektor(),
+                ];
                 $data['nazwa_zasobu'] = $zasob->getNazwa();
                 $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, $data);
             }

@@ -719,7 +719,6 @@ class Wniosek
         return $this->viewers;
     }
 
-
     /**
      * Set wniosekNadanieOdebranieZasobow
      *
