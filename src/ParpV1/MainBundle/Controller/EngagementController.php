@@ -491,7 +491,7 @@ class EngagementController extends Controller
                             if ($form->getData()['dodanieZaangazowan']) {
                                 $program2 = new Engagement();
                                 $program2->setName($program);
-                                $em->persist($program2);  
+                                $em->persist($program2);
                                 $em->flush();
                                 $this->get('session')->getFlashBag()->add('warning', 'W słowniku brak zaangażownia o nazwie (utworzono nowe): ' . $program2);
                             } else {
