@@ -338,11 +338,7 @@ class LdapAdminService
                 $entry['manager'] = [];
             } elseif (strstr($manager, 'CN=') === false) {
                 // znajdz sciezke przelozonego
-                if (strstr($manager, '(') === false) {
-                    $cn = $manager;
-                } else {
-                    $cn = preg_quote($manager);
-                }
+                $cn = preg_replace('/\\\\-/', '-', preg_quote($manager));
                 
                 $searchString = '(&(cn='. $cn .')(objectClass=person))';
 
