@@ -341,11 +341,11 @@ class EngagementController extends Controller
 
 
                 if (empty($bledy)) {
-                    $this->get('session')->getFlashBag()->add('notice', 'Plik został wczytany');
+                    $this->addFlash('notice', 'Plik został wczytany');
                 }
 
                 foreach ($bledy as $blad) {
-                    $this->get('session')->getFlashBag()->add('warning', $blad['error']);
+                    $this->addFlash('warning', $blad['error']);
                 }
                 return $this->redirectToRoute('engagement_import');
             }
@@ -493,7 +493,7 @@ class EngagementController extends Controller
                                 $program2->setName($program);
                                 $em->persist($program2);
                                 $em->flush();
-                                $this->get('session')->getFlashBag()->add('warning', 'W słowniku brak zaangażownia o nazwie (utworzono nowe): ' . $program2);
+                                $this->addFlash('warning', 'W słowniku brak zaangażownia o nazwie (utworzono nowe): ' . $program2);
                             } else {
                                 $bledy[] = [
                                     'error' => 'W słowniku brak zaangażownia o nazwie ' . $program,
