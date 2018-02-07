@@ -317,7 +317,7 @@ class EngagementController extends Controller
                     'maxSize' => 1024 * 1024 * 10,
                     'maxSizeMessage' => 'Przekroczono rozmiar wczytywanego pliku',
                     'mimeTypes' => array('text/csv', 'text/plain', 'application/vnd.ms-excel', 'application/msexcel', 'application/xls', 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', 'application/octet-stream'),
-                    'mimeTypesMessage' => 'Niewłaściwy typ plku. Proszę wczytac plik z rozszerzeniem csv'
+                    'mimeTypesMessage' => 'Niewłaściwy typ pliku. Proszę wczytac plik z rozszerzeniem csv'
                 )),
             ),
             'mapped' => false,
@@ -486,8 +486,8 @@ class EngagementController extends Controller
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
-                        $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
-                        if (null == $pr) {
+                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        if (null == $zaangazownie) {
                             if ($form->getData()['dodanieZaangazowan']) {
                                 $program2 = new Engagement();
                                 $program2->setName($program);
@@ -504,11 +504,11 @@ class EngagementController extends Controller
                             }
                         }
 
-                        $pr = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
                         
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                             $daneRekord->getLogin(),
-                            $pr->getId(),
+                            $zaangazownie->getId(),
                             $i,
                             $rok
                         );
@@ -519,14 +519,14 @@ class EngagementController extends Controller
                             $p = $wpis[$i];
                             $ug->setPercent($p);
                             $ug->setCzyNowy(true);
-                            $ug->setEngagement($pr);
+                            $ug->setEngagement($zaangazownie);
                         } elseif ($ug->getPercent() != $wpis[$i]) {
                             $ugnew = clone $usereng;
                             $ugnew->setId(null);
                             $ugnew->setMonth($i);
                             $p = $wpis[$i];
                             $ugnew->setPercent($p);
-                            $ugnew->setEngagement($pr);
+                            $ugnew->setEngagement($zaangazownie);
                             $ugnew->setCzyNowy(true);
 
                             $ug->setCzyNowy(false);
