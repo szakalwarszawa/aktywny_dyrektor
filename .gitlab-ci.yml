@@ -2,6 +2,7 @@ stages:
     - build
     - test
     - optional
+    - quality
 
 build:
     image: alpine:3.7
@@ -15,7 +16,7 @@ build:
         - curl -sS https://getcomposer.org/installer | php
         - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
         - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
-        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "asm89/twig-lint" --prefer-dist --no-suggest --no-progress --no-scripts
+        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "asm89/twig-lint" "sebastian/phpcpd:1.4.*" --prefer-dist --no-suggest --no-progress --no-scripts
         - apk add nodejs nodejs-npm
         - npm init -y
         - npm install eslint eslint-plugin-html eslint-config-idiomatic htmlhint
@@ -66,3 +67,13 @@ lint_html:
         - apk add nodejs
         - node_modules/.bin/htmlhint --rulesdir .htmlhintrc src/ParpV1/**/*.{htm,html,html.twig}
         - node_modules/.bin/htmlhint --rulesdir .htmlhintrc app/Resources/views/**/*.{htm,html,html.twig}
+
+php_cpd:
+    image: alpine:3.7
+    stage: quality
+    allow_failure: true
+    script:
+        - apk update
+        - apk add php5 php5-iconv
+        - ln -sf /usr/bin/php5 /usr/bin/php
+        - ./bin/phpcpd src/ParpV1/
