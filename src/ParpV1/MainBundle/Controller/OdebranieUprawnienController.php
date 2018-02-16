@@ -135,7 +135,7 @@ class OdebranieUprawnienController extends Controller
      * @param $samaccountname
      *
      * @return JsonResponse
-     */    
+     */
     public function grupyUseraAction($samaccountname)
     {
         $ldap = $this->get('ldap_service');

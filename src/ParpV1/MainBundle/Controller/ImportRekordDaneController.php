@@ -425,8 +425,6 @@ class ImportRekordDaneController extends Controller
                 ->generateFullname(
                     $dr->getImie(),
                     $dr->getNazwisko(),
-//                    $poprzednieDane->getImie(),
-//                    $poprzednieDane->getNazwisko()
                     $poprzednieDane[1],
                     $poprzednieDane[0]
                 ));
