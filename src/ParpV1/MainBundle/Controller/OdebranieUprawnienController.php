@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -128,6 +129,40 @@ class OdebranieUprawnienController extends Controller
         }
     }
 
+    /**
+     *
+     * @Route("/grupyUsera/{samaccountname}", name="grupyUsera", defaults={"samaccountname" : ""})
+     * @param $samaccountname
+     *
+     * @return JsonResponse
+     */    
+    public function grupyUseraAction($samaccountname)
+    {
+        $ldap = $this->get('ldap_service');
+        $user = $this->getUser()->getUsername();
+        $userAD = $ldap->getUserFromAD($user);
+        if (count($userAD) > 0 && $userAD[0]['description'] == 'BI') {
+            $em = $this->getDoctrine()->getManager();
+            if ($samaccountname == '') {
+                $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
+            } else {
+                $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+            }
+            $uprawnienia = $this->audytUprawnienUsera($user[0]);
+            $urawnieniaJson = json_encode($uprawnienia);
+            $dir = __DIR__."/../../../../app/logs/uprawnienia";
+            if (!file_exists($dir)) {
+                mkdir($dir);
+            }
+            $datetime = new \Datetime();
+            file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
+            
+            return new JsonResponse($uprawnienia);
+        } else {
+            die('Nie masz uprawnień by to oglądać!');
+        }
+    }
+    
     public function audytUprawnienUsera($user)
     {
 
