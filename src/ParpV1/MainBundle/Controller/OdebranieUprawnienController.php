@@ -139,15 +139,10 @@ class OdebranieUprawnienController extends Controller
      */
     public function grupyUseraAction($samaccountname)
     {
-        $ldap = $this->get('ldap_service');
-        $user = $this->getUser()->getUsername();
-        $userAD = $ldap->getUserFromAD($user);
-        if (count($userAD) > 0 && $userAD[0]['description'] == 'BI') {
-            $em = $this->getDoctrine()->getManager();
-            if ($samaccountname == '') {
-                $user = $this->get('ldap_service')->getUserFromAD($this->getUser()->getUsername());
-            } else {
-                $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+        if ($samaccountname !== '') {
+            $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+            if (empty($user)) {
+                return new JsonResponse('Nie znaleziono uzytkownika o podanym samaccountname.',404);
             }
             $uprawnienia = $this->audytUprawnienUsera($user[0]);
             $urawnieniaJson = json_encode($uprawnienia);
@@ -157,10 +152,8 @@ class OdebranieUprawnienController extends Controller
             }
             $datetime = new \Datetime();
             file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
-            
+
             return new JsonResponse($uprawnienia);
-        } else {
-            die('Nie masz uprawnień by to oglądać!');
         }
     }
     
