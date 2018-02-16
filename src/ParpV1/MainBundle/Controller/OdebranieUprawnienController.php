@@ -131,7 +131,7 @@ class OdebranieUprawnienController extends Controller
 
     /**
      * Zapisuje aktualne uprawnienia użytkownika do pliku JSON w logach
-     * 
+     *
      * @Route("/grupyUsera/{samaccountname}", name="grupyUsera", defaults={"samaccountname" : ""})
      * @param $samaccountname
      *
