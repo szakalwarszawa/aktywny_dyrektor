@@ -139,7 +139,6 @@ class OdebranieUprawnienController extends Controller
      */
     public function grupyUseraAction($samaccountname)
     {
-        if ($samaccountname !== '') {
             $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
             if (empty($user)) {
                 return new JsonResponse('Nie znaleziono uzytkownika o podanym samaccountname.',404);
@@ -154,7 +153,6 @@ class OdebranieUprawnienController extends Controller
             file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
 
             return new JsonResponse($uprawnienia);
-        }
     }
     
     public function audytUprawnienUsera($user)
