@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -128,6 +129,32 @@ class OdebranieUprawnienController extends Controller
         }
     }
 
+    /**
+     * Zapisuje aktualne uprawnienia użytkownika do pliku JSON w logach
+     *
+     * @Route("/grupyUsera/{samaccountname}", name="grupyUsera", defaults={"samaccountname" : ""})
+     * @param $samaccountname
+     *
+     * @return JsonResponse
+     */
+    public function grupyUseraAction($samaccountname)
+    {
+        $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+        if (empty($user)) {
+            return new JsonResponse('Nie znaleziono uzytkownika o podanym samaccountname.', 404);
+        }
+        $uprawnienia = $this->audytUprawnienUsera($user[0]);
+        $urawnieniaJson = json_encode($uprawnienia);
+        $dir = __DIR__."/../../../../app/logs/uprawnienia";
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        $datetime = new \Datetime();
+        file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
+
+        return new JsonResponse($uprawnienia);
+    }
+    
     public function audytUprawnienUsera($user)
     {
 

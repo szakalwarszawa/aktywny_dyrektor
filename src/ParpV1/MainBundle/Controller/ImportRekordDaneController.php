@@ -418,15 +418,17 @@ class ImportRekordDaneController extends Controller
         if (true === $nowy) {
             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
         }
-
+        
         if ((isset($changeSet['imie']) || isset($changeSet['nazwisko'])) && !$nowy) {
             //zmiana imienia i nazwiska
+            $imie = $poprzednieDane[1];
+            $nazwisko = $poprzednieDane[0];
             $entry->setCn($this->get('samaccountname_generator')
                 ->generateFullname(
                     $dr->getImie(),
                     $dr->getNazwisko(),
-                    $poprzednieDane->getImie(),
-                    $poprzednieDane->getNazwisko()
+                    $imie,
+                    $nazwisko
                 ));
         }
 
@@ -904,7 +906,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository('ParpMainBundle:DaneRekord')->find($id);
-        $poprzednieDane = clone $daneRekord;
+        $poprzednieDane = explode(' ', $userFromAD[0]['name']);
 
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];
@@ -945,7 +947,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
                 $zmieniamySekcje = true;
             }
-
+            
             $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane);
 
             if (!$nowy && $daneRekord->getNewUnproccessed() === 2) {
