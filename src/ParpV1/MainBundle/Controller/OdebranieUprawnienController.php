@@ -139,20 +139,20 @@ class OdebranieUprawnienController extends Controller
      */
     public function grupyUseraAction($samaccountname)
     {
-            $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
-            if (empty($user)) {
-                return new JsonResponse('Nie znaleziono uzytkownika o podanym samaccountname.',404);
-            }
-            $uprawnienia = $this->audytUprawnienUsera($user[0]);
-            $urawnieniaJson = json_encode($uprawnienia);
-            $dir = __DIR__."/../../../../app/logs/uprawnienia";
-            if (!file_exists($dir)) {
-                mkdir($dir);
-            }
-            $datetime = new \Datetime();
-            file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
+        $user = $this->get('ldap_service')->getUserFromAD($samaccountname);
+        if (empty($user)) {
+            return new JsonResponse('Nie znaleziono uzytkownika o podanym samaccountname.', 404);
+        }
+        $uprawnienia = $this->audytUprawnienUsera($user[0]);
+        $urawnieniaJson = json_encode($uprawnienia);
+        $dir = __DIR__."/../../../../app/logs/uprawnienia";
+        if (!file_exists($dir)) {
+            mkdir($dir);
+        }
+        $datetime = new \Datetime();
+        file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
 
-            return new JsonResponse($uprawnienia);
+        return new JsonResponse($uprawnienia);
     }
     
     public function audytUprawnienUsera($user)
