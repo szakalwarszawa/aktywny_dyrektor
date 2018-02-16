@@ -906,7 +906,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository('ParpMainBundle:DaneRekord')->find($id);
-//        $poprzednieDane = clone $daneRekord;
         $poprzednieDane = explode(' ', $userFromAD[0]['name']);
 
         if ($daneRekord->getNewUnproccessed() > 0) {
