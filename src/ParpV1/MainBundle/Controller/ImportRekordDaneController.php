@@ -1081,7 +1081,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     /**
      * Umożliwia przeniesienie pracownika do problematycznych
      *
-     * @Route("/zmanaDepStanowDlaTymczasowych/{UserRekordId}", name="zmanaDepStanowDlaTymczasowych", defaults={})
+     * @Route("/zmanaDepSekcjiPrzelozDlaTymczasowych/{UserRekordId}", name="zmanaDepSekcjiPrzelozDlaTymczasowych", defaults={})
      *
      * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_2')")
      *
@@ -1098,13 +1098,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      * @throws \InvalidArgumentException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function zmanaDepStanowDlaTymczasowychAction(Request $request, $UserRekordId)
+    public function zmanaDepSekcjiPrzelozDlaTymczasowychAction(Request $request, $UserRekordId)
     {
         $UserRekordId = (int) $UserRekordId;
         $entityManager = $this->getDoctrine()->getManager();
         $daneRekord = $entityManager->getRepository('ParpMainBundle:DaneRekord')->find($UserRekordId);
 
-        // 2 - zmiana Departamentu, stanowiska, wrzucenie pracownika do problematycznych
+        // 2 - zmiana departamentu/sekcji/przelozonego, wrzucenie pracownika do problematycznych
         $daneRekord->setNewUnproccessed(2);
         $entityManager->persist($daneRekord);
         $entityManager->flush();
