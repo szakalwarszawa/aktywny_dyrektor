@@ -70,7 +70,7 @@
                             <a class="btn btn-primary" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a>
                             {% endif %}
                             {% if is_granted(expression('"PARP_BZK_2" in roles')) and dane_rekord.departament == 600 %}
-                                <a class="btn btn-primary" href="{{ path('zmanaDepStanowDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}"><i class="fa fa-exclamation-circle"></i> <i class="fa fa-briefcase"></i> Zmiana Dep./Przełożonego - przenieś do problematycznych</a>
+                                <a class="btn btn-primary" href="{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}"><i class="fa fa-exclamation-circle"></i> <i class="fa fa-briefcase"></i> Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych</a>
                             {% endif %}
                         </div>
                     </div>
