@@ -1079,13 +1079,19 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     }
     
     /**
+     * Umożliwia przeniesienie pracownika do problematycznych
+     *
      * @Route("/zmanaDepStanowDlaTymczasowych/{UserRekordId}", name="zmanaDepStanowDlaTymczasowych", defaults={})
+     *
      * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_2')")
+     *
      * @Method("GET")
+     *
      * @param Request $request
      * @param         $UserRekordId
      *
      * @return Response
+     *
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      * @throws \Doctrine\ORM\ORMInvalidArgumentException
      * @throws \LogicException
