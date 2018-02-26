@@ -1077,6 +1077,36 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         return new Response($id);
     }
+    
+    /**
+     * @Route("/zmanaDepStanowDlaTymczasowych/{UserRekordId}", name="zmanaDepStanowDlaTymczasowych", defaults={})
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_2')")
+     * @Method("GET")
+     * @param Request $request
+     * @param         $UserRekordId
+     *
+     * @return Response
+     * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
+     * @throws \Doctrine\ORM\ORMInvalidArgumentException
+     * @throws \LogicException
+     * @throws \InvalidArgumentException
+     * @throws \Doctrine\ORM\OptimisticLockException
+     */
+    public function zmanaDepStanowDlaTymczasowychAction(Request $request, $UserRekordId)
+    {
+        $UserRekordId = (int) $UserRekordId;
+        $entityManager = $this->getDoctrine()->getManager();
+        $daneRekord = $entityManager->getRepository('ParpMainBundle:DaneRekord')->find($UserRekordId);
+
+        // 2 - zmiana Departamentu, stanowiska, wrzucenie pracownika do problematycznych
+        $daneRekord->setNewUnproccessed(2);
+        $entityManager->persist($daneRekord);
+        $entityManager->flush();
+
+        $this->addFlash('warning', 'Pracownik został dodany do listy.');
+        
+        return $this->redirect($this->generateUrl('przejrzyjnowych'));
+    }
 
     public function sendMailAboutNewUser($name, $samaccountname)
     {
