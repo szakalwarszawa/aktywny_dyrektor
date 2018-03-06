@@ -1178,8 +1178,7 @@ class LdapService
             'Pracownicy'
                 //, 'SGG-(skrót D/B)-Public-RO'
         ];
-        if (!in_array($sekcja, $pomijajSekcje, true)) {
-            //die('1');
+        if (null !== $sekcja && !in_array($sekcja, $pomijajSekcje, true)) {
             $grupy[] = 'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
         switch ($stanowisko) {
