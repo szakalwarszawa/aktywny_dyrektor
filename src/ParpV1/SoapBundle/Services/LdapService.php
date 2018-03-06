@@ -1179,7 +1179,6 @@ class LdapService
                 //, 'SGG-(skrót D/B)-Public-RO'
         ];
         if (null !== $sekcja && !in_array($sekcja, $pomijajSekcje, true)) {
-            //die('1');
             $grupy[] = 'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
         }
         switch ($stanowisko) {
