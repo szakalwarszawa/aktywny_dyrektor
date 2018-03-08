@@ -161,7 +161,7 @@ class UserZasoby
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $powodNadania;
@@ -170,7 +170,7 @@ class UserZasoby
     /**
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="string", length=4000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $powodOdebrania;
