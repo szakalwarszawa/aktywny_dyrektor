@@ -293,7 +293,12 @@
                         {% for z in userzasoby %}
                             <tr>
                                 <td><a href="{{path('zasoby_edit', {'id' : z.zasobId})}}">{{z.zasobNazwa}}</a></td>
-                                <td><a href="{{path('userEdit', {'samaccountname' : z.samaccountname})}}">{{z.samaccountname|showFullname}}</a></td>
+                                <td>{% if (entity.pracownikSpozaParp) %}
+                                        {{ z.samaccountname|showFullname }}
+                                    {% else %}
+                                        <a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
+                                    {% endif %}
+                                </td>
                                 <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
                                 <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
                                 <td>{{z.sumowanieUprawnien ? "TAK" : "NIE"}}</td>
