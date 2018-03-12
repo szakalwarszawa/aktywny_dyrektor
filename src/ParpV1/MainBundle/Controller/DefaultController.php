@@ -355,7 +355,7 @@ class DefaultController extends Controller
     {
         // Sięgamy do AD:
         $ldap = $this->get('ldap_service');
-        $ADUser = $ldap->getUserFromAD($samaccountname);
+        $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
 
         $picture = $ADUser[0]['thumbnailphoto'];
 
