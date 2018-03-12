@@ -19,6 +19,15 @@
 
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+    <script>
+        $(".popoverElement").on('click', function (e) {
+            e.preventDefault();
+            $('.popoverElement').not(this).popover('hide');
+            var skadZdjecie = $(this).attr('href');
+            $(this).attr('data-content', '<center><img style="height: 120px;" src="' + skadZdjecie + '" /></center>');
+        });
+        $(".popoverElement").popover();
+    </script>
     <style>
         table tr td:first-child, table tr th:first-child{
             min-width:30px;
