@@ -1,18 +1,20 @@
 $(document).ready(function(){
-   $('#form_cn').change(function(){
-       var data = {'name' : $(this).val()};
-       
-       var url = Routing.generate('userSuggestLoginAction');
-            $.post(url, data, function (ret) {
-                $('#form_samaccountname').val(ret);
-            }).fail(function () {
-                alert("Wystapił błąd pobierania danych do wygenerowania loginu!");
-            })
-       
-      var val = $(this).val();
-      val = val.replace(" ", "_").toLowerCase();
-      $('#form_samaccountname').val(val); 
-   }); 
+    if ($("body").hasClass("userAdd")) {
+        $('#form_cn').change(function(){
+            var data = {'name' : $(this).val()};
+
+            var url = Routing.generate('userSuggestLoginAction');
+                 $.post(url, data, function (ret) {
+                     $('#form_samaccountname').val(ret);
+                 }).fail(function () {
+                     alert("Wystapił błąd pobierania danych do wygenerowania loginu!");
+                 })
+
+           var val = $(this).val();
+           val = val.replace(" ", "_").toLowerCase();
+           $('#form_samaccountname').val(val); 
+        }); 
+   }
 });
 //$('#form_fromWhen').mask("9999-99-99");
 $('#suggestinitials').click(function () {

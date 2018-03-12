@@ -154,7 +154,6 @@ class DefaultController extends Controller
                 ->setOperatorsVisible(false);
             $grid->getColumn('info')
                 ->setTitle('Sekcja')
-                ->setFilterType('select')
                 ->setOperators(array('like'))
                 ->setOperatorsVisible(false);
             $grid->getColumn('lastlogon')
