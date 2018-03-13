@@ -1175,7 +1175,8 @@ class LdapService
         $pomijajSekcje = ['ND', '', 'n/d', ''];
         $grupy = [
             'SGG-(skrót D/B)-Wewn-Wsp-RW',
-            'Pracownicy'
+            'Pracownicy',
+            'DLP-gg-USB_CD_DVD-DENY'
                 //, 'SGG-(skrót D/B)-Public-RO'
         ];
         if (null !== $sekcja && !in_array($sekcja, $pomijajSekcje, true)) {

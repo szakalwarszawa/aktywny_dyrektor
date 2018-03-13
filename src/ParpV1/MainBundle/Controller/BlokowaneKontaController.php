@@ -38,7 +38,7 @@ class BlokowaneKontaController extends Controller
      * Lists all zablokowane konta entities.
      *
      * @Route("/lista/{ktorzy}", name="lista_odblokowania", defaults={"ktorzy" : "zablokowane"})
-     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_1')")
      * @Template()
      * @param string $ktorzy
      * @return Response
@@ -77,7 +77,7 @@ class BlokowaneKontaController extends Controller
      *
      * @Route("/unblock/{ktorzy}/{samaccountname}", name="unblock_user")
      * @Template()
-     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_1')")
      * @param Request $request
      * @param $ktorzy
      * @param $samaccountname
@@ -138,7 +138,7 @@ class BlokowaneKontaController extends Controller
      * Lists all zablokowane konta entities.
      *
      * @Route("/kontaDisabledPrzenies", name="kontaDisabledPrzenies")
-     * @Security("has_role('PARP_ADMIN', 'PARP_BZK_1', 'PARP_BZK_2')")
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_1')")
      * @Template()
      * @param Request $request
      * @return
