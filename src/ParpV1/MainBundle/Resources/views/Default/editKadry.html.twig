@@ -11,6 +11,15 @@
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h3>Imie  i nazwisko: {{user.name}}</h3>
+                {% if "now"|date('Y-m-d') > user.accountExpires|date('Y-m-d') %}
+                    <div class="alert alert-danger" role="alert">UWAGA! konto wygasło: {{ user.accountExpires }}</div>
+                {% endif %}
+                {% if user.description starts with 'Konto' %}
+                    <div class="alert alert-danger" role="alert">UWAGA! {{ user.description }}</div>
+                {% endif %}
+                {% if user.useraccountcontrol matches '/ACCOUNTDISABLE/' %}
+                    <div class="alert alert-danger" role="alert">UWAGA! Konto wyłączone w AD.</div>
+                {% endif %}
                 <div class="form-horizontal">
                     {{  form_start(form) }}
                     <div class="form-group">
