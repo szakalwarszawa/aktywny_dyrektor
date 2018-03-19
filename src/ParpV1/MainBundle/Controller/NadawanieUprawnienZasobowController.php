@@ -274,7 +274,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         'name' => $sam
                     );
                 } else {
-                    $ADUser = $ldap->getUserFromAD($sam);
+                    $ADUser = $ldap->getUserFromAD($sam, null, null, 'wszyscyWszyscy');
                     $users[] = $ADUser[0];
                 }
             }

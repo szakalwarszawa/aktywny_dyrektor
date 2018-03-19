@@ -61,6 +61,7 @@ class ParpUserProvider implements UserProviderInterface
                     'PARP_MANAGER',
                     'PARP_BZK_1',
                     'PARP_BZK_2',
+                    'PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW',
                     'PARP_ADMIN',
                     'PARP_ADMIN_ZASOBOW',
                     'PARP_ADMIN_TECHNICZNY_ZASOBOW'
