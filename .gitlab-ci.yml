@@ -65,8 +65,8 @@ lint_html:
     script:
         - apk update
         - apk add nodejs
-        - node_modules/.bin/htmlhint --config .htmlhint_ruleset.js src/ParpV1/**/*.{htm,html,html.twig}
-        - node_modules/.bin/htmlhint --config .htmlhint_ruleset.js app/Resources/views/**/*.{htm,html,html.twig}
+        - node_modules/.bin/htmlhint src/ParpV1/**/*.{htm,html,html.twig} --config .htmlhint_ruleset.js
+        - node_modules/.bin/htmlhint app/Resources/views/**/*.{htm,html,html.twig} --config .htmlhint_ruleset.js
 
 php_cpd:
     image: alpine:3.7
