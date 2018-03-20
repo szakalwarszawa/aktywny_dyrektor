@@ -19,7 +19,7 @@ build:
         - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "allocine/twigcs:1.0.*" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
         - apk add nodejs nodejs-npm
         - npm init -y
-        - npm install eslint eslint-plugin-html eslint-config-idiomatic htmlhint
+        - npm install eslint eslint-plugin-html eslint-config-idiomatic htmllint-cli
 
     artifacts:
         untracked: true
@@ -65,11 +65,7 @@ lint_html:
     script:
         - apk update
         - apk add nodejs
-        - node_modules/.bin/htmlhint src/ParpV1/**/*.{htm,html,html.twig} --rulesdir .htmlhint_ruleset.js
-        - node_modules/.bin/htmlhint src/ParpV1/**/*.{htm,html,html.twig} --config .htmlhint_ruleset.js
-        - node_modules/.bin/htmlhint app/Resources/views/**/*.{htm,html,html.twig} --rulesdir "./.htmlhint_ruleset.js"
-        - node_modules/.bin/htmlhint app/Resources/views/**/*.{htm,html,html.twig} --config "./.htmlhint_ruleset.js"
-        - node_modules/.bin/htmlhint src/ParpV1/**/*.{htm,html,html.twig} --config zupa.js
+        - node_modules/.bin/htmllint-cli src/ParpV1/**/*.html.twig
 
 php_cpd:
     image: alpine:3.7
