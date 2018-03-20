@@ -16,7 +16,7 @@ build:
         - curl -sS https://getcomposer.org/installer | php
         - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
         - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
-        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "asm89/twig-lint" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
+        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "allocine/twigcs:1.0.*" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
         - apk add nodejs nodejs-npm
         - npm init -y
         - npm install eslint eslint-plugin-html eslint-config-idiomatic htmlhint
@@ -45,8 +45,8 @@ lint_twig:
         - apk update
         - apk add php5 php5-ctype
         - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./bin/twig-lint lint app/Resources/views/
-        - ./bin/twig-lint lint src/ParpV1/
+        - ./bin/twigcs lint app/Resources/views/
+        - ./bin/twigcs lint src/ParpV1/
 
 lint_js:
     image: alpine:3.7
