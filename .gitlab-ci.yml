@@ -27,6 +27,7 @@ build:
             - vendor/
             - web/
             - bin/
+            - node_modules/
 
 cs_psr2:
     image: alpine:3.7
