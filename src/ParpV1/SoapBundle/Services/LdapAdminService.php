@@ -636,15 +636,37 @@ class LdapAdminService
      */
     public function sendMailAboutNewUser($name, $samaccountname)
     {
-        $mails = ['kamil_jakacki@parp.gov.pl', 'marcin_lipinski@parp.gov.pl'];
-        $view = 'Dnia '.date('Y-m-d')." został utworzony nowy użytkownik '".$name."' o loginie '".$samaccountname."', utwórz mu pocztę pliz :)";
+        $mails = ['marcin_lipinski@parp.gov.pl','dorota_tymanowska@parp.gov.pl'];
+
+        $ldap = $this->get('ldap_service');
+        $user = $ldap->getUserFromAD($samaccountname);
+
+        $view =
+            'Dnia '.
+            date('Y-m-d').
+            " został utworzony nowy użytkownik '".
+            $name.
+            "' o loginie '".
+            $samaccountname.
+            "', utwórz mu pocztę pliz :)";
+        $view .=
+            "<br><br>Pozostałe dane: <ul><li>stanowisko: ".
+            $user[0]['title'] . '</li><li>department: '.
+            $user[0]['department'].
+            ' [' . $user[0]['description'].
+            ']</li><li>sekcja: '.
+            $user[0]['info'].
+            ' [' . $user[0]['division'].
+            ']</li><li>e-mail wewnętrzny: '.
+            $samaccountname.
+            '@parp.gov.pl</li></ul>';
+
         $message = \Swift_Message::newInstance()
-                ->setSubject('Nowy użytkownik w AkD')
-                ->setFrom('intranet@parp.gov.pl')
-                //->setFrom("kamikacy@gmail.com")
-                ->setTo($mails)
-                ->setBody($view)
-                ->setContentType('text/html');
+            ->setSubject('Nowy użytkownik w AkD')
+            ->setFrom('intranet@parp.gov.pl')
+            ->setTo($mails)
+            ->setBody($view)
+            ->setContentType('text/html');
 
         $this->container->get('mailer')->send($message);
     }
