@@ -73,21 +73,21 @@
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
 
-                            {% if "PARP_ADMIN" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or  "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
+                            {% if "PARP_ADMIN" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy w AD</a></li>
                                     {% if "PARP_ADMIN" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles %}
                                         <li><a href="{{ path('przejrzyjnowych') }}"><i class="fa fa-exclamation-circle"></i> użytkownicy problematyczni - nowi z rekorda</a></li>
-                                        <li><a href="{{ path('main', {'onlyTemporary' : 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi (czekający na utworzenia w AD)</a></li>
+                                        <li><a href="{{ path('main', {'onlyTemporary': 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi (czekający na utworzenia w AD)</a></li>
                                         <li><a href="{{ path('userAdd') }}"><i class="fa fa-plus-square"></i> Dodaj użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy' : 'nieobecni'}) }}"><i class="fa fa-share-square-o"></i> Odblokuj nieaktywnego użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy' : 'zablokowane'}) }}"><i class="fa fa-rotate-right"></i> Odblokuj zablokowanego użytkownika</a></li>
-                                    {%endif %}
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'nieobecni'}) }}"><i class="fa fa-share-square-o"></i> Odblokuj nieaktywnego użytkownika</a></li>
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'zablokowane'}) }}"><i class="fa fa-rotate-right"></i> Odblokuj zablokowanego użytkownika</a></li>
+                                    {% endif %}
                                 </ul>
                             </li>
-                            {% endif%}
+                            {% endif %}
                             {% if "PARP_ADMIN" in app.user.roles %}
                             <li class="dropdown">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
@@ -161,7 +161,7 @@
 
                         </ul>
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{app.user.getRolesHtml}}"
+                            <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{ app.user.getRolesHtml }}"
                              data-placement="left">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"
 
@@ -211,10 +211,10 @@
         </div>
         {% if app.user %}
             {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
-                <div class="text-center"><a href="{{path('nowa_pomoc_techniczna',{uri:app.request.uri|url_encode })}}"><small>Zgłoś problem techniczny</small></a></div>
+                <div class="text-center"><a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
             {% endif %}
         {% else %}
-           <div class="text-center"><a href="{{path('nowe_zgloszenie',{uri:app.request.uri|url_encode })}}"><small>Zgłoś problem techniczny</small></a></div>
+           <div class="text-center"><a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
         {% endif %}
         {% include '::javascripts.html.twig' %}
     </body>
