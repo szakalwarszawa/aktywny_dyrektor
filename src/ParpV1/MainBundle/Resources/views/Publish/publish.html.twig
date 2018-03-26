@@ -1,13 +1,13 @@
 {% extends '::base.html.twig' %}
 
-{% block body %} 
+{% block body %}
     <div class="col-sm-12 publishOutput">
-        {{content|raw}}
+        {{ content|raw }}
     </div>
     <div class="col-sm-12 ">
         {% if showonly == 1 %}
         <br><br>
-        <a href="{{path('publish', {showonly: 0})}}" class="btn btn-danger">Wypchnij powyższe zmiany do AD</a>
+        <a href="{{ path('publish', {showonly: 0}) }}" class="btn btn-danger">Wypchnij powyższe zmiany do AD</a>
         {% endif %}
     </div>
-{%endblock%}
+{% endblock %}

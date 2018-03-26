@@ -8,14 +8,14 @@
         <span class="fa fa-calendar"></span>
     </span>
 </div>
-{% endblock %} 
+{% endblock %}
 
 {% block _form_access_row %}
 <div class="form-group">
     <div class="col-sm-12 control-label text-left control-label">
     <h3>{{ block('form_label') }}</h3>
     </div>
-    <div class="col-sm-12"> 
+    <div class="col-sm-12">
         {{ block('_form_access_widget') }}
     </div>
 </div>
@@ -23,34 +23,34 @@
 {% endblock %}
 {% block _form_access_widget %}
     <div class="col-sm-12 ">
-        <div class="col-sm-4">    
+        <div class="col-sm-4">
             <b>Zasób/uprawnienie</b>
         </div>
-        <div class="col-sm-2">    
+        <div class="col-sm-2">
             <b>Użytkownik</b>
         </div>
-        <div class="col-sm-2">    
+        <div class="col-sm-2">
             <b>Aktywne</b>
         </div>
-        <div class="col-sm-2">    
+        <div class="col-sm-2">
             <b>Moduł</b>
         </div>
-        <div class="col-sm-2">    
+        <div class="col-sm-2">
             <b>Poziom</b>
         </div>
     </div>
     {{ block('form_widget') }}
-{% endblock %} 
+{% endblock %}
 
 {% block checkbox_radio_row -%}
 {% spaceless %}
-    <div class="col-sm-12 {% if not valid %} has-error{% endif %} {{label|getMultipleCheckboxLabelClasses }} uprawnienieRow">
-        
+    <div class="col-sm-12 {% if not valid %} has-error{% endif %} {{ label|getMultipleCheckboxLabelClasses }} uprawnienieRow">
+
         {{ form_widget(form) }}
         {{ form_errors(form) }}
     </div>
 {% endspaceless %}
-{%- endblock checkbox_radio_row %}
+{% - endblock checkbox_radio_row %}
 {% block checkbox_radio_label %}
     {# Do not display the label if widget is not defined in order to prevent double label rendering #}
     {% if widget is defined %}
@@ -64,23 +64,23 @@
             {% set label = name|humanize %}
         {% endif %}
             <div class="col-sm-4">
-                {{- widget|raw }} 
-                <label for="{{id}}" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %} 
+                {{ - widget|raw }}
+                <label for="{{ id }}" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}
                 data-ajaxload2="/app_dev.php/dev/getUzInfo" data-original-title="Tytuł" class="noPadding">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(0) -}}
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(0) - }}
                 </label>
             </div>
             <div class="col-sm-2">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(1)|raw}}                
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(1)|raw }}
             </div>
             <div class="col-sm-2">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(2)|raw}}                
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(2)|raw }}
             </div>
             <div class="col-sm-2">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(3)|raw}}                
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(3)|raw }}
             </div>
             <div class="col-sm-2">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(4)|raw}}                
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(4)|raw }}
             </div>
     {% endif %}
 {% endblock checkbox_radio_label %}

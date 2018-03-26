@@ -1,16 +1,16 @@
 {% extends '::base.html.twig' %}
 
-{% block body %} 
+{% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#czekajaceAD">Czekające na wdrożenie w AD</a></li>
             <li><a data-toggle="tab" href="#komentarze">Komentarze</a></li>
         </ul>
-        
+
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h3>Imie  i nazwisko: {{user.name}}</h3>
+                <h3>Imie  i nazwisko: {{ user.name }}</h3>
                 {% if "now"|date('Y-m-d') > user.accountExpires|date('Y-m-d') %}
                     <div class="alert alert-danger" role="alert">UWAGA! konto wygasło: {{ user.accountExpires }}</div>
                 {% endif %}
@@ -21,13 +21,13 @@
                     <div class="alert alert-danger" role="alert">UWAGA! Konto wyłączone w AD.</div>
                 {% endif %}
                 <div class="form-horizontal">
-                    {{  form_start(form) }}
+                    {{ form_start(form) }}
                     <div class="form-group">
                         <label class="col-sm-4 control-label col-sm-2 control-label" for="form_samaccountname">
                             Nazwa konta
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.samaccountname}}"/>
+                            <input type="text" class="form-control" readonly value="{{ user.samaccountname }}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -35,7 +35,7 @@
                             Imię i nazwisko
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.name}}"/>
+                            <input type="text" class="form-control" readonly value="{{ user.name }}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -43,7 +43,7 @@
                             Inicjały
                         </label>
                         <div class="col-sm-8">
-                            <input type="text" class="form-control" readonly value="{{user.initials}}"/>
+                            <input type="text" class="form-control" readonly value="{{ user.initials }}"/>
                         </div>
                     </div>
                     <div class="form-group">
@@ -51,11 +51,11 @@
                             Biuro / Departament
                         </label>
                         <div class="col-sm-8">
-                            {%if (dane_rekord) %}
-                                <input type="text" class="form-control" readonly value="{{user.department}}"/>
-                            {%else%}                            
+                            {% if (dane_rekord) %}
+                                <input type="text" class="form-control" readonly value="{{ user.department }}"/>
+                            {% else %}
                                 {{ form_widget(form.department) }}
-                            {%endif%}
+                            {% endif %}
                         </div>
                     </div>
                     <div class="form-group">
@@ -63,11 +63,11 @@
                             Stanowisko
                         </label>
                         <div class="col-sm-8">
-                            {%if (dane_rekord) %}
-                                <input type="text" class="form-control" readonly value="{{user.title}}"/>
+                            {% if (dane_rekord) %}
+                                <input type="text" class="form-control" readonly value="{{ user.title }}"/>
                             {% else %}
-                                <div class="col-sm-{{  (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
-                            {% endif %}   
+                                <div class="col-sm-{{ (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
+                            {% endif %}
                         </div>
                     </div>
                     <div class="form-group">
@@ -88,9 +88,9 @@
                             <div class="col-sm-8">
                                 <div id="formRowInfo">
                                 {{ form_widget(form.info) }}
-                                <div class="well">Sekcja w AD: {{user.infoinAD is defined ? user.infoinAD : user.info | default('Brak sekcji')}}</div>
+                                <div class="well">Sekcja w AD: {{ user.infoinAD is defined ? user.infoinAD : user.info | default('Brak sekcji') }}</div>
                                 </div>
-                                {{ form_widget(form.infoNew)}}
+                                {{ form_widget(form.infoNew) }}
                                 <span class="input-group-addon hidden">
                                     <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
                                     Nowa Sekcja
@@ -108,7 +108,7 @@
                                 <a class="btn btn-primary col-sm-12" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
                             </div>
                         </div>
-                                    
+
                         <div class="form-group">
                             {{ form_label(form.accountExpires) }}
                             <div class='col-sm-8'>
@@ -124,11 +124,11 @@
                             {{ form_label(form.isDisabled) }}
                             <div class='col-sm-8'>
                                 <div class="input-group">
-                                    {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}'}}) }}
+                                    {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}' }}) }}
                                 </div>
                             </div>
                         </div>
-                        <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden'}}" id="disableDescriptionDiv" >
+                        <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden' }}" id="disableDescriptionDiv" >
                             {{ form_label(form.disableDescription) }}
                             <div class='col-sm-8'>
                                 <div class="input-group">
@@ -136,7 +136,7 @@
                                 </div>
                             </div>
                         </div>
-                        
+
                         <div class="form-group">
                             {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
                             <div class='col-sm-8'>
@@ -172,37 +172,37 @@
                             <tbody>
                                 {% for row in pendingEntries %}
                                 {% if (
-                                    row.initials or 
-                                    row.department or 
-                                    row.manager or 
-                                    row.title or 
-                                    row.info or 
+                                    row.initials or
+                                    row.department or
+                                    row.manager or
+                                    row.title or
+                                    row.info or
                                     row.initialrights
-                                )%}
+                                ) %}
                                     <tr>
                                         <td>{{ n }}</td>
-                                        <td>{{ row.cn  }}</td>
-                                        <td>{{row.initials}}</td>
-                                        <td>{{row.department}}</td>
-                                        <td>{{row.manager}}</td>
-                                        <td>{{row.title}}</td>
-                                        <td>{{row.info}}</td>
-                                        <td>{{row.initialrights}}</td>
-                                        <td>{{row.distinguishedName}}</td>
-                                        <td>{{row.fromWhen|date}}</td>
+                                        <td>{{ row.cn }}</td>
+                                        <td>{{ row.initials }}</td>
+                                        <td>{{ row.department }}</td>
+                                        <td>{{ row.manager }}</td>
+                                        <td>{{ row.title }}</td>
+                                        <td>{{ row.info }}</td>
+                                        <td>{{ row.initialrights }}</td>
+                                        <td>{{ row.distinguishedName }}</td>
+                                        <td>{{ row.fromWhen|date }}</td>
                                     </tr>
                                     {% set n = n + 1 %}
-                                {%endif%}
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
-            
+
                         </table>
                     {% else %}
-                        
+
                         <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
-                        
+
                     {% endif %}
-                
+
                 </div>
             </div>
             <div id="komentarze" class="tab-pane fade">
@@ -233,13 +233,13 @@
                 </div>
             </div>
         </div>
-    </div>  
-    
+    </div>
+
     <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
 
     <script>
         $('#form_info option').attr('disabled', true);
-        $('#form_info optgroup[label={{user.description}}] option').attr('disabled', false);
+        $('#form_info optgroup[label={{ user.description }}] option').attr('disabled', false);
 
         {# Z nieznanych mi przyczyn, pod FF nie wybiera właściwie wartości pola z sekcją. #}
         $(document).ready(function() {
@@ -247,4 +247,4 @@
         });
     </script>
 
-{%endblock%}
+{% endblock %}

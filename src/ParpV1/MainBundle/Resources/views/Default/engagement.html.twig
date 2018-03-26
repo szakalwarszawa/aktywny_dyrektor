@@ -2,7 +2,7 @@
 
 {% block body %}
 
-    <a href="{{ path('userEdit', {samaccountname: samaccountname})}}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{samaccountname}}</a>
+    <a href="{{ path('userEdit', {samaccountname: samaccountname}) }}" class="btn btn-primary"> < Wróć do edycji użytkownika : {{ samaccountname }}</a>
     <h3>Zaangażowanie dla {{ samaccountname }}:</h3>
     <form method="post" name="formularz">
         <div class="btn-group" data-toggle="buttons">
@@ -10,11 +10,11 @@
 
                 {% if year|default('')|length>0 %}
                     <label class="btn btn-primary {% if y == year %}active{% endif %}">
-                        <input type="radio" name="year" value="{{y}}"> {{ y }}
+                        <input type="radio" name="year" value="{{ y }}"> {{ y }}
                     </label>
                 {% else %}
                     <label class="btn btn-primary {% if y == "now"|date("Y") %}active{% endif %}">
-                        <input type="radio" name="year" value="{{y}}"> {{ y }}
+                        <input type="radio" name="year" value="{{ y }}"> {{ y }}
                     </label>
                 {% endif %}
 
@@ -103,20 +103,20 @@
                             {% for key2, row2 in row %}
                             <td>
                                 <input {% if row2['historia'] is not empty %} style="background-color: rgb(255,255,0)" {% endif %}
-                                    name="angaz[{{ key }}][{{key2}}]" class="{{ key2 }} float" size="4" value="{{row2['procent']}}"/>
-                                {% if row2['historia'] is not empty %} 
+                                    name="angaz[{{ key }}][{{ key2 }}]" class="{{ key2 }} float" size="4" value="{{ row2['procent'] }}"/>
+                                {% if row2['historia'] is not empty %}
                                 <span class="dropdown_zmiany red-tooltip" style="width: 300px;" data-toggle="popover" title="Zmiany zaangażowania:" data-content="
                                 {% for zmiana in row2['historia'] %}
-                                    {{ zmiana.kiedyUsuniety | date('Y.m.d') }} 
-                                    {{ zmiana.percentFormat }}% 
+                                    {{ zmiana.kiedyUsuniety | date('Y.m.d') }}
+                                    {{ zmiana.percentFormat }}%
                                     {{ zmiana.ktoUsunal }}<br />
                                 {% endfor %}" data-placement="left">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" ><b class="caret"></b></a>
                                 {% endif %}
                             </td>
-                        {% endfor%}
+                        {% endfor %}
                     </tr>
-                {%endfor%}
+                {% endfor %}
 
                 <tr>
                     <th>Suma:</th>
@@ -127,7 +127,7 @@
             </table>
 
         {% endif %}
-        <input type="hidden" name="samaccountname" id="samaccountname" value="{{samaccountname}}" />
+        <input type="hidden" name="samaccountname" id="samaccountname" value="{{ samaccountname }}" />
         <div class="alert alert-warning" role="alert">
             <p><strong>Uwaga!</strong></p>
             <p>Wartości należy wprowadzać jako wartości procentowe (np. 25%).</p>

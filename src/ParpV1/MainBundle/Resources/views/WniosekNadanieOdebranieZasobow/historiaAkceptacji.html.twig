@@ -1,6 +1,6 @@
 <table class="record_properties table table-striped">
     <tbody>
-        
+
         <tr>
             <th>Data</th>
             <th>Kto</th>
@@ -11,40 +11,40 @@
         {% set numerIteracji = 0 %}
         {% for ss in entity.wniosek.statusy %}
             <tr>
-                <td>{{ ss.createdAt|date("Y-m-d H:i:s")}}</td>
+                <td>{{ ss.createdAt|date("Y-m-d H:i:s") }}</td>
                 <td>
-                    {%if(ss.zastepstwo)%}
+                    {% if(ss.zastepstwo) %}
                         <div class="alert alert-danger"
                         data-toggle="popover" title="Zastepstwo"  data-placement="top"
-                        data-content="Zastępstwo za {{ss.zastepstwo.kogoZastepuje}} od  {{ss.zastepstwo.dataOd|date("Y-m-d")}} do {{ss.zastepstwo.dataDo|date("Y-m-d")}}">
-                            {{ ss.createdBy|showFullname }} w zastepstwie za {{ss.zastepstwo.kogoZastepuje|showFullname}}
+                        data-content="Zastępstwo za {{ ss.zastepstwo.kogoZastepuje }} od  {{ ss.zastepstwo.dataOd|date("Y-m-d") }} do {{ ss.zastepstwo.dataDo|date("Y-m-d") }}">
+                            {{ ss.createdBy|showFullname }} w zastepstwie za {{ ss.zastepstwo.kogoZastepuje|showFullname }}
                         </div>
-                    {%else%}
+                    {% else %}
                         {{ ss.createdBy|showFullname }}
-                    {%endif%}
+                    {% endif %}
                 </td>
-                <td>{{ ss.statusName }} 
-                
-                {%if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1)%}
-                {%set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent  ? entity.wniosek.parent.parent : entity.wniosek.parent)))%}
-                <a 
-                href="{{path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id})}}" 
+                <td>{{ ss.statusName }}
+
+                {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1) %}
+                {% set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent  ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
+                <a
+                href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id}) }}"
                 class="btn btn-primary">
                 {% set bylJuzPierwszyParent = true %}
-                Link do wniosku nr {{wniosekDoLinku.numer}}
+                Link do wniosku nr {{ wniosekDoLinku.numer }}
                 </a>
-                {%endif%}
+                {% endif %}
                 {% set numerIteracji = numerIteracji + 1 %}
-                
-                
+
+
                 {% if ss.rejected %}
                     <div class="alert alert-danger">
                     (Cofnięty)
                     </div>
-                {%endif%}
+                {% endif %}
                 </td>
             </tr>
-        {%endfor%}
+        {% endfor %}
 
     </tbody>
 </table>

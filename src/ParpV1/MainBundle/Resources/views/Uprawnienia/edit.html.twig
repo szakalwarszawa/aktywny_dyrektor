@@ -7,7 +7,7 @@
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#useruprawnienia">Lista Użytkowników Uprawnienia</a></li>
         </ul>
-        
+
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h1>Edycja Uprawnienia </h1>
@@ -21,13 +21,13 @@
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(edit_form) }}
                 </div>
-            </div>            
+            </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Uprawnienia', id: edit_form.vars.value.id})) }}
                 </div>
             </div>
-            
+
             <div id="useruprawnienia" class="tab-pane fade">
                 <div  class="tabContent">
                     <table class="table table-striped table-bordered">
@@ -36,7 +36,7 @@
                         </tr>
                         {% for uz in users %}
                             <tr>
-                                <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname})}}">{{ uz.ADUser.name }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: uz.ADUser.samaccountname}) }}">{{ uz.ADUser.name }}</a></td>
                             </tr>
                         {% endfor %}
                         </tbody>
@@ -46,7 +46,7 @@
         </div>
     </div>
 
-    
-    
-    
+
+
+
 {% endblock %}

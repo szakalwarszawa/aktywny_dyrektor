@@ -10,62 +10,62 @@
             <th>Stanowisko</th>
             <th>Sekcja</th>
             <th>Departament skrót</th>
-            <th>Sekcja skrót</th>                     
+            <th>Sekcja skrót</th>
         </tr>
-        {%for d in data%}
+        {% for d in data %}
             <tr>
-                <td>{{d.id}}</td>
-                <td>{{d.samaccountname}}</td>
-                <td>{{d.name}}</td>
-                <td>{{d.title}}</td>
-                <td>{{d.info}}</td>
-                <td>{{d.description}}</td>
-                <td>{{d.division}}</td>
+                <td>{{ d.id }}</td>
+                <td>{{ d.samaccountname }}</td>
+                <td>{{ d.name }}</td>
+                <td>{{ d.title }}</td>
+                <td>{{ d.info }}</td>
+                <td>{{ d.description }}</td>
+                <td>{{ d.division }}</td>
             </tr>
             <tr>
                 <td colspan="7">
                 <h3>Grupy odebrane w AD:</h3>
-{#                     {{d.memberOfNames}} #}
-                    <label onclick="zaznaczWszystkie('grupy[{{d.samaccountname}}]')" class="btn btn-primary">Zaznacz wszystkie</label>
-                    
-                    
-                    {%for g in d.memberOf%}
+{#                     {{ d.memberOfNames }} #}
+                    <label onclick="zaznaczWszystkie('grupy[{{ d.samaccountname }}]')" class="btn btn-primary">Zaznacz wszystkie</label>
+
+
+                    {% for g in d.memberOf %}
                         <div class="col-xs-4">
                             {% if  g not in d.memberOfNow %}
                                 <table>
                                     <tr>
                                         <td>
-                                            <input type="checkbox" name="grupy[{{d.samaccountname}}]" id="grupa{{g}}" value="{{g}}"/>
+                                            <input type="checkbox" name="grupy[{{ d.samaccountname }}]" id="grupa{{ g }}" value="{{ g }}"/>
                                         </td>
                                         <td>
-                                            <label for="grupa{{g}}" class="btn btn-danger">{{g}}</label>
+                                            <label for="grupa{{ g }}" class="btn btn-danger">{{ g }}</label>
                                         </td>
                                     </tr>
                                 </table>
-                            {%endif%}
+                            {% endif %}
                         </div>
-                    {%endfor%}
+                    {% endfor %}
                     <div class="col-xs-12">
-                        <textarea id="text{{d.samaccountname}}" placeholder="powód przywrócenia"></textarea>
-                        <button onclick="nadajGrupy('{{d.samaccountname}}');" class="btn btn-success">Przywróć zaznaczone grupy</button>
+                        <textarea id="text{{ d.samaccountname }}" placeholder="powód przywrócenia"></textarea>
+                        <button onclick="nadajGrupy('{{ d.samaccountname }}');" class="btn btn-success">Przywróć zaznaczone grupy</button>
                     </div>
                     <div class="col-xs-12"><h3>Grupy w AD:</h3></div>
-                    {%for g in d.memberOf%}
+                    {% for g in d.memberOf %}
                         <div class="col-xs-4">
                             {% if g in d.memberOfNow %}
-                                <label class="btn btn-success">{{g}}</label>
-                            {%endif%}
+                                <label class="btn btn-success">{{ g }}</label>
+                            {% endif %}
                         </div>
-                    {%endfor%}
-                    
+                    {% endfor %}
+
                 </td>
             </tr>
-        {%endfor%}
+        {% endfor %}
    </table>
    <script>
     function zaznaczWszystkie(name){
         $('input[name="'+name+'"]').each(function(){
-            $(this).prop('checked', true);    
+            $(this).prop('checked', true);
         });
     }
     function nadajGrupy(sam){
@@ -75,13 +75,13 @@
             var grupy = [];
             $('input[name="grupy['+sam+']"]').each(function(){
                 if($(this).prop('checked')){
-                    grupy.push($(this).val());  
-                }  
+                    grupy.push($(this).val());
+                }
             });
-            var url = "{{path('nadaj_grupy_ad')}}/"+sam+"/"+grupy.join(';')+'/'+$('#text'+sam).val();
+            var url = "{{ path('nadaj_grupy_ad') }}/"+sam+"/"+grupy.join(';')+'/'+$('#text'+sam).val();
             window.location.href = url;
         }
     }
    </script>
-    
-{%endblock%}
+
+{% endblock %}

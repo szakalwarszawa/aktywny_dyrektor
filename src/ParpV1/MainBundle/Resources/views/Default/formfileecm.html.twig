@@ -4,7 +4,7 @@
     <div class="row" style="height:20px;">
         <div class="col-md-2 col-md-offset-4">
             <div id="ajaxSpinnerContainer">
-                <img id="ajaxSpinnerImage" src="{{ asset('img/ajax-loader.gif')}}" title="trwa wczytywanie pliku..."  style="display:none;"/>
+                <img id="ajaxSpinnerImage" src="{{ asset('img/ajax-loader.gif') }}" title="trwa wczytywanie pliku..."  style="display:none;"/>
             </div>
         </div>
     </div>
@@ -12,13 +12,13 @@
 
     {% if not form.vars.valid %}
         <div class="alert alert-danger" role="alert">
-            {{ form_errors(form.plik)}}
+            {{ form_errors(form.plik) }}
         </div>
     {% endif %}
 
     <div class="col-sm-8">
         <form class="form-horizontal" method="POST" role="form" {{ form_enctype(form) }}>
-            {{  form_start(form) }}
+            {{ form_start(form) }}
 
             <div class="form-group">
                 {{ form_label(form.plik) }}
@@ -40,4 +40,4 @@
             $("#ajaxSpinnerImage").show();
         });
     </script>
-{%endblock%}
+{% endblock %}

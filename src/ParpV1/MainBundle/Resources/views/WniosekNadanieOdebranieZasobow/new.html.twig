@@ -1,11 +1,11 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Utwórz wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów</h1>
+    <h1>Utwórz wniosek o {{ entity.odebranie ? "odebranie" : "nadanie" }} zasobów</h1>
     {% if message != '' %}
-    <div class="alert alert-danger">{{message}}</div>
-    
-    {%endif%}
+    <div class="alert alert-danger">{{ message }}</div>
+
+    {% endif %}
     {{ form(form) }}
 
         <div class="btn-group">

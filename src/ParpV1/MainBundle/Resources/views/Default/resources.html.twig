@@ -23,9 +23,9 @@
                     {% for row in zasoby %}
                         <tr {% if row.poziomDostepuNapraw is defined and row.poziomDostepuNapraw | length > 0 %}class="bg-danger"{% endif %}>
                             <td>{{ n }}</td>
-                            <td>{{ row.nazwa  }}</td>
-                            <td>{{ row.opis  }}</td>
-                            {% if row.poziomDostepuNapraw is defined  %}
+                            <td>{{ row.nazwa }}</td>
+                            <td>{{ row.opis }}</td>
+                            {% if row.poziomDostepuNapraw is defined %}
                             {% for poziomDostepuNapraw in row.poziomDostepuNapraw %}
                                 <td><li>[{{ poziomDostepuNapraw.jest }}]</li></td>
                                 <td>
@@ -51,9 +51,9 @@
 
             </table>
         {% else %}
-            
+
             <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
-            
+
         {% endif %}
 
 

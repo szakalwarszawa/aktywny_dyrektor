@@ -22,15 +22,14 @@
 {#<img src="{{ path('userGetPhoto',{'samaccountname': row.field('samaccountname')}) }}" />#}
 
 
-{% block grid_column_opis_cell  %}
+{% block grid_column_opis_cell %}
     <div class="text-right">
-     {{value|raw }} 
+     {{ value|raw }}
     </div>
-{% endblock %}                               
+{% endblock %}
 
-{% block grid_column_userZasoby_zasobOpis_group_concat_cell  %}
+{% block grid_column_userZasoby_zasobOpis_group_concat_cell %}
     <div class="text-right">
-     {{value|zasobyNazwa}}
+     {{ value|zasobyNazwa }}
     </div>
-{% endblock %} 
-                            
+{% endblock %}

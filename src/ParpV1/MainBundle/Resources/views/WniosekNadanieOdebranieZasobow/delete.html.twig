@@ -1,18 +1,18 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Usuwanie wniosku nr: {{entity.wniosek.numer}}</h1>
+    <h1>Usuwanie wniosku nr: {{ entity.wniosek.numer }}</h1>
     <div class="alert alert-danger">
         Czy na pewno chcesz skasować poniższy wniosek ?
     </div>
-    <ul>                
+    <ul>
         <li><b>Pracownicy :</b> {{ entity.pracownicy }}</li>
         <li><b>Zasoby: </b>
         {% set i = 0 %}
-        {% for z in entity.userZasoby %}                
-            {% set i = i + 1%}
-            {{z.zasobId|zasobNazwa}} {% if i != entity.userZasoby|length %},{%endif%}
-        {% endfor%}
+        {% for z in entity.userZasoby %}
+            {% set i = i + 1 %}
+            {{ z.zasobId|zasobNazwa }} {% if i != entity.userZasoby|length %},{% endif %}
+        {% endfor %}
         </li>
     </ul>
     <table class="record_properties table table-striped">
@@ -25,11 +25,11 @@
                 <th>Numer</th>
                 <td>
                     <div class="alert alert-success">{{ entity.wniosek.numer }}</div>
-                    
-                    {% if entity.wniosek.parent%}
-                        
-                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.wniosekNadanieOdebranieZasobow.id})}}" class="btn btn-info">powstał z podzielenia Wniosku o nr {{entity.wniosek.parent.numer}}</a>
-                    {%endif%}
+
+                    {% if entity.wniosek.parent %}
+
+                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.wniosek.parent.wniosekNadanieOdebranieZasobow.id}) }}" class="btn btn-info">powstał z podzielenia Wniosku o nr {{ entity.wniosek.parent.numer }}</a>
+                    {% endif %}
                 </td>
             </tr>
             <tr>
@@ -40,10 +40,10 @@
                         Na wnioski:
                         <ul class="list-group">
                         {% for w in entity.wniosek.children %}
-                            <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
-                        {%endfor %}                           
+                            <li class="list-group-item"><a class="btn btn-info" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id}) }}">Wniosek nr {{ w.numer }} - {{ w.status.nazwa }}</a></li>
+                        {% endfor %}
                         </ul>
-                    {%endif%}
+                    {% endif %}
                 </td>
             </tr>
             <tr>
@@ -74,7 +74,7 @@
                 <th>Edytowany (zablokowany) dnia</th>
                 <td>{{ entity.wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
             </tr>
-            
+
             <tr>
                 <th>Osoby które widzą wniosek</th>
                 <td>{{ entity.wniosek.viewernames }}</td>
@@ -83,9 +83,9 @@
                 <th>Osoby które mogą edytować wniosek</th>
                 <td>{{ entity.wniosek.editornames }}</td>
             </tr>
-            
-            
-            
+
+
+
         </tbody>
     </table>
 
