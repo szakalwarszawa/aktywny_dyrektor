@@ -123,7 +123,7 @@
                                 <tr>
                                     <td>
                                         {% if uz.wniosek is not null %}
-                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id}) }}">{{ uz.wniosek.id }}</a>
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">{{ uz.wniosek.id }}</a>
                                         {% else %}
                                             Bez wniosku
                                         {% endif %}
@@ -131,7 +131,7 @@
                                     <td>
 
                                         {% if uz.wniosek is not null %}
-                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id}) }}">Wniosek  o {{ uz.wniosek.odebranie ? "odebranie" : "nadanie" }} uprawnień numer: {{ uz.wniosek.wniosek.numer }} </a>
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">Wniosek  o {{ uz.wniosek.odebranie ? "odebranie" : "nadanie" }} uprawnień numer: {{ uz.wniosek.wniosek.numer }} </a>
                                         {% else %}
                                             Nie odebrane
                                         {% endif %}
@@ -141,22 +141,22 @@
                             {% endfor %}
                             {% if entity.wniosekUtworzenieZasobu %}
                                 <tr>
-                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekUtworzenieZasobu.id}) }}">{{ entity.wniosekUtworzenieZasobu.id }}</a></td>
-                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekUtworzenieZasobu.id}) }}">Wniosek o utworzenie zasobu: {{ entity.wniosekUtworzenieZasobu.wniosek.numer }} </a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekUtworzenieZasobu.id}) }}">{{ entity.wniosekUtworzenieZasobu.id }}</a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekUtworzenieZasobu.id}) }}">Wniosek o utworzenie zasobu: {{ entity.wniosekUtworzenieZasobu.wniosek.numer }} </a></td>
                                 </tr>
                             {% endif %}
-                            {% if (entity.wnioskiZmieniajaceZasob|length  > 0) %}
+                            {% if (entity.wnioskiZmieniajaceZasob|length > 0) %}
                                 {% for wniosek in entity.wnioskiZmieniajaceZasob %}
                                     <tr>
-                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : wniosek.id}) }}">{{ wniosek.id }}</a></td>
-                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : wniosek.id}) }}">Wniosek o zmianę zasobu: {{ wniosek.wniosek.numer }} </a></td>
+                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': wniosek.id}) }}">{{ wniosek.id }}</a></td>
+                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': wniosek.id}) }}">Wniosek o zmianę zasobu: {{ wniosek.wniosek.numer }} </a></td>
                                     </tr>
                                 {% endfor %}
                             {% endif %}
                             {% if entity.wniosekSkasowanieZasobu %}
                                 <tr>
-                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekSkasowanieZasobu.id}) }}">{{ entity.wniosekSkasowanieZasobu.id }}</a></td>
-                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekSkasowanieZasobu.id}) }}">Wniosek o usunięcie zasobu: {{ entity.wniosekSkasowanieZasobu.wniosek.numer }} </a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekSkasowanieZasobu.id}) }}">{{ entity.wniosekSkasowanieZasobu.id }}</a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekSkasowanieZasobu.id}) }}">Wniosek o usunięcie zasobu: {{ entity.wniosekSkasowanieZasobu.wniosek.numer }} </a></td>
                                 </tr>
                             {% endif %}
                         </tbody>

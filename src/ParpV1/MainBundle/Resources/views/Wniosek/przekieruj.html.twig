@@ -19,7 +19,7 @@
                     <td>
                         {{ wniosek.wniosekNadanieOdebranieZasobow is not null ? "O nadanie/odebranie uprawnień do zasobów" : "Wniosek o utworzenie/zmianę/skasowanie zasobu" }} o id :
                         <b>{{ wniosek.wniosekNadanieOdebranieZasobow is not null ? wniosek.wniosekNadanieOdebranieZasobow.id : wniosek.wniosekUtworzenieZasobu.id }}    </b>
-                        <a href="{{ wniosek.wniosekNadanieOdebranieZasobow is not null ? path('wnioseknadanieodebraniezasobow_show', {'id' : wniosek.wniosekNadanieOdebranieZasobow.id}) : path('wniosekutworzeniezasobu_edit', {'id' : wniosek.wniosekUtworzenieZasobu.id}) }}" class="btn btn-primary">Link do wniosku</a>
+                        <a href="{{ wniosek.wniosekNadanieOdebranieZasobow is not null ? path('wnioseknadanieodebraniezasobow_show', {'id': wniosek.wniosekNadanieOdebranieZasobow.id}) : path('wniosekutworzeniezasobu_edit', {'id': wniosek.wniosekUtworzenieZasobu.id}) }}" class="btn btn-primary">Link do wniosku</a>
                     </td>
                 </tr>
                 <tr>

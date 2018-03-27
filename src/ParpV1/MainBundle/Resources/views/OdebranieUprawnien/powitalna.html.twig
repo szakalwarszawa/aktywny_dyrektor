@@ -41,7 +41,7 @@
                     <div class="alert alert-danger">
                     {{ g.grupaAD }}
                     {% if(g.zasob) %}
-                    <a href="{{ url('wnioseknadanieodebraniezasobow_new_dla_zasobow', {'zasobyId' : g.zasob.id}) }}" class="btn btn-success">Złóż wniosek o nadanie uprawnień do tego zasobu</a>
+                    <a href="{{ url('wnioseknadanieodebraniezasobow_new_dla_zasobow', {'zasobyId': g.zasob.id}) }}" class="btn btn-success">Złóż wniosek o nadanie uprawnień do tego zasobu</a>
                     {% endif %}
                     </div>
                 {% endfor %}
@@ -58,7 +58,7 @@
                 {% for g in uprawnienia.powinienMiec.sumaZWnioskow %}
                     <div class="alert alert-{{ g.grupa == 'brak' ? "warning" : (g.jestWAD ? "success" : "danger") }}">
                         Zasób :
-                        <a href="{{ url('zasoby_edit', {'id' : g.zasobId}) }}" class="btn btn-success">{{ g.zasob }}</a>
+                        <a href="{{ url('zasoby_edit', {'id': g.zasobId}) }}" class="btn btn-success">{{ g.zasob }}</a>
 
                         {% if g.grupa == 'brak' %}
                             ZASÓB NIE MA GRUPY AD

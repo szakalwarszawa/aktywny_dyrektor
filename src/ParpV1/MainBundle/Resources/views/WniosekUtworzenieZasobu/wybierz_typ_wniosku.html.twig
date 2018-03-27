@@ -2,11 +2,11 @@
 
 {% block body -%}
 <script type="text/javascript"src="{{ asset('js/wnioskiZasob.js') }}"></script>
-    {{ form_start(form, {'attr' : {'class' : 'container' }}) }}
+    {{ form_start(form, {'attr': {'class': 'container' }}) }}
     <div class="col-sm-12 container">
         <div class="form-group">
             <label class="col-sm-2  control-label"></label>
-            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr' : {'onclick' : 'submitWniosekType(event)' }}) }}  </div>
+            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr': {'onclick': 'submitWniosekType(event)' }}) }}  </div>
         </div>
         <table class="table bordered">
             <tr>
@@ -30,7 +30,7 @@
         </table>
         <div class="form-group">
             <label class="col-sm-2  control-label"></label>
-            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr' : {'onclick' : 'submitWniosekType(event)' }}) }}  </div>
+            <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr': {'onclick': 'submitWniosekType(event)' }}) }}  </div>
         </div>
     </div>
     <div class="col-sm-12 container">

@@ -23,7 +23,7 @@
                     {% set i = i + 1 %}
                     {% if z.zasobId not in przetworzoneZasoby %}
                         {% set przetworzoneZasoby = przetworzoneZasoby|merge([z.zasobId]) %}
-                        <a class="btn" href="{{ path('zasoby_edit', {'id' : z.zasobId}) }}">{{ z.zasobId|zasobNazwa }} </a>
+                        <a class="btn" href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobId|zasobNazwa }} </a>
 {#                         {% if i != entity.userZasoby|length %},{% endif %} #}
                     {% endif %}
                 {% endfor %}
@@ -48,20 +48,20 @@
                 {% set numerIteracji = 0 %}
                 <ul class="list-inline">
                     {% for ss in entity.wniosek.statusy %}
-                        {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1) %}
+                        {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}
                         {% set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                         {% endif %}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default" }}"
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1) %}Podzielony wniosek nr {{ wniosekDoLinku.numer }} {% endif %}"
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}Podzielony wniosek nr {{ wniosekDoLinku.numer }} {% endif %}"
                         >
-                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1) %}
+                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}
 
                             <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id}) }}" class="whiteLink">
-                            {% set bylJuzPierwszyParent = true %}
+                            {# {% set bylJuzPierwszyParent = true %} #}
                             {% endif %}
                             <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right" }}">&nbsp;</i>
 
-                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length - 1) %}
+                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length - 1) %}
 
                             </a>
                             {% endif %}
@@ -82,20 +82,20 @@
                         <h4>Akcje:</h4>
                         {% if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
                             {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                         {% else %}
-                            <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'reject'}) }}');"
+                            <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'reject'}) }}');"
                             class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
                             {% if canReturn %}
-                            <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'return'}) }}');"
+                            <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'return'}) }}');"
                             class="btn btn-info" title="">Zwrot do poprawy o jeden krok do tyłu <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
 
                             {% endif %}
                             {% if(entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR") %}
-                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
-                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                             {% else %}
-                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'}) }}"
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}"
                                 onclick="ZaakceptujWniosek(event, '{{ entity.wniosek.status.nazwaSystemowa == '03_EDYCJA_WLASCICIEL' ? '1' : '0' }}')" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                             {% endif %}
                         {% endif %}
@@ -107,20 +107,20 @@
 
                 {% endif %}
                 {% if czyLsi and entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
 
 
                 {% if canUnblock %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                 {% endif %}
                 {% if app.user.username == 'marcin_lipinski' or app.user.username == 'kamil_jakacki' %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj i PONÓW PUBLIKACJĘ <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj i PONÓW PUBLIKACJĘ <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
 
                 {% if 'PARP_ADMIN' in app.user.roles %}
-                    <a href="{{ path('wniosek_przekieruj', {'id' : entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek  <i class="glyphicon glyphicon-arrow-right">&nbsp;</i></a>
+                    <a href="{{ path('wniosek_przekieruj', {'id': entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek  <i class="glyphicon glyphicon-arrow-right">&nbsp;</i></a>
                 {% endif %}
 
             </div>
@@ -243,7 +243,7 @@
                             <tr>
                                 <th>Osoby które widzą wniosek</th>
                                 <td>
-                                    {% for v in  entity.wniosek.viewers %}
+                                    {% for v in entity.wniosek.viewers %}
                                         {{ v.samaccountname|showFullname }},
                                     {% endfor %}
 {#                                     {{ entity.wniosek.viewernames|addSpaces }} #}</td>
@@ -251,7 +251,7 @@
                             <tr>
                                 <th>Osoby które mogą edytować wniosek</th>
                                 <td>
-                                    {% for v in  entity.wniosek.editors %}
+                                    {% for v in entity.wniosek.editors %}
                                         {{ v.samaccountname|showFullname }},
                                     {% endfor %}
 {#                                     {{ entity.wniosek.editornames|addSpaces }} #}
@@ -271,7 +271,7 @@
             <div id="zasoby" class="tab-pane fade">
 
 
-                {% if editor %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames' : entity.jsonSams}) }}" class="btn btn-success">Dodaj uprawnienia</a>{% endif %}
+                {% if editor %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-success">Dodaj uprawnienia</a>{% endif %}
                 <table class="record_properties table table-striped tablesorter">
                     <thead>
                         <tr>
@@ -292,7 +292,7 @@
                         <tbody>
                         {% for z in userzasoby %}
                             <tr>
-                                <td><a href="{{ path('zasoby_edit', {'id' : z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
+                                <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
                                 <td>{% if (entity.pracownikSpozaParp) %}
                                         {{ z.samaccountname|showFullname }}
                                     {% else %}
@@ -326,15 +326,15 @@
                                 </td>
                                 <td>
                                 {% if entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
-                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId' : entity.id, 'action' : 'editResources','uzid' : z.id, 'samaccountnames' : z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
-                                    <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id' : z.id}) }}" class="btn btn-danger">Kasuj</a>
+                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources','uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id': z.id}) }}" class="btn btn-danger">Kasuj</a>
                                 {% endif %}
 
                                 {% if(entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
-                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id' : z.wniosek.id}) }}" class="btn btn-warning">Nadanie</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning">Nadanie</a>
                                 {% else %}
-                                    {% if(z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id ) %}
-                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id' : z.wniosekOdebranie.id}) }}" class="btn btn-warning">Odebranie</a>
+                                    {% if(z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id) %}
+                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Odebranie</a>
                                     {% endif %}
                                 {% endif %}
 
@@ -378,7 +378,7 @@
                         </tr>
                         {% for e in grupyAD %}
                             <tr>
-                                <td><a href="{{ path('userEdit', {'samaccountname' : e.entry.samaccountname}) }}">{{ e.entry.samaccountname|showFullname }}</a></td>
+                                <td><a href="{{ path('userEdit', {'samaccountname': e.entry.samaccountname}) }}">{{ e.entry.samaccountname|showFullname }}</a></td>
                                 <td>{{ e.entry.memberOf }}</td>
                                 <td>{{ e.entry.isImplemented }}</td>
                                 <td>
@@ -438,8 +438,8 @@
                             <tbody>
                             {% for z in userzasobyRozbite %}
                                 <tr>
-                                    <td><a href="{{ path('zasoby_edit', {'id' : z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
-                                    <td><a href="{{ path('userEdit', {'samaccountname' : z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a></td>
+                                    <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
+                                    <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a></td>
                                     <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
@@ -459,7 +459,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
                 {% if editor %}
-                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id : entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
             </div>
         </div>

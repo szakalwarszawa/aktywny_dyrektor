@@ -18,7 +18,7 @@
         <center>
             <div class="btn-group">
                 <a class="btn btn-success btn" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
-                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
+                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie: 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
 
             </div>
         </center>
@@ -35,11 +35,11 @@
         </div>
     {% endif %}
     <ul class="nav nav-tabs">
-        <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore' : 'oczekujace'}) }}">Oczekujące na realizację</a></li>
-        <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore' : 'wtoku'}) }}">W toku</a></li>
-        <li class="{{ ktore == "zakonczone" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore' : 'zakonczone'}) }}">Zakończone</a></li>
+        <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'oczekujace'}) }}">Oczekujące na realizację</a></li>
+        <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wtoku'}) }}">W toku</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'zakonczone'}) }}">Zakończone</a></li>
         {% if app.user.hasRole('PARP_ADMIN') %}
-            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore' : 'wszystkie'}) }}">Wszystkie</a></li>
+            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wszystkie'}) }}">Wszystkie</a></li>
         {% endif %}
     </ul>
 

@@ -1,10 +1,8 @@
 {% extends "::base.html.twig" %}
 
 {% block body %}
-
     <div class="col-sm-12">
         <h3>{{ user }}</h3>
-
         {% if zasoby|length > 0 %}
             <table class="table table-hover">
                 <thead>
@@ -35,7 +33,7 @@
                                             <li><a href="{{ path('uprawnienia_zamien',
                                                 {
                                                     'obecnyPoziomDostepuIdB64': row.id|base64Encode|url_encode,
-                                                    'obecnyPoziomDostepuB64': poziomDostepuNapraw.jest|base64Encode|url_encode ,
+                                                    'obecnyPoziomDostepuB64': poziomDostepuNapraw.jest|base64Encode|url_encode,
                                                     'nowyPoziomDostepuB64': powinnoByc|base64Encode|url_encode
                                                 }) }}">[{{ powinnoByc }}]</a></li>
                                             {% endif %}
@@ -48,15 +46,9 @@
                         {% set n = n + 1 %}
                     {% endfor %}
                 </tbody>
-
             </table>
         {% else %}
-
             <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
-
         {% endif %}
-
-
-
     </div>
 {% endblock %}

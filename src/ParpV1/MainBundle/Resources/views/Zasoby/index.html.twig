@@ -3,8 +3,8 @@
 {% block body %}
 <h1>Lista Zasoby</h1>
 <ul class="nav nav-tabs">
-  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby', {'aktywne' : 1}) }}">Zasoby aktywne</a></li>
-  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby', {'aktywne' : 0}) }}">Zasoby nieaktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby', {'aktywne': 1}) }}">Zasoby aktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby', {'aktywne': 0}) }}">Zasoby nieaktywne</a></li>
 </ul>
 
 

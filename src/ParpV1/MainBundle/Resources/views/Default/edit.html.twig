@@ -18,7 +18,7 @@
             <div id="general" class="tab-pane fade in active">
                 <h3>{{ user.name }}</h3>
                 {% if "PARP_ADMIN" in app.user.roles %}
-                    <a href="{{ path('raportBss', {'login' : user.samaccountname}) }}" class="btn btn-warning">Linia czasowa uprawnień</a>
+                    <a href="{{ path('raportBss', {'login': user.samaccountname}) }}" class="btn btn-warning">Linia czasowa uprawnień</a>
                 {% endif %}
 
                 {% include 'ParpMainBundle:Default:userForm.html.twig' %}
@@ -60,8 +60,8 @@
                 <div class="tab-content">
                     <div id="zasobyActive" class="tab-pane fade in active">
                         <div class="tabContent">
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' }) }}" class="btn btn-success">Dodaj zasoby</a>
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removeResources' }) }}" class="btn btn-danger">Odbierz zasoby</a>
+                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' }) }}" class="btn btn-success">Dodaj zasoby</a>
+                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'removeResources' }) }}" class="btn btn-danger">Odbierz zasoby</a>
 
                             {% if zasoby|length > 0 %}
                             <table class="table table-hover" id="userZasobyTable">
@@ -185,8 +185,8 @@
                 <div class="tab-content">
                     <div id="uprawnieniaActive" class="tab-pane fade in active">
                         <div class="tabContent">
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' }) }}" class="btn btn-success">Dodaj uprawnienia</a>
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames' : { (user.samaccountname) : 1}|json_encode(), 'action' : 'removePrivileges' }) }}" class="btn btn-danger">Odbierz uprawnienia</a>
+                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' }) }}" class="btn btn-success">Dodaj uprawnienia</a>
+                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'removePrivileges' }) }}" class="btn btn-danger">Odbierz uprawnienia</a>
 
                             {% if uprawnienia|length > 0 %}
                                 <table class="table table-hover" id="uprawnieniaTable">

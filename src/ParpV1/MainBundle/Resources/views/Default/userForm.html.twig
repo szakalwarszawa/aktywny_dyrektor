@@ -88,7 +88,7 @@
         <div class="form-group">
             {{ form_label(form.isDisabled) }}
             <div class='col-sm-8'>
-                    {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}' }}) }}
+                    {{ form_widget(form.isDisabled, {'attr': {'onchange': 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}' }}) }}
 
             </div>
         </div>

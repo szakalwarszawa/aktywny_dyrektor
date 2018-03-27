@@ -35,8 +35,8 @@
                 {{ form_widget(formularz.opis) }}
             </div>
         </div>
-        {% set currentPath = app.request.attributes.get('_route') %}
-        {% if currentPath == 'pomoc_techiniczna_nowa' %}
+        {% set current_path = app.request.attributes.get('_route') %}
+        {% if current_path == 'pomoc_techiniczna_nowa' %}
             <div class="form-group">
                 <div class="col-xs-12">
                     <a href="{{ path('pomoc_techniczna') }}" class="btn btn-primary">Powrót do listy</a>

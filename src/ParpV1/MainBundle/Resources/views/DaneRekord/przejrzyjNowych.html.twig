@@ -196,8 +196,8 @@
                               <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
                               <a class="list-group-item">Nadanie nowych uprawnień w oparciu o nowy departament '{{ obj.departament.name }}'</a>
                           {% endif %}
-                          {% if obj.nazwisko ~ " " ~obj.imie != user.name %}
-                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{ user.name }}' na '{{ obj.nazwisko ~ " " ~obj.imie }}'</a>
+                          {% if obj.nazwisko ~ " " ~ obj.imie != user.name %}
+                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{ user.name }}' na '{{ obj.nazwisko ~ " " ~ obj.imie }}'</a>
                           {% endif %}
                         </div>
                     </div>
@@ -262,7 +262,7 @@
                           {% if(obj.newUnproccessed == 1) %}
                           <a class="list-group-item">Nadanie Biura/Departamentu : '{{ obj.departament.name }}'</a>
                           <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{ obj.departament.name }}'</a>
-                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{ obj.nazwisko ~ " " ~obj.imie }}'</a>
+                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{ obj.nazwisko ~ " " ~ obj.imie }}'</a>
                           <a class="list-group-item">Nadanie loginu '{{ obj.login }}'</a>
                           {% else %}
                           <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
@@ -299,7 +299,7 @@
                         </div>
                         <div class="list-group">
                           <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
-                          <a class="list-group-item">Usunięcie użytkownika {{ obj.nazwisko ~ " " ~obj.imie }} z kolejki importu</a>
+                          <a class="list-group-item">Usunięcie użytkownika {{ obj.nazwisko ~ " " ~ obj.imie }} z kolejki importu</a>
 
                         </div>
                     </div>
