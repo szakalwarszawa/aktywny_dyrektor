@@ -20,17 +20,17 @@
             </tr>
             {% for zgloszenie in zgloszenia %}
             {% if(zgloszenie.project.id == redmine_projekt) %}
-            <tr {% if zgloszenie.custom_fields.10 is defined and zgloszenie.custom_fields.10.id==1 %}class="info"{% endif %}>
+            <tr {% if zgloszenie.custom_fields.10 is defined and zgloszenie.custom_fields.10.id == 1 %}class="info"{% endif %}>
                 <td>{{ zgloszenie.id }}</td>
                 {# Wyświetlanie tematu i opisu tylko dla zgłoszeń użytkownika kategoria_id = 22 #}
-                <td>{% if zgloszenie.category.id is defined and zgloszenie.category.id==22 %}
+                <td>{% if zgloszenie.category.id is defined and zgloszenie.category.id == 22 %}
                 		{{ zgloszenie.subject }}
                 	{% else %}
                 		Automatyczne
                 	{% endif %}
                 </td>
                 <td>{% if zgloszenie.category.name is defined %} {{ zgloszenie.category.name }} {% endif %}</td>
-                <td>{% if zgloszenie.category.id is defined and zgloszenie.category.id==22 %}
+                <td>{% if zgloszenie.category.id is defined and zgloszenie.category.id == 22 %}
                 		{{ zgloszenie.description }}
                 	{% else %}
                 		Szczegółowy opis zgłoszenia przekazany obsłudze pomocy technicznej

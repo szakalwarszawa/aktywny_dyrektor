@@ -19,8 +19,8 @@
                     <tbody>
                         <tr>
                             <th>Imię i nazwisko</th>
-                            <td>{{ user  ? user.name : "BRAK WPISU W AD" }}</td>
-                            <td>{{ daneRekord  ? daneRekord.imie ~ " " ~ daneRekord.nazwisko : "BRAK WPISU W REKORD" }}</td>
+                            <td>{{ user ? user.name : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? daneRekord.imie ~ " " ~ daneRekord.nazwisko : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.cn, {'attr' : {'readonly' : 'true' }}) }}</div>
@@ -29,8 +29,8 @@
                         </tr>
                         <tr>
                             <th>Biuro / Departament</th>
-                            <td>{{ user  ? user.department ~ "(" ~ user.description ~ ")" : "BRAK WPISU W AD" }}</td>
-                            <td>{{ daneRekord  ? departamentRekord : "BRAK WPISU W REKORD" }}</td>
+                            <td>{{ user ? user.department ~ "(" ~ user.description ~ ")" : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? departamentRekord : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.department) }}</div>
@@ -39,8 +39,8 @@
                         </tr>
                         <tr>
                             <th>Stanowisko</th>
-                            <td>{{ user  ? user.title : "BRAK WPISU W AD" }}</td>
-                            <td>{{ daneRekord  ? daneRekord.stanowisko : "BRAK WPISU W REKORD" }}</td>
+                            <td>{{ user ? user.title : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? daneRekord.stanowisko : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.title) }}</div>
@@ -49,7 +49,7 @@
                         </tr>
                         <tr>
                             <th>Sekcja</th>
-                            <td>{{ user  ? user.division ~ "(" ~ user.info ~ ")" : "BRAK WPISU W AD" }}</td>
+                            <td>{{ user ? user.division ~ "(" ~ user.info ~ ")" : "BRAK WPISU W AD" }}</td>
                             <td>TYCH DANYCH NIE MA W SYSTEMIE REKORD</td>
                             <td>
                                 <div class="form-group">
@@ -59,7 +59,7 @@
                         </tr>
                         <tr>
                             <th>Przełożony</th>
-                            <td>{{ user  ? user.manager : "BRAK WPISU W AD" }}</td>
+                            <td>{{ user ? user.manager : "BRAK WPISU W AD" }}</td>
                             <td>TYCH DANYCH NIE MA W SYSTEMIE REKORD</td>
                             <td>
                                 <div class="form-group">

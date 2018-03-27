@@ -26,7 +26,7 @@
                 <td>{{ ss.statusName }}
 
                 {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and  numerIteracji != entity.wniosek.statusy|length -1) %}
-                {% set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent  ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
+                {% set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                 <a
                 href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id}) }}"
                 class="btn btn-primary">

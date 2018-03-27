@@ -68,7 +68,7 @@
                     var checked = $('input[type=checkbox]', $(this)).prop('checked');
                     if(checked)
                         console.log('checked '+checked+' '+txt);
-                    if(txt.indexOf(szukaj) >= 0 || checked){
+                    if(txt.indexOf(szukaj) >= 0||checked){
                         $(this).removeClass('hidden');
                     }else{
                         $(this).addClass('hidden');

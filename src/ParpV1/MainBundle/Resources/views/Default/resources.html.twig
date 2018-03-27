@@ -21,7 +21,7 @@
                 {% set n = 1 %}
                 <tbody>
                     {% for row in zasoby %}
-                        <tr {% if row.poziomDostepuNapraw is defined and row.poziomDostepuNapraw | length > 0 %}class="bg-danger"{% endif %}>
+                        <tr {% if row.poziomDostepuNapraw is defined and row.poziomDostepuNapraw|length > 0 %}class="bg-danger"{% endif %}>
                             <td>{{ n }}</td>
                             <td>{{ row.nazwa }}</td>
                             <td>{{ row.opis }}</td>
@@ -31,7 +31,7 @@
                                 <td>
                                     {% if poziomDostepuNapraw.powinno_byc %}
                                         {% for powinnoByc in poziomDostepuNapraw.powinno_byc %}
-                                            {% if powinnoByc | length > 0 %}
+                                            {% if powinnoByc|length > 0 %}
                                             <li><a href="{{ path('uprawnienia_zamien',
                                                 {
                                                     'obecnyPoziomDostepuIdB64': row.id|base64Encode|url_encode,

@@ -107,7 +107,7 @@
                                 {% if row2['historia'] is not empty %}
                                 <span class="dropdown_zmiany red-tooltip" style="width: 300px;" data-toggle="popover" title="Zmiany zaangażowania:" data-content="
                                 {% for zmiana in row2['historia'] %}
-                                    {{ zmiana.kiedyUsuniety | date('Y.m.d') }}
+                                    {{ zmiana.kiedyUsuniety|date('Y.m.d') }}
                                     {{ zmiana.percentFormat }}%
                                     {{ zmiana.ktoUsunal }}<br />
                                 {% endfor %}" data-placement="left">

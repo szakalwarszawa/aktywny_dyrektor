@@ -46,7 +46,7 @@
                                         {% if c == "zasobId" %}
                                             {{ (attribute(e.entity, c))|zasobNazwa }}
                                         {% else %}
-                                            {{ attribute(e.entity, c | toCamelcase)|getObjectValue }}
+                                            {{ attribute(e.entity, c|toCamelcase)|getObjectValue }}
                                         {% endif %}
                                         {% if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}</strong>{% endif %}
                                     {% endif %}
