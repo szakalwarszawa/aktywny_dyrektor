@@ -148,7 +148,7 @@
             var samaccountname = $('#samaccountname').val();
             //alert("Value of Changed Radio is : " +rok +' '+samaccountname);
 
-            var tmpurl = "{{ path('engageUser', {'samaccountname': 'tmpid1','year': 'tmpid2'}) }}";
+            var tmpurl = "{{ path('engageUser', {'samaccountname': 'tmpid1', 'year': 'tmpid2'}) }}";
             var url = tmpurl.replace('tmpid1', samaccountname).replace('tmpid2', year);
 
             window.location.href = url;

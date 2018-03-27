@@ -9,20 +9,18 @@
                 {% if entity.pracownikSpozaParp %}
                 <li>
                     <div class="alert alert-danger">
-
                         <b>Czy pracownik/pracownicy spoza PARP</b>
                         <b>{{ entity.pracownikSpozaParp ? "TAK" : "NIE" }}</b>
-
                     </div>
                 </li>
                 {% endif %}
                 <li><b>Zasoby: </b>
                 {% set i = 0 %}
-                {% set przetworzoneZasoby = {} %}
+                {% set przetworzone_zasoby = {} %}
                 {% for z in entity.userZasoby %}
                     {% set i = i + 1 %}
-                    {% if z.zasobId not in przetworzoneZasoby %}
-                        {% set przetworzoneZasoby = przetworzoneZasoby|merge([z.zasobId]) %}
+                    {% if z.zasobId not in przetworzone_zasoby %}
+                        {% set przetworzone_zasoby = przetworzone_zasoby|merge([z.zasobId]) %}
                         <a class="btn" href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobId|zasobNazwa }} </a>
 {#                         {% if i != entity.userZasoby|length %},{% endif %} #}
                     {% endif %}
@@ -30,13 +28,12 @@
                 </li>
                 <li><b>Cel nadania/odebrania: </b>
                 {% set i = 0 %}
-                {% set przetworzonePowody = {} %}
+                {% set przetworzone_powody = {} %}
                 {% for z in entity.userZasoby %}
                     {% set i = i + 1 %}
-                    {% if z.powodNadania not in przetworzonePowody %}
-                        {% set przetworzonePowody = przetworzonePowody|merge([z.powodNadania]) %}
+                    {% if z.powodNadania not in przetworzone_powody %}
+                        {% set przetworzone_powody = przetworzone_powody|merge([z.powodNadania]) %}
                         <span class="btn celWniosku">{{ z.powodNadania }}</span>
-
 {#                         {% if i != entity.userZasoby|length %},{% endif %} #}
                     {% endif %}
                 {% endfor %}
@@ -44,28 +41,28 @@
                 <li><b>Statusy:</b></li>
             </ul>
             <div class="well well-sm statusyWniosku">
-                {% set bylJuzPierwszyParent = false %}
-                {% set numerIteracji = 0 %}
+                {% set byl_juz_pierwszy_parent = false %}
+                {% set numer_iteracji = 0 %}
                 <ul class="list-inline">
                     {% for ss in entity.wniosek.statusy %}
-                        {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}
-                        {% set wniosekDoLinku = ((bylJuzPierwszyParent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
+                        {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
+                        {% set wniosek_do_linku = ((byl_juz_pierwszy_parent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                         {% endif %}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default" }}"
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}Podzielony wniosek nr {{ wniosekDoLinku.numer }} {% endif %}"
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}"
                         >
-                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length -1) %}
+                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosekDoLinku.id}) }}" class="whiteLink">
-                            {# {% set bylJuzPierwszyParent = true %} #}
+                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek_do_linku.id}) }}" class="whiteLink">
+                            {# {% set byl_juz_pierwszy_parent = true %} #}
                             {% endif %}
                             <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right" }}">&nbsp;</i>
 
-                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numerIteracji != entity.wniosek.statusy|length - 1) %}
+                            {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
                             </a>
                             {% endif %}
-                            {% set numerIteracji = numerIteracji + 1 %}
+                            {% set numer_iteracji = numer_iteracji + 1 %}
                         </li>
                     {% endfor %}
                 </ul>
@@ -173,7 +170,7 @@
                         <tbody>
                              <tr>
                                 <th>Id</th>
-                                <td>{{ entity.id }} {{ entity.wniosek is defined ? "("~entity.wniosek.id~")" : "" }}</td>
+                                <td>{{ entity.id }} {{ entity.wniosek is defined ? "(" ~ entity.wniosek.id ~ ")" : "" }}</td>
                             </tr>
                             <tr>
                                 <th>Numer</th>
@@ -205,11 +202,11 @@
                                 <td>
 {#                                     {{ entity.pracownicy }} #}
                                     {% set i = 0 %}
-                                    {% set przetworzoneOsoby = {} %}
+                                    {% set przetworzone_osoby = {} %}
                                     {% for z in entity.userZasoby %}
                                         {% set i = i + 1 %}
-                                        {% if z.samaccountname not in przetworzoneOsoby %}
-                                            {% set przetworzoneOsoby = przetworzoneOsoby|merge([z.samaccountname]) %}
+                                        {% if z.samaccountname not in przetworzone_osoby %}
+                                            {% set przetworzone_osoby = przetworzone_osoby|merge([z.samaccountname]) %}
                                             {{ z.samaccountname|showFullname }} {% if i != entity.userZasoby|length %}<br>{% endif %}
                                         {% endif %}
                                     {% endfor %}
@@ -257,9 +254,6 @@
 {#                                     {{ entity.wniosek.editornames|addSpaces }} #}
                                 </td>
                             </tr>
-
-
-
                         </tbody>
                     </table>
                     {% if editor %}
@@ -326,7 +320,7 @@
                                 </td>
                                 <td>
                                 {% if entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
-                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources','uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
+                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
                                     <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id': z.id}) }}" class="btn btn-danger">Kasuj</a>
                                 {% endif %}
 
