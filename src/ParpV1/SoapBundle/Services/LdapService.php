@@ -1099,7 +1099,8 @@ class LdapService
         $dyrs = $this->getDyrektorow();
 
         foreach ($dyrs as $d) {
-            if (mb_strtoupper(trim($d['description'])) == mb_strtoupper(trim($skrot))) {
+            if (mb_strtoupper(trim($d['description'])) == mb_strtoupper(trim($skrot))
+                || (mb_strtoupper(trim($skrot)) == "DIP" && $d['samaccountname'] == "arkadiusz_dewodzki")) {
                 return $d;
             }
         }
