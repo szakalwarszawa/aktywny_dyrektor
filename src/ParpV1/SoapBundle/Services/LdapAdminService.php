@@ -638,7 +638,7 @@ class LdapAdminService
     {
         $mails = ['marcin_lipinski@parp.gov.pl','dorota_tymanowska@parp.gov.pl'];
 
-        $ldap = $this->get('ldap_service');
+        $ldap = $this->container->get('ldap_service');
         $user = $ldap->getUserFromAD($samaccountname);
 
         $view =
