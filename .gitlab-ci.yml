@@ -76,8 +76,8 @@ lint_html_with_tidy:
     script:
         - apk update
         - apk add tidyhtml
-        - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/**/*.{htm,html,html.twig} 
-        - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/**/*.{htm,html,html.twig}
+        - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/*
+        - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
 
 php_cpd:
     image: alpine:3.7
