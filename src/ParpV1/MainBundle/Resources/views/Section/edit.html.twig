@@ -11,12 +11,11 @@
             <div id="general" class="tab-pane fade in active">
                 <h1>Edycja Section </h1>
                 <div class="tabContent">
-                                        <div class="btn-group">
-
-<a class="btn btn-primary" href="{{ path('section') }}">
-    <i class="fa fa-list"></i> Lista Section
-</a>
-</div>
+                    <div class="btn-group">
+                        <a class="btn btn-primary" href="{{ path('section') }}">
+                            <i class="fa fa-list"></i> Lista Section
+                        </a>
+                    </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(edit_form) }}
                 </div>
@@ -28,8 +27,4 @@
             </div>
         </div>
     </div>
-
-
-
-
 {% endblock %}

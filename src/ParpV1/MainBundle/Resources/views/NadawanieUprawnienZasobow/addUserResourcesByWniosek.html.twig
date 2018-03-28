@@ -1,7 +1,6 @@
 
 {% extends '::base.html.twig' %}
 
-
 {% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
@@ -9,8 +8,6 @@
             <li><a data-toggle="tab" href="#zasobypast">Zasoby już we wniosku</a></li>
             <li class="active"><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
         </ul>
-
-
         <div class="tab-content">
             <div id="wniosek" class="tab-pane fade">
                 <table class="record_properties table table-striped">
@@ -55,9 +52,6 @@
             </table>
             </div>
             <div id="zasobypast" class="tab-pane fade">
-
-
-
                 <table class="record_properties table table-striped">
                     <tbody>
                         <tr>
@@ -91,15 +85,9 @@
                         {% endfor %}
                     </tbody>
                 </table>
-
             </div>
             <div id="zasoby" class="tab-pane fade in active ">
                 {% include 'ParpMainBundle:NadawanieUprawnienZasobow:addUserResourcesInner.html.twig' %}
-
             </div>
         </div>
-
-
-
 {% endblock %}
-

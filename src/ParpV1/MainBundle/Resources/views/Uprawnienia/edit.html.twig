@@ -12,12 +12,11 @@
             <div id="general" class="tab-pane fade in active">
                 <h1>Edycja Uprawnienia </h1>
                 <div class="tabContent">
-                                        <div class="btn-group">
-
-<a class="btn btn-primary" href="{{ path('uprawnienia') }}">
-    <i class="fa fa-list"></i> Lista Uprawnienia
-</a>
-</div>
+                    <div class="btn-group">
+                        <a class="btn btn-primary" href="{{ path('uprawnienia') }}">
+                            <i class="fa fa-list"></i> Lista Uprawnienia
+                        </a>
+                    </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(edit_form) }}
                 </div>
@@ -27,7 +26,6 @@
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Uprawnienia', id: edit_form.vars.value.id})) }}
                 </div>
             </div>
-
             <div id="useruprawnienia" class="tab-pane fade">
                 <div  class="tabContent">
                     <table class="table table-striped table-bordered">
@@ -45,8 +43,4 @@
             </div>
         </div>
     </div>
-
-
-
-
 {% endblock %}

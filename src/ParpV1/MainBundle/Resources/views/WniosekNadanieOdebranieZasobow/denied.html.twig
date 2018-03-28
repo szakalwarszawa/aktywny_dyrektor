@@ -6,7 +6,6 @@
         Nie masz uprawnień do edycji tego wniosku w tym momencie.
         <br>
         Status wniosku : {{ wniosek.wniosek.status }}
-
         {% if viewer or 1 == 1 %}
             <h3>Osoby które mogą obecnie edytować wniosek</h3>
             <ul>
@@ -23,15 +22,9 @@
                 {% for e in wniosek.wniosek.viewers %}
                     <li>{{ e.samaccountname }}</li>
                 {% endfor %}
-
             </ul>
-
         {% endif %}
         </div>
     </div>
-
-
-
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
-
 {% endblock %}

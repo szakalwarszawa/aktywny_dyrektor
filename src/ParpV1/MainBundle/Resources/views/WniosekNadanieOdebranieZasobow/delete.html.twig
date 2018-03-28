@@ -83,14 +83,9 @@
                 <th>Osoby które mogą edytować wniosek</th>
                 <td>{{ entity.wniosek.editornames }}</td>
             </tr>
-
-
-
         </tbody>
     </table>
-
-        <div class="btn-group">
-
-    {{ form(delete_form) }}
-</div>
+    <div class="btn-group">
+        {{ form(delete_form) }}
+    </div>
 {% endblock %}

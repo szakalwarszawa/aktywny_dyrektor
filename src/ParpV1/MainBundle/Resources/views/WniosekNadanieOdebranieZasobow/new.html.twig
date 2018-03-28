@@ -4,17 +4,12 @@
     <h1>Utwórz wniosek o {{ entity.odebranie ? "odebranie" : "nadanie" }} zasobów</h1>
     {% if message != '' %}
     <div class="alert alert-danger">{{ message }}</div>
-
     {% endif %}
     {{ form(form) }}
-
-        <div class="btn-group">
-
-<a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
-    <i class="fa fa-list"></i> Wróć do listy Wniosków o nadanie uprawnień do zasobów
-</a>
-</div>
-
-
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
+            <i class="fa fa-list"></i> Wróć do listy Wniosków o nadanie uprawnień do zasobów
+        </a>
+    </div>
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 {% endblock %}

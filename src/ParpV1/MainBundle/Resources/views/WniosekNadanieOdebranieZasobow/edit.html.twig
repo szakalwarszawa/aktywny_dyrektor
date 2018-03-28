@@ -10,7 +10,6 @@
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
         </ul>
-
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h1> {{ entity.id ? "Edycja" : "Tworzenie" }} wniosku o {{ entity.odebranie ? "odebranie" : "nadanie" }} uprawnień do zasobów </h1>
@@ -21,7 +20,6 @@
                 </div>
             </div>
             <div id="zasoby" class="tab-pane fade">
-
                 <table class="record_properties table table-striped" id="table1">
                     <tbody>
                         <tr>
@@ -56,7 +54,6 @@
                         {% endfor %}
                     </tbody>
                 </table>
-
             </div>
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
@@ -91,20 +88,16 @@
                 </div>
             </div>
         </div>
-<div class="btn-group">
-{% if form.vars.value.id > 0 %}
-<a class="btn btn-success" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.id}) }}">
-    <i class="fa fa-list"></i> Pokaż wniosek
-</a>
-{% endif %}
-<a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
-    <i class="fa fa-list"></i>  Wróć do listy Wniosków o nadanie uprawnień do zasobów
-</a>
-</div>
+        <div class="btn-group">
+            {% if form.vars.value.id > 0 %}
+            <a class="btn btn-success" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.id}) }}">
+                <i class="fa fa-list"></i> Pokaż wniosek
+            </a>
+            {% endif %}
+            <a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
+                <i class="fa fa-list"></i>  Wróć do listy Wniosków o nadanie uprawnień do zasobów
+            </a>
+        </div>
     </div>
-
-
-
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
-
 {% endblock %}
