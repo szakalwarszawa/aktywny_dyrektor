@@ -59,15 +59,25 @@ lint_js:
         - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color src/ParpV1/
         - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color app/Resources/views/
 
-lint_html:
+# lint_html:
+#     image: alpine:3.7
+#     stage: optional
+#     allow_failure: true
+#     script:
+#         - apk update
+#         - apk add nodejs
+#         - node_modules/.bin/htmllint --rc .htmllintrc src/ParpV1/**/*.{htm,html,html.twig} 
+#         - node_modules/.bin/htmllint --rc .htmllintrc app/Resources/views/**/*.{htm,html,html.twig}
+        
+lint_html_with_tidy:
     image: alpine:3.7
     stage: optional
     allow_failure: true
     script:
         - apk update
-        - apk add nodejs
-        - node_modules/.bin/htmllint --rc .htmllintrc src/ParpV1/**/*.{htm,html,html.twig} 
-        - node_modules/.bin/htmllint --rc .htmllintrc app/Resources/views/**/*.{htm,html,html.twig}
+        - apk add tidyhtml
+        - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/**/*.{htm,html,html.twig} 
+        - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/**/*.{htm,html,html.twig}
 
 php_cpd:
     image: alpine:3.7
