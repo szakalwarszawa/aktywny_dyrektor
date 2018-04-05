@@ -421,8 +421,14 @@ class ImportRekordDaneController extends Controller
         
         if ((isset($changeSet['imie']) || isset($changeSet['nazwisko'])) && !$nowy) {
             //zmiana imienia i nazwiska
-            $imie = $poprzednieDane[1];
-            $nazwisko = $poprzednieDane[0];
+            if (is_object($poprzednieDane)) {
+                $imie = $poprzednieDane->getImie();
+                $nazwisko = $poprzednieDane->getNazwisko();
+            } else {
+                $imie = $poprzednieDane[1];
+                $nazwisko = $poprzednieDane[0];
+            }
+
             $entry->setCn($this->get('samaccountname_generator')
                 ->generateFullname(
                     $dr->getImie(),
