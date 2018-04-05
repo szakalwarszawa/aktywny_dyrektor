@@ -9,7 +9,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Zasoby
  * @ORM\Table(name="zasoby")
  * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\ZasobyRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,opis,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,nazwa,opisZasobu,wlascicielZasobu,administratorZasobu,administratorTechnicznyZasobu,wniosekUtworzenieZasobu.wniosek.numer,wniosekUtworzenieZasobu.id")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
@@ -144,7 +144,7 @@ class Zasoby
     protected $miejsceInstalacji;
     /**
      * @var string
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(type="text", nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $opisZasobu;
