@@ -100,8 +100,12 @@ class LdapCommand extends ContainerAwareCommand
 
             $this->showonly = $input->getArgument('showonly');
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)": "Publikowanie zmian do AD";
-            $output->writeln('<comment>'.$msg.'</comment>', false);
 
+            if (php_sapi_name() === "cli") {
+                $output = new BufferedOutput();
+            }
+
+            $output->writeln('<comment>'.$msg.'</comment>', false);
             $output->writeln('<comment>Wczytuję usługi ...                             </comment>', false);
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
