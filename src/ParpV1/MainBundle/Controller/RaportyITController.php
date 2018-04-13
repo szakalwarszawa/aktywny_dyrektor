@@ -630,7 +630,7 @@ class RaportyITController extends Controller
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function nadajGrupyAction($login = 'kamil_jakacki', $grupy = '')
+    public function nadajGrupyAction($login = '', $grupy = '')
     {
         $grupy = explode(',', $grupy);
         $entry = new Entry();
@@ -641,7 +641,8 @@ class RaportyITController extends Controller
         $entry->setOpis('Przywracanie uprawnien za pomoca linku.');
         $this->getDoctrine()->getManager()->persist($entry);
         $this->getDoctrine()->getManager()->flush();
-        var_dump($login, $grupy, $entry);
-        //die();
+
+        $dane[] =  ['konto' => $login, 'grupy w AD' => $grupy];
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Nadawanie uprawnien dla: ' . $login]);
     }
 }
