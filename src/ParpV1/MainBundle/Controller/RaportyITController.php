@@ -630,7 +630,7 @@ class RaportyITController extends Controller
      * @throws \InvalidArgumentException
      * @throws \LogicException
      */
-    public function nadajGrupyAction($login = '', $grupy = '')
+    public function nadajGrupyAction($login, $grupy)
     {
         $grupy = explode(',', $grupy);
         $entry = new Entry();
@@ -643,6 +643,7 @@ class RaportyITController extends Controller
         $this->getDoctrine()->getManager()->flush();
 
         $dane[] =  ['konto' => $login, 'grupy w AD' => $grupy];
+
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Nadawanie uprawnien dla: ' . $login]);
     }
 }
