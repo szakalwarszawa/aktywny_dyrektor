@@ -295,7 +295,7 @@ class DefaultController extends Controller
 
 
         if ($ktorzy === 'usersFromAdFull') {
-            $grid->setLimits(1000);
+            $grid->setLimits(2000);
         }
 
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
