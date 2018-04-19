@@ -6,6 +6,13 @@
             <h3>Wniosek o {{entity.odebranie ? "odebranie" : "nadanie"}} zasobów numer : {{entity.wniosek.numer}}</h3>
             <ul>                
                 <li><b>Pracownicy :</b> {{ entity.pracownicy|addSpaces }}</li>
+                {% if '_' in entity.pracownicy|addSpaces %}
+                    <li>
+                        <div class="alert alert-danger">
+                            <b>UWAGA! Wniosek dotyczy pracowników z niekatywnymi kontami!</b>
+                        </div>
+                    </li>
+                {% endif %}
                 {% if entity.pracownikSpozaParp %}
                 <li>
                     <div class="alert alert-danger">
