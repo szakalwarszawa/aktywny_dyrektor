@@ -2560,4 +2560,45 @@ class DefaultController extends Controller
             sprintf('%s#%s', $url, '#czekajaceAD')
         );
     }
+
+    /**
+     * Zwraca użytkowników z AD z grupami uprawnień (na potrzeby śledzenia zmian w AD).
+     *
+     * @Route("/usersAdData/{showall}", defaults={"showall" : 0})
+     *
+     * @param boolean $showall
+     *
+     * @return JsonResponse
+     *
+     * @throws \Exception
+     */
+    public function getUsersAdDataAction($showall)
+    {
+        $ldap = $this->container->get('ldap_service');
+
+        if ($showall) {
+            $usersFromAD = $ldap->getAllFromAD('wszyscy');
+        } else {
+            $usersFromAD = $ldap->getAllFromAD();
+        }
+
+        if (empty($usersFromAD)) {
+            return new Json404NotFoundResponse('Nie znaleziono użytkowników.');
+        }
+
+        $users = [];
+        foreach ($usersFromAD as $user) {
+            $samaccountname = $user['samaccountname'];
+            unset($user['thumbnailphoto']);
+            unset($user['lastlogon']);
+            unset($user['samaccountname']);
+            unset($user['roles']);
+            unset($user['email']);
+            sort($user['memberOf']);
+            $user['memberOf'] = implode(';', $user['memberOf']);
+            $users[$samaccountname] = $user;
+        }
+
+        return new JsonResponse($users);
+    }
 }
