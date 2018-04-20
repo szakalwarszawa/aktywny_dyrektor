@@ -25,6 +25,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
