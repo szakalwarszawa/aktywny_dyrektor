@@ -1,28 +1,23 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-
     {% if not form.vars.valid %}
         <div class="alert alert-danger" role="alert">
-            {{ form_errors(form.samaccountname)}}
-            {{ form_errors(form.cn)}}
-            {{ form_errors(form.initials)}}
-            {{ form_errors(form.department)}}
-            {{ form_errors(form.info)}}
-            {{ form_errors(form.manager)}}
-            {{ form_errors(form.title)}}
-            {{ form_errors(form.fromWhen)}} 
-            {{ form_errors(form.initialrights)}}  
+            {{ form_errors(form.samaccountname) }}
+            {{ form_errors(form.cn) }}
+            {{ form_errors(form.initials) }}
+            {{ form_errors(form.department) }}
+            {{ form_errors(form.info) }}
+            {{ form_errors(form.manager) }}
+            {{ form_errors(form.title) }}
+            {{ form_errors(form.fromWhen) }}
+            {{ form_errors(form.initialrights) }}
         </div>
     {% endif %}
-
     <div class="col-sm-8">
         <h3>Dodaj pracownika</h3>
-        
         {% include 'ParpMainBundle:Default:userForm.html.twig' %}
     </div>
-
-
     <div id="myModal" class="modal fade">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
@@ -101,6 +96,5 @@
             $("#imienazwisko").val();
         });
 #}
-
     </script>
 {% endblock %}

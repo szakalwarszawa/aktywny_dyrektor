@@ -2,7 +2,7 @@
 
 {% block body -%}
 <div class="col-sm-12">
-    <h3>Historia zmian dla obiektu "{{entityname|objectTitles}}" o id: {{id}} na chwilę: {{now}}</h3>
+    <h3>Historia zmian dla obiektu "{{ entityname|objectTitles }}" o id: {{ id }} na chwilę: {{ now }}</h3>
     <table class="table table-striped table-bordered tree" style="width:100%;">
             <tr>
                 <th>Obiekt</th>
@@ -11,50 +11,50 @@
                 <th>User</th>
             </tr>
             {% for t,a in result %}
-                <tr class="treegrid-{{t}}">
+                <tr class="treegrid-{{ t }}">
                     <td colspan="1">
-                        {{a.obiekt|join(", ")}}
+                        {{ a.obiekt|join(", ") }}
                     </td>
                     <td colspan="1">
-                        {{a.operacje|join(", ")}}
+                        {{ a.operacje|join(", ") }}
                     </td>
                     <td colspan="1">
-                        {{a.id}}
+                        {{ a.id }}
                     </td>
                     <td colspan="1">
-                        {{a.user|join(", ")}}
+                        {{ a.user|join(", ") }}
                     </td>
                 </tr>
-                
+
                 {% for e in a.data %}
-                    <tr class="treegrid-{{e.log.id}} treegrid-parent-{{t}}">
-                        <td style="border-bottom:none;">{{e.repo|objectTitles}}</td>
-                        <td style="border-bottom:none;">{{e.log.action|actionTitles}}</td>
-                        <td style="border-bottom:none;">{{e.log.loggedAt|date("Y-m-d H:i:s")}}</td>
-                        <td style="border-bottom:none;">{{e.log.username}}</td> 
+                    <tr class="treegrid-{{ e.log.id }} treegrid-parent-{{ t }}">
+                        <td style="border-bottom:none;">{{ e.repo|objectTitles }}</td>
+                        <td style="border-bottom:none;">{{ e.log.action|actionTitles }}</td>
+                        <td style="border-bottom:none;">{{ e.log.loggedAt|date("Y-m-d H:i:s") }}</td>
+                        <td style="border-bottom:none;">{{ e.log.username }}</td>
                     </tr>
-                    <tr class="treegrid-{{e.log.id}}2 treegrid-parent-{{t}}"> 
-                        <td colspan="4" style="border-top:none;">   
-                             
-                            {%if(e.cols|length > 0)%}
+                    <tr class="treegrid-{{ e.log.id }}2 treegrid-parent-{{ t }}">
+                        <td colspan="4" style="border-top:none;">
+
+                            {% if(e.cols|length > 0) %}
                                 <div class=" col-sm-12">
                                   <ul class="list-group">
                                     {% for c in e.cols %}
-                                    {%if c in e.log.data|keys or 1 == 1%}
-                                        <li class="list-group-item col-sm-4">{{c|gridTitles}} : 
-                                        {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}<strong style="color:red">{%endif%}
-                                        {%if c == "zasobId"%}
-                                            {{ (attribute(e.entity, c))|zasobNazwa}}                               
-                                        {%else%}
-                                            {{attribute(e.entity, c | toCamelcase)|getObjectValue}}
-                                        {%endif%}
-                                        {%if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}</strong>{%endif%}
-                                    {%endif%}
+                                    {% if c in e.log.data|keys or 1 == 1 %}
+                                        <li class="list-group-item col-sm-4">{{ c|gridTitles }} :
+                                        {% if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}<strong style="color:red">{% endif %}
+                                        {% if c == "zasobId" %}
+                                            {{ (attribute(e.entity, c))|zasobNazwa }}
+                                        {% else %}
+                                            {{ attribute(e.entity, c|toCamelcase)|getObjectValue }}
+                                        {% endif %}
+                                        {% if c in e.log.data|keys and not (e.log.action == 'update' and c == 'obiektId') %}</strong>{% endif %}
+                                    {% endif %}
                                         </li>
-                                    {%endfor%} 
+                                    {% endfor %}
                                   </ul>
                                 </div>
-                            {%endif%}
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}
@@ -68,4 +68,4 @@
     });
 </script>
 
-{%endblock%}
+{% endblock %}

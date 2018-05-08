@@ -1,34 +1,33 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    
+
     {% for flashMessage in app.session.flashbag.get('warning') %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
         </ul>
-        
+
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h1>Edycja Komentarza </h1>
                 <div class="tabContent">
-                                        <div class="btn-group">
-
-<a class="btn btn-primary" href="{{ returnUrl }}">
-    <i class="fa fa-list"></i> Wstecz
-</a>
-</div>
+                    <div class="btn-group">
+                        <a class="btn btn-primary" href="{{ returnUrl }}">
+                            <i class="fa fa-list"></i> Wstecz
+                        </a>
+                    </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(edit_form) }}
                 </div>
-            </div>            
+            </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Komentarz', id: edit_form.vars.value.id})) }}
@@ -36,8 +35,4 @@
             </div>
         </div>
     </div>
-
-    
-    
-    
 {% endblock %}

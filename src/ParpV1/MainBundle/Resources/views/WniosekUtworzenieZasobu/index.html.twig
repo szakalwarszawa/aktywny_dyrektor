@@ -3,50 +3,50 @@
 {% block body %}
 
 <div class="col-sm-12">
-        
+
     {% for flashMessage in app.session.flashbag.get('warning') %}
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
 
     <h1>Lista Wniosków o Utworzenie/Zmianę/Usunięcie zasobów </h1>
-    
-    
+
+
         <center>
             <div class="btn-group">
                 <a class="btn btn-success btn" href="{{ path('wniosekutworzeniezasobu_new') }}">Dodaj Wniosek o utworzenie/zmianę/usunięcie zasobu</a>
-                
+
             </div>
         </center>
-    {%if(zastepstwa|length > 0)%}
+    {% if(zastepstwa|length > 0) %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga, obecnie masz aktywne zastępstw{{zastepstwa|length > 1 ? "a" : "o"}} za :</strong>            
-            <div class="btn-group">  
+            <strong>Uwaga, obecnie masz aktywne zastępstw{{ zastepstwa|length > 1 ? "a" : "o" }} za :</strong>
+            <div class="btn-group">
                 {% for z in zastepstwa %}
-                      <a href="{{path('userEdit', {samaccountname: z.kogoZastepuje})}}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</a>   
+                      <a href="{{ path('userEdit', {samaccountname: z.kogoZastepuje}) }}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{ z.kogoZastepuje }} od  {{ z.dataOd|date("Y-m-d") }} do {{ z.dataDo|date("Y-m-d") }}">{{ z.kogoZastepuje }}</a>
                 {% endfor %}
-            </div>    
-            
-        </div>   
-    {%endif%}
+            </div>
+
+        </div>
+    {% endif %}
     <ul class="nav nav-tabs">
-        <li class="{{ ktore == "oczekujace" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'oczekujace'})}}">Oczekujące na realizację</a></li>
-        <li class="{{ ktore == "wtoku" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'wtoku'})}}">W toku</a></li>
-        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>        
+        <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'oczekujace'}) }}">Oczekujące na realizację</a></li>
+        <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'wtoku'}) }}">W toku</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'zakonczone'}) }}">Zakończone</a></li>
         {% if app.user.hasRole('PARP_ADMIN') %}
-            <li class="{{ ktore == "wszystkie" ? 'active' : ''}}"><a  href="{{path('wniosekutworzeniezasobu', {'ktore' : 'wszystkie'})}}">Wszystkie</a></li>
-        {%endif%}
+            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'wszystkie'}) }}">Wszystkie</a></li>
+        {% endif %}
     </ul>
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
-            
+
             {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
-        
+
     </div>
 </div>
 

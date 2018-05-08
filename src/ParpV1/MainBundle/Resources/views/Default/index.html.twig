@@ -5,30 +5,30 @@
     {% for flashMessage in app.session.flashbag.get('notice') %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
     {% for flashMessage in app.session.flashbag.get('warning') %}
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
 
     <center>
         <div class="btn-group">
-            <a class="btn btn-primary btn-xs" href="{{ path('main', {'ktorzy' : 'usersFromAdFull'}) }}">Wyszukiwanie aktywne</a>
+            <a class="btn btn-primary btn-xs" href="{{ path('main', {'ktorzy': 'usersFromAdFull'}) }}">Wyszukiwanie aktywne</a>
         </div>
         {% if app.user.hasRole('PARP_ADMIN') %}
         <div class="btn-group">
             <a class="btn btn-success btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
         </div>
         <div>
-            <a class="btn btn-danger" href="{{path('publish')}}">Opublikuj zmiany do AD</a>
+            <a class="btn btn-danger" href="{{ path('publish') }}">Opublikuj zmiany do AD</a>
         </div>
-        {%endif%}
+        {% endif %}
     </center>
     {% if ktorzy == 'usersFromAdFull' %}
         <div class="well">
@@ -38,7 +38,7 @@
                 id="aktywneWyszukanie" />
             </div>
         </div>
-    {%endif%}
+    {% endif %}
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
     <script>
@@ -68,9 +68,9 @@
                     var checked = $('input[type=checkbox]', $(this)).prop('checked');
                     if(checked)
                         console.log('checked '+checked+' '+txt);
-                    if(txt.indexOf(szukaj) >= 0 || checked){
+                    if(txt.indexOf(szukaj) >= 0||checked){
                         $(this).removeClass('hidden');
-                    }else{                    
+                    }else{
                         $(this).addClass('hidden');
                     }
                 }

@@ -5,33 +5,26 @@
         <div class="alert alert-danger">
         Nie masz uprawnień do edycji tego wniosku w tym momencie.
         <br>
-        Status wniosku : {{wniosek.wniosek.status}}
-        
-        {% if viewer or 1 == 1%}
+        Status wniosku : {{ wniosek.wniosek.status }}
+        {% if viewer or 1 == 1 %}
             <h3>Osoby które mogą obecnie edytować wniosek</h3>
             <ul>
-                {%if wniosek.wniosek.lockedBy is null%}
+                {% if wniosek.wniosek.lockedBy is null %}
                     {% for e in wniosek.wniosek.editors %}
-                        <li>{{e.samaccountname}}</li>                    
-                    {%endfor%}
-                {%else%}
-                    <li>{{wniosek.wniosek.lockedBy}}</li>
-                {%endif%}
+                        <li>{{ e.samaccountname }}</li>
+                    {% endfor %}
+                {% else %}
+                    <li>{{ wniosek.wniosek.lockedBy }}</li>
+                {% endif %}
             </ul>
             <h3>Osoby które mogą obecnie oglądać wniosek</h3>
             <ul>
                 {% for e in wniosek.wniosek.viewers %}
-                    <li>{{e.samaccountname}}</li>                    
-                {%endfor%}
-            
+                    <li>{{ e.samaccountname }}</li>
+                {% endfor %}
             </ul>
-        
-        {%endif%}
+        {% endif %}
         </div>
     </div>
-
-    
-    
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
-
 {% endblock %}

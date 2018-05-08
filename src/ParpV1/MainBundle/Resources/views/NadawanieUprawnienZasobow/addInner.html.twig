@@ -4,7 +4,7 @@
         <div class="panel-heading">
             <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-            Użytkownicy ({{users|length}}) 
+            Użytkownicy ({{ users|length }})
             </a>
             </h4>
         </div>
@@ -24,24 +24,24 @@
                     <tbody>
                         {% for row in users %}
                             <tr>
-                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" class="rowNumber">{{ n }}</a></td>
-                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
-                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
-                                <td>                                                 
-                                    <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}" class="rowNumber">{{ n }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a></td>
+                                <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
+                                <td>
+                                    <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
                                 </td>
                             </tr>
                             {% set n = n + 1 %}
                         {% endfor %}
                     </tbody>
-                
+
                 </table>
                 {% else %}
-                
+
                 <p>Nie wybrano użytkowników</p>
-                
+
                 {% endif %}
-                
+
             </div>
         </div>
     </div>
@@ -52,21 +52,21 @@
         <div class="panel-heading">
             <h4 class="panel-title">
             <a data-toggle="collapse" data-parent="#accordion" href="#collapse2">
-            {{title}}
+            {{ title }}
             </a>
             </h4>
         </div>
         <div id="collapse2" class="panel-collapse collapse in">
             <div class="panel-body">
-                {%if choicesDescription|length == 0 %}
+                {% if choicesDescription|length == 0 %}
                 <div class="alert alert-danger">
                     Nie ma żadnych zasobów które możnaby odebrać
                 </div>
-                {%endif%}
-                 {{form_start(form)}}
-                 {{form_row(form.zapisz2, {'attr' : {'onclick' : 'beforeSubmit(event)'}})}} 
-                 {{form_rest(form)}} 
-                 {{form_end(form)}} 
+                {% endif %}
+                 {{ form_start(form) }}
+                 {{ form_row(form.zapisz2, {'attr': {'onclick': 'beforeSubmit(event)' }}) }}
+                 {{ form_rest(form) }}
+                 {{ form_end(form) }}
             </div>
         </div>
     </div>
@@ -75,9 +75,9 @@
     function filtrujZasobUprawnienia(){
         var v = $('#form_grupy').val();
         var s = $('#form_nazwafiltr').val().toUpperCase();
-        if(v || s){
+        if(v||s){
             $('#form_access > div').addClass('hidden');
-            //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);                                
+            //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);
             if(s){
                 $('#form_access > div').each(function(){
                     var txt = $(this).text().toUpperCase();
@@ -88,7 +88,7 @@
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien'+v) >= 0;
                     }else{
                         show = txt.indexOf(s) >= 0;
-                    } 
+                    }
                     if(show){
                         $(this).removeClass('hidden');
                     }
@@ -99,7 +99,7 @@
             }
             //pokazujemy zaznaczone
             $('.uprawnienieRow input:checked').closest('.checkbox').removeClass('hidden');
-        }else{                
+        }else{
             $('.uprawnienieRow').removeClass('hidden');
         }
     }
@@ -111,11 +111,11 @@
     });
     $('#form_buttonzaznacz').click(function(){
         $('.uprawnienieRow:not(.hidden) input[type=checkbox]').prop('checked', true);
-        zmianaZaznaczenia(); 
+        zmianaZaznaczenia();
     });
     $('#form_buttonodznacz').click(function(){
         $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);
-        zmianaZaznaczenia(); 
+        zmianaZaznaczenia();
     });
     function beforeSubmit(e){
         if($("input[name='form[access][]']").serialize() == ""){
@@ -136,24 +136,24 @@
     }
     $('#form_access input[type=checkbox]').click(zmianaZaznaczenia);
 </script>
-{%if(zasobyId != '')%}
+{% if(zasobyId != '') %}
 <script>
-{% set ids = zasobyId|split(",")%}
+{% set ids = zasobyId|split(",") %}
 
 
 {% for id in ids %}
-    $('input[name="form[access][]"][value={{id}}]').prop('checked', true);
-{%endfor%}
+    $('input[name="form[access][]"][value={{ id }}]').prop('checked', true);
+{% endfor %}
 
-{%if(ids|length == 1)%}
-    $('#form_nazwafiltr').val($('input[name="form[access][]"][value={{ids[0]}}]').closest('label').text().trim());
+{% if(ids|length == 1) %}
+    $('#form_nazwafiltr').val($('input[name="form[access][]"][value={{ ids[0] }}]').closest('label').text().trim());
     $('#form_nazwafiltr').trigger('input');
-{%else%}
+{% else %}
     $('#form_nazwafiltr').val("Zaznaczono wybrane zasoby");
     $('#form_nazwafiltr').trigger('input');
-{%endif%}
+{% endif %}
 </script>
-{%endif%}
+{% endif %}
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 
 

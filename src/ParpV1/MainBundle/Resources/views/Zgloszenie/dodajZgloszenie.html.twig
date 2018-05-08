@@ -7,15 +7,15 @@
 
      {% if not formularz.vars.valid %}
         <div class="alert alert-danger" role="alert">
-            {{ form_errors(formularz.podmiot)}}
-            {{ form_errors(formularz.email)}}
-            {{ form_errors(formularz.telefon)}}
-            {{ form_errors(formularz.temat)}}
-            {{ form_errors(formularz.opis)}}
+            {{ form_errors(formularz.podmiot) }}
+            {{ form_errors(formularz.email) }}
+            {{ form_errors(formularz.telefon) }}
+            {{ form_errors(formularz.temat) }}
+            {{ form_errors(formularz.opis) }}
         </div>
     {% endif %}
 
-    {{ form_start(formularz,{'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_start(formularz,{'attr': {'novalidate': 'novalidate' }}) }}
     <div class="form-horizontal">
         <div class="form-group">
             {{ form_label(formularz.podmiot) }}
@@ -28,13 +28,13 @@
             <div class="col-xs-10">
                 {{ form_widget(formularz.email) }}
             </div>
-        </div>    
+        </div>
 	<div class="form-group">
             {{ form_label(formularz.telefon) }}
             <div class="col-xs-10">
                 {{ form_widget(formularz.telefon) }}
 	    </div>
-        </div>    
+        </div>
         <div class="form-group">
             {{ form_label(formularz.temat) }}
             <div class="col-xs-10">
@@ -49,7 +49,7 @@
         </div>
         <div class="form-group">
             <div class="col-xs-12">
-                <a href="{{ path('main')}}" class="btn btn-primary">Powrót</a>
+                <a href="{{ path('main') }}" class="btn btn-primary">Powrót</a>
                 {{ form_widget(formularz.zapisz) }}
             </div>
         </div>

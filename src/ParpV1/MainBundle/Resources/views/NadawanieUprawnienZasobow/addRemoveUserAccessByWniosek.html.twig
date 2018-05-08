@@ -1,15 +1,15 @@
 {% extends '::base.html.twig' %}
 
 
-{% block body %} 
+{% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li><a data-toggle="tab" href="#wniosek">Wniosek</a></li>
             <li><a data-toggle="tab" href="#zasobypast">Zasoby już we wniosku</a></li>
             <li class="active"><a data-toggle="tab" href="#zasoby">Zasoby</a></li>
         </ul>
-        
-        
+
+
         <div class="tab-content">
             <div id="wniosek" class="tab-pane fade">
                 <table class="record_properties table table-striped">
@@ -22,11 +22,11 @@
                         <th>Numer</th>
                         <td>
                             <div class="alert alert-success">{{ wniosek.wniosek.numer }}</div>
-                            
-                            {% if wniosek.wniosek.parent%}
-                                
-                                <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: wniosek.wniosek.parent.wniosekNadanieOdebranieZasobow.id})}}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{wniosek.wniosek.parent.numer}}</a>
-                            {%endif%}
+
+                            {% if wniosek.wniosek.parent %}
+
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek.wniosek.parent.wniosekNadanieOdebranieZasobow.id}) }}" class="btn btn-info">powstał z podzielenia wniosku Wniosku o nr {{ wniosek.wniosek.parent.numer }}</a>
+                            {% endif %}
                         </td>
                     </tr>
                     <tr>
@@ -37,10 +37,10 @@
                                 Na wnioski:
                                 <ul class="list-group">
                                 {% for w in entity.wniosek.children %}
-                                    <li class="list-group-item"><a class="btn btn-info" href="{{path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id})}}">Wniosek nr {{w.numer}} - {{w.status.nazwa}}</a></li>
-                                {%endfor %}                           
+                                    <li class="list-group-item"><a class="btn btn-info" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: w.wniosekNadanieOdebranieZasobow.id}) }}">Wniosek nr {{ w.numer }} - {{ w.status.nazwa }}</a></li>
+                                {% endfor %}
                                 </ul>
-                            {%endif%}
+                            {% endif %}
                         </td>
                     </tr>
                     <tr>
@@ -71,7 +71,7 @@
                         <th>Edytowany (zablokowany) dnia</th>
                         <td>{{ wniosek.wniosek.lockedAt|date('Y-m-d H:i:s') }}</td>
                     </tr>
-                    
+
                     <tr>
                         <th>Osoby które widzą wniosek</th>
                         <td>{{ wniosek.wniosek.viewernames }}</td>
@@ -84,8 +84,8 @@
             </table>
             </div>
             <div id="zasobypast" class="tab-pane fade">
-        
-            
+
+
                 <table class="record_properties table table-striped">
                     <tbody>
                         <tr>
@@ -99,32 +99,32 @@
                             <th>Aktywne do</th>
                             <th>Kanał dostępu</th>
                             <th>Uprawnienia administracyjne</th>
-                            <th>Odstepstwo od procedury</th>                  
+                            <th>Odstepstwo od procedury</th>
                         </tr>
                         {% for z in wniosek.userzasoby %}
                             <tr>
-                                <td>{{z.zasobNazwa}}</td>
-                                <td>{{z.samaccountname}}</td>
-                                <td>{{z.modul|showMultiFieldAsNewLines|raw}}</td>
-                                <td>{{z.poziomDostepu|showMultiFieldAsNewLines|raw}}</td>
-                                <td>{{z.sumowanieUprawnien}}</td>
-                                <td>{{z.aktywneOd|date}}</td>
-                                <td>{{z.bezterminowo}}</td>
-                                <td>{{z.aktywneDo|date}}</td>
-                                <td>{{z.kanalDostepu}}</td>
-                                <td>{{z.uprawnieniaAdministracyjne}}</td>
-                                <td>{{z.odstepstwoOdProcedury}}</td>
-                                
+                                <td>{{ z.zasobNazwa }}</td>
+                                <td>{{ z.samaccountname }}</td>
+                                <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
+                                <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
+                                <td>{{ z.sumowanieUprawnien }}</td>
+                                <td>{{ z.aktywneOd|date }}</td>
+                                <td>{{ z.bezterminowo }}</td>
+                                <td>{{ z.aktywneDo|date }}</td>
+                                <td>{{ z.kanalDostepu }}</td>
+                                <td>{{ z.uprawnieniaAdministracyjne }}</td>
+                                <td>{{ z.odstepstwoOdProcedury }}</td>
+
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                
+
             </div>
             <div id="zasoby" class="tab-pane fade in active ">
                 {% include 'ParpMainBundle:NadawanieUprawnienZasobow:addInner.html.twig' %}
-            
+
             </div>
         </div>
-    
-{%endblock%}
+
+{% endblock %}

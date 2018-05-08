@@ -3,60 +3,60 @@
 {% block body %}
 
 <div class="col-sm-12">
-        
+
     {% for flashMessage in app.session.flashbag.get('warning') %}
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
 
     <h1>Lista Wniosków o nadanie zasobów </h1>
-    
-    
+
+
         <center>
             <div class="btn-group">
                 <a class="btn btn-success btn" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
-                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie : 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
-                    
+                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie: 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
+
             </div>
         </center>
-    {%if(zastepstwa|length > 0)%}
+    {% if(zastepstwa|length > 0) %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga, obecnie masz aktywne zastępstw{{zastepstwa|length > 1 ? "a" : "o"}} za :</strong>            
-            <div class="btn-group">  
+            <strong>Uwaga, obecnie masz aktywne zastępstw{{ zastepstwa|length > 1 ? "a" : "o" }} za :</strong>
+            <div class="btn-group">
                 {% for z in zastepstwa %}
-                      <a href="{{path('userEdit', {samaccountname: z.kogoZastepuje})}}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{z.kogoZastepuje}} od  {{z.dataOd|date("Y-m-d")}} do {{z.dataDo|date("Y-m-d")}}">{{z.kogoZastepuje}}</a>   
+                      <a href="{{ path('userEdit', {samaccountname: z.kogoZastepuje}) }}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{ z.kogoZastepuje }} od  {{ z.dataOd|date("Y-m-d") }} do {{ z.dataDo|date("Y-m-d") }}">{{ z.kogoZastepuje }}</a>
                 {% endfor %}
-            </div>    
-            
-        </div>   
-    {%endif%}
+            </div>
+
+        </div>
+    {% endif %}
     <ul class="nav nav-tabs">
-        <li class="{{ ktore == "oczekujace" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'oczekujace'})}}">Oczekujące na realizację</a></li>
-        <li class="{{ ktore == "wtoku" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'wtoku'})}}">W toku</a></li>
-        <li class="{{ ktore == "zakonczone" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'zakonczone'})}}">Zakończone</a></li>        
+        <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'oczekujace'}) }}">Oczekujące na realizację</a></li>
+        <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wtoku'}) }}">W toku</a></li>
+        <li class="{{ ktore == "zakonczone" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'zakonczone'}) }}">Zakończone</a></li>
         {% if app.user.hasRole('PARP_ADMIN') %}
-            <li class="{{ ktore == "wszystkie" ? 'active' : ''}}"><a  href="{{path('wnioseknadanieodebraniezasobow', {'ktore' : 'wszystkie'})}}">Wszystkie</a></li>
-        {%endif%}
+            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wszystkie'}) }}">Wszystkie</a></li>
+        {% endif %}
     </ul>
-    
+
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
-            
+
             {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
 {#
         <div id="wtoku" class="tab-pane fade">
 
-            
+
             {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
         <div id="zakonczone" class="tab-pane fade">
 
-            
+
             {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
         </div>
 #}

@@ -10,18 +10,16 @@
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
             <li><a data-toggle="tab" href="#historiaAkceptacji">Historia akceptacji</a></li>
         </ul>
-        
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1> {{entity.id ? "Edycja" : "Tworzenie"}} wniosku o {{entity.odebranie ? "odebranie" : "nadanie"}} uprawnień do zasobów </h1>
+                <h1> {{ entity.id ? "Edycja" : "Tworzenie" }} wniosku o {{ entity.odebranie ? "odebranie" : "nadanie" }} uprawnień do zasobów </h1>
                 <div class="tabContent">
 
                     {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(form) }}
                 </div>
-            </div> 
+            </div>
             <div id="zasoby" class="tab-pane fade">
-                
                 <table class="record_properties table table-striped" id="table1">
                     <tbody>
                         <tr>
@@ -35,76 +33,71 @@
                             <th>Aktywne do</th>
                             <th>Kanał dostępu</th>
                             <th>Uprawnienia administracyjne</th>
-                            <th>Odstepstwo od procedury</th>   
-{#                             <th>Akcje</th>  #}                           
+                            <th>Odstepstwo od procedury</th>
+{#                             <th>Akcje</th>  #}
                         </tr>
                         {% for z in userzasoby %}
                             <tr>
-                                <td>{{z.zasobNazwa}}</td>
-                                <td>{{z.samaccountname}}</td>
-                                <td>{{z.modul}}</td>
-                                <td>{{z.poziomDostepu}}</td>
-                                <td>{{z.sumowanieUprawnien}}</td>
-                                <td>{{z.aktywneOd|date}}</td>
-                                <td>{{z.bezterminowo}}</td>
-                                <td>{{z.aktywneDo|date}}</td>
-                                <td>{{z.kanalDostepu}}</td>
-                                <td>{{z.uprawnieniaAdministracyjne}}</td>
-                                <td>{{z.odstepstwoOdProcedury}}</td>
+                                <td>{{ z.zasobNazwa }}</td>
+                                <td>{{ z.samaccountname }}</td>
+                                <td>{{ z.modul }}</td>
+                                <td>{{ z.poziomDostepu }}</td>
+                                <td>{{ z.sumowanieUprawnien }}</td>
+                                <td>{{ z.aktywneOd|date }}</td>
+                                <td>{{ z.bezterminowo }}</td>
+                                <td>{{ z.aktywneDo|date }}</td>
+                                <td>{{ z.kanalDostepu }}</td>
+                                <td>{{ z.uprawnieniaAdministracyjne }}</td>
+                                <td>{{ z.odstepstwoOdProcedury }}</td>
 {#                                 <td><a href="" class="btn btn-danger">Kasuj</a></td> #}
                             </tr>
                         {% endfor %}
                     </tbody>
                 </table>
-                
-            </div>             
+            </div>
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
-                    {%if form.vars.value.id > 0 %}
+                    {% if form.vars.value.id > 0 %}
                     {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: form.vars.value.id})) }}
-                    {%else%}
+                    {% else %}
                     Ta zakładka będzie dostępna po zapisaniu wniosku
-                    {%endif%}
+                    {% endif %}
                 </div>
-            </div>            
+            </div>
             <div id="komentarze" class="tab-pane fade">
                 <div  class="tabContent">
-                    {%if form.vars.value.id > 0 %}
+                    {% if form.vars.value.id > 0 %}
                     {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'WniosekNadanieOdebranieZasobow', obiektId: form.vars.value.id})) }}
-                    {%else%}
+                    {% else %}
                     Ta zakładka będzie dostępna po zapisaniu wniosku
-                    {%endif%}
+                    {% endif %}
                 </div>
             </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {%if form.vars.value.id > 0 %}
+                    {% if form.vars.value.id > 0 %}
                     {{ render(controller('ParpMainBundle:Version:versionsHistory', {repository: 'WniosekNadanieOdebranieZasobow', id: form.vars.value.id})) }}
-                    {%else%}
+                    {% else %}
                     Ta zakładka będzie dostępna po zapisaniu wniosku
-                    {%endif%}
+                    {% endif %}
                 </div>
             </div>
             <div id="historiaAkceptacji" class="tab-pane fade">
                 <div  class="tabContent">
-                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}                
+                    {% include 'ParpMainBundle:WniosekNadanieOdebranieZasobow:historiaAkceptacji.html.twig' %}
                 </div>
             </div>
         </div>
-<div class="btn-group">
-{%if form.vars.value.id > 0 %}
-<a class="btn btn-success" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.id}) }}">
-    <i class="fa fa-list"></i> Pokaż wniosek
-</a>
-{%endif%}
-<a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
-    <i class="fa fa-list"></i>  Wróć do listy Wniosków o nadanie uprawnień do zasobów
-</a>
-</div>
+        <div class="btn-group">
+            {% if form.vars.value.id > 0 %}
+            <a class="btn btn-success" href="{{ path('wnioseknadanieodebraniezasobow_show', {id: entity.id}) }}">
+                <i class="fa fa-list"></i> Pokaż wniosek
+            </a>
+            {% endif %}
+            <a class="btn btn-primary" href="{{ path('wnioseknadanieodebraniezasobow') }}">
+                <i class="fa fa-list"></i>  Wróć do listy Wniosków o nadanie uprawnień do zasobów
+            </a>
+        </div>
     </div>
-
-    
-    
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
-    
 {% endblock %}
