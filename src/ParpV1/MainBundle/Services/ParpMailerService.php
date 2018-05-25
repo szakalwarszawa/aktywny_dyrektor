@@ -437,8 +437,10 @@ class ParpMailerService
         $wymaganePola = $this->getWymaganePola($template);
 
         if (isset($data['tytul']) && $data['tytul'] != '') {
-            $tytul = $this->getTytulMaila($template).$data['tytul'];
-        } else $tytul = 'Aktywny Dyrektor komunikat: '.$this->getTytulMaila($template);
+            $tytul = $this->getTytulMaila($template) . $data['tytul'];
+        } else {
+            $tytul = 'Aktywny Dyrektor komunikat: ' . $this->getTytulMaila($template);
+        }
 
         if (count(array_intersect_key(array_flip($wymaganePola), $data)) === count($wymaganePola)) {
             //Mamy wszystkie wymagane dane
@@ -453,7 +455,9 @@ class ParpMailerService
 
             if (isset($data['nadawca']) && $data['nadawca'] != '') {
                 $this->sendEmail($data['odbiorcy'], $tytul, $view, $data['nadawca']);
-            } else $this->sendEmail($data['odbiorcy'], $tytul, $view);
+            } else {
+                $this->sendEmail($data['odbiorcy'], $tytul, $view);
+            }
 
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
