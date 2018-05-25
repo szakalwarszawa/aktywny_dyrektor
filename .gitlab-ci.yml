@@ -22,6 +22,7 @@ build:
         - npm install eslint eslint-plugin-html eslint-config-idiomatic "htmllint@0.7.2" htmllint-cli
 
     artifacts:
+        expire_in: 1 day
         untracked: true
         paths:
             - vendor/
