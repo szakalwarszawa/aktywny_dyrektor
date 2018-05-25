@@ -5,5 +5,5 @@ app/logs/*
 bin/*
 vendor/*
 web/*
-
+work/logs/*
 
