@@ -9,6 +9,7 @@ build:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: build
     script:
+        - /usr/bin/composer.phar global show -i > .gitlab-ci/gitlab-ci-composer.dump
         - php -d memory_limit=5G /usr/bin/composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
     artifacts:
         expire_in: 1 day
@@ -30,7 +31,7 @@ parallellint:
 psr2:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: quality
-    allow_failure: false
+    allow_failure: true
     script:
         - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/
 
