@@ -23,7 +23,7 @@ class ParpMailerService
     const RETURN_PATH = 'aktywnydyrektor@parp.gov.pl';
     const EMAIL_DO_AUMS_AD = 'jaroslaw_bednarczyk';
     const EMAIL_DO_HELPDESK = 'INT-BI-HELPDESK';
-    const EMAIL_DO_GLPI = 'serwis';
+    const EMAIL_DO_GLPI = 'pomoc';
 
     const TEMPLATE_PRACOWNIKMIGRACJA1 = 'pracownikMigracja1.html.twig';
     const TEMPLATE_PRACOWNIKMIGRACJA2 = 'pracownikMigracja2.html.twig';
