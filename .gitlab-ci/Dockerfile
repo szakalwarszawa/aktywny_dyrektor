@@ -14,7 +14,6 @@ RUN cp sami.phar /usr/bin/sami.phar
 RUN apk add --no-cache nodejs nodejs-npm
 RUN mkdir /usr/bin/node_modules
 RUN npm config set prefix "/usr/bin/node_modules/"
-RUN npm install -g eslint eslint-plugin-html eslint-config-idiomatic htmllint htmllint-cli
 COPY ./missing_empty_line_detector.sh /usr/bin/missing_empty_line_detector.sh
 RUN chmod 0777 /usr/bin/missing_empty_line_detector.sh
 CMD ["/bin/sh"]
