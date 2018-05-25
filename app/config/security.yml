@@ -34,6 +34,9 @@ security:
         rest_api:
                 pattern:  ^/api
                 security: false
+        usersAdData:
+                pattern:  ^/usersAdData
+                security: false
         secured_area:
             pattern:    ^/
             anonymous: false

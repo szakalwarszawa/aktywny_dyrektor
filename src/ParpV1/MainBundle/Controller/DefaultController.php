@@ -25,6 +25,7 @@ use Symfony\Component\Form\Form;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
@@ -295,7 +296,7 @@ class DefaultController extends Controller
 
 
         if ($ktorzy === 'usersFromAdFull') {
-            $grid->setLimits(1000);
+            $grid->setLimits(2000);
         }
 
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
@@ -2559,5 +2560,46 @@ class DefaultController extends Controller
         return $this->redirect(
             sprintf('%s#%s', $url, '#czekajaceAD')
         );
+    }
+
+    /**
+     * Zwraca użytkowników z AD z grupami uprawnień (na potrzeby śledzenia zmian w AD).
+     *
+     * @Route("/usersAdData/{showall}", defaults={"showall" : 0})
+     *
+     * @param boolean $showall
+     *
+     * @return JsonResponse
+     *
+     * @throws \Exception
+     */
+    public function getUsersAdDataAction($showall)
+    {
+        $ldap = $this->container->get('ldap_service');
+
+        if ($showall) {
+            $usersFromAD = $ldap->getAllFromAD('wszyscy');
+        } else {
+            $usersFromAD = $ldap->getAllFromAD();
+        }
+
+        if (empty($usersFromAD)) {
+            return new Json404NotFoundResponse('Nie znaleziono użytkowników.');
+        }
+
+        $users = [];
+        foreach ($usersFromAD as $user) {
+            $samaccountname = $user['samaccountname'];
+            unset($user['thumbnailphoto']);
+            unset($user['lastlogon']);
+            unset($user['samaccountname']);
+            unset($user['roles']);
+            unset($user['email']);
+            sort($user['memberOf']);
+            $user['memberOf'] = implode(';', $user['memberOf']);
+            $users[$samaccountname] = $user;
+        }
+
+        return new JsonResponse($users);
     }
 }

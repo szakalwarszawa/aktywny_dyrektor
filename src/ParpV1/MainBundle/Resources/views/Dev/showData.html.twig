@@ -3,20 +3,20 @@
 {% block body -%}
 {% if title is defined %}
     <h1>{{ title }}</h1>
-{%endif%}
+{% endif %}
 {% if msg is defined %}
     <div class="alert alert-danger">
-        {{msg}}
+        {{ msg }}
     </div>
-{%endif%}
-{%if data|length > 0 %}
-Data count: {{data|length}}
+{% endif %}
+{% if data|length > 0 %}
+Data count: {{ data|length }}
 <table class="record_properties table table-striped tablesorter">
     <thead>
         <tr>
             {% for key,value in data[0] %}
-            <th>{{key}}</th>
-            {% endfor %}        
+            <th>{{ key }}</th>
+            {% endfor %}
         </tr>
     </thead>
     <tbody>
@@ -25,28 +25,28 @@ Data count: {{data|length}}
                     {% for key,value in obj %}
                         <td>
                             {% if value.timestamp is defined %}
-                                {{value|date}}
+                                {{ value|date }}
                             {% else %}
-                                {%if value is iterable %}
+                                {% if value is iterable %}
                                     {% for k, v in value %}
-                                        {{k}} : {{ v|raw }}<br>
+                                        {{ k }} : {{ v|raw }}<br>
                                     {% endfor %}
-                                {% else %}                                
+                                {% else %}
                                     {{ value|raw }}
                                 {% endif %}
                             {% endif %}
-                        
+
                         </td>
-                    {% endfor %}                   
+                    {% endfor %}
                 </tr>
-            {%endfor%}
+            {% endfor %}
     </tbody>
 </table>
-{%endif %}
-    
+{% endif %}
+
 <script type="text/javascript">
-    
-    $("table.tablesorter").tablesorter(); 
+
+    $("table.tablesorter").tablesorter();
 
 </script>
 

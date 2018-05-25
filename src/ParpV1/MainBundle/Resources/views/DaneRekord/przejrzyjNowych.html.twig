@@ -6,22 +6,22 @@
         <label  for="form_info">Sekcja</label>
         <select id="form_info" name="form[info]" class="form-control select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
             <option value=""></option>
-            {%for d,g in sekcje%}
-            <optgroup label="{{d}}">
-                {%for k,s in g%}
+            {% for d,g in sekcje %}
+            <optgroup label="{{ d }}">
+                {% for k,s in g %}
                     <option value="{{ k }}">[{{ d }}] {{ s }}</option>
-                {%endfor%}
+                {% endfor %}
             </optgroup>
-            {%endfor%}
+            {% endfor %}
         </select>
     </div>
     <div class="form-group">
         <label for="form_manager">Przełożony</label>
         <select id="form_manager" name="form[manager]" class="form-control select2" tabindex="-1" aria-hidden="true">
             <option value=""></option>
-           {%for s in przelozeni%}
-                <option value="{{s.samaccountname}}">{{s.name}} ({{ s.title }})</option>
-            {%endfor%}
+           {% for s in przelozeni %}
+                <option value="{{ s.samaccountname }}">{{ s.name }} ({{ s.title }})</option>
+            {% endfor %}
         </select>
     </div>
     <div class="form-group">
@@ -53,19 +53,19 @@
 {% block body -%}
 {% if msg is defined %}
     <div class="alert alert-danger">
-        {{msg|raw}}
+        {{ msg|raw }}
     </div>
-{%endif%}
+{% endif %}
 
-{%if data|length > 0 %}
+{% if data|length > 0 %}
 {% for obj in data %}
 
-<div class="alert alert-danger acceptUser" id="acceptUser{{obj.id}}">
+<div class="alert alert-danger acceptUser" id="acceptUser{{ obj.id }}">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
     <h3 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i>
-        {%if (obj.newUnproccessed == 1) %}
-        <i class="fa fa-plus">&nbsp;</i> Nowy użytkownik{%else%}
-        <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{%endif%}
+        {% if (obj.newUnproccessed == 1) %}
+        <i class="fa fa-plus">&nbsp;</i> Nowy użytkownik{% else %}
+        <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{% endif %}
     </h3>
     <h4>Dane zaimportowane z systemu REKORD</h4>
     <table class="record_properties table table-striped">
@@ -83,14 +83,14 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{obj.id}}</td>
-                <td>{{obj.imie}}</td>
-                <td>{{obj.nazwisko}}</td>
-                <td>{{obj.departament.name}}</td>
-                <td>{{obj.stanowisko}}</td>
-                <td>{{obj.umowa}}</td>
-                <td>{{obj.umowaOd ? obj.umowaOd|date("Y-m-d") : ""}}</td>
-                <td>{{obj.umowaDo ? obj.umowaDo|date("Y-m-d") : ""}}</td>
+                <td>{{ obj.id }}</td>
+                <td>{{ obj.imie }}</td>
+                <td>{{ obj.nazwisko }}</td>
+                <td>{{ obj.departament.name }}</td>
+                <td>{{ obj.stanowisko }}</td>
+                <td>{{ obj.umowa }}</td>
+                <td>{{ obj.umowaOd ? obj.umowaOd|date("Y-m-d") : "" }}</td>
+                <td>{{ obj.umowaDo ? obj.umowaDo|date("Y-m-d") : "" }}</td>
             </tr>
             <tr>
                 <td colspan="8">
@@ -111,27 +111,27 @@
                                     <th>Sekcja</th>
                                     <th>Akcje</th>
                                 </tr>
-                            {%else%}
+                            {% else %}
                                 <tr>
                                     <th colspan="6">Nie znaleziono żadnych pasujących użytkowników w AD</th>
                                 </tr>
                             {% endif %}
                             </thead>
                             <tbody>
-                                {%for user in obj.users %}
+                                {% for user in obj.users %}
                                     <tr>
-                                        <td><a href="{{path('userEdit', {samaccountname: user.samaccountname})}}">{{user.samaccountname}}</a></td>
-                                        <td>{{user.name}}</td>
-                                        <td>{{user.department}}</td>
-                                        <td>{{user.title}}</td>
-                                        <td>{{user.info}}</td>
-                                        <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmSelection{{user.samaccountname}}{{obj.id}}">Przypisz do tego użytkownika</button></td>
+                                        <td><a href="{{ path('userEdit', {samaccountname: user.samaccountname}) }}">{{ user.samaccountname }}</a></td>
+                                        <td>{{ user.name }}</td>
+                                        <td>{{ user.department }}</td>
+                                        <td>{{ user.title }}</td>
+                                        <td>{{ user.info }}</td>
+                                        <td><button type="button" class="btn btn-danger" data-toggle="modal" data-target="#confirmSelection{{ user.samaccountname }}{{ obj.id }}">Przypisz do tego użytkownika</button></td>
                                     </tr>
-                                {%endfor%}
+                                {% endfor %}
                                 {# <tr>
                                     <td colspan="6">
-                                        {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, utwórz nowe konto w AD za pomocą przycisku poniżej</h4>{%endif%}
-                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
+                                        {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, utwórz nowe konto w AD za pomocą przycisku poniżej</h4>{% endif %}
+                                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Utwórz nowego użytkownika</button>
                                     </td>
                                 </tr> #}
                             </tbody>
@@ -139,7 +139,7 @@
                     </td>
                 {% else %}
                     <td colspan="1">
-                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Zapisz użytkownika</button>
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Zapisz użytkownika</button>
                     </td>
                     <td colspan="7"></td>
                 {% endif %}
@@ -149,99 +149,99 @@
     <div>
     {% if (obj.newUnproccessed == 1) %}
         {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, wybierz akcję poniżej</h4>{% endif %}
-        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Utwórz nowego użytkownika</button>
-{#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>#}
-        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteSelection{{obj.id}}">Usuń uzytkownika z kolejki importu</button>
+        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Utwórz nowego użytkownika</button>
+{#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Usuń uzytkownika z kolejki importu</button>#}
+        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#deleteSelection{{ obj.id }}">Usuń uzytkownika z kolejki importu</button>
     {% endif %}
     </div>
 </div>
-{%endfor%}
+{% endfor %}
     <div class="pagerfanta">
     {{ pagerfanta(data, 'twitter_bootstrap3_translated') }}
     </div>
-{%endif %}
+{% endif %}
 
 
 
-{%if data|length > 0 %}
+{% if data|length > 0 %}
 {% for obj in data %}
     {% for user in obj.users %}
     <!-- Modal -->
-    <div id="confirmSelection{{user.samaccountname}}{{obj.id}}" class="modal fade" role="dialog">
+    <div id="confirmSelection{{ user.samaccountname }}{{ obj.id }}" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">
-                        {%if (obj.newUnproccessed == 1) %}
+                        {% if (obj.newUnproccessed == 1) %}
                         Akceptacja przypisania nowego użytkownika z systemu REKORD
-                        {%else%}
+                        {% else %}
                         Akceptacja zmiany departamentu/stanowiska/sekcji
-                        {%endif%}
+                        {% endif %}
                     </h4>
                 </div>
                 <div class="modal-body">
                     <div class="row">
                         <div class="alert alert-danger">
                             <h2>
-                                Akceptujesz przypisanie użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do istniejącego w AD użytkownika '{{user.name}}'
+                                Akceptujesz przypisanie użytkownika z systemu REKORD '{{ obj.nazwisko }} {{ obj.imie }}' do istniejącego w AD użytkownika '{{ user.name }}'
 
                             </h2>
                         </div>
                         <div class="list-group">
                           <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
                           {% if user.department != obj.departament.name %}
-                              <a class="list-group-item">Zmiana Biura/Departamentu '{{user.department}}' do '{{obj.departament.name}}'</a>
+                              <a class="list-group-item">Zmiana Biura/Departamentu '{{ user.department }}' do '{{ obj.departament.name }}'</a>
                               <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
-                              <a class="list-group-item">Nadanie nowych uprawnień w oparciu o nowy departament '{{obj.departament.name}}'</a>
-                          {%endif%}
-                          {% if obj.nazwisko ~ " " ~obj.imie != user.name %}
-                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{user.name}}' na '{{obj.nazwisko ~ " " ~obj.imie}}'</a>
-                          {%endif%}
+                              <a class="list-group-item">Nadanie nowych uprawnień w oparciu o nowy departament '{{ obj.departament.name }}'</a>
+                          {% endif %}
+                          {% if obj.nazwisko ~ " " ~ obj.imie != user.name %}
+                              <a class="list-group-item">Zmiana Imienia i Nazwiska z '{{ user.name }}' na '{{ obj.nazwisko ~ " " ~ obj.imie }}'</a>
+                          {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="zapisz{{user.samaccountname}}{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="zapisz{{ user.samaccountname }}{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        function zapisz{{user.samaccountname}}{{obj.id}}(){
-            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: user.samaccountname})}}";
-            var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
-            var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
-            save(url, form, manager, {{obj.id}});
+        function zapisz{{ user.samaccountname }}{{ obj.id }}(){
+            var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: user.samaccountname}) }}";
+            var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
+            var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
+            save(url, form, manager, {{ obj.id }});
         }
-        function usun{{obj.id}}(){
-            var url = "{{path('usunUzytkownikaZKolejki', {id: obj.id})}}";
+        function usun{{ obj.id }}(){
+            var url = "{{ path('usunUzytkownikaZKolejki', {id: obj.id}) }}";
             $.ajax({
                 url: url,
                 type: 'POST',
                 success: function(result) {
-                    $('#acceptUser{{obj.id}}').hide();
+                    $('#acceptUser{{ obj.id }}').hide();
                     alert("Usuwam z kolejki rekord ID:"+result);
                 }
             });
         }
     </script>
-    {%endfor%}
+    {% endfor %}
     <!-- Modal -->
-    <div id="confirmSelection{{obj.id}}" class="modal fade" role="dialog">
+    <div id="confirmSelection{{ obj.id }}" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                     <h4 class="modal-title">
-                    {%if(obj.newUnproccessed == 1)%}
+                    {% if(obj.newUnproccessed == 1) %}
                         Akceptacja utworzenia nowego użytkownika z systemu REKORD
-                    {%else%}
-                        Akceptujesz przypisanie użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do nowej sekcji/departamentu/zmiany stanowiska, zmiana taka będzie skutkować zmianą uprawnień użytkownika!
-                    {%endif%}
+                    {% else %}
+                        Akceptujesz przypisanie użytkownika z systemu REKORD '{{ obj.nazwisko }} {{ obj.imie }}' do nowej sekcji/departamentu/zmiany stanowiska, zmiana taka będzie skutkować zmianą uprawnień użytkownika!
+                    {% endif %}
 
                     </h4>
                 </div>
@@ -250,37 +250,37 @@
                         <div class="alert alert-danger">
                             <h2>
 
-                            {%if(obj.newUnproccessed == 1)%}
-                            Akceptujesz utworzenie nowego użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' z loginem '{{obj.login}}'
-                            {%else%}
-                            Akceptujesz przypisanie użytkownika z systemu REKORD '{{obj.nazwisko}} {{obj.imie}}' do nowej sekcji/departamentu/zmiany stanowiska, zmiana taka będzie skutkować zmianą uprawnień użytkownika!
-                        {%endif%}
+                            {% if(obj.newUnproccessed == 1) %}
+                            Akceptujesz utworzenie nowego użytkownika z systemu REKORD '{{ obj.nazwisko }} {{ obj.imie }}' z loginem '{{ obj.login }}'
+                            {% else %}
+                            Akceptujesz przypisanie użytkownika z systemu REKORD '{{ obj.nazwisko }} {{ obj.imie }}' do nowej sekcji/departamentu/zmiany stanowiska, zmiana taka będzie skutkować zmianą uprawnień użytkownika!
+                        {% endif %}
                             </h2>
                         </div>
                         <div class="list-group">
                           <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
-                          {%if(obj.newUnproccessed == 1)%}
-                          <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{obj.nazwisko ~ " " ~obj.imie}}'</a>
-                          <a class="list-group-item">Nadanie loginu '{{obj.login}}'</a>
-                          {%else%}
+                          {% if(obj.newUnproccessed == 1) %}
+                          <a class="list-group-item">Nadanie Biura/Departamentu : '{{ obj.departament.name }}'</a>
+                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{ obj.departament.name }}'</a>
+                          <a class="list-group-item">Nadanie Imienia i Nazwiska '{{ obj.nazwisko ~ " " ~ obj.imie }}'</a>
+                          <a class="list-group-item">Nadanie loginu '{{ obj.login }}'</a>
+                          {% else %}
                           <a class="list-group-item">Odebranie wszystkich dotychczasowych uprawnień</a>
-                          <a class="list-group-item">Nadanie Biura/Departamentu : '{{obj.departament.name}}'</a>
-                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{obj.departament.name}}'</a>
-                          {%endif%}
+                          <a class="list-group-item">Nadanie Biura/Departamentu : '{{ obj.departament.name }}'</a>
+                          <a class="list-group-item">Nadanie nowych uprawnień w oparciu o departament '{{ obj.departament.name }}'</a>
+                          {% endif %}
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="zapisz{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="zapisz{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 </div>
             </div>
         </div>
     </div>
     <!-- modal usun -->
-    <div id="deleteSelection{{obj.id}}" class="modal fade" role="dialog">
+    <div id="deleteSelection{{ obj.id }}" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
             <!-- Modal content-->
             <div class="modal-content">
@@ -299,29 +299,29 @@
                         </div>
                         <div class="list-group">
                           <a class="list-group-item active">Wykonane zostaną następujące czynności:</a>
-                          <a class="list-group-item">Usunięcie użytkownika {{obj.nazwisko ~ " " ~obj.imie}} z kolejki importu</a>
+                          <a class="list-group-item">Usunięcie użytkownika {{ obj.nazwisko ~ " " ~ obj.imie }} z kolejki importu</a>
 
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="usun{{obj.id}}()" class="btn btn-success" data-dismiss="modal">Usuń <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="usun{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Usuń <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 </div>
             </div>
         </div>
     </div>
     <!-- koniec modal usun -->
     <script>
-        function zapisz{{obj.id}}(){
-            var url = "{{path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)})}}";
-            var form = $('form', $("#acceptUser{{obj.id}}")).serialize();
-            var manager = $('select[name="form[manager]"]', $("#acceptUser{{obj.id}}")).val();
-            save(url, form, manager, {{obj.id}});
+        function zapisz{{ obj.id }}(){
+            var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)}) }}";
+            var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
+            var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
+            save(url, form, manager, {{ obj.id }});
         }
     </script>
-{%endfor%}
-{%endif %}
+{% endfor %}
+{% endif %}
 <script type="text/javascript">
     function save(url, data, manager, id){
         console.log(manager);

@@ -5,19 +5,19 @@
     {% for flashMessage in app.session.flashbag.get('notice') %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
     {% for flashMessage in app.session.flashbag.get('warning') %}
         <div class="alert alert-info">
             <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga!</strong> 
+            <strong>Uwaga!</strong>
             {{ flashMessage }}
-        </div>       
+        </div>
     {% endfor %}
 
-    {{ grid(grid,'ParpMainBundle:BlokowaneKonta:grid.html.twig', null, {'polaAD' : polaAD}) }}
+    {{ grid(grid,'ParpMainBundle:BlokowaneKonta:grid.html.twig', null, {'polaAD': polaAD}) }}
     <style>
         table tr td:first-child, table tr th:first-child{
             min-width:30px;

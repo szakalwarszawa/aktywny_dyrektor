@@ -4,7 +4,7 @@
             <div class="panel-heading">
                 <h4 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                Użytkownicy ({{users|length}})
+                Użytkownicy ({{ users|length }})
                 </a>
                 </h4>
             </div>
@@ -24,54 +24,54 @@
                         <tbody>
                             {% for row in users %}
                                 <tr>
-                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" class="rowNumber">{{ n }}</a></td>
-                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.name  }}</a></td>
-                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}">{{ row.samaccountname  }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}" class="rowNumber">{{ n }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
                                     <td>
-                                        
-                                        <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname  }}', this)">Usuń</a>
+
+                                        <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
                                     </td>
                                 </tr>
                                 {% set n = n + 1 %}
                             {% endfor %}
                         </tbody>
-                    
+
                     </table>
                     {% else %}
-                    
+
                     <p>Nie wybrano użytkowników</p>
-                    
+
                     {% endif %}
-                    
+
                 </div>
             </div>
         </div>
-    
+
     </div>
     <div class="col-sm-12">
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="panel-title">
                 <a data-toggle="collapse" data-parent="#accordion" href="#collapse1">
-                {{action == "addResources" ? "Dodawanie" : "Edycja"}} uprawnień do zasobów 
+                {{ action == "addResources" ? "Dodawanie" : "Edycja" }} uprawnień do zasobów
                 </a>
                 </h4>
             </div>
             <div id="collapse1" class="panel-collapse collapse in">
-                {%if users|length > 1%}
+                {% if users|length > 1 %}
                 <div class="alert alert-info">
                 wszystkim użytkownikom zostanie przypisany ten sam zestaw parametrów: Moduł, Poziom Dostępu etc., po zapisie będzie można edytować to pole per użytkownik
                 </div>
-                {%endif%}
+                {% endif %}
                 <div class="panel-body">
                 {{ form_start(form) }}
-                {{form_widget(form.wniosekId)}}
-                {{form_widget(form.action)}}
-                {{form_widget(form.samaccountnames)}}
-                {{form_widget(form.fromWhen)}}
-                {{form_widget(form.powod)}}
-{#                 {{form_widget(form.userzasoby)}} #}
-{#                  <h3>Nadajesz zasoby od {{form.vars.value.fromWhen}} z powodu "{{form.vars.value.powod }}"</h3>  #}
+                {{ form_widget(form.wniosekId) }}
+                {{ form_widget(form.action) }}
+                {{ form_widget(form.samaccountnames) }}
+                {{ form_widget(form.fromWhen) }}
+                {{ form_widget(form.powod) }}
+{#                 {{ form_widget(form.userzasoby) }} #}
+{#                  <h3>Nadajesz zasoby od {{ form.vars.value.fromWhen }} z powodu "{{ form.vars.value.powod }}"</h3>  #}
                 {% if form.userzasoby is defined %}
                     <table class="table table-hover">
                         <thead>
@@ -82,47 +82,47 @@
                                 <th>Kanał dostępu / Sumowanie uprawnień / Uprawnienia administracyjne</th>
                             </tr>
                         </thead>
-                        {% set n = 1 %}
+                        {# {% set n = 1 %} #}
                         <tbody>
                             {% for userzasoby in form.userzasoby %}
                                 <tr>
                                     <td>
-                                        {{form_widget(userzasoby.id)}}
-                                        {{userzasoby.vars.value.zasobNazwa}}
-                                        {{form_widget(userzasoby.zasobNazwa)}}
+                                        {{ form_widget(userzasoby.id) }}
+                                        {{ userzasoby.vars.value.zasobNazwa }}
+                                        {{ form_widget(userzasoby.zasobNazwa) }}
                                     </td>
                                     <td>
                                         <div>
                                         <label>Moduł <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
-                                        {{form_widget(userzasoby.samaccountname)}}
-                                        {{form_widget(userzasoby.zasobId)}}
-                                        {{form_widget(userzasoby.modul)}}
+                                        {{ form_widget(userzasoby.samaccountname) }}
+                                        {{ form_widget(userzasoby.zasobId) }}
+                                        {{ form_widget(userzasoby.modul) }}
                                         </div>
                                         <div>
                                         <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
-                                        {{form_widget(userzasoby.poziomDostepu)}}
+                                        {{ form_widget(userzasoby.poziomDostepu) }}
                                         </div>
                                     </td>
-                                    
+
                                     <td>
-                                        {{form_widget(userzasoby.aktywneOd)}}
-                                        {{form_widget(userzasoby.aktywneDo)}}
-                                        {{form_widget(userzasoby.bezterminowo)}}
+                                        {{ form_widget(userzasoby.aktywneOd) }}
+                                        {{ form_widget(userzasoby.aktywneDo) }}
+                                        {{ form_widget(userzasoby.bezterminowo) }}
                                     </td>
-                                
+
                                     <td>
-                                        {{form_widget(userzasoby.kanalDostepu)}}
-                                        {{form_widget(userzasoby.sumowanieUprawnien)}}
-                                        {{form_widget(userzasoby.uprawnieniaAdministracyjne)}}
+                                        {{ form_widget(userzasoby.kanalDostepu) }}
+                                        {{ form_widget(userzasoby.sumowanieUprawnien) }}
+                                        {{ form_widget(userzasoby.uprawnieniaAdministracyjne) }}
                                     </td>
-                                </tr>                        
+                                </tr>
                             {% endfor %}
                         </tbody>
-                    
+
                     </table>
-                {%endif%}
+                {% endif %}
                 {{ form_end(form) }}
-{#                     {{form(form)}} #}
+{#                     {{ form(form) }} #}
                 </div>
             </div>
         </div>

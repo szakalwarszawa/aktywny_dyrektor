@@ -1,11 +1,11 @@
 {% extends '::base.html.twig' %}
 
-{% block body %} 
+{% block body %}
     <div class="col-sm-12">
-        <h1>Odblokowanie konta {{samaccountname}} </h1>
+        <h1>Odblokowanie konta {{ samaccountname }} </h1>
         <form id="odblokowanieForm" method="POST">
-            <div class="alert alert-{{daneRekord ? 'success' : 'danger'}}">{{daneRekord ? 'Jest w systemie REKORD' : 'Nie ma w systemie REKORD'}}</div>
-            
+            <div class="alert alert-{{ daneRekord ? 'success' : 'danger' }}">{{ daneRekord ? 'Jest w systemie REKORD' : 'Nie ma w systemie REKORD' }}</div>
+
             <div class="row">
                 <table class="table stripped">
                     <thead>
@@ -19,18 +19,18 @@
                     <tbody>
                         <tr>
                             <th>Imię i nazwisko</th>
-                            <td>{{user  ? user.name : "BRAK WPISU W AD"}}</td>
-                            <td>{{daneRekord  ? daneRekord.imie ~ " " ~ daneRekord.nazwisko : "BRAK WPISU W REKORD"}}</td>
+                            <td>{{ user ? user.name : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? daneRekord.imie ~ " " ~ daneRekord.nazwisko : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-12">{{ form_widget(form.cn, {'attr' : {'readonly' : 'true'}}) }}</div>
+                                    <div class="col-sm-12">{{ form_widget(form.cn, {'attr': {'readonly': 'true' }}) }}</div>
                                 </div>
                             </td>
                         </tr>
                         <tr>
                             <th>Biuro / Departament</th>
-                            <td>{{user  ? user.department ~ "(" ~ user.description ~ ")" : "BRAK WPISU W AD"}}</td>
-                            <td>{{daneRekord  ? departamentRekord : "BRAK WPISU W REKORD"}}</td>
+                            <td>{{ user ? user.department ~ "(" ~ user.description ~ ")" : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? departamentRekord : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.department) }}</div>
@@ -39,8 +39,8 @@
                         </tr>
                         <tr>
                             <th>Stanowisko</th>
-                            <td>{{user  ? user.title : "BRAK WPISU W AD"}}</td>
-                            <td>{{daneRekord  ? daneRekord.stanowisko : "BRAK WPISU W REKORD"}}</td>
+                            <td>{{ user ? user.title : "BRAK WPISU W AD" }}</td>
+                            <td>{{ daneRekord ? daneRekord.stanowisko : "BRAK WPISU W REKORD" }}</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.title) }}</div>
@@ -49,7 +49,7 @@
                         </tr>
                         <tr>
                             <th>Sekcja</th>
-                            <td>{{user  ? user.division ~ "(" ~ user.info ~ ")" : "BRAK WPISU W AD"}}</td>
+                            <td>{{ user ? user.division ~ "(" ~ user.info ~ ")" : "BRAK WPISU W AD" }}</td>
                             <td>TYCH DANYCH NIE MA W SYSTEMIE REKORD</td>
                             <td>
                                 <div class="form-group">
@@ -59,35 +59,35 @@
                         </tr>
                         <tr>
                             <th>Przełożony</th>
-                            <td>{{user  ? user.manager : "BRAK WPISU W AD"}}</td>
+                            <td>{{ user ? user.manager : "BRAK WPISU W AD" }}</td>
                             <td>TYCH DANYCH NIE MA W SYSTEMIE REKORD</td>
                             <td>
                                 <div class="form-group">
                                     <div class="col-sm-12">{{ form_widget(form.manager) }}</div>
                                 </div>
-                                
+
     {#
                                 <div class="col-sm-12 btn-group">
-                                    <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>                            
+                                    <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
                                 </div>
     #}
                             </td>
                         </tr>
                     </tbody>
-                
+
                 </table>
                 <div class="row">
-                    
+
                     {#% include 'ParpMainBundle:Default:userForm.html.twig' %#}
                     <button class="btn btn-danger" type="submit">ODBLOKUJ</button>
                 </div>
             </div>
-        
-        
-        </div>    
+
+
+        </div>
     </div>
-    
+
     {% include 'ParpMainBundle:Default:managerWindow.html.twig' %}
-    
+
     <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
-{%endblock%}
+{% endblock %}

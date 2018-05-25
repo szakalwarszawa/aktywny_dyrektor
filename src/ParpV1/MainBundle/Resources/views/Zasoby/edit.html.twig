@@ -10,10 +10,10 @@
             <li><a data-toggle="tab" href="#pliki">Pliki</a></li>
             <li><a data-toggle="tab" href="#wnioski">Wnioski</a></li>
         </ul>
-        
+
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Edycja Zasoby {{entity.published == 0 ? "(ZASÓB NIEAKTYWNY)" : ""}} </h1>
+                <h1>Edycja Zasoby {{ entity.published == 0 ? "(ZASÓB NIEAKTYWNY)" : "" }} </h1>
                 <div class="tabContent">
                                         <div class="btn-group">
 
@@ -22,10 +22,10 @@
 </a>
 </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-                    
+
                     {{ form(edit_form) }}
                 </div>
-            </div>            
+            </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Zasoby', id: edit_form.vars.value.id})) }}
@@ -53,35 +53,35 @@
                             {% for row in users %}
                             {% if row.czyAktywne %}
                                 <tr>
-                                    <td><a href="{{ path('userzasoby_edit', {id: row.id})}}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
-                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname})}}" 
-                                   
-                                    >{{ row.samaccountname  }}</a></td>
-                                    <td>{{row.loginDoZasobu}}</td>
-                                    <td>{{row.modul}}</td>
-                                    <td>{{row.kanalDostepu}}</td>
-                                    <td>{{row.poziomDostepu}}</td>
-                                    <td>{{row.aktywneOd|date("Y-m-d")}}</td>
-                                    <td>{{row.aktywneDo ? row.aktywneDo|date("Y-m-d") : ""}}</td>
-                                    <td>{{row.powodNadania}}</td>
+                                    <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}"
+
+                                    >{{ row.samaccountname }}</a></td>
+                                    <td>{{ row.loginDoZasobu }}</td>
+                                    <td>{{ row.modul }}</td>
+                                    <td>{{ row.kanalDostepu }}</td>
+                                    <td>{{ row.poziomDostepu }}</td>
+                                    <td>{{ row.aktywneOd|date("Y-m-d") }}</td>
+                                    <td>{{ row.aktywneDo ? row.aktywneDo|date("Y-m-d") : "" }}</td>
+                                    <td>{{ row.powodNadania }}</td>
                                     <td>
-                                    {%if row.wniosek %}
-                                        <a href="{{path('wnioseknadanieodebraniezasobow_show', {id: row.wniosek.id})}}">Wniosek nr {{row.wniosek.wniosek.numer}}</a>
-                                    {%else%}
+                                    {% if row.wniosek %}
+                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: row.wniosek.id}) }}">Wniosek nr {{ row.wniosek.wniosek.numer }}</a>
+                                    {% else %}
                                         <div class="alert alert-danger">Bez wniosku</div>
-                                    {%endif%}
+                                    {% endif %}
                                     </td>
-                                    
-                                    
+
+
                                 </tr>
                                 {% set n = n + 1 %}
-                            {%endif%}
+                            {% endif %}
                             {% endfor %}
                         </tbody>
-                        
+
                     </table>
                 </div>
-            </div>    
+            </div>
             <div id="grupyad" class="tab-pane fade">
                 <div  class="tabContent">
                     <table class="table table-striped table-bordered" id="tableGrupyAD">
@@ -92,20 +92,20 @@
                         </tr>
                         {% for g,p in grupyAd %}
                             <tr>
-                                <td>{{g}}</td>
-                                <td>{{p.exists ? "TAK" : "NIE"}} </td>
+                                <td>{{ g }}</td>
+                                <td>{{ p.exists ? "TAK" : "NIE" }} </td>
                                 <td>
                                     {% for u in p.members %}
-                                        {{u.name}} ,                                     
-                                    {%endfor%}
-                                
+                                        {{ u.name }} ,
+                                    {% endfor %}
+
                                 </td>
                             </tr>
                         {% endfor %}
                         </tbody>
                     </table>
                 </div>
-            </div>      
+            </div>
             <div id="pliki" class="tab-pane fade">
                 <div  class="tabContent">
                     {{ render(controller('ParpMainBundle:Plik:index', {obiekt: 'Zasoby', obiektId: edit_form.vars.value.id})) }}
@@ -122,46 +122,46 @@
                             {% for uz in users %}
                                 <tr>
                                     <td>
-                                        {%if uz.wniosek is not null %}
-                                            <a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">{{uz.wniosek.id}}</a>
-                                        {%else%}
+                                        {% if uz.wniosek is not null %}
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">{{ uz.wniosek.id }}</a>
+                                        {% else %}
                                             Bez wniosku
-                                        {%endif%}
+                                        {% endif %}
                                     </td>
                                     <td>
-                                        
-                                        {%if uz.wniosek is not null %}
-                                            <a href="{{path('wnioseknadanieodebraniezasobow_edit', {'id' : uz.wniosek.id})}}">Wniosek  o {{uz.wniosek.odebranie ? "odebranie" : "nadanie"}} uprawnień numer: {{uz.wniosek.wniosek.numer}} </a>
-                                        {%else%}
+
+                                        {% if uz.wniosek is not null %}
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">Wniosek  o {{ uz.wniosek.odebranie ? "odebranie" : "nadanie" }} uprawnień numer: {{ uz.wniosek.wniosek.numer }} </a>
+                                        {% else %}
                                             Nie odebrane
-                                        {%endif%}
-                                        
+                                        {% endif %}
+
                                     </td>
                                 </tr>
                             {% endfor %}
                             {% if entity.wniosekUtworzenieZasobu %}
                                 <tr>
-                                    <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekUtworzenieZasobu.id})}}">{{entity.wniosekUtworzenieZasobu.id}}</a></td>
-                                    <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekUtworzenieZasobu.id})}}">Wniosek o utworzenie zasobu: {{entity.wniosekUtworzenieZasobu.wniosek.numer}} </a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekUtworzenieZasobu.id}) }}">{{ entity.wniosekUtworzenieZasobu.id }}</a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekUtworzenieZasobu.id}) }}">Wniosek o utworzenie zasobu: {{ entity.wniosekUtworzenieZasobu.wniosek.numer }} </a></td>
                                 </tr>
-                            {%endif%}
-                            {%if (entity.wnioskiZmieniajaceZasob|length  > 0) %}
+                            {% endif %}
+                            {% if (entity.wnioskiZmieniajaceZasob|length > 0) %}
                                 {% for wniosek in entity.wnioskiZmieniajaceZasob %}
                                     <tr>
-                                        <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : wniosek.id})}}">{{wniosek.id}}</a></td>
-                                        <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : wniosek.id})}}">Wniosek o zmianę zasobu: {{wniosek.wniosek.numer}} </a></td>
+                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': wniosek.id}) }}">{{ wniosek.id }}</a></td>
+                                        <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': wniosek.id}) }}">Wniosek o zmianę zasobu: {{ wniosek.wniosek.numer }} </a></td>
                                     </tr>
                                 {% endfor %}
-                            {% endif%}
+                            {% endif %}
                             {% if entity.wniosekSkasowanieZasobu %}
                                 <tr>
-                                    <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekSkasowanieZasobu.id})}}">{{entity.wniosekSkasowanieZasobu.id}}</a></td>
-                                    <td><a href="{{path('wniosekutworzeniezasobu_show', {'id' : entity.wniosekSkasowanieZasobu.id})}}">Wniosek o usunięcie zasobu: {{entity.wniosekSkasowanieZasobu.wniosek.numer}} </a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekSkasowanieZasobu.id}) }}">{{ entity.wniosekSkasowanieZasobu.id }}</a></td>
+                                    <td><a href="{{ path('wniosekutworzeniezasobu_show', {'id': entity.wniosekSkasowanieZasobu.id}) }}">Wniosek o usunięcie zasobu: {{ entity.wniosekSkasowanieZasobu.wniosek.numer }} </a></td>
                                 </tr>
-                            {%endif%}
+                            {% endif %}
                         </tbody>
                     </table>
-                    
+
                 </div>
             </div>
         </div>
@@ -175,8 +175,8 @@
         $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('readonly', false);
     });
 </script>
-    
-    
+
+
 {% endblock %}
 
 {% form_theme edit_form _self %}
@@ -187,4 +187,4 @@
         <span class="fa fa-calendar"></span>
     </span>
 </div>
-{% endblock %} 
+{% endblock %}

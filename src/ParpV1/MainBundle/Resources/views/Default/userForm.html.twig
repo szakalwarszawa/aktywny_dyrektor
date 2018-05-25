@@ -1,7 +1,7 @@
 
 <div  class="tabContent">
     <form class="form-horizontal" method="POST" role="form">
-        {{  form_start(form) }}
+        {{ form_start(form) }}
         <div class="form-group">
             {{ form_label(form.samaccountname) }}
             <div class="col-sm-8">{{ form_widget(form.samaccountname) }}</div>
@@ -25,10 +25,10 @@
         </div>
         <div class="form-group">
             {{ form_label(form.title) }}
-            <div class="col-sm-{{  (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
+            <div class="col-sm-{{ (user is defined) ? "4" : "8" }}">{{ form_widget(form.title) }}</div>
             {% if user is defined %}
                 <div class="col-sm-4"><a class="btn btn-primary col-sm-12" href="{{ path('engageUser', {samaccountname: user.samaccountname}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a></div>
-            {%endif%}
+            {% endif %}
         </div>
         <div class="form-group">
             {{ form_label(form.initialrights) }}
@@ -41,7 +41,7 @@
                     {{ form_widget(form.info) }}
                     </div>
                     <div class="hidden">
-                        {{ form_widget(form.infoNew)}}
+                        {{ form_widget(form.infoNew) }}
                         <span class="input-group-addon">
                             <button class="btn btn-primary fa fa-edit" onclick="event.preventDefault(); var hideCombo = $('#form_infoNew').attr('type') == 'hidden';  if(hideCombo){$('#formRowInfo').addClass('hidden'); $('#form_infoNew').attr('type', 'text');}else{$('#formRowInfo').removeClass('hidden'); $('#form_infoNew').attr('type', 'hidden');}">
                             Nowa Sekcja
@@ -66,14 +66,14 @@
             <div class="col-sm-2 btn-group">
 {#
                 <a class="btn btn-primary col-sm-6" id="nadaj" name="nadaj"><i class="fa fa-users"></i>{% if form.manager %}Zmień{% else %}Nadaj{% endif %}</a>
-                
+
 #}
                 {% if user is defined %}
                 <a class="btn btn-primary col-sm-6" href="{{ path('structure',{samaccountname: user.samaccountname }) }}"><i class="fa fa-sitemap"></i> Struktura</a>
-                {%endif%}
+                {% endif %}
             </div>
         </div>
-                    
+
         <div class="form-group">
             {{ form_label(form.accountExpires) }}
             <div class='col-sm-8'>
@@ -88,15 +88,15 @@
         <div class="form-group">
             {{ form_label(form.isDisabled) }}
             <div class='col-sm-8'>
-                    {{ form_widget(form.isDisabled, {'attr': {'onchange' : 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}'}}) }}
-                
+                    {{ form_widget(form.isDisabled, {'attr': {'onchange': 'if($(this).val() == 1){$("#disableDescriptionDiv").removeClass("hidden");}else{$("#form_disableDescription").val("");$("#disableDescriptionDiv").addClass("hidden");}' }}) }}
+
             </div>
         </div>
-        <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden'}}" id="disableDescriptionDiv" >
+        <div class="form-group {{ form.vars.value.isDisabled ? '' : 'hidden' }}" id="disableDescriptionDiv" >
             {{ form_label(form.disableDescription) }}
             <div class='col-sm-8'>
                     {{ form_widget(form.disableDescription) }}
-                
+
             </div>
         </div>
         <div class="form-group">
@@ -114,19 +114,19 @@
                 </div>
             </div>
         </div>
-        
+
         <div class="form-group">
             {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
             <div class='col-sm-8'>
                 {{ form_widget(form.ustawUprawnieniaPoczatkowe) }}
             </div>
         </div>
-        
+
         {% if form.zapisz is defined %}
         <div class="form-group">
             <div class="col-sm-6"><input type="button" class="btn btn-danger btncancel" disabled onclick="cancelForm()" value="Cofnij zmiany"/></div>
             <div class="col-sm-6">{{ form_widget(form.zapisz) }}</div>
         </div>
-        {%endif%}
+        {% endif %}
     {{ form_rest(form) }}
 </div>

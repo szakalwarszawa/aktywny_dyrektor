@@ -3,12 +3,12 @@
 {% block body -%}
 {% if msg is defined %}
     <div class="alert alert-danger">
-        {{msg}}
+        {{ msg }}
     </div>
-{%endif%}
-{%if daneZRekorda|length > 0 %}
-<h2>Raport za okres: {{rok}} - {{miesiac}}</h2>
-Liczba rekordów: {{daneZRekorda|length}}
+{% endif %}
+{% if daneZRekorda|length > 0 %}
+<h2>Raport za okres: {{ rok }} - {{ miesiac }}</h2>
+Liczba rekordów: {{ daneZRekorda|length }}
 <table class="record_properties table table-striped tablesorter">
     <thead>
         <tr>
@@ -33,11 +33,11 @@ Liczba rekordów: {{daneZRekorda|length}}
                     {% for key,value in obj %}
                         <td>
                             {% if value.timestamp is defined %}
-                                {{value|date}}
+                                {{ value|date }}
                             {% else %}
-                                {%if value is iterable %}
+                                {% if value is iterable %}
                                     {% for k, v in value %}
-                                        {{k}} : {{ v|raw }}<br>
+                                        {{ k }} : {{ v|raw }}<br>
                                     {% endfor %}
                                 {% else %}
                                     {{ value|raw }}
@@ -47,10 +47,10 @@ Liczba rekordów: {{daneZRekorda|length}}
                         </td>
                     {% endfor %}
                 </tr>
-            {%endfor%}
+            {% endfor %}
     </tbody>
 </table>
-{%endif %}
+{% endif %}
 
     <a href="{{ path('raport_it_generuj_xls') }}" class="btn btn-primary"><i class="fa fa-file-excel-o"></i> Zapisz raport jako XLS</a>
 
