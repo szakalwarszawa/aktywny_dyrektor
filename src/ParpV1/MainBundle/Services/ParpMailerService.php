@@ -23,6 +23,7 @@ class ParpMailerService
     const RETURN_PATH = 'aktywnydyrektor@parp.gov.pl';
     const EMAIL_DO_AUMS_AD = 'jaroslaw_bednarczyk';
     const EMAIL_DO_HELPDESK = 'INT-BI-HELPDESK';
+    const EMAIL_DO_GLPI = 'serwis';
 
     const TEMPLATE_PRACOWNIKMIGRACJA1 = 'pracownikMigracja1.html.twig';
     const TEMPLATE_PRACOWNIKMIGRACJA2 = 'pracownikMigracja2.html.twig';
@@ -31,6 +32,8 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKMIGRACJA5 = 'pracownikMigracja5.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEIMPORT = 'pracownikPrzyjecieImport.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN = 'pracownikPrzyjecieNadanieUprawnien.html.twig';
+    const TEMPLATE_PRACOWNIKPRZYJECIEBA = 'pracownikPrzyjecieBa.html.twig';
+    const TEMPLATE_PRACOWNIKPRZYJECIEBI = 'pracownikPrzyjecieBi.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1 = 'pracownikWygasniecieUprawnien1.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2 = 'pracownikWygasniecieUprawnien2.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3 = 'pracownikWygasniecieUprawnien3.html.twig';
@@ -120,7 +123,6 @@ class ParpMailerService
         $sender = SELF::DEFAULT_SENDER,
         $priority = SELF::DEFAULT_PRIORITY
     ) {
-
         $mailer = $this->mailer;
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
@@ -433,7 +435,13 @@ class ParpMailerService
     public function sendEmailByType($template, $data)
     {
         $wymaganePola = $this->getWymaganePola($template);
-        $tytul = 'Aktywny Dyrektor komunikat: '.$this->getTytulMaila($template);
+
+        if (!empty($data['tytul'])) {
+            $tytul = $this->getTytulMaila($template) . $data['tytul'];
+        } else {
+            $tytul = 'Aktywny Dyrektor komunikat: ' . $this->getTytulMaila($template);
+        }
+
         if (count(array_intersect_key(array_flip($wymaganePola), $data)) === count($wymaganePola)) {
             //Mamy wszystkie wymagane dane
             if ($template == ParpMailerService::TEMPLATE_RAPORTZBIORCZY) {
@@ -444,7 +452,13 @@ class ParpMailerService
                     $data
                 );
             }
-            $this->sendEmail($data['odbiorcy'], $tytul, $view);
+
+            if (!empty($data['nadawca'])) {
+                $this->sendEmail($data['odbiorcy'], $tytul, $view, $data['nadawca']);
+            } else {
+                $this->sendEmail($data['odbiorcy'], $tytul, $view);
+            }
+
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg =
@@ -581,6 +595,8 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE          => 'Zrealizowanie wniosku o umieszczenie/zmianę/wycofanie zasobu',
             ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE              => 'Zwrócenie do poprawy wniosku o umieszczenie/zmianę/wycofanie zasobu',
             ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE                   => 'Zwrócenie do poprawy wniosku o nadanie/odebranie uprawnień',
+            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA               => '[BA] – Nowy pracownik: ',
+            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] – Nowy pracownik: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
