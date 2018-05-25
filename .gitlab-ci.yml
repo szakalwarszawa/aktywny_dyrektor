@@ -16,7 +16,7 @@ build:
         - curl -sS https://getcomposer.org/installer | php
         - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
         - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
-        - php -d memory_limit=3G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "allocine/twigcs:1.0.*" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
+        - php -d memory_limit=4G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "allocine/twigcs:1.0.*" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
         - apk add nodejs nodejs-npm
         - npm init -y
         - npm install eslint eslint-plugin-html eslint-config-idiomatic "htmllint@0.7.2" htmllint-cli
