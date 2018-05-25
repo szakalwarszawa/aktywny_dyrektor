@@ -31,7 +31,7 @@ parallellint:
 psr2:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: quality
-    allow_failure: true
+    allow_failure: false
     script:
         - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/
 
