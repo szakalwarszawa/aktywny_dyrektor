@@ -1,101 +1,109 @@
 stages:
     - build
     - test
-    - optional
     - quality
+    - stats
+    - doc
 
 build:
-    image: alpine:3.7
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: build
     script:
-        - apk update
-        - apk add curl php5 php5-json php5-phar php5-openssl php5-zlib php5-pdo php5-xml php5-dom php5-ldap php5-ctype php5-intl php5-curl php5-soap
-        - echo 'date.timezone = "Europe/Warsaw"' > /etc/php5/conf.d/timezone.ini
-        - ln -sf /usr/bin/php5 /usr/bin/php
-        - php --ini
-        - curl -sS https://getcomposer.org/installer | php
-        - php -d memory_limit=3G composer.phar global require "hirak/prestissimo" --prefer-dist --no-suggest --no-progress
-        - php -d memory_limit=3G composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
-        - php -d memory_limit=4G composer.phar require "squizlabs/php_codesniffer:~2.2.0" "allocine/twigcs:1.0.*" "sebastian/phpcpd:1.4.*" "phploc/phploc" --prefer-dist --no-suggest --no-progress --no-scripts
-        - apk add nodejs nodejs-npm
-        - npm init -y
-        - npm install eslint eslint-plugin-html eslint-config-idiomatic "htmllint@0.7.2" htmllint-cli
-
+        - /usr/bin/composer.phar global show -i > .gitlab-ci/gitlab-ci-composer.dump
+        - php -d memory_limit=5G /usr/bin/composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
     artifacts:
         expire_in: 1 day
         untracked: true
         paths:
             - vendor/
-            - web/
-            - bin/
-            - node_modules/
+            - .gitlab-ci/gitlab-ci-composer.dump
 
-cs_psr2:
-    image: alpine:3.7
-    stage: test
+parallellint:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
+    allow_failure: false
     script:
-        - apk update
-        - apk add php5
-        - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./bin/phpcs -n --report=full --colors --standard=PSR2 --extensions=php src/ParpV1/
+        - /root/.composer/vendor/bin/parallel-lint --version
+        - /root/.composer/vendor/bin/parallel-lint --colors --blame ./src
+        - /root/.composer/vendor/bin/parallel-lint --colors --blame ./app
+        - /root/.composer/vendor/bin/parallel-lint --colors --blame ./web
 
-lint_twig:
-    image: alpine:3.7
-    stage: optional
+psr2:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
     allow_failure: true
     script:
-        - apk update
-        - apk add php5 php5-ctype
-        - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./bin/twigcs lint app/Resources/views/
-        - ./bin/twigcs lint src/ParpV1/
+        - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/
 
-lint_js:
-    image: alpine:3.7
-    stage: optional
+twigcs:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
     allow_failure: true
     script:
-        - apk update
-        - apk add nodejs
-        - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color src/ParpV1/
-        - node_modules/.bin/eslint --config .eslintrc --ignore-path .eslintignore --ext .html,.html.twig,.js --format table --color app/Resources/views/
+        - /root/.composer/vendor/bin/twigcs lint app/Resources/views/
+        - /root/.composer/vendor/bin/twigcs lint src
 
-# lint_html:
-#     image: alpine:3.7
-#     stage: optional
-#     allow_failure: true
-#     script:
-#         - apk update
-#         - apk add nodejs
-#         - node_modules/.bin/htmllint --rc .htmllintrc src/ParpV1/**/*.{htm,html,html.twig} 
-#         - node_modules/.bin/htmllint --rc .htmllintrc app/Resources/views/**/*.{htm,html,html.twig}
-        
-lint_html_with_tidy:
-    image: alpine:3.7
-    stage: optional
+eofemptyline:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
     allow_failure: true
     script:
-        - apk update
-        - apk add tidyhtml
+        - /usr/bin/missing_empty_line_detector.sh .
+
+phpmd:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
+    allow_failure: true
+    script:
+        - /root/.composer/vendor/bin/phpmd src/ text "./.gitlab-ci/phpmd.xml"
+
+phpcpd:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
+    allow_failure: true
+    script:
+        - /root/.composer/vendor/bin/phpcpd src/
+
+phploc:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: stats
+    allow_failure: true
+    script:
+        - /root/.composer/vendor/bin/phploc src
+
+eslint:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
+    allow_failure: true
+    script:
+        - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext .html,.html.twig,.js --format table --color src/ParpV1/
+        - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext .html,.html.twig,.js --format table --color app/Resources/views/
+
+tidyhtml:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: quality
+    allow_failure: true
+    script:
         - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/*
         - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
 
-php_cpd:
-    image: alpine:3.7
-    stage: quality
-    allow_failure: true
-    script:
-        - apk update
-        - apk add php5 php5-iconv
-        - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./bin/phpcpd src/ParpV1/
+# lint_html:
+#     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+#     stage: quality
+#     allow_failure: true
+#     script:
+#         - /usr/bin/node_modules/bin/htmllint --rc "./.gitlab-ci/.htmllintrc" src/ParpV1/**/*.{htm,html,html.twig} 
+#         - /usr/bin/node_modules/bin/htmllint --rc "./.gitlab-ci/.htmllintrc" app/Resources/views/**/*.{htm,html,html.twig}
 
-php_loc:
-    image: alpine:3.7
-    stage: quality
+sami:
+    image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+    stage: doc
     allow_failure: true
     script:
-        - apk update
-        - apk add php5
-        - ln -sf /usr/bin/php5 /usr/bin/php
-        - ./bin/phploc src/ParpV1/
+        - mkdir -p doc/api
+        - php -d memory_limit=1G /usr/bin/sami.phar update "./.gitlab-ci/sami.conf" -v
+    artifacts:
+        untracked: false
+        expire_in: 1 day
+        paths:
+            - .gitlab-ci/doc/api/
