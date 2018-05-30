@@ -120,14 +120,14 @@ class ParpMailerService
         $recipient,
         $subject,
         $contentHtml,
-        $sender = SELF::DEFAULT_SENDER,
-        $priority = SELF::DEFAULT_PRIORITY
+        $sender = self::DEFAULT_SENDER,
+        $priority = self::DEFAULT_PRIORITY
     ) {
         $mailer = $this->mailer;
         $contentTxt = strip_tags($contentHtml);
         $contentTxt .= "\n\n\nWiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.";
         $contentHtml .= "<br><br><div style='width: 100%;'>Wiadomość została wygenerowana automatycznie. Prosimy na nią nie odpowiadać.</div>";
-        
+
         // umożiwia testowanie wysyłki maili ze środowiska testowego,
         if ($this->idSrodowiska == 'test') {
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
@@ -135,7 +135,7 @@ class ParpMailerService
             $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
             $recipient = array('pawel_fedoruk','tomasz_bonczak','jaroslaw_bednarczyk');
         }
-        
+
         $recipientArray= $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */
@@ -458,7 +458,6 @@ class ParpMailerService
             } else {
                 $this->sendEmail($data['odbiorcy'], $tytul, $view);
             }
-
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg =
@@ -595,8 +594,8 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE          => 'Zrealizowanie wniosku o umieszczenie/zmianę/wycofanie zasobu',
             ParpMailerService::TEMPLATE_WNIOSEKZASOBZWROCENIE              => 'Zwrócenie do poprawy wniosku o umieszczenie/zmianę/wycofanie zasobu',
             ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE                   => 'Zwrócenie do poprawy wniosku o nadanie/odebranie uprawnień',
-            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA               => '[BA] – Nowy pracownik: ',
-            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] – Nowy pracownik: ',
+            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA               => '[BA] Nowy pracownik: ',
+            ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] Nowy pracownik: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';

@@ -140,7 +140,7 @@ class ZgloszenieController extends Controller
         $kategoria = 22; # Zgłoszone przez użytkownika
         $uri = strip_tags($formularz['uri']);
 
-//		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
+        // putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
         $odpowiedz_tmp = $this->get('parp.redmine')->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, $uri, true, null, null, null, $email, $telefon, $imie_nazwisko);
 
         if (preg_match('~\{(?:[^{}]|(?R))*\}~', $odpowiedz_tmp, $odpowiedz_json)) {
@@ -310,7 +310,7 @@ class ZgloszenieController extends Controller
 
         // niezalogowany więc 0
         $userId = 0;
-//		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
+        // putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
         $odpowiedz_tmp = $this->get('parp.redmine')->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, $uri, true, null, null, $podmiot, $email, $telefon);
 
         if (preg_match('~\{(?:[^{}]|(?R))*\}~', $odpowiedz_tmp, $odpowiedz_json)) {

@@ -57,7 +57,7 @@ class RedmineConnectService
     
     /*
      * Kontener
-     * 
+     *
      */
     private $container;
 

@@ -1167,7 +1167,7 @@ class LdapService
         $stanowisko = mb_strtolower(trim($user['title']));
 
         /*
-          Prezesa PARP	[UPr]	PARP	członkostwo w grupie INT Olimp [send];
+          Prezesa PARP [UPr] PARP członkostwo w grupie INT Olimp [send];
           członkostwo w grupie INT Prezesi [send];
           wysyłanie do grupy INT Dyrektorzy;
           wysyłanie do grupy INT-Zastepcy-Dyrektorow;

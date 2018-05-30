@@ -191,7 +191,6 @@ class BlokowaneKontaController extends Controller
                     array('samaccountname', 'ktorzy' => $ktorzy)
             );
             $rowAction->addAttribute('class', 'btn btn-success btn-xs');
-    
             $grid->addRowAction($rowAction);
         */
         $grid->isReadyForRedirect();

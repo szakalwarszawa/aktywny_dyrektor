@@ -19,15 +19,15 @@ class ZasobyRepository extends EntityRepository
         $temps = $this->getRepository("ParpMainBundle:UserZasoby")->findAll();
         print_r($temps);
         die();
-/*
+        /*
         $query = $this->createQueryBuilder('e')
                 ->join('e.userzasoby', 'uz')
                 ->where('uz.samaccountname = :sams')
                 ->setParameters(array('sams' => "kjakacki"))
                 ->getQuery();
 
-        return $query->getResult();    
-*/
+        return $query->getResult();
+        */
     }
 
 
@@ -35,9 +35,9 @@ class ZasobyRepository extends EntityRepository
     {
 
         $query = $this->createQueryBuilder('z')
-                ->where('z.nazwa like :grupa or z.grupyAD like :grupa ')
-                ->setParameters(array('grupa' => "%$grupa%"))
-                ->getQuery();
+            ->where('z.nazwa like :grupa or z.grupyAD like :grupa ')
+            ->setParameters(array('grupa' => "%$grupa%"))
+            ->getQuery();
         $results = $query->getResult();
         return count($results) == 1 ? $results[0] : null;
     }
