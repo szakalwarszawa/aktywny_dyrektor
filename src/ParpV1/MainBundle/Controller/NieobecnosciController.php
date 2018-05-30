@@ -53,13 +53,13 @@ class NieobecnosciController extends Controller
         $c->setContainer($this->container);
         
         /*
-        //pobiera dane o urlopach dla ostatnich x dni 
+        //pobiera dane o urlopach dla ostatnich x dni
         $daneUrlopy = $this->grupujUrlopyOsob($c->executeQuery($this->getSqlUrlopy()));
         $daneDniWolneDodatkoweUrlopy1 = $this->grupujUrlopyOsob($c->executeQuery($this->getSqlDniWolne(date("Y")-1)));
         $daneDniWolneDodatkoweUrlopy2 = $this->grupujUrlopyOsob($c->executeQuery($this->getSqlDniWolne(date("Y"))));
-        //grupuje po osobach, do kazdej dorzucajac weekendy i swieta poprzedniego roku 
+        //grupuje po osobach, do kazdej dorzucajac weekendy i swieta poprzedniego roku
         $this->dodajDniWolneIDodatkoweyUrlopy($daneUrlopy, $daneDniWolneDodatkoweUrlopy1);
-        //grupuje po osobach, do kazdej dorzucajac weekendy i swieta tego roku 
+        //grupuje po osobach, do kazdej dorzucajac weekendy i swieta tego roku
         $this->dodajDniWolneIDodatkoweyUrlopy($daneUrlopy, $daneDniWolneDodatkoweUrlopy2);
         //sortuje po dacie nieobecnosci (zeby swieta i urlopy sie poukladaly odpowiednio)
         $this->sortujDane($daneUrlopy);

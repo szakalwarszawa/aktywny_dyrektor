@@ -40,7 +40,6 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
                 ));
 */
         }

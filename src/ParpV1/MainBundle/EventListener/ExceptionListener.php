@@ -128,7 +128,7 @@ class ExceptionListener implements EventSubscriberInterface
                     $kategoria = 10; # Zgłoszone przez system
 
                     $redmine = $this->kernel->getContainer()->get('parp.redmine');
-                    //		putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
+                    // putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
                     $json = $redmine->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, null, true, $komunikat_systemowy, null, null, $email, null, $imie_nazwisko);
 
                     // wyciagnij numer zgłoszenia

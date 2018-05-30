@@ -154,7 +154,7 @@ class StringExtension extends \Twig_Extension
             if($last == "mala" && $duza){
                 $ret .= " ";
             }
-            $ret .= $last == "" ? mb_strtoupper($c) : $c;            
+            $ret .= $last == "" ? mb_strtoupper($c) : $c;
             $last = $duza ? "duza" : "mala";
         }
 */

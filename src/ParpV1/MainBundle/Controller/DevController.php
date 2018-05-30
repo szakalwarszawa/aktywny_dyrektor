@@ -649,13 +649,12 @@ class DevController extends Controller
 
 /*
         print_r($this->getMembers(
-        			array("INT-BI","INT-BA")
-        		)); // EXCLUSIVE: Gets only members that belong to BOTH 'Test Group' AND 'Test Group 2'
+            array("INT-BI","INT-BA")
+        )); // EXCLUSIVE: Gets only members that belong to BOTH 'Test Group' AND 'Test Group 2'
 
         print_r($this->getMembers(
-        			array("INT-BI","INT-BA"),TRUE
-        		)); // INCLUSIVE: Gets members that belong to EITHER 'Test Group' OR 'Test Group 2'
-
+            array("INT-BI","INT-BA"),TRUE
+        )); // INCLUSIVE: Gets members that belong to EITHER 'Test Group' OR 'Test Group 2'
 */
         //$gs = $this->get('ldap_service')->getMembersOfGroupFromAD("INT-BI");
         die('membersOf');

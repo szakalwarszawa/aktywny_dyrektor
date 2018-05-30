@@ -120,8 +120,8 @@ class ParpMailerService
         $recipient,
         $subject,
         $contentHtml,
-        $sender = SELF::DEFAULT_SENDER,
-        $priority = SELF::DEFAULT_PRIORITY
+        $sender = self::DEFAULT_SENDER,
+        $priority = self::DEFAULT_PRIORITY
     ) {
         $mailer = $this->mailer;
         $contentTxt = strip_tags($contentHtml);
@@ -458,7 +458,6 @@ class ParpMailerService
             } else {
                 $this->sendEmail($data['odbiorcy'], $tytul, $view);
             }
-
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg =
