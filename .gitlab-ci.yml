@@ -48,7 +48,7 @@ eofemptyline:
     stage: quality
     allow_failure: true
     script:
-        - /usr/bin/missing_empty_line_detector.sh -e "./vendor" .
+        - /usr/bin/missing_empty_line_detector.sh -e "./vendor, ./web/bower_components, ./.gitignore" .
 
 phpmd:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
