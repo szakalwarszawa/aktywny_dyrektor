@@ -1,4 +1,3 @@
-
 {% form_theme form  'bootstrap_3_horizontal_layout.html.twig' _self %}
 
 {% block _form_fromWhen_widget %}
@@ -50,7 +49,7 @@
         {{ form_errors(form) }}
     </div>
 {% endspaceless %}
-{% - endblock checkbox_radio_row %}
+{%- endblock checkbox_radio_row %}
 {% block checkbox_radio_label %}
     {# Do not display the label if widget is not defined in order to prevent double label rendering #}
     {% if widget is defined %}
@@ -64,10 +63,10 @@
             {% set label = name|humanize %}
         {% endif %}
             <div class="col-sm-4">
-                {{ - widget|raw }}
+                {{- widget|raw }}
                 <label for="{{ id }}" {% for attrname, attrvalue in label_attr %} {{ attrname }}="{{ attrvalue }}"{% endfor %}
                 data-ajaxload2="/app_dev.php/dev/getUzInfo" data-original-title="Tytuł" class="noPadding">
-                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(0) - }}
+                {{ (label is not same as(false) ? (translation_domain is same as(false) ? label : label|trans({}, translation_domain)))|getMultipleCheckboxLabel(0) -}}
                 </label>
             </div>
             <div class="col-sm-2">
