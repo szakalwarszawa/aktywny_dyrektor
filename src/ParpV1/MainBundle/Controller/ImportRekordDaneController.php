@@ -825,7 +825,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
             $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : 'bez departamentu';
-            $sections[$dep][$tmp->getName()] = $tmp->getName();
+            $sections[$dep][$tmp->getShortname()] = $tmp->getName();
         }
 
         $adapter = new ArrayAdapter($data);
@@ -963,7 +963,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     $this->getDoctrine()
                         ->getRepository('ParpMainBundle:Departament')
                         ->findOneByName($userFromAD[0]['department']);
-                $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByName($userFromAD[0]['division']);
+                $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByShortname($userFromAD[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska =
                     $ldapService->getGrupyUsera(
                         $userFromAD[0],
@@ -977,7 +977,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $this->getDoctrine()
                     ->getRepository('ParpMainBundle:Departament')
                     ->findOneByNameInRekord($daneRekord->getDepartament());
-            $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByName($dane['form']['info']);
+            $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByShortname($dane['form']['info']);
             if (null === $departament) {
                 $departament = $section->getDepartament();
             }
@@ -1004,7 +1004,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $entry->setAccountExpires($v);
             }
             if ($dane['form']['info'] !== '') {
-                $entry->setInfo($dane['form']['info']);
+                $entry->setDivision($dane['form']['info']);
+                $entry->setInfo($section->getName());
             }
             if ($dane['form']['manager'] !== '') {
                 $manager = $ldapService->getUserFromAD($dane['form']['manager']);

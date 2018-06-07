@@ -1275,7 +1275,7 @@ class LdapService
             }
         }
         $sekcyjne = [
-            'SRO' => ['SG-BI-VPN-Access'],
+            'BI.SOR' => ['SG-BI-VPN-Access'],
         ];
         if (isset($sekcyjne[$sekcja])) {
             foreach ($sekcyjne[$sekcja] as $s) {
