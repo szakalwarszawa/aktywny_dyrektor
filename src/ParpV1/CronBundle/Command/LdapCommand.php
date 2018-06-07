@@ -102,7 +102,10 @@ class LdapCommand extends ContainerAwareCommand
             $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)": "Publikowanie zmian do AD";
 
             if (php_sapi_name() === "cli") {
-                $output = new BufferedOutput();
+                $output = new BufferedOutput(
+                    OutputInterface::VERBOSITY_NORMAL,
+                    true // kolorowanie skladni dla konsoli
+                );
             }
 
             $output->writeln('<comment>'.$msg.'</comment>', false);
