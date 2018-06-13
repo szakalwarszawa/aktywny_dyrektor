@@ -25,8 +25,8 @@ class AppKernel extends Kernel
             new Stof\DoctrineExtensionsBundle\StofDoctrineExtensionsBundle(),
             new Liuggio\ExcelBundle\LiuggioExcelBundle(),
             new FOS\JsRoutingBundle\FOSJsRoutingBundle(),
-
-             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
+            new Doctrine\Bundle\MigrationsBundle\DoctrineMigrationsBundle(),
+            new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 	        new JMS\SerializerBundle\JMSSerializerBundle(),
 	        new FOS\RestBundle\FOSRestBundle(),
         );

@@ -120,3 +120,9 @@ fos_rest:
             include_format: false
     view:
         view_response_listener: true
+
+doctrine_migrations:
+    dir_name: "%kernel.root_dir%/../setup/migrations"
+    namespace: 'Application\Migrations'
+    table_name: 'migration_versions'
+    name: 'Application Migrations'
