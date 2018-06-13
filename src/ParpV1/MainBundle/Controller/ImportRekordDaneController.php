@@ -1060,6 +1060,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
                 $dane['nadawca'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
                 $dane['tytul'] = $daneRekord->getImie() . ' ' . $daneRekord->getNazwisko();
+                $dane['stanowisko'] = $daneRekord->getStanowisko();
+                $dane['umowa_od'] = $daneRekord->getUmowaOd();
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
             }
