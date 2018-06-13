@@ -982,6 +982,14 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $departament = $section->getDepartament();
             }
 
+            if (empty($entry->getDistinguishedname())) {
+                $tab = explode('.', $this->container->getParameter('ad_domain'));
+                $adOu = ($this->container->getParameter('ad_ou'));
+                $adDn = 'CN=' . $entry->getCn() . ',OU=' . $departament->getShortname() . ',' . $adOu . ',DC=' . $tab[0] .
+                    ',DC=' . $tab[1];
+                $entry->setDistinguishedname($adDn);
+            }
+
             $entry->setDepartment($departament->getName());
             $grupyNaPodstawieSekcjiOrazStanowiska =
                 $ldapService->getGrupyUsera(
