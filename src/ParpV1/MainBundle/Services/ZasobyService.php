@@ -63,7 +63,7 @@ class ZasobyService
                 if (true === $this->zasobSpecjalnyDostep($zasob, $uzytkownik)) {
                     $zasobyPrzefiltrowane[$zasob['id']] = $zasob['nazwa'];
                 }
-            } elseif(true !== $zasob['zasobSpecjalny']) {
+            } elseif (true !== $zasob['zasobSpecjalny']) {
                 $zasobyPrzefiltrowane[$zasob['id']] = $zasob['nazwa'];
             }
         }

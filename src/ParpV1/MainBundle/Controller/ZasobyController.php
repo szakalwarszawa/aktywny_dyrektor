@@ -53,10 +53,11 @@ class ZasobyController extends Controller
 
 
         return $siatkaUsluga->getGridResponse(
-            "ParpMainBundle:Zasoby:index.html.twig", array(
+            "ParpMainBundle:Zasoby:index.html.twig",
+            array(
                 'grid' => $siatkaZasoby->generate(),
                 'aktywne' => $aktywne
-                )
+            )
         );
     }
 

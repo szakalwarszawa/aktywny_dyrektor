@@ -145,7 +145,6 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
                     }
-
                 }
                 //var_dump($chs); die();
                 break;
