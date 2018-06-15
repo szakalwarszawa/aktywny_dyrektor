@@ -8,7 +8,15 @@ use ParpV1\MainBundle\Entity\Zasoby;
 
 class ZasobyService
 {
+    /**
+     * @var EntityManager $entityManager
+     */
     protected $entityManager;
+
+    /**
+     * @var Container $container
+     */
+    protected $container;
 
     public function __construct(EntityManager $entityManager, Container $container)
     {
@@ -50,6 +58,13 @@ class ZasobyService
         return false;
     }
 
+    /**
+     * Wyszukuje wszystkie zasoby które może widzieć aktualny użytkownik.
+     *
+     * @param User $uzytkownik
+     *
+     * @return array
+     */
     public function findZasobyDlaUsera($uzytkownik)
     {
         $zasoby = $this
