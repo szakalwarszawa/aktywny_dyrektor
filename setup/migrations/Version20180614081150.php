@@ -18,8 +18,7 @@ class Version20180614081150 extends AbstractMigration
         // this up() migration is auto-generated, please modify it to your needs
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
-        $this->addSql('ALTER TABLE zasoby ADD zasob_specjalny TINYINT(1) DEFAULT NULL');
-	$this->addSql('UPDATE zasoby set zasob_specjalny=0 WHERE zasob_specjalny is NULL');
+        $this->addSql('ALTER TABLE zasoby ADD zasob_specjalny TINYINT(1) DEFAULT 0');
     }
 
     /**
