@@ -332,10 +332,17 @@ if($('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').hasClass('select
         var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id' : val});
         console.log(href);
         $.get(href, function(data){
-            console.log(data);
             for(k in data){
                 var v = data[k];
                 var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_"+k;
+                if ($(sel).is('input[type="checkbox"]')) {
+                    if (data[k] == true) {
+                        $(sel).prop('checked', true);
+                    } else {
+                        $(sel).prop('checked', false);
+                    }
+                }
+
                 if($(sel).hasClass('tagit-hidden-field')){
                     $(sel).tagit('removeAll');
                     if(v){

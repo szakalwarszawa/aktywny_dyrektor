@@ -5,14 +5,15 @@ namespace ParpV1\MainBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
 class ZasobyType extends AbstractType
 {
     protected $nazwaLabel;
-    
+
     protected $container;
     protected $zablokujPolaPozaPoziomModul = false;
-    
+
     public function __construct($container, $nazwaLabel = "Nazwa", $niemozeEdytowac = false, $czyJestWlascicielemLubPowiernikiem = false)
     {
         $this->container = $container;
@@ -26,14 +27,19 @@ class ZasobyType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $adminiMulti = false; //in_array("PARP_ADMIN2", $this->container->getUser()->getRoles());
-        
+
         $ldap = $this->container->get('ldap_service');
-        
+
         $admini = $ldap->getAdministratorzyZasobow();
-        
+
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             //->add('id')
+            ->add('zasobSpecjalny', CheckboxType::class, array(
+                'label' => 'Zasób specjany',
+                'mapped' => true,
+                'required' => false,
+            ))
             ->add('nazwa', 'text', ['label' => $this->nazwaLabel, 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('opis', 'hidden')//jest drugie pole opis z importu ecm
             ->add('biuro', 'hidden');
@@ -52,7 +58,7 @@ class ZasobyType extends AbstractType
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ));
         }
-            
+
         $builder->add($builder->create('powiernicyWlascicielaZasobu', 'choice', array(
                 'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
@@ -71,8 +77,8 @@ class ZasobyType extends AbstractType
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
-            
-            
+
+
             ->add('uzytkownicy', 'choice', array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzni" => "Zewnętrzni"),
                 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]
@@ -99,8 +105,8 @@ class ZasobyType extends AbstractType
             ->add('grupyAD', 'text', array(
                 'attr' => array('class' => 'tagAjaxInput', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul), 'required' => false,
             ))
-            
-            
+
+
             ->add('dataZakonczeniaWdrozenia', 'datetime', array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
@@ -113,7 +119,7 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
+
                 ))
             ->add('wykonawca', 'choice', array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny"),
@@ -144,8 +150,8 @@ class ZasobyType extends AbstractType
                 'attr' => ['class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul],
                 'choices' => array('brak' => 'brak', "inna" => "inna", "powdrożeniowa" => "powdrożeniowa", "proj. techniczny" => "proj. techniczny", "raport z analizy" => "raport z analizy", "specyf. wymagań" => "specyf. wymagań")
             ), ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])->addModelTransformer($transformer));
-            
-            
+
+
             $builder->add('technologia', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('testyBezpieczenstwa', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
             ->add('testyWydajnosciowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
@@ -162,7 +168,7 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
+
                 ))
             ->add('interwalPrzegladuUprawnien', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', 'datetime', array(
@@ -178,7 +184,7 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
+
                 ))
             ->add('interwalPrzegladuAktywnosci', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', 'datetime', array(
@@ -194,7 +200,7 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'widget' => 'single_text'
-                    
+
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul]])
             ->add('dataUtworzeniaZasobu', 'datetime', array(
@@ -232,7 +238,7 @@ class ZasobyType extends AbstractType
                 ))
             ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
