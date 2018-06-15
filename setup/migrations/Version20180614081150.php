@@ -19,6 +19,7 @@ class Version20180614081150 extends AbstractMigration
         $this->abortIf($this->connection->getDatabasePlatform()->getName() !== 'mysql', 'Migration can only be executed safely on \'mysql\'.');
 
         $this->addSql('ALTER TABLE zasoby ADD zasob_specjalny TINYINT(1) DEFAULT 0');
+	$this->addSql('INSERT INTO acl_role(`name`,`opis`) VALUES(\'PARP_ZASOBY_SPECJALNE\', \'Dostęp do zasobów specjalnych\')');
     }
 
     /**
