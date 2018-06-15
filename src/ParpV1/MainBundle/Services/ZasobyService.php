@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Services;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\Container;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\AuthBundle\Security\ParpUser;
 
 class ZasobyService
 {
@@ -13,26 +14,21 @@ class ZasobyService
      */
     protected $entityManager;
 
-    /**
-     * @var Container $container
-     */
-    protected $container;
-
-    public function __construct(EntityManager $entityManager, Container $container)
+    public function __construct(EntityManager $entityManager)
     {
         $this->entityManager = $entityManager;
-        $this->container = $container;
     }
 
     /**
      * Dostęp do zasobu specjalnego mają określone role/grupy/użytkownicy
      *
-     * @param Zasob $zasob
+     * @param array $zasob
+     * @param ParpUser $uzytkownik
      *
      * @return bool
      *
      */
-    public function zasobSpecjalnyDostep($zasob, $uzytkownik)
+    public function zasobSpecjalnyDostep($zasob, ParpUser $uzytkownik)
     {
         $bialaLista = array_unique(
             array_merge(
@@ -61,11 +57,11 @@ class ZasobyService
     /**
      * Wyszukuje wszystkie zasoby które może widzieć aktualny użytkownik.
      *
-     * @param User $uzytkownik
+     * @param ParpUser $uzytkownik
      *
      * @return array
      */
-    public function findZasobyDlaUsera($uzytkownik)
+    public function findZasobyDlaUsera(ParpUser $uzytkownik)
     {
         $zasoby = $this
                 ->entityManager

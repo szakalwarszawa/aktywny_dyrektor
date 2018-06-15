@@ -10,7 +10,7 @@ services:
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
-            arguments: ["@security.context","@service_container","@doctrine.orm.entity_manager"]
+            arguments: ["@security.context","@doctrine.orm.entity_manager"]
             tags: ~
     gedmo.listener.loggable:
         class: Gedmo\Loggable\LoggableListener
