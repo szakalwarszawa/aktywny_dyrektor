@@ -175,7 +175,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                     $builder->add('zmienianyZasob', ChoiceType::class, array(
                         'mapped' => true,
                         'label' => "Wybierz zasób",
-                        'choices' => $zasobyService->findZasobyDlaUsera($container->get('security.context')->getToken()),
+                        'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
                         'attr' => array(
                             'class' => 'select2'
                         ),
@@ -191,16 +191,14 @@ class WniosekUtworzenieZasobuType extends AbstractType
                         'query_builder' => function ($er) {
                             return $er->createQueryBuilder('u')
                                 ->andWhere('u.published = 1');
-
                         }
                     ));
-                 }
+                }
             }
             $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
                 'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
 
             ));
-
         } elseif ("kasowanie" === $typ) {
             $route = $container->get('request')->get('_route');
             if ($formPost === false && $route !== 'wniosekutworzeniezasobu_show') {
@@ -224,7 +222,6 @@ class WniosekUtworzenieZasobuType extends AbstractType
                                 'query_builder' => function ($er) {
                                     return $er->createQueryBuilder('u')
                                         ->andWhere('u.published = 1');
-
                                 }
                 ));
             }
@@ -245,6 +242,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
             'ADUsers' => null,
             'ADManagers' => null,
             'hideCheckboxes' => false,
+            'user' => null,
         ]);
 
         $resolver->setRequired([

@@ -50,10 +50,8 @@ class ZasobyService
         return false;
     }
 
-    public function findZasobyDlaUsera($token)
+    public function findZasobyDlaUsera($uzytkownik)
     {
-        $uzytkownik = $token->getUser();
-
         $zasoby = $this
                 ->entityManager
                 ->getRepository(Zasoby::class)

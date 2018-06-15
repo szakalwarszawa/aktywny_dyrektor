@@ -71,7 +71,6 @@ class ListaZasobowGrid
         $zasobAkcja->setColumn('akcja');
         $siatka->addRowAction($zasobAkcja);
 
-
         $zasobAkcja = new RowAction(
             '<i class="fa fa-delete"></i> ' .
             ($this->parameters['aktywne'] ? "Deaktywuj" : "Aktywuj"),
@@ -117,7 +116,7 @@ class ListaZasobowGrid
                 if (true === $zasobyService->zasobSpecjalnyDostep($zasob, $this->parameters['uzytkownik'])) {
                     $zasobyPrzefiltrowane[] = $zasob;
                 }
-            } elseif(true !== $zasob['zasobSpecjalny']) {
+            } elseif (true !== $zasob['zasobSpecjalny']) {
                 $zasobyPrzefiltrowane[] = $zasob;
             }
         }

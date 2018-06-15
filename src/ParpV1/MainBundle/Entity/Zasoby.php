@@ -310,14 +310,12 @@ class Zasoby
      */
     protected $dataUsunieciaZasobu;
 
-
     /**
      * @var boolean
      * @ORM\Column(name="published", type="boolean")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $published = false;
-
 
     /**
      * @var bool
@@ -327,7 +325,6 @@ class Zasoby
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $zasobSpecjalny = false;
-
 
     /**
      * Get id

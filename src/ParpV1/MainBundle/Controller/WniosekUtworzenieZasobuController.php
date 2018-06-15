@@ -14,7 +14,6 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu;
 use ParpV1\MainBundle\Form\WniosekUtworzenieZasobuType;
 use Symfony\Component\Serializer\Serializer;
@@ -22,7 +21,6 @@ use Symfony\Component\Serializer\Encoder\XmlEncoder;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use ParpV1\MainBundle\Services\ParpMailerService;
-
 use Symfony\Component\HttpFoundation\Response;
 
 /**
@@ -279,6 +277,7 @@ class WniosekUtworzenieZasobuController extends Controller
             //                'ADUsers' => $this->getUsersFromAD(),
             //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
+                'user'      => $this->getUser(),
             )
         );
 

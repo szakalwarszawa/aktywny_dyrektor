@@ -52,9 +52,11 @@ class ZasobyController extends Controller
         $siatkaZasoby = new ListaZasobowGrid($siatkaUsluga, $entityManager, $parametry);
 
 
-        return $siatkaUsluga->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array(
-            'grid' => $siatkaZasoby->generate(),
-            'aktywne' => $aktywne)
+        return $siatkaUsluga->getGridResponse(
+            "ParpMainBundle:Zasoby:index.html.twig", array(
+                'grid' => $siatkaZasoby->generate(),
+                'aktywne' => $aktywne
+                )
         );
     }
 
@@ -307,20 +309,6 @@ class ZasobyController extends Controller
             ->getForm()
         ;
     }
-
-    private function czyMogeWidziecZasobSpecjalny()
-    {
-        $role = $this->getUser()->getRoles();
-        if (in_array('PARP_ADMIN_REJESTRU_ZASOBOW')) {
-            return true;
-        }
-        if (in_array("PARP_ZASOBY_SPECJALNE", $role)) {
-            return true;
-        } else {
-            return false;
-        }
-    }
-
 
     private function getManagers()
     {
