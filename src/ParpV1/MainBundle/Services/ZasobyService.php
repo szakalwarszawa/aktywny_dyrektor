@@ -28,7 +28,7 @@ class ZasobyService
      * @return bool
      *
      */
-    public function zasobSpecjalnyDostep($zasob, ParpUser $uzytkownik)
+    public function zasobSpecjalnyDostep(array $zasob, ParpUser $uzytkownik)
     {
         $bialaLista = array_unique(
             array_merge(
