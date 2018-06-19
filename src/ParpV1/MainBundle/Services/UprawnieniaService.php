@@ -407,8 +407,8 @@ class UprawnieniaService
             if ($person->getInfo()) {
                 $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
                 $shortname = $section->getShortname();
-            } // jezeli nie zmieniona sekcja pobierz z ldap-a
-            else {
+            } else {
+                // jezeli nie zmieniona sekcja pobierz z ldap-a
                 $ldap = $this->container->get('ldap_service');
                 $userAD = $ldap->getUserFromAD($person->getSamaccountname());
                 $shortname = $userAD[0]['division'];

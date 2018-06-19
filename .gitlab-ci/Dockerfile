@@ -2,7 +2,7 @@
 # Nazwa: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
 FROM alpine:3.7
 RUN apk add --no-cache git curl util-linux gawk tidyhtml
-RUN apk add --no-cache php7 php7-curl php7-openssl php7-ldap php7-phar php7-zlib php7-json php7-iconv php7-mbstring php7-intl php7-ctype php7-xml php7-simplexml php7-xmlwriter php7-tokenizer php7-dom php7-pdo
+RUN apk add --no-cache php7 php7-curl php7-openssl php7-ldap php7-phar php7-zlib php7-zip php7-json php7-iconv php7-mbstring php7-intl php7-ctype php7-xml php7-simplexml php7-xmlwriter php7-xmlreader php7-tokenizer php7-dom php7-pdo php7-gd
 RUN ln -sf /usr/bin/php7 /usr/bin/php
 RUN echo 'date.timezone = "Europe/Warsaw"' > /etc/php7/conf.d/timezone.ini
 RUN curl -sS https://getcomposer.org/installer | php
