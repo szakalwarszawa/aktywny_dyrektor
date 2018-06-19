@@ -25,14 +25,14 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="id", title="Id")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $deletedAt;
-    
+
     /**
      *
      * @ORM\OneToOne(targetEntity="Wniosek", inversedBy="wniosekNadanieOdebranieZasobow")
@@ -46,7 +46,7 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
      */
     private $wniosek;
-    
+
     /**
      *
      * @ORM\OneToOne(targetEntity="Zasoby", mappedBy="wniosekUtworzenieZasobu")
@@ -71,7 +71,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zrealizowany = false;
-    
+
     /**
      * @var string
      *
@@ -79,7 +79,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $imienazwisko;
-    
+
     /**
      * @var string
      *
@@ -95,7 +95,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $stanowisko;
-    
+
     /**
      * @var string
      *
@@ -103,7 +103,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $telefon;
-    
+
     /**
      * @var string
      *
@@ -111,7 +111,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nrpokoju;
-    
+
     /**
      * @var string
      *
@@ -119,7 +119,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $email;
-    
+
     /**
      * @var string
      *
@@ -127,7 +127,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $departament;
-    
+
     /**
      * @var string
      *
@@ -135,7 +135,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $proponowanaNazwa;
-    
+
     /**
      * @var boolean
      *
@@ -144,7 +144,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuDoRejestru = false;
-    
+
     /**
      * @var boolean
      *
@@ -152,7 +152,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuDoUruchomienia = false;
-    
+
     /**
      * @var boolean
      *
@@ -161,7 +161,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuZmianaInformacji = false;
-    
+
     /**
      * @var boolean
      *
@@ -169,7 +169,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuZmianaWistniejacym = false;
-    
+
     /**
      * @var boolean
      *
@@ -178,7 +178,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWnioskuWycofanie = false;
-    
+
     /**
      * @var boolean
      *
@@ -210,7 +210,7 @@ class WniosekUtworzenieZasobu
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosekDomenowy = false;
-    
+
     /**
      * Get id
      *
@@ -653,8 +653,8 @@ class WniosekUtworzenieZasobu
     {
         return $this->typWnioskuWycofanieZinfrastruktury;
     }
-    
-    
+
+
 
     /**
      * Set powodZwrotu
@@ -680,7 +680,7 @@ class WniosekUtworzenieZasobu
         return $this->powodZwrotu;
     }
 
-    
+
     /**
      * Constructor
      */

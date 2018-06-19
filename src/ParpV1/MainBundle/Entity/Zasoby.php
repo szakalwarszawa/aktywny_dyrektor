@@ -310,13 +310,21 @@ class Zasoby
      */
     protected $dataUsunieciaZasobu;
 
-
     /**
      * @var boolean
      * @ORM\Column(name="published", type="boolean")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $published = false;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="zasob_specjalny", type="boolean", nullable=true)
+     *
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $zasobSpecjalny = false;
 
     /**
      * Get id
@@ -986,7 +994,7 @@ class Zasoby
     public function setDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych(
         $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
     ) {
-    
+
         $this->dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych =
             $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych;
 
@@ -1013,7 +1021,7 @@ class Zasoby
     public function setInterwalZmianyHaselKontaAdministracyjnychISerwisowych(
         $interwalZmianyHaselKontaAdministracyjnychISerwisowych
     ) {
-    
+
         $this->interwalZmianyHaselKontaAdministracyjnychISerwisowych =
             $interwalZmianyHaselKontaAdministracyjnychISerwisowych;
 
@@ -1101,7 +1109,7 @@ class Zasoby
     public function setWniosekUtworzenieZasobu(
         WniosekUtworzenieZasobu $wniosekUtworzenieZasobu = null
     ) {
-    
+
         $this->wniosekUtworzenieZasobu = $wniosekUtworzenieZasobu;
         $this->wniosekUtworzenieZasobu->setZasob($this);
 
@@ -1131,7 +1139,7 @@ class Zasoby
     public function setWniosekSkasowanieZasobu(
         WniosekUtworzenieZasobu $wniosekSkasowanieZasobu = null
     ) {
-    
+
         $this->wniosekSkasowanieZasobu = $wniosekSkasowanieZasobu;
 
         return $this;
@@ -1276,7 +1284,7 @@ class Zasoby
     public function removeWnioskiZmieniajaceZasob(
         WniosekUtworzenieZasobu $wnioskiZmieniajaceZasob
     ) {
-    
+
         $this->wnioskiZmieniajaceZasob->removeElement($wnioskiZmieniajaceZasob);
     }
 
@@ -1456,6 +1464,30 @@ class Zasoby
     public function getPowiernicyWlascicielaZasobu()
     {
         return $this->powiernicyWlascicielaZasobu;
+    }
+
+    /**
+     * Get zasobSpecjalny
+     *
+     * @return  bool
+     */
+    public function getZasobSpecjalny()
+    {
+        return $this->zasobSpecjalny;
+    }
+
+    /**
+     * Set zasobSpecjalny
+     *
+     * @param  bool  $zasobSpecjalny
+     *
+     * @return  WniosekUtworzenieZasobu
+     */
+    public function setZasobSpecjalny($zasobSpecjalny)
+    {
+        $this->zasobSpecjalny = $zasobSpecjalny;
+
+        return $this;
     }
 
     public function getGrupyADdlaPoziomu($poziomDostepu)

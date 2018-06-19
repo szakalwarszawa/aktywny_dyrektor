@@ -17,6 +17,8 @@ use ParpV1\MainBundle\Grid\ParpExcelExport;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Form\ZasobyType;
 use ParpV1\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Grid\ListaZasobowGrid;
+use Doctrine\Common\Persistence\ObjectManager;
 
 /**
  * Zasoby controller.
@@ -36,63 +38,36 @@ class ZasobyController extends Controller
      */
     public function indexAction($aktywne = true)
     {
-        $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
-    
-        $source = new Entity('ParpMainBundle:Zasoby');
-        $tableAlias = $source->getTableAlias();
-        $source->manipulateQuery(
-            function ($query) use ($tableAlias, $aktywne) {
-                $query->leftJoin($tableAlias.'.wniosekUtworzenieZasobu', 'w');
-                $query->andWhere($tableAlias.'.published = '.($aktywne ? "1" : "0"));
-                $query->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)');
-            }
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $siatkaUsluga = $this->get('grid');
+        $zasobyService = $this->get('zasoby_service');
+
+        $parametry = array(
+            'aktywne'        => $aktywne,
+            'uzytkownik'     => $this->getUser(),
+            'zasoby_service' => $zasobyService
         );
-        $grid = $this->get('grid');
-        $grid->setSource($source);
-    
-        // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
-        $grid->addColumn($actionsColumn);
-    
-        // Zdejmujemy filtr
-        $grid->getColumn('akcje')
-                ->setFilterable(false)
-                ->setSafe(true);
-    
-        
-        // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'zasoby_edit');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-        
-        
-        $grid->addRowAction($rowAction2);
-        
-        if (in_array("PARP_ADMIN", $this->getUser()->getRoles()) ||
-            in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles())
-        ) {
-            $rowAction3 = new RowAction('<i class="fa fa-delete"></i> '.($aktywne ? "Deaktywuj" : "Aktywuj"), 'zasoby_delete');
-            $rowAction3->setRouteParameters(array('id', 'published' => ($aktywne ? "0" : "1")));
-            $rowAction3->setColumn('akcje');
-            $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-            $grid->addRowAction($rowAction3);
-        }
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
+        $siatkaZasoby = new ListaZasobowGrid($siatkaUsluga, $entityManager, $parametry);
 
 
-        $grid->isReadyForRedirect();
-        return $grid->getGridResponse("ParpMainBundle:Zasoby:index.html.twig", array('aktywne' => $aktywne));
+        return $siatkaUsluga->getGridResponse(
+            "ParpMainBundle:Zasoby:index.html.twig",
+            array(
+                'grid' => $siatkaZasoby->generate(),
+                'aktywne' => $aktywne
+            )
+        );
     }
-    
+
     protected function sprawdzDostep($zasob)
     {
-        
+
         if ($zasob) {
             $wlascicieleIPowirnicy = array_merge(explode(",", $zasob->getWlascicielZasobu()), explode(",", $zasob->getPowiernicyWlascicielaZasobu()));
-            
-            
+
+
             $this->czyJestWlascicielemLubPowiernikiem = in_array($this->getUser()->getUsername(), $wlascicieleIPowirnicy);
             $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) &&
                 !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles()) &&
@@ -101,7 +76,7 @@ class ZasobyController extends Controller
         } else {
             $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
         }
-        
+
         if ($this->niemozeEdytowac
         ) {
             $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
@@ -121,8 +96,8 @@ class ZasobyController extends Controller
         $entity = new Zasoby();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
-        
-        
+
+
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
@@ -226,7 +201,7 @@ class ZasobyController extends Controller
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
-        
+
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
         foreach ($ADUsers as $u) {
@@ -255,7 +230,7 @@ class ZasobyController extends Controller
 
         return $form;
     }
-    
+
     /**
      * Edits an existing Zasoby entity.
      *
@@ -302,7 +277,7 @@ class ZasobyController extends Controller
      */
     public function deleteAction(Request $request, $id, $published = 0)
     {
-        
+
         $em = $this->getDoctrine()->getManager();
         $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
 
@@ -314,7 +289,7 @@ class ZasobyController extends Controller
         $entity->setPublished($published);
         //$em->remove($entity);
         $em->flush();
-    
+
 
         return $this->redirect($this->generateUrl('zasoby', ['aktywne' => ($published)]));
     }
@@ -335,11 +310,10 @@ class ZasobyController extends Controller
             ->getForm()
         ;
     }
-    
-    
+
     private function getManagers()
     {
-        
+
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllManagersFromAD();
         $users = array();
@@ -348,7 +322,7 @@ class ZasobyController extends Controller
         }
         return $users;
     }
-    
+
     /**
      * Finds and displays a Zasoby entity.
      *

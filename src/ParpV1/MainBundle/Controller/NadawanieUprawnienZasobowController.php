@@ -81,6 +81,7 @@ class NadawanieUprawnienZasobowController extends Controller
      */
     public function addRemoveAccessToUsersAction(Request $request, $action, $wniosekId = 0)
     {
+        $zasobSpecjalnyUprawnienie = in_array("PARP_ZASOBY_SPECJALNE", $this->getUser()->getRoles());
         $zasobyId = '';
         if ($request->getMethod() == 'POST') {
             //\Doctrine\Common\Util\Debug::dump($request->get('form')['samaccountnames']);die();
@@ -121,6 +122,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     $userzasobyOpisy[$uu->getZasobId()][$uu->getSamaccountname()] = $uu->getOpisHtml();
                 }
                 $chsTemp = $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findByPublished(1);
+
                 if (!$wniosekId && !in_array('PARP_ADMIN2', $this->getUser()->getRoles(), true)) {
                     $chs = [];
                     $login = $this->getUser()->getUsername();
@@ -132,7 +134,17 @@ class NadawanieUprawnienZasobowController extends Controller
                         }
                     }
                 } else {
-                    $chs = $chsTemp;
+                    $chs = array();
+
+                    foreach ($chsTemp as $zasob) {
+                        if (true !== $zasob->getZasobSpecjalny()) {
+                            $chs[] = $zasob;
+                        } elseif (true === $zasob->getZasobSpecjalny()) {
+                            if (true === $zasobSpecjalnyUprawnienie) {
+                                $chs[] = $zasob;
+                            }
+                        }
+                    }
                 }
                 //var_dump($chs); die();
                 break;
@@ -257,7 +269,7 @@ class NadawanieUprawnienZasobowController extends Controller
         $wniosekId = 0,
         $zasobyId = ''
     ) {
-    
+
         $wniosek = $this->getDoctrine()->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($wniosekId);
         //print_r($samaccountnames);
         $ldap = $this->get('ldap_service');

@@ -6,6 +6,9 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use ParpV1\MainBundle\Entity\Zasoby;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 /**
  * Class WniosekUtworzenieZasobuType
@@ -31,6 +34,10 @@ class WniosekUtworzenieZasobuType extends AbstractType
         $ADUsers = $options['ADUsers'];
         $hideCheckboxes = $options['hideCheckboxes'];
         $typ = $entity->getTyp();
+        $formPost = false;
+        if (!empty($_POST)) {
+            $formPost = true;
+        }
         $container = $options['container']; // FIXME: Tu jest potrzebny tylko service LDAP!
         $nazwaLabel = $typ == "nowy" ? "Proponowana nazwa" : "Nazwa";
 
@@ -163,35 +170,62 @@ class WniosekUtworzenieZasobuType extends AbstractType
                     ]
                 );
             } else {
-                $builder->add('zmienianyZasob', 'entity', array(
-                    'mapped' => true,
-                    'label' => "Wybierz zasób", 'class' => 'ParpV1\MainBundle\Entity\Zasoby',
-                    'attr' => ['class' => 'select2', 'style' => "width:100%"],
-                    'query_builder' => function ($er) {
-                        return $er->createQueryBuilder('u')
-                            ->andWhere('u.published = 1');
-                        //->orderBy('u.name', 'ASC');//->findByPublished(1);
-                    }
-                ));
+                if ($formPost === false) {
+                    $zasobyService = $container->get('zasoby_service');
+                    $builder->add('zmienianyZasob', ChoiceType::class, array(
+                        'mapped' => true,
+                        'label' => "Wybierz zasób",
+                        'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                        'attr' => array(
+                            'class' => 'select2'
+                        ),
+                    ));
+                } elseif ($formPost !== false) {
+                    $builder->add('zmienianyZasob', EntityType::class, array(
+                        'mapped' => true,
+                        'label' => "Wybierz zasób",
+                        'class' => Zasoby::class,
+                        'attr' => array(
+                            'class' => 'select2'
+                        ),
+                        'query_builder' => function ($er) {
+                            return $er->createQueryBuilder('u')
+                                ->andWhere('u.published = 1');
+                        }
+                    ));
+                }
             }
             $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
                 'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
 
             ));
         } elseif ("kasowanie" === $typ) {
-            $builder->add(
-                'zmienianyZasob',
-                'entity',
-                [
-                    'query_builder' => function ($er) {
-                        return $er->createQueryBuilder('u')
-                            ->andWhere('u.published = 1');
-                        //->orderBy('u.name', 'ASC');//->findByPublished(1);
-                    },
-                    'label' => "Wybierz zasób do skasowania", 'class' => 'ParpV1\MainBundle\Entity\Zasoby',
-                'attr' => ['class' => 'select2', 'style' => "width:100%"]
-                ]
-            );
+            $route = $container->get('request')->get('_route');
+            if ($formPost === false && $route !== 'wniosekutworzeniezasobu_show') {
+                $zasobyService = $container->get('zasoby_service');
+                $builder->add('zmienianyZasob', ChoiceType::class, array(
+                    'mapped' => true,
+                    'label' => "Wybierz zasób",
+                    'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                    'attr' => array(
+                        'class' => 'select2'
+                    ),
+                ));
+            } else {
+                $builder->add('zmienianyZasob', EntityType::class, array(
+                                'mapped' => true,
+                                'label' => "Wybierz zasób",
+                                'class' => Zasoby::class,
+                                'attr' => array(
+                                    'class' => 'select2'
+                                ),
+                                'query_builder' => function ($er) {
+                                    return $er->createQueryBuilder('u')
+                                        ->andWhere('u.published = 1');
+                                }
+                ));
+            }
+
             $builder->add('zasob', 'hidden', ['attr' => ['class' => 'form-item']]);
         } else {
             throw new UnexpectedTypeException('Nieznany typ '. $typ, null);
@@ -208,6 +242,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
             'ADUsers' => null,
             'ADManagers' => null,
             'hideCheckboxes' => false,
+            'user' => null,
         ]);
 
         $resolver->setRequired([

@@ -15,7 +15,7 @@ class ZasobyRepository extends EntityRepository
 
     public function findBySamaccountnames()
     {
-    
+
         $temps = $this->getRepository("ParpMainBundle:UserZasoby")->findAll();
         print_r($temps);
         die();
@@ -30,7 +30,6 @@ class ZasobyRepository extends EntityRepository
         */
     }
 
-
     public function findByGrupaAD($grupa)
     {
 
@@ -40,5 +39,17 @@ class ZasobyRepository extends EntityRepository
             ->getQuery();
         $results = $query->getResult();
         return count($results) == 1 ? $results[0] : null;
+    }
+
+    public function findListaZasobow($aktywne)
+    {
+        $query = $this->createQueryBuilder('z')
+                ->leftJoin('z.wniosekUtworzenieZasobu', 'w')
+                ->andWhere('z.published = '.($aktywne ? "1" : "0"))
+                ->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)')
+                ->getQuery()
+                ->getArrayResult();
+
+        return $query;
     }
 }

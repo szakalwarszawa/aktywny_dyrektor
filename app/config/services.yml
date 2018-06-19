@@ -10,7 +10,7 @@ services:
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
-            arguments: ["@security.context","@service_container","@doctrine.orm.entity_manager"]
+            arguments: ["@security.context","@doctrine.orm.entity_manager"]
             tags: ~
     gedmo.listener.loggable:
         class: Gedmo\Loggable\LoggableListener
@@ -26,6 +26,10 @@ services:
             - [ setAnnotationReader, [ @annotation_reader ] ]
     uprawnienia_service:
         class : ParpV1\MainBundle\Services\UprawnieniaService
+        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        tags: ~
+    zasoby_service:
+        class : ParpV1\MainBundle\Services\ZasobyService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
         tags: ~
     check_access:
@@ -53,7 +57,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
             # translatable sets locale such as default application locale before command execute
             - { name: kernel.event_listener, event: console.command, method: onConsoleCommand, priority: -10 }
-            #- { name: doctrine.event_listener, event: preUpdate, connection: default }    
+            #- { name: doctrine.event_listener, event: preUpdate, connection: default }
     parp.redmine:
         class: ParpV1\MainBundle\Services\RedmineConnectService
         arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
