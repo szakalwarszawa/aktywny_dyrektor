@@ -19,8 +19,8 @@ parameters:
     session_memcached_expire: 86400
     redmine_protokol: http
     redmine_serwer: redmine.parp.gov.pl
-    redmine_uzytkownik: 
-    redmine_haslo: 
+    redmine_uzytkownik:
+    redmine_haslo:
     redmine_projekt: '87'
     id_srodowiska: ''
     blokada_na_zapis_tylko_userow_o_tym_nawisku: 'testowy'
@@ -31,13 +31,18 @@ parameters:
     ad_host3: 10.0.2.21
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
-    ad_password : 
+    ad_password :
     ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
     grupy_ou : "PARP Grupy"
     session_max_idle_time: 3600
     pusz_to_ad: true
     rekord_db: "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost"
-    
+
     router.request_context.host: aktywnydyrektor.parp.gov.pl
     router.request_context.scheme: https
     router.request_context.base_url: ''
+
+    porownania_json:
+        katalog_raportow: 'setup/raporty/'
+        katalog_plikow_json: ''
+        mail_do_raportu: ''
