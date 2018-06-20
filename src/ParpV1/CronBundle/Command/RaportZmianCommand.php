@@ -17,7 +17,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class RaportZmianCommand extends ContainerAwareCommand
 {
-    const WIERSZ_POCZATKOWY_TABELI = 3;
+    const POKAZ_ZMIANY_UPRAWNIEN = false;
 
     protected function configure()
     {
@@ -79,18 +79,14 @@ class RaportZmianCommand extends ContainerAwareCommand
 
         $roznice = $this->diff($tablicaPorownaj1, $tablicaPorownaj2);
 
-        $nazwyUzytkownikow = array_keys($roznice);
         $wszystkieRoznice = array();
 
-        $index = 0;
-
-        foreach ($roznice as $roznica) {
+        foreach($roznice as $klucz => $roznica) {
             $rozniceKlucze = $this->formatujRoznice($roznica);
-            if (count($rozniceKlucze) > 0) {
-                $wszystkieRoznice[$nazwyUzytkownikow[$index]] = $rozniceKlucze;
-                $index++;
-            }
+            $wszystkieRoznice[$klucz] = $rozniceKlucze;
         }
+
+        $wszystkieRoznice = array_filter($wszystkieRoznice);
 
         $plik = $this->zapiszDoExcela($wszystkieRoznice);
         $plikZeSciezka = $porownaniaJson['katalog_raportow'] . $plik;
@@ -133,7 +129,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $writer = new Xlsx($spreadsheet);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $wierszIndex = $this::WIERSZ_POCZATKOWY_TABELI;
+        $wierszIndex = 3;
         $uzytkownikIndex = 0;
 
         $sheet->setCellValue('A1', 'Nazwa użytkownika');
@@ -150,28 +146,23 @@ class RaportZmianCommand extends ContainerAwareCommand
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
 
-        foreach ($diffes as $diff) {
-            $uzytkownik = array_keys($diffes)[$uzytkownikIndex];
-            $sheet->setCellValue('A'. $wierszIndex, $uzytkownik);
 
-            if (isset($diff['status'])) {
-                $sheet->setCellValue('B'. $wierszIndex++, $diff['status']);
+        foreach ($diffes as $key => $diff) {
+            $sheet->setCellValue('A'. $wierszIndex, $key);
+            $poczatekTabeliWiersz = $wierszIndex;
+
+            foreach ($diff as $pojedynczaZmiana) {
+                $sheet->setCellValue('B'. $wierszIndex, $pojedynczaZmiana['status']);
+                $sheet->setCellValue('C'. $wierszIndex, $pojedynczaZmiana['stare']);
+                $sheet->setCellValue('D'. $wierszIndex, $pojedynczaZmiana['nowe']);
                 $wierszIndex++;
-            } else {
-                for ($item = 0; $item < count($diff); $item++) {
-                    $wierszIndexDodatkowy = $wierszIndex++;
-                    $sheet->setCellValue('B'. $wierszIndexDodatkowy, $diff[$item]['status']);
-                    $sheet->setCellValue('C'. $wierszIndexDodatkowy, $diff[$item]['stare']);
-                    $sheet->setCellValue('D'. $wierszIndexDodatkowy, $diff[$item]['nowe']);
-                    $wierszIndex++;
-                }
             }
 
-            $sheet->getStyle('A' . $wierszIndex .':D' . $wierszIndex)
+            $sheet->getStyle('A' . $poczatekTabeliWiersz .':D' . $wierszIndex)
                 ->getBorders()
                 ->getBottom()
                 ->setBorderStyle(ExcelBorder::BORDER_THICK);
-            $uzytkownikIndex++;
+
             $wierszIndex++;
         }
 
@@ -185,8 +176,7 @@ class RaportZmianCommand extends ContainerAwareCommand
     }
 
     /**
-     * Formatuje różnice i zapisuje je w tablicy a określonym komunikatym
-     * czytelnym dla człowieka.
+     * Formatuje roznice i nadaje im odpowiedni status.
      *
      * @param array $diff
      *
@@ -194,82 +184,89 @@ class RaportZmianCommand extends ContainerAwareCommand
      */
     private function formatujRoznice($diff)
     {
-        $komunikaty = $this->getKomunikaty();
-
-        /**
-         * Lista elementów z tablicy które nie są wyświetlane
-         * lub nie są wyświetlane automatycznie bo podlegają
-         * dodatkowemu parsowaniu (np. memberOf musi pociąć string
-         * z uprawnieniami i porównać go).
-         */
-        $zbedneDoRaportu = array(
-            'distinguishedname',
-            'memberOf',
-            'manager'
-        );
-
         $outputDiff = array();
 
-        foreach ($diff as $zmienne) {
-            $klucze = array_keys($zmienne);
-            $uprawnieniaOdebrane = array();
-            $uprawnieniaNadane = array();
-
-            if (isset($zmienne['manager'])) {
-                if (count($zmienne['manager']) > 1) {
-                    $staryManager = explode(',', $zmienne['manager']['old']);
-                    $nowyManager = explode(',', $zmienne['manager']['new']);
-                    $outputDiff[] = array(
-                        'status' => $komunikaty['manager'],
-                        'stare' => str_replace('CN=', '', $staryManager[0]),
-                        'nowe' => str_replace('CN=', '', $nowyManager[0]),
-                    );
-                }
-            }
-
-            for ($index=0; $index<count($klucze); $index++) {
-                if (!in_array($klucze[$index], $zbedneDoRaportu)) {
-                    if (isset($zmienne['isDisabled'])) {
-                        if ($klucze[$index] == 'isDisabled') {
-                            if ($zmienne['isDisabled']['new'] === 1) {
-                                $outputDiff['status'] = $komunikaty['ACCOUNT_ENABLED'];
-                            } elseif ($zmienne['isDisabled']['new'] === 0) {
-                                $outputDiff['status'] = $komunikaty['ACCOUNT_DISABLED'];
-                            }
-                        }
-                        continue;
-                    }
-                    if (isset($zmienne[$klucze[$index]]['old'])) {
-                        $tempArr = array();
-                        $tempArr['status'] = $komunikaty[$klucze[$index]];
-                        $tempArr['stare'] = $zmienne[$klucze[$index]]['old'];
-                        $tempArr['nowe'] = $zmienne[$klucze[$index]]['new'];
-                        $outputDiff[] = $tempArr;
-                    }
-                }
+        if ((isset($diff['old']) || isset($diff['new']))) {
+            $outputDiff = array(array(
+                'status' => $this->formatujStatus($diff),
+                'stare' => '',
+                'nowe' => '',
+            ));
+        } elseif(isset($diff['upd']['isDisabled'])){
+            // nie zwracamy reszty zmian w koncie jeżeli zostało dopiero włączone/wyłączone
+            $status = $diff['upd']['isDisabled']['new'];
+            $komunikat = $this->getKomunikat(($status === 1? 'ACCOUNT_DISABLED' : 'ACCOUNT_ENABLED'));
+            $outputDiff = array(array(
+                'status' => $komunikat,
+                'stare' => '',
+                'nowe' => '',
+            ));
+        } elseif (isset($diff['upd'])) {
+            $aktualizacje = $this->formatujZaktualizowaneKlucze($diff['upd']);
+            if (count($aktualizacje) > 0) {
+                $outputDiff = $aktualizacje;
             }
         }
-
-        if (empty($outputDiff)) {
-            if (count($diff) === 1) {
-                if (isset($diff['old'])) {
-                    $outputDiff['status'] = $komunikaty['ACCOUNT_REMOVED'];
-                } elseif (isset($diff['new'])) {
-                    $outputDiff['status'] = $komunikaty['ACCOUNT_CREATED'];
-                }
-            }
-        }
-
         return $outputDiff;
     }
 
     /**
-     * Zwraca komunikaty które będą wpisane w statusie
-     * w dokumencie Excel
+     * Zwraca tablicę zaktualizowanych elementów z odpowiednim statusem.
+     * Filtruje klucze i zwraca tylko te które są potrzebne do raportu.
+     *
+     * @param array $diff
      *
      * @return array
      */
-    private function getKomunikaty()
+    private function formatujZaktualizowaneKlucze($diff)
+    {
+        $aktualizacje = array();
+
+        $zbedneDoRaportu = array(
+            'distinguishedname',
+            'memberOf',
+            'manager',
+        );
+
+        foreach ($diff as $klucz => $element) {
+            if(!in_array($klucz, $zbedneDoRaportu)) {
+                $tymczasowaTablica = array();
+                $tymczasowaTablica['status'] = $this->getKomunikat($klucz);
+                $tymczasowaTablica['stare'] = $element['old'];
+                $tymczasowaTablica['nowe'] = $element['new'];
+
+                $aktualizacje[] = $tymczasowaTablica;
+            }
+        }
+
+        return $aktualizacje;
+    }
+
+    /**
+     * Formatuje status jeżeli zaszła zmiana typu dodanie lub
+     * usunięcie konta
+     *
+     * @param array $diff
+     *
+     * @return string
+     */
+    private function formatujStatus($diff)
+    {
+        if (isset($diff['old'])) {
+            return $this->getKomunikat('ACCOUNT_REMOVED');
+        } elseif (isset($diff['new'])) {
+            return $this->getKomunikat('ACCOUNT_CREATED');
+        }
+    }
+
+    /**
+     * Zwraca komunikat dodany do statusu.
+     *
+     * @param string $klucz
+     *
+     * @return string
+     */
+    private function getKomunikat($klucz)
     {
         /**
          * Kluczami tej tabeli są (głównie) nazwy takie jak w raporcie .json
@@ -297,7 +294,7 @@ class RaportZmianCommand extends ContainerAwareCommand
             'cn'                    => 'Zmieniono nazwę',
         );
 
-        return $komunikaty;
+        return $komunikaty[$klucz];
     }
 
     /**
@@ -333,7 +330,7 @@ class RaportZmianCommand extends ContainerAwareCommand
     }
 
     /**
-     * Porównuje 2 jsony i zwraca różnice pomiędzy nimi.
+     * Porównuje dwie tablice (json_decode)
      *
      * @see https://gist.github.com/wrey75/c631f6fe9c975354aec7
      *
