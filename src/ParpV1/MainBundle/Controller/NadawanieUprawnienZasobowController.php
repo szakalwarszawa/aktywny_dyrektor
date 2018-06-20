@@ -140,7 +140,8 @@ class NadawanieUprawnienZasobowController extends Controller
                         if (true !== $zasob->getZasobSpecjalny()) {
                             $chs[] = $zasob;
                         } elseif (true === $zasob->getZasobSpecjalny()) {
-                            if (true === $zasobSpecjalnyUprawnienie) {
+                            if (true === $zasobSpecjalnyUprawnienie
+                                || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())) {
                                 $chs[] = $zasob;
                             }
                         }
