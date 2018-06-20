@@ -18,6 +18,7 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 class RaportZmianCommand extends ContainerAwareCommand
 {
     const POKAZ_ZMIANY_UPRAWNIEN = false;
+    const WIERSZ_POCZATKOWY_TABELI = 3;
 
     protected function configure()
     {
@@ -133,7 +134,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $writer = new Xlsx($spreadsheet);
         $sheet = $spreadsheet->getActiveSheet();
 
-        $wierszIndex = 3;
+        $wierszIndex = $this::WIERSZ_POCZATKOWY_TABELI;
         $uzytkownikIndex = 0;
 
         $sheet->setCellValue('A1', 'Nazwa użytkownika');
