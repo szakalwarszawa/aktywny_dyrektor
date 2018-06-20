@@ -85,7 +85,6 @@ class RaportZmianCommand extends ContainerAwareCommand
         $i = 0;
 
         foreach ($roznice as $roznica) {
-
             $rozniceKlucze = $this->formatujRoznice($roznica);
             if (count($rozniceKlucze) > 0) {
                 $wszystkieRoznice[$nazwyUzytkownikow[$i]] = $rozniceKlucze;
