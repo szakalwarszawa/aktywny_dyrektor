@@ -75,7 +75,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $tablicaPorownaj1 = json_decode($json1, true);
         $tablicaPorownaj2 = json_decode($json2, true);
 
-        $roznice = $this->diff($tablicaPorownaj1, $tablicaPorownaj2);
+        $roznice = $this->porownajTablice($tablicaPorownaj1, $tablicaPorownaj2);
 
         $wszystkieRoznice = array();
 
@@ -331,7 +331,7 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @return array
      */
-    private function diff($tablica1, $tablica2)
+    private function porownajTablice($tablica1, $tablica2)
     {
         $zaktualizowane = array();
 
@@ -345,7 +345,6 @@ class RaportZmianCommand extends ContainerAwareCommand
             } elseif (!isset($tablica2[$key1])) {
                 $zaktualizowane[$key1] = array('old' => $tablica1[$key1]);
                 unset($tablica1[$key1]);
-
             }
         }
 
