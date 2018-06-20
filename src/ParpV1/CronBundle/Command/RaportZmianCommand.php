@@ -17,8 +17,6 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class RaportZmianCommand extends ContainerAwareCommand
 {
-    const POKAZ_ZMIANY_UPRAWNIEN = false;
-
     protected function configure()
     {
         $this
@@ -82,7 +80,6 @@ class RaportZmianCommand extends ContainerAwareCommand
         $wszystkieRoznice = array();
 
         foreach ($roznice as $klucz => $roznica) {
-
             $rozniceKlucze = $this->formatujRoznice($roznica);
             $wszystkieRoznice[$klucz] = $rozniceKlucze;
         }
@@ -334,9 +331,8 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @return array
      */
-     private function diff($tablica1, $tablica2)
-     {
-        $diffs = array();
+    private function diff($tablica1, $tablica2)
+    {
         $zaktualizowane = array();
 
         foreach ($tablica1 as $key1 => $value) {
@@ -351,14 +347,14 @@ class RaportZmianCommand extends ContainerAwareCommand
                 unset($tablica1[$key1]);
 
             }
-          }
+        }
 
         foreach ($tablica2 as $key2 => $value) {
             $zaktualizowane[$key2] = array('new' => $tablica2[$key2]);
         }
 
         return array_filter($zaktualizowane);
-     }
+    }
 
     /**
      * Jeżeli klucz1 z tablicy1 istnieje w tablicy2
