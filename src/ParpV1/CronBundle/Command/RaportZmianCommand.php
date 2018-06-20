@@ -81,7 +81,7 @@ class RaportZmianCommand extends ContainerAwareCommand
 
         $wszystkieRoznice = array();
 
-        foreach($roznice as $klucz => $roznica) {
+        foreach ($roznice as $klucz => $roznica) {
             $rozniceKlucze = $this->formatujRoznice($roznica);
             $wszystkieRoznice[$klucz] = $rozniceKlucze;
         }
@@ -130,7 +130,6 @@ class RaportZmianCommand extends ContainerAwareCommand
         $sheet = $spreadsheet->getActiveSheet();
 
         $wierszIndex = 3;
-        $uzytkownikIndex = 0;
 
         $sheet->setCellValue('A1', 'Nazwa użytkownika');
         $sheet->setCellValue('B1', 'Zmiana');
@@ -192,7 +191,7 @@ class RaportZmianCommand extends ContainerAwareCommand
                 'stare' => '',
                 'nowe' => '',
             ));
-        } elseif(isset($diff['upd']['isDisabled'])){
+        } elseif (isset($diff['upd']['isDisabled'])) {
             // nie zwracamy reszty zmian w koncie jeżeli zostało dopiero włączone/wyłączone
             $status = $diff['upd']['isDisabled']['new'];
             $komunikat = $this->getKomunikat(($status === 1? 'ACCOUNT_DISABLED' : 'ACCOUNT_ENABLED'));
@@ -203,9 +202,7 @@ class RaportZmianCommand extends ContainerAwareCommand
             ));
         } elseif (isset($diff['upd'])) {
             $aktualizacje = $this->formatujZaktualizowaneKlucze($diff['upd']);
-            if (count($aktualizacje) > 0) {
-                $outputDiff = $aktualizacje;
-            }
+            $outputDiff = $aktualizacje;
         }
         return $outputDiff;
     }
@@ -229,7 +226,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         );
 
         foreach ($diff as $klucz => $element) {
-            if(!in_array($klucz, $zbedneDoRaportu)) {
+            if (!in_array($klucz, $zbedneDoRaportu)) {
                 $tymczasowaTablica = array();
                 $tymczasowaTablica['status'] = $this->getKomunikat($klucz);
                 $tymczasowaTablica['stare'] = $element['old'];
@@ -362,10 +359,16 @@ class RaportZmianCommand extends ContainerAwareCommand
             }
         }
         reset($arr2);
-        foreach ($arr2 as $k => $v) {
-            $diff[$k] = array('new' => $v);
+
+        return $this->zapiszZmianyTablic($arr2, $diff);
+    }
+
+    private function zapiszZmianyTablic($tablica1, $tablica2)
+    {
+        foreach ($tablica1 as $key => $value) {
+            $tablica2[$key] = array('new' => $value);
         }
 
-        return $diff;
+        return $tablica2;
     }
 }
