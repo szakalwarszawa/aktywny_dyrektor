@@ -82,6 +82,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $wszystkieRoznice = array();
 
         foreach ($roznice as $klucz => $roznica) {
+
             $rozniceKlucze = $this->formatujRoznice($roznica);
             $wszystkieRoznice[$klucz] = $rozniceKlucze;
         }
@@ -184,7 +185,6 @@ class RaportZmianCommand extends ContainerAwareCommand
     private function formatujRoznice($diff)
     {
         $outputDiff = array();
-
         if ((isset($diff['old']) || isset($diff['new']))) {
             $outputDiff = array(array(
                 'status' => $this->formatujStatus($diff),
@@ -329,46 +329,61 @@ class RaportZmianCommand extends ContainerAwareCommand
     /**
      * Porównuje dwie tablice (json_decode)
      *
-     * @see https://gist.github.com/wrey75/c631f6fe9c975354aec7
-     *
      * @param array $arr1
      * @param array $arr2
      *
      * @return array
      */
-    private function diff($arr1, $arr2)
+     private function diff($tablica1, $tablica2)
+     {
+        $diffs = array();
+        $zaktualizowane = array();
+
+        foreach ($tablica1 as $key1 => $value) {
+            if (isset($tablica2[$key1])) {
+                $zaktualizowane[$key1] = array(
+                    'upd' => $this->aktualizacjeTablicy($tablica1[$key1], $tablica2[$key1])
+                );
+                unset($tablica1[$key1]);
+                unset($tablica2[$key1]);
+            } elseif (!isset($tablica2[$key1])) {
+                $zaktualizowane[$key1] = array('old' => $tablica1[$key1]);
+                unset($tablica1[$key1]);
+
+            }
+          }
+
+        foreach ($tablica2 as $key2 => $value) {
+            $zaktualizowane[$key2] = array('new' => $tablica2[$key2]);
+        }
+
+        return array_filter($zaktualizowane);
+     }
+
+    /**
+     * Jeżeli klucz1 z tablicy1 istnieje w tablicy2
+     * to wyciąga zmiany jakie wystąpiły w tych kluczach.
+     * Zapisuje je jako old/new.
+     *
+     * @param array $element1
+     * @param array $element2
+     *
+     * @return array
+     */
+    private function aktualizacjeTablicy($element1, $element2)
     {
-        $diff = array();
-        foreach ($arr1 as $k1 => $v1) {
-            if (isset($arr2[$k1])) {
-                $v2 = $arr2[$k1];
-                if (is_array($v1) && is_array($v2)) {
-                    $changes = self::diff($v1, $v2);
-                    if (count($changes) > 0) {
-                        $diff[$k1] = array('upd' => $changes);
-                    }
-                    unset($arr2[$k1]);
-                } elseif ($v2 === $v1) {
-                    unset($arr2[$k1]);
-                } else {
-                    $diff[$k1] = array( 'old' => $v1, 'new' => $v2 );
-                    unset($arr2[$k1]);
-                }
-            } else {
-                $diff[$k1] = array('old' => $v1);
+        $zmiany = array();
+        foreach ($element1 as $key => $value) {
+            if ($element1[$key] == $element2[$key]) {
+                unset($element1[$key]);
+                unset($element2[$key]);
+            } elseif ($element1[$key] != $element2[$key]) {
+                $zmiany[$key] = array(
+                            'old' => $element1[$key],
+                            'new' => $element2[$key],
+                );
             }
         }
-        reset($arr2);
-
-        return $this->zapiszZmianyTablic($arr2, $diff);
-    }
-
-    private function zapiszZmianyTablic($tablica1, $tablica2)
-    {
-        foreach ($tablica1 as $key => $value) {
-            $tablica2[$key] = array('new' => $value);
-        }
-
-        return $tablica2;
+        return $zmiany;
     }
 }
