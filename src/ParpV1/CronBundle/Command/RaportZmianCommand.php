@@ -17,7 +17,6 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class RaportZmianCommand extends ContainerAwareCommand
 {
-    const POKAZ_ZMIANY_UPRAWNIEN = false;
     const WIERSZ_POCZATKOWY_TABELI = 3;
 
     protected function configure()
@@ -160,18 +159,6 @@ class RaportZmianCommand extends ContainerAwareCommand
                 $wierszIndex++;
             } else {
                 for ($item = 0; $item < count($diff); $item++) {
-                    if (isset($diff[$item]['GROUPS_ADDED'])) {
-                        $wierszIndexDodatkowy = $wierszIndex++;
-                        $sheet->setCellValue('B'. $wierszIndexDodatkowy, $diff[$item]['status']);
-                        if (empty($diff[$item]['GROUPS_ADDED'])) {
-                            $sheet->setCellValue('D'. $wierszIndexDodatkowy, 'NADANO: ' . $diff[$item]['GROUPS_REMOVED']);
-                        } else {
-                            $sheet->setCellValue('C'. $wierszIndexDodatkowy, 'ODEBRANO: ' . $diff[$item]['GROUPS_ADDED']);
-                        }
-                            $wierszIndex++;
-                            continue;
-                    }
-
                     $wierszIndexDodatkowy = $wierszIndex++;
                     $sheet->setCellValue('B'. $wierszIndexDodatkowy, $diff[$item]['status']);
                     $sheet->setCellValue('C'. $wierszIndexDodatkowy, $diff[$item]['stare']);
@@ -228,33 +215,6 @@ class RaportZmianCommand extends ContainerAwareCommand
             $uprawnieniaOdebrane = array();
             $uprawnieniaNadane = array();
 
-            if (isset($zmienne['memberOf']) &&
-                (true === $this::POKAZ_ZMIANY_UPRAWNIEN)) {
-                if (count($zmienne['memberOf']) > 1) {
-                    $uprawnieniaOld = explode(';', $zmienne['memberOf']['old']);
-                    $uprawnieniaNew = explode(';', $zmienne['memberOf']['new']);
-
-                    $uprawnieniaOdebrane = array();
-                    $uprawnieniaNadane = array();
-
-                    for ($index=0; $index<count($uprawnieniaOld); $index++) {
-                        if (!in_array($uprawnieniaOld[$index], $uprawnieniaNew)) {
-                            $uprawnieniaOdebrane[] = $uprawnieniaOld[$index];
-                        }
-                    }
-
-                    for ($index=0; $index<count($uprawnieniaNew); $index++) {
-                        if (!in_array($uprawnieniaNew[$index], $uprawnieniaOld)) {
-                            $uprawnieniaNadane[] = $uprawnieniaNew[$index];
-                        }
-                    }
-                    $outputDiff[] = array(
-                        'status' => $komunikaty['memberOf'],
-                        'GROUPS_ADDED' => implode(';', $uprawnieniaOdebrane),
-                        'GROUPS_REMOVED' => implode(';', $uprawnieniaNadane),
-                    );
-                }
-            }
             if (isset($zmienne['manager'])) {
                 if (count($zmienne['manager']) > 1) {
                     $staryManager = explode(',', $zmienne['manager']['old']);
@@ -382,7 +342,7 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @return array
      */
-    private static function diff($arr1, $arr2)
+    private function diff($arr1, $arr2)
     {
         $diff = array();
         foreach ($arr1 as $k1 => $v1) {
