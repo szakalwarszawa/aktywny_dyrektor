@@ -294,6 +294,8 @@ class RaportZmianCommand extends ContainerAwareCommand
     /**
      * Zwraca nazwy dwóch najnowszych plików .json w katalogu
      *
+     * @param string
+     *
      * @return array
      */
     private function getListaPlikow($katalogPlikowJson)
