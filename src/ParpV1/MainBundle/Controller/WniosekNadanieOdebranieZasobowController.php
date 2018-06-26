@@ -173,11 +173,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //die($query->getDQL());
             }
         );
-        
+
         // kolorowanie wierszy
         $source->manipulateRow(
             function ($row) {
-            
+
                 if ($row->getField('odebranie') == '1') {
                     $row->setClass('wiersz-odebranie');
                 }
@@ -188,17 +188,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 return $row;
             }
         );
-        
+
         $grid = $this->get('grid');
 
         $grid->setSource($source);
         //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));
         //$grid->addColumn($kolumnaZasobNazwa);
-        
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-        
+
         // dodanie spacji umożliwiających łamanie tekstu
         $grid->getColumn('pracownicy')->manipulateRenderCell(
             function ($value, $row, $router) {
@@ -727,6 +727,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         switch ($kogoSzukac) {
             case 'manager':
             case 'prezes':
+            case 'p.o. prezesa':
                 $ADManager = $ldap->getPrzelozonyJakoTablica($ADUser['samaccountname']);
                 break;
             case 'dyrektor':
