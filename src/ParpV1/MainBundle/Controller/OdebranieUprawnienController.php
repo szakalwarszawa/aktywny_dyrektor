@@ -36,7 +36,7 @@ class OdebranieUprawnienController extends Controller
     {
 
 //         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!! sobie tez nie bo jak mnie wypnie z VPN...
-        $pominOsoby = ['kamil_jakacki', 'patrycja_klarecka', 'nina_dobrzynska', 'robert_muchacki', 'marcin_szygula', 'czeslaw_testowy', 'text_testowy'];
+        $pominOsoby = ['jadwiga_lesisz', 'nina_dobrzynska', 'malgorzata_oleszczuk', 'czeslaw_testowy', 'text_testowy'];
         $em = $this->getDoctrine()->getManager();
         $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
         $pominOsoby = array_merge($pominOsoby, $sams);
@@ -154,7 +154,7 @@ class OdebranieUprawnienController extends Controller
 
         return new JsonResponse($uprawnienia);
     }
-    
+
     public function audytUprawnienUsera($user)
     {
 

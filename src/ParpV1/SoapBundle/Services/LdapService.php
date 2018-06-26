@@ -1088,7 +1088,7 @@ class LdapService
           }
           }
          */
-        $user = $this->getUserFromAD('patrycja_klarecka');
+        $user = $this->getUserFromAD('jadwiga_lesisz');
         $ret = $user[0];
 
         return $ret;
@@ -1119,6 +1119,7 @@ class LdapService
             case 'zastępca prezesa':
             case 'zastępca prezesa (p.o.)':
             case 'prezes':
+            case 'p.o. prezesa':
                 $ret = 'prezes';
                 break;
             default:
@@ -1184,6 +1185,7 @@ class LdapService
         }
         switch ($stanowisko) {
             case 'prezes':
+            case 'p.o. prezesa':
             case 'zastępca prezesa':
             case 'zastępca prezesa (p.o.)':
                 /*
@@ -1420,7 +1422,7 @@ class LdapService
     {
         $ludzie = $this->getAllFromAD();
         $ret = [];
-        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'p.o. prezesa', 'zastępca prezesa'];
         foreach ($ludzie as $u) {
             if (in_array($u['title'], $stanowiska, true)) {
                 $ret[] = $u;
@@ -1458,7 +1460,7 @@ class LdapService
     {
         $pracownik = $this->getUserFromAD($samaccountname)[0];
 
-        $zarzad = $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa'];
+        $zarzad = $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'p.o. prezesa', 'zastępca prezesa'];
 
         if (in_array($pracownik['title'], $zarzad)) {
             return $pracownik;

@@ -90,7 +90,7 @@ class EngagementCommand extends ContainerAwareCommand
                             $data['departament'] = $user['department'];
                             $data['data_zmiany'] = $today->format('Y-m-d');
                             $data['rok'] = $userEngagement->getYear();
-    
+
                             $mailer->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA, $data);
                             $kontaUzyte[] = $user['samaccountname'];
                         }
@@ -112,7 +112,7 @@ class EngagementCommand extends ContainerAwareCommand
      */
     protected function czyZarzad($user)
     {
-        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'zastępca prezesa', 'główny księgowy,dyrektor'];
+        $stanowiska = ['zastępca dyrektora', 'p.o. dyrektora', 'dyrektor', 'prezes', 'p.o. prezesa', 'zastępca prezesa', 'główny księgowy,dyrektor'];
         if (in_array($user['title'], $stanowiska)) {
             return true;
         }
