@@ -1,5 +1,4 @@
-# Definicja obrazu używanego przez GitLab CI dla proejktu Aktywny Dyrektor.
-# Nazwa: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
+# Podstawowy obraz dla CI: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
 FROM alpine:3.7
 RUN apk add --no-cache git curl util-linux gawk tidyhtml
 RUN apk add --no-cache php7 php7-curl php7-openssl php7-ldap php7-phar php7-zlib php7-zip php7-json php7-iconv php7-mbstring php7-intl php7-ctype php7-xml php7-simplexml php7-xmlwriter php7-xmlreader php7-tokenizer php7-dom php7-pdo php7-gd
@@ -14,6 +13,7 @@ RUN cp sami.phar /usr/bin/sami.phar
 RUN apk add --no-cache nodejs nodejs-npm
 RUN mkdir /usr/bin/node_modules
 RUN npm config set prefix "/usr/bin/node_modules/"
+RUN npm install -g eslint eslint-plugin-html eslint-config-idiomatic htmllint htmllint-cli
 COPY ./missing_empty_line_detector.sh /usr/bin/missing_empty_line_detector.sh
 RUN chmod 0777 /usr/bin/missing_empty_line_detector.sh
 CMD ["/bin/sh"]
