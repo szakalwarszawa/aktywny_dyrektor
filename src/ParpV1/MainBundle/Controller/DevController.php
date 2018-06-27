@@ -3086,4 +3086,70 @@ class DevController extends Controller
 
         die('fixMissingWniosekEditor');
     }
+
+    /**
+     * Zmienia błędne skróty sekcji w AD wraz z korektą uprawnień do SGG
+     *
+     * @Route("/fixBledneSkrotySekcji", name="fixBledneSkrotySekcji")
+     *
+     * @Template()
+     */
+    public function fixBledneSkrotySekcjiAction()
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $dane = [];
+        $users = $ldap->getAllFromAD();
+
+        foreach ($users as $user) {
+            if (strpos($user['division'], '.')
+                && strlen($user['description']) < 20
+                && strcasecmp(explode('.', $user['division'])[0], $user['description']) // z uwagi na: BPR != BPr
+            ) {
+                $sekcjaSkrot = $user['division'];
+                $departamentSkrot = $user['description'];
+                $sekcjaPrawidlowa = $departamentSkrot . '.' . explode('.', $user['division'])[1];
+
+                // odbieram/nadaję grupy sekcyjne
+                $litera = explode('.', $sekcjaPrawidlowa);
+                if ($litera[1][0] === 'S') { // pomijam samodzielne stanowiska, które nie mają grup SGG
+                    $grupaDoNadania = "+SGG-".$departamentSkrot."-Wewn-".$sekcjaPrawidlowa."-RW";
+                    $grupaDoOdebrania = "-SGG-".explode('.', $user['division'])[0]."-Wewn-".$sekcjaSkrot."-RW";
+                    $grupy = $grupaDoOdebrania.','.$grupaDoNadania;
+                } else {
+                    $grupy = '';
+                }
+
+                /* $section = $entityManager->getRepository('ParpMainBundle:Section')->findOneByShortname($sekcjaPrawidlowa);
+                if ($section) {
+                    $sekcja = $section->getShortname();
+                } else {
+                    $sekcja = '!!!';
+                    die('Brak sekcji: ', $sekcjaPrawidlowa);
+                } */
+
+                $dane[] = [
+                    'konto' => $user['samaccountname'],
+                    'departament' => $user['department'],
+                    'dep' => $departamentSkrot,
+                    'sekcja_skrot' => $sekcjaSkrot,
+                    'sekcja_OK' => $sekcjaPrawidlowa,
+                    'sekcja' => $user['info'],
+                    'grupy' => $grupy
+                ];
+
+                $entry = new Entry();
+                $entry->setFromWhen(new \Datetime());
+                $entry->setSamaccountname($user['samaccountname']);
+                $entry->setCreatedBy($this->getUser()->getUsername());
+                $entry->setDivision($sekcjaPrawidlowa);
+                $entry->setMemberOf($grupy);
+                $entry->setOpis('Poprawienie blednych skrotow sekcji (fixBledneSkrotySekcji)');
+                $entityManager->persist($entry);
+            }
+        }
+        $entityManager->flush();
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
+    }
 }
