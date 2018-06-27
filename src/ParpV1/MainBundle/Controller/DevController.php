@@ -3091,8 +3091,6 @@ class DevController extends Controller
      * Zmienia błędne skróty sekcji w AD wraz z korektą uprawnień do SGG
      *
      * @Route("/fixBledneSkrotySekcji", name="fixBledneSkrotySekcji")
-     *
-     * @Template()
      */
     public function fixBledneSkrotySekcjiAction()
     {
