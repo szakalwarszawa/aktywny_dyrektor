@@ -76,8 +76,9 @@ eslint:
     stage: quality
     allow_failure: true
     script:
-        - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext ".js,.html,.html.twig" --format "table" --color ./src/ParpV1/*
-        - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext ".js,.html,.html.twig" --format "table" --color ./app/Resources/views/*
+        # - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext ".js,.html,.html.twig" --format "table" --color ./src/ParpV1/*
+        # - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc" --ignore-path "./.gitlab-ci/.eslintignore" --ext ".js,.html,.html.twig" --format "table" --color ./app/Resources/views/*
+        - /usr/bin/eslint_glob_patch.sh "./src/ParpV1" "./.gitlab-ci"
 
 tidyhtml:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
