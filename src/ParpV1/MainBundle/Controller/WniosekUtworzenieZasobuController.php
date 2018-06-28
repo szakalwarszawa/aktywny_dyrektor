@@ -921,7 +921,6 @@ class WniosekUtworzenieZasobuController extends Controller
             $kom->setTytul('Wniosek odbito z powodu:');
             $kom->setOpis($txt);
             $kom->setSamaccountname($this->getUser()->getUsername());
-            $kom->setCreatedAt(new \Datetime());
             $em->persist($kom);
         } else {
             $wniosek->setPowodZwrotu('');

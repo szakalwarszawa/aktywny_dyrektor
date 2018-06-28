@@ -994,7 +994,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
             $kom->setOpis($txt);
             $kom->setSamaccountname($this->getUser()->getUsername());
-            $kom->setCreatedAt(new \Datetime());
             $em->persist($kom);
         } else {
             $wniosek->setPowodZwrotu('');
