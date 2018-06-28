@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Gedmo\Mapping\Annotation as Gedmo;
 
 /**
  * UserZasoby
@@ -10,8 +11,8 @@ use Doctrine\ORM\Mapping as ORM;
  * @ORM\Table(name="komentarz", indexes={@ORM\Index(name="obiekt_id_idx", columns={"obiektId"})})
  * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\KomentarzRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,samaccountname,createdAt,tytul,opis")
- * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
- * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
+ * @Gedmo\SoftDeleteable(fieldName="deletedAt", timeAware=false)
+ * @Gedmo\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Komentarz
 {
@@ -23,7 +24,7 @@ class Komentarz
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -35,49 +36,50 @@ class Komentarz
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Versioned
      */
     private $samaccountname;
-    
-    
-    
+
+
+
     /**
      * @var \DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Timestampable(on="update")
+     * @Gedmo\Versioned
      */
     private $createdAt;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="tytul", type="string", length=255, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Versioned
      */
     private $tytul;
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="opis", type="string", length=5000, nullable=true)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Versioned
      */
     private $opis;
 
-    
+
     /**
      * @var string
      *
      * @ORM\Column(name="obiekt", type="string", length=255)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Versioned
      */
     private $obiekt;
     /**
      * @var string
      *
      * @ORM\Column(name="obiektId", type="string", length=255)
-     * @Gedmo\Mapping\Annotation\Versioned
+     * @Gedmo\Versioned
      */
     private $obiektId;
 
@@ -138,25 +140,6 @@ class Komentarz
     public function getSamaccountname()
     {
         return $this->samaccountname;
-    }
-
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Komentarz
-     */
-    public function setCreatedAt(\DateTime $createdAt = null)
-    {
-        if (null === $createdAt) {
-            $createdAt = new \DateTime();
-        }
-
-        $this->createdAt = $createdAt;
-
-        return $this;
     }
 
     /**

@@ -35,7 +35,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Komentarz')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:Komentarz');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
@@ -45,33 +45,33 @@ class KomentarzController extends Controller
         );
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'komentarz_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'komentarz_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
         $grid->setRouteUrl($this->generateUrl('komentarz', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->isReadyForRedirect();
@@ -136,7 +136,6 @@ class KomentarzController extends Controller
         $entity = new Komentarz();
         $entity->setObiekt($obiekt);
         $entity->setObiektId($obiektId);
-        $entity->setCreatedAt(new \Datetime());
         $entity->setSamaccountname($this->getUser()->getUsername());
         $form   = $this->createCreateForm($entity);
 
@@ -269,11 +268,11 @@ class KomentarzController extends Controller
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
             $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
-            
+
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');
             }
-            
+
             if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
                 $this->addFlash('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
                 return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));

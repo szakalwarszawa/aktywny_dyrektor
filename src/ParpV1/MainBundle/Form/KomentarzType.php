@@ -20,18 +20,13 @@ class KomentarzType extends AbstractType
                 'attr' => array('readonly' => true),
                 'label' => 'Osoba dodająca komentarz'
             ))
-            ->add('createdAt', 'datetime', array(
-                'attr' => array('readonly' => true),
-                'widget' => 'single_text',
-                'label' => 'Kiedy utworzono komentarz'
-            ))
             ->add('tytul', 'text', ['label' => 'Tytuł komentarza'])
             ->add('opis', 'textarea', ['label' => 'Treść komentarza', 'attr' => ['maxlength' => 5000]])
             ->add('obiekt', 'hidden')
             ->add('obiektId', 'hidden')
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
