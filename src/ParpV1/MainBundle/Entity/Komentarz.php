@@ -150,7 +150,11 @@ class Komentarz
      */
     public function setCreatedAt($createdAt)
     {
-        $this->createdAt = new \DateTime();
+        if (empty($createdAt)) {
+            $this->createdAt = new \DateTime();
+        } else {
+            $this->createdAt = $createdAt;
+        }
 
         return $this;
     }
