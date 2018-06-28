@@ -148,8 +148,12 @@ class Komentarz
      *
      * @return Komentarz
      */
-    public function setCreatedAt($createdAt)
+    public function setCreatedAt(\DateTime $createdAt = null)
     {
+        if (null === $createdAt) {
+            $createdAt = new \DateTime();
+        }
+
         $this->createdAt = $createdAt;
 
         return $this;
