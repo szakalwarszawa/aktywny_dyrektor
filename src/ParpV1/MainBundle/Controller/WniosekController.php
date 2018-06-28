@@ -57,14 +57,14 @@ class WniosekController extends Controller
             'viewers' => $people['viewers'],
             'editors' => $people['editors'],
         ];
-        
+
         $statusyEntities = $em->getRepository('ParpMainBundle:WniosekStatus')->findBy(['typWniosku' => $typWniosku]);
         $statusy = [];
         foreach ($statusyEntities as $e) {
             $statusy[$e->getId()] = $e->getNazwa();
         }
-        
-        
+
+
         $builder = $this->createFormBuilder($dane)
                 ->add('status', 'choice', array(
                     'required' => false,
@@ -118,26 +118,25 @@ class WniosekController extends Controller
                             'class' => 'btn btn-danger col-sm-12'
                         ),
                     ));
-                
+
                 $form = $builder->setAction($this->generateUrl('wniosek_przekieruj', ['id' => $id]))->setMethod('POST')->getForm();
-        
+
         if ($request->getMethod() == "POST") {
             $form->handleRequest($request);
             $dane = $form->getData();
             $komentarz = new Komentarz();
             $komentarz->setSamaccountname($this->getUser()->getUsername());
-            $komentarz->setCreatedAt(new \Datetime());
             $komentarz->setTytul("Ręczne przekierowanie wniosku");
             $komentarz->setOpis($dane['powod']);
             $komentarz->setObiekt($typWniosku == 'wniosekONadanieUprawnien' ? "WniosekNadanieOdebranieZasobow" : "WniosekUtworzenieZasobu");
             $komentarz->setObiektId($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId());
             $em->persist($komentarz);
-            
+
             $nowyStatus = $em->getRepository('ParpMainBundle:WniosekStatus')->find($dane['status']);
             $wniosek->setStatus($nowyStatus);
             $wniosek->setLockedBy(null);
             $wniosek->setLockedAt(null);
-            
+
             foreach ($wniosek->getViewers() as $v) {
                 $em->remove($v);
             }
@@ -159,12 +158,12 @@ class WniosekController extends Controller
                 $wniosek->addEditor($nv);
                 $em->persist($nv);
             }
-            
+
             $em->flush();
 
             return $this->redirect($this->generateUrl(($typWniosku == 'wniosekONadanieUprawnien' ? 'wnioseknadanieodebraniezasobow_show' : 'wniosekutworzeniezasobu_edit'), ['id' => ($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId())]));
         }
-        
+
 
         return array(
             'wniosek'      => $wniosek,
@@ -197,38 +196,38 @@ class WniosekController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Wniosek')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:Wniosek');
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosek_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosek_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
