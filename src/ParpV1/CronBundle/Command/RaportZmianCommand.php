@@ -2,17 +2,17 @@
 
 namespace ParpV1\CronBundle\Command;
 
-use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Input\InputInterface;
-use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Output\OutputInterface;
-use ParpV1\MainBundle\Services\ParpMailerService;
+use Symfony\Component\Finder\Finder;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
-use PhpOffice\PhpSpreadsheet\Style\Border as ExcelBorder;
-use PhpOffice\PhpSpreadsheet\Style\Fill as ExcelFill;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 use PhpOffice\PhpSpreadsheet\Writer\IWriter;
-use Symfony\Component\Finder\Finder;
+use ParpV1\MainBundle\Services\ParpMailerService;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputInterface;
+use PhpOffice\PhpSpreadsheet\Style\Fill as ExcelFill;
+use Symfony\Component\Console\Output\OutputInterface;
+use PhpOffice\PhpSpreadsheet\Style\Border as ExcelBorder;
+use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class RaportZmianCommand extends ContainerAwareCommand
@@ -51,6 +51,8 @@ class RaportZmianCommand extends ContainerAwareCommand
      * @param string|null $plik1
      * @param string|null $plik2
      *
+     * @throws FileNotFoundException jeżeli plik nie istnieje
+     *
      * @return void
      */
     private function generujRaport($plik1 = null, $plik2 = null)
@@ -60,16 +62,23 @@ class RaportZmianCommand extends ContainerAwareCommand
         $file1 = $katalogPlikowJson . $plik1;
         $file2 = $katalogPlikowJson . $plik2;
 
+
         if (null !== $plik1) {
             if (!file_exists($file1) || !file_exists($file2)) {
                 throw new FileNotFoundException("Plik nie istnieje.");
             }
             $json1 = file_get_contents($file1);
             $json2 = file_get_contents($file2);
+
+            $file1 = $plik1;
+            $file2 = $plik2;
         } else {
             $nazwyPlikow = $this->getListaPlikow($katalogPlikowJson);
             $json1 = file_get_contents($katalogPlikowJson . $nazwyPlikow[0]);
             $json2 = file_get_contents($katalogPlikowJson . $nazwyPlikow[1]);
+
+            $file1 = $nazwyPlikow[0];
+            $file2 = $nazwyPlikow[1];
         }
 
         $tablicaPorownaj1 = json_decode($json1, true);
@@ -85,10 +94,36 @@ class RaportZmianCommand extends ContainerAwareCommand
         }
 
         $wszystkieRoznice = array_filter($wszystkieRoznice);
+        $zakresCzasowy = $this->formatujDaty(array($file1, $file2));
 
-        $plik = $this->zapiszDoExcela($wszystkieRoznice);
+        $plik = $this->zapiszDoExcela($wszystkieRoznice, $zakresCzasowy);
         $plikZeSciezka = $porownaniaJson['katalog_raportow'] . $plik;
         $this->wyslijMail($plikZeSciezka, $porownaniaJson['mail_do_raportu']);
+    }
+
+    /**
+     * Nazwa pliku to `users-ad_2018-06-14-060501.json`
+     * Zwraca samą datę z pliku.
+     *
+     * @param array $nazwyPlikow
+     *
+     * @throws \Exception jeżeli Plik nie zawiera daty w nazwie w formacie YYYY/MM/DD
+     *
+     * @return array
+     *
+     */
+    private function formatujDaty(array $nazwyPlikow)
+    {
+        $nazwyDoZwrotu = array();
+        foreach ($nazwyPlikow as $nazwa) {
+            if (preg_match("/\d{4}-\d{2}-\d{2}/", $nazwa, $dopasowane)) {
+                $nazwyDoZwrotu[] = $dopasowane[0];
+            } else {
+                throw new \Exception("Plik nie zawiera daty w nazwie w formacie YYYY/MM/DD");
+            }
+        }
+
+        return $nazwyDoZwrotu;
     }
 
     /**
@@ -101,7 +136,10 @@ class RaportZmianCommand extends ContainerAwareCommand
      */
     private function wyslijMail($plik, $odbiorca)
     {
-        $transport = \Swift_MailTransport::newInstance();
+        $mailerHost = $this->getContainer()->getParameter('mailer_host');
+        $mailerPort = $this->getContainer()->getParameter('mailer_port');
+
+        $transport = (new \Swift_SmtpTransport($mailerHost, $mailerPort));
         $message = \Swift_Message::newInstance();
         $message->setTo(array($odbiorca));
         $message->setSubject("Raport zmian AD - AKD");
@@ -121,7 +159,7 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @return string
      */
-    private function zapiszDoExcela($diffes)
+    private function zapiszDoExcela(array $diffes, $zakresCzasowy)
     {
         $spreadsheet = new Spreadsheet();
         $writer = new Xlsx($spreadsheet);
@@ -131,8 +169,8 @@ class RaportZmianCommand extends ContainerAwareCommand
 
         $sheet->setCellValue('A1', 'Nazwa użytkownika');
         $sheet->setCellValue('B1', 'Zmiana');
-        $sheet->setCellValue('C1', 'Stara wartość');
-        $sheet->setCellValue('D1', 'Nowa wartość');
+        $sheet->setCellValue('C1', sprintf('Stara wartość (%s)', $zakresCzasowy[0]));
+        $sheet->setCellValue('D1', sprintf('Nowa wartość (%s)', $zakresCzasowy[1]));
 
         $sheet->getStyle('A1:D1')->getFill()
             ->setFillType(ExcelFill::FILL_SOLID)
@@ -149,9 +187,14 @@ class RaportZmianCommand extends ContainerAwareCommand
             $poczatekTabeliWiersz = $wierszIndex;
 
             foreach ($diff as $pojedynczaZmiana) {
+                if (empty($pojedynczaZmiana['stare']) && empty($pojedynczaZmiana['nowe'])) {
+                    $sheet->setCellValue('D'. $wierszIndex, $pojedynczaZmiana['status']);
+                    $wierszIndex++;
+                    continue;
+                }
                 $sheet->setCellValue('B'. $wierszIndex, $pojedynczaZmiana['status']);
-                $sheet->setCellValue('C'. $wierszIndex, $pojedynczaZmiana['stare']);
-                $sheet->setCellValue('D'. $wierszIndex, $pojedynczaZmiana['nowe']);
+                $sheet->setCellValue('C'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['stare']));
+                $sheet->setCellValue('D'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['nowe']));
                 $wierszIndex++;
             }
 
@@ -173,16 +216,32 @@ class RaportZmianCommand extends ContainerAwareCommand
     }
 
     /**
+     * Zamienia nic nie znaczące wyrazy na zrozumiałe dla człowieka.
+     *
+     * @param string $wartosc
+     *
+     * @return string
+     */
+    private function tlumaczWyrazy($wartosc)
+    {
+        $wartosc = str_replace("INTERDOMAIN_TRUST_ACCOUNT", "", $wartosc);
+        $wartosc = str_replace("PASSWD_CANT_CHANGE", "Nie może zmienić hasła", $wartosc);
+        $wartosc = str_replace("ACCOUNTDISABLE", "Konto wyłączone", $wartosc);
+
+        return $wartosc;
+    }
+
+    /**
      * Formatuje roznice i nadaje im odpowiedni status.
      *
      * @param array $diff
      *
      * @return array
      */
-    private function formatujRoznice($diff)
+    private function formatujRoznice(array $diff)
     {
         $outputDiff = array();
-        if ((isset($diff['old']) || isset($diff['new']))) {
+        if ((isset($diff['old']))) {
             $outputDiff = array(array(
                 'status' => $this->formatujStatus($diff),
                 'stare' => '',
@@ -200,19 +259,47 @@ class RaportZmianCommand extends ContainerAwareCommand
         } elseif (isset($diff['upd'])) {
             $aktualizacje = $this->formatujZaktualizowaneKlucze($diff['upd']);
             $outputDiff = $aktualizacje;
+        } elseif (isset($diff['new'])) {
+            $zwrotTablica = array(
+                array(
+                    'status' => $this->getKomunikat('N_ACCOUNT_CREATED'),
+                    'nowe' => ' ',
+                    'stare' => ' ',
+                ),
+                array(
+                    'status' => $this->getKomunikat('N_DIVISION'),
+                    'nowe' => $diff['new']['division'],
+                    'stare' => '',
+                ),
+                array(
+                    'status' => $this->getKomunikat('N_DEPARTMENT'),
+                    'nowe' => $diff['new']['department'],
+                    'stare' => '',
+                ),
+                array(
+                    'status' => $this->getKomunikat('N_TITLE'),
+                    'nowe' => $diff['new']['title'],
+                    'stare' => '',
+                )
+            );
+
+            return $zwrotTablica;
         }
+
         return $outputDiff;
     }
 
     /**
      * Zwraca tablicę zaktualizowanych elementów z odpowiednim statusem.
      * Filtruje klucze i zwraca tylko te które są potrzebne do raportu.
+     * Sprawdza też czy zaszła zmiana sekcji (warunkiem jest zmiana
+     * klucza `info` oraz `division` jednocześnie - wypluwamy tylko skrót).
      *
      * @param array $diff
      *
      * @return array
      */
-    private function formatujZaktualizowaneKlucze($diff)
+    private function formatujZaktualizowaneKlucze(array $diff)
     {
         $aktualizacje = array();
 
@@ -220,7 +307,16 @@ class RaportZmianCommand extends ContainerAwareCommand
             'distinguishedname',
             'memberOf',
             'manager',
+            'accountExpires',
+            'accountexpires',
+            'info',
+            'division'
         );
+
+        if (!empty($diff['info']) && !empty($diff['division'])) {
+            $indexDivision = array_search('division', $zbedneDoRaportu);
+            unset($zbedneDoRaportu[$indexDivision]);
+        }
 
         foreach ($diff as $klucz => $element) {
             if (!in_array($klucz, $zbedneDoRaportu)) {
@@ -229,6 +325,10 @@ class RaportZmianCommand extends ContainerAwareCommand
                 $tymczasowaTablica['stare'] = $element['old'];
                 $tymczasowaTablica['nowe'] = $element['new'];
 
+                if (('initials' === $klucz && empty($element['new'])) ||
+                    ('initials' === $klucz && !empty($element['old']))) {
+                    continue;
+                }
                 $aktualizacje[] = $tymczasowaTablica;
             }
         }
@@ -237,19 +337,16 @@ class RaportZmianCommand extends ContainerAwareCommand
     }
 
     /**
-     * Formatuje status jeżeli zaszła zmiana typu dodanie lub
-     * usunięcie konta
+     * Formatuje status jeżeli zaszła zmiana typu usunięcie konta
      *
      * @param array $diff
      *
      * @return string
      */
-    private function formatujStatus($diff)
+    private function formatujStatus(array $diff)
     {
         if (isset($diff['old'])) {
             return $this->getKomunikat('ACCOUNT_REMOVED');
-        } elseif (isset($diff['new'])) {
-            return $this->getKomunikat('ACCOUNT_CREATED');
         }
     }
 
@@ -268,24 +365,27 @@ class RaportZmianCommand extends ContainerAwareCommand
          * (zapisane wielką literą SNAKE_CASE)
          */
         $komunikaty = array(
-            'title'                 => 'ZMIANA STATUSU KONTA',
-            'name'                  => 'ZMIANA NAZWY STANOWISKA',
+            'title'                 => 'Zmieniono nazwę stanowiska',
+            'name'                  => 'Zmieniono imię i nazwisko',
             'accountExpires'        => 'Zmieniono date wygaśnięcia konta',
-            'department'            => 'ZMIENIONO DEPARTAMENT',
+            'department'            => 'Zmieniono departament',
             'info'                  => 'ZMIENIONO SEKCJĘ',
             'description'           => 'ZMIENIONO OPIS',
             'isDisabled'            => 'ZMIANA STATUSU URUCHOMIENIA KONTA WŁ/WYŁ',
-            'initials'              => 'ZMIENIONO INICJAŁY',
-            'division'              => 'ZMIENIONO COŚTAM',
+            'initials'              => 'Zmieniono inicjały',
+            'division'              => 'Zmieniono sekcję',
             'accountexpires'        => 'ZMIENIONO KONTO EXPIRES??',
-            'ACCOUNT_CREATED'       => 'Utworzono konto',
-            'ACCOUNT_REMOVED'       => 'Usunieto konto',
+            'N_ACCOUNT_CREATED'       => 'Utworzono konto',
+            'ACCOUNT_REMOVED'       => 'Usunięto konto',
             'memberOf'              => 'Zmieniono uprawnienia',
             'manager'               => 'Zmieniono managera',
             'ACCOUNT_ENABLED'       => 'Włączono konto',
             'ACCOUNT_DISABLED'      => 'Wyłączono konto',
-            'useraccountcontrol'    => 'ZMIENIONO USER COŚTAM',
+            'useraccountcontrol'    => 'Zmieniono parametry konta',
             'cn'                    => 'Zmieniono nazwę',
+            'N_DEPARTMENT'          => 'Nazwa departamentu/biura',
+            'N_DIVISION'            => 'Sekcja',
+            'N_TITLE'               => 'Stanowisko'
         );
 
         return $komunikaty[$klucz];
@@ -296,7 +396,10 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @param string
      *
+     * @throws FileNotFoundException jeżeli w folderze nie ma dwóch plików do porównania
+     *
      * @return array
+     *
      */
     private function getListaPlikow($katalogPlikowJson)
     {
@@ -333,7 +436,7 @@ class RaportZmianCommand extends ContainerAwareCommand
      *
      * @return array
      */
-    private function porownajTablice($tablica1, $tablica2)
+    private function porownajTablice(array $tablica1, array $tablica2)
     {
         $zaktualizowane = array();
 
