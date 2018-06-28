@@ -16,6 +16,4 @@ RUN npm config set prefix "/usr/bin/node_modules/"
 RUN npm install -g eslint eslint-plugin-html eslint-config-idiomatic htmllint htmllint-cli
 COPY ./missing_empty_line_detector.sh /usr/bin/missing_empty_line_detector.sh
 RUN chmod 0777 /usr/bin/missing_empty_line_detector.sh
-COPY ./eslint_glob_patch.sh /usr/bin/eslint_glob_patch.sh
-RUN chmod 0777 /usr/bin/eslint_glob_patch.sh
 CMD ["/bin/sh"]
