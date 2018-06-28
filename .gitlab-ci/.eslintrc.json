@@ -10,5 +10,15 @@
     "browser": true,
     "jquery": true
   },
+  "rules": {
+    "space-in-parens": "off",
+    "space-before-function-paren": ["error", {
+      "anonymous": "always",
+      "named": "never"
+    }],
+    "computed-property-spacing": "off",
+    "func-names": "off",
+    "indent": ["error", 4]
+  },
   "root": true
 }
