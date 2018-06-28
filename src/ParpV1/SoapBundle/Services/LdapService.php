@@ -1114,6 +1114,8 @@ class LdapService
             case 'dyrektor':
             case 'p.o. dyrektora':
             case 'dyrektor (p.o.)':
+            case 'główny księgowy,dyrektor':
+            case 'główny księgowy, dyrektor':
                 $ret = 'manager';
                 break;
             case 'zastępca prezesa':
