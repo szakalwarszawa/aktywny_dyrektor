@@ -67,8 +67,6 @@ class RaportZmianCommand extends ContainerAwareCommand
 
         $nazwyPlikowDoRaportu = array_slice($listaPlikow, $indexStart);
 
-
-        $liczbaPlikow = 0;
         $jsonPliki = array();
         $tempArray = array();
 
