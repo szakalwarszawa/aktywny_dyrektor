@@ -14,6 +14,7 @@ use Symfony\Component\Console\Output\OutputInterface;
 use PhpOffice\PhpSpreadsheet\Style\Border as ExcelBorder;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Console\Input\InputOption;
 
 class RaportZmianCommand extends ContainerAwareCommand
 {
@@ -23,7 +24,8 @@ class RaportZmianCommand extends ContainerAwareCommand
                 ->setName('parp:raportzmian')
                 ->setDescription('Generuje plik excela i wysyła mail z raportem zmian w AKD względem AD')
                 ->addArgument('plik1', InputArgument::OPTIONAL, 'Plik 1 do porownania.')
-                ->addArgument('plik2', InputArgument::OPTIONAL, 'Plik 2 do porownania.');
+                ->addArgument('plik2', InputArgument::OPTIONAL, 'Plik 2 do porownania.')
+                ->addOption('start', null, InputOption::VALUE_OPTIONAL, 'Od jakiej daty.');
     }
 
     /**
@@ -40,8 +42,49 @@ class RaportZmianCommand extends ContainerAwareCommand
 
         if ($input->getArgument('plik1') && $input->getArgument('plik2')) {
             $this->generujRaport($input->getArgument('plik1'), $input->getArgument('plik2'));
-        } else {
+        } elseif (null === $input->getOption('start')) {
             $this->generujRaport();
+        } else {
+            $this->generujSerieRaportow($input->getOption('start'));
+        }
+    }
+
+    /**
+     * W przypadku podania opcji --start *nazwa pliku* generuje X raportów.
+     * Generuje porównania dzień po dniu.
+     *
+     * @param string $nazwaPlikuStartowego
+     *
+     * @return void
+     */
+    private function generujSerieRaportow($nazwaPlikuStartowego)
+    {
+        $porownaniaJson = $this->getContainer()->getParameter('porownania_json');
+        $katalogPlikowJson = $porownaniaJson['katalog_plikow_json'];
+        $listaPlikow = $this->getListaPlikow($katalogPlikowJson, true);
+
+        $indexStart = array_search($nazwaPlikuStartowego, $listaPlikow);
+
+        $nazwyPlikowDoRaportu = array_slice($listaPlikow, $indexStart);
+
+
+        $liczbaPlikow = 0;
+        $jsonPliki = array();
+        $tempArray = array();
+
+        foreach ($nazwyPlikowDoRaportu as $nazwa) {
+            if (count($tempArray) < 2) {
+                $tempArray[] = $nazwa;
+            }
+            if (count($tempArray) == 2) {
+                $jsonPliki[] = $tempArray;
+                $tempArray = array();
+                $tempArray[] = $nazwa;
+            }
+        }
+
+        foreach ($jsonPliki as $plik) {
+            $this->generujRaport($plik[0], $plik[1]);
         }
     }
 
@@ -73,7 +116,7 @@ class RaportZmianCommand extends ContainerAwareCommand
             $file1 = $plik1;
             $file2 = $plik2;
         } else {
-            $nazwyPlikow = $this->getListaPlikow($katalogPlikowJson);
+            $nazwyPlikow = $this->getListaPlikow($katalogPlikowJson, false);
             $json1 = file_get_contents($katalogPlikowJson . $nazwyPlikow[0]);
             $json2 = file_get_contents($katalogPlikowJson . $nazwyPlikow[1]);
 
@@ -94,7 +137,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         }
 
         $wszystkieRoznice = array_filter($wszystkieRoznice);
-        $zakresCzasowy = $this->formatujDaty(array($file1, $file2));
+        $zakresCzasowy = $this->ekstrahujDateZNazwyPliku(array($file1, $file2));
 
         $plik = $this->zapiszDoExcela($wszystkieRoznice, $zakresCzasowy);
         $plikZeSciezka = $porownaniaJson['katalog_raportow'] . $plik;
@@ -112,7 +155,7 @@ class RaportZmianCommand extends ContainerAwareCommand
      * @return array
      *
      */
-    private function formatujDaty(array $nazwyPlikow)
+    private function ekstrahujDateZNazwyPliku(array $nazwyPlikow)
     {
         $nazwyDoZwrotu = array();
         foreach ($nazwyPlikow as $nazwa) {
@@ -209,14 +252,14 @@ class RaportZmianCommand extends ContainerAwareCommand
         $dataTeraz = new \DateTime();
 
         $katalog = $this->getContainer()->getParameter('porownania_json')['katalog_raportow'];
-        $nazwaPliku = 'raport_' . $dataTeraz->format('Y-m-d') .'.xlsx';
+        $nazwaPliku = 'raport_' . $zakresCzasowy[0] . '__' .$zakresCzasowy[1] .'.xlsx';
         $writer->save($katalog . $nazwaPliku);
 
         return $nazwaPliku;
     }
 
     /**
-     * Zamienia nic nie znaczące wyrazy na zrozumiałe dla człowieka.
+     * Zamienia nic nieznaczące wyrazy na zrozumiałe dla człowieka.
      *
      * @param string $wartosc
      *
@@ -391,17 +434,19 @@ class RaportZmianCommand extends ContainerAwareCommand
         return $komunikaty[$klucz];
     }
 
-    /**
+  /**
      * Zwraca nazwy dwóch najnowszych plików .json w katalogu
+     * Jeżeli $pokazWszystkie jest true to zwraca listę wszystkich plików z katalogu.
      *
-     * @param string
+     * @param string $katalogPlikowJson
+     * @param bool $pokazWszystkie
      *
      * @throws FileNotFoundException jeżeli w folderze nie ma dwóch plików do porównania
      *
      * @return array
      *
      */
-    private function getListaPlikow($katalogPlikowJson)
+    private function getListaPlikow($katalogPlikowJson, $pokazWszystkie)
     {
         $finder = new Finder();
 
@@ -419,11 +464,14 @@ class RaportZmianCommand extends ContainerAwareCommand
                  $nazwyPlikow[] = $fileName;
             }
         }
-        if (count($nazwyPlikow) > 2) {
-            $nazwyPlikow = array_splice($nazwyPlikow, -2);
-        } elseif (count($nazwyPlikow) < 2) {
-            throw new FileNotFoundException("Brakuje plików do porównania");
+        if (false === $pokazWszystkie) {
+            if (count($nazwyPlikow) > 2) {
+                $nazwyPlikow = array_splice($nazwyPlikow, -2);
+            } elseif (count($nazwyPlikow) < 2) {
+                throw new FileNotFoundException("Brakuje plików do porównania");
+            }
         }
+
 
         return $nazwyPlikow;
     }
