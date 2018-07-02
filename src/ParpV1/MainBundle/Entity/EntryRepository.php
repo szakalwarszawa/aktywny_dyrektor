@@ -114,6 +114,13 @@ accountexpires: ""
         return $data;
     }
 
+    /**
+     * Zwraca wszystkie zmiany jakie zaszły na koncie.
+     *
+     * @todo W przyszłości może być potrzebne pobieranie od daty.
+     *
+     * @return array
+     */
     public function findZmianyNaUzytkownikach()
     {
         $queryBuilder = $this->createQueryBuilder('h');

@@ -650,7 +650,7 @@ class RaportyITController extends Controller
 
 
     /**
-     * Pobiera ostatnią zmiane uprawnień użytkownika i redukuje je.
+     * Zwraca listę osób wraz z datą ostatniej zmiany.
      * @see https://redmine.parp.gov.pl/issues/58977
      *
      * @Route(
