@@ -2,17 +2,18 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use Doctrine\Common\Persistence\ObjectManager;
 use ParpV1\MainBundle\Entity\Entry;
+use Symfony\Component\HttpFoundation\Request;
+use Doctrine\Common\Persistence\ObjectManager;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use ParpV1\MainBundle\Exception\SecurityTestException;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
-use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -645,5 +646,160 @@ class RaportyITController extends Controller
         $dane[] =  ['konto' => $login, 'grupy w AD' => $grupy];
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Nadawanie uprawnien dla: ' . $login]);
+    }
+
+
+    /**
+     * Pobiera ostatnią zmiane uprawnień użytkownika i redukuje je.
+     * @see https://redmine.parp.gov.pl/issues/58977
+     *
+     * @Route(
+     *  "/przegladUprawnien/{departament}",
+     *  name="przeglad_uprawnien",
+     *  defaults={"departament" = ""}
+     * )
+     *
+     * @param string $departament
+     *
+     * @return JsonResponse
+     */
+    public function przegladZmianNaKoncieAction($departament)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $zmianyUprawnien = $entityManager
+                               ->getRepository(Entry::class)
+                               ->findZmianyNaUzytkownikach();
+
+        $ldapService = $this->get('ldap_service');
+        $zbiorZmian = $this->pokazDlaWszystkich($zmianyUprawnien);
+
+        if (!empty($departament)) {
+            $uzytkownicy = $ldapService->getUsersFromOU($departament);
+
+            if (null === $uzytkownicy) {
+                throw new \Exception('Nie znaleziono takiego departamentu.');
+            }
+
+            $uzytkownicyOuNazwy = array();
+            foreach ($uzytkownicy as $uzytkownik) {
+                $uzytkownicyOuNazwy[] = $uzytkownik['samaccountname'];
+            }
+
+            $zbiorZmian = $this->odfiltrujDlaDepartamentu($zbiorZmian, $uzytkownicyOuNazwy);
+        }
+echo '<pre>';
+        print_r($zbiorZmian);
+        die();
+        return new JsonResponse($zbiorZmian);
+    }
+
+    /**
+     * Usuwa z tablicy osoby które nie są w tablicy użytkowników
+     * z danego departamentu.
+     *
+     * @param array $zmiany
+     * @param array $listaUzytkownikow
+     *
+     * @return array
+     */
+    public function odfiltrujDlaDepartamentu(array $zmiany, array $listaUzytkownikow)
+    {
+        foreach ($zmiany as $key => $zmiana) {
+            if (!in_array($key, $listaUzytkownikow)) {
+                unset($zmiany[$key]);
+            }
+        }
+
+        return $zmiany;
+    }
+
+    /**
+     * Zwraca tylko wpisy gdzie wystąpiło zdarzenie
+     * zgodnie z Redmine #58977
+     * Zwraca użytkowników ze wszystkich departametnow
+     * $zmianyUprawnien zawiera listę wszystkich zmian.
+     *
+     * @param array $zmianyUprawnien
+     *
+     * @return array
+     */
+    public function pokazDlaWszystkich(array $zmianyUprawnien)
+    {
+        $zmiany = array();
+
+        foreach ($zmianyUprawnien as $zmiana)
+        {
+            $dataZmiany = $zmiana->getFromWhen()->format('Y-m-d H:i:s');
+            $nazwaKonta = $zmiana->getSamaccountName();
+            $info = $zmiana->getInfo();
+            $division = $zmiana->getDivision();
+            $title = $zmiana->getTitle();
+            $distinguishedName = $zmiana->getDistinguishedName();
+
+            if (!isset($zmiany[$nazwaKonta])) {
+                $zmiany[$nazwaKonta]['ostatnia_zmiana'] = null;
+                $zmiany[$nazwaKonta]['ou'] = $distinguishedName;
+            }
+
+            $zmianaStatus = false;
+
+            if (null !== $title) {
+                if ($dataZmiany > $zmiany[$nazwaKonta]['ostatnia_zmiana']) {
+                    $zmianaStanowiska = $this->sprawdzZmianeStanowiska($zmiana);
+                    if (null !== $zmianaStanowiska) {
+                        $zmiany[$nazwaKonta]['ostatnia_zmiana'] = $dataZmiany;
+                        $zmiany[$nazwaKonta]['powod'] = 'TITLE';
+                        $zmianaStatus = true;
+                    }
+                }
+            }
+
+            if (null !== $division || null !== $info) {
+                if ($dataZmiany > $zmiany[$nazwaKonta]['ostatnia_zmiana']) {
+                    $zmiany[$nazwaKonta]['ostatnia_zmiana'] = $dataZmiany;
+                    $zmiany[$nazwaKonta]['powod'] = 'DIVISION/INFO';
+                    $zmianaStatus = true;
+                }
+            }
+
+            if (null !== $distinguishedName) {
+                if ($distinguishedName !== $zmiany[$nazwaKonta]['ou']) {
+                    $zmiany[$nazwaKonta]['ou'] = $distinguishedName;
+                    if ($dataZmiany > $zmiany[$nazwaKonta]['ostatnia_zmiana']) {
+                        $zmiany[$nazwaKonta]['ostatnia_zmiana'] = $dataZmiany;
+                        $zmiany[$nazwaKonta]['powod'] = 'OU';
+                        $zmianaStatus = true;
+                    }
+                }
+            }
+        }
+
+        return $zmiany;
+    }
+
+    /**
+     * Sprawdza czy zaszła zmiana stanowiska na określoną.
+     * Jeżeli tak to zwraca datę tej zmiany.
+     *
+     * @param Entry $zmiana
+     *
+     * @return null|datetime
+     */
+    public function sprawdzZmianeStanowiska(Entry $zmiana)
+    {
+        $stanowiska = array(
+            'kierownik',
+            'koordynator',
+            'zastępca dyrektora',
+            'zastępca prezesa',
+            'prezes',
+            'dyrektor',
+        );
+
+        if (in_array($zmiana->getTitle(), $stanowiska)) {
+            return $zmiana->getFromWhen();
+        }
+
+        return null;
     }
 }
