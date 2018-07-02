@@ -687,9 +687,7 @@ class RaportyITController extends Controller
 
             $zbiorZmian = $this->odfiltrujDlaDepartamentu($zbiorZmian, $uzytkownicyOuNazwy);
         }
-echo '<pre>';
-        print_r($zbiorZmian);
-        die();
+
         return new JsonResponse($zbiorZmian);
     }
 
@@ -727,8 +725,7 @@ echo '<pre>';
     {
         $zmiany = array();
 
-        foreach ($zmianyUprawnien as $zmiana)
-        {
+        foreach ($zmianyUprawnien as $zmiana) {
             $dataZmiany = $zmiana->getFromWhen()->format('Y-m-d H:i:s');
             $nazwaKonta = $zmiana->getSamaccountName();
             $info = $zmiana->getInfo();
@@ -772,6 +769,10 @@ echo '<pre>';
                     }
                 }
             }
+
+            if (null === $zmiany[$nazwaKonta]['ostatnia_zmiana']) {
+                unset($zmiany[$nazwaKonta]);
+            }
         }
 
         return $zmiany;
@@ -783,7 +784,7 @@ echo '<pre>';
      *
      * @param Entry $zmiana
      *
-     * @return null|datetime
+     * @return null|Datetime
      */
     public function sprawdzZmianeStanowiska(Entry $zmiana)
     {
