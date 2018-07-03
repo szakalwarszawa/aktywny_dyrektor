@@ -551,7 +551,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu', 'wnioskiZmieniajaceZasob'));
+        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu', 'wnioskiZmieniajaceZasob', 'wniosekSkasowanieZasobu'));
         $normalizers = array($normalizer);
 
         $serializer = new Serializer($normalizers, $encoders);
