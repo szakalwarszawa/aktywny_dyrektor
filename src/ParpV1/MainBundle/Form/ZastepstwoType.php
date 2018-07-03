@@ -27,21 +27,21 @@ class ZastepstwoType extends AbstractType
             ->add('opis', 'textarea', ['required' => true]);
         $builder->add('ktoZastepuje', 'choice', array(
                 'choices' => $this->ADUsers,
-                'required' => false, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2')));
+                'required' => true, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2')));
         if (in_array("PARP_ADMIN", $this->ADUser->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $this->ADUser->getRoles())) {
             //PARP_ADMIN oraz PARP_ADMIN_ZASTEPSTW moga ustawic kogolowiek jako kogo zastepuja
             $builder->add('kogoZastepuje', 'choice', array(
                 'choices' => $this->ADUsers,
-                'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
+                'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
         } elseif (in_array("PARP_DB_ZASTEPSTWA", $this->ADUser->getRoles())) {
             //PARP_DB_ZASTEPSTWA moga ustawic kogolowiek z DB jako kogo zastepuja
             $builder->add('kogoZastepuje', 'choice', array(
                     'choices' => $this->ADUsers,
-                    'required' => false, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
+                    'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
         } else {
             //reszta normalnych osob, ma ustawionego tylko siebie jako kogoZastepuje
             $builder->add('kogoZastepuje', 'text', array(
-                'required' => false, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true)));
+                'required' => true, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true)));
         }
             
             
@@ -53,7 +53,7 @@ class ZastepstwoType extends AbstractType
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+                    'required' => true,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd HH:mm'
                     
@@ -66,7 +66,7 @@ class ZastepstwoType extends AbstractType
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+                    'required' => true,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd HH:mm'
                     
