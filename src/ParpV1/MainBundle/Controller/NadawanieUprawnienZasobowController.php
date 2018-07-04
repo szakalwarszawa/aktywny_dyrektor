@@ -273,12 +273,14 @@ class NadawanieUprawnienZasobowController extends Controller
         $listaWlascicieli = explode(',', $zasob->getWlascicielZasobu());
         $listaAdministratorow = explode(',', $zasob->getAdministratorZasobu());
         $listaAdministratorowTech = explode(',', $zasob->getAdministratorTechnicznyZasobu());
-        $listaOsobUprawnionych = array_unique(array_merge(
-                    $listaPowiernikow,
-                    $listaWlascicieli,
-                    $listaAdministratorow,
-                    $listaAdministratorowTech
-                ));
+        $listaOsobUprawnionych = array_unique(
+            array_merge(
+                $listaPowiernikow,
+                $listaWlascicieli,
+                $listaAdministratorow,
+                $listaAdministratorowTech
+                )
+            );
 
         if (in_array($this->getUser()->getUserName(), $listaOsobUprawnionych)) {
             return true;
