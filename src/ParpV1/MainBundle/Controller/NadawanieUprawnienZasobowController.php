@@ -279,8 +279,8 @@ class NadawanieUprawnienZasobowController extends Controller
                 $listaWlascicieli,
                 $listaAdministratorow,
                 $listaAdministratorowTech
-                )
-            );
+            )
+        );
 
         if (in_array($this->getUser()->getUserName(), $listaOsobUprawnionych)) {
             return true;
