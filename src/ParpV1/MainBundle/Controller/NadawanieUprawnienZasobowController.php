@@ -141,7 +141,8 @@ class NadawanieUprawnienZasobowController extends Controller
                             $chs[] = $zasob;
                         } elseif (true === $zasob->getZasobSpecjalny()) {
                             if (true === $zasobSpecjalnyUprawnienie
-                                || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())) {
+                                || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())
+                                || $this->dostepDoZasobowSpecjalnych($zasob)) {
                                 $chs[] = $zasob;
                             }
                         }
@@ -259,6 +260,33 @@ class NadawanieUprawnienZasobowController extends Controller
             }
         }
         return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);
+    }
+
+    /**
+     * Sprawdza czy aktualny użytkownik może widzieć zasób specjalny.
+     *
+     * @param Zasoby $zasob
+     */
+    private function dostepDoZasobowSpecjalnych(Zasoby $zasob)
+    {
+        $listaPowiernikow = explode(',', $zasob->getPowiernicyWlascicielaZasobu());
+        $listaWlascicieli = explode(',', $zasob->getWlascicielZasobu());
+        $listaAdministratorow = explode(',', $zasob->getAdministratorZasobu());
+        $listaAdministratorowTech = explode(',', $zasob->getAdministratorTechnicznyZasobu());
+        $listaOsobUprawnionych = array_unique(
+            array_merge(
+                $listaPowiernikow,
+                $listaWlascicieli,
+                $listaAdministratorow,
+                $listaAdministratorowTech
+            )
+        );
+
+        if (in_array($this->getUser()->getUserName(), $listaOsobUprawnionych)) {
+            return true;
+        }
+
+        return false;
     }
 
     protected function addRemoveAccessToUsers(
