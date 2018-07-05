@@ -1376,11 +1376,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $grupy = explode(';', $z->getGrupyAd());
 
                         $poziomy = str_replace('; ', ';', $z->getPoziomDostepu());
+                        $poziomyTekst = str_replace(";", ", ", $poziomy);
 
                         $dostepnePoziomy = explode(';', $poziomy);
+
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
                             throw new \Exception('Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() . '\', wybrany poziom to \'' .
-                            $uz->getPoziomDostepu() . '\', dostepne poziomy: ' . $dostepnePoziomy);
+                            $uz->getPoziomDostepu() . '\', dostepne poziomy: ' . $poziomyTekst . '. W trakcie tworzenia wniosku zasób uległ zmianie. ' .
+                            'Skontaktuj się z właścielem zasobu.');
                         }
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
