@@ -299,8 +299,10 @@ class KomentarzController extends Controller
     private function pokazRouteDoPrzekierowania($komentarz)
     {
         switch ($komentarz) {
-            case 'WniosekNadanieOdebranieZasobow' : return 'wnioseknadanieodebraniezasobow_show';
-            case 'WniosekUtworzenieZasobu' : return 'wniosekutworzeniezasobu_show';
+            case 'WniosekNadanieOdebranieZasobow':
+                return 'wnioseknadanieodebraniezasobow_show';
+            case 'WniosekUtworzenieZasobu':
+                return 'wniosekutworzeniezasobu_show';
         }
     }
 
