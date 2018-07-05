@@ -1381,7 +1381,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $dostepnePoziomy = explode(';', $poziomy);
 
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-
                             throw new \Exception('Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() . '\', wybrany poziom to \'' .
                             $uz->getPoziomDostepu() . '\', dostepne poziomy: ' . $poziomyTekst . '. W trakcie tworzenia wniosku zasób uległ zmianie. ' .
                             'Skontaktuj się z właścielem zasobu.');
