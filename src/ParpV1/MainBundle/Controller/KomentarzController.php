@@ -273,6 +273,9 @@ class KomentarzController extends Controller
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');
             }
 
+            $obiekt = (string) $entity->getObiekt();
+            $obiektId = $entity->getObiektId();
+
             if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
                 $this->addFlash('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
                 return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
@@ -281,7 +284,24 @@ class KomentarzController extends Controller
             $em->flush();
         }
 
-        return $this->redirect($this->generateUrl('komentarz'));
+        return $this->redirectToRoute($this->pokazRouteDoPrzekierowania($obiekt), array(
+            'id' => $obiektId,
+        ));
+    }
+
+    /**
+     * Zwraca route do przekierowania.
+     *
+     * @param string $komentarz
+     *
+     * @return string
+     */
+    private function pokazRouteDoPrzekierowania($komentarz)
+    {
+        switch ($komentarz) {
+            case 'WniosekNadanieOdebranieZasobow' : return 'wnioseknadanieodebraniezasobow_show';
+            case 'WniosekUtworzenieZasobu' : return 'wniosekutworzeniezasobu_show';
+        }
     }
 
     /**
