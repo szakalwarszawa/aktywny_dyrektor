@@ -1376,8 +1376,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $grupy = explode(';', $z->getGrupyAd());
 
                         $poziomy = str_replace('; ', ';', $z->getPoziomDostepu());
-                        $poziomyTekst = str_replace(";", ",", $poziomy);
-
+                        $poziomyTekst = str_replace(";", ", ", $poziomy);
 
                         $dostepnePoziomy = explode(';', $poziomy);
 
