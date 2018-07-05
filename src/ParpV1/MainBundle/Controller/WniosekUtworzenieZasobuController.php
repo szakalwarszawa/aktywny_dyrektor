@@ -508,6 +508,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 //                'ADUsers' => $this->getUsersFromAD(),
                 //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
+                'user'      => $this->getUser(),
             )
         );
 
