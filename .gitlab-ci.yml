@@ -43,12 +43,12 @@ twigcs:
         - /root/.composer/vendor/bin/twigcs lint app/Resources/views/
         - /root/.composer/vendor/bin/twigcs lint src
 
-eofemptyline:
+neleof:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: quality
     allow_failure: true
     script:
-        - /usr/bin/missing_empty_line_detector.sh -e "./vendor, ./web/bower_components, ./.gitignore" .
+        - /usr/bin/neleof.sh -e "./vendor, ./web/bower_components, ./.gitignore" .
 
 phpmd:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
@@ -86,14 +86,6 @@ tidyhtml:
     script:
         - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/*
         - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
-
-# lint_html:
-#     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
-#     stage: quality
-#     allow_failure: true
-#     script:
-#         - /usr/bin/node_modules/bin/htmllint --rc "./.gitlab-ci/.htmllintrc" src/ParpV1/**/*.{htm,html,html.twig} 
-#         - /usr/bin/node_modules/bin/htmllint --rc "./.gitlab-ci/.htmllintrc" app/Resources/views/**/*.{htm,html,html.twig}
 
 sami:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
