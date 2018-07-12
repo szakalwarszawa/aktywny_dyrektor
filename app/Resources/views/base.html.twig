@@ -54,12 +54,10 @@
         {% if app.user %}
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
-                    <!-- Brand and toggle get grouped for better mobile display -->
                     <div class="navbar-header">
                         <a class="navbar-brand" href="{{ path('powitalna') }}">Aktywny Dyrektor <small>v2.0 beta</small></a>
                     </div>
 
-                    <!-- Collect the nav links, forms, and other content for toggling -->
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
 
@@ -78,7 +76,7 @@
                                 </ul>
                             </li>
                             {% endif %}
-    
+
                             {% if "PARP_ADMIN" in app.user.roles %}
                                 <li class="dropdown">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
@@ -92,7 +90,7 @@
                                         <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
                                         <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
                                         <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
-    
+
                                     </ul>
                                 </li>
                             {% endif %}
@@ -131,7 +129,7 @@
                                         {% if "PARP_BZK_RAPORTY" in app.user.roles %}
                                             <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
                                         {% endif %}
-    
+
                                         {% if "PARP_ADMIN" in app.user.roles %}
                                             <li class=""><a href="{{ path('raportIT1') }}"><i class="fa fa-floppy-o"></i> Raport IT</a></li>
                                         {% endif %}
@@ -141,51 +139,56 @@
                         </ul>
 
                         <ul class="nav navbar-nav navbar-right">
-                            <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{ app.user.getRolesHtml }}"
-                             data-placement="left">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"
-
-                                >{{ app.user.username }} <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
-                                </ul>
+                            <li class="dropdown red-tooltip" 
+                                data-toggle="popover" 
+                                title="Role w systemie AkD:" 
+                                data-content="{{ app.user.getRolesHtml }}"
+                                data-placement="left">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
+                                    </ul>
                             </li>
                         </ul>
-                    </div><!-- /.navbar-collapse -->
-                </div><!-- /.container-fluid -->
+                    </div>
+                </div>
             </nav>
         {% endif %}
 
         <div class="container-fluid">
             {% if not app.user %}
-            <div class="row">
-                <div class="page-header">
-                    <h1>Aktywny Dyrektor <small>v2.0<small> beta</small></small></h1>
+                <div class="row">
+                    <div class="page-header">
+                        <h1>Aktywny Dyrektor <small>v2.0<small> beta</small></small></h1>
+                    </div>
                 </div>
-            </div>
             {% endif %}
+
             <div class="row">
                 {% for flashMessage in app.session.flashbag.get('warning') %}
-                <div class="alert alert-warning">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Uwaga!</strong>
-                     {{ flashMessage }}
-                </div>
+                    <div class="alert alert-warning">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Uwaga!</strong>
+                        {{ flashMessage }}
+                    </div>
                 {% endfor %}
+
                 {% for flashMessage in app.session.flashbag.get('notice') %}
-                <div class="alert alert-info">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Uwaga!</strong>
-                    {{ flashMessage }}
-                </div>
+                    <div class="alert alert-info">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Uwaga!</strong>
+                        {{ flashMessage }}
+                    </div>
                 {% endfor %}
+
                 {% for flashMessage in app.session.flashbag.get('error') %}
-                <div class="alert alert-danger">
-                    <button type="button" class="close" data-dismiss="alert">&times;</button>
-                    <strong>Uwaga!</strong>
-                    {{ flashMessage }}
-                </div>
+                    <div class="alert alert-danger">
+                        <button type="button" class="close" data-dismiss="alert">&times;</button>
+                        <strong>Uwaga!</strong>
+                        {{ flashMessage }}
+                    </div>
                 {% endfor %}
+
                 {% block body %}{% endblock %}
             </div>
         </div>
@@ -197,6 +200,7 @@
         {% else %}
            <div class="text-center"><a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
         {% endif %}
+
         {% include '::javascripts.html.twig' %}
     </body>
 </html>

@@ -38,7 +38,7 @@ psr2:
 twigcs:
     image: gitlab.parp.gov.pl:4567/parp/aktywny_dyrektor:latest
     stage: quality
-    allow_failure: true
+    allow_failure: false
     script:
         - /root/.composer/vendor/bin/twigcs lint app/Resources/views/
         - /root/.composer/vendor/bin/twigcs lint src
