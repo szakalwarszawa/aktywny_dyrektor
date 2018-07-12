@@ -3,9 +3,6 @@
     <head>
         <meta charset="UTF-8" />
         {% block stylesheets %}
-{#             <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.1/css/bootstrap.min.css"> #}
-            {#<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap-theme.min.css">#}
-            {#<link rel="stylesheet" href="//bootswatch.com/cerulean/bootstrap.min.css">#}
             <link rel="stylesheet" href="{{ asset('css/bootstrap1.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
@@ -14,14 +11,12 @@
             <link rel="stylesheet" href="{{ asset('css/main.css') }}">
             <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
             <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
-            {#<link rel="stylesheet" href="{{ asset('css/select2.min.css') }}">#}
             <link rel="stylesheet" href="{{ asset('css/jquery.treegrid.css') }}">
             <link rel="stylesheet" href="{{ asset('css/table.sorter.css') }}">
         {% endblock %}
 
         {% block javascripts %}
             <script src="{{ asset('js/jquery-1.11.0.min.js') }}"></script>
-            {#        <script src="//code.jquery.com/jquery-migrate-1.2.1.min.js"></script>#}
             <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -30,20 +25,15 @@
             <script type="text/javascript" src="{{ asset('js/jquery.maskedinput.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-filestyle.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jsapi.js') }}"></script>
-            <script src="{{ asset('js/jquery-ui.min.js') }}" type="text/javascript" charset="utf-8"></script>
+            <script type="text/javascript" src="{{ asset('js/jquery-ui.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/tag-it.min.js') }}"></script>
-            {#<script type="text/javascript" src="{{ asset('js/select2.min.js') }}"></script>#}
             <script type="text/javascript" src="{{ asset('js/jquery.are-you-sure.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.bootstrap3.js') }}"></script>
             <script type="text/javascript" src="{{ asset('resizable/inna/colResizable-1.6.js') }}"></script>
-
-                <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
-
-                <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
-                <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
-{#             <script type="text/javascript" src="{{ asset('resizable/dist/jquery-resizable.js') }}"></script> #}
-{#             <script type="text/javascript" src="{{ asset('js/colResizable-1.6.min.js') }}"></script> #}
+            <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
+            <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
+            <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
             <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
             <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
@@ -88,22 +78,23 @@
                                 </ul>
                             </li>
                             {% endif %}
+    
                             {% if "PARP_ADMIN" in app.user.roles %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
-                                    <li><a href="{{ path('section') }}"><i class="fa fa-archive"></i> Sekcje</a></li>
-                                    <li><a href="{{ path('position') }}"><i class="fa fa-user-md"></i> Stanowiska</a></li>
-                                    <li><a href="{{ path('engagement') }}"><i class="fa fa-calendar"></i> Zaangażowania</a></li>
-                                    <li><a href="{{ path('uprawnienia') }}"><i class="fa fa-pencil-square-o"></i> Uprawnienia</a></li>
-                                    <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li>
-                                    <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
-                                    <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
-                                    <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
-
-                                </ul>
-                            </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
+                                        <li><a href="{{ path('section') }}"><i class="fa fa-archive"></i> Sekcje</a></li>
+                                        <li><a href="{{ path('position') }}"><i class="fa fa-user-md"></i> Stanowiska</a></li>
+                                        <li><a href="{{ path('engagement') }}"><i class="fa fa-calendar"></i> Zaangażowania</a></li>
+                                        <li><a href="{{ path('uprawnienia') }}"><i class="fa fa-pencil-square-o"></i> Uprawnienia</a></li>
+                                        <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li>
+                                        <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
+                                        <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
+                                        <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
+    
+                                    </ul>
+                                </li>
                             {% endif %}
 
                             <li class="dropdown">
@@ -116,50 +107,39 @@
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
                                 </ul>
                             </li>
-{#
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-file-text"></i> Raporty <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li><a href="#">Raport 1</a></li>
-                                    <li class="divider"></li>
-                                    <li><a href="#">Raport 2</a></li>
-                                </ul>
-                            </li>
-#}
-                            {% if "PARP_ADMIN" in app.user.roles %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> DEV <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    <li class=""><a href="{{ path('listLogs') }}"><i class="fa fa-floppy-o"></i> Logi z wypychania do AD</a></li>
-                                    <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane ECM</a></li>
-                                    <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
-                                    <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
-                                    <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
-                                    <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
-                                    <li><a href="{{ path('adgroup') }}"><i class="fa fa-group"></i> Groups AD</a></li>
-                                    <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
-                                </ul>
-                            </li>
-                            {% endif %}
 
+                            {% if "PARP_ADMIN" in app.user.roles %}
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> DEV <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        <li class=""><a href="{{ path('listLogs') }}"><i class="fa fa-floppy-o"></i> Logi z wypychania do AD</a></li>
+                                        <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane ECM</a></li>
+                                        <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
+                                        <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
+                                        <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
+                                        <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
+                                        <li><a href="{{ path('adgroup') }}"><i class="fa fa-group"></i> Groups AD</a></li>
+                                        <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
+                                    </ul>
+                                </li>
+                            {% endif %}
 
                             {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
-                            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Raporty <b class="caret"></b></a>
-                                <ul class="dropdown-menu">
-                                    {% if "PARP_BZK_RAPORTY" in app.user.roles %}
-                                        <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
-                                    {% endif %}
-
-                                    {% if "PARP_ADMIN" in app.user.roles %}
-                                        <li class=""><a href="{{ path('raportIT1') }}"><i class="fa fa-floppy-o"></i> Raport IT</a></li>
-                                    {% endif %}
-                                </ul>
-                            </li>
+                                <li class="dropdown">
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Raporty <b class="caret"></b></a>
+                                    <ul class="dropdown-menu">
+                                        {% if "PARP_BZK_RAPORTY" in app.user.roles %}
+                                            <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
+                                        {% endif %}
+    
+                                        {% if "PARP_ADMIN" in app.user.roles %}
+                                            <li class=""><a href="{{ path('raportIT1') }}"><i class="fa fa-floppy-o"></i> Raport IT</a></li>
+                                        {% endif %}
+                                    </ul>
+                                </li>
                             {% endif %}
-
-
                         </ul>
+
                         <ul class="nav navbar-nav navbar-right">
                             <li class="dropdown red-tooltip" data-toggle="popover" title="Role w systemie AkD:" data-content="{{ app.user.getRolesHtml }}"
                              data-placement="left">
@@ -175,6 +155,7 @@
                 </div><!-- /.container-fluid -->
             </nav>
         {% endif %}
+
         <div class="container-fluid">
             {% if not app.user %}
             <div class="row">
@@ -207,8 +188,8 @@
                 {% endfor %}
                 {% block body %}{% endblock %}
             </div>
-
         </div>
+
         {% if app.user %}
             {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
                 <div class="text-center"><a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
