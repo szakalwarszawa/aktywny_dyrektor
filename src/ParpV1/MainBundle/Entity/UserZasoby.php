@@ -59,7 +59,7 @@ class UserZasoby
     /**
      * @var string
      *
-     * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @ORM\Column(name="samaccountname", type="text")
      * @Gedmo\Mapping\Annotation\Versioned
      */
     protected $samaccountname;
@@ -307,7 +307,7 @@ class UserZasoby
     {
         return $this->id;
     }
-   
+
     /**
      * Set id
      *
@@ -317,11 +317,11 @@ class UserZasoby
     public function setId($id)
     {
         $this->id = $id;
-        
+
         return $this;
     }
-    
-    
+
+
 
     /**
      * Set samaccountname
