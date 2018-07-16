@@ -11,6 +11,8 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\UserEngagement;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
@@ -1117,60 +1119,56 @@ class DefaultController extends Controller
     }
 
     /**
-     * FIXME: Zupełnie do przerobienia na model usługowy
+     * Przywraca uprawnienia początkowe użytkownika.
      *
-     * @param $ADUser
-     * @param $entry
-     * @param $newData
+     * @param array $ADUser
+     * @param Entry $entry
+     * @param array $newData
+     *
+     * @return void
      */
-    private function nadajUprawnieniaPoczatkowe($ADUser, $entry, $newData)
+    private function nadajUprawnieniaPoczatkowe(array $ADUser, Entry $entry, array $newData)
     {
-        $raportCtrl = new RaportyITController();
-        $raportCtrl->container = $this;
-        $dane = $raportCtrl->raportBssProcesuj($ADUser[0]['samaccountname']);
-        $grupDoNadania = $raportCtrl->brakujaceGrupy;
-        //echo "<pre>".print_r($ret, true)."</pre>"; //die();
+        $entityManager = $this->getDoctrine()->getManager();
 
+        $departament = $ADUser[0]['description'];
+        $section = $entityManager
+                    ->getRepository(Section::class)
+                    ->findOneBy(
+                        array(
+                            'shortname' => trim($ADUser[0]['division'])
+                        )
+                    );
+        $section = ($section ? $section->getShortname() : '');
 
-        $dep = $ADUser[0]['description'];
-        $section =
-            $this->getDoctrine()
-                ->getManager()
-                ->getRepository('ParpMainBundle:Section')
-                ->findOneBy(['shortname' => trim($ADUser[0]['division'])]);
-        $sec = $section ? $section->getShortname() : '';
-        //odbiera stare
-        $grupyNaPodstawieSekcjiOrazStanowiska =
-            $ADUser[0]['memberOf']; //teraz czyscimy wszystko a nie tylko to co powinien miec w podstawowych
-        //$this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
-        //var_dump($ADUser[0]['memberOf'], $grupyNaPodstawieSekcjiOrazStanowiska); die();
-
+        $grupyNaPodstawieSekcjiOrazStanowiska = $ADUser[0]['memberOf'];
         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
-        $entry->addGrupyAD($grupDoNadania, '+');
 
         if (isset($newData['department'])) {
-            $department =
-                $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:Departament')
-                    ->findOneBy(['name' => $newData['department']]);
-            $dep = $department->getShortname();
+            $department = $entityManager
+                    ->getRepository(Departament::class)
+                    ->findOneBy(
+                        array(
+                        'name' => $newData['department']
+                        )
+                    );
+            $departament = $department->getShortname();
         }
 
         if (isset($newData['info'])) {
-            $section =
-                $this->getDoctrine()
-                    ->getManager()
-                    ->getRepository('ParpMainBundle:Section')
-                    ->findOneBy(['name' => $newData['info']]);
-            $sec = $section->getShortname();
+            $section = $entityManager
+                    ->getRepository(Section::class)
+                    ->findOneBy(
+                        array(
+                            'name' => $newData['info']
+                        )
+                    );
+            $section = $section->getShortname();
         }
-        //if(in_array("UPP", $newrights) || isset($newData['department']) || isset($newData['info'])){
 
-        $grupyNaPodstawieSekcjiOrazStanowiska =
-            $this->container->get('ldap_service')->getGrupyUsera($ADUser[0], $dep, $sec);
+        $ldapService = $this->container->get('ldap_service');
+        $grupyNaPodstawieSekcjiOrazStanowiska = $ldapService->getGrupyUsera($ADUser[0], $departament, $section);
         $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
-//        var_dump($entry); die();
-        //}
     }
 
     /**
