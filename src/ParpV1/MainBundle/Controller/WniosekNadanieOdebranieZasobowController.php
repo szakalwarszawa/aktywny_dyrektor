@@ -278,13 +278,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         if ($entity->getOdebranie()) {
-            //sprawdzamy czy w ogole jest co odebrac
-            $uzs =
-                $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:UserZasoby')
-                    ->findBy(array('samaccountname' => $listaPracownikow, 'czyAktywne' => true, /* 'czyNadane' => true */));
+            $userZasoby = $this
+                    ->getDoctrine()
+                    ->getRepository(UserZasoby::class)
+                    ->findBy(
+                        array(
+                            'samaccountname' => $listaPracownikow,
+                            'czyAktywne' => true
+                            )
+                        );
 
-            $jestCoOdebrac = count($uzs) > 0;
+            $jestCoOdebrac = count($userZasoby) > 0;
         }
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $entityManager = $this->getDoctrine()->getManager();
@@ -294,7 +298,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             if (count($listaPracownikow) === 0) {
                 throw new SecurityTestException(
-                    "Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz w przeglądarce i wybierz conajmniej jedną osobę w polu 'Pracownicy'!",
+                    'Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz' .
+                    ' w przeglądarce i wybierz conajmniej jedną osobę w polu "Pracownicy"!',
                     745
                 );
             }
