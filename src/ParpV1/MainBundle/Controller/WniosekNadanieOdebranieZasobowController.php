@@ -285,8 +285,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         array(
                             'samaccountname' => $listaPracownikow,
                             'czyAktywne' => true
-                            )
-                        );
+                        )
+                    );
 
             $jestCoOdebrac = count($userZasoby) > 0;
         }
