@@ -270,49 +270,55 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
         $jestCoOdebrac = false;
-        if ($entity->getOdebranie()) {
-            //sprawdzamy czy w ogole jest co odebrac
-            $sams = explode(',', $entity->getPracownicy());
-            $uzs =
-                $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:UserZasoby')
-                    ->findBy(array('samaccountname' => $sams, 'czyAktywne' => true, /* 'czyNadane' => true */));
 
-            $jestCoOdebrac = count($uzs) > 0;
+        if (false === strpos($entity->getPracownicy(), ',')) {
+            $listaPracownikow =  array_filter(explode(';', $entity->getPracownicy()));
+        } else {
+            $listaPracownikow = array_filter(explode(',', $entity->getPracownicy()));
+        }
+
+        if ($entity->getOdebranie()) {
+            $userZasoby = $this
+                    ->getDoctrine()
+                    ->getRepository(UserZasoby::class)
+                    ->findBy(
+                        array(
+                            'samaccountname' => $listaPracownikow,
+                            'czyAktywne' => true
+                        )
+                    );
+
+            $jestCoOdebrac = count($userZasoby) > 0;
         }
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
-            $em = $this->getDoctrine()->getManager();
+            $entityManager = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, '00_TWORZONY', false);
-            $em->persist($entity);
-            $em->persist($entity->getWniosek());
-            $prs = explode(',', $entity->getPracownicy());
-            if ($entity->getPracownicy() == '' || count($prs) == 0) {
+            $entityManager->persist($entity);
+            $entityManager->persist($entity->getWniosek());
+
+            if (count($listaPracownikow) === 0) {
                 throw new SecurityTestException(
-                    "Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz w przeglądarce i wybierz conajmniej jedną osobę w polu 'Pracownicy'!",
+                    'Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz' .
+                    ' w przeglądarce i wybierz conajmniej jedną osobę w polu "Pracownicy"!',
                     745
                 );
             }
             $entity->ustawPoleZasoby();
-            $em->flush();
+            $entityManager->flush();
 
             $this->addFlash('warning', 'Wniosek został utworzony.');
-            //return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
 
-
-            $prs = explode(',', $entity->getPracownicy());
-            $pr = array();
-            foreach ($prs as $p) {
-                $pr[$p] = 1;
+            $pracownicy = array();
+            foreach ($listaPracownikow as $pracownik) {
+                $pracownicy[$pracownik] = 1;
             }
 
             return $this->redirect($this->generateUrl('addRemoveAccessToUsersAction', array(
-                'samaccountnames' => json_encode($pr),
+                'samaccountnames' => json_encode($pracownicy),
                 'action'          => ($entity->getOdebranie() ? 'removeResources' : 'addResources'),
                 'wniosekId'       => $entity->getId(),
             )));
         } elseif (!(($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
-            //die("Blad 67 Nie ma co odebrac !!!!");
-
             $this->get('session')
                 ->getFlashBag()
                 ->set(
