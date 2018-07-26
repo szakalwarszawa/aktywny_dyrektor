@@ -7,7 +7,7 @@ stages:
     - postbuild
 
 build:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: build
     script:
         - /usr/bin/composer.phar global show -i > .gitlab-ci/gitlab-ci-composer.dump
@@ -20,7 +20,7 @@ build:
             - .gitlab-ci/gitlab-ci-composer.dump
 
 parallellint:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: false
     script:
@@ -30,14 +30,14 @@ parallellint:
         - /root/.composer/vendor/bin/parallel-lint --colors --blame ./web
 
 psr2:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: false
     script:
         - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/
 
 twigcs:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: false
     script:
@@ -45,35 +45,35 @@ twigcs:
         - /root/.composer/vendor/bin/twigcs lint src
 
 neleof:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: true
     script:
         - /usr/bin/neleof.sh -e "./vendor, ./web/bower_components, ./.gitignore" .
 
 phpmd:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: true
     script:
         - /root/.composer/vendor/bin/phpmd src/ text "./.gitlab-ci/phpmd.xml"
 
 phpcpd:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: true
     script:
         - /root/.composer/vendor/bin/phpcpd src/
 
 phploc:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: stats
     allow_failure: true
     script:
         - /root/.composer/vendor/bin/phploc src
 
 eslint:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: true
     script:
@@ -81,7 +81,7 @@ eslint:
         - /usr/bin/node_modules/bin/eslint --config "./.gitlab-ci/.eslintrc.json" --ext ".js,.html,.html.twig" --format "table" --color "./app/Resources/views/"
 
 tidyhtml:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: quality
     allow_failure: true
     script:
@@ -89,7 +89,7 @@ tidyhtml:
         - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
 
 sami:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: doc
     allow_failure: true
     script:
@@ -102,7 +102,7 @@ sami:
             - .gitlab-ci/doc/api/
 
 automerge:
-    image: "gitlab-test.parp.gov.pl:5055/aktywny_dyrektor:latest"
+    image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:v1"
     stage: postbuild
     allow_failure: false
     script:
