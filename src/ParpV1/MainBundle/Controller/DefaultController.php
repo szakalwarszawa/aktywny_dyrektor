@@ -1081,6 +1081,10 @@ class DefaultController extends Controller
             if (isset($diff['isDisabled'])) {
                 $entry->setIsDisabled($ndata['isDisabled']);
                 $entry->setDisableDescription($ndata['disableDescription']);
+                if ($ndata['disableDescription'] === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
+                    $grupyWszystkie = $aduser[0]['memberOf'];
+                    $entry->addGrupyAD($grupyWszystkie, '-');
+                }
             }
             if ($ustawUprawnieniaPoczatkowe) {
                 $this->nadajUprawnieniaPoczatkowe($aduser, $entry, $ndata);
