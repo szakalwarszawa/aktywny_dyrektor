@@ -41,7 +41,7 @@ $(document).ready(function(){
 
     $('.tagAjaxInputNoAjax:not([disabled])').tagit({
         'allowSpaces' : true,
-        'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
+        'placeholderText' : 'Kolejność: nazwisko i imię, następnie naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikiem)',
         'singleFieldDelimiter': ";",
         'allowDuplicates' : true
         //autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
