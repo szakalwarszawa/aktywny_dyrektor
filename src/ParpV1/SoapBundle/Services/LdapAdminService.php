@@ -339,7 +339,7 @@ class LdapAdminService
             } elseif (strstr($manager, 'CN=') === false) {
                 // znajdz sciezke przelozonego
                 $cn = preg_replace('/\\\\-/', '-', preg_quote($manager));
-                
+
                 $searchString = '(&(cn='. $cn .')(objectClass=person))';
 
                 $search = ldap_search($ldapconn, $userdn, $searchString, array(
@@ -492,7 +492,11 @@ class LdapAdminService
             }
         }
 
-        //zmiana kontenera - obsługujemy nie modyfikacja
+        if ($person->getMemberOf()) {
+            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+            $ldapstatus = $this->ldapError($ldapconn);
+        }
+        // zmiana kontenera - obsługujemy nie modyfikacja
         // zmiana departamentu musi byc ostnia operacją ponieważ zmienimi rownież
         // kontener pracownika. Jezeli zmodyfikujemy go wczecniej to pozowatłe operacje mogą
         // nie znaleśc obiektu w ad (zmieniamy przeciez distinguishedName!).
@@ -518,8 +522,17 @@ class LdapAdminService
 
             $ldapstatus = $this->ldapError($ldapconn);
         }
-        if ($person->getMemberOf()) {
-            $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
+        // przenosimy konto do OU=Zablokowane
+        if ($person->getDisableDescription() === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
+            $this->ldapModDel($ldapconn, $person->getDistinguishedName(), array("manager" => array()));
+            $newparent = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
+            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
+            $ldapstatus = $this->ldapError($ldapconn);
+        }
+        // przenosimy konto do OU=Nieobecni
+        if ($person->getDisableDescription() === 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni') {
+            $newparent = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
+            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
             $ldapstatus = $this->ldapError($ldapconn);
         }
         ldap_unbind($ldapconn);
