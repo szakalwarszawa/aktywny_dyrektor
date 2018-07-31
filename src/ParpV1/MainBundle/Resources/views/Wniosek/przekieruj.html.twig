@@ -56,14 +56,14 @@
         </div>
     </div>
 <script>
-    $(document).ready(function(){
-        $('form').submit(function(e){
+    $(document).ready(function () {
+        $('form').submit(function (e) {
             var msg = $('#form_powod').val();
-            if(msg == ''){
+            if (msg == '') {
                 alert('Musisz podac powod!!!');
                 e.preventDefault();
                 return false;
-            }else{
+            } else {
                 return true;
             }
         });

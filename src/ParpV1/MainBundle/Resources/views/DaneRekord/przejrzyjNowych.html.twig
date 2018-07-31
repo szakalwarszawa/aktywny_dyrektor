@@ -323,20 +323,18 @@
 {% endfor %}
 {% endif %}
 <script type="text/javascript">
-    function save(url, data, manager, id){
+    function save(url, data, manager, id) {
         console.log(manager);
-        if(manager === ""){
-            alert("Musisz wybrać przełożonego!");
-        }else{
-            $.post(url, data, function(result){
-            }).success(function(){
-                $("#acceptUser"+id).removeClass('alert-danger').addClass('alert-success');
-                $('button', $("#acceptUser"+id)).remove();
-                $('select, input', $("#acceptUser"+id)).prop('disabled', true);
+        if (manager === '') {
+            alert('Musisz wybrać przełożonego!');
+        } else {
+            $.post(url, data, function (result) {}).success(function () {
+                $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
+                $('button', $("#acceptUser" + id)).remove();
+                $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             });
         }
     }
-
 
     //$("table.tablesorter").tablesorter();
 </script>
