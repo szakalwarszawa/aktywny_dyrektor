@@ -2,7 +2,7 @@
 
 {% block body %}
 
-   <table class="table">
+    <table class="table">
         <tr>
             <th>Id</th>
             <th>login</th>
@@ -61,27 +61,27 @@
                 </td>
             </tr>
         {% endfor %}
-   </table>
-   <script>
-    function zaznaczWszystkie(name){
-        $('input[name="'+name+'"]').each(function(){
-            $(this).prop('checked', true);
-        });
-    }
-    function nadajGrupy(sam){
-        if($('#text'+sam).val() == ""){
-            alert("musisz podac powod")
-        }else{
-            var grupy = [];
-            $('input[name="grupy['+sam+']"]').each(function(){
-                if($(this).prop('checked')){
-                    grupy.push($(this).val());
-                }
+    </table>
+    <script>
+        function zaznaczWszystkie(name) {
+            $('input[name="' + name + '"]').each(function () {
+                $(this).prop('checked', true);
             });
-            var url = "{{ path('nadaj_grupy_ad') }}/"+sam+"/"+grupy.join(';')+'/'+$('#text'+sam).val();
-            window.location.href = url;
         }
-    }
-   </script>
+        function nadajGrupy(sam) {
+            if ($('#text' + sam).val() == '') {
+                alert('musisz podac powod')
+            } else {
+                var grupy = [];
+                $('input[name="grupy[' + sam + ']"]').each(function () {
+                    if ($(this).prop('checked')) {
+                        grupy.push($(this).val());
+                    }
+                });
+                var url = "{{ path('nadaj_grupy_ad') }}/" + sam + '/' + grupy.join(';') + '/' + $('#text' + sam).val();
+                window.location.href = url;
+            }
+        }
+    </script>
 
 {% endblock %}

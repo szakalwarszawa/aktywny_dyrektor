@@ -42,35 +42,34 @@
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
     <script>
-        $(".popoverElement").on('click', function (e) {
+        $('.popoverElement').on('click', function (e) {
             e.preventDefault();
             $('.popoverElement').not(this).popover('hide');
             var skadZdjecie = $(this).attr('href');
             $(this).attr('data-content', '<center><img style="height: 120px;" src="' + skadZdjecie + '" /></center>');
         });
-        $(".popoverElement").popover(
-                );
+        $('.popoverElement').popover();
         $('#submitexport').on('click', function (e) {
             $('#export-grid').val('0');
             e.preventDefault();
             $("#{{ grid.hash }}").submit();
             $('#export-grid').val('-1');
         })
-        $('#aktywneWyszukanie').keydown(function(){
+        $('#aktywneWyszukanie').keydown(function () {
             szukajUserow(this);
         });
-        function szukajUserow(that){
+        function szukajUserow(that) {
             var i = 0;
             var szukaj = $(that).val().toUpperCase();
-            $('table tr').each(function(){
-                if(i > 1){
+            $('table tr').each(function () {
+                if (i > 1) {
                     var txt = $(this).text().toUpperCase();
                     var checked = $('input[type=checkbox]', $(this)).prop('checked');
-                    if(checked)
-                        console.log('checked '+checked+' '+txt);
-                    if(txt.indexOf(szukaj) >= 0||checked){
+                    if (checked)
+                        console.log('checked ' + checked + ' ' + txt);
+                    if (txt.indexOf(szukaj) >= 0 || checked) {
                         $(this).removeClass('hidden');
-                    }else{
+                    } else {
                         $(this).addClass('hidden');
                     }
                 }
