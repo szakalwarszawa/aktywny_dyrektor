@@ -35,7 +35,6 @@ class ParpUserProvider implements UserProviderInterface
         $this->ad_dc1 = $tab[0];
         $this->ad_dc2 = $tab[1];
         $this->idSrodowiska = $kernel->getContainer()->getParameter('id_srodowiska');
-        $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
     }
 
     public function loadUserByUsername($username)
@@ -55,6 +54,7 @@ class ParpUserProvider implements UserProviderInterface
             $password = $_POST['_password'];
 
             if ('test' === $idSrodowiska) {
+                $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
                 $salt = null;
                 $roles = array(
                     'ROLE_USER',
