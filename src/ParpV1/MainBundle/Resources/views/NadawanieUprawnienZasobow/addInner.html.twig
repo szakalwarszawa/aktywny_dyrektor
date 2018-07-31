@@ -72,61 +72,61 @@
     </div>
 </div>
 <script>
-    function filtrujZasobUprawnienia(){
+    function filtrujZasobUprawnienia() {
         var v = $('#form_grupy').val();
         var s = $('#form_nazwafiltr').val().toUpperCase();
-        if(v||s){
+        if (v || s) {
             $('#form_access > div').addClass('hidden');
             //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);
-            if(s){
-                $('#form_access > div').each(function(){
+            if (s) {
+                $('#form_access > div').each(function () {
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
-                    console.log('sprawdzam txt '+txt+' i classes '+classes);
+                    console.log('sprawdzam txt ' + txt + ' i classes ' + classes);
                     var show = false;
-                    if(v){
-                        show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien'+v) >= 0;
-                    }else{
+                    if (v) {
+                        show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien' + v) >= 0;
+                    } else {
                         show = txt.indexOf(s) >= 0;
                     }
-                    if(show){
+                    if (show) {
                         $(this).removeClass('hidden');
                     }
                 });
-            }else{
+            } else {
                 //pokazujemy szukane grupy
-                $('.uprawnienieRow.grupaUprawnien'+v+'').closest('.checkbox').removeClass('hidden');
+                $('.uprawnienieRow.grupaUprawnien' + v + '').closest('.checkbox').removeClass('hidden');
             }
             //pokazujemy zaznaczone
             $('.uprawnienieRow input:checked').closest('.checkbox').removeClass('hidden');
-        }else{
+        } else {
             $('.uprawnienieRow').removeClass('hidden');
         }
     }
-    $('#form_grupy').change(function(){
-         filtrujZasobUprawnienia();
+    $('#form_grupy').change(function () {
+        filtrujZasobUprawnienia();
     });
-    $('#form_nazwafiltr').bind('input', function(){
-         filtrujZasobUprawnienia();
+    $('#form_nazwafiltr').bind('input', function () {
+        filtrujZasobUprawnienia();
     });
-    $('#form_buttonzaznacz').click(function(){
+    $('#form_buttonzaznacz').click(function () {
         $('.uprawnienieRow:not(.hidden) input[type=checkbox]').prop('checked', true);
         zmianaZaznaczenia();
     });
-    $('#form_buttonodznacz').click(function(){
+    $('#form_buttonodznacz').click(function () {
         $('.uprawnienieRow input[type=checkbox]:checked').prop('checked', false);
         zmianaZaznaczenia();
     });
-    function beforeSubmit(e){
-        if($("input[name='form[access][]']").serialize() == ""){
+    function beforeSubmit(e) {
+        if ($("input[name='form[access][]']").serialize() == "") {
             event.preventDefault();
             alert('Musisz wybrać co najmniej jeden zasób');
             return false;
         }
     }
-    function zmianaZaznaczenia(){
+    function zmianaZaznaczenia() {
         var ret = [];
-        $('#form_access input[type=checkbox]:checked').each(function(){
+        $('#form_access input[type=checkbox]:checked').each(function () {
             var v = $('label', $(this).closest('.checkbox')).text();
             v = v.trim();
             ret.push(v);
@@ -149,13 +149,9 @@
     $('#form_nazwafiltr').val($('input[name="form[access][]"][value={{ ids[0] }}]').closest('label').text().trim());
     $('#form_nazwafiltr').trigger('input');
 {% else %}
-    $('#form_nazwafiltr').val("Zaznaczono wybrane zasoby");
+    $('#form_nazwafiltr').val('Zaznaczono wybrane zasoby');
     $('#form_nazwafiltr').trigger('input');
 {% endif %}
 </script>
 {% endif %}
-<script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
-
-
-
-
+<script type="text/javascript" src="{{ asset('js/wnioskiZasoby.js') }}"></script>

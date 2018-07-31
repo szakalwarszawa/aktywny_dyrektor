@@ -14,16 +14,20 @@ parameters:
 
     locale:            pl
     secret:            ThisTokenIsNotSoSecretChangeIt
+
     session_memcached_host: 127.0.0.1
     session_memcached_port: 11211
     session_memcached_prefix: sess_
     session_memcached_expire: 86400
+
     redmine_protokol: http
     redmine_serwer: redmine.parp.gov.pl
     redmine_uzytkownik:
     redmine_haslo:
     redmine_projekt: '87'
+
     id_srodowiska: ''
+    haslo_srodowiska_testowego: ''
     blokada_na_zapis_tylko_userow_o_tym_nawisku: 'testowy'
     maximum_ldap_reconnects: 10
 

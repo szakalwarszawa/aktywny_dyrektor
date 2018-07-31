@@ -142,22 +142,18 @@
         </div>
     </form>
     <script>
-
         $('input:radio[name=year]').change(function () {
             var year = $("form input[type='radio']:checked").val();
             var samaccountname = $('#samaccountname').val();
             //alert("Value of Changed Radio is : " +rok +' '+samaccountname);
-
             var tmpurl = "{{ path('engageUser', {'samaccountname': 'tmpid1', 'year': 'tmpid2'}) }}";
             var url = tmpurl.replace('tmpid1', samaccountname).replace('tmpid2', year);
-
             window.location.href = url;
-
         });
 
-        $(".sty").on('keyup', function (e) {
+        $('.sty').on('keyup', function (e) {
             var sum = 0;
-            $(".sty").each(function () {
+            $('.sty').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -177,9 +173,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".lut").on('keyup', function (e) {
+        $('.lut').on('keyup', function (e) {
             var sum = 0;
-            $(".lut").each(function () {
+            $('.lut').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -199,9 +195,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".mar").on('keyup', function (e) {
+        $('.mar').on('keyup', function (e) {
             var sum = 0;
-            $(".mar").each(function () {
+            $('.mar').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -221,9 +217,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".kwi").on('keyup', function (e) {
+        $('.kwi').on('keyup', function (e) {
             var sum = 0;
-            $(".kwi").each(function () {
+            $('.kwi').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -243,9 +239,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".maj").on('keyup', function (e) {
+        $('.maj').on('keyup', function (e) {
             var sum = 0;
-            $(".maj").each(function () {
+            $('.maj').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -265,9 +261,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".cze").on('keyup', function (e) {
+        $('.cze').on('keyup', function (e) {
             var sum = 0;
-            $(".cze").each(function () {
+            $('.cze').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -287,9 +283,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".lip").on('keyup', function (e) {
+        $('.lip').on('keyup', function (e) {
             var sum = 0;
-            $(".lip").each(function () {
+            $('.lip').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -309,9 +305,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".sie").on('keyup', function (e) {
+        $('.sie').on('keyup', function (e) {
             var sum = 0;
-            $(".sie").each(function () {
+            $('.sie').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -331,9 +327,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".wrz").on('keyup', function (e) {
+        $('.wrz').on('keyup', function (e) {
             var sum = 0;
-            $(".wrz").each(function () {
+            $('.wrz').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -353,9 +349,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".paz").on('keyup', function (e) {
+        $('.paz').on('keyup', function (e) {
             var sum = 0;
-            $(".paz").each(function () {
+            $('.paz').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -375,9 +371,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".lis").on('keyup', function (e) {
+        $('.lis').on('keyup', function (e) {
             var sum = 0;
-            $(".lis").each(function () {
+            $('.lis').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -397,9 +393,9 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".gru").on('keyup', function (e) {
+        $('.gru').on('keyup', function (e) {
             var sum = 0;
-            $(".gru").each(function () {
+            $('.gru').each(function () {
                 if ($.isNumeric($(this).val())) {
                     var smallSum = parseFloat($(this).val());
                     sum = sum + smallSum;
@@ -419,16 +415,15 @@
                 $(this).closest('td').prev().find('input').select();
             }
         });
-        $(".float").on('keyup', function () {
+        $('.float').on('keyup', function () {
             var val = $(this).val();
-            val = val.replace(",", ".");
-            val = val.replace(/[aZ]/g, "")
+            val = val.replace(',', '.');
+            val = val.replace(/[aZ]/g, '')
             $(this).val(val);
         })
 
-        $(document).ready(function(){
+        $(document).ready(function () {
             $('[data-toggle="tooltip"]').tooltip();
         });
-
     </script>
 {% endblock %}

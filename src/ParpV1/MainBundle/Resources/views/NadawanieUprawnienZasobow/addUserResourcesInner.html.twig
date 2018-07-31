@@ -127,25 +127,24 @@
             </div>
         </div>
     </div>
-<script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
+<script type="text/javascript" src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 <script>
-    function zaznaczOdznaczWszsytkoSelect2(dys){
-        if(typeof dys == 'string'){
-            $('select.'+dys).each(function(){
+    function zaznaczOdznaczWszsytkoSelect2(dys) {
+        if (typeof dys == 'string') {
+            $('select.' + dys).each(function () {
                 zaznaczSelect2(this);
             });
-        }else{
+        } else {
             //mamy jeden rzad
-            $('select', $(dys).closest('div')).each(function(){
+            $('select', $(dys).closest('div')).each(function () {
                 zaznaczSelect2(this);
             });
         }
     }
-    function zaznaczSelect2(dys){
+    function zaznaczSelect2(dys) {
         var sel = $(dys).attr('data-selected') == "true";
-        //alert(sel);
-        $('option', $(dys)).prop("selected", !sel ? "selected" : false);
-        $(dys).trigger("change");
+        $('option', $(dys)).prop('selected', !sel ? 'selected' : false);
+        $(dys).trigger('change');
         $(dys).attr('data-selected', !sel);
     }
 </script>

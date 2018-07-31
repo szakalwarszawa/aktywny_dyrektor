@@ -323,64 +323,61 @@
 
 <script type="text/javascript"src="{{ asset('js/wnioskiZasob.js') }}"></script>
 
-
 <script>
-if($('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').hasClass('select2')){
-    $('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').select2().on('change', function(){
-        var val = $(this).val();
-        console.log(val);
-        var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id' : val});
-        console.log(href);
-        $.get(href, function(data){
-            for(k in data){
-                var v = data[k];
-                var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_"+k;
-                if ($(sel).is('input[type="checkbox"]')) {
-                    if (data[k] == true) {
-                        $(sel).prop('checked', true);
-                    } else {
-                        $(sel).prop('checked', false);
-                    }
-                }
-
-                if($(sel).hasClass('tagit-hidden-field')){
-                    $(sel).tagit('removeAll');
-                    if(v){
-                        var vs = v.split(",");
-                        for(var i = 0; i < vs.length; i++){
-
-                            $(sel).tagit("createTag", vs[i]);
+    if ($('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').hasClass('select2')) {
+        $('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').select2().on('change', function () {
+            var val = $(this).val();
+            console.log(val);
+            var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id': val});
+            console.log(href);
+            $.get(href, function (data) {
+                for (k in data) {
+                    var v = data[k];
+                    var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_" + k;
+                    if ($(sel).is('input[type="checkbox"]')) {
+                        if (data[k] == true) {
+                            $(sel).prop('checked', true);
+                        } else {
+                            $(sel).prop('checked', false);
                         }
                     }
-                }else{
-                    if($(sel).hasClass('select2')){
-                        $(sel).val(v.split(","));
-                        $(sel).select2().trigger('change');
-                        //$(sel).select2("data", v, true);
-                        //$(sel).select2("updateResults");
-                    }else{
-                        $(sel).val(v);
 
+                    if ($(sel).hasClass('tagit-hidden-field')) {
+                        $(sel).tagit('removeAll');
+                        if (v) {
+                            var vs = v.split(",");
+                            for (var i = 0; i < vs.length; i++) {
+
+                                $(sel).tagit('createTag', vs[i]);
+                            }
+                        }
+                    } else {
+                        if ($(sel).hasClass('select2')) {
+                            $(sel).val(v.split(","));
+                            $(sel).select2().trigger('change');
+                            //$(sel).select2("data", v, true);
+                            //$(sel).select2("updateResults");
+                        } else {
+                            $(sel).val(v);
+
+                        }
                     }
                 }
-            }
+            });
+        })
+    }
+    if ($('#parp_mainbundle_wniosekutworzeniezasobu_zasob').hasClass('select2')) {
+        $('#parp_mainbundle_wniosekutworzeniezasobu_zasob').select2().on('change', function () {
+            $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_nazwa').val('kasowanie zasobow');
         });
-    })
-}
-if($('#parp_mainbundle_wniosekutworzeniezasobu_zasob').hasClass('select2')){
-    $('#parp_mainbundle_wniosekutworzeniezasobu_zasob').select2().on('change', function(){
-        $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_nazwa').val('kasowanie zasobow');
-    });
-}
-var z = $('#parp_mainbundle_wniosekutworzeniezasobu_zmienionePola').val();
-var zs = z.split(',');
-for(var i = 0; i < zs.length; i++){
-    var sel = '#parp_mainbundle_wniosekutworzeniezasobu_zasob_'+zs[i];
-    console.log(sel);
-    $(sel).closest('.form-group').addClass('has-error');
-}
-
-
+    }
+    var z = $('#parp_mainbundle_wniosekutworzeniezasobu_zmienionePola').val();
+    var zs = z.split(',');
+    for (var i = 0; i < zs.length; i++) {
+        var sel = '#parp_mainbundle_wniosekutworzeniezasobu_zasob_' + zs[i];
+        console.log(sel);
+        $(sel).closest('.form-group').addClass('has-error');
+    }
 </script>
 
 {% endblock %}

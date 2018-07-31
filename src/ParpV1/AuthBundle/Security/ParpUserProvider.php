@@ -54,7 +54,7 @@ class ParpUserProvider implements UserProviderInterface
             $password = $_POST['_password'];
 
             if ('test' === $idSrodowiska) {
-                $password = 'test';
+                $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
                 $salt = null;
                 $roles = array(
                     'ROLE_USER',
