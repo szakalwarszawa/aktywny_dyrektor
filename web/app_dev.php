@@ -3,8 +3,7 @@
 // Sprawdzenie czy adres uzytkownika (lub jego czesc) jest na liscie dozwolonych IP.
 $ipDozwolone = array(
        '10.10.120.',               // Wewnetrzne adresy. 
-       '192.168.',               // Wewnetrzne adresy. 
-       ''
+       '10.10.50.'                 // Adresy VPN. 
 );
 function czyIpJestDozwolony($ip = null)
 {
