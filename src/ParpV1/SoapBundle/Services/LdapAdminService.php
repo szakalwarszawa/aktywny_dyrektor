@@ -468,6 +468,10 @@ class LdapAdminService
 
             if ($person->getIsDisabled()) {
                 $entry['description'] = $person->getDisableDescription();
+                if ($person->getDisableDescription() === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
+                    $grupyWszystkie = $userAD[0]['memberOf'];
+                    $person->addGrupyAD($grupyWszystkie, '-');
+                }
             } else {
                 $entry['description'] = $sn;
             }
