@@ -58,6 +58,7 @@ class ParpMailerService
     const TEMPLATE_WNIOSEKZASOBODRZUCENIE = 'wniosekZasobOdrzucenie.html.twig';
     const TEMPLATE_WNIOSEKZASOBZREALIZOWANIE = 'wniosekZasobZrealizowanie.html.twig';
     const TEMPLATE_WNIOSEKZASOBZWROCENIE = 'wniosekZasobZwrocenie.html.twig';
+    const TEMPLATE_PRACOWNIKZWOLNIENIEBI = 'pracownikWylaczenieKontaAd.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -77,7 +78,7 @@ class ParpMailerService
     private $templating;
 
     private $ldap;
-    
+
     private $idSrodowiska;
 
     /**
@@ -596,6 +597,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE                   => 'Zwrócenie do poprawy wniosku o nadanie/odebranie uprawnień',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA               => '[BA] Nowy pracownik: ',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] Nowy pracownik: ',
+            ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => '[BI] Wyłączenie konta w AD/Exchange: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';

@@ -17,6 +17,7 @@ use ParpV1\MainBundle\Entity\UserEngagement;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundle\Services\ParpMailerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -1084,6 +1085,16 @@ class DefaultController extends Controller
                 if ($ndata['disableDescription'] === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
                     $grupyWszystkie = $aduser[0]['memberOf'];
                     $entry->addGrupyAD($grupyWszystkie, '-');
+
+                    $dane = [
+                        'imie_nazwisko'                       => $aduser[0]['name'],
+                        'login'                               => $aduser[0]['samaccountname'],
+                        'tytul'                               => $aduser[0]['samaccountname'],
+                        'odbiorcy'                            => [ParpMailerService::EMAIL_DO_GLPI],
+                        'usuniete_int'                        => preg_grep('/^INT/i', $grupyWszystkie),
+                        'usuniete_ext'                        => preg_grep('/^EXT/i', $grupyWszystkie),
+                    ];
+                    $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI, $dane);
                 }
             }
             if ($ustawUprawnieniaPoczatkowe) {

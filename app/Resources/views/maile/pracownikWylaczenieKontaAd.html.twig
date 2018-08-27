@@ -1,0 +1,19 @@
+Pracownik: <b>{{ imie_nazwisko }}</b> ({{ login }})<br /><br />
+
+{% if usuniete_int is not empty %}
+    Usunięte INT-y: <br />
+    <ol>
+        {% for inty in usuniete_int %}
+            <li>{{ inty }}</li>
+        {% endfor %}
+    </ol>
+{% endif %}
+
+{% if usuniete_ext is not empty %}
+    Usunięte EXT-y: <br />
+    <ol>
+        {% for exty in usuniete_ext %}
+            <li>{{ exty }}</li>
+        {% endfor %}
+    </ol>
+{% endif %}
