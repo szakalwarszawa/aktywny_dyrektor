@@ -79,6 +79,9 @@
                     Wniosek Edytowany (zablokowany) przez: {{ entity.wniosek.lockedBy|showFullname }}<br>
                     Edytowany (zablokowany) dnia: {{ entity.wniosek.lockedAt|date('Y-m-d H:i:s') }}
                 </div>
+                {% if czyZastepstwo %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                {% endif %}
             {% endif %}
             <div class="btn-group container">
                 {% if editor %}
