@@ -975,11 +975,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
         $acc = $this->checkAccess($wniosek);
         if ($acc['editor'] === null &&
             !($isAccepted == 'publish_lsi' ||
-                in_array($this->getUser()->getUsername(), ['marcin_lipinski', 'kamil_jakacki']))
+                in_array($this->getUser()->getUsername(), ['marcin_lipinski'])) &&
+            !($isAccepted == 'unblock' && $czyZastepstwo)
         ) {
             throw new SecurityTestException(
                 'Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!',
@@ -1489,9 +1492,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-                'samaccountname' => $zastepstwa,
-                'wniosek'        => $entity->getWniosek(),
-            ));
+            'samaccountname' => $zastepstwa,
+            'wniosek'        => $entity->getWniosek(),
+        ));
 
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
         $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
@@ -1600,7 +1603,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $em->getRepository('ParpMainBundle:Komentarz')
                 ->getCommentCount('WniosekNadanieOdebranieZasobow', $entity->getId());
 
-        //var_dump($comments); die();
+        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+
         return array(
             'grupyAD'           => $grupyAD,
             'entity'            => $entity,
@@ -1611,6 +1615,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() !=
                 '01_EDYCJA_WNIOSKODAWCA'),
             'canUnblock'        => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'czyZastepstwo'     => (in_array($entity->getWniosek()->getLockedBy(), $zastepstwa)),
             'userzasobyRozbite' => $userzasobyRozbite,
             'czyLsi'            => $czyLsi,
             'comments'          => $comments,
