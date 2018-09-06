@@ -232,9 +232,7 @@ class RaportZmianCommand extends ContainerAwareCommand
             try {
                 $imieNazwisko = $ldapService->getUserFromAD($key)[0]['name'];
                 $sheet->setCellValue('B'. $wierszIndex, $imieNazwisko);
-            }
-            catch(\Exception $exception)
-            {
+            } catch (\Exception $exception) {
             }
 
             foreach ($diff as $pojedynczaZmiana) {
