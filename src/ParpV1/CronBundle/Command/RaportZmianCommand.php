@@ -209,11 +209,12 @@ class RaportZmianCommand extends ContainerAwareCommand
         $wierszIndex = 3;
 
         $sheet->setCellValue('A1', 'Nazwa użytkownika');
-        $sheet->setCellValue('B1', 'Zmiana');
-        $sheet->setCellValue('C1', sprintf('Stara wartość (%s)', $zakresCzasowy[0]));
-        $sheet->setCellValue('D1', sprintf('Nowa wartość (%s)', $zakresCzasowy[1]));
+        $sheet->setCellValue('B1', 'Nazwa użytkownika');
+        $sheet->setCellValue('C1', 'Zmiana');
+        $sheet->setCellValue('D1', sprintf('Stara wartość (%s)', $zakresCzasowy[0]));
+        $sheet->setCellValue('E1', sprintf('Nowa wartość (%s)', $zakresCzasowy[1]));
 
-        $sheet->getStyle('A1:D1')->getFill()
+        $sheet->getStyle('A1:E1')->getFill()
             ->setFillType(ExcelFill::FILL_SOLID)
             ->getStartColor()->setARGB('D1D1D1D1');
 
@@ -221,25 +222,31 @@ class RaportZmianCommand extends ContainerAwareCommand
         $sheet->getColumnDimension('B')->setAutoSize(true);
         $sheet->getColumnDimension('C')->setAutoSize(true);
         $sheet->getColumnDimension('D')->setAutoSize(true);
+        $sheet->getColumnDimension('E')->setAutoSize(true);
 
+        $ldapService = $this->getContainer()->get('ldap_service');
 
         foreach ($diffes as $key => $diff) {
             $sheet->setCellValue('A'. $wierszIndex, $key);
             $poczatekTabeliWiersz = $wierszIndex;
+            if (isset($ldapService->getUserFromAD($key)[0])) {
+                $imieNazwisko = $ldapService->getUserFromAD($key)[0]['name'];
+                $sheet->setCellValue('B'. $wierszIndex, $imieNazwisko);
+            }
 
             foreach ($diff as $pojedynczaZmiana) {
                 if (empty($pojedynczaZmiana['stare']) && empty($pojedynczaZmiana['nowe'])) {
-                    $sheet->setCellValue('D'. $wierszIndex, $pojedynczaZmiana['status']);
+                    $sheet->setCellValue('E'. $wierszIndex, $pojedynczaZmiana['status']);
                     $wierszIndex++;
                     continue;
                 }
-                $sheet->setCellValue('B'. $wierszIndex, $pojedynczaZmiana['status']);
-                $sheet->setCellValue('C'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['stare']));
-                $sheet->setCellValue('D'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['nowe']));
+                $sheet->setCellValue('C'. $wierszIndex, $pojedynczaZmiana['status']);
+                $sheet->setCellValue('D'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['stare']));
+                $sheet->setCellValue('E'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['nowe']));
                 $wierszIndex++;
             }
 
-            $sheet->getStyle('A' . $poczatekTabeliWiersz .':D' . $wierszIndex)
+            $sheet->getStyle('A' . $poczatekTabeliWiersz .':E' . $wierszIndex)
                 ->getBorders()
                 ->getBottom()
                 ->setBorderStyle(ExcelBorder::BORDER_THICK);
