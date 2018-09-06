@@ -597,7 +597,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE                   => 'Zwrócenie do poprawy wniosku o nadanie/odebranie uprawnień',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA               => '[BA] Nowy pracownik: ',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] Nowy pracownik: ',
-            ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => '[BI] Wyłączenie konta w AD/Exchange: ',
+            ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => 'Wyłączenie konta w Exchange: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
