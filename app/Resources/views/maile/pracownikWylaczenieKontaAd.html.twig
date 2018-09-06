@@ -1,4 +1,6 @@
-Pracownik: <b>{{ imie_nazwisko }}</b> ({{ login }})<br /><br />
+W AD wyłączono konto użytkownika: <b>{{ imie_nazwisko }}</b> ({{ login }})<br />
+AkD przypomina o konieczności dezaktywacji skrzynki na Exchange.
+<br /><br />
 
 {% if usuniete_int is not empty %}
     Usunięte INT-y: <br />
@@ -8,7 +10,7 @@ Pracownik: <b>{{ imie_nazwisko }}</b> ({{ login }})<br /><br />
         {% endfor %}
     </ol>
 {% endif %}
-
+<br />
 {% if usuniete_ext is not empty %}
     Usunięte EXT-y: <br />
     <ol>
