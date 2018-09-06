@@ -225,14 +225,13 @@ class RaportZmianCommand extends ContainerAwareCommand
         $sheet->getColumnDimension('E')->setAutoSize(true);
 
         $ldapService = $this->getContainer()->get('ldap_service');
-    
+
         foreach ($diffes as $key => $diff) {
             $sheet->setCellValue('A'. $wierszIndex, $key);
             $poczatekTabeliWiersz = $wierszIndex;
-            try {
+            if (isset($ldapService->getUserFromAD($key)[0])) {
                 $imieNazwisko = $ldapService->getUserFromAD($key)[0]['name'];
                 $sheet->setCellValue('B'. $wierszIndex, $imieNazwisko);
-            } catch (\Exception $exception) {
             }
 
             foreach ($diff as $pojedynczaZmiana) {
