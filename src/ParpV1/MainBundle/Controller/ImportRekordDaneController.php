@@ -418,7 +418,7 @@ class ImportRekordDaneController extends Controller
         if (true === $nowy) {
             $entry->setCn($this->get('samaccountname_generator')->generateFullname($dr->getImie(), $dr->getNazwisko()));
         }
-        
+
         if ((isset($changeSet['imie']) || isset($changeSet['nazwisko'])) && !$nowy) {
             //zmiana imienia i nazwiska
             if (is_object($poprzednieDane)) {
@@ -953,7 +953,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
                 $zmieniamySekcje = true;
             }
-            
+
             $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane);
 
             if (!$nowy && $daneRekord->getNewUnproccessed() === 2) {
@@ -1058,12 +1058,14 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     ->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN, $dane);
 
                 $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
-                $dane['nadawca'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
                 $dane['tytul'] = $daneRekord->getImie() . ' ' . $daneRekord->getNazwisko();
                 $dane['stanowisko'] = $daneRekord->getStanowisko();
                 $dane['umowa_od'] = $daneRekord->getUmowaOd();
-                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
+                // wysłanie zgłoszenia do [BI]:
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
+                // wysłanie zgłoszenia do [BA] jako dyrektor D/B:
+                $dane['nadawca'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
             }
 
             $daneRekord->setNewUnproccessed(0);
@@ -1100,7 +1102,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         return new Response($id);
     }
-    
+
     /**
      * Umożliwia przeniesienie pracownika do problematycznych
      *
@@ -1133,7 +1135,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $entityManager->flush();
 
         $this->addFlash('warning', 'Pracownik został dodany do listy.');
-        
+
         return $this->redirect($this->generateUrl('przejrzyjnowych'));
     }
 
