@@ -8,6 +8,7 @@ use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class ParpUserProvider implements UserProviderInterface
 {
@@ -54,19 +55,10 @@ class ParpUserProvider implements UserProviderInterface
             $password = $_POST['_password'];
 
             if ('test' === $idSrodowiska) {
+                $wybraneRole = isset($_POST['_roles']) ? $_POST['_roles'] : array();
                 $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
                 $salt = null;
-                $roles = array(
-                    'ROLE_USER',
-                    'PARP_MANAGER',
-                    'PARP_BZK_1',
-                    'PARP_BZK_2',
-                    'PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW',
-                    'PARP_ADMIN',
-                    'PARP_ADMIN_ZASOBOW',
-                    'PARP_ADMIN_TECHNICZNY_ZASOBOW'
-                );
-
+                $roles = empty($wybraneRole) ? $this->availableRoles() : $this->checkDevRolesFromPost($wybraneRole);
                 return new ParpUser($username, $password, $salt, $roles);
             }
 
@@ -108,6 +100,45 @@ class ParpUserProvider implements UserProviderInterface
         }
 
         throw new MethodNotAllowedException(['POST']);
+    }
+
+    /**
+     * Sprwadza czy podane role są dopuszczone.
+     *
+     * @param array $postRoles
+     *
+     * @return array
+     */
+    private function checkDevRolesFromPost(array $postRoles)
+    {
+        $availableRoles = $this->availableRoles();
+
+        foreach ($postRoles as $role) {
+            if (!in_array($role, $availableRoles)) {
+                throw new AccessDeniedException('Wystąpił błąd w sprawdzaniu ról.');
+            }
+        }
+
+        return $postRoles;
+    }
+
+    /**
+     * Zwraca dopuszczalne role do zalogowania jako dev.
+     *
+     * @return array
+     */
+    private function availableRoles()
+    {
+        return array(
+            'ROLE_USER',
+            'PARP_MANAGER',
+            'PARP_BZK_1',
+            'PARP_BZK_2',
+            'PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW',
+            'PARP_ADMIN',
+            'PARP_ADMIN_ZASOBOW',
+            'PARP_ADMIN_TECHNICZNY_ZASOBOW'
+        );
     }
 
     public function refreshUser(UserInterface $user)

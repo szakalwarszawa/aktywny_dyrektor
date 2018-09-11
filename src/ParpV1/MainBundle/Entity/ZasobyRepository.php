@@ -52,4 +52,23 @@ class ZasobyRepository extends EntityRepository
 
         return $query;
     }
+
+    /**
+     * Zwraca tablicę osób mogących edytować konkretne wnioski.
+     *
+     * @return array
+     */
+    public function findEdytorzyWnioskow()
+    {
+        $query = $this->createQueryBuilder('z')
+                ->select('z')
+                ->where('z.deletedAt IS NULL')
+                ->andWhere('z.dataUsunieciaZasobu IS NULL')
+                ->andWhere('z.published = true')
+                ->getQuery();
+
+        $wynik = $query->getResult();
+
+        return $wynik;
+    }
 }

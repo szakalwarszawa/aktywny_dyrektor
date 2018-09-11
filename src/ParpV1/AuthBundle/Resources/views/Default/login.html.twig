@@ -33,6 +33,15 @@
         <div class="form-group">
             <input class="form-control" type="password" id="password" name="_password" placeholder="Hasło"/>
         </div>
+        {% if app.environment == 'dev' %}
+            <div class="form-group">
+                <select id="roles" name="_roles[]" class="form-control" multiple="true">
+                    {% for role in roles %}
+                        <option>{{ role }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% endif %}
         <button class="btn btn-primary" style="width: 100%;" type="submit">Login</button>
     </form>
 </div>
