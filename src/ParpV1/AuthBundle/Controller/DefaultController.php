@@ -25,11 +25,12 @@ class DefaultController extends Controller
             $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
-        //die('a1');
+
         return $this->render('ParpAuthBundle:Default:login.html.twig', array(
             // last username entered by the user
             'last_username' => $session->get(SecurityContext::LAST_USERNAME),
             'error'         => $error,
+            'roles'         => $this->getAkdRolesNames(),
         ));
     }
 
@@ -47,5 +48,21 @@ class DefaultController extends Controller
     public function logout()
     {
         return true;
+    }
+
+    /**
+     * Zwraca nazwy wszystkich dostępnych ról
+     *
+     * @return array
+     */
+    private function getAkdRolesNames()
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $roles = $entityManager->getRepository('ParpMainBundle:AclRole')->findAll();
+        foreach ($roles as $role) {
+            $roleDostepne[] = $role->getName();
+        }
+
+        return ($roleDostepne);
     }
 }
