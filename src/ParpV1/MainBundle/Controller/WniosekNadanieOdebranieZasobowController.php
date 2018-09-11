@@ -1758,10 +1758,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            $osoby = explode(',', $entity->getPracownicy());
+            if (strpos($entity->getPracownicy(), ',') !== false) {
+                $osoby = explode(',', $entity->getPracownicy());
+            } else {
+                $osoby = explode(';', $entity->getPracownicy());
+            }
+
             foreach ($entity->getUserZasoby() as $uz) {
                 if (!in_array($uz->getSamaccountname(), $osoby)) {
-                    //die("kasuje uz bo nie ma osoby ".$uz->getSamaccountname());
                     $em->remove($uz);
                 }
             }
