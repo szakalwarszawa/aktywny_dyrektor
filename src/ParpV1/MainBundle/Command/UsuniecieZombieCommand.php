@@ -15,6 +15,9 @@ use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
 
+/**
+ * Klasa komendy UsuniecieZombieCommand
+ */
 class UsuniecieZombieCommand extends ContainerAwareCommand
 {
     const UZYTKOWNIK_BEZ_ZAMIANY = 1;
@@ -40,6 +43,11 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      */
     private $uzytkownikDoZamiany = false;
 
+    /**
+     * Ustawienia wywołania komendy.
+     *
+     * @return void
+     */
     protected function configure()
     {
         $this
@@ -53,9 +61,16 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
                     'nazwy użytkowników zombie.');
     }
 
+    /**
+     * Wywołanie komendy.
+     *
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     *
+     * @return void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-
         $uzytkownik = $input->getOption('user');
         $uzytkownikDoZamiany = $input->getOption('replace');
         $this->uzytkownicyZombie = array($uzytkownik);
@@ -77,6 +92,13 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
         $this->rozpocznijUsuwanieZombie($status);
     }
 
+    /**
+     * Rozpoczyna proces usuwania użytkowników zombie.
+     *
+     * @param int $status
+     *
+     * @return void
+     */
     private function rozpocznijUsuwanieZombie($status)
     {
         $kontynuowacWykonywanie = $this
@@ -99,6 +121,8 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      * i nadać określonej osobie.
      *
      * @param int $status
+     *
+     * @return void
      */
     private function wytnijUzytkownikowZWnioskow($status)
     {

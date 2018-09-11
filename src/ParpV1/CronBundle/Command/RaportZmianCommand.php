@@ -34,6 +34,11 @@ class RaportZmianCommand extends ContainerAwareCommand
      */
     private $aktualnyUzytkownik;
 
+    /**
+     * Ustawienia wywołania komendy.
+     *
+     * @return void
+     */
     protected function configure()
     {
         $this
