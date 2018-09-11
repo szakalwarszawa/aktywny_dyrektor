@@ -15,9 +15,25 @@ use PhpOffice\PhpSpreadsheet\Style\Border as ExcelBorder;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Filesystem\Filesystem;
 
 class RaportZmianCommand extends ContainerAwareCommand
 {
+    /**
+     * @var array
+     *
+     * Lista usuniętych użytkowników która zostanie zapisana do json.
+     * Używane w usuwaniu użytkowników zombie.
+     */
+    private $listaUsunietychUzytkownikow = array();
+
+    /**
+     * @var string
+     *
+     * Aktualnie sprawdzany użytkownik.
+     */
+    private $aktualnyUzytkownik;
+
     protected function configure()
     {
         $this
@@ -130,6 +146,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $wszystkieRoznice = array();
 
         foreach ($roznice as $klucz => $roznica) {
+            $this->aktualnyUzytkownik = $klucz;
             $rozniceKlucze = $this->formatujRoznice($roznica);
             $wszystkieRoznice[$klucz] = $rozniceKlucze;
         }
@@ -140,6 +157,25 @@ class RaportZmianCommand extends ContainerAwareCommand
         $plik = $this->zapiszDoExcela($wszystkieRoznice, $zakresCzasowy);
         $plikZeSciezka = $porownaniaJson['katalog_raportow'] . $plik;
         $this->wyslijMail($plikZeSciezka, $porownaniaJson['mail_do_raportu']);
+        $this->zapiszUzytkownikowZombieJson();
+    }
+
+     /**
+     * Zapisuje do pliku `.json` nazwy użytkowników zombie.
+     *
+     * @return void
+     */
+    private function zapiszUzytkownikowZombieJson()
+    {
+        $katalog = $this
+                    ->getContainer()
+                    ->getParameter('porownania_json')['katalog_raportow'];
+        $dataDzisiaj = new \DateTime();
+        $nazwaPliku = 'ZombieALL_' . $dataDzisiaj->format('Y-m-d') . '.json';
+
+        $fileSystem = new FileSystem();
+        $data = json_encode($this->listaUsunietychUzytkownikow);
+        $fileSystem->dumpFile($katalog . \DIRECTORY_SEPARATOR . $nazwaPliku, $data);
     }
 
     /**
@@ -295,6 +331,7 @@ class RaportZmianCommand extends ContainerAwareCommand
                 'stare' => '',
                 'nowe' => '',
             ));
+            $this->listaUsunietychUzytkownikow[] = $this->aktualnyUzytkownik;
         } elseif (isset($diff['upd']['isDisabled'])) {
             // nie zwracamy reszty zmian w koncie jeżeli zostało dopiero włączone/wyłączone
             $status = $diff['upd']['isDisabled']['new'];
