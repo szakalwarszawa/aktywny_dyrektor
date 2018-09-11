@@ -14,6 +14,9 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
+use ParpV1\MainBundle\Entity\WniosekViewer;
+use ParpV1\MainBundle\Entity\WniosekEditor;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Klasa komendy UsuniecieZombieCommand
@@ -142,6 +145,8 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
 
         foreach ($this->uzytkownicyZombie as $uzytkownik) {
             $this->modyfikujRoleOsoby($uzytkownik);
+            $nadpisani = $this->nadpiszDodatkoweTabele($uzytkownik);
+            print_r($nadpisani);
             foreach ($zasoby as $zasob) {
                 if (true === $this->sprawdzCzyEdytor($zasob, $uzytkownik)) {
                     $this->inputOutput->text('ID ZASOBU: ' . $zasob->getId());
@@ -287,6 +292,78 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
             $this->inputOutput->text('Zmiana na : ' . $stringDoZapisu);
             $this->inputOutput->text('*******');
         }
+    }
+
+    /**
+     * Jeżeli są jakieś wpisy w tabeli wniosek_editor lub wniosek_viewer
+     * dla danego użytkownika - usuwa je lub podmienia.
+     *
+     * @param string $uzytkownik
+     *
+     * @return array
+     */
+    private function nadpiszDodatkoweTabele($uzytkownik)
+    {
+        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+
+        $zmianyViewer = array();
+        $zmianyEditor = array();
+        $wnioskiViewer = $entityManager
+            ->getRepository(WniosekViewer::class)
+            ->findBy(
+                array('samaccountname' => $uzytkownik)
+            );
+
+        if (null !== $wnioskiViewer) {
+            $zmianyViewer = $this->usunZTabeli($entityManager, $wnioskiViewer);
+        }
+
+        $wnioskiEditor = $entityManager
+            ->getRepository(WniosekEditor::class)
+            ->findBy(
+                array('samaccountname' => $uzytkownik)
+            );
+
+        if (null !== $wnioskiEditor) {
+            $zmianyEditor = $this->usunZTabeli($entityManager, $wnioskiEditor);
+        }
+
+        return array_merge($zmianyViewer, $zmianyEditor);
+    }
+
+    /**
+     * Usuwa lub podmienia w tabeli wniosek_editor lub wniosek_viewer
+     * podanego użytkownika.
+     *
+     * @param WniosekViewer|WniosekEditor $entity
+     *
+     * @return array
+     */
+    private function usunZTabeli(EntityManager $entityManager, $entity)
+    {
+        $listaZmian = array();
+        foreach ($entity as $entry) {
+            if (!empty($this->uzytkownikDoZamiany)) {
+                $entry->setSamaccountname($this->uzytkownikDoZamiany);
+                $listaZmian[] = array(
+                    'status'     => 'zamieniono',
+                    'id_wniosku' => $entry->getWniosek()->getId(),
+                    'zmiana_na'  => $this->uzytkownikDoZamiany
+                );
+            } else {
+                $listaZmian[] = array(
+                    'status'     => 'usunięto',
+                    'id_wniosku' => $entry->getWniosek()->getId(),
+                    'zmiana_na'  => ''
+                );
+                $entityManager->remove($entry);
+
+            }
+        }
+
+        $entityManager->flush();
+
+        return $listaZmian;
     }
 
     /**
