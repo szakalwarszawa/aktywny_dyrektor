@@ -380,7 +380,6 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      * @throws FileNotFoundException jeżeli w folderze nie ma żadnego pliku .json
      *
      * @return array
-     *
      */
     private function findOstatniZrzut()
     {
