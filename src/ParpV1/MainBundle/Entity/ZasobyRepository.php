@@ -71,5 +71,4 @@ class ZasobyRepository extends EntityRepository
 
         return $wynik;
     }
-
 }
