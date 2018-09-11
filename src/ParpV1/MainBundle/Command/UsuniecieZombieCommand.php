@@ -195,7 +195,14 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
     }
 
     /**
-     * @todo
+     * Modyfikuje rekordy w bazie danych.
+     *
+     * @param string $uzytkownik
+     * @param array $edytorzyZasobu
+     * @param Zasoby $zasob
+     * @param string $
+     *
+     * @return array
      */
     private function modyfikujGrupeOsob($uzytkownik, array $edytorzyZasobu, Zasoby $zasob, $rola)
     {
