@@ -269,6 +269,8 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
             }
         }
 
+        $stringDoZapisu = str_replace(',,', ',', $stringDoZapisu);
+
         if (isset($stringDoZapisu)) {
             switch ($rola) {
                 case 'PW':
@@ -345,9 +347,10 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
         foreach ($entity as $entry) {
             if (!empty($this->uzytkownikDoZamiany)) {
                 $entry->setSamaccountname($this->uzytkownikDoZamiany);
+                $wniosek = $entry->getWniosek();
                 $listaZmian[] = array(
                     'status'     => 'zamieniono',
-                    'id_wniosku' => $entry->getWniosek()->getId(),
+                    'id_wniosku' => null !== $wniosek? $wniosek->getId() : '0',
                     'zmiana_na'  => $this->uzytkownikDoZamiany
                 );
             } else {
