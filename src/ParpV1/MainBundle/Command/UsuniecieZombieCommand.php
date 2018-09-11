@@ -360,7 +360,6 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
                     'zmiana_na'  => ''
                 );
                 $entityManager->remove($entry);
-
             }
         }
 
