@@ -659,6 +659,8 @@ class RaportyITController extends Controller
      *  defaults={"departament" = ""}
      * )
      *
+     * @Security("has_role('PARP_ADMIN')")
+     *
      * @param string $departament
      *
      * @return JsonResponse
@@ -726,7 +728,12 @@ class RaportyITController extends Controller
         $zmiany = array();
 
         foreach ($zmianyUprawnien as $zmiana) {
-            $dataZmiany = $zmiana->getFromWhen()->format('Y-m-d H:i:s');
+            if (null !== $zmiana->getFromWhen()) {
+                $dataZmiany = $zmiana->getFromWhen()->format('Y-m-d H:i:s');
+            } else {
+                $dataZmiany = null;
+            }
+
             $nazwaKonta = $zmiana->getSamaccountName();
             $info = $zmiana->getInfo();
             $division = $zmiana->getDivision();
