@@ -850,7 +850,7 @@ class LdapService
         } elseif ($query) {
             $searchString = '(&(' . $query . ')(objectClass=person))';
         } else {
-            $searchString = '(&(samaccountname=)(objectClass=person))';
+            $searchString = '(objectClass=person)';
         }
 
 
