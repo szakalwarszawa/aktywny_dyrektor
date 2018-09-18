@@ -2549,7 +2549,7 @@ class DevController extends Controller
             '07_ROZPATRZONY_POZYTYWNIE',
             '11_OPUBLIKOWANY'
         ]);
-        $sql = "select wz,w from ParpMainBundle:WniosekNadanieOdebranieZasobow wz join wz.wniosek w join w.status s 
+        $sql = "select wz,w from ParpMainBundle:WniosekNadanieOdebranieZasobow wz join wz.wniosek w join w.status s
         where s.nazwaSystemowa in ('07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY')
         and wz.pracownikSpozaParp = 1";
 
@@ -3147,6 +3147,37 @@ class DevController extends Controller
             }
         }
         $entityManager->flush();
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
+    }
+
+    /**
+     * Przenosi konta pracowników na zwolnieniach do OU=Nieobecni
+     *
+     * @Route("/przeniesNieobecnych", name="przeniesNieobecnych")
+     */
+    public function przeniesNieobecnychAction()
+    {
+        $ldap = $this->get('ldap_service');
+        $pracownicyNaZwolnieniu = $ldap->getUserFromAD(null, null, 'description=*Konto wyłączono z powodu nieobecności dłuższej niż 21 dni');
+
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapconn = $ldapAdmin->prepareConnection();
+
+        foreach ($pracownicyNaZwolnieniu as $pracownik) {
+            $newparent = 'OU=Nieobecni,OU=PARP Pracownicy,DC=parp,DC=local';
+            $ldapAdmin->ldapRename($ldapconn, $pracownik['distinguishedname'], 'CN='. $pracownik['cn'], $newparent, true);
+            $ldapstatus = $ldapAdmin->ldapError($ldapconn);
+
+            $dane[] = [
+                'pracownik' => $pracownik['samaccountname'],
+                'cn' => $pracownik['cn'],
+                'department' => $pracownik['department'],
+                'description' => $pracownik['description'],
+                'distinguishedname' => $pracownik['distinguishedname'],
+                'status_zmiany' => $ldapstatus
+            ];
+        }
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
     }

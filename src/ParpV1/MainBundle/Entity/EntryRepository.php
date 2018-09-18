@@ -42,7 +42,7 @@ class EntryRepository extends EntityRepository
 
         return $query->getResult();
     }
-    
+
     public function getTempEntriesAsUsers($ldap)
     {
         $rets = array();
@@ -80,7 +80,7 @@ accountexpires: ""
                 $ret['manager'] = $e->getManager(); // CN=Lipiński Marcin,OU=BA,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST
                 $ret['thumbnailphoto'] = "";
                 $ret['useraccountcontrol'] = "";//$e->getUseraccountcontrol(); // INTERDOMAIN_TRUST_ACCOUNT,NOT_DELEGATED,
-                
+
                 $ret['accountexpires'] = "";//$e->getAccountexpires(); //""
                 $ret['isDisabled'] = $e->getIsDisabled(); // fdsfd
                 $ret['disableDescription'] = $e->getDisableDescription(); // fdsfd
@@ -112,5 +112,25 @@ accountexpires: ""
             }
         }
         return $data;
+    }
+
+    /**
+     * Zwraca wszystkie zmiany jakie zaszły na koncie.
+     *
+     * @todo W przyszłości może być potrzebne pobieranie od daty.
+     *
+     * @return array
+     */
+    public function findZmianyNaUzytkownikach()
+    {
+        $queryBuilder = $this->createQueryBuilder('h');
+        $queryBuilder
+            ->select('h')
+            ->orderBy('h.fromWhen', 'DESC');
+
+        $query = $queryBuilder->getQuery();
+        $results = $query->getResult();
+
+        return $results;
     }
 }
