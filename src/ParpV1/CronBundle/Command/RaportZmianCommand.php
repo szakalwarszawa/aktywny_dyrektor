@@ -358,7 +358,10 @@ class RaportZmianCommand extends ContainerAwareCommand
                 ),
                 array(
                     'status' => $this->getKomunikat('N_DIVISION'),
-                    'nowe' => $diff['new']['division'],
+                    // #63578
+                    //
+                    //'nowe' => $diff['new']['division'],
+                    'nowe' => $diff['new']['info'],
                     'stare' => '',
                 ),
                 array(
@@ -403,8 +406,15 @@ class RaportZmianCommand extends ContainerAwareCommand
             'division'
         );
 
+        // #63578
+        //
+        // if (!empty($diff['info']) && !empty($diff['division'])) {
+        //     $indexDivision = array_search('division', $zbedneDoRaportu);
+        //     unset($zbedneDoRaportu[$indexDivision]);
+        // }
+
         if (!empty($diff['info']) && !empty($diff['division'])) {
-            $indexDivision = array_search('division', $zbedneDoRaportu);
+            $indexDivision = array_search('info', $zbedneDoRaportu);
             unset($zbedneDoRaportu[$indexDivision]);
         }
 
