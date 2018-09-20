@@ -17,6 +17,10 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Filesystem\Filesystem;
 
+/**
+ * Klasa RaportZmianCommand
+ * Zmiana metody pobierania sekcji Redmine #63578
+ */
 class RaportZmianCommand extends ContainerAwareCommand
 {
     /**
@@ -358,7 +362,7 @@ class RaportZmianCommand extends ContainerAwareCommand
                 ),
                 array(
                     'status' => $this->getKomunikat('N_DIVISION'),
-                    'nowe' => $diff['new']['division'],
+                    'nowe' => $diff['new']['info'],
                     'stare' => '',
                 ),
                 array(
@@ -404,7 +408,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         );
 
         if (!empty($diff['info']) && !empty($diff['division'])) {
-            $indexDivision = array_search('division', $zbedneDoRaportu);
+            $indexDivision = array_search('info', $zbedneDoRaportu);
             unset($zbedneDoRaportu[$indexDivision]);
         }
 
