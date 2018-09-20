@@ -53,6 +53,7 @@ class ListaZasobowGrid
             'nazwa',
             'opisZasobu',
             'wlascicielZasobu',
+            'powiernicyWlascicielaZasobu',
             'administratorZasobu',
             'administratorTechnicznyZasobu',
             'Numer',
@@ -146,6 +147,13 @@ class ListaZasobowGrid
                 'field'   => 'wlascicielZasobu',
                 'source'  => true,
                 'title'   => 'Właściciel zasobu',
+                'size'    => 200,
+            )),
+            new Column\TextColumn(array(
+                'id'      => 'powiernicyWlascicielaZasobu',
+                'field'   => 'powiernicyWlascicielaZasobu',
+                'source'  => true,
+                'title'   => 'Powiernicy właściciela zasobu',
                 'size'    => 200,
             )),
             new Column\TextColumn(array(
