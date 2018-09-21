@@ -96,6 +96,7 @@ class ZasobyService
      */
     public function findAktywneWnioski($user, \DateTime $date)
     {
+        $user = strToLower($user);
         $wnioskiLista = array();
         $userZasoby = $this
             ->entityManager
