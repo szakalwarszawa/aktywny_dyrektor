@@ -3,10 +3,11 @@
 namespace ParpV1\AuthBundle\Services;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\Container;
 use ParpV1\MainBundle\Entity\AclRole;
-use ParpV1\AuthBundle\Security\ParpUser;
 
+/**
+ * Klasa UserLoginService
+ */
 class UserLoginService
 {
     /**
