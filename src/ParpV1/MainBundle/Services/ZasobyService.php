@@ -104,7 +104,7 @@ class ZasobyService
             ->findBy(array(
                 'samaccountname' => $user,
                 'czyAktywne' => true,
-        ));
+            ));
 
         foreach ($userZasoby as $zasob) {
             $infoZasob = array (
@@ -121,7 +121,6 @@ class ZasobyService
                     $wnioskiLista[$user]['po_dacie'][] = $infoZasob;
                 }
             }
-
         }
 
         return $wnioskiLista;
