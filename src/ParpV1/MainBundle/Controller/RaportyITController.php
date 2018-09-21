@@ -15,6 +15,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
 
 /**
  * RaportyIT controller.
@@ -809,5 +811,29 @@ class RaportyITController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Na podstawie loginu użytkownika oraz daty, zwraca wnioski
+     * które były złożone przed i po tej dacie.
+     *
+     * @Route(
+     *  "/przegladUprawnien/znajdzWnioski/{user}/{date}",
+     *  name="przeglad_uprawnien_znajdz_wnioski"
+     * )
+     *
+     * @param string $user
+     * @param string $date
+     *
+     * @return JsonResponse
+     */
+    public function findWnioskiByDateAction($user, $date)
+    {
+        $zasobyService = $this->get('zasoby_service');
+
+        $date = new \DateTime($date);
+        $wnioskiByDate = $zasobyService->findAktywneWnioski($user, $date);
+
+        return new JsonResponse($wnioskiByDate);
     }
 }
