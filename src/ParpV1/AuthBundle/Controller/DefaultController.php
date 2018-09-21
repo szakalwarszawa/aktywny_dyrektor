@@ -25,12 +25,14 @@ class DefaultController extends Controller
             $error = $session->get(SecurityContext::AUTHENTICATION_ERROR);
             $session->remove(SecurityContext::AUTHENTICATION_ERROR);
         }
+        $userLoginService = $this->get('parp.user_login_service');
+        $availableRoles = $userLoginService->getAkdRolesNames();
 
         return $this->render('ParpAuthBundle:Default:login.html.twig', array(
             // last username entered by the user
             'last_username' => $session->get(SecurityContext::LAST_USERNAME),
             'error'         => $error,
-            'roles'         => $this->getAkdRolesNames(),
+            'roles'         => $availableRoles,
         ));
     }
 

@@ -105,3 +105,6 @@ services:
     parp.mailer:
         class : ParpV1\MainBundle\Services\ParpMailerService
         arguments: ["@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.context", "@templating", "@ldap_service", '%id_srodowiska%']
+    parp.user_login_service:
+        class : ParpV1\AuthBundle\Services\UserLoginService
+        arguments: ["@doctrine.orm.entity_manager"]
