@@ -622,10 +622,11 @@ class ParpMailerService
             $recipientArr = [];
             for ($i = 0; $i < count($recipient); $i++) {
                 if (strstr($recipient[$i], '@') === false) {
-                    $line = $this->getUserMail($recipient[$i]);
-                    $recipientArr = array_merge($recipientArr, explode(';', $line));
+                    $recipient[$i] = $this->getUserMail($recipient[$i]);
                 }
+                    $recipientArr = array_merge($recipientArr, explode(';', $recipient[$i]));
             }
+            $recipientArr = array_unique($recipientArr);
 
             return $recipientArr;
         } else {
