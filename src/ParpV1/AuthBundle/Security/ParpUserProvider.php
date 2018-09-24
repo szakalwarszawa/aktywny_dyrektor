@@ -58,7 +58,7 @@ class ParpUserProvider implements UserProviderInterface
                 $wybraneRole = isset($_POST['_roles']) ? $_POST['_roles'] : array();
                 $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
                 $salt = null;
-                $roles = empty($wybraneRole) ? $this->availableRoles() : $this->checkDevRolesFromPost($wybraneRole);
+                $roles = empty($wybraneRole) ? $this->defaultRoles() : $this->checkDevRolesFromPost($wybraneRole);
                 return new ParpUser($username, $password, $salt, $roles);
             }
 
@@ -111,7 +111,13 @@ class ParpUserProvider implements UserProviderInterface
      */
     private function checkDevRolesFromPost(array $postRoles)
     {
-        $availableRoles = $this->availableRoles();
+        global $kernel;
+
+        $userLoginService = $kernel
+            ->getContainer()
+            ->get('parp.user_login_service');
+
+        $availableRoles = $userLoginService->getAkdRolesNames();
 
         foreach ($postRoles as $role) {
             if (!in_array($role, $availableRoles)) {
@@ -123,11 +129,11 @@ class ParpUserProvider implements UserProviderInterface
     }
 
     /**
-     * Zwraca dopuszczalne role do zalogowania jako dev.
+     * Zwraca domyślne role do zalogowania jako dev.
      *
      * @return array
      */
-    private function availableRoles()
+    private function defaultRoles()
     {
         return array(
             'ROLE_USER',
