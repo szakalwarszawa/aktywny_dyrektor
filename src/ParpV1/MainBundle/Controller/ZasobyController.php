@@ -307,7 +307,7 @@ class ZasobyController extends Controller
         $nazwaZasobu = $zasob->getNazwa();
         $this->addFlash('danger', 'Zasób (' . $nazwaZasobu . ') został zdezaktywowany!');
 
-        return $this->redirectToRoute('zasoby', array ('aktywne' => 0));
+        return $this->redirectToRoute('zasoby', array ('aktywne' => Zasoby::ZASOB_NIEAKTYWNY));
     }
 
     /**
@@ -340,13 +340,13 @@ class ZasobyController extends Controller
         if (false !== $zasob->getPublished()) {
             $this->addFlash('warning', 'Zasób (' . $nazwaZasobu . ') jest już aktywowany!');
         } else {
-            $zasob->setPublished(1);
+            $zasob->setPublished(Zasoby::ZASOB_AKTYWNY);
 
             $entityManager->flush();
             $this->addFlash('success', 'Zasób (' . $nazwaZasobu . ') został aktywowany!');
         }
 
-        return $this->redirectToRoute('zasoby', array ('aktywne' => 1));
+        return $this->redirectToRoute('zasoby', array ('aktywne' => Zasoby::ZASOB_AKTYWNY));
     }
 
     /**

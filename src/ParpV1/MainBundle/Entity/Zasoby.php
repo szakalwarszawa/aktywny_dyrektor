@@ -16,6 +16,20 @@ use Doctrine\ORM\Mapping as ORM;
 class Zasoby
 {
     /**
+     * @var int
+     *
+     * Status zasobu gdy aktywny.
+     */
+    const ZASOB_AKTYWNY = 1;
+
+    /**
+     * @var int
+     *
+     * Status zasobu gdy nieaktywny.
+     */
+    const ZASOB_NIEAKTYWNY = 0;
+
+    /**
      * @var integer
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
