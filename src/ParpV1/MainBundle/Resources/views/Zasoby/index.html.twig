@@ -7,15 +7,6 @@
   <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby', {'aktywne': 0}) }}">Zasoby nieaktywne</a></li>
 </ul>
 
-
-{% for flashMessage in app.session.flashbag.get('warning') %}
-    <div class="alert alert-info">
-        <button type="button" class="close" data-dismiss="alert">&times;</button>
-        <strong>Uwaga!</strong>
-        {{ flashMessage }}
-    </div>
-{% endfor %}
-
 <center>
     <div class="btn-group">
         <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
@@ -27,5 +18,3 @@
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
 
 {% endblock %}
-
-

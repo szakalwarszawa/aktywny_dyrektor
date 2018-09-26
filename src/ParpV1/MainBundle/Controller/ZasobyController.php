@@ -15,10 +15,12 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Grid\ParpExcelExport;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Exception\ZasobNotFoundException;
 use ParpV1\MainBundle\Form\ZasobyType;
 use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Grid\ListaZasobowGrid;
 use Doctrine\Common\Persistence\ObjectManager;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 
 /**
  * Zasoby controller.
@@ -274,24 +276,77 @@ class ZasobyController extends Controller
      * Deletes a Zasoby entity.
      *
      * @Route("/delete/{id}/{published}", name="zasoby_delete", defaults={"published" : 0})
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @param int $id
+     * @param int $published
+     *
+     * @return Response
+     *
      */
-    public function deleteAction(Request $request, $id, $published = 0)
+    public function deleteAction($id, $published = 0)
     {
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $zasob = $entityManager
+            ->getRepository(Zasoby::class)
+            ->findOneBy(array(
+                'id' => $id,
+            ));
 
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
+        if (null === $zasob) {
+            throw new ZasobNotFoundException();
         }
-        $this->sprawdzDostep($entity);
-        //dodac obsluge pola dlaczego niaktywny
-        $entity->setPublished($published);
-        //$em->remove($entity);
-        $em->flush();
 
+        $this->sprawdzDostep($zasob);
 
-        return $this->redirect($this->generateUrl('zasoby', ['aktywne' => ($published)]));
+        $zasob->setPublished($published);
+
+        $entityManager->flush();
+
+        $nazwaZasobu = $zasob->getNazwa();
+        $this->addFlash('danger', 'Zasób (' . $nazwaZasobu . ') został zdezaktywowany!');
+
+        return $this->redirectToRoute('zasoby', array ('aktywne' => 0));
+    }
+
+    /**
+     * Aktywuje nieaktywny zasób.
+     *
+     * @Route("/aktywuj_zasob/{id}", name="zasoby_aktywuj")
+     * @Security("has_role('PARP_ADMIN') or has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @param int $id
+     *
+     * @return Response
+     */
+    public function aktywujZasobAction($id)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $zasob = $entityManager
+            ->getRepository(Zasoby::class)
+            ->findOneBy(array(
+                'id' => $id,
+            ));
+
+        if (null === $zasob) {
+            throw new ZasobNotFoundException();
+        }
+
+        $this->sprawdzDostep($zasob);
+        $nazwaZasobu = $zasob->getNazwa();
+
+        if (false !== $zasob->getPublished()) {
+            $this->addFlash('warning', 'Zasób (' . $nazwaZasobu . ') jest już aktywowany!');
+        } else {
+            $zasob->setPublished(1);
+
+            $entityManager->flush();
+            $this->addFlash('success', 'Zasób (' . $nazwaZasobu . ') został aktywowany!');
+        }
+
+        return $this->redirectToRoute('zasoby', array ('aktywne' => 1));
     }
 
     /**
