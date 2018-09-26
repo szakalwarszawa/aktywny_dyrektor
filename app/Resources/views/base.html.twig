@@ -165,30 +165,15 @@
             {% endif %}
 
             <div class="row">
-                {% for flashMessage in app.session.flashbag.get('warning') %}
-                    <div class="alert alert-warning">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Uwaga!</strong>
-                        {{ flashMessage }}
-                    </div>
+                {% for type, flashMessages in app.session.flashbag.all %}
+                    {% for flashMessage in flashMessages %}
+                        <div class="alert alert-{{ type }}">
+                            <button type="button" class="close" data-dismiss="alert">&times;</button>
+                            <strong>Uwaga!</strong>
+                            {{ flashMessage }}
+                        </div>
+                    {% endfor %}
                 {% endfor %}
-
-                {% for flashMessage in app.session.flashbag.get('notice') %}
-                    <div class="alert alert-info">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Uwaga!</strong>
-                        {{ flashMessage }}
-                    </div>
-                {% endfor %}
-
-                {% for flashMessage in app.session.flashbag.get('error') %}
-                    <div class="alert alert-danger">
-                        <button type="button" class="close" data-dismiss="alert">&times;</button>
-                        <strong>Uwaga!</strong>
-                        {{ flashMessage }}
-                    </div>
-                {% endfor %}
-
                 {% block body %}{% endblock %}
             </div>
         </div>

@@ -72,36 +72,72 @@ class ListaZasobowGrid
         $zasobAkcja->setColumn('akcja');
         $siatka->addRowAction($zasobAkcja);
 
-        $zasobAkcja = new RowAction(
-            '<i class="fa fa-delete"></i> ' .
-            ($this->parameters['aktywne'] ? "Deaktywuj" : "Aktywuj"),
-            'zasoby_delete',
-            null,
-            null,
-            array(
-                'class' => 'btn btn-danger btn-xs',
-            )
-        );
-        $zasobAkcja->setColumn('akcja');
-        $zasobAkcja->manipulateRender(
-            function ($action, $row) {
-                $roleDozwolone = array(
-                    'PARP_ADMIN',
-                    'PARP_ADMIN_REJESTRU_ZASOBOW',
-                );
-                if (in_array('PARP_ADMIN', $this->parameters['uzytkownik']->getRoles())
-                    || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->parameters['uzytkownik']->getRoles())) {
-                    return $action;
+        if ($this->parameters['aktywne']) {
+            $zasobAkcja = new RowAction(
+                '<i class="fa fa-ban"></i> ' .
+                'Dezaktywuj',
+                'zasoby_delete',
+                null,
+                null,
+                array(
+                    'class' => 'btn btn-danger btn-xs',
+                )
+            );
+            $zasobAkcja->setColumn('akcja');
+            $zasobAkcja->manipulateRender(
+                function ($action, $row) {
+                    return $this->adminRowAction($action, $row);
                 }
+            );
+            $siatka->addRowAction($zasobAkcja);
+        } else {
+            $zasobAkcja = new RowAction(
+                '<i class="fa fa-check"></i> ' .
+                'Aktywuj',
+                'zasoby_aktywuj',
+                null,
+                null,
+                array(
+                    'class' => 'btn btn-warning btn-xs',
+                )
+            );
+            $zasobAkcja->setColumn('akcja');
+            $zasobAkcja->manipulateRender(
+                function ($action, $row) {
+                    return $this->adminRowAction($action, $row);
+                }
+            );
+            $siatka->addRowAction($zasobAkcja);
+        }
 
-                return null;
-            }
-        );
-        $siatka->addRowAction($zasobAkcja);
+
 
         $siatka->isReadyForRedirect();
 
         return $siatka;
+    }
+
+    /**
+     * Sprawdza czy użytkownik ma odpowiednią rolę aby zobaczyć
+     * akcję wiersza dostępną dla wybranych ról.
+     *
+     * @param RowAction $acton
+     * @param Row $row
+     *
+     * @return null|RowAction
+     */
+    private function adminRowAction($action, $row)
+    {
+        $roleDozwolone = array(
+            'PARP_ADMIN',
+            'PARP_ADMIN_REJESTRU_ZASOBOW',
+        );
+        if (in_array('PARP_ADMIN', $this->parameters['uzytkownik']->getRoles())
+            || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->parameters['uzytkownik']->getRoles())) {
+            return $action;
+        }
+
+        return null;
     }
 
     private function getData($aktywne)
