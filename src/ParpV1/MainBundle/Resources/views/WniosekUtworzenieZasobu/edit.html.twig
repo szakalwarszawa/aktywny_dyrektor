@@ -345,7 +345,7 @@
                     if ($(sel).hasClass('tagit-hidden-field')) {
                         $(sel).tagit('removeAll');
                         if (v) {
-                            var vs = v.split(",");
+                            var vs = v.split(";");
                             for (var i = 0; i < vs.length; i++) {
 
                                 $(sel).tagit('createTag', vs[i]);
@@ -353,7 +353,7 @@
                         }
                     } else {
                         if ($(sel).hasClass('select2')) {
-                            $(sel).val(v.split(","));
+                            $(sel).val(v.split(";"));
                             $(sel).select2().trigger('change');
                             //$(sel).select2("data", v, true);
                             //$(sel).select2("updateResults");
@@ -372,7 +372,7 @@
         });
     }
     var z = $('#parp_mainbundle_wniosekutworzeniezasobu_zmienionePola').val();
-    var zs = z.split(',');
+    var zs = z.split(';');
     for (var i = 0; i < zs.length; i++) {
         var sel = '#parp_mainbundle_wniosekutworzeniezasobu_zasob_' + zs[i];
         console.log(sel);
