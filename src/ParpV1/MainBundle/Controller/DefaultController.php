@@ -75,7 +75,8 @@ class DefaultController extends Controller
             foreach ($ADUsersTemp as $u) {
                 //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
                 if ($widzi_wszystkich ||
-                    mb_strtolower(trim($aduser[0]['department'])) === mb_strtolower(trim($u['department']))
+                    (!empty($u['department']) &&
+                    mb_strtolower(trim($aduser[0]['department'])) === mb_strtolower(trim($u['department'])))
                 ) {
                     $ADUsers[] = $u;//['name'];
                 }
@@ -1371,8 +1372,14 @@ class DefaultController extends Controller
         // Pobieramy naszego pracownika
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
-        // Pobieramy naszego przełożonego
-        $ADManager = $ldap->getPrzelozony($samaccountname);
+        // Prezes nie ma przełożonego...
+        if ($ADUser[0]['title'] === 'p.o. prezesa' ||
+            $ADUser[0]['title'] === 'prezes') {
+            $ADManager = '';
+        } else {
+            // Pobieramy przełożonego
+            $ADManager = $ldap->getPrzelozony($samaccountname);
+        }
 
         // Pobieramy wszystkich jego pracowników (w których występuje jako przełożony)
         $ADWorkers = $ldap->getUserFromAD(null, null, 'manager='.$ADUser[0]['distinguishedname'].'');
