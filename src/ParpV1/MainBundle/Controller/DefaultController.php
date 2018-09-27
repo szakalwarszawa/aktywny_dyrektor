@@ -1372,12 +1372,13 @@ class DefaultController extends Controller
         // Pobieramy naszego pracownika
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
-        // Pobieramy naszego przełożonego
-        $ADManager = $ldap->getPrzelozony($samaccountname);
-
-        if ($ADUser[0]['title'] == 'p.o. prezesa' ||
-            $ADUser[0]['title'] == 'prezes') {
+        // Prezes nie ma przełożonego...
+        if ($ADUser[0]['title'] === 'p.o. prezesa' ||
+            $ADUser[0]['title'] === 'prezes') {
             $ADManager = '';
+        } else {
+            // Pobieramy przełożonego
+            $ADManager = $ldap->getPrzelozony($samaccountname);
         }
 
         // Pobieramy wszystkich jego pracowników (w których występuje jako przełożony)
