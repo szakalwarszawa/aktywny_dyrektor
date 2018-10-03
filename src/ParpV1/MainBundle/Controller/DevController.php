@@ -1939,36 +1939,31 @@ class DevController extends Controller
     }
 
     /**
+     * Zwraca listę logów z wypychania do AD
+     *
      * @Route("/listLogs/{file}", name="listLogs", defaults={"file" : ""})
-     * @Template()
      */
     public function listLogsAction($file = '')
     {
         if ($file == '') {
-            //show list
             $finder = new Finder();
+            // ograniczamy listę do logów z ostatnich 30 dni
+            $finder->date('> now - 30 days');
             $finder->files()->in(__DIR__.'/../../../../work/logs/');
 
-            //$links = [];
-            $links2 = [];
+            $links = [];
 
             foreach ($finder as $file) {
-                //$links[] = '<li class="list-group-item"><a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'" class="btn btn-primary">'.$file->getRelativePathname().'</a></li>';
-                $links2[] = ['link' => '<a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'">'.$file->getRelativePathname().'</a>'];
+                $links[] = ['link' => '<a href="'.$this->generateUrl('listLogs', ['file' => $file->getRelativePathname()]).'">'.$file->getRelativePathname().'</a>'];
             }
-            //sort($links);
-            sort($links2);
-            //return new Response('<html><body><ul class="list-group">'.implode('', $links).'</li></body>');
-            return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $links2, 'title' => 'Logi z wypychania do AD']);
+            sort($links);
+
+            return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $links, 'title' => 'Logi z wypychania do AD (ostatnie 30 dni):']);
         } else {
-            //download file
             $file = __DIR__.'/../../../../work/logs/'.$file;
             $fileStr = file_get_contents($file);
             $response = new Response($fileStr);
-            //die($response);
-            //$response->setContentDisposition(ResponseHeaderBag::DISPOSITION_ATTACHMENT);
 
-            //return $response;
             return $this->render('ParpMainBundle:Publish:publish.html.twig', array('showonly' => 0, 'content' => $response));
         }
     }
