@@ -179,7 +179,10 @@ class ParpUserProvider implements UserProviderInterface
                 if ('test' === $idSrodowiska) {
                     $ldapbind = true;
                 } else {
-                    $ldapbind = ldap_bind($ldapconn, $ldapuser.$ldapdomain, $ldappass) or die('Nieprawidłowe dane!');
+                    $errorlevel = error_reporting();
+                    error_reporting($errorlevel & ~E_WARNING);
+                    $ldapbind = ldap_bind($ldapconn, $ldapuser.$ldapdomain, $ldappass);
+                    error_reporting($errorlevel);
                 }
             } catch (Exception $e) {
                 throw new Exception('Brak komunikacji z serwerem!');
