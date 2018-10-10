@@ -113,8 +113,7 @@
                     {% endif %}
 
                 {% endif %}
-                {% if czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR"
-                    or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                {% if czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
 
