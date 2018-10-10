@@ -24,6 +24,7 @@ use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 
@@ -1091,7 +1092,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //echo $m;
                         $naborDane = explode('/', $m);
                         $dzialanie = $naborDane[0];
-                        $nabor = $naborDane[1];
+                        $nabor = 32;
                         $rola = $p;
                         $sql =
                             "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".
@@ -1108,10 +1109,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
             }
 
-            return $this->render(
-                'ParpMainBundle:WniosekNadanieOdebranieZasobow:publish_lsi.html.twig',
-                array('sqls' => $sqls)
-            );
+            $response = new Response();
+
+            $response->headers->set('Content-Type', 'application/sql');
+            $fileName = $wniosek->getWniosek()->getNumer() . '.sql';
+            $response->headers->set('Content-Disposition', 'attachment;filename="' . $fileName);
+
+            $view = $this->renderView('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish_lsi.html.twig', array(
+                'query_list' => $sqls
+                ));
+            $response->setContent($view);
+
+            return $response;
         } else {
             switch ($status) {
                 case '00_TWORZONY':
