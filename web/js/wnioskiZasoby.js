@@ -79,22 +79,27 @@ function beforeSubmit(event){
 
     var message = '';
     var atLeastOne = false;
-    $('input[data-required]').each(function () {
-        var element = $(this);
-        var inputType = element.attr('type');
+    if ($('input[data-required]').length > 0) {
+        $('input[data-required]').each(function () {
+            var element = $(this);
+            var inputType = element.attr('type');
 
-        if ('text' === inputType) {
-            if (element.val().length > 0) {
-                atLeastOne = true;
+            if ('text' === inputType) {
+                if (element.val().length > 0) {
+                    atLeastOne = true;
+                }
             }
-        }
 
-        if ('checkbox' === inputType) {
-            if (element.is(':checked')) {
-                atLeastOne = true;
+            if ('checkbox' === inputType) {
+                if (element.is(':checked')) {
+                    atLeastOne = true;
+                }
             }
-        }
-    });
+        });
+    } else {
+        atLeastOne = true;
+    }
+
 
     if (!atLeastOne) {
         message += 'Brak wybranego terminu końcowego.\n';
