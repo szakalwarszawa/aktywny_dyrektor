@@ -1,12 +1,4 @@
-{% extends '::base.html.twig' %}
 
-{% block body %}
-    <div class="col-sm-12">
-        <h1>Uruchom taką SQL:</h1>
-        <div class="well">
-            {% for s in sqls %}
-            {{ s }}; <br/>
-            {% endfor %}
-        </div>
-    </div>
-{% endblock %}
+{% for query in query_list %}
+    {{ query|raw }};
+{% endfor %}
