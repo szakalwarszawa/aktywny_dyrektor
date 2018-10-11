@@ -106,8 +106,8 @@
 
                                     <td>
                                         {{ form_widget(userzasoby.aktywneOd) }}
-                                        {{ form_widget(userzasoby.aktywneDo) }}
-                                        {{ form_widget(userzasoby.bezterminowo) }}
+                                        {{ form_widget(userzasoby.aktywneDo, {'attr': {'data-required' : 'single'}}) }}
+                                        {{ form_widget(userzasoby.bezterminowo, {'attr': {'data-required' : 'single'}}) }}
                                     </td>
 
                                     <td>
