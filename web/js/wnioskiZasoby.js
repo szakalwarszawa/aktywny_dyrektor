@@ -12,9 +12,7 @@ function wniosekPracownikSpozaParp(){
     }
 }
 function usunUzytkownikaZwniosku(id, that){
-    console.log('kasuje '+id);
     var sams = JSON.parse($('#form_samaccountnames').val());
-    console.log(sams);
 
     for(k in sams){
         if(k == id){
@@ -50,9 +48,7 @@ $(document).ready(function(){
     $('.inputAktywneDo').change(function(){
         var v = $(this).val();
         var row = $(this).closest('tr');
-        console.log('.inputAktywneDo');
-        console.log(v);
-        console.log(row);
+
         if(v != ""){
             $('.inputBezterminowo', $(row)).prop('checked', false);
         }
@@ -60,9 +56,6 @@ $(document).ready(function(){
     $('.inputBezterminowo').change(function(){
         var v = $(this).prop('checked');
         var row = $(this).closest('tr');
-        console.log('.inputBezterminowo');
-        console.log(v);
-        console.log(row);
 
         if(v){
             $('.inputAktywneDo', $(row)).val("");
