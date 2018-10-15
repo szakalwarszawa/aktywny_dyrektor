@@ -241,8 +241,11 @@ class WniosekUtworzenieZasobuController extends Controller
             $this->addFlash('warning', 'Wniosek został utworzony.');
                 return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', ['id' => $entity->getId()]));
         } else {
-            $er = $form->getErrorsAsString();
-            die($er);
+            $formErrors = $form->getErrors(true, true);
+
+            $this->addFlash('danger', (string) $formErrors);
+
+            return $this->redirectToRoute('wniosekutworzeniezasobu_new');
         }
 
         return array(
