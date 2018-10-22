@@ -6,6 +6,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolverInterface;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ZasobyType extends AbstractType
 {
@@ -54,7 +55,14 @@ class ZasobyType extends AbstractType
             $builder->add('wlascicielZasobu', 'choice', array(
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => false,
-                'required' => false,
+                'placeholder' => 'Wybierz wartość',
+                'constraints' => array(
+                    new Assert\NotBlank(array(
+                        'message' => 'Wybór właściciela zasobu jest obligatoryjny. Jeśli na liście wyboru nie ' .
+                        'ma odpowiedniej osoby należy skontaktować się z Hubertem Góreckim lub Jarosławem Bednarczykiem'
+                    )),
+                ),
+                'error_bubbling' => true,
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ));
         }
