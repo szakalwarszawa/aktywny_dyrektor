@@ -983,7 +983,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if ($acc['editor'] === null &&
             !($isAccepted == 'publish_lsi' ||
                 in_array($this->getUser()->getUsername(), ['marcin_lipinski'])) &&
-            !($isAccepted == 'unblock' && $czyZastepstwo)
+            !($isAccepted == 'unblock' && ($czyZastepstwo || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())))
         ) {
             throw new SecurityTestException(
                 'Nie możesz zaakceptować wniosku, nie jesteś jego edytorem (nie posiadasz obecnie takich uprawnień, prawdopodobnie już zaakceptowałeś wniosek i jest w on akceptacji u kolejnej osoby!',
