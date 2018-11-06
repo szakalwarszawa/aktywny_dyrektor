@@ -1063,6 +1063,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $dane['umowa_od'] = $daneRekord->getUmowaOd();
                 // wysłanie zgłoszenia do [BI]:
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
+                // dodaktowe zgłoszenie do [BI] dla administratorów serwera Exchange:
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE, $dane);
                 // wysłanie zgłoszenia do [BA] jako dyrektor D/B:
                 $dane['nadawca'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
