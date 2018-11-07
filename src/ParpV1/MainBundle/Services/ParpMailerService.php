@@ -34,7 +34,7 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN = 'pracownikPrzyjecieNadanieUprawnien.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEBA = 'pracownikPrzyjecieBa.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEBI = 'pracownikPrzyjecieBi.html.twig';
-    const TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE = 'pracownikPrzyjecieBi.html.twig';
+    const TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE = 'pracownikPrzyjecieBiEx.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1 = 'pracownikWygasniecieUprawnien1.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2 = 'pracownikWygasniecieUprawnien2.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3 = 'pracownikWygasniecieUprawnien3.html.twig';
