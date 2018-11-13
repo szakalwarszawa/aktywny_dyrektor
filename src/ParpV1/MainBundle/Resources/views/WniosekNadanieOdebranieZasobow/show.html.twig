@@ -117,6 +117,14 @@
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
 
+                {% if lsi_import_token_form is defined %}
+                    {{ form_start(lsi_import_token_form) }}
+                        {{ form_widget(lsi_import_token_form.wniosek) }}
+                        {{ form_widget(lsi_import_token_form.submit, {'attr' : {'data-ajax' : 'ajax'}}) }}
+                        {{ form_widget(lsi_import_token_form._token) }}
+                    {{ form_end(lsi_import_token_form) }}
+                {% endif %}
+
 
                 {% if canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>

@@ -108,3 +108,6 @@ services:
     parp.user_login_service:
         class : ParpV1\AuthBundle\Services\UserLoginService
         arguments: ["@doctrine.orm.entity_manager"]
+    lsi_import_service:
+        class: ParpV1\MainBundle\Services\Api\LsiImportService
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage']
