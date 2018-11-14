@@ -117,7 +117,7 @@
                 {% if lsi_import_token_form is defined and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
                     {{ form_start(lsi_import_token_form) }}
                         {{ form_widget(lsi_import_token_form.wniosek) }}
-                        {{ form_widget(lsi_import_token_form.submit, {'attr' : {'data-ajax' : 'ajax', 'class' : 'btn-primary', 'data-toggle' : 'modal'}}) }}
+                        {{ form_widget(lsi_import_token_form.submit, {'attr': {'data-ajax': 'ajax', 'class': 'btn-primary', 'data-toggle': 'modal'}}) }}
                     {{ form_end(lsi_import_token_form) }}
                 {% endif %}
 

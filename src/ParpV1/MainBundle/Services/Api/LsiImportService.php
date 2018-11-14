@@ -85,7 +85,6 @@ class LsiImportService
             $jsonResponse = $this->prepareJsonResponse($activeToken);
 
             return $jsonResponse;
-
         }
 
         throw new IncorrectWniosekIdException();
@@ -271,10 +270,10 @@ class LsiImportService
 
             $wniosekLsi = true;
             foreach ($userZasoby as $zasob) {
-                 if ($zasob->getZasobId() !== $zasobLsi1420->getId()) {
-                     throw new UnexpectedResultException('Wniosek nie zawiera ' .
-                     'samych uprawnień ' . self::NAZWA_ZASOBU_LSI1420);
-                 }
+                if ($zasob->getZasobId() !== $zasobLsi1420->getId()) {
+                    throw new UnexpectedResultException('Wniosek nie zawiera ' .
+                    'samych uprawnień ' . self::NAZWA_ZASOBU_LSI1420);
+                }
             }
         }
 
