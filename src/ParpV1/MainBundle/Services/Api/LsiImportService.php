@@ -16,6 +16,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Doctrine\ORM\UnexpectedResultException;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Exception\IncorrectWniosekIdException;
 
 /**
  * Klasa serwisu LsiImportService
@@ -59,12 +60,14 @@ class LsiImportService
         $this->tokenExpireTime = $tokenExpireTime;
     }
 
-
-
     /**
      * Rozpoczyna sekwencję szukania lub tworzenia nowego Tokena Importu.
      *
      * @param array $serializedForm
+     *
+     * @return JsonResponse
+     *
+     * @throws IncorrectWniosekIdException gdy podano niewłaściwy (inny niż INT) numer wniosku.
      */
     public function createOrFindToken(array $serializedForm)
     {
@@ -85,10 +88,16 @@ class LsiImportService
 
         }
 
-        //throw niewłaściwy ID WNIOSKU
-
+        throw new IncorrectWniosekIdException();
     }
 
+    /**
+     * Zwraca JsonResponse odpowiednie dla typu.
+     *
+     * @param array $typeAndToken
+     *
+     * @return JsonResponse
+     */
     private function prepareJsonResponse(array $typeAndToken)
     {
         $jsonResponse = new JsonResponse();
@@ -198,6 +207,10 @@ class LsiImportService
 
     /**
      * Sprawdza przekazany z formularza numer wniosku o nadanie uprawnień.
+     *
+     * @param int $wniosekId
+     *
+     * @return bool
      */
     private function validateWniosekId($wniosekId)
     {
@@ -281,19 +294,5 @@ class LsiImportService
     private function generateRandomString()
     {
         return bin2hex(openssl_random_pseudo_bytes(10));
-    }
-
-    /**
-     * Sprawdza czy poprawnie przypisano użytkownika.
-     *
-     * @throws \Exception gdy nie przypisano użytkownika.
-     *
-     * @return void
-     */
-    private function checkUser()
-    {
-        if (null === $this->currentUser) {
-            throw new \Exception('brak tokena');
-        }
     }
 }

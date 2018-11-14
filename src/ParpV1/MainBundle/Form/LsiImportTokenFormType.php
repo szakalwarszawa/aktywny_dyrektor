@@ -9,9 +9,12 @@ use ParpV1\MainBundle\Entity\LsiImportToken;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
+/**
+ * Klasa LsiImportTokenFormType
+ */
 class LsiImportTokenFormType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -21,7 +24,9 @@ class LsiImportTokenFormType extends AbstractType
             ->add('wniosek', HiddenType::class, array(
                 'data' => $options['wniosek_nadanie_odebranie_zasobow']->getId(),
             ))
-            ->add('submit', SubmitType::class, array())
+            ->add('submit', SubmitType::class, array(
+                'label' => 'Wygeneruj Token Importu LSI'
+            ))
         ;
     }
 
@@ -32,8 +37,6 @@ class LsiImportTokenFormType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => LsiImportToken::class,
-            'csrf_protection' => true,
-            'csrf_field_name' => '_token',
             'wniosek_nadanie_odebranie_zasobow' => null,
         ));
     }
