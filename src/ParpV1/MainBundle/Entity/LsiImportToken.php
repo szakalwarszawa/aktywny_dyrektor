@@ -11,13 +11,12 @@ use Gedmo\Mapping\Annotation as Gedmo;
  * LsiImportTokens
  *
  * @ORM\Table(name="lsi_import_tokens")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\Repository\LsiImportTokenRepository")
  */
 class LsiImportToken
 {
     const NEW_TOKEN = 'new_token';
-    const USED_TOKEN = 'used_token';
-    const EXPIRED_TOKEN = 'expired_token';
+    const ACTIVE_TOKEN = 'active_token';
     const SUCCESSFULLY_USED_TOKEN = 'successfully_used_token';
 
     /**
@@ -311,5 +310,33 @@ class LsiImportToken
         $this->useCount++;
 
         return $this;
+    }
+
+    /**
+     * Czy Token Importu jest przeterminowany.
+     *
+     * @return bool
+     */
+    public function isExpired()
+    {
+        return $this->expireAt < new DateTime();
+    }
+
+    public function isValid()
+    {
+        $tokenExpired = $this->isExpired();
+        $tokenUsed = $this->getStatus() === self::SUCCESSFULLY_USED_TOKEN;
+
+        return $tokenExpired || $tokenUsed;
+    }
+
+    /**
+     * Zmienia status na wykorzystany.
+     *
+     * @return void
+     */
+    public function markTokenAsUsed()
+    {
+        $this->status = self::SUCCESSFULLY_USED_TOKEN;
     }
 }

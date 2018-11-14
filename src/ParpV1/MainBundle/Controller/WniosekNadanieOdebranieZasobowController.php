@@ -1657,7 +1657,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $lsiImportService = $this->get('lsi_import_service');
 
-        return $lsiImportService->generateImportToken($formData);
+        return $lsiImportService->createOrFindToken($formData);
     }
 
     /**
