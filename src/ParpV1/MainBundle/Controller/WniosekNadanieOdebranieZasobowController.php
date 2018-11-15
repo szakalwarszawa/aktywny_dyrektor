@@ -27,6 +27,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
+use ParpV1\MainBundle\Form\LsiImportTokenFormType;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -1613,21 +1614,50 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
 
+        $lsiImportTokenForm = null;
+        if ($czyLsi) {
+            $lsiImportTokenForm = $this->createForm(LsiImportTokenFormType::class, null, array(
+                'wniosek_nadanie_odebranie_zasobow' => $entity,
+                'action' => $this->generateUrl('lsi_import_token_generate'),
+            ));
+
+            $lsiImportTokenForm = $lsiImportTokenForm->createView();
+        }
+
         return array(
-            'grupyAD'           => $grupyAD,
-            'entity'            => $entity,
-            'delete_form'       => $deleteForm->createView(),
-            'userzasoby'        => $uzs,
-            'editor'            => $editor,
-            'canReturn'         => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != '00_TWORZONY' &&
+            'grupyAD'               => $grupyAD,
+            'entity'                => $entity,
+            'delete_form'           => $deleteForm->createView(),
+            'userzasoby'            => $uzs,
+            'editor'                => $editor,
+            'canReturn'             => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != '00_TWORZONY' &&
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() !=
                 '01_EDYCJA_WNIOSKODAWCA'),
-            'canUnblock'        => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
-            'czyZastepstwo'     => (in_array($entity->getWniosek()->getLockedBy(), $zastepstwa)),
-            'userzasobyRozbite' => $userzasobyRozbite,
-            'czyLsi'            => $czyLsi,
-            'comments'          => $comments,
+            'canUnblock'            => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'czyZastepstwo'         => (in_array($entity->getWniosek()->getLockedBy(), $zastepstwa)),
+            'userzasobyRozbite'     => $userzasobyRozbite,
+            'czyLsi'                => $czyLsi,
+            'lsi_import_token_form' => $lsiImportTokenForm,
+            'comments'              => $comments,
         );
+    }
+
+    /**
+     * @Route("/generate_lsi_import_token", name="lsi_import_token_generate")
+     *
+     * @Method("POST")
+     *
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
+    public function generateLsiImportTokenAction(Request $request)
+    {
+        $formData = $request->request->all();
+
+        $lsiImportService = $this->get('lsi_import_service');
+
+        return $lsiImportService->createOrFindToken($formData);
     }
 
     /**

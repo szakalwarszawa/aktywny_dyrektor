@@ -51,3 +51,5 @@ parameters:
         katalog_raportow: 'setup/raporty/'
         katalog_plikow_json: ''
         mail_do_raportu: ''
+
+    api_token_expire_minutes: 5
