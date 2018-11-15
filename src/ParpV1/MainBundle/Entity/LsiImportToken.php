@@ -322,6 +322,12 @@ class LsiImportToken
         return $this->expireAt < new DateTime();
     }
 
+    /**
+     * Sprawdzenie czy token jest ważny.
+     * Czy nie wygasł i czy jego status nie jest SUCCESSFULLY_USED_TOKEN.
+     *
+     * @return bool
+     */
     public function isValid()
     {
         $tokenExpired = $this->isExpired();

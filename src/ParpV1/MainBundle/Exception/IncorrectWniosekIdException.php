@@ -1,6 +1,9 @@
 <?php
 namespace ParpV1\MainBundle\Exception;
 
+/**
+ * Klasa wyjątku IncorrectWniosekIdException
+ */
 class IncorrectWniosekIdException extends \Exception
 {
     /**

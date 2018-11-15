@@ -23,7 +23,14 @@ use ParpV1\MainBundle\Exception\IncorrectWniosekIdException;
  */
 class LsiImportService
 {
+    /**
+     * @var string
+     */
     const TOKEN_EXIST = 'token_exist';
+
+    /**
+     * @var string
+     */
     const NAZWA_ZASOBU_LSI1420 = 'LSI1420';
 
     /**
