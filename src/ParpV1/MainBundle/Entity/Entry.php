@@ -158,8 +158,8 @@ class Entry
      * @ORM\Column(name="isImplemented", type="boolean")
      */
     private $isImplemented;
-    
-    
+
+
     /**
      * @var string
      *
@@ -169,7 +169,7 @@ class Entry
      */
     private $initialrights;
 
-    
+
     /**
      * @var string
      *
@@ -187,7 +187,7 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $isDisabled;
-    
+
     /**
      * @var string
      *
@@ -195,8 +195,8 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $disableDescription;
-    
-    
+
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Wniosek", inversedBy="entries")
@@ -204,8 +204,8 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosek;
-    
-    
+
+
     /**
      * @var string
      *
@@ -213,7 +213,7 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $publishedBy;
-    
+
     /**
      * @var \DateTime
      *
@@ -222,7 +222,7 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $publishedAt;
-    
+
     /**
      * @var string
      *
@@ -230,7 +230,7 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $logfile;
-    
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="DaneRekord", inversedBy="entries")
@@ -238,15 +238,15 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $daneRekord;
-    
-    
+
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
     */
     private $createdAt;
-    
-    
+
+
     /**
      * @var string
      *
@@ -254,8 +254,8 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdBy;
-    
-    
+
+
     /**
      * @var boolean
      *
@@ -263,9 +263,9 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $activateDeactivated = false;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -273,7 +273,7 @@ class Entry
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
-    
+
     /**
      * Get id
      *
@@ -315,7 +315,8 @@ class Entry
      */
     public function setAccountExpires($accountExpires)
     {
-        $this->accountExpires = $accountExpires;
+        // Redmine #51829: wydłużenie okresu ważności kont w AD do końca podanego dnia
+        $this->accountExpires = $accountExpires->setTime(23, 59);
 
         return $this;
     }
@@ -520,7 +521,7 @@ class Entry
         return $this->isImplemented;
     }
 
-    
+
 
     /**
      * Set samaccountname
@@ -532,7 +533,7 @@ class Entry
     {
         $find = array('ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż');
         $repl = array('a', 'c', 'e', 'l', 'n', 'o', 's', 'z', 'z');
-        
+
         $samaccountname = strlen($samaccountname) > 20 ? substr($samaccountname, 0, 20) : $samaccountname;
         $samaccountname = strtolower($samaccountname);
         $samaccountname = str_replace($find, $repl, $samaccountname);
@@ -574,9 +575,9 @@ class Entry
     {
         return $this->initials;
     }
-    
-    
-    
+
+
+
 
     /**
      * Set initialrights
@@ -649,7 +650,7 @@ class Entry
     {
         return $this->disableDescription;
     }
-    
+
     public function getRoles()
     {
         return array();
@@ -658,7 +659,7 @@ class Entry
     {
         return $this;
     }
-    
+
     public function setGrupyAD($departament, $czyDodaj = "+")
     {
         if ($departament) {
@@ -872,7 +873,7 @@ class Entry
     {
         return $this->activateDeactivated;
     }
-    
+
     public function getUstawUprawnieniaPoczatkowe()
     {
         return true;

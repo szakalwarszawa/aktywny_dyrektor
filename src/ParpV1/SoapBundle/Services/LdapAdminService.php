@@ -320,14 +320,11 @@ class LdapAdminService
         $entry = array();
 
         if ($person->getAccountExpires()) {
-            // Dla roku 2000 data wygaśnięcia jest zerowana.
-            if ($person->getAccountExpires()->format('Y') == 2000) {
+            // Dla roku 2000 i 3000 data wygaśnięcia jest zerowana.
+            if ($person->getAccountExpires()->format('Y') === '2000' || $person->getAccountExpires()->format('Y') === '3000') {
                 $entry['accountExpires'] = 0;
             } else {
                 $d = $this->unixToLdap($person->getAccountExpires()->getTimestamp());
-                if ($person->getAccountExpires()->format('Y') == '3000') {
-                    $d = '9223372036854775807';
-                }
                 $entry['accountExpires'] = $d;
             }
         }
@@ -717,8 +714,13 @@ class LdapAdminService
 
             $entry = array();
             $entry['cn'] = $person->getCn();
+
             if (!empty($accountExpires)) {
-                $entry['accountExpires'] = $this->unixToLdap($accountExpires->getTimestamp());
+                if ($accountExpires->format('Y') === '2000' || $accountExpires->format('Y') === '3000') {
+                    $entry['accountExpires'] = 0;
+                } else {
+                    $entry['accountExpires'] = $this->unixToLdap($accountExpires->getTimestamp());
+                }
             }
 
             $manager = $person->getManager();
