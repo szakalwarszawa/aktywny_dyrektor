@@ -999,7 +999,7 @@ class DefaultController extends Controller
             ->add('disableDescription', 'choice', array(
                 'label'    => 'Podaj powód wyłączenia konta',
                 'choices'  => array(
-                    ''                                                          => '',
+                    ''                                                          => ' !!! >>>  wybierz  <<< ',
                     'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni',
                     'Konto wyłączono z powodu rozwiązania stosunku pracy'       => 'Konto wyłączono z powodu rozwiązania stosunku pracy',
                 ),
@@ -1291,13 +1291,8 @@ class DefaultController extends Controller
         if (!$mozeTuByc) {
             throw new SecurityTestException('Nie masz uprawnień by tworzyć użytkowników!');
         }
-        // Sięgamy do AD:
-        // $ldap = $this->get('ldap_service');
-        // $ADUser = $ldap->getUserFromAD($samaccountname);
-        //$ADManager = $ldap->getUserFromAD(null, substr($ADUser[0]['manager'], 0, stripos($ADUser[0]['manager'], ',')));
-        //$defaultData = $ADUser[0];
-        //$previousData = $defaultData;
-        $em = $this->getDoctrine()->getManager();
+
+        $entityManager = $this->getDoctrine()->getManager();
 
 
         $entry = new Entry($this->getUser()->getUsername());
@@ -1308,47 +1303,54 @@ class DefaultController extends Controller
         if ($form->isValid()) {
             $this->get('adcheck_service')->checkIfUserCanBeEdited($entry->getSamaccountname());
 
-
-//            $newSection = $form->get('infoNew')->getData();
-//            $oldSection = $form->get('info')->getData();
-//            if ($newSection !== '') {
-//                $ns = new Section();
-//                $ns->setName($newSection);
-//                $ns->setShortName($newSection);
-//                $this->getDoctrine()->getManager()->persist($ns);
-//                $entry->setInfo($newSection);
-//                //unset($ndata['infoNew']);
-//            }
-            // perform some action, such as saving the task to the database
-            // utworz distinguishedname
             $tab = explode('.', $this->container->getParameter('ad_domain'));
             $ou = ($this->container->getParameter('ad_ou'));
             $department =
                 $this->getDoctrine()
                     ->getRepository('ParpMainBundle:Departament')
                     ->findOneBy(['name' => $entry->getDepartment()]);
-            //print_r($form->get('department')->getData());die();
-            $distinguishedname = 'CN='.$entry->getCn().', OU='.$department->getShortname().','.$ou.', DC='.$tab[0].
+            $distinguishedname = 'CN='.$entry->getCn().',OU='.$department->getShortname().','.$ou.',DC='.$tab[0].
                 ',DC='.$tab[1];
 
             $entry->setDistinguishedName($distinguishedname);
 
             $entry->setFromWhen(new \DateTime($entry->getFromWhen()));
 
-            $d = new \DateTime($entry->getAccountExpires());
-            if ($d) {
-                $d->setTime(23, 59);
-                $entry->setAccountExpires($d);
-                //die(".".$d->format("Y-m-d h:I:s"));
+            $data = new \DateTime($entry->getAccountExpires());
+            if ($data) {
+                $data->setTime(23, 59);
+                $entry->setAccountExpires($data);
             }
 
             // FIXME: Tu wydaje mi się że coś jest nie tak.
-//            $value = implode(',', [$entry->getInitialrights()]);
-//            $entry->setInitialrights($value);
+            // $value = implode(',', [$entry->getInitialrights()]);
+            // $entry->setInitialrights($value);
 
-            //print_r($entry);
-            $em->persist($entry);
-            $em->flush();
+            $entityManager->persist($entry);
+            $entityManager->flush();
+
+            $now = new \Datetime();
+            $dane = [
+                'imie_nazwisko'                       => $entry->getCn(),
+                'login'                               => $entry->getSamaccountname(),
+                'departament'                         => $entry->getDepartment(),
+                'data_nadania_uprawnien_poczatkowych' => $now->format('Y-m-d'),
+            ];
+
+            $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
+            $dane['tytul'] = $entry->getCn();
+            $dane['stanowisko'] = $entry->getTitle();
+            $dane['umowa_od'] = $now->format('Y-m-d');
+
+            // wysłanie zgłoszenia do [BI]:
+            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
+
+            // dodaktowe zgłoszenie do [BI] dla administratorów serwera Exchange:
+            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE, $dane);
+
+            // wysłanie zgłoszenia do [BA] jako dyrektor D/B:
+            $dane['nadawca'] = [$department->getDyrektor() . '@parp.gov.pl' => $department->getDyrektor()];
+            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
 
             return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));
         }
