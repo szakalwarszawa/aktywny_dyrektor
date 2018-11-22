@@ -156,7 +156,11 @@ class LdapCommand extends ContainerAwareCommand
                         if ($zmiana->getAccountExpires()) {
                             $liczbaZmian++;
                             // Wygasza się konto
-                            $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
+                            if ($zmiana->getAccountExpires()->format('Y') === '2000' || $zmiana->getAccountExpires()->format('Y') === '3000') {
+                                $output->writeln('  - Wygaszenie konta: nigdy');
+                            } else {
+                                $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
+                            }
                         }
                         if ($zmiana->getDepartment()) {
                             $liczbaZmian++;

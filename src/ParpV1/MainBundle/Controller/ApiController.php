@@ -21,6 +21,7 @@ use ParpV1\MainBundle\Api\Response\Json404NotFoundResponse;
 use ParpV1\MainBundle\Api\Response\Json403ForbiddenResponse;
 use ParpV1\MainBundle\Api\Response\Json422UnprocessableEntityResponse;
 use ParpV1\MainBundle\Api\Exception\InvalidContentException;
+use ParpV1\MainBundle\Entity\LsiImportToken;
 
 /**
  * Api controller.
@@ -155,6 +156,51 @@ class ApiController extends Controller
     }
 
     /**
+     * Po sukcesywnym imporcie uprawnień w LSI zmienia status ImportToken na wykorzystany.
+     *
+     * @Route("/tokenSuccess/{importToken}", requirements={"importToken"=".+"})
+     *
+     * @Method({"PUT"})
+     *
+     * @ApiDoc(
+     *      description="Zmienia status obiektu LsiImportToken na wykorzystany.",
+     *      parameters={
+     *          {
+     *              "name"="importToken",
+     *                 "dataType"="string",
+     *              "required"=true,
+     *              "description"="Token Importu LSI"
+     *          }
+     *      },
+     *      statusCodes={
+     *          200="Returned when successful",
+     *          404="Returned when there is no object in database",
+     *          422="Returned when resource can not be processed"
+     *      }
+     * )
+     */
+    public function markImportTokenSuccess(Request $request, $importToken)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $lsiImportToken = $entityManager
+            ->getRepository(LsiImportToken::class)
+            ->findOneBy(array(
+                'token' => $importToken
+            ));
+        if (null === $lsiImportToken) {
+            return new Json404NotFoundResponse('Token Importu nieznaleziony.');
+        }
+
+        $lsiImportToken->markTokenAsUsed();
+
+        $entityManager->persist($lsiImportToken);
+        $entityManager->flush();
+
+        return new JsonResponse(null, 200);
+    }
+
+    /**
      * Zwraca odpowiedź zawierającą JSON z uprawnieniami do dodania w LSI1420.
      *
      * @Route("/uprawnieniaLsi1420/{numerWniosku}", requirements={"numerWniosku"=".+"})
@@ -191,10 +237,21 @@ class ApiController extends Controller
     public function eksportUprawnienDlsLsi1420Action(Request $request, $numerWniosku)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $wniosek = $entityManager
-            ->getRepository(Wniosek::class)
-            ->findOneByNumer($numerWniosku)
-        ;
+
+        $lsiImportToken = $entityManager
+            ->getRepository(LsiImportToken::class)
+            ->findOneBy(array(
+                'token' => $numerWniosku
+            ));
+        if (null === $lsiImportToken) {
+            return new Json404NotFoundResponse('Token Importu nieznaleziony.');
+        }
+
+        if ($lsiImportToken->isValid()) {
+            return new Json403ForbiddenResponse('Ten Token stracił ważność lub został użyty.');
+        }
+
+        $wniosek = $lsiImportToken->getWniosek();
         if (null === $wniosek) {
             return new Json404NotFoundResponse('Nie znaleziono wniosku o nadanie uprawnień.');
         }
@@ -214,7 +271,7 @@ class ApiController extends Controller
             ->getUserZasoby()
         ;
         try {
-            $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep, $numerWniosku);
+            $eksport = $this->parseWnioskowanyDostep($wnioskowanyDostep, $wniosek->getNumer());
         } catch (InvalidContentException $e) {
             $komunikat = 'Wniosek o nadanie uprawnień zawiera niepoprawne dane.';
             return new Json422UnprocessableEntityResponse($komunikat);
@@ -223,6 +280,10 @@ class ApiController extends Controller
         if (empty($eksport)) {
             return new Json404NotFoundResponse('We wniosku nie znaleziono uprawnień do nadania.');
         }
+
+        $lsiImportToken->incrementUseCount();
+        $entityManager->persist($lsiImportToken);
+        $entityManager->flush();
 
         return new JsonResponse($eksport);
     }
@@ -258,7 +319,7 @@ class ApiController extends Controller
                     if (count($naborArr) >= 2) {
                         $dzialanie = $naborArr[0];
                         $nrNaboru = $naborArr[1];
-        
+
                         foreach ($uprawnienia as $role) {
                             $uprawnienieLsi1420 = new UprawnienieLsi1420(
                                 $numerWniosku,

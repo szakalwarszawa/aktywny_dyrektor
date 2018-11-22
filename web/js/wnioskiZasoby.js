@@ -61,8 +61,12 @@ $(document).ready(function(){
             $('.inputAktywneDo', $(row)).val("");
         }
     });
-    //form[userzasoby][0][bezterminowo]
 
+    $('*[data-ajax]').click(function(event) {
+            event.preventDefault();
+            var form = extractParentForm(this);
+            ajaxFormCall(form);
+        });
 });
 
 function ZaakceptujWniosek(event, wlasciciel){
@@ -113,4 +117,24 @@ function beforeSubmit(event){
         event.preventDefault();
         alert(message);
     }
+}
+
+function extractParentForm(childObject)
+{
+    if (!(childObject instanceof jQuery)) {
+        childObject = $(childObject);
+    }
+
+    return childObject.parent('form');
+}
+
+function ajaxFormCall(formObject)
+{
+    var url = formObject.prop('action');
+    var serializedForm = formObject.serialize();
+
+    $.post(url, serializedForm, function(responseData) {
+        responseData = JSON.parse(responseData);
+        prompt(responseData.message, responseData.token);
+    });
 }
