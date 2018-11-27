@@ -5,7 +5,6 @@ namespace ParpV1\SoapBundle\Services;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\Container;
-use Symfony\Component\Security\Core\SecurityContextInterface;
 
 //use Memcached;
 
@@ -13,7 +12,6 @@ class LdapService
 {
 
     protected $dodatkoweOpcje = 'ekranEdycji';
-    protected $securityContext;
     protected $ad_host;
     protected $ad_domain;
     protected $container;
@@ -45,9 +43,8 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(SecurityContextInterface $securityContext, Container $container)
+    public function __construct(Container $container)
     {
-        $this->securityContext = $securityContext;
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
         $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
@@ -833,9 +830,6 @@ class LdapService
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
-        //$ldap_username = $this->securityContext->getToken()->getUsername();
-        //$ldap_password = $this->securityContext->getToken()->getUser()->getPassword();
-
 
         $ldap_username = $this->container->getParameter('ad_user');
         $ldap_password = $this->container->getParameter('ad_password');
@@ -1305,7 +1299,7 @@ class LdapService
                     }
                 }
             }
-            if (in_array('PARP_ADMIN', $this->container->get('security.context')
+            if (in_array('PARP_ADMIN', $this->container->get('security.token_storage')
                                     ->getToken()
                                     ->getUser()->getRoles(), true)) {
                 //var_dump(($grupy));

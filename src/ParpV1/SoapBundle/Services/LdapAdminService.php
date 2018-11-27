@@ -7,7 +7,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Exception\SecurityTestException;
@@ -24,7 +24,7 @@ class LdapAdminService
     protected $protocol = ''; //"ldap://";
     protected $port = 389;//636;
     protected $debug = 0;
-    protected $securityContext;
+    protected $tokenStorage;
     protected $AdminUser = 'aktywny_dyrektor';
     protected $AdminPass = 'F4UCorsair';
     protected $grupyOU = 'PARP Grupy';
@@ -42,15 +42,14 @@ class LdapAdminService
 
     /**
      * LdapAdminService constructor.
-     * @param SecurityContextInterface $securityContext
+     * @param TokenStorage $tokenStorage
      * @param Container $container
      * @param EntityManager $OrmEntity
      * @throws SecurityTestException
      */
-    public function __construct(SecurityContextInterface $securityContext, Container $container, EntityManager $OrmEntity)
+    public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity)
     {
-        //var_dump($securityContext->isGranted('PARP_ADMIN')); //->getToken()->getRoles()); die();
-        if (!in_array('PARP_ADMIN', $securityContext->getToken()->getUser()->getRoles())) {
+        if (!in_array('PARP_ADMIN', $tokenStorage->getToken()->getUser()->getRoles())) {
             //throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");
             //echo ""; var_dump(debug_backtrace());
             throw new SecurityTestException('Tylko administrator AkD może aktualizować zmiany w AD');
@@ -65,7 +64,6 @@ class LdapAdminService
         putenv('LDAPTLS_REQCERT=never');
 
         $this->doctrine = $OrmEntity;
-        $this->securityContext = $securityContext;
         $this->container = $container;
         //$this->ad_host = $this->container->getParameter('ad_host'.($this->hostId ? $this->hostId : ""));
         $this->switchServer();
