@@ -13,10 +13,8 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\Zadanie;
 use ParpV1\MainBundle\Form\ZadanieType;
-use Symfony\Component\Security\Core\SecurityContext;
 
 /**
  * Zadanie controller.
@@ -38,15 +36,16 @@ class ZadanieController extends Controller
         $grid2 = $this->makeGrid(false);
         return $this->render('ParpMainBundle:Zadanie:index.html.twig', array('grid' => $grid, 'grid2' => $grid2));
     }
-    
+
     protected function makeGrid($aktywne)
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Zadanie')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:Zadanie');
-        
-        $user = $this->get('security.context')->getToken()->getUser();
+
+        $user = $this->getUser();
+
         $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
         $username = trim($ad[0]['name']);
         //print_r($username);
@@ -65,43 +64,43 @@ class ZadanieController extends Controller
                 }
             }
         );
-        
-    
+
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'zadanie_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'zadanie_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
         return $grid;
     }
-    
+
     /**
      * Creates a new Zadanie entity.
      *
@@ -263,8 +262,8 @@ class ZadanieController extends Controller
             if (($entity->getDataUkonczenia() != null && $oldEn->getDataUkonczenia() == null)
             ) {
                 //zmiana daty ukonczenie
-                
-                $user = $this->get('security.context')->getToken()->getUser();
+
+                $user = $this->getUser();
                 $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
                 $username = trim($ad[0]['name']);
                 $entity->setUkonczonePrzez($username);
@@ -272,8 +271,8 @@ class ZadanieController extends Controller
             if ($entity->getStatus() == "zrealizowany" && $oldEn->getStatus() != "zrealizowany"
             ) {
                 //zmiana statusu
-                
-                $user = $this->get('security.context')->getToken()->getUser();
+
+                $user = $this->getUser();
                 $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
                 $username = trim($ad[0]['name']);
                 $entity->setUkonczonePrzez($username);

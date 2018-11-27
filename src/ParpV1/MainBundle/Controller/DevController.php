@@ -487,9 +487,9 @@ class DevController extends Controller
         $now = new \Datetime();
 
         $username = 'undefined';
-        $securityContext = $this->get('security.context');
-        if (null !== $securityContext && null !== $securityContext->getToken() && $securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
-            $username = ($securityContext->getToken()->getUsername());
+        $tokenStorage = $this->get('security.token_storage');
+        if (null !== $tokenStorage && null !== $tokenStorage->getToken() && $tokenStorage->getToken()->isAuthenticated()) {
+            $username = ($tokenStorage->getToken()->getUsername());
         }
         $request = $this->get('request');
         $url = $request->getUri();

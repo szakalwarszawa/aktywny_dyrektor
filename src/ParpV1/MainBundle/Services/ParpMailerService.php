@@ -4,8 +4,9 @@ namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\Email;
-use Symfony\Component\Security\Core\SecurityContext;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Exception\ValidatorException;
+use Swift_Mailer;
 
 /**
  * Klasa ParpMailerService.
@@ -72,9 +73,9 @@ class ParpMailerService
     private $mailer;
 
     /**
-     * @var \Symfony\Component\Security\Core\SecurityContext
+     * @var TokenStorage
      */
-    private $securityContext;
+    private $tokenStorage;
 
     private $templating;
 
@@ -85,14 +86,14 @@ class ParpMailerService
     /**
      * EmailerService constructor.
      *
-     * @param \Doctrine\ORM\EntityManager                      $entityManager
-     * @param \Swift_Mailer                                    $mailer
-     * @param \Symfony\Component\Security\Core\SecurityContext $securityContext
+     * @param EntityManager $entityManager
+     * @param Swift_Mailer $mailer
+     * @param TokenStorage $tokenStorage
      */
     public function __construct(
         EntityManager $entityManager,
         \Swift_Mailer $mailer,
-        SecurityContext $securityContext,
+        TokenStorage $tokenStorage,
         $templating,
         $ldap,
         $idSrodowiska
@@ -100,7 +101,7 @@ class ParpMailerService
 
         $this->entityManager = $entityManager;
         $this->mailer = $mailer;
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->templating = $templating;
         $this->ldap = $ldap;
         $this->idSrodowiska = $idSrodowiska;
@@ -165,8 +166,8 @@ class ParpMailerService
             ->setLiczbaMaili($sent)
             ->setOdbiorca($recipient);
 
-        if ($this->securityContext->getToken()) {
-            $uzytkownik = $this->securityContext->getToken()->getUser()->getUsername();
+        if ($this->tokenStorage->getToken()) {
+            $uzytkownik = $this->tokenStorage->getToken()->getUser()->getUsername();
             $email->setUzytkownik($uzytkownik);
         }
         $this->entityManager->persist($email);
