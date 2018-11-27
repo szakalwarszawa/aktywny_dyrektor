@@ -7,7 +7,7 @@ use Symfony\Component\HttpKernel\Event\GetResponseEvent;
 use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Routing\RouterInterface;
 use Symfony\Component\HttpFoundation\RedirectResponse;
-use Symfony\Component\Security\Core\SecurityContextInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Class SessionIdleHandler
@@ -17,21 +17,21 @@ class SessionIdleHandler
 {
 
     protected $session;
-    protected $securityContext;
+    protected $tokenStorage;
     protected $router;
     protected $maxIdleTime;
 
     /**
      * SessionIdleHandler constructor.
      * @param SessionInterface $session
-     * @param SecurityContextInterface $securityContext
+     * @param TokenStorage $tokenStorage
      * @param RouterInterface $router
      * @param int $maxIdleTime
      */
-    public function __construct(SessionInterface $session, SecurityContextInterface $securityContext, RouterInterface $router, $maxIdleTime = 0)
+    public function __construct(SessionInterface $session, TokenStorage $tokenStorage, RouterInterface $router, $maxIdleTime = 0)
     {
         $this->session = $session;
-        $this->securityContext = $securityContext;
+        $this->tokenStorage = $tokenStorage;
         $this->router = $router;
         $this->maxIdleTime = $maxIdleTime;
     }
@@ -50,7 +50,7 @@ class SessionIdleHandler
             $lapse = time() - $this->session->getMetadataBag()->getLastUsed();
 
             if ($lapse > $this->maxIdleTime) {
-                $this->securityContext->setToken(null);
+                $this->tokenStorage->setToken(null);
                 $this->session->getFlashBag()->set('info', 'You have been logged out due to inactivity.');
 
                 // Change the route if you are not using FOSUserBundle.
