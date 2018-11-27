@@ -1,16 +1,16 @@
 services:
     my.handler.session_idle:
         class: ParpV1\AuthBundle\Handler\SessionIdleHandler
-        arguments: ["@session", "@security.context", "@router", %session_max_idle_time%]
+        arguments: ["@session", "@security.token_storage", "@router", %session_max_idle_time%]
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
         class: ParpV1\SoapBundle\Services\LdapService
-        arguments: ["@security.context","@service_container"]
+        arguments: ["@service_container"]
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
-            arguments: ["@security.context","@service_container","@doctrine.orm.entity_manager"]
+            arguments: ["@security.token_storage","@service_container","@doctrine.orm.entity_manager"]
             tags: ~
     gedmo.listener.loggable:
         class: Gedmo\Loggable\LoggableListener
@@ -104,7 +104,7 @@ services:
         tags: ~
     parp.mailer:
         class : ParpV1\MainBundle\Services\ParpMailerService
-        arguments: ["@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.context", "@templating", "@ldap_service", '%id_srodowiska%']
+        arguments: ["@doctrine.orm.entity_manager", "@swiftmailer.mailer", "@security.token_storage", "@templating", "@ldap_service", '%id_srodowiska%']
     parp.user_login_service:
         class : ParpV1\AuthBundle\Services\UserLoginService
         arguments: ["@doctrine.orm.entity_manager"]

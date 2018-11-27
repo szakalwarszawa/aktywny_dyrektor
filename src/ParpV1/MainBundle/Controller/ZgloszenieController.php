@@ -37,7 +37,7 @@ class ZgloszenieController extends Controller
      */
     public function noweZgloszenieAction($uri = null)
     {
-        $user = $this->get('security.context')->getToken()->getUser();
+        $user = $this->getUser();
         $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
         //echo "<pre>"; print_r($ad); die();
         $dane_wstepne = array("uri" => urldecode($uri));
