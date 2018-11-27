@@ -76,7 +76,7 @@ class LdapCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            if (!$this->getContainer()->get('security.context')->getToken()) {
+            if (!$this->getContainer()->get('security.token_storage')->getToken()) {
                 $user = new ParpUser("kamil_jakacki", "", "salt", ["PARP_ADMIN"]);
                 // create the authentication token
                 $token = new UsernamePasswordToken(
@@ -86,7 +86,7 @@ class LdapCommand extends ContainerAwareCommand
                     $user->getRoles()
                 );
                 // give it to the security context
-                $this->getContainer()->get('security.context')->setToken($token);
+                $this->getContainer()->get('security.token_storage')->setToken($token);
             }
 
             $t1 = microtime(true) ;
