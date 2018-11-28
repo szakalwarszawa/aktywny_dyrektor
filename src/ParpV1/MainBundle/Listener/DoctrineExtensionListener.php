@@ -1,24 +1,13 @@
 <?php
-
-// file: src/Acme/DemoBundle/Listener/DoctrineExtensionListener.php
-
 namespace ParpV1\MainBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DoctrineExtensionListener implements ContainerAwareInterface
+class DoctrineExtensionListener
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
+    use ContainerAwareTrait;
 
     public function onLateKernelRequest(GetResponseEvent $event)
     {
