@@ -17,6 +17,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 /**
  * Klasa kontrolera obsługująca wysyłanie i odbieranie zgłoszeń do/z Redmine.
@@ -62,7 +63,7 @@ class ZgloszenieController extends Controller
                     'class' => 'col-xs-2',
                 ),
             ))
-        ->add('email', 'email', array(
+        ->add('email', EmailType::class, array(
                  'label' => 'Proszę podać email kontaktowy',
                  'data' => trim(@$ad[0]['samaccountname'])."@parp.gov.pl",//trim(@$ad[0]['email']),
                  'attr' => array(
@@ -230,7 +231,7 @@ class ZgloszenieController extends Controller
                         new NotBlank(array('message' => 'Pole opis problemu technicznego jest wymagane.')),
                     ),
                 ))
-                ->add('email', 'email', array(
+                ->add('email', EmailType::class, array(
                     'label' => 'Proszę podać email kontaktowy',
                     'attr' => array(
                         'class' => 'form-control col-xs-5',

@@ -2,10 +2,13 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
@@ -52,22 +55,22 @@ class WniosekUtworzenieZasobuType extends AbstractType
         }
 
         $builder
-            ->add('wniosekDomenowy', 'checkbox', $atrs)
+            ->add('wniosekDomenowy', CheckboxType::class, $atrs)
             ->add('wniosek', new WniosekType($ADUsers), array(
                 'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek'))
             //->add('deletedAt')
-            ->add('imienazwisko', 'text', ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
-            ->add('login', 'text', ['attr' => ['readonly' => true]])
-            ->add('departament', 'text', ['attr' => ['readonly' => true]])
-            ->add('stanowisko', 'text', ['attr' => ['readonly' => true]])
+            ->add('imienazwisko', TextType::class, ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
+            ->add('login', TextType::class, ['attr' => ['readonly' => true]])
+            ->add('departament', TextType::class, ['attr' => ['readonly' => true]])
+            ->add('stanowisko', TextType::class, ['attr' => ['readonly' => true]])
             ->add('telefon')
-            ->add('nrpokoju', 'text', ['required' => false, 'label' => 'Numer pokoju'])
+            ->add('nrpokoju', TextType::class, ['required' => false, 'label' => 'Numer pokoju'])
             ->add('email')
             //->add('proponowanaNazwa')
 
             //->add('zasob')
-            ->add('zmienionePola', 'text', ['attr' => ['readonly' => true]])
-            ->add('zrealizowany', 'hidden');
+            ->add('zmienionePola', TextType::class, ['attr' => ['readonly' => true]])
+            ->add('zrealizowany', HiddenType::class);
 
         if (true === $hideCheckboxes) {
             if ($entity->getTypWnioskuDoRejestru()) {
@@ -157,12 +160,12 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 'cascade_validation' => true,
             ));
 
-            $builder->add('zmienianyZasob', 'hidden', ['attr' => ['class' => 'form-item']]);
+            $builder->add('zmienianyZasob', HiddenType::class, ['attr' => ['class' => 'form-item']]);
         } elseif ("zmiana" === $typ) {
             if ($entity->getId()) {
                 $builder->add(
                     'zmienianyZasob',
-                    'text',
+                    TextType::class,
                     [
                         'mapped' => false,
                         'attr' => ['readonly' => true],
@@ -226,7 +229,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 ));
             }
 
-            $builder->add('zasob', 'hidden', ['attr' => ['class' => 'form-item']]);
+            $builder->add('zasob', HiddenType::class, ['attr' => ['class' => 'form-item']]);
         } else {
             throw new UnexpectedTypeException('Nieznany typ '. $typ, null);
         }
@@ -235,7 +238,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
     /**
      * @param OptionsResolverInterface $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => 'ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu',
@@ -253,7 +256,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_wniosekutworzeniezasobu';
     }
