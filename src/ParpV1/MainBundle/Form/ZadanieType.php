@@ -57,15 +57,15 @@ class ZadanieType extends AbstractType
                 ))
                 ->addModelTransformer($transformer)
             )
-            
+
             ->add('ukonczonePrzez', TextType::class, array('attr' => array('readonly' => true)))
             ->add('obiekt', HiddenType::class)
             ->add('obiektId', HiddenType::class)
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

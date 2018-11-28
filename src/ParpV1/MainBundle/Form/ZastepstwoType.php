@@ -14,7 +14,7 @@ class ZastepstwoType extends AbstractType
 {
     protected $ADUser;
     protected $ADUsers;
-    
+
     public function __construct($ADUser, $ADUsers)
     {
         $this->ADUser = $ADUser;
@@ -47,8 +47,8 @@ class ZastepstwoType extends AbstractType
             $builder->add('kogoZastepuje', TextType::class, array(
                 'required' => true, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true)));
         }
-            
-            
+
+
         $builder->add('dataOd', DateTimeType::class, array(
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
@@ -60,7 +60,7 @@ class ZastepstwoType extends AbstractType
                     'required' => true,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd HH:mm'
-                    
+
                 ))
             ->add('dataDo', DateTimeType::class, array(
                     'attr' => array(
@@ -73,13 +73,13 @@ class ZastepstwoType extends AbstractType
                     'required' => true,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd HH:mm'
-                    
+
                 ))
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

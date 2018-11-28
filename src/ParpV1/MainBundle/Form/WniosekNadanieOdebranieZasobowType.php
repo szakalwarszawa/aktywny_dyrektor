@@ -14,7 +14,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     protected $ADUsers;
     protected $entity;
     protected $managerzySpozaPARP;
-    
+
     public function __construct($ADUsers, $managerzySpozaPARP, $entity)
     {
         $this->ADUsers = $ADUsers;
@@ -46,8 +46,8 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 ));
 */
         }
-            
-            
+
+
         $builder->add('pracownikSpozaParp', CheckboxType::class, array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
 
             ->add($builder->create('pracownicy', 'choice', array(
@@ -57,9 +57,9 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
-            
+
             ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
-            
+
             ->add('managerSpozaParp', ChoiceType::class, array(
                 'choices' => $this->managerzySpozaPARP,
                 'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2')))
@@ -67,9 +67,9 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek',
                 'label' => false));
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

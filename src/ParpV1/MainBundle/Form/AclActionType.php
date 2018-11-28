@@ -22,9 +22,9 @@ class AclActionType extends AbstractType
             ->add('roles', null, array('by_reference' => false))
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

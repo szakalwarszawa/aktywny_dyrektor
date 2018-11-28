@@ -27,9 +27,9 @@ class DaneRekordType extends AbstractType
             ->add('umowaDo', DateType::class, ['widget' => 'single_text', 'required' => false])
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

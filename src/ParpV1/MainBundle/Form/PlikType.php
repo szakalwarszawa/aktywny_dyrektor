@@ -27,9 +27,9 @@ class PlikType extends AbstractType
             ->add('obiektId', HiddenType::class)
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

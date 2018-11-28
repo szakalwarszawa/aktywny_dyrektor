@@ -20,9 +20,9 @@ class WniosekNadanieOdebranieZasobowEditorType extends AbstractType
             ->add('wniosek')
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

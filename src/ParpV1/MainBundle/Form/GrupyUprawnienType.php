@@ -20,9 +20,9 @@ class GrupyUprawnienType extends AbstractType
             ->add('uprawnienia', null, array('expanded' => true))
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

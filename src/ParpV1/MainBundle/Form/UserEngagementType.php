@@ -32,9 +32,9 @@ class UserEngagementType extends AbstractType
             ->add('submit', SubmitType::class)
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
