@@ -2,9 +2,12 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class KomentarzType extends AbstractType
 {
@@ -15,22 +18,22 @@ class KomentarzType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('deletedAt', 'hidden')
-            ->add('samaccountname', 'text', array(
+            ->add('deletedAt', HiddenType::class)
+            ->add('samaccountname', TextType::class, array(
                 'attr' => array('readonly' => true),
                 'label' => 'Osoba dodająca komentarz'
             ))
-            ->add('tytul', 'text', ['label' => 'Tytuł komentarza'])
-            ->add('opis', 'textarea', ['label' => 'Treść komentarza', 'attr' => ['maxlength' => 5000]])
-            ->add('obiekt', 'hidden')
-            ->add('obiektId', 'hidden')
+            ->add('tytul', TextType::class, ['label' => 'Tytuł komentarza'])
+            ->add('opis', TextareaType::class, ['label' => 'Treść komentarza', 'attr' => ['maxlength' => 5000]])
+            ->add('obiekt', HiddenType::class)
+            ->add('obiektId', HiddenType::class)
         ;
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\Komentarz'
@@ -40,7 +43,7 @@ class KomentarzType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_komentarz';
     }

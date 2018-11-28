@@ -2,9 +2,12 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PlikType extends AbstractType
 {
@@ -17,18 +20,18 @@ class PlikType extends AbstractType
         $builder
             //->add('deletedAt')
             ->add('nazwa')
-            ->add('typ', 'choice', array('choices' => array('wniosek' => 'załącznik')))
+            ->add('typ', ChoiceType::class, array('choices' => array('wniosek' => 'załącznik')))
             ->add('opis')
-            ->add('file', 'file', array('data' => null, 'required' => false))
-            ->add('obiekt', 'hidden')
-            ->add('obiektId', 'hidden')
+            ->add('file', FileType::class, array('data' => null, 'required' => false))
+            ->add('obiekt', HiddenType::class)
+            ->add('obiektId', HiddenType::class)
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\Plik'
@@ -38,7 +41,7 @@ class PlikType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_plik';
     }

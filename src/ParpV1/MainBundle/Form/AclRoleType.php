@@ -4,15 +4,16 @@ namespace ParpV1\MainBundle\Form;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class AclRoleType extends AbstractType
 {
-    
-    
+
+
     protected $ADUsers;
     protected $em;
-    
+
     public function __construct($ADUsers, $em)
     {
         $this->ADUsers = $ADUsers;
@@ -30,22 +31,22 @@ class AclRoleType extends AbstractType
             ->add('name')
             ->add('opis')
             ->add('actions')
-            ->add($builder->create('users', 'choice', array(
+            ->add($builder->create('users', ChoiceType::class, array(
                 'choices' => $this->ADUsers,
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))
-            
+
             ->addModelTransformer($transformer))
             //->add('users')
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\AclRole'
@@ -55,7 +56,7 @@ class AclRoleType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_aclrole';
     }

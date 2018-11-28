@@ -2,9 +2,13 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 
@@ -36,13 +40,13 @@ class UserZasobyType extends AbstractType
         $d1 = $this->datauz ? $this->datauz['aktywneOd'] : $now->format("d-m-Y");
         //print_r($this->datauz);
         $builder
-            ->add('id', 'hidden')
-            ->add('samaccountname', 'hidden')
-            ->add('zasobNazwa', 'hidden')
-            ->add('zasobId', 'hidden')
+            ->add('id', HiddenType::class)
+            ->add('samaccountname', HiddenType::class)
+            ->add('zasobNazwa', HiddenType::class)
+            ->add('zasobId', HiddenType::class)
 
 
-            ->add('aktywneOd', 'text', array(
+            ->add('aktywneOd', TextType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
                         'placeholder' => 'Aktywne od'
@@ -58,10 +62,10 @@ class UserZasobyType extends AbstractType
                     'data' => $d1,
                     //'format' => 'Y-m-d'
                 ))
-            ->add('bezterminowo', 'checkbox', ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
-            ->add('sumowanieUprawnien', 'checkbox', ['required' => false])
+            ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
+            ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
             //->add('aktywneOdPomijac')
-            ->add('aktywneDo', 'text', array(
+            ->add('aktywneDo', TextType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker inputAktywneDo',
                         'placeholder' => 'Aktywne do'
@@ -77,7 +81,7 @@ class UserZasobyType extends AbstractType
                     'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
                     //'format' => 'Y-m-d'
                 ))
-            ->add('kanalDostepu', 'choice', [
+            ->add('kanalDostepu', ChoiceType::class, [
                 'choices' => [
                     'WK' => 'WK - Wewnętrzny kablowy',
                     'DZ_O' => 'DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP',
@@ -140,9 +144,9 @@ class UserZasobyType extends AbstractType
     }
 
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\UserZasoby'
@@ -152,7 +156,7 @@ class UserZasobyType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_userzasoby';
     }

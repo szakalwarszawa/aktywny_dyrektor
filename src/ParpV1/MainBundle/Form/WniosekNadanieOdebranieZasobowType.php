@@ -2,16 +2,19 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class WniosekNadanieOdebranieZasobowType extends AbstractType
 {
     protected $ADUsers;
     protected $entity;
     protected $managerzySpozaPARP;
-    
+
     public function __construct($ADUsers, $managerzySpozaPARP, $entity)
     {
         $this->ADUsers = $ADUsers;
@@ -26,7 +29,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     {
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
-            ->add('odebranie', 'hidden');
+            ->add('odebranie', HiddenType::class);
         //die(". ".$this->entity->getOdebranie());
         if ($this->entity->getOdebranie()) {
 /*
@@ -43,9 +46,9 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 ));
 */
         }
-            
-            
-        $builder->add('pracownikSpozaParp', 'checkbox', array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
+
+
+        $builder->add('pracownikSpozaParp', CheckboxType::class, array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
 
             ->add($builder->create('pracownicy', 'choice', array(
                 'choices' => $this->ADUsers,
@@ -54,21 +57,21 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
-            
+
             ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
-            
-            ->add('managerSpozaParp', 'choice', array(
+
+            ->add('managerSpozaParp', ChoiceType::class, array(
                 'choices' => $this->managerzySpozaPARP,
                 'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2')))
             ->add('wniosek', new \ParpV1\MainBundle\Form\WniosekType($this->ADUsers), array(
                 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek',
                 'label' => false));
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow'
@@ -78,7 +81,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_wnioseknadanieodebraniezasobow';
     }
