@@ -33,6 +33,11 @@ use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
 use Symfony\Component\Security\Core\Exception\UnsupportedUserException;
 use Symfony\Component\Validator\Constraints\File;
 use Symfony\Component\Validator\Constraints\NotBlank;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Class DefaultController
@@ -778,7 +783,7 @@ class DefaultController extends Controller
 
 
         $builder = $that->createFormBuilder($defaultData)
-            ->add('samaccountname', 'text', array(
+            ->add('samaccountname', TextType::class, array(
                 'required'   => false,
                 'read_only'  => true,
                 'label'      => 'Nazwa konta',
@@ -790,7 +795,7 @@ class DefaultController extends Controller
                     'readonly' => true //(!$admin)
                 ),
             ))
-            ->add('cn', 'text', array(
+            ->add('cn', TextType::class, array(
                 'required'   => false,
                 'read_only'  => false,
                 'label'      => 'Nazwisko i Imię', //'Imię i Nazwisko',//'Nazwisko i Imię',
@@ -802,7 +807,7 @@ class DefaultController extends Controller
                     'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                 ),
             ))
-            ->add('initials', 'text', array(
+            ->add('initials', TextType::class, array(
                 'required'   => false,
                 'read_only'  => false,
                 'label'      => 'Inicjały',
@@ -814,7 +819,7 @@ class DefaultController extends Controller
                     'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
                 ),
             ))
-            ->add('title', 'choice', array(
+            ->add('title', ChoiceType::class, array(
                 //                'class' => 'ParpMainBundle:Position',
                 'required'   => false,
                 'read_only'  => false,
@@ -832,7 +837,7 @@ class DefaultController extends Controller
                 'choices'    => $titles,
                 //                'mapped'=>false,
             ))
-            ->add('infoNew', 'hidden', array(
+            ->add('infoNew', HiddenType::class, array(
                 'mapped'     => false,
                 'label'      => false,
                 'label_attr' => array(
@@ -844,7 +849,7 @@ class DefaultController extends Controller
                 ),
 
             ))
-            ->add('info', 'choice', array(
+            ->add('info', ChoiceType::class, array(
                 'required'   => false,
                 'read_only'  => false,
                 'label'      => 'Sekcja',
@@ -860,7 +865,7 @@ class DefaultController extends Controller
                 'choices'    => $sections,
                 'data' => $info,
             ))
-            ->add('department', 'choice', array(
+            ->add('department', ChoiceType::class, array(
                 'required'   => false,
                 'read_only'  => false,
                 'label'      => 'Biuro / Departament',
@@ -876,7 +881,7 @@ class DefaultController extends Controller
                 'choices'    => $departments,
                 //'data' => @$defaultData["department"],
             ))
-            ->add('manager', 'choice', array(
+            ->add('manager', ChoiceType::class, array(
                 'required'   => false,
                 'read_only'  => (!$admin && !$kadry1 && !$kadry2),
                 'label'      => 'Przełożony',
@@ -894,25 +899,7 @@ class DefaultController extends Controller
                 'choices'    => $przelozeni
                 //'data' => @$defaultData['manager']
             ))
-            /*
-                            ->add('manager', 'text', array(
-                                'required' => false,
-                                'read_only' => true,
-                                'label' => 'Przełożony',
-                                'label_attr' => array(
-                                    'class' => 'col-sm-4 control-label',
-                                ),
-                                'attr' => array(
-                                    'class' => 'form-control',
-                                    'readonly' => (!$admin && !$kadry1 && !$kadry2) || 1,
-
-                                    //'disabled' => (!$admin && !$kadry1 && !$kadry2)
-
-                                ),
-                                //'data' => @$defaultData['manager']
-                            ))
-            */
-            ->add('accountExpires', 'text', array(
+            ->add('accountExpires', TextType::class, array(
                 'attr'       => array(
                     'class' => 'form-control',
                 ),
@@ -927,7 +914,7 @@ class DefaultController extends Controller
                 'required'   => false,
                 //'data' => @$expires
             ))
-            ->add('fromWhen', 'text', array(
+            ->add('fromWhen', TextType::class, array(
                 'attr'       => array(
                     'class' => 'form-control',
                 ),
@@ -941,7 +928,7 @@ class DefaultController extends Controller
                 'required'   => false,
                 'data'       => $now->format('Y-m-d'),
             ))
-            ->add('initialrights', 'choice', array(
+            ->add('initialrights', ChoiceType::class, array(
                 'required'   => false,
                 'read_only'  => false,
                 'label'      => 'Uprawnienia początkowe',
@@ -960,7 +947,7 @@ class DefaultController extends Controller
                 'multiple'   => true,
                 'expanded'   => false,
             ))
-            ->add('roles', 'choice', array(
+            ->add('roles', ChoiceType::class, array(
                 'required'   => false,
                 'read_only'  => (!$admin),
                 'label'      => 'Role w AkD',
@@ -978,7 +965,7 @@ class DefaultController extends Controller
                 'multiple'   => true,
                 'expanded'   => false,
             ))
-            ->add('isDisabled', 'choice', array(
+            ->add('isDisabled', ChoiceType::class, array(
                 'required'   => true,
                 'read_only'  => false,
                 'label'      => 'Konto wyłączone w AD',
@@ -996,7 +983,7 @@ class DefaultController extends Controller
                 ),
                 //'data' => @$defaultData["department"],
             ))
-            ->add('disableDescription', 'choice', array(
+            ->add('disableDescription', ChoiceType::class, array(
                 'label'    => 'Podaj powód wyłączenia konta',
                 'choices'  => array(
                     ''                                                          => ' !!! >>>  wybierz  <<< ',
@@ -1008,7 +995,7 @@ class DefaultController extends Controller
                     'disabled' => (!$admin && !$kadry1 && !$kadry2),
                 ),
             ))
-            ->add('ustawUprawnieniaPoczatkowe', 'checkbox', array(
+            ->add('ustawUprawnieniaPoczatkowe', CheckboxType::class, array(
                 'label'      => 'Resetuj do uprawnień początkowych',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -1022,7 +1009,7 @@ class DefaultController extends Controller
             ));
 
         if (!(!$admin && !$kadry1 && !$kadry2)) {
-            $builder->add('zapisz', 'submit', array(
+            $builder->add('zapisz', SubmitType::class, array(
                 'attr' => array(
                     'class'    => 'btn btn-success col-sm-12',
                     'disabled' => (!$admin && !$kadry1 && !$kadry2),
