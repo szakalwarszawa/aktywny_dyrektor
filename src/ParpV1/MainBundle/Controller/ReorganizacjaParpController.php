@@ -9,6 +9,9 @@ use Symfony\Component\Validator\Constraints\File;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 /**
  * Klaster controller.
@@ -606,7 +609,7 @@ class ReorganizacjaParpController extends Controller
     public function importujSekcjeAction(Request $request)
     {
 
-        $form = $this->createFormBuilder()->add('plik', 'file', array(
+        $form = $this->createFormBuilder()->add('plik', FileType::class, array(
                     'required' => false,
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
@@ -627,10 +630,10 @@ class ReorganizacjaParpController extends Controller
                     ),
                     'mapped' => false,
                 ))
-                ->add('wczytaj', 'submit', array('attr' => array(
+                ->add('wczytaj', SubmitType::class, array('attr' => array(
                         'class' => 'btn btn-success col-sm-12',
                 )))
-                ->add('typPliku', 'choice', ['choices' => ['sekcje' => 'sekcje', 'zasoby' => 'zasoby']])
+                ->add('typPliku', ChoiceType::class, ['choices' => ['sekcje' => 'sekcje', 'zasoby' => 'zasoby']])
                 ->getForm();
 
         $form->handleRequest($request);

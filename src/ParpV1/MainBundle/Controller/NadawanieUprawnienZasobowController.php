@@ -29,6 +29,12 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use APY\DataGridBundle\Grid\Column\TextColumn;
 use ParpV1\MainBundle\Exception\SecurityTestException;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -331,16 +337,16 @@ class NadawanieUprawnienZasobowController extends Controller
 
         $builder = $this->createFormBuilder();
         $form = $builder
-                ->add('samaccountnames', 'hidden', array(
+                ->add('samaccountnames', HiddenType::class, array(
                     'data' => $samaccountnames
                 ))
-                ->add('wniosekId', 'hidden', array(
+                ->add('wniosekId', HiddenType::class, array(
                     'data' => $wniosekId
                 ))
-                ->add('action', 'hidden', array(
+                ->add('action', HiddenType::class, array(
                     'data' => $action
                 ))
-                ->add('samaccountnames', 'hidden', array(
+                ->add('samaccountnames', HiddenType::class, array(
                     'required' => false,
                     'read_only' => true,
                     'label' => 'Nazwa kont',
@@ -352,21 +358,18 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'data' => json_encode($samaccountnames)
                 ))
-                ->add('fromWhen', 'text', array(
+                ->add('fromWhen', TextareaType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
                     ),
-//                'widget' => 'single_text',
                     'label' => 'Data zmiany',
-//                'format' => 'dd-MM-yyyy',
-//                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label ',
                     ),
                     'required' => false,
                     'data' => $now->format('Y-m-d')
                 ))
-                ->add('powod', 'textarea', array(
+                ->add('powod', TextareaType::class, array(
                     'attr' => array(
                         'class' => 'form-control',
                     ),
@@ -376,7 +379,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'required' => true
                 ))
-                ->add('grupy', 'choice', array(
+                ->add('grupy', ChoiceType::class, array(
                     'required' => false,
                     'read_only' => false,
                     'label' => 'Filtruj po grupie uprawnień',
@@ -391,23 +394,23 @@ class NadawanieUprawnienZasobowController extends Controller
                     'multiple' => false,
                     'expanded' => false
                 ))
-                ->add('buttonzaznacz', 'button', array(
+                ->add('buttonzaznacz', ButtonType::class, array(
                     //'label' =>  false,
                     'attr' => array(
                         'class' => 'btn btn-info col-sm-12',
                     ),
                     'label' => 'Zaznacz wszystkie widoczne'
                 ))
-                ->add('buttonodznacz', 'button', array(
+                ->add('buttonodznacz', ButtonType::class, array(
                     //'label' =>  false,
                     'attr' => array(
                         'class' => 'btn btn-info col-sm-12',
                     ),
                     'label' => 'Odznacz wszystkie'
                 ))
-                ->add('wybraneZasoby', 'textarea', array('mapped' => false, 'attr' => ['readonly' => true]))
+                ->add('wybraneZasoby', TextareaType::class, array('mapped' => false, 'attr' => ['readonly' => true]))
 
-                ->add('nazwafiltr', 'text', array(
+                ->add('nazwafiltr', TextareaType::class, array(
                     'label_attr' => array(
                         'class' => 'col-sm-12 control-label text-left ',
                     ),
@@ -417,7 +420,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'required' => false
                 ))
-                ->add('access', 'choice', array(
+                ->add('access', ChoiceType::class, array(
                     'required' => false,
                     'read_only' => false,
                     'label' => $title,
@@ -432,13 +435,13 @@ class NadawanieUprawnienZasobowController extends Controller
                     'expanded' => true
                 ))
 
-                ->add('zapisz2', 'submit', array(
+                ->add('zapisz2', SubmitType::class, array(
                     'attr' => array(
                         'class' => 'btn btn-success col-sm-12',
                     ),
                     'label' => 'Dalej'
                 ))
-                ->add('zapisz', 'submit', array(
+                ->add('zapisz', SubmitType::class, array(
                     'attr' => array(
                         'class' => 'btn btn-success col-sm-12',
                     ),
@@ -844,26 +847,26 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         //print_r($fromWhenPars['data']);
         $form = $this->createFormBuilder()
-            ->add('action', 'hidden', array(
+            ->add('action', HiddenType::class, array(
                 'data' => $action
             ))
-            ->add('wniosekId', 'hidden', array(
+            ->add('wniosekId', HiddenType::class, array(
                 'data' => $wniosekId
             ))
-            ->add('samaccountnames', 'hidden', $samaccountnamesPars)
-            ->add('fromWhen', 'hidden', $fromWhenPars)
-            ->add('powod', 'hidden', $powodPars)
-        ->add('userzasoby', 'collection', array(
-            'type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu, true, $datauz),
-            'allow_add'    => true,
-            'allow_delete'    => true,
-            'by_reference' => false,
-            'label' => 'Zasoby',
-            'prototype' => true,
-            'cascade_validation' => true,
-            'data' => $userzasoby
-        ))
-            ->add('Dalej', 'submit', array(
+            ->add('samaccountnames', HiddenType::class, $samaccountnamesPars)
+            ->add('fromWhen', HiddenType::class, $fromWhenPars)
+            ->add('powod', HiddenType::class, $powodPars)
+            ->add('userzasoby', CollectionType::class, array(
+                'entry_type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu, true, $datauz),
+                'allow_add'    => true,
+                'allow_delete'    => true,
+                'by_reference' => false,
+                'label' => 'Zasoby',
+                'prototype' => true,
+                'cascade_validation' => true,
+                'data' => $userzasoby
+            ))
+            ->add('Dalej', SubmitType::class, array(
                 'attr' => array(
                     'onclick' => 'beforeSubmit(event)',
                     'class' => 'btn btn-success col-sm-12',

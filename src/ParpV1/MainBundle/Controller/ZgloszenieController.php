@@ -17,6 +17,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\Email;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 
 /**
@@ -44,7 +47,7 @@ class ZgloszenieController extends Controller
         $dane_wstepne = array("uri" => urldecode($uri));
         $form = $this->createFormBuilder($dane_wstepne)
             ->setAction($this->generateUrl('nowa_pomoc_techniczna_submit'))
-            ->add('temat', 'text', array(
+            ->add('temat', TextareaType::class, array(
                 'label' => 'Temat zgłoszenia',
                 'attr' => array(
                     'class' => 'form-control col-xs-5',
@@ -53,7 +56,7 @@ class ZgloszenieController extends Controller
                     'class' => 'col-xs-2',
                 ),
             ))
-            ->add('imie_nazwisko', 'text', array(
+            ->add('imie_nazwisko', TextareaType::class, array(
                 'label' => 'Imię i Nazwisko',
                 'data' => trim(@$ad[0]['name']),
                 'attr' => array(
@@ -63,7 +66,7 @@ class ZgloszenieController extends Controller
                     'class' => 'col-xs-2',
                 ),
             ))
-        ->add('email', EmailType::class, array(
+            ->add('email', EmailType::class, array(
                  'label' => 'Proszę podać email kontaktowy',
                  'data' => trim(@$ad[0]['samaccountname'])."@parp.gov.pl",//trim(@$ad[0]['email']),
                  'attr' => array(
@@ -77,7 +80,7 @@ class ZgloszenieController extends Controller
                      new Email(array('message' => 'Podany email kontaktowy jest niepoprawny.'))
                  ),
                 ))
-            ->add('telefon', 'text', array(
+            ->add('telefon', TextareaType::class, array(
                     'label' => 'Proszę podać telefon kontaktowy',
                     'attr' => array(
                         'class' => 'form-control col-xs-5',
@@ -89,7 +92,7 @@ class ZgloszenieController extends Controller
                         new NotBlank(array('message' => 'Pole telefon kontaktowy jest wymagane.')),
                     ),
                 ))
-          ->add('opis', 'textarea', array(
+          ->add('opis', TextareaType::class, array(
                 'label' => 'Proszę opisać występujący problem techniczny',
                 'attr' => array(
                     'class' => 'form-control col-xs-5',
@@ -98,8 +101,8 @@ class ZgloszenieController extends Controller
                     'class' => 'col-xs-2',
                 ),
             ))
-            ->add('uri', 'hidden')
-            ->add('zapisz', 'submit', array(
+            ->add('uri', HiddenType::class)
+            ->add('zapisz', SubmitType::class, array(
                 'label' => 'Wyślij zgłoszenie',
                 'attr' => array(
                     'class' => 'btn btn-success pull-right',
@@ -197,7 +200,7 @@ class ZgloszenieController extends Controller
     {
 
         $form = $this->createFormBuilder()->setAction($this->generateUrl('nowe_zgloszenie'))
-                ->add('podmiot', 'text', array('label' => 'Nazwa podmiotu', 'attr' => array(
+                ->add('podmiot', TextareaType::class, array('label' => 'Nazwa podmiotu', 'attr' => array(
                         'class' => 'form-control col-xs-5',
                     ),
                     'label_attr' => array(
@@ -207,7 +210,7 @@ class ZgloszenieController extends Controller
                         new NotBlank(array('message' => 'Pole nazwa podmiotu jest wymagane.')),
                     ),
                 ))
-                ->add('temat', 'text', array(
+                ->add('temat', TextareaType::class, array(
                     'label' => 'Temat zgłoszenia',
                     'attr' => array(
                         'class' => 'form-control col-xs-5',
@@ -219,7 +222,7 @@ class ZgloszenieController extends Controller
                         new NotBlank(array('message' => 'Pole temat zgłoszenia jest wymagane.')),
                     ),
                 ))
-                ->add('opis', 'textarea', array(
+                ->add('opis', TextareaType::class, array(
                     'label' => 'Proszę opisać występujący problem techniczny',
                     'attr' => array(
                         'class' => 'form-control col-xs-5',
@@ -244,7 +247,7 @@ class ZgloszenieController extends Controller
                         new Email(array('message' => 'Podany email kontaktowy jest niepoprawny.'))
                     ),
                 ))
-                 ->add('telefon', 'text', array(
+                 ->add('telefon', TextareaType::class, array(
                     'label' => 'Proszę podać telefon kontaktowy',
                     'attr' => array(
                         'class' => 'form-control col-xs-5',
@@ -256,14 +259,14 @@ class ZgloszenieController extends Controller
                         new NotBlank(array('message' => 'Pole telefon kontaktowy jest wymagane.')),
                     ),
                  ))
-               ->add('uri', 'hidden')
-               ->add('zapisz', 'submit', array(
+               ->add('uri', HiddenType::class)
+               ->add('zapisz', SubmitType::class, array(
                     'label' => 'Wyślij zgłoszenie',
                     'attr' => array(
                         'class' => 'btn btn-success pull-right',
                     ),
                 ))
-                ->add('sciezka', 'hidden', array(
+                ->add('sciezka', HiddenType::class, array(
                     'empty_data' => ''))
                 ->getForm();
 

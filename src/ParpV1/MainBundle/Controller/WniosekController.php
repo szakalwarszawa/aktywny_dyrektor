@@ -13,7 +13,9 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Wniosek;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Entity\WniosekEditor;
@@ -66,7 +68,7 @@ class WniosekController extends Controller
 
 
         $builder = $this->createFormBuilder($dane)
-                ->add('status', 'choice', array(
+                ->add('status', ChoiceType::class, array(
                     'required' => false,
                     'label' => 'Status',
                     'label_attr' => array(
@@ -77,7 +79,7 @@ class WniosekController extends Controller
                     ),
                     'choices' => $statusy
                 ))
-                ->add('viewers', 'choice', array(
+                ->add('viewers', ChoiceType::class, array(
                     'required' => false,
                     'label' => 'Viewers',
                     'label_attr' => array(
@@ -90,7 +92,7 @@ class WniosekController extends Controller
                     'multiple' => true,
                     'expanded' => false
                 ))
-                ->add('editors', 'choice', array(
+                ->add('editors', ChoiceType::class, array(
                     'required' => false,
                     'label' => 'Editors',
                     'label_attr' => array(
@@ -103,7 +105,7 @@ class WniosekController extends Controller
                     'multiple' => true,
                     'expanded' => false
                 ))
-                ->add('powod', 'textarea', array(
+                ->add('powod', TextareaType::class, array(
                     'required' => false,
                     'label' => 'Powód',
                     'label_attr' => array(
@@ -113,7 +115,7 @@ class WniosekController extends Controller
                         'class' => 'form-control'
                     ),
                 ))
-                ->add('zapisz', 'submit', array(
+                ->add('zapisz', SubmitType::class, array(
                         'attr' => array(
                             'class' => 'btn btn-danger col-sm-12'
                         ),
