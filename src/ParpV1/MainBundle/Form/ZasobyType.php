@@ -11,6 +11,7 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class ZasobyType extends AbstractType
 {
@@ -49,7 +50,7 @@ class ZasobyType extends AbstractType
             ->add('opis', HiddenType::class)//jest drugie pole opis z importu ecm
             ->add('biuro', HiddenType::class);
         if ($adminiMulti) {
-            $builder->add($builder->create('wlascicielZasobu', 'choice', array(
+            $builder->add($builder->create('wlascicielZasobu', ChoiceType::class, array(
                 'choices' => $ldap->getWlascicieleZasobow(),
                 'multiple' => true,
                 'required' => false,
@@ -71,19 +72,19 @@ class ZasobyType extends AbstractType
             ));
         }
 
-        $builder->add($builder->create('powiernicyWlascicielaZasobu', 'choice', array(
+        $builder->add($builder->create('powiernicyWlascicielaZasobu', ChoiceType::class, array(
                 'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
-            ->add($builder->create('administratorZasobu', 'choice', array(
+            ->add($builder->create('administratorZasobu', ChoiceType::class, array(
                 'choices' => $ldap->getAllFromADforCombo(),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
-            ->add($builder->create('administratorTechnicznyZasobu', 'choice', array(
+            ->add($builder->create('administratorTechnicznyZasobu', ChoiceType::class, array(
                 'choices' => $ldap->getAdministratorzyTechniczniZasobow(),
                 'multiple' => true,
                 'required' => false,
@@ -96,7 +97,7 @@ class ZasobyType extends AbstractType
                 'attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]
             ))
             ->add('daneOsobowe', null, ['attr' => ['readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul]])
-            ->add('komorkaOrgazniacyjna', 'entity', array(
+            ->add('komorkaOrgazniacyjna', EntityType::class, array(
                 'class' => 'ParpV1\MainBundle\Entity\Departament',
                 'choice_value' => function ($dep) {
                     return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
@@ -150,13 +151,13 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'widget' => 'single_text'
                 ));
-            $builder->add($builder->create('dokumentacjaFormalna', 'choice', array(
+            $builder->add($builder->create('dokumentacjaFormalna', ChoiceType::class, array(
                 'multiple' => true,
                 'required' => false,
                 'attr' => ['class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul],
                 'choices' => array('protok. odbioru' => 'protok. odbioru', "SIWZ" => "SIWZ", "umowa" => "umowa", "inna" => "inna")
             ))->addModelTransformer($transformer));
-            $builder->add($builder->create('dokumentacjaProjektowoTechniczna', 'choice', array(
+            $builder->add($builder->create('dokumentacjaProjektowoTechniczna', ChoiceType::class, array(
                 'multiple' => true,
                 'required' => false,
                 'attr' => ['class' => 'select2', 'readonly' => $this->zablokujPolaPozaPoziomModul, 'disabled' => $this->zablokujPolaPozaPoziomModul],

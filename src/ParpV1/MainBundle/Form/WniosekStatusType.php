@@ -25,7 +25,7 @@ class WniosekStatusType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        
+
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa')
@@ -33,7 +33,7 @@ class WniosekStatusType extends AbstractType
             ->add('nazwaSystemowa')
             ->add('finished')
             ->add('opis')
-            ->add($builder->create('viewers', 'choice', array(
+            ->add($builder->create('viewers', ChoiceType::class, array(
                 'multiple' => true,
                 'attr' => array(
                     'class' => 'select2'
@@ -42,7 +42,7 @@ class WniosekStatusType extends AbstractType
                 'required' => false,
                 'label' => 'Kto widzi wniosek o tym statusie'
             ))->addModelTransformer($transformer))
-            ->add($builder->create('editors', 'choice', array(
+            ->add($builder->create('editors', ChoiceType::class, array(
                 'multiple' => true,
                 'attr' => array(
                     'class' => 'select2'
@@ -51,10 +51,10 @@ class WniosekStatusType extends AbstractType
                 'required' => false,
                 'label' => 'Kto może edytować wniosek o tym statusie'
             ))->addModelTransformer($transformer))
-            
+
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */

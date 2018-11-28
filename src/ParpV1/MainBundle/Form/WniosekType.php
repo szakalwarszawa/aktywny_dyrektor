@@ -7,11 +7,12 @@ use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class WniosekType extends AbstractType
 {
     protected $ADUsers;
-    
+
     public function __construct($ADUsers)
     {
         $this->ADUsers = $ADUsers;
@@ -24,18 +25,18 @@ class WniosekType extends AbstractType
     {
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
-        
+
             ->add('numer', TextType::class, array(
                 'attr' => array('readonly' => true)
             ))
             ->add('jednostkaOrganizacyjna', TextType::class, array(
                 'attr' => array('readonly' => true)
             ))
-            ->add('status', 'entity', array(
+            ->add('status', EntityType::class, array(
                 'class' => 'ParpMainBundle:WniosekStatus',
                 'attr' => array('readonly' => true, 'disabled' => 'disabled'),
             ))
-           
+
             ->add('createdBy', TextType::class, array(
                 'attr' => array('readonly' => true),
                 'label' => 'Utworzony przez'
@@ -58,7 +59,7 @@ class WniosekType extends AbstractType
             ))
         ;
     }
-    
+
     /**
      * @param OptionsResolverInterface $resolver
      */
