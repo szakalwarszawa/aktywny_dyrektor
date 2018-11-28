@@ -17,7 +17,10 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\File;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\FileType;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use ParpV1\MainBundle\Entity\Engagement;
 use ParpV1\MainBundle\Form\EngagementType;
 
@@ -118,7 +121,7 @@ class EngagementController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zaangażowanie', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zaangażowanie', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -207,7 +210,7 @@ class EngagementController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -282,7 +285,7 @@ class EngagementController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('engagement_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Engagement','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Engagement','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
@@ -301,7 +304,7 @@ class EngagementController extends Controller
         }
 
 
-        $form = $this->createFormBuilder()->add('plik', 'file', array(
+        $form = $this->createFormBuilder()->add('plik', Filetype::class, array(
             'required' => false,
             'label_attr' => array(
                 'class' => 'col-sm-4 control-label',
@@ -322,12 +325,12 @@ class EngagementController extends Controller
             ),
             'mapped' => false,
         ))
-            ->add('rok', 'choice', ['choices' => $lata])
-            ->add('dodanieZaangazowan', 'checkbox', array(
+            ->add('rok', ChoiceType::class, ['choices' => $lata])
+            ->add('dodanieZaangazowan', CheckboxType::class, array(
                 'required' => false,
                 'label'      => 'Dodaj do słownika brakujące zaangażowania'
                 ))
-            ->add('wczytaj', 'submit', array('attr' => array(
+            ->add('wczytaj', SubmitType::class, array('attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             )))
             ->getForm();
@@ -505,7 +508,7 @@ class EngagementController extends Controller
                         }
 
                         $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
-                        
+
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                             $daneRekord->getLogin(),
                             $zaangazownie->getId(),
