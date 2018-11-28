@@ -34,9 +34,9 @@ class ADUserType extends AbstractType
             ->add('cn')
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

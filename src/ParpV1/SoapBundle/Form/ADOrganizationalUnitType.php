@@ -31,9 +31,9 @@ class ADOrganizationalUnitType extends AbstractType
             ->add('dn')
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {

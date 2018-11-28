@@ -37,9 +37,9 @@ class ADGroupType extends AbstractType
             ->add('ADUsers')
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
     public function configureOptions(OptionsResolver $resolver)
     {
