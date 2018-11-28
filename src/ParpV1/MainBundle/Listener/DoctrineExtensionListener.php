@@ -1,24 +1,13 @@
 <?php
-
-// file: src/Acme/DemoBundle/Listener/DoctrineExtensionListener.php
-
 namespace ParpV1\MainBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
-class DoctrineExtensionListener implements ContainerAwareInterface
+class DoctrineExtensionListener
 {
-    /**
-     * @var ContainerInterface
-     */
-    protected $container;
-
-    public function setContainer(ContainerInterface $container = null)
-    {
-        $this->container = $container;
-    }
+    use ContainerAwareTrait;
 
     public function onLateKernelRequest(GetResponseEvent $event)
     {
@@ -30,7 +19,7 @@ class DoctrineExtensionListener implements ContainerAwareInterface
         //die('b');
         $event->setNewValue('grupyHistoriaZmian', $event->getEntity()->getGrupyHistoriaZmian());
         $nv = $event->getEntity()->getGrupyHistoriaZmian();
-        
+
         print_r($nv);
         die('   preUpdate '.get_class($event));
     }
@@ -42,10 +31,10 @@ class DoctrineExtensionListener implements ContainerAwareInterface
     }
     public function onKernelRequest(GetResponseEvent $event)
     {
-        $securityContext = $this->container->get('security.context', ContainerInterface::NULL_ON_INVALID_REFERENCE);
-        if (null !== $securityContext && null !== $securityContext->getToken() && $securityContext->isGranted('IS_AUTHENTICATED_REMEMBERED')) {
+        $tokenStorage = $this->container->get('security.token_storage', ContainerInterface::NULL_ON_INVALID_REFERENCE);
+        if (null !== $tokenStorage && null !== $tokenStorage->getToken() && $tokenStorage->getToken()->isAuthenticated()) {
             $loggable = $this->container->get('gedmo.listener.loggable');
-            $loggable->setUsername($securityContext->getToken()->getUsername());
+            $loggable->setUsername($tokenStorage->getToken()->getUsername());
         }
     }
 }

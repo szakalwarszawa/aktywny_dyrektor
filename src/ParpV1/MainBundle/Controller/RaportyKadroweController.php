@@ -15,6 +15,8 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use ParpV1\MainBundle\Exception\SecurityTestException;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * RaportyKadrowe controller.
@@ -57,7 +59,7 @@ class RaportyKadroweController extends Controller
             $lata[$i] = $i;
         }
         $builder = $this->createFormBuilder(array('csrf_protection' => false))
-            ->add('rok', 'choice', array(
+            ->add('rok', ChoiceType::class, array(
                 'required' => true,
                 'label' => 'Wybierz rok do raportu',
                 'label_attr' => array(
@@ -68,7 +70,7 @@ class RaportyKadroweController extends Controller
                     'class' => 'form-control',
                 ),
             ));
-        $builder->add('zapisz', 'submit', array(
+        $builder->add('zapisz', SubmitType::class, array(
             'attr' => array(
                 'class' => 'btn btn-success col-sm-12',
             ),
@@ -327,27 +329,27 @@ class RaportyKadroweController extends Controller
         $sql = 'select  pr.symbol as id, pr.nazwisko, pr.imie, m.kod symbol, p.rodz as rodzaj, s.opis,sum(kwota) kwota, sum(godz)/60 godz, mp.opis as departament
 from p_lp_pla p,
 p_listapl l,
-p_skladnik s, 
+p_skladnik s,
 p_lp_prac m,
 p_pra_grgus g,
 p_pracownik pr,
-p_mpracy mp 
-where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
+p_mpracy mp
+where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
 and mp.kod = m.kod
 and p.rodz not in ( '.$pomin.' )
 '.$this->xtraWhereForTests.'
 group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 
-union 
+union
 
-select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz, max(mp.opis) as departament from 
+select  pr.symbol as id, pr.nazwisko, pr.imie, max(m.kod) symbol, p.rodz as rodzaj, s.opis,sum(-kwota),sum(m.id-m.id)/60 godz, max(mp.opis) as departament from
 p_lp_pot p,
 p_listapl l,
-p_skladnik s, 
+p_skladnik s,
 p_lp_prac m,
-p_pra_grgus g , 
+p_pra_grgus g ,
 p_pracownik pr,
-p_mpracy mp 
+p_mpracy mp
 where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
 and mp.kod = m.kod
 and p.rodz not in ( '.$pomin.')
@@ -362,13 +364,13 @@ order by 5,2,3
     }
     protected function getSqlDoRaportuKadrowegoProgramyOperacyjne($rok, $miesiac)
     {
-        $sql = 'select d.symbol as id,d.rodz,d.db, sum(d.kwota) kwota,pr.nazwisko,pr.imie, f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie  
-        from 
+        $sql = 'select d.symbol as id,d.rodz,d.db, sum(d.kwota) kwota,pr.nazwisko,pr.imie, f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie
+        from
         p_lp_pla_db d,
         p_listapl l,
         p_pracownik pr,
-        f_db f 
-        where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.' 
+        f_db f
+        where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.'
         and d.rodz IN (\'6AA\')
         '.$this->xtraWhereForTests.'
         group by 1,2,3,5,6,7,8,9,10 order by pr.nazwisko, pr.imie'; // bylo 010 rodz
@@ -380,11 +382,11 @@ order by 5,2,3
     }
     protected function getSqlDoSkladekPracodwacy($rok, $miesiac)
     {
-        $sql = 'select 
+        $sql = 'select
         d.symbol as id ,d.rodz  as rodzaj, sum(d.kwota) kwota,p.nazwisko,p.imie
         from p_lp_pla_db d,p_listapl l,p_pracownik p,f_db f where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = '.$rok.
-            ' and l.miesiac_O = '.$miesiac." 
-        and d.rodz in ('ZSA', 'ZSC', 'ZSF', 'ZSI') 
+            ' and l.miesiac_O = '.$miesiac."
+        and d.rodz in ('ZSA', 'ZSC', 'ZSF', 'ZSI')
         group by 1,2,4,5 order by p.nazwisko,p.imie;";
 
         if ($this->showSqlsAndDie) {
@@ -400,7 +402,7 @@ order by 5,2,3
             departament.OPIS as departamentNazwa,
             departament.KOD  departament,
             stanowisko.OPIS stanowisko
-            
+
             from P_PRACOWNIK pr
             left join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok.
             '-'.$miesiac."-01') AND mpr.DATA_OD <=  '".$rok.
@@ -431,7 +433,7 @@ order by 5,2,3
             departament.OPIS as departamentNazwa,
             departament.KOD  departament,
             stanowisko.OPIS stanowisko
-            
+
             from P_PRACOWNIK pr
             join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok.
             '-'.$miesiac."-01') AND mpr.DATA_OD <=  '".$rok.
@@ -582,33 +584,33 @@ order by 5,2,3
         f.dzialanie,f.zrodlo_fin,f.wpl_wyd,f.zadanie ,
         round(((d.kwota) / s.kwota)*100, 0) as procent,
         (d.kwota) kwota, s.kwota as pensja
-from 
-p_lp_pla_db d, 
-p_listapl l, 
-p_pracownik pr, 
+from
+p_lp_pla_db d,
+p_listapl l,
+p_pracownik pr,
 f_db f ,
 
  (
-    select  
+    select
     pr.symbol as id, pr.nazwisko, pr.imie,
     p.rodz as rodzaj, s.opis,sum(kwota) kwota
     from p_lp_pla p,
     p_listapl l,
-    p_skladnik s, 
+    p_skladnik s,
     p_lp_prac m,
     p_pra_grgus g,
     p_pracownik pr,
-    p_mpracy mp 
-    where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = 2017 and l.miesiac_O = 1   
-    and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol 
+    p_mpracy mp
+    where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = 2017 and l.miesiac_O = 1
+    and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
     and mp.kod = m.kod and p.rodz = \'010\'
-    group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis    
+    group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 ) as s
 
 where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'
 
 
---and d.rodz IN (\'6AA\') 
+--and d.rodz IN (\'6AA\')
 
 and l.LABEL not like \'Premia%\'
 and s.id = pr.symbol

@@ -2,9 +2,11 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UserEngagementType extends AbstractType
 {
@@ -20,21 +22,21 @@ class UserEngagementType extends AbstractType
                     'class' => 'form-control',
                 )
             ))
-            ->add('percent', 'text', array(
+            ->add('percent', TextType::class, array(
                 'attr' => array(
                     'class' => 'slider form-control',
                     'data-slider-min' => '1',
                     'style' => 'width: 400px',
                 )
             ))
-            ->add('submit', 'submit')
+            ->add('submit', SubmitType::class)
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\UserEngagement'
@@ -44,7 +46,7 @@ class UserEngagementType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_userengagement';
     }

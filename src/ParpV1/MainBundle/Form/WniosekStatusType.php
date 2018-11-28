@@ -2,9 +2,10 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class WniosekStatusType extends AbstractType
 {
@@ -24,15 +25,15 @@ class WniosekStatusType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        
+
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa')
-            ->add('typWniosku', 'choice', ['choices' => ['wniosekONadanieUprawnien' => 'wniosek o Nadanie Uprawnień', 'wniosekOUtworzenieZasobu' => 'wniosek o utworzenie zasobu']])
+            ->add('typWniosku', ChoiceType::class, ['choices' => ['wniosekONadanieUprawnien' => 'wniosek o Nadanie Uprawnień', 'wniosekOUtworzenieZasobu' => 'wniosek o utworzenie zasobu']])
             ->add('nazwaSystemowa')
             ->add('finished')
             ->add('opis')
-            ->add($builder->create('viewers', 'choice', array(
+            ->add($builder->create('viewers', ChoiceType::class, array(
                 'multiple' => true,
                 'attr' => array(
                     'class' => 'select2'
@@ -41,7 +42,7 @@ class WniosekStatusType extends AbstractType
                 'required' => false,
                 'label' => 'Kto widzi wniosek o tym statusie'
             ))->addModelTransformer($transformer))
-            ->add($builder->create('editors', 'choice', array(
+            ->add($builder->create('editors', ChoiceType::class, array(
                 'multiple' => true,
                 'attr' => array(
                     'class' => 'select2'
@@ -50,14 +51,14 @@ class WniosekStatusType extends AbstractType
                 'required' => false,
                 'label' => 'Kto może edytować wniosek o tym statusie'
             ))->addModelTransformer($transformer))
-            
+
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\WniosekStatus'
@@ -67,7 +68,7 @@ class WniosekStatusType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_wniosekstatus';
     }

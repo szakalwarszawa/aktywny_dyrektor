@@ -2,9 +2,10 @@
 
 namespace ParpV1\MainBundle\Form;
 
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolverInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class UprawnieniaType extends AbstractType
 {
@@ -17,16 +18,16 @@ class UprawnieniaType extends AbstractType
         $builder
             ->add('opis')
             ->add('grupaAd')
-            ->add('czy_sekcja', 'hidden')
-            ->add('czy_edycja', 'hidden')
+            ->add('czy_sekcja', HiddenType::class)
+            ->add('czy_edycja', HiddenType::class)
             ->add('grupy', null, array('expanded' => true))
         ;
     }
-    
+
     /**
-     * @param OptionsResolverInterface $resolver
+     * @param OptionsResolver $resolver
      */
-    public function setDefaultOptions(OptionsResolverInterface $resolver)
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
             'data_class' => 'ParpV1\MainBundle\Entity\Uprawnienia'
@@ -36,7 +37,7 @@ class UprawnieniaType extends AbstractType
     /**
      * @return string
      */
-    public function getName()
+    public function getBlockPrefix()
     {
         return 'parp_mainbundle_uprawnienia';
     }
