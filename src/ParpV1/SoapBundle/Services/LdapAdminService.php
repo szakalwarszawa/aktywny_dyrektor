@@ -397,7 +397,7 @@ class LdapAdminService
             if (!$departmentOld) {
                 echo("Nie znalazl starego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
             } else {
-                $person->setGrupyAD($departmentOld, '-');
+                $person->addGrupyAD($departmentOld, '-');
                 $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
                 $person->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
                 $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
@@ -410,7 +410,7 @@ class LdapAdminService
             if (!$department) {
                 echo("Nie znalazl nowego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
             } else {
-                $person->setGrupyAD($department);
+                $person->addGrupyAD($department, '-');
                 if ($person->getTitle()) {
                     //musimy zmienic stanowisko w $userAD aby dobrze wybral grupy uprawnien
                     $userAD[0]['title'] = $this->mapowanieStanowisk($person->getTitle());
