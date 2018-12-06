@@ -131,9 +131,8 @@ class UserZasobyType extends AbstractType
 
             $form->add(
                 $fieldName, /* NestedComboType::class */
-                'choice',
-                array("choices" => $choices,
-                        //'attr' => [],
+                ChoiceType::class,
+                array('choices' => $choices,
                         'data' => explode(";", $this->datauz[$fieldName]),//potrzebne by zaznaczal przy edycji
                         'multiple' => true,
                         'expanded' => false,

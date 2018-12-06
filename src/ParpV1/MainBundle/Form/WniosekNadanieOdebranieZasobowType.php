@@ -50,7 +50,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
 
         $builder->add('pracownikSpozaParp', CheckboxType::class, array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
 
-            ->add($builder->create('pracownicy', 'choice', array(
+            ->add($builder->create('pracownicy', ChoiceType::class, array(
                 'choices' => $this->ADUsers,
                 'multiple' => true,
                 'required' => false,
