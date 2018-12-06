@@ -23,7 +23,7 @@ services:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
     uprawnienia_service:
         class : ParpV1\MainBundle\Services\UprawnieniaService
         arguments : ["@doctrine.orm.entity_manager","@service_container"]
@@ -44,7 +44,7 @@ services:
             - [ addServer, [ %session_memcached_host%, %session_memcached_port% ]]
     session.handler.memcached:
         class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler
-        arguments: [@session.memcached, { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
+        arguments: ["@session.memcached", { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
     # KernelRequest listener
     extension.listener:
         class: ParpV1\MainBundle\Listener\DoctrineExtensionListener
@@ -69,7 +69,7 @@ services:
             - { name: kernel.event_listener, event: console.exception }
     adcheck_service:
         class: ParpV1\MainBundle\Services\ADSecurityCheckService
-        arguments: ["@service_container" ]
+        arguments: ["@service_container"]
         tags: ~
     parp.administrator.glowne_bundle.event_listener.exception_listener:
         class: ParpV1\MainBundle\EventListener\ExceptionListener
