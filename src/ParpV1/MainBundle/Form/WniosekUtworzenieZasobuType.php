@@ -12,6 +12,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Validator\Constraints;
 
 /**
  * Class WniosekUtworzenieZasobuType
@@ -155,9 +156,12 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
         if ($typ == "nowy" || $typ == "") {
             $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
-                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
-
-                'cascade_validation' => true,
+                'label' => false,
+                'data_class' => 'ParpV1\MainBundle\Entity\Zasoby',
+                'by_reference' => true,
+                'constraints' => array(
+                    new Constraints\Valid(),
+                ),
             ));
 
             $builder->add('zmienianyZasob', HiddenType::class, ['attr' => ['class' => 'form-item']]);
