@@ -349,13 +349,13 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('samaccountnames', HiddenType::class, array(
                     'required' => false,
-                    'read_only' => true,
                     'label' => 'Nazwa kont',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => true,
                     ),
                     'data' => json_encode($samaccountnames)
                 ))
@@ -382,7 +382,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('grupy', ChoiceType::class, array(
                     'required' => false,
-                    'read_only' => false,
                     'label' => 'Filtruj po grupie uprawnień',
                     'label_attr' => array(
                         'class' => 'col-sm-12 control-label text-left '.($action == 'addResources' || $action ==
@@ -423,7 +422,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('access', ChoiceType::class, array(
                     'required' => false,
-                    'read_only' => false,
                     'label' => $title,
                     'label_attr' => array(
                         'class' => 'col-sm-12 control-label text-left uprawnienieRow',
@@ -737,13 +735,13 @@ class NadawanieUprawnienZasobowController extends Controller
         $action = $uzid == 0 ? 'addResources' : 'editResources';
         $samaccountnamesPars = array(
             'required' => false,
-            'read_only' => true,
             'label' => 'Nazwa kont',
             'label_attr' => array(
                 'class' => 'col-sm-4 control-label',
             ),
             'attr' => array(
                 'class' => 'form-control',
+                'readonly' => true,
             )
         );
         $fromWhenPars = array(
