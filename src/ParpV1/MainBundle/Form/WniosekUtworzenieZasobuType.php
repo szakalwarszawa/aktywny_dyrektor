@@ -77,79 +77,79 @@ class WniosekUtworzenieZasobuType extends AbstractType
             if ($entity->getTypWnioskuDoRejestru()) {
                 $builder->add(
                     'typWnioskuDoRejestru',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'do Rejestru']
                 );
             }
             if ($entity->getTypWnioskuDoUruchomienia()) {
                 $builder->add(
                     'typWnioskuDoUruchomienia',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']
                 );
             }
             if ($entity->getTypWnioskuZmianaInformacji()) {
                 $builder->add(
                     'typWnioskuZmianaInformacji',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']
                 );
             }
             if ($entity->getTypWnioskuZmianaWistniejacym()) {
                 $builder->add(
                     'typWnioskuZmianaWistniejacym',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'w istniejącym zasobie']
                 );
             }
             if ($entity->getTypWnioskuWycofanie()) {
                 $builder->add(
                     'typWnioskuWycofanie',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'z Rejestru']
                 );
             }
             if ($entity->getTypWnioskuWycofanieZinfrastruktury()) {
                 $builder->add(
                     'typWnioskuWycofanieZinfrastruktury',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'z infrastruktury PARP']
                 );
             }
         } else {
             $builder->add(
                 'typWnioskuDoRejestru',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'do Rejestru']
             );
 
             $builder->add(
                 'typWnioskuDoUruchomienia',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']
             );
 
             $builder->add(
                 'typWnioskuZmianaInformacji',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']
             );
 
             $builder->add(
                 'typWnioskuZmianaWistniejacym',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'w istniejącym zasobie']
             );
 
             $builder->add(
                 'typWnioskuWycofanie',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'z Rejestru']
             );
 
             $builder->add(
                 'typWnioskuWycofanieZinfrastruktury',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'z infrastruktury PARP']
             );
         }
