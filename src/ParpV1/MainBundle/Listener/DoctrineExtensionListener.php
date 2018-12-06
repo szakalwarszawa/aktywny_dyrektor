@@ -11,8 +11,6 @@ class DoctrineExtensionListener
 
     public function onLateKernelRequest(GetResponseEvent $event)
     {
-        //$translatable = $this->container->get('gedmo.listener.translatable');
-        //$translatable->setTranslatableLocale($event->getRequest()->getLocale());
     }
     public function preUpdate($event)
     {
