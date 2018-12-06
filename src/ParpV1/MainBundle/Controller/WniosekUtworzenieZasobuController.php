@@ -22,6 +22,8 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -284,10 +286,10 @@ class WniosekUtworzenieZasobuController extends Controller
             )
         );
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('submit2', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit2', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -515,10 +517,10 @@ class WniosekUtworzenieZasobuController extends Controller
             )
         );
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('submit2', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('submit2', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
 
 /*
         foreach($form->all() as $ff){
@@ -694,7 +696,7 @@ class WniosekUtworzenieZasobuController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wniosekutworzeniezasobu_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
