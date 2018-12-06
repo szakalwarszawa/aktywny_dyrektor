@@ -16,7 +16,6 @@ class PositionType extends AbstractType
     {
         $builder->add('name', null, array(
             'required' => false,
-            'read_only' => false,
             'label' => 'Nazwa stanowiska',
             'label_attr' => array(
                 'class' => 'col-sm-2 control-label',
