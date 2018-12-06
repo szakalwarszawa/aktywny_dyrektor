@@ -92,7 +92,6 @@ class UserZasobyType extends AbstractType
                 ]
             ])
             ->add('uprawnieniaAdministracyjne')
-            //->add('odstepstwoOdProcedury', 'text', ['attr' => ['placeholder' => 'Odstępstwo od procedury']])
         ;
 
 

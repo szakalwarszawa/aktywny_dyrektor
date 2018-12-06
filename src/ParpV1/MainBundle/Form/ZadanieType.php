@@ -30,7 +30,7 @@ class ZadanieType extends AbstractType
             ->add('osoby', TextType::class, array('attr' => array('readonly' => true)))
             //datetime
             ->add(
-                $builder->create('dataDodania', 'text', array(
+                $builder->create('dataDodania', TextType::class, array(
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
                         'readonly' => true
@@ -44,7 +44,7 @@ class ZadanieType extends AbstractType
                 ->addModelTransformer($transformer)
             )
             ->add(
-                $builder->create('dataUkonczenia', 'text', array(
+                $builder->create('dataUkonczenia', TextType::class, array(
                     //'block_name' => 'custom_name',
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
