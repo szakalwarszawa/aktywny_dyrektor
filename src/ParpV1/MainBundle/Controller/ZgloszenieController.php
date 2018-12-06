@@ -273,7 +273,7 @@ class ZgloszenieController extends Controller
         // jezeli adres powrotny raz ustwiony to go nie zmieniamy
         $sciezka = $form->get('sciezka')->getData();
         if (empty($sciezka)) {
-            $form->get('sciezka')->setData($this->getRequest()->headers->get('referer'));
+            $form->get('sciezka')->setData($request->headers->get('referer'));
         }
 
         $form->handleRequest($request);
@@ -301,9 +301,6 @@ class ZgloszenieController extends Controller
 
     private function wyslijZgloszenie($formularz)
     {
-
-        //$formularz = $this->getRequest()->get('form');
-
         $podmiot = $formularz['podmiot'];
         $temat = $formularz['temat'];
         $opis = $formularz['opis'];
@@ -320,7 +317,7 @@ class ZgloszenieController extends Controller
         if (preg_match('~\{(?:[^{}]|(?R))*\}~', $odpowiedz_tmp, $odpowiedz_json)) {
             $odpowiedz = json_decode($odpowiedz_json[0], true);
 
-            $this->getRequest()->getSession()->getFlashBag()->add(
+            $this->addFlash(
                 'success',
                 'Pomyślnie zgłoszono problem techniczny. Numer Twojego zgłoszenia to ' . $odpowiedz['issue']['id'] . '. Prosimy powoływać się na niego w kontaktach z PARP.'
             );

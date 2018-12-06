@@ -823,14 +823,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
 
+        $request = $this
+            ->container
+            ->get('request_stack')
+            ->getCurrentRequest();
         $this->logg('setWniosekStatus START!', array(
-            'url'        => $this->getRequest()->getRequestUri(),
+            'url'        => $request->getRequestUri(),
             'user'       => $this->getUser()->getUsername(),
             'wniosek.id' => $wniosek->getId(),
             'statusName' => $statusName,
             'rejected'   => $rejected,
             'oldStatus'  => $oldStatus,
-            'isPost'     => $this->getRequest()->isMethod('POST'),
+            'isPost'     => $request->isMethod('POST'),
             'zastepstwo' => $zastepstwo,
         ));
 
