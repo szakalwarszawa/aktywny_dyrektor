@@ -35,6 +35,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Validator\Constraints;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -845,6 +846,7 @@ class NadawanieUprawnienZasobowController extends Controller
             //$uz->setSamaccountname($z->getId());
             $userzasoby[] = $uz;
         }
+
         //print_r($fromWhenPars['data']);
         $form = $this->createFormBuilder()
             ->add('action', HiddenType::class, array(
@@ -863,7 +865,9 @@ class NadawanieUprawnienZasobowController extends Controller
                 'by_reference' => false,
                 'label' => 'Zasoby',
                 'prototype' => true,
-                'cascade_validation' => true,
+                'constraints' => array(
+                    new Constraints\Valid(),
+                ),
                 'data' => $userzasoby
             ))
             ->add('Dalej', SubmitType::class, array(
