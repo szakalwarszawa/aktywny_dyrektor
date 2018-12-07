@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -521,7 +522,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $status =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')
+                ->getRepository(WniosekStatus::class)
                 ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);

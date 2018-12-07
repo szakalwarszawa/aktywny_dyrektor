@@ -9,6 +9,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\MainBundle\Form\WniosekType;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 
 class WniosekNadanieOdebranieZasobowType extends AbstractType
 {
@@ -49,7 +50,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow',
+            'data_class' => WniosekNadanieOdebranieZasobow::class,
             'ad_users' => array(),
             'managerzy_spoza_parp' => array(),
         ));

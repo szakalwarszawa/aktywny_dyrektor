@@ -5,6 +5,7 @@ namespace ParpV1\SoapBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\SoapBundle\Entity\ADUser;
 
 class ADUserType extends AbstractType
 {
@@ -41,7 +42,7 @@ class ADUserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\SoapBundle\Entity\ADUser'
+            'data_class' => ADUser::class,
         ));
     }
 

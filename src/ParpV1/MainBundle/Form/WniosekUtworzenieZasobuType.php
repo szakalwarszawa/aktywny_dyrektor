@@ -13,6 +13,7 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints;
+use ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu;
 
 /**
  * Class WniosekUtworzenieZasobuType
@@ -246,7 +247,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu',
+            'data_class' => WniosekUtworzenieZasobu::class,
             'ADUsers' => null,
             'ADManagers' => null,
             'hideCheckboxes' => false,

@@ -22,6 +22,7 @@ use ParpV1\MainBundle\Grid\ListaZasobowGrid;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 /**
  * Zasoby controller.
@@ -189,7 +190,7 @@ class ZasobyController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $em = $this->getDoctrine()->getManager();
-        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($id);
+        $uzs = $em->getRepository(UserZasoby::class)->findUsersByZasobId($id);
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),

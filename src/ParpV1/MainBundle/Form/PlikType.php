@@ -8,6 +8,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\Plik;
 
 class PlikType extends AbstractType
 {
@@ -18,7 +19,6 @@ class PlikType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            //->add('deletedAt')
             ->add('nazwa')
             ->add('typ', ChoiceType::class, array('choices' => array('wniosek' => 'załącznik')))
             ->add('opis')
@@ -34,7 +34,7 @@ class PlikType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Plik'
+            'data_class' => Plik::class,
         ));
     }
 

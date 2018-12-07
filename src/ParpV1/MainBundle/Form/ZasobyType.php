@@ -12,6 +12,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\Departament;
 
 class ZasobyType extends AbstractType
 {
@@ -88,7 +90,7 @@ class ZasobyType extends AbstractType
             ))
             ->add('daneOsobowe', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('komorkaOrgazniacyjna', EntityType::class, array(
-                'class' => 'ParpV1\MainBundle\Entity\Departament',
+                'class' => Departament::class,
                 'choice_value' => function ($dep) {
                     return $dep ? (is_object($dep) ? $dep->getName() : $dep) : "___BRAK___";
                 },
@@ -248,7 +250,7 @@ class ZasobyType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Zasoby',
+            'data_class' => Zasoby::class,
             'ldap_service' => null,
             'nazwa_label' => 'Nazwa',
             'nie_moze_edytowac' => false,

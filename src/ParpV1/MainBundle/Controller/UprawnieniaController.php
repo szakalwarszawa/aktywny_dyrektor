@@ -13,9 +13,9 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\Uprawnienia;
 use ParpV1\MainBundle\Form\UprawnieniaType;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
 
 /**
  * Uprawnienia controller.
@@ -34,29 +34,29 @@ class UprawnieniaController extends Controller
     public function indexAction()
     {
         $source = new Entity('ParpMainBundle:Uprawnienia');
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'uprawnienia_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'uprawnienia_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
@@ -180,7 +180,7 @@ class UprawnieniaController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserUprawnienia')->findUsersByUprawnienieId($id);
+        $uzs = $em->getRepository(UserUprawnienia::class)->findUsersByUprawnienieId($id);
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
