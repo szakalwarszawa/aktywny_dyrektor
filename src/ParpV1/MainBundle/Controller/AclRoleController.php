@@ -34,9 +34,8 @@ class AclRoleController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:AclRole')->findAll();
 
-        $source = new Entity('ParpMainBundle:AclRole');
+        $source = new Entity(AclRole::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);

@@ -23,7 +23,6 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $builder
             ->add('odebranie', HiddenType::class);
 
-            //var_dump($options['ad_users']); die;
         $builder
             ->add('pracownikSpozaParp', CheckboxType::class, array(
                 'required' => false,

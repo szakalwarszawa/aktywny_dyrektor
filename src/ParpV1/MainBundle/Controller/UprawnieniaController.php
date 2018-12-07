@@ -33,7 +33,7 @@ class UprawnieniaController extends Controller
      */
     public function indexAction()
     {
-        $source = new Entity('ParpMainBundle:Uprawnienia');
+        $source = new Entity(Uprawnienia::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
