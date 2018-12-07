@@ -23,13 +23,17 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $builder
             ->add('odebranie', HiddenType::class);
 
+            //var_dump($options['ad_users']); die;
         $builder
             ->add('pracownikSpozaParp', CheckboxType::class, array(
                 'required' => false,
                 'label' => "Czy pracownik/pracownicy spoza PARP"
             ))
             ->add($builder->create('pracownicy', ChoiceType::class, array(
-                'choices' => $options['ad_users'],
+                'choices' => array_keys($options['ad_users']),
+                'choice_label' => function ($value) use ($options) {
+                    return $options['ad_users'][$value];
+                },
                 'multiple' => true,
                 'required' => false,
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',

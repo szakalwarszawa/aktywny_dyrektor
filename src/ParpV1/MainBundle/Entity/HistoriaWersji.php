@@ -25,14 +25,14 @@ class HistoriaWersji extends AbstractLogEntry
     /**
      * All required columns are mapped through inherited superclass
      */
-     
+
     /**
      * @var string
      *
      * @ORM\Column(name="url", type="string", length=255)
      */
     private $url;
-    
+
     /**
      * @var string
      *
@@ -63,7 +63,7 @@ class HistoriaWersji extends AbstractLogEntry
     {
         return $this->url;
     }
-    
+
     /**
      * @ORM\PrePersist()
      * @ORM\PreUpdate()
@@ -74,12 +74,12 @@ class HistoriaWersji extends AbstractLogEntry
         if ('AppCache' == get_class($kernel)) {
             $kernel = $kernel->getKernel();
         }
-        $request = $kernel->getContainer()->get('request');
+        $request = $kernel->getContainer()->get('request_stack')->getCurrentRequest();
         $url = $request->getUri();
         //print_r($url);
         $routeName = $request->get('_route');
         //print_r($routeName); die();
-        
+
         $this->setUrl($url);
         $this->setRoute($routeName);
     }
@@ -107,7 +107,7 @@ class HistoriaWersji extends AbstractLogEntry
     {
         return $this->route;
     }
-    
+
     public function __construct()
     {
         $this->setRoute('ldap_service');

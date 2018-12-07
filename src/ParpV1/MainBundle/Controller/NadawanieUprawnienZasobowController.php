@@ -266,6 +266,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             }
         }
+
         return $this->addRemoveAccessToUsers($request, $samaccountnames, $choices, $title, $action, $wniosekId, $zasobyId);
     }
 
@@ -333,8 +334,6 @@ class NadawanieUprawnienZasobowController extends Controller
             $grupy[$g->getId()] = $g->getOpis();
         }
         $now = new \Datetime();
-
-        //echo "<pre>"; print_r($choices); die();
 
         $builder = $this->createFormBuilder();
         $form = $builder
@@ -429,7 +428,10 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => array(
                         'class' => '',
                     ),
-                    'choices' => $choices,
+                    'choices' => array_keys($choices),
+                    'choice_label' => function ($value) use ($choices) {
+                        return $choices[$value];
+                    },
                     'multiple' => true,
                     'expanded' => true
                 ))
@@ -962,7 +964,7 @@ class NadawanieUprawnienZasobowController extends Controller
 
                             //\Doctrine\Common\Util\Debug::dump($z);die();
 
-                            $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('renameService')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
+                            $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {
                             $this->addFlash('warning', $msg);
                         }

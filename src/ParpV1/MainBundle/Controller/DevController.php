@@ -398,7 +398,7 @@ class DevController extends Controller
      */
     public function zasobNazwaAction($zid)
     {
-        $n = $this->get('renameService')->zasobNazwa($zid);
+        $n = $this->get('rename_service')->zasobNazwa($zid);
         die($n);
     }
 
