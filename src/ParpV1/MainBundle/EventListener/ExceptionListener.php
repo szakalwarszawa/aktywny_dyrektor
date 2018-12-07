@@ -98,7 +98,7 @@ class ExceptionListener implements EventSubscriberInterface
                 $imie_nazwisko = $userData->getImie().' '.$userData->getNazwisko();
 */
 
-                $em = $this->kernel->getContainer()->get('doctrine')->getEntityManager();
+                $em = $this->kernel->getContainer()->get('doctrine')->getManager();
                 $uprawnienia = $userData->getRoles();//$em->getRepository('ParpV1\UzytkownikBundle\Entity\Uzytkownik')->findOneById($userId)->getRoles();
             }
 
