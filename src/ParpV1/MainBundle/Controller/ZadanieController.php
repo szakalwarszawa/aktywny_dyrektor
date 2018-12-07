@@ -15,6 +15,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\Zadanie;
 use ParpV1\MainBundle\Form\ZadanieType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Zadanie controller.
@@ -42,7 +43,7 @@ class ZadanieController extends Controller
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Zadanie')->findAll();
 
-        $source = new Entity('ParpMainBundle:Zadanie');
+        $source = new Entity(Zadanie::class);
 
         $user = $this->getUser();
 
@@ -138,12 +139,12 @@ class ZadanieController extends Controller
      */
     private function createCreateForm(Zadanie $entity)
     {
-        $form = $this->createForm(new ZadanieType(), $entity, array(
+        $form = $this->createForm(ZadanieType::class, $entity, array(
             'action' => $this->generateUrl('zadanie_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zadanie', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zadanie', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -177,7 +178,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zadanie entity.');
@@ -202,7 +203,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zadanie entity.');
@@ -247,7 +248,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
         $oldEn = clone $entity;
 
         if (!$entity) {
@@ -304,7 +305,7 @@ class ZadanieController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+            $entity = $em->getRepository(Zadanie::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Zadanie entity.');
