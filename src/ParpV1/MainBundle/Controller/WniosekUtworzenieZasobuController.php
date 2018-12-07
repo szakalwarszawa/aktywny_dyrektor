@@ -267,20 +267,9 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createCreateForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(
-            new WniosekUtworzenieZasobuType(
-                //                $this->getUsersFromAD(),
-                //                $this->getManagers(),
-                //                $entity->getTyp(),
-                //                $entity,
-                //                $this
-            ),
-            $entity,
-            array(
+        $form = $this->createForm(WniosekUtworzenieZasobuType::class, $entity, array(
                 'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
                 'method' => 'POST',
-            //                'ADUsers' => $this->getUsersFromAD(),
-            //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
                 'user'      => $this->getUser(),
             )

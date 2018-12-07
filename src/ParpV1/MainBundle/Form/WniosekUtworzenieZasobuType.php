@@ -57,9 +57,9 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
         $builder
             ->add('wniosekDomenowy', CheckboxType::class, $atrs)
-            ->add('wniosek', new WniosekType($ADUsers), array(
-                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek'))
-            //->add('deletedAt')
+            ->add('wniosek', WniosekType::class, array(
+                'label' => false,
+            ))
             ->add('imienazwisko', TextType::class, ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
             ->add('login', TextType::class, ['attr' => ['readonly' => true]])
             ->add('departament', TextType::class, ['attr' => ['readonly' => true]])
@@ -67,9 +67,6 @@ class WniosekUtworzenieZasobuType extends AbstractType
             ->add('telefon')
             ->add('nrpokoju', TextType::class, ['required' => false, 'label' => 'Numer pokoju'])
             ->add('email')
-            //->add('proponowanaNazwa')
-
-            //->add('zasob')
             ->add('zmienionePola', TextType::class, ['attr' => ['readonly' => true]])
             ->add('zrealizowany', HiddenType::class);
 
@@ -155,9 +152,11 @@ class WniosekUtworzenieZasobuType extends AbstractType
         }
 
         if ($typ == "nowy" || $typ == "") {
-            $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
+            $builder->add('zasob', ZasobyType::class, array(
                 'label' => false,
-                'data_class' => 'ParpV1\MainBundle\Entity\Zasoby',
+                'ldap_service' => $container->get('ldap_service'),
+                'nazwa_label' => $nazwaLabel,
+                'data_class' => Zasoby::class,
                 'by_reference' => true,
                 'constraints' => array(
                     new Constraints\Valid(),
@@ -202,8 +201,10 @@ class WniosekUtworzenieZasobuType extends AbstractType
                     ));
                 }
             }
-            $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
-                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
+            $builder->add('zasob', ZasobyType::class, array(
+                'label' => false,
+                'ldap_service' => $container->get('ldap_service'),
+                'by_reference' => true,
 
             ));
         } elseif ("kasowanie" === $typ) {

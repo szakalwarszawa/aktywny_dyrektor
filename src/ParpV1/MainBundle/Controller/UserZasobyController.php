@@ -13,7 +13,6 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
 
@@ -35,38 +34,38 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:UserZasoby')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:UserZasoby');
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userzasoby_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'userzasoby_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -109,7 +108,7 @@ class UserZasobyController extends Controller
      */
     private function createCreateForm(UserZasoby $entity)
     {
-        $form = $this->createForm(new UserZasobyType(), $entity, array(
+        $form = $this->createForm(UserZasobyType::class, $entity, array(
             'action' => $this->generateUrl('userzasoby_create'),
             'method' => 'POST',
         ));
@@ -200,7 +199,7 @@ class UserZasobyController extends Controller
     {
         $choicesModul = array();
         $choicesPoziomDostepu = array();
-        
+
         $em = $this->getDoctrine()->getManager();
         $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($entity->getZasobId());
         $p1 = explode(",", $zasob->getModulFunkcja());
@@ -213,11 +212,12 @@ class UserZasobyController extends Controller
             $p = trim($p);
             $choicesPoziomDostepu[$p] = $p;
         }
-        
-        
-        $form = $this->createForm(new UserZasobyType($choicesModul, $choicesPoziomDostepu, false), $entity, array(
+
+
+        $form = $this->createForm(UserZasobyType::class, $entity, array(
             'action' => $this->generateUrl('userzasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'is_sub_form' => false,
         ));
 
         $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));

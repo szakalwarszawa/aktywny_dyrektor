@@ -857,7 +857,11 @@ class NadawanieUprawnienZasobowController extends Controller
             ->add('fromWhen', HiddenType::class, $fromWhenPars)
             ->add('powod', HiddenType::class, $powodPars)
             ->add('userzasoby', CollectionType::class, array(
-                'entry_type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu, true, $datauz),
+                'entry_type' => UserZasobyType::class,
+                'entry_options' => array(
+                    'is_sub_form' => true,
+                    'data_uz' => $datauz,
+                ),
                 'allow_add'    => true,
                 'allow_delete'    => true,
                 'by_reference' => false,

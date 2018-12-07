@@ -430,13 +430,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
@@ -1758,16 +1756,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl(
                     'wnioseknadanieodebraniezasobow_update',
                     array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(

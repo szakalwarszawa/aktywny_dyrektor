@@ -11,34 +11,19 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 class UserZasobyType extends AbstractType
 {
-    private $choicesModul;
-    private $choicesPoziomDostepu;
-    private $isSubForm;
-    private $datauz;
-    private $transformer;
-
-    public function __construct($choicesModul, $choicesPoziomDostepu, $isSubForm = true, $datauz = null)
-    {
-
-        $this->transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
-        $this->choicesModul = $choicesModul;
-        $this->choicesPoziomDostepu = $choicesPoziomDostepu;
-        $this->isSubForm = $isSubForm;
-        $this->datauz = $datauz;
-    }
-
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $now = new \Datetime();
-        $d1 = $this->datauz ? $this->datauz['aktywneOd'] : $now->format("d-m-Y");
-        //print_r($this->datauz);
+        $d1 = $options['data_uz'] ? $options['data_uz']['aktywneOd'] : $now->format("d-m-Y");
+        //print_r($options['data_uz']);
         $builder
             ->add('id', HiddenType::class)
             ->add('samaccountname', HiddenType::class)
@@ -78,7 +63,7 @@ class UserZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'data' => (isset($this->datauz['aktywneDo']) ? $this->datauz['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
+                    'data' => (isset($options['data_uz']['aktywneDo']) ? $options['data_uz']['aktywneDo']->format("Y-m-d") : null), //$now->format("Y-m-d")),
                     //'format' => 'Y-m-d'
                 ))
             ->add('kanalDostepu', ChoiceType::class, [
@@ -96,7 +81,7 @@ class UserZasobyType extends AbstractType
 
 
 
-        if ($this->isSubForm) {
+        if ($options['is_sub_form']) {
             $builder->addEventListener(
                 FormEvents::PRE_SET_DATA,
                 function (FormEvent $event) use ($builder) {
@@ -113,7 +98,7 @@ class UserZasobyType extends AbstractType
     }
     protected function addChoicesFromDictionary($o, $form, $getter, $fieldName, $builder)
     {
-        //var_dump($this->datauz);
+        //var_dump($options['data_uz']);
         $ch = explode(";", $o->{$getter}());
         $choices = array("do wypełnienia przez właściciela zasobu" => "do wypełnienia przez właściciela zasobu");
         foreach ($ch as $c) {
@@ -126,13 +111,13 @@ class UserZasobyType extends AbstractType
         if (count($choices) == 1) {
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
-        $this->datauz[$fieldName] = isset($this->datauz[$fieldName]) ? $this->datauz[$fieldName] : "";
+        $options['data_uz'][$fieldName] = isset($options['data_uz'][$fieldName]) ? $options['data_uz'][$fieldName] : "";
 
             $form->add(
                 $fieldName, /* NestedComboType::class */
                 ChoiceType::class,
                 array('choices' => $choices,
-                        'data' => explode(";", $this->datauz[$fieldName]),//potrzebne by zaznaczal przy edycji
+                        'data' => explode(";", $options['data_uz'][$fieldName]),//potrzebne by zaznaczal przy edycji
                         'multiple' => true,
                         'expanded' => false,
                         'required' => true,
@@ -147,7 +132,9 @@ class UserZasobyType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\UserZasoby'
+            'data_class' => UserZasoby::class,
+            'is_sub_form' => true,
+            'data_uz' => null,
         ));
     }
 

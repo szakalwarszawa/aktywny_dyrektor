@@ -13,9 +13,9 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Form\ZastepstwoType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Zastepstwo controller.
@@ -103,12 +103,14 @@ class ZastepstwoController extends Controller
      */
     private function createCreateForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsersFromAD()), $entity, array(
+        $form = $this->createForm(ZastepstwoType::class, $entity, array(
+            'current_user' => $this->getUser(),
+            'ad_users' => $this->getUsersFromAD(),
             'action' => $this->generateUrl('zastepstwo_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zastepstwo', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zastepstwo', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -196,7 +198,9 @@ class ZastepstwoController extends Controller
     */
     private function createEditForm(Zastepstwo $entity)
     {
-        $form = $this->createForm(new ZastepstwoType($this->getUser(), $this->getUsersFromAD()), $entity, array(
+        $form = $this->createForm(ZastepstwoType::class, $entity, array(
+            'current_user' => $this->getUser(),
+            'ad_users' => $this->getUsersFromAD(),
             'action' => $this->generateUrl('zastepstwo_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
