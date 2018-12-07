@@ -137,7 +137,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
         $entityManager = $this
                             ->getContainer()
                             ->get('doctrine')
-                            ->getEntityManager();
+                            ->getManager();
 
         $zasoby = $entityManager
                         ->getRepository(Zasoby::class)
@@ -306,7 +306,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      */
     private function nadpiszDodatkoweTabele($uzytkownik)
     {
-        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $entityManager = $this->getContainer()->get('doctrine')->getManager();
 
         $zmianyViewer = array();
         $zmianyEditor = array();
@@ -377,7 +377,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      */
     private function modyfikujRoleOsoby($nazwaUzytkownika)
     {
-        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $entityManager = $this->getContainer()->get('doctrine')->getManager();
 
         $roleUzytkownika = $entityManager
                 ->getRepository(AclUserRole::class)
@@ -406,7 +406,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      */
     private function dodajNowyWpisRoli($nazwaUzytkownika, AclRole $rola, $nazwaRoli)
     {
-        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $entityManager = $this->getContainer()->get('doctrine')->getManager();
         $ldapService = $this->getContainer()->get('ldap_service');
 
         if ('PARP_IBI' === $nazwaRoli) {
@@ -449,7 +449,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      */
     private function findIbi()
     {
-        $entityManager = $this->getContainer()->get('doctrine')->getEntityManager();
+        $entityManager = $this->getContainer()->get('doctrine')->getManager();
         $ibi = $entityManager
                 ->getRepository(AclUserRole::class)
                 ->findOneBy(

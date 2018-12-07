@@ -1001,7 +1001,7 @@ class ReorganizacjaParpController extends Controller
         $ldap->output = $this;
         $ldapconn = $ldap->prepareConnection();
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $pomijac = ["n/d","ND"];
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
