@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Form\ZasobyType;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 /**
  * Zasoby controller.
@@ -33,12 +34,12 @@ class ZasobyParpController extends Controller
      */
     public function listUsersAction($zasobId)
     {
-        
+
         $em = $this->getDoctrine()->getManager();
-        $res = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($zasobId);
-        
+        $res = $em->getRepository(UserZasoby::class)->findUsersByZasobId($zasobId);
+
         //print_r($res[0]->getADUser()); die();
-        
+
         return $this->render(
             "ParpMainBundle:Zasoby:zasobyUsers.html.twig",
             array(

@@ -5,6 +5,7 @@ namespace ParpV1\SoapBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\SoapBundle\Entity\ADGroup;
 
 class ADGroupType extends AbstractType
 {
@@ -44,7 +45,7 @@ class ADGroupType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\SoapBundle\Entity\ADGroup'
+            'data_class' => ADGroup::class,
         ));
     }
 

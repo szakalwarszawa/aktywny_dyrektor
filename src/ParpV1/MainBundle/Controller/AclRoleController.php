@@ -34,39 +34,38 @@ class AclRoleController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:AclRole')->findAll();
-    
-        $source = new Entity('ParpMainBundle:AclRole');
-    
+
+        $source = new Entity(AclRole::class);
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'aclrole_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'aclrole_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -109,7 +108,9 @@ class AclRoleController extends Controller
      */
     private function createCreateForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType($this->getUsersFromAD(), $this->getDoctrine()->getManager()), $entity, array(
+        $form = $this->createForm(AclRoleType::class, $entity, array(
+            'ad_users' => $this->getUsersFromAD(),
+            'entity_manager' => $this->getDoctrine()->getManager(),
             'action' => $this->generateUrl('aclrole_create'),
             'method' => 'POST',
         ));
@@ -198,7 +199,9 @@ class AclRoleController extends Controller
     */
     private function createEditForm(AclRole $entity)
     {
-        $form = $this->createForm(new AclRoleType($this->getUsersFromAD(), $this->getDoctrine()->getManager()), $entity, array(
+        $form = $this->createForm(AclRoleType::class, $entity, array(
+            'ad_users' => $this->getUsersFromAD(),
+            'entity_manager' => $this->getDoctrine()->getManager(),
             'action' => $this->generateUrl('aclrole_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -292,13 +295,13 @@ class AclRoleController extends Controller
             ->getForm()
         ;
     }
-    
+
     private function getUsersFromAD()
     {
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
         $widzi_wszystkich = true;//in_array("PARP_WNIOSEK_WIDZI_WSZYSTKICH", $this->getUser()->getRoles()) || in_array("PARP_ADMIN", $this->getUser()->getRoles());
-        
+
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
         foreach ($ADUsers as $u) {
