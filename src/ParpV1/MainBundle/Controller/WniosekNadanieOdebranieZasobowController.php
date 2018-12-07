@@ -440,7 +440,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Przejdź do wyboru zasobów', 'attr' => array('class' => 'btn btn-success'))
         );
 
