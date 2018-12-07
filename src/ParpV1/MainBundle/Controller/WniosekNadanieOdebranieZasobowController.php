@@ -29,6 +29,7 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
 use ParpV1\MainBundle\Entity\WniosekStatus;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -1769,7 +1770,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'))
         );
 
@@ -1862,7 +1863,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wnioseknadanieodebraniezasobow_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
             ->getForm();
     }
 
