@@ -274,9 +274,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 'method' => 'POST',
                 'container' => $this->container,
                 'user'      => $this->getUser(),
-            )
-        );
-
+        ));
         $form->add('submit', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
         $form->add('submit2', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
         $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));

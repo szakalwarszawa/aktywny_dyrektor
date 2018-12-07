@@ -23,8 +23,11 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $builder
             ->add('odebranie', HiddenType::class);
 
-        $builder->add('pracownikSpozaParp', CheckboxType::class, array('required' => false, 'label' => "Czy pracownik/pracownicy spoza PARP"))
-
+        $builder
+            ->add('pracownikSpozaParp', CheckboxType::class, array(
+                'required' => false,
+                'label' => "Czy pracownik/pracownicy spoza PARP"
+            ))
             ->add($builder->create('pracownicy', ChoiceType::class, array(
                 'choices' => $options['ad_users'],
                 'multiple' => true,
@@ -32,16 +35,24 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
-
-            ->add('pracownicySpozaParp', null, array('required' => false, 'label' => 'Pracownicy spoza PARP', 'attr' => array('class' => 'tagAjaxInputNoAjax')))
-
+            ->add('pracownicySpozaParp', null, array(
+                'required' => false,
+                'label' => 'Pracownicy spoza PARP',
+                'attr' => array(
+                    'class' => 'tagAjaxInputNoAjax'
+                )
+            ))
             ->add('managerSpozaParp', ChoiceType::class, array(
                 'choices' => $options['managerzy_spoza_parp'],
-                'required' => false, 'label' => 'Manager Pracowników spoza PARP', 'attr' => array('class' => 'select2')))
+                'required' => false,
+                'label' => 'Manager Pracowników spoza PARP',
+                'attr' => array(
+                    'class' => 'select2'
+                    )
+            ))
             ->add('wniosek', WniosekType::class, array(
                 'label' => false
-                )
-            );
+            ));
     }
 
     /**
