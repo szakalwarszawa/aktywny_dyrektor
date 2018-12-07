@@ -28,6 +28,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -430,13 +431,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
@@ -523,7 +522,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $status =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')
+                ->getRepository(WniosekStatus::class)
                 ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);
@@ -1758,16 +1757,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl(
                     'wnioseknadanieodebraniezasobow_update',
                     array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(

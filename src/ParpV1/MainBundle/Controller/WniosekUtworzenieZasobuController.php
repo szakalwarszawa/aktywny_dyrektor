@@ -24,6 +24,8 @@ use ParpV1\MainBundle\Services\ParpMailerService;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use ParpV1\MainBundle\Entity\Departament;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -267,25 +269,12 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createCreateForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(
-            new WniosekUtworzenieZasobuType(
-                //                $this->getUsersFromAD(),
-                //                $this->getManagers(),
-                //                $entity->getTyp(),
-                //                $entity,
-                //                $this
-            ),
-            $entity,
-            array(
+        $form = $this->createForm(WniosekUtworzenieZasobuType::class, $entity, array(
                 'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
                 'method' => 'POST',
-            //                'ADUsers' => $this->getUsersFromAD(),
-            //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
                 'user'      => $this->getUser(),
-            )
-        );
-
+        ));
         $form->add('submit', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
         $form->add('submit2', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
         $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
@@ -354,7 +343,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
 
-        $status = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
+        $status = $this->getDoctrine()->getManager()->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
 
         $entity = new WniosekUtworzenieZasobu();
         //var_dump($typ1, $typ2); die();
@@ -374,7 +363,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity->setLogin($ADUser[0]['samaccountname']);
         $entity->setDepartament($ADUser[0]['department']);
         $entity->setStanowisko($ADUser[0]['title']);
-        $departament = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
+        $departament = $this->getDoctrine()->getManager()->getRepository(Departament::class)->findOneByName($ADUser[0]['department']);
         if ($entity->getZasob()) {
             $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
         }

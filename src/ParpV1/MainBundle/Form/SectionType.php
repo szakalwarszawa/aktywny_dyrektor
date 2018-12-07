@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\Section;
 
 class SectionType extends AbstractType
 {
@@ -47,7 +48,7 @@ class SectionType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Section'
+            'data_class' => Section::class,
         ));
     }
 
