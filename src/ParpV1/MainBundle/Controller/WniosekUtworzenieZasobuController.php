@@ -493,14 +493,9 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true, $readonly = true)
     {
-        $form = $this->createForm(
-            new WniosekUtworzenieZasobuType(),
-            $entity,
-            array(
+        $form = $this->createForm(WniosekUtworzenieZasobuType::class, $entity, array(
                 'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
                 'method' => 'PUT',
-                //                'ADUsers' => $this->getUsersFromAD(),
-                //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
                 'user'      => $this->getUser(),
             )
