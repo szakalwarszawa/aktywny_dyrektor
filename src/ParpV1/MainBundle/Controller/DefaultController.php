@@ -2241,7 +2241,7 @@ class DefaultController extends Controller
                         $samaccountname = $ADUser[0]['samaccountname'];
                         $zasobid = $zasob->getId();
                         $dane['zasobId'] = $zasobid;
-                        if (key_exists($samaccountname, $tablica)) {
+                        if (array_key_exists($samaccountname, $tablica)) {
                             $klucz = $tablica[$samaccountname];
                             if (!in_array($zasobid, $klucz, true)) {
                                 $tablica[$samaccountname][] = array('zasobId' => $zasobid, 'dane' => $dane);

@@ -25,11 +25,10 @@ class AccessCheckerService
         $this->doctrine = $OrmEntity;
         $this->container = $container;
         if (PHP_SAPI == 'cli') {
-            $this->container->enterScope('request');
             $this->container->set('request', new \Symfony\Component\HttpFoundation\Request(), 'request');
         }
     }
-    
+
     public function checkAccess($actionName)
     {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();

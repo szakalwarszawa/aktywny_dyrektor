@@ -210,7 +210,6 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 'label' => false,
                 'ldap_service' => $container->get('ldap_service'),
                 'by_reference' => true,
-
             ));
         } elseif ("kasowanie" === $typ) {
             $route = $container->get('request_stack')->getCurrentRequest()->get('_route');

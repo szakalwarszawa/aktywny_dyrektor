@@ -149,7 +149,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosekutworzeniezasobu_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->manipulateRender(
+        $rowAction3->addManipulateRender(
             function ($action, $row) {
                 if ($row->getField('wniosek.numer') === 'wniosek w trakcie tworzenia') {
                     return $action;
