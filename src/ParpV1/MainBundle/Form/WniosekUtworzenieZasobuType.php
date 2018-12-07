@@ -179,10 +179,14 @@ class WniosekUtworzenieZasobuType extends AbstractType
             } else {
                 if ($formPost === false) {
                     $zasobyService = $container->get('zasoby_service');
+                    $zasobyDlaUsera = $zasobyService->findZasobyDlaUsera($options['user']);
                     $builder->add('zmienianyZasob', ChoiceType::class, array(
                         'mapped' => true,
                         'label' => "Wybierz zasób",
-                        'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                        'choices' => array_keys($zasobyDlaUsera),
+                        'choice_label' => function ($value) use ($zasobyDlaUsera) {
+                            return $zasobyDlaUsera[$value];
+                        },
                         'attr' => array(
                             'class' => 'select2'
                         ),
