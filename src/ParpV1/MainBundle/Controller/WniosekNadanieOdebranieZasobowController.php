@@ -238,7 +238,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->manipulateRender(
+        $rowAction3->addManipulateRender(
             function ($action, $row) {
                 if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
                     return $action;
