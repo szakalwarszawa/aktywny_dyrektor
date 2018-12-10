@@ -1442,7 +1442,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //}
                     } else {
                         //bez grup ad tworzymy zadanie i maila do admina
-                        $this->get('uprawnieniaservice')->wyslij(
+                        $this->get('uprawnienia_service')->wyslij(
                             array(
                                 'cn'             => '',
                                 'samaccountname' => $uz->getSamaccountname(),
