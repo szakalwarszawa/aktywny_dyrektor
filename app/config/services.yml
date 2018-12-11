@@ -6,7 +6,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
         class: ParpV1\SoapBundle\Services\LdapService
-        arguments: ["@service_container"]
+        arguments: ["@service_container", '@ldap.cache']
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
@@ -62,7 +62,7 @@ services:
     kernel.listener.command_dispatch:
         class: ParpV1\MainBundle\EventListener\ConsoleExceptionListener
         arguments:
-            - ["@logger"]
+            - "@logger"
         tags:
             - { name: kernel.event_listener, event: console.exception }
     adcheck_service:
