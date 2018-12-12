@@ -77,11 +77,7 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control'
                     ),
-                    'choices' => array_keys($statusy),
-                    'choice_label' => function ($value) use ($statusy) {
-                        return $statusy[$value];
-                    },
-
+                    'choices' => array_flip($statusy)
                 ))
                 ->add('viewers', ChoiceType::class, array(
                     'required' => false,
@@ -92,10 +88,7 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control select2'
                     ),
-                    'choices' => array_keys($viewersEditors),
-                    'choice_label' => function ($value) use ($viewersEditors) {
-                        return $viewersEditors[$value];
-                    },
+                    'choices' => array_flip($viewersEditors),
                     'multiple' => true,
                     'expanded' => false
                 ))
@@ -108,10 +101,7 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control select2'
                     ),
-                    'choices' => array_keys($viewersEditors),
-                    'choice_label' => function ($value) use ($viewersEditors) {
-                        return $viewersEditors[$value];
-                    },
+                    'choices' => array_flip($viewersEditors),
                     'multiple' => true,
                     'expanded' => false
                 ))

@@ -183,10 +183,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                     $builder->add('zmienianyZasob', ChoiceType::class, array(
                         'mapped' => true,
                         'label' => "Wybierz zasób",
-                        'choices' => array_keys($zasobyDlaUsera),
-                        'choice_label' => function ($value) use ($zasobyDlaUsera) {
-                            return $zasobyDlaUsera[$value];
-                        },
+                        'choices' => array_flip($zasobyDlaUsera),
                         'attr' => array(
                             'class' => 'select2'
                         ),
@@ -219,10 +216,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 $builder->add('zmienianyZasob', ChoiceType::class, array(
                     'mapped' => true,
                     'label' => "Wybierz zasób",
-                    'choices' => array_keys($zasobyDlaUsera),
-                    'choice_label' => function ($value) use ($zasobyDlaUsera) {
-                        return $zasobyDlaUsera[$value];
-                    },
+                    'choices' => array_flip($zasobyDlaUsera),
                     'attr' => array(
                         'class' => 'select2'
                     ),

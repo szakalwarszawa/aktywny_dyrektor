@@ -29,10 +29,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'label' => "Czy pracownik/pracownicy spoza PARP"
             ))
             ->add($builder->create('pracownicy', ChoiceType::class, array(
-                'choices' => array_keys($options['ad_users']),
-                'choice_label' => function ($value) use ($options) {
-                    return $options['ad_users'][$value];
-                },
+                'choices' => array_flip($options['ad_users']),
                 'multiple' => true,
                 'required' => false,
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',

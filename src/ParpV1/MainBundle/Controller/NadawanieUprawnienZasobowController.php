@@ -428,10 +428,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => array(
                         'class' => '',
                     ),
-                    'choices' => array_keys($choices),
-                    'choice_label' => function ($value) use ($choices) {
-                        return $choices[$value];
-                    },
+                    'choices' => array_flip($choices),
                     'multiple' => true,
                     'expanded' => true
                 ))

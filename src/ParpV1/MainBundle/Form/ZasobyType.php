@@ -43,20 +43,14 @@ class ZasobyType extends AbstractType
             ->add('biuro', HiddenType::class);
         if ($adminiMulti) {
             $builder->add($builder->create('wlascicielZasobu', ChoiceType::class, array(
-                'choices' => array_keys($wlascicieleZasobow),
-                'choice_label' => function ($value) use ($wlascicieleZasobow) {
-                    return $wlascicieleZasobow[$value];
-                },
+                'choices' => array_flip($wlascicieleZasobow),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer));
         } else {
             $builder->add('wlascicielZasobu', ChoiceType::class, array(
-                'choices' => array_keys($wlascicieleZasobow),
-                'choice_label' => function ($value) use ($wlascicieleZasobow) {
-                    return $wlascicieleZasobow[$value];
-                },
+                'choices' => array_flip($wlascicieleZasobow),
                 'multiple' => false,
                 'placeholder' => 'Wybierz wartość',
                 'constraints' => array(
@@ -73,28 +67,19 @@ class ZasobyType extends AbstractType
         $uzytkownicyAd = $ldap->getAllFromADforCombo();
         $administratorzyTechniczniZasobow = $ldap->getAdministratorzyTechniczniZasobow();
         $builder->add($builder->create('powiernicyWlascicielaZasobu', ChoiceType::class, array(
-                'choices' => array_keys($uzytkownicyAd),
-                'choice_label' => function ($value) use ($uzytkownicyAd) {
-                    return $uzytkownicyAd[$value];
-                },
+                'choices' => array_flip($uzytkownicyAd),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', ChoiceType::class, array(
-                'choices' => array_keys($uzytkownicyAd),
-                'choice_label' => function ($value) use ($uzytkownicyAd) {
-                    return $uzytkownicyAd[$value];
-                },
+                'choices' => array_flip($uzytkownicyAd),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorTechnicznyZasobu', ChoiceType::class, array(
-                'choices' => array_keys($administratorzyTechniczniZasobow),
-                'choice_label' => function ($value) use ($administratorzyTechniczniZasobow) {
-                    return $administratorzyTechniczniZasobow[$value];
-                },
+                'choices' => array_flip($administratorzyTechniczniZasobow),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
