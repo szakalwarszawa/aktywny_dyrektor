@@ -7,6 +7,7 @@ use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
 
 //use Memcached;
 
@@ -990,7 +991,11 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        return $this->adldap->group()->find($grupa);
+        try{
+            return $this->adldap->group()->find($grupa);
+        } catch(DebugContextErrorException $exception) {
+            return false;
+        }
     }
 
     public function getUsersWithRole($role)
