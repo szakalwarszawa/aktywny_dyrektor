@@ -20,25 +20,45 @@ class ZastepstwoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            //->add('deletedAt')
-            ->add('opis', TextareaType::class, ['required' => true]);
-        $builder->add('ktoZastepuje', ChoiceType::class, array(
-                'choices' => $options['ad_users'],
-                'required' => true, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2')));
-        if (in_array("PARP_ADMIN", $options['current_user']->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())) {
-            //PARP_ADMIN oraz PARP_ADMIN_ZASTEPSTW moga ustawic kogolowiek jako kogo zastepuja
+            ->add('opis', TextareaType::class, ['required' => true])
+            ->add('ktoZastepuje', ChoiceType::class, array(
+                'choices' => array_flip($options['ad_users']),
+                'required' => true,
+                'label' => 'Kto zastępuje',
+                'attr' => array(
+                    'class' => 'select2'
+                )
+        ));
+
+        if (in_array("PARP_ADMIN", $options['current_user']->getRoles())
+            || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())) {
             $builder->add('kogoZastepuje', ChoiceType::class, array(
-                'choices' => $options['ad_users'],
-                'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
+                'choices' => array_flip($options['ad_users']),
+                'required' => true,
+                'label' => 'Kogo zastępuje',
+                'attr' => array(
+                    'class' => 'select2'
+                )
+            ));
         } elseif (in_array("PARP_DB_ZASTEPSTWA", $options['current_user']->getRoles())) {
-            //PARP_DB_ZASTEPSTWA moga ustawic kogolowiek z DB jako kogo zastepuja
             $builder->add('kogoZastepuje', ChoiceType::class, array(
-                    'choices' => $options['ad_users'],
-                    'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
+                    'choices' => array_flip($options['ad_users']),
+                    'required' => true,
+                    'label' => 'Kogo zastępuje',
+                    'attr' => array(
+                        'class' => 'select2'
+                    )
+            ));
         } else {
-            //reszta normalnych osob, ma ustawionego tylko siebie jako kogoZastepuje
+
             $builder->add('kogoZastepuje', TextType::class, array(
-                'required' => true, 'label' => 'Kogo zastępuje', 'data' => $options['current_user']->getUsername(), 'attr' => array('readonly' => true)));
+                'required' => true,
+                'label' => 'Kogo zastępuje',
+                'data' => $options['current_user']->getUsername(),
+                'attr' => array(
+                    'readonly' => true
+                )
+            ));
         }
 
 
