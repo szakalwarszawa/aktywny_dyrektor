@@ -109,7 +109,7 @@ class WniosekViewerController extends Controller
      */
     private function createCreateForm(WniosekNadanieOdebranieZasobowViewer $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowViewerType(), $entity, array(
+        $form = $this->createForm(WniosekNadanieOdebranieZasobowViewerType::class, $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobowviewer_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class WniosekViewerController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobowViewer $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowViewerType(), $entity, array(
+        $form = $this->createForm(WniosekNadanieOdebranieZasobowViewerType::class, $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasobowviewer_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

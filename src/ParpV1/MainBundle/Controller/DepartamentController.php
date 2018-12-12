@@ -139,7 +139,7 @@ class DepartamentController extends Controller
      */
     private function createCreateForm(Departament $entity)
     {
-        $form = $this->createForm(new DepartamentType(), $entity, array(
+        $form = $this->createForm(DepartamentType::class, $entity, array(
             'action' => $this->generateUrl('departament_create'),
             'method' => 'POST',
         ));
@@ -228,7 +228,7 @@ class DepartamentController extends Controller
     */
     private function createEditForm(Departament $entity)
     {
-        $form = $this->createForm(new DepartamentType(), $entity, array(
+        $form = $this->createForm(DepartamentType::class, $entity, array(
             'action' => $this->generateUrl('departament_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

@@ -109,7 +109,7 @@ class ADOrganizationalUnitController extends Controller
      */
     private function createCreateForm(ADOrganizationalUnit $entity)
     {
-        $form = $this->createForm(new ADOrganizationalUnitType(), $entity, array(
+        $form = $this->createForm(ADOrganizationalUnitType::class, $entity, array(
             'action' => $this->generateUrl('adorganizationalunit_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class ADOrganizationalUnitController extends Controller
     */
     private function createEditForm(ADOrganizationalUnit $entity)
     {
-        $form = $this->createForm(new ADOrganizationalUnitType(), $entity, array(
+        $form = $this->createForm(ADOrganizationalUnitType::class, $entity, array(
             'action' => $this->generateUrl('adorganizationalunit_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

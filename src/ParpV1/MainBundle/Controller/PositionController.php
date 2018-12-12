@@ -109,7 +109,7 @@ class PositionController extends Controller
      */
     private function createCreateForm(Position $entity)
     {
-        $form = $this->createForm(new PositionType(), $entity, array(
+        $form = $this->createForm(PositionType::class, $entity, array(
             'action' => $this->generateUrl('position_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class PositionController extends Controller
     */
     private function createEditForm(Position $entity)
     {
-        $form = $this->createForm(new PositionType(), $entity, array(
+        $form = $this->createForm(PositionType::class, $entity, array(
             'action' => $this->generateUrl('position_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

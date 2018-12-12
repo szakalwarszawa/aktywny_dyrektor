@@ -109,7 +109,7 @@ class ADGroupController extends Controller
      */
     private function createCreateForm(ADGroup $entity)
     {
-        $form = $this->createForm(new ADGroupType(), $entity, array(
+        $form = $this->createForm(ADGroupType::class, $entity, array(
             'action' => $this->generateUrl('adgroup_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class ADGroupController extends Controller
     */
     private function createEditForm(ADGroup $entity)
     {
-        $form = $this->createForm(new ADGroupType(), $entity, array(
+        $form = $this->createForm(ADGroupType::class, $entity, array(
             'action' => $this->generateUrl('adgroup_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

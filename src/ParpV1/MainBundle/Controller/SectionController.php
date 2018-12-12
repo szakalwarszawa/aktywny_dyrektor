@@ -111,7 +111,7 @@ class SectionController extends Controller
      */
     private function createCreateForm(Section $entity)
     {
-        $form = $this->createForm(new SectionType(), $entity, array(
+        $form = $this->createForm(SectionType::class, $entity, array(
             'action' => $this->generateUrl('section_create'),
             'method' => 'POST',
         ));
@@ -205,7 +205,7 @@ class SectionController extends Controller
     */
     private function createEditForm(Section $entity)
     {
-        $form = $this->createForm(new SectionType(), $entity, array(
+        $form = $this->createForm(SectionType::class, $entity, array(
             'action' => $this->generateUrl('section_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

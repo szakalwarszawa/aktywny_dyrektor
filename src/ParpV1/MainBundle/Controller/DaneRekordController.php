@@ -109,7 +109,7 @@ class DaneRekordController extends Controller
      */
     private function createCreateForm(DaneRekord $entity)
     {
-        $form = $this->createForm(new DaneRekordType(), $entity, array(
+        $form = $this->createForm(DaneRekordType::class, $entity, array(
             'action' => $this->generateUrl('danerekord_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class DaneRekordController extends Controller
     */
     private function createEditForm(DaneRekord $entity)
     {
-        $form = $this->createForm(new DaneRekordType(), $entity, array(
+        $form = $this->createForm(DaneRekordType::class, $entity, array(
             'action' => $this->generateUrl('danerekord_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

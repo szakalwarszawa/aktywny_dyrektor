@@ -116,7 +116,7 @@ class EngagementController extends Controller
      */
     private function createCreateForm(Engagement $entity)
     {
-        $form = $this->createForm(new EngagementType(), $entity, array(
+        $form = $this->createForm(EngagementType::class, $entity, array(
             'action' => $this->generateUrl('engagement_create'),
             'method' => 'POST',
         ));
@@ -205,7 +205,7 @@ class EngagementController extends Controller
     */
     private function createEditForm(Engagement $entity)
     {
-        $form = $this->createForm(new EngagementType(), $entity, array(
+        $form = $this->createForm(EngagementType::class, $entity, array(
             'action' => $this->generateUrl('engagement_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

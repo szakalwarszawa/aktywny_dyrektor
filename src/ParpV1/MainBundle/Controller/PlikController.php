@@ -188,7 +188,7 @@ class PlikController extends Controller
      */
     private function createCreateForm(Plik $entity)
     {
-        $form = $this->createForm(new PlikType(), $entity, array(
+        $form = $this->createForm(PlikType::class, $entity, array(
             'action' => $this->generateUrl('plik_create'),
             'method' => 'POST',
         ));
@@ -280,7 +280,7 @@ class PlikController extends Controller
     */
     private function createEditForm(Plik $entity)
     {
-        $form = $this->createForm(new PlikType(), $entity, array(
+        $form = $this->createForm(PlikType::class, $entity, array(
             'action' => $this->generateUrl('plik_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

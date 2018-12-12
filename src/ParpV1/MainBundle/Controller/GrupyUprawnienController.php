@@ -109,7 +109,7 @@ class GrupyUprawnienController extends Controller
      */
     private function createCreateForm(GrupyUprawnien $entity)
     {
-        $form = $this->createForm(new GrupyUprawnienType(), $entity, array(
+        $form = $this->createForm(GrupyUprawnienType::class, $entity, array(
             'action' => $this->generateUrl('grupyuprawnien_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class GrupyUprawnienController extends Controller
     */
     private function createEditForm(GrupyUprawnien $entity)
     {
-        $form = $this->createForm(new GrupyUprawnienType(), $entity, array(
+        $form = $this->createForm(GrupyUprawnienType::class, $entity, array(
             'action' => $this->generateUrl('grupyuprawnien_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

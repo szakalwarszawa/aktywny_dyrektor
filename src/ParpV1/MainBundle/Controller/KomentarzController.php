@@ -114,7 +114,7 @@ class KomentarzController extends Controller
      */
     private function createCreateForm(Komentarz $entity)
     {
-        $form = $this->createForm(new KomentarzType(), $entity, array(
+        $form = $this->createForm(KomentarzType::class, $entity, array(
             'action' => $this->generateUrl('komentarz_create'),
             'method' => 'POST',
         ));
@@ -208,7 +208,7 @@ class KomentarzController extends Controller
     */
     private function createEditForm(Komentarz $entity)
     {
-        $form = $this->createForm(new KomentarzType(), $entity, array(
+        $form = $this->createForm(KomentarzType::class, $entity, array(
             'action' => $this->generateUrl('komentarz_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

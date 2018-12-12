@@ -228,7 +228,7 @@ class ZadanieController extends Controller
     */
     private function createEditForm(Zadanie $entity)
     {
-        $form = $this->createForm(new ZadanieType(), $entity, array(
+        $form = $this->createForm(ZadanieType::class, $entity, array(
             'action' => $this->generateUrl('zadanie_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

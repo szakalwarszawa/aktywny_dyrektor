@@ -109,7 +109,7 @@ class AclActionController extends Controller
      */
     private function createCreateForm(AclAction $entity)
     {
-        $form = $this->createForm(new AclActionType(), $entity, array(
+        $form = $this->createForm(AclActionType::class, $entity, array(
             'action' => $this->generateUrl('aclaction_create'),
             'method' => 'POST',
         ));
@@ -198,7 +198,7 @@ class AclActionController extends Controller
     */
     private function createEditForm(AclAction $entity)
     {
-        $form = $this->createForm(new AclActionType(), $entity, array(
+        $form = $this->createForm(AclActionType::class, $entity, array(
             'action' => $this->generateUrl('aclaction_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

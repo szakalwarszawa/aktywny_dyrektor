@@ -105,7 +105,7 @@ class ADUserController extends Controller
      */
     private function createCreateForm(ADUser $entity)
     {
-        $form = $this->createForm(new ADUserType(), $entity, array(
+        $form = $this->createForm(ADUserType::class, $entity, array(
             'action' => $this->generateUrl('aduser_create'),
             'method' => 'POST',
         ));
@@ -194,7 +194,7 @@ class ADUserController extends Controller
     */
     private function createEditForm(ADUser $entity)
     {
-        $form = $this->createForm(new ADUserType(), $entity, array(
+        $form = $this->createForm(ADUserType::class, $entity, array(
             'action' => $this->generateUrl('aduser_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

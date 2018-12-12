@@ -105,7 +105,7 @@ class UprawnieniaController extends Controller
      */
     private function createCreateForm(Uprawnienia $entity)
     {
-        $form = $this->createForm(new UprawnieniaType(), $entity, array(
+        $form = $this->createForm(UprawnieniaType::class, $entity, array(
             'action' => $this->generateUrl('uprawnienia_create'),
             'method' => 'POST',
         ));
@@ -199,7 +199,7 @@ class UprawnieniaController extends Controller
     */
     private function createEditForm(Uprawnienia $entity)
     {
-        $form = $this->createForm(new UprawnieniaType(), $entity, array(
+        $form = $this->createForm(UprawnieniaType::class, $entity, array(
             'action' => $this->generateUrl('uprawnienia_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

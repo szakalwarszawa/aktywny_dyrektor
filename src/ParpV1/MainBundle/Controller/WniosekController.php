@@ -272,7 +272,7 @@ class WniosekController extends Controller
      */
     private function createCreateForm(Wniosek $entity)
     {
-        $form = $this->createForm(new WniosekType(), $entity, array(
+        $form = $this->createForm(WniosekType::class, $entity, array(
             'action' => $this->generateUrl('wniosek_create'),
             'method' => 'POST',
         ));
@@ -361,7 +361,7 @@ class WniosekController extends Controller
     */
     private function createEditForm(Wniosek $entity)
     {
-        $form = $this->createForm(new WniosekType(), $entity, array(
+        $form = $this->createForm(WniosekType::class, $entity, array(
             'action' => $this->generateUrl('wniosek_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));

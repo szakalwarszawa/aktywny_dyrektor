@@ -116,7 +116,7 @@ class WniosekStatusController extends Controller
      */
     private function createCreateForm(WniosekStatus $entity)
     {
-        $form = $this->createForm(new WniosekStatusType(), $entity, array(
+        $form = $this->createForm(WniosekStatusType::class, $entity, array(
             'action' => $this->generateUrl('wniosekstatus_create'),
             'method' => 'POST',
         ));
@@ -205,7 +205,7 @@ class WniosekStatusController extends Controller
     */
     private function createEditForm(WniosekStatus $entity)
     {
-        $form = $this->createForm(new WniosekStatusType(), $entity, array(
+        $form = $this->createForm(WniosekStatusType::class, $entity, array(
             'action' => $this->generateUrl('wniosekstatus_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
