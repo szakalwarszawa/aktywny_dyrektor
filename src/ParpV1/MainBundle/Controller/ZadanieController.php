@@ -48,7 +48,7 @@ class ZadanieController extends Controller
         $user = $this->getUser();
 
         $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
-        $username = trim($ad[0]['name']);
+        $username = trim($ad[0]['samaccountname']);
         //print_r($username);
         $source->manipulateQuery(
             function ($query) use ($username, $aktywne) {
