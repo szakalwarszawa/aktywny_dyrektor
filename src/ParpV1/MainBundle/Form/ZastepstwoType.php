@@ -28,7 +28,7 @@ class ZastepstwoType extends AbstractType
                 'attr' => array(
                     'class' => 'select2'
                 )
-        ));
+            ));
 
         if (in_array("PARP_ADMIN", $options['current_user']->getRoles())
             || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())) {
@@ -50,7 +50,6 @@ class ZastepstwoType extends AbstractType
                     )
             ));
         } else {
-
             $builder->add('kogoZastepuje', TextType::class, array(
                 'required' => true,
                 'label' => 'Kogo zastępuje',
@@ -60,7 +59,6 @@ class ZastepstwoType extends AbstractType
                 )
             ));
         }
-
 
         $builder->add('dataOd', DateTimeType::class, array(
                     'attr' => array(
