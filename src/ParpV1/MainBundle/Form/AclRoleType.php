@@ -23,7 +23,7 @@ class AclRoleType extends AbstractType
             ->add('opis')
             ->add('actions')
             ->add($builder->create('users', ChoiceType::class, array(
-                'choices' => $options['ad_users'],
+                'choices' => array_flip($options['ad_users']),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
