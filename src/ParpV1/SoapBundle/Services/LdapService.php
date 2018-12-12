@@ -991,9 +991,9 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        try{
+        try {
             return $this->adldap->group()->find($grupa);
-        } catch(DebugContextErrorException $exception) {
+        } catch (DebugContextErrorException $exception) {
             return false;
         }
     }

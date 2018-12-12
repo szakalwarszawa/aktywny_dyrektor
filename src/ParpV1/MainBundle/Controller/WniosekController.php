@@ -66,7 +66,7 @@ class WniosekController extends Controller
             $statusy[$e->getId()] = $e->getNazwa();
         }
 
-
+        $viewersEditors = $this->getUsersFromADWithRole("");
         $builder = $this->createFormBuilder($dane)
                 ->add('status', ChoiceType::class, array(
                     'required' => false,
@@ -77,7 +77,11 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control'
                     ),
-                    'choices' => $statusy
+                    'choices' => array_keys($statusy),
+                    'choice_label' => function ($value) use ($statusy) {
+                        return $statusy[$value];
+                    },
+
                 ))
                 ->add('viewers', ChoiceType::class, array(
                     'required' => false,
@@ -88,7 +92,10 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control select2'
                     ),
-                    'choices' => $this->getUsersFromADWithRole(""),
+                    'choices' => array_keys($viewersEditors),
+                    'choice_label' => function ($value) use ($viewersEditors) {
+                        return $viewersEditors[$value];
+                    },
                     'multiple' => true,
                     'expanded' => false
                 ))
@@ -101,7 +108,10 @@ class WniosekController extends Controller
                     'attr' => array(
                         'class' => 'form-control select2'
                     ),
-                    'choices' => $this->getUsersFromADWithRole(""),
+                    'choices' => array_keys($viewersEditors),
+                    'choice_label' => function ($value) use ($viewersEditors) {
+                        return $viewersEditors[$value];
+                    },
                     'multiple' => true,
                     'expanded' => false
                 ))
