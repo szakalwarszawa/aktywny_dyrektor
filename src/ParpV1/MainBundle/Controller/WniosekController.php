@@ -277,7 +277,7 @@ class WniosekController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -366,7 +366,7 @@ class WniosekController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -441,7 +441,7 @@ class WniosekController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wniosek_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

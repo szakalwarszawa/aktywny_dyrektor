@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Form\DepartamentType;
 
@@ -36,66 +36,66 @@ class DepartamentController extends Controller
         $em = $this->getDoctrine()->getManager();
         $grid = $this->generateGrid("2016");
         $grid2 = $this->generateGrid("stare");
-        
+
         if ($grid->isReadyForRedirect() || $grid2->isReadyForRedirect()) {
             if ($grid->isReadyForExport()) {
                 return $grid->getExportResponse();
             }
-        
+
             if ($grid2->isReadyForExport()) {
                 return $grid2->getExportResponse();
             }
-            
-        
+
+
             // Url is the same for the grids
             return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         } else {
             return $this->render('ParpMainBundle:Departament:index.html.twig', array('grid' => $grid, 'grid2' => $grid2));
         }
     }
-    
+
     protected function generateGrid($ktore)
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Departament')->findAll();
-    
+
         $source = new Entity('ParpMainBundle:Departament');
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $ktore) {
-                
+
                 $query->andWhere($tableAlias.'.nowaStruktura = '.($ktore == 'stare' ? '0' : '1'));
             }
         );
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'departament_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'departament_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         //$grid->isReadyForRedirect();
@@ -144,7 +144,7 @@ class DepartamentController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Departament', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Departament', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -233,7 +233,7 @@ class DepartamentController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -308,7 +308,7 @@ class DepartamentController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('departament_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Departament','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Departament','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

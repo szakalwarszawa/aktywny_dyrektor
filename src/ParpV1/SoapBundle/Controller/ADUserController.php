@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\SoapBundle\Entity\ADUser;
 use ParpV1\SoapBundle\Form\ADUserType;
 
@@ -35,36 +35,36 @@ class ADUserController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpSoapBundle:ADUser')->findAll();
-    
+
         $source = new Entity('ParpSoapBundle:ADUser');
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'aduser_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'aduser_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
         $grid->isReadyForRedirect();
         return $grid->getGridResponse();
     }
@@ -110,7 +110,7 @@ class ADUserController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz ADUser', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz ADUser', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -199,7 +199,7 @@ class ADUserController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -274,7 +274,7 @@ class ADUserController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('aduser_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj ADUser','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj ADUser','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

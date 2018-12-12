@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Form\KomentarzType;
 
@@ -119,7 +119,7 @@ class KomentarzController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Komentarz', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Komentarz', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -213,7 +213,7 @@ class KomentarzController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -318,7 +318,7 @@ class KomentarzController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('komentarz_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Komentarz','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Komentarz','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

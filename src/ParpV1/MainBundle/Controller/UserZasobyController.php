@@ -15,6 +15,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * UserZasoby controller.
@@ -113,7 +114,7 @@ class UserZasobyController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz UserZasoby', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz UserZasoby', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -220,7 +221,7 @@ class UserZasobyController extends Controller
             'is_sub_form' => false,
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -295,7 +296,7 @@ class UserZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('userzasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj UserZasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj UserZasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

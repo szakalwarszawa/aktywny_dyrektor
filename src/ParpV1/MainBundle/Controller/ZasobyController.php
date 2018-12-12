@@ -23,6 +23,7 @@ use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Zasoby controller.
@@ -367,7 +368,7 @@ class ZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

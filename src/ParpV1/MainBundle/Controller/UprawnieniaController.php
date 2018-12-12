@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\Uprawnienia;
 use ParpV1\MainBundle\Form\UprawnieniaType;
 use ParpV1\MainBundle\Entity\UserUprawnienia;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Uprawnienia controller.
@@ -109,7 +110,7 @@ class UprawnieniaController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Uprawnienia', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Uprawnienia', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -203,7 +204,7 @@ class UprawnieniaController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -287,7 +288,7 @@ class UprawnieniaController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('uprawnienia_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array(
+            ->add('submit', SubmitType::class, array(
                 'label' => 'Skasuj Uprawnienia',
                 'attr' => array('class' => 'btn btn-danger'
                 )
