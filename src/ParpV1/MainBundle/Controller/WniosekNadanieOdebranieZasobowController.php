@@ -28,6 +28,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -430,18 +432,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Przejdź do wyboru zasobów', 'attr' => array('class' => 'btn btn-success'))
         );
 
@@ -523,7 +523,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $status =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')
+                ->getRepository(WniosekStatus::class)
                 ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);
@@ -823,14 +823,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
 
+        $request = $this
+            ->container
+            ->get('request_stack')
+            ->getCurrentRequest();
         $this->logg('setWniosekStatus START!', array(
-            'url'        => $this->getRequest()->getRequestUri(),
+            'url'        => $request->getRequestUri(),
             'user'       => $this->getUser()->getUsername(),
             'wniosek.id' => $wniosek->getId(),
             'statusName' => $statusName,
             'rejected'   => $rejected,
             'oldStatus'  => $oldStatus,
-            'isPost'     => $this->getRequest()->isMethod('POST'),
+            'isPost'     => $request->isMethod('POST'),
             'zastepstwo' => $zastepstwo,
         ));
 
@@ -1754,21 +1758,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl(
                     'wnioseknadanieodebraniezasobow_update',
                     array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'))
         );
 
@@ -1861,7 +1863,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wnioseknadanieodebraniezasobow_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
             ->getForm();
     }
 

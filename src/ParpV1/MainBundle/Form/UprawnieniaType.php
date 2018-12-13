@@ -6,10 +6,11 @@ use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\Uprawnienia;
 
 class UprawnieniaType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -30,7 +31,7 @@ class UprawnieniaType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Uprawnienia'
+            'data_class' => Uprawnienia::class,
         ));
     }
 

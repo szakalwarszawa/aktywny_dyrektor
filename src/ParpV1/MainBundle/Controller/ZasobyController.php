@@ -21,6 +21,8 @@ use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Grid\ListaZasobowGrid;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 /**
  * Zasoby controller.
@@ -63,7 +65,7 @@ class ZasobyController extends Controller
         );
     }
 
-    protected function sprawdzDostep($zasob)
+    protected function sprawdzDostep($zasob = null)
     {
 
         if ($zasob) {
@@ -125,12 +127,13 @@ class ZasobyController extends Controller
      */
     private function createCreateForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this), $entity, array(
+        $form = $this->createForm(ZasobyType::class, $entity, array(
             'action' => $this->generateUrl('zasoby_create'),
             'method' => 'POST',
+            'ldap_service' => $this->get('ldap_service')
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zasoby', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zasoby', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -187,7 +190,7 @@ class ZasobyController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $em = $this->getDoctrine()->getManager();
-        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($id);
+        $uzs = $em->getRepository(UserZasoby::class)->findUsersByZasobId($id);
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -223,12 +226,15 @@ class ZasobyController extends Controller
     */
     private function createEditForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this, "Nazwa", $this->niemozeEdytowac, $this->czyJestWlascicielemLubPowiernikiem), $entity, array(
+        $form = $this->createForm(ZasobyType::class, $entity, array(
             'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'nie_moze_edytowac' => $this->niemozeEdytowac,
+            'czy_wlasciciel_lub_powiernik' => $this->czyJestWlascicielemLubPowiernikiem,
+            'ldap_service' => $this->get('ldap_service'),
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }

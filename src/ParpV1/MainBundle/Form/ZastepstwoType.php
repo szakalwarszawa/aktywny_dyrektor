@@ -9,17 +9,10 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\Zastepstwo;
 
 class ZastepstwoType extends AbstractType
 {
-    protected $ADUser;
-    protected $ADUsers;
-
-    public function __construct($ADUser, $ADUsers)
-    {
-        $this->ADUser = $ADUser;
-        $this->ADUsers = $ADUsers;
-    }
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
@@ -30,22 +23,22 @@ class ZastepstwoType extends AbstractType
             //->add('deletedAt')
             ->add('opis', TextareaType::class, ['required' => true]);
         $builder->add('ktoZastepuje', ChoiceType::class, array(
-                'choices' => $this->ADUsers,
+                'choices' => $options['ad_users'],
                 'required' => true, 'label' => 'Kto zastępuje', 'attr' => array('class' => 'select2')));
-        if (in_array("PARP_ADMIN", $this->ADUser->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $this->ADUser->getRoles())) {
+        if (in_array("PARP_ADMIN", $options['current_user']->getRoles()) || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())) {
             //PARP_ADMIN oraz PARP_ADMIN_ZASTEPSTW moga ustawic kogolowiek jako kogo zastepuja
             $builder->add('kogoZastepuje', ChoiceType::class, array(
-                'choices' => $this->ADUsers,
+                'choices' => $options['ad_users'],
                 'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
-        } elseif (in_array("PARP_DB_ZASTEPSTWA", $this->ADUser->getRoles())) {
+        } elseif (in_array("PARP_DB_ZASTEPSTWA", $options['current_user']->getRoles())) {
             //PARP_DB_ZASTEPSTWA moga ustawic kogolowiek z DB jako kogo zastepuja
             $builder->add('kogoZastepuje', ChoiceType::class, array(
-                    'choices' => $this->ADUsers,
+                    'choices' => $options['ad_users'],
                     'required' => true, 'label' => 'Kogo zastępuje', 'attr' => array('class' => 'select2')));
         } else {
             //reszta normalnych osob, ma ustawionego tylko siebie jako kogoZastepuje
             $builder->add('kogoZastepuje', TextType::class, array(
-                'required' => true, 'label' => 'Kogo zastępuje', 'data' => $this->ADUser->getUsername(), 'attr' => array('readonly' => true)));
+                'required' => true, 'label' => 'Kogo zastępuje', 'data' => $options['current_user']->getUsername(), 'attr' => array('readonly' => true)));
         }
 
 
@@ -84,7 +77,9 @@ class ZastepstwoType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Zastepstwo'
+            'data_class' => Zastepstwo::class,
+            'current_user' => null,
+            'ad_users' => array()
         ));
     }
 

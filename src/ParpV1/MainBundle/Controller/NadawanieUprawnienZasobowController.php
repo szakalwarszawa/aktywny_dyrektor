@@ -35,6 +35,7 @@ use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use Symfony\Component\Validator\Constraints;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -348,13 +349,13 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('samaccountnames', HiddenType::class, array(
                     'required' => false,
-                    'read_only' => true,
                     'label' => 'Nazwa kont',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
                     'attr' => array(
                         'class' => 'form-control',
+                        'readonly' => true,
                     ),
                     'data' => json_encode($samaccountnames)
                 ))
@@ -381,7 +382,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('grupy', ChoiceType::class, array(
                     'required' => false,
-                    'read_only' => false,
                     'label' => 'Filtruj po grupie uprawnień',
                     'label_attr' => array(
                         'class' => 'col-sm-12 control-label text-left '.($action == 'addResources' || $action ==
@@ -422,7 +422,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('access', ChoiceType::class, array(
                     'required' => false,
-                    'read_only' => false,
                     'label' => $title,
                     'label_attr' => array(
                         'class' => 'col-sm-12 control-label text-left uprawnienieRow',
@@ -736,13 +735,13 @@ class NadawanieUprawnienZasobowController extends Controller
         $action = $uzid == 0 ? 'addResources' : 'editResources';
         $samaccountnamesPars = array(
             'required' => false,
-            'read_only' => true,
             'label' => 'Nazwa kont',
             'label_attr' => array(
                 'class' => 'col-sm-4 control-label',
             ),
             'attr' => array(
                 'class' => 'form-control',
+                'readonly' => true,
             )
         );
         $fromWhenPars = array(
@@ -845,6 +844,7 @@ class NadawanieUprawnienZasobowController extends Controller
             //$uz->setSamaccountname($z->getId());
             $userzasoby[] = $uz;
         }
+
         //print_r($fromWhenPars['data']);
         $form = $this->createFormBuilder()
             ->add('action', HiddenType::class, array(
@@ -857,13 +857,19 @@ class NadawanieUprawnienZasobowController extends Controller
             ->add('fromWhen', HiddenType::class, $fromWhenPars)
             ->add('powod', HiddenType::class, $powodPars)
             ->add('userzasoby', CollectionType::class, array(
-                'entry_type' => new UserZasobyType($choicesModul, $choicesPoziomDostepu, true, $datauz),
+                'entry_type' => UserZasobyType::class,
+                'entry_options' => array(
+                    'is_sub_form' => true,
+                    'data_uz' => $datauz,
+                ),
                 'allow_add'    => true,
                 'allow_delete'    => true,
                 'by_reference' => false,
                 'label' => 'Zasoby',
                 'prototype' => true,
-                'cascade_validation' => true,
+                'constraints' => array(
+                    new Constraints\Valid(),
+                ),
                 'data' => $userzasoby
             ))
             ->add('Dalej', SubmitType::class, array(

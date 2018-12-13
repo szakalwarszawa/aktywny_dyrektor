@@ -783,19 +783,17 @@ class DefaultController extends Controller
         $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', TextType::class, array(
                 'required'   => false,
-                'read_only'  => true,
                 'label'      => 'Nazwa konta',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
                     'class'    => 'form-control',
-                    'readonly' => true //(!$admin)
+                    'readonly' => true
                 ),
             ))
             ->add('cn', TextType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Nazwisko i Imię', //'Imię i Nazwisko',//'Nazwisko i Imię',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -807,7 +805,6 @@ class DefaultController extends Controller
             ))
             ->add('initials', TextType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Inicjały',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -820,7 +817,6 @@ class DefaultController extends Controller
             ->add('title', ChoiceType::class, array(
                 //                'class' => 'ParpMainBundle:Position',
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Stanowisko',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -849,7 +845,6 @@ class DefaultController extends Controller
             ))
             ->add('info', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Sekcja',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -865,7 +860,6 @@ class DefaultController extends Controller
             ))
             ->add('department', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Biuro / Departament',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -881,7 +875,6 @@ class DefaultController extends Controller
             ))
             ->add('manager', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => (!$admin && !$kadry1 && !$kadry2),
                 'label'      => 'Przełożony',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -928,7 +921,6 @@ class DefaultController extends Controller
             ))
             ->add('initialrights', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Uprawnienia początkowe',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -947,7 +939,6 @@ class DefaultController extends Controller
             ))
             ->add('roles', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => (!$admin),
                 'label'      => 'Role w AkD',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -965,7 +956,6 @@ class DefaultController extends Controller
             ))
             ->add('isDisabled', ChoiceType::class, array(
                 'required'   => true,
-                'read_only'  => false,
                 'label'      => 'Konto wyłączone w AD',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',

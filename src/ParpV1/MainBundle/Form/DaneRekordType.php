@@ -6,6 +6,7 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\DaneRekord;
 
 class DaneRekordType extends AbstractType
 {
@@ -34,7 +35,7 @@ class DaneRekordType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\DaneRekord'
+            'data_class' => DaneRekord::class,
         ));
     }
 
