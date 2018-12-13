@@ -67,14 +67,13 @@ class UserZasobyType extends AbstractType
                     //'format' => 'Y-m-d'
                 ))
             ->add('kanalDostepu', ChoiceType::class, [
-                'choices' => [
+                'choices' => array_flip(array(
                     'WK' => 'WK - Wewnętrzny kablowy',
                     'DZ_O' => 'DZ_O - Zdalny, za pomocą komputera nie będącego własnością PARP',
                     'DZ_P' => 'DZ_P - Zdalny, za pomocą komputera będącego własnością PARP',
                     'WR' => 'WR - Wewnętrzny radiowy',
                     'WRK' => 'WRK - Wewnętrzny radiowy i kablowy'
-
-                ]
+                ))
             ])
             ->add('uprawnieniaAdministracyjne')
         ;
