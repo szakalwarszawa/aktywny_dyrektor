@@ -343,10 +343,10 @@
                                 {% endif %}
 
                                 {% if(entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
-                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning">Nadanie</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning">Zobacz wniosek o nadanie uprawnień</a>
                                 {% else %}
                                     {% if(z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id) %}
-                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Odebranie</a>
+                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Zobacz wniosek o odebranie uprawnień</a>
                                     {% endif %}
                                 {% endif %}
 
