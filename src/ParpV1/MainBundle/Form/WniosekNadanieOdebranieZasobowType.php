@@ -29,7 +29,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'label' => "Czy pracownik/pracownicy spoza PARP"
             ))
             ->add($builder->create('pracownicy', ChoiceType::class, array(
-                'choices' => $options['ad_users'],
+                'choices' => array_flip($options['ad_users']),
                 'multiple' => true,
                 'required' => false,
                 'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
@@ -43,7 +43,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 )
             ))
             ->add('managerSpozaParp', ChoiceType::class, array(
-                'choices' => $options['managerzy_spoza_parp'],
+                'choices' => array_flip($options['managerzy_spoza_parp']),
                 'required' => false,
                 'label' => 'Manager Pracowników spoza PARP',
                 'attr' => array(

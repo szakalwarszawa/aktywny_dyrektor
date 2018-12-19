@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Plik;
 use ParpV1\MainBundle\Form\PlikType;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,8 +25,8 @@ use Symfony\Component\HttpFoundation\Response;
  */
 class PlikController extends Controller
 {
-    
-    
+
+
     /**
      * Download a file
      *
@@ -38,12 +38,12 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
-        $doc = $em->getRepository('ParpMainBundle:Plik')->find($id);
-    
+        $doc = $em->getRepository(Plik::class)->find($id);
+
         if (!$doc) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
         }
-        
+
         $filePath = $doc->getFilePath();
         $filename = $doc->getFile();
         // check if file exists
@@ -51,26 +51,26 @@ class PlikController extends Controller
             echo($filePath);
             throw $this->createNotFoundException();
         }
-        
+
         // Generate response
         $response = new Response();
-        
-        
+
+
         // Set headers
         $response->headers->set('Cache-Control', 'private');
         //$finfo = finfo_open(FILEINFO_MIME_TYPE); // return mime type ala mimetype extension
         //$mtype = finfo_file($finfo, $filePath);
         $response->headers->set('Content-type', 'application/octet-stream'); //$mtype);
         //finfo_close($finfo);
-        
+
         $response->headers->set('Content-Disposition', 'attachment; filename="' . basename($filePath) . '";');
         $response->headers->set('Content-length', filesize($filePath));
-        
+
         //print_r($response->headers);
         //die();
         // Send headers before outputting anything
         $response->sendHeaders();
-        
+
         $response->setContent(readfile($filePath));
         $em->getFilters()->enable('softdeleteable');
         die();
@@ -88,7 +88,7 @@ class PlikController extends Controller
         return $response;
         */
     }
-    
+
 
     /**
      * Lists all Plik entities.
@@ -101,8 +101,8 @@ class PlikController extends Controller
         //die('a');
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Plik')->findAll();
-    
-        $source = new Entity('ParpMainBundle:Plik');
+
+        $source = new Entity(Plik::class);
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
@@ -112,39 +112,39 @@ class PlikController extends Controller
         $grid = $this->get('grid');
         $grid->setRouteUrl($this->generateUrl('plik', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')->setFilterable(false)->setSafe(true);
-    
+
         // Edycja konta
 
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'plik_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'plik_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        
-        
+
+
         $rowAction4 = new RowAction('<i class="fa fa-file"></i> Pobierz', 'plik_download');
         $rowAction4->setColumn('akcje');
         $rowAction4->addAttribute('class', 'btn btn-primary btn-xs');
-    
 
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
         $grid->addRowAction($rowAction4);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -188,12 +188,12 @@ class PlikController extends Controller
      */
     private function createCreateForm(Plik $entity)
     {
-        $form = $this->createForm(new PlikType(), $entity, array(
+        $form = $this->createForm(PlikType::class, $entity, array(
             'action' => $this->generateUrl('plik_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Załącz Plik', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Załącz Plik', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -211,7 +211,7 @@ class PlikController extends Controller
         $entity->setObiekt($obiekt);
         $entity->setObiektId($obiektId);
         $form   = $this->createCreateForm($entity);
-        
+
         return array(
             'entity' => $entity,
             'form'   => $form->createView(),
@@ -230,7 +230,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -255,7 +255,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -280,12 +280,12 @@ class PlikController extends Controller
     */
     private function createEditForm(Plik $entity)
     {
-        $form = $this->createForm(new PlikType(), $entity, array(
+        $form = $this->createForm(PlikType::class, $entity, array(
             'action' => $this->generateUrl('plik_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -300,7 +300,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -334,7 +334,7 @@ class PlikController extends Controller
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
         $url = $this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId()));
 
         if ($form->isValid()) {
@@ -360,7 +360,7 @@ class PlikController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('plik_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Plik','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Plik','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

@@ -158,7 +158,7 @@ class StringExtension extends \Twig_Extension
             $last = $duza ? "duza" : "mala";
         }
 */
-        
+
         return $ret;
     }
 
@@ -200,15 +200,6 @@ class StringExtension extends \Twig_Extension
         }
         return implode(" ", $ret);
     }
-
-    /**
-     * @return string
-     */
-    public function getName()
-    {
-        return 'app_extension';
-    }
-
 
     /**
      * @param $var

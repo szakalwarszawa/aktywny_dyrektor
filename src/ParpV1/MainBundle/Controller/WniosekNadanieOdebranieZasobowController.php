@@ -8,7 +8,13 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\WniosekEditor;
+use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Exception\SecurityTestException;
@@ -73,7 +79,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         //$grid2 = $this->generateGrid("oczekujace");
         //$grid3 = $this->generateGrid("zamkniete");
         $zastepstwa = $em
-            ->getRepository('ParpMainBundle:Zastepstwo')
+            ->getRepository(Zastepstwo::class)
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
 
@@ -115,12 +121,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     protected function generateGrid($ktore)
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
+        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->findAll();
         $zastepstwa = $em
-            ->getRepository('ParpMainBundle:Zastepstwo')
+            ->getRepository(Zastepstwo::class)
             ->znajdzKogoZastepuje($this->getUser()->getUsername())
         ;
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobow');
+        $source = new Entity(WniosekNadanieOdebranieZasobow::class);
         $tableAlias = $source->getTableAlias();
         $sam = $this->getUser()->getUsername();
 
@@ -238,7 +244,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->manipulateRender(
+        $rowAction3->addManipulateRender(
             function ($action, $row) {
                 if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
                     return $action;
@@ -410,7 +416,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $managersSpozaParp =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpMainBundle:AclRole')
+                ->getRepository(AclRole::class)
                 ->findOneByName('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP');
 
         $managerzySpozaParp = [];
@@ -604,8 +610,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case 'ibi':
                 //
                 $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_IBI');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                $role = $em->getRepository(AclRole::class)->findOneByName('PARP_IBI');
+                $users = $em->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
@@ -617,7 +623,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 //
                 foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
                     echo '.'.$u->getZasobId().'.';
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
+                    $zasob = $em->getRepository(Zasoby::class)->find($u->getZasobId());
                     $grupa1 = explode(',', $zasob->getWlascicielZasobu());
                     $grupa2 = explode(',', $zasob->getPowiernicyWlascicielaZasobu());
                     $grupa = array_merge($grupa1, $grupa2);
@@ -657,7 +663,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case 'administrator':
                 //
                 foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
+                    $zasob = $em->getRepository(Zasoby::class)->find($u->getZasobId());
                     $grupa = explode(',', $zasob->getAdministratorZasobu());
                     foreach ($grupa as $g) {
                         $mancn = str_replace('CN=', '', substr($g, 0, stripos($g, ',')));
@@ -687,7 +693,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             case 'techniczny':
                 //
                 foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
+                    $zasob = $em->getRepository(Zasoby::class)->find($u->getZasobId());
                     $grupa = explode(',', $zasob->getAdministratorTechnicznyZasobu());
                     foreach ($grupa as $g) {
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
@@ -740,7 +746,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case 'dyrektor':
             default:
-                $skrotDepartamentu = $manager->getRepository('ParpMainBundle:Departament')
+                $skrotDepartamentu = $manager->getRepository(Departament::class)
                     ->findOneBy([
                         'name' => $ADUser['department']
                     ]);
@@ -765,8 +771,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $mails = ['kamil_jakacki@parp.gov.pl'];
 
         $em = $this->getDoctrine()->getManager();
-        $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
-        $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+        $role = $em->getRepository(AclRole::class)->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
+        $users = $em->getRepository(AclUserRole::class)->findByRole($role);
         foreach ($users as $u) {
             $mails[] = $u->getSamaccountname().'@parp.gov.pl';
         }
@@ -844,7 +850,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
-        $status = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($statusName);
+        $status = $em->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa($statusName);
         $wniosek->getWniosek()->setStatus($status);
         $wniosek->getWniosek()->setLockedBy(null);
         $wniosek->getWniosek()->setLockedAt(null);
@@ -858,7 +864,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $czyLsi = false;
         $czyMaGrupyAD = false;
         foreach ($wniosek->getUserZasoby() as $uz) {
-            $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+            $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
             if ($z->getGrupyAd()) {
                 $czyMaGrupyAD = true;
                 $czyLsi = $uz->getZasobId() == 4420;
@@ -867,7 +873,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         if ($statusName == '07_ROZPATRZONY_POZYTYWNIE' && $oldStatus != null && ($czyMaGrupyAD || $czyLsi)) {
             //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
-            $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
+            $os = $em->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa($oldStatus);
             $es = explode(',', $os->getEditors());
         } else {
             $es = explode(',', $status->getEditors());
@@ -941,7 +947,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
             //dziala zastepstwo, szukamy ktore
             $zastepstwa =
-                $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()
+                $this->getDoctrine()->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()
                     ->getUsername());
             foreach ($zastepstwa as $z) {
                 //var_dump($ret);
@@ -980,8 +986,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $wniosek = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
         $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
         $acc = $this->checkAccess($wniosek);
@@ -1381,13 +1387,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                     $department =
                         $this->getDoctrine()
-                            ->getRepository('ParpMainBundle:Departament')
+                            ->getRepository(Departament::class)
                             ->findOneByName(trim($aduser[0]['department']));
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
                 }
                 foreach ($wniosek->getUserZasoby() as $uz) {
-                    $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
@@ -1442,7 +1448,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //}
                     } else {
                         //bez grup ad tworzymy zadanie i maila do admina
-                        $this->get('uprawnieniaservice')->wyslij(
+                        $this->get('uprawnienia_service')->wyslij(
                             array(
                                 'cn'             => '',
                                 'samaccountname' => $uz->getSamaccountname(),
@@ -1498,19 +1504,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($username);
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($username);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
 
-        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editor = $em->getRepository(WniosekEditor::class)->findOneBy(array(
             'samaccountname' => $zastepstwa,
             'wniosek'        => $entity->getWniosek(),
         ));
 
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
-        $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editorsBezZastepstw = $em->getRepository(WniosekEditor::class)->findOneBy(array(
                 'samaccountname' => $username,
                 'wniosek'        => $entity->getWniosek(),
             ));
@@ -1545,7 +1551,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         $access = $this->checkAccess($entity);
 
@@ -1555,7 +1561,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 array('wniosek' => $entity, 'viewer' => 0)
             );
         }
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        $uzs = $em->getRepository(UserZasoby::class)->findByWniosekWithZasob($entity);
         //die(count($uzs).">");
         $editor = $access['editor'];
 
@@ -1613,10 +1619,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
         $comments =
-            $em->getRepository('ParpMainBundle:Komentarz')
+            $em->getRepository(Komentarz::class)
                 ->getCommentCount('WniosekNadanieOdebranieZasobow', $entity->getId());
 
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
 
         $lsiImportTokenForm = null;
         if ($czyLsi) {
@@ -1674,7 +1680,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -1699,7 +1705,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
         }
@@ -1720,7 +1726,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     public function editAction($id)
     {
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -1738,7 +1744,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        $uzs = $em->getRepository(UserZasoby::class)->findByWniosekWithZasob($entity);
 
         return array(
             'entity'      => $entity,
@@ -1787,7 +1793,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -1837,7 +1843,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+            $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');

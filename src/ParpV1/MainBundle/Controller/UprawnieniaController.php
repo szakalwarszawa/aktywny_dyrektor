@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\Uprawnienia;
 use ParpV1\MainBundle\Form\UprawnieniaType;
 use ParpV1\MainBundle\Entity\UserUprawnienia;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Uprawnienia controller.
@@ -104,12 +105,12 @@ class UprawnieniaController extends Controller
      */
     private function createCreateForm(Uprawnienia $entity)
     {
-        $form = $this->createForm(new UprawnieniaType(), $entity, array(
+        $form = $this->createForm(UprawnieniaType::class, $entity, array(
             'action' => $this->generateUrl('uprawnienia_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Uprawnienia', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Uprawnienia', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -145,7 +146,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -172,7 +173,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -198,12 +199,12 @@ class UprawnieniaController extends Controller
     */
     private function createEditForm(Uprawnienia $entity)
     {
-        $form = $this->createForm(new UprawnieniaType(), $entity, array(
+        $form = $this->createForm(UprawnieniaType::class, $entity, array(
             'action' => $this->generateUrl('uprawnienia_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -222,7 +223,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -262,7 +263,7 @@ class UprawnieniaController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+            $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -287,7 +288,7 @@ class UprawnieniaController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('uprawnienia_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array(
+            ->add('submit', SubmitType::class, array(
                 'label' => 'Skasuj Uprawnienia',
                 'attr' => array('class' => 'btn btn-danger'
                 )
@@ -311,7 +312,7 @@ class UprawnieniaController extends Controller
         $nowyPoziomDostepuString = $this->stringUnCode($nowyPoziomDostepuB64);
 
         /** @var UserZasoby $obecnyPoziomDostepu */
-        $obecnyUserZasob= $manager->getRepository('ParpMainBundle:UserZasoby')->find($obecnyUserZasobId);
+        $obecnyUserZasob= $manager->getRepository(UserZasoby::class)->find($obecnyUserZasobId);
 
         if (null === $obecnyUserZasob) {
             throw new EntityNotFoundException('Nie ma UserZasobu o takim identyfikatorze!');

@@ -16,9 +16,11 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
 use Symfony\Component\Form\Exception\InvalidArgumentException;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\HistoriaWersji;
+use ParpV1\MainBundle\Entity\DaneRekord;
 
 /**
  * RaportyIT controller.
@@ -202,7 +204,7 @@ class RaportyITController extends Controller
             $daneZRekorda[$dr['login']] = $this->zrobRekordZRekorda($dr, $ndata['rok'], $ndata['miesiac']);
         }
 
-        $repo = $em->getRepository('ParpMainBundle:DaneRekord');
+        $repo = $em->getRepository(DaneRekord::class);
         $historyRepo = $em->getRepository(HistoriaWersji::class);
         $zmianyDep = $repo->findChangesInMonthByPole($ndata['rok'], $ndata['miesiac']);
         foreach ($zmianyDep as $zmiana) {
@@ -366,7 +368,7 @@ class RaportyITController extends Controller
      */
     protected function getData($rok, $miesiac, $em)
     {
-        return $em->getRepository('ParpMainBundle:DaneRekord')->findChangesInMonth($rok, $miesiac);
+        return $em->getRepository(DaneRekord::class)->findChangesInMonth($rok, $miesiac);
     }
 
     /**
@@ -456,9 +458,9 @@ class RaportyITController extends Controller
         $this->user = $this->container->get('ldap_service')->getUserFromAD($login, null, null, 'wszyscyWszyscy')[0];
 
 
-        $this->departamenty = $em->getRepository('ParpMainBundle:Departament')->bierzDepartamentyNowe();
+        $this->departamenty = $em->getRepository(Departament::class)->bierzDepartamentyNowe();
         //pobierz dane zmiany departamentow, stanowisk
-        $entity = $em->getRepository('ParpMainBundle:DaneRekord')->findOneByLogin($login);
+        $entity = $em->getRepository(DaneRekord::class)->findOneByLogin($login);
 
         if ($entity === null) {
             $min = new \DateTime('2001-01-01 00:00:00');
@@ -496,9 +498,9 @@ class RaportyITController extends Controller
         //var_dump($dane); die();
 
         foreach ($dane as $d) {
-            $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findDlaOsoby($login, $d['start'], $d['end']);
+            $uzs = $em->getRepository(UserZasoby::class)->findDlaOsoby($login, $d['start'], $d['end']);
             foreach ($uzs as $uz) {
-                $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                $zasob = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                 $do =
                     $uz->getAktywneDo() ? ($uz->getAktywneDo() <
                     $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];

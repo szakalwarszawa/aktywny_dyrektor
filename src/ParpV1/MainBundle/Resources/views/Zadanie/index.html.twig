@@ -10,7 +10,6 @@
     </div>
 {% endfor %}
 
-
 <div class="col-sm-12">
     <ul class="nav nav-tabs">
         <li class="active"><a data-toggle="tab" href="#aktywne">Do zrobienia</a></li>
@@ -19,29 +18,21 @@
 
     <div class="tab-content">
         <div id="aktywne" class="tab-pane fade in active">
-            <div class="tabContent container">
+            <div class="tabContent">
                 <center>
                     <div class="btn-group">
                         <a class="btn btn-primary btn-xs" href="{{ path('zadanie_new') }}">Dodaj Zadanie</a>
                     </div>
                 </center>
-
                 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
             </div>
         </div>
         <div id="historia" class="tab-pane fade">
-            <div  class="tabContent container">
-
+            <div  class="tabContent">
                 {{ grid(grid2,'ParpMainBundle:Default:index_grid.html.twig') }}
             </div>
         </div>
     </div>
 </div>
 
-
-
-
-
 {% endblock %}
-
-

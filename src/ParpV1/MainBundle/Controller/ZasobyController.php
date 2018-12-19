@@ -168,7 +168,7 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
@@ -250,7 +250,7 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
@@ -367,7 +367,7 @@ class ZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
@@ -395,7 +395,7 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');

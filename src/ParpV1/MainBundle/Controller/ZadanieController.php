@@ -15,6 +15,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\Zadanie;
 use ParpV1\MainBundle\Form\ZadanieType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * Zadanie controller.
@@ -42,12 +43,12 @@ class ZadanieController extends Controller
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Zadanie')->findAll();
 
-        $source = new Entity('ParpMainBundle:Zadanie');
+        $source = new Entity(Zadanie::class);
 
         $user = $this->getUser();
 
         $ad = $this->get('ldap_service')->getUserFromAD($user->getUsername());
-        $username = trim($ad[0]['name']);
+        $username = trim($ad[0]['samaccountname']);
         //print_r($username);
         $source->manipulateQuery(
             function ($query) use ($username, $aktywne) {
@@ -138,12 +139,12 @@ class ZadanieController extends Controller
      */
     private function createCreateForm(Zadanie $entity)
     {
-        $form = $this->createForm(new ZadanieType(), $entity, array(
+        $form = $this->createForm(ZadanieType::class, $entity, array(
             'action' => $this->generateUrl('zadanie_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zadanie', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zadanie', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -177,7 +178,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zadanie entity.');
@@ -202,7 +203,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zadanie entity.');
@@ -227,12 +228,12 @@ class ZadanieController extends Controller
     */
     private function createEditForm(Zadanie $entity)
     {
-        $form = $this->createForm(new ZadanieType(), $entity, array(
+        $form = $this->createForm(ZadanieType::class, $entity, array(
             'action' => $this->generateUrl('zadanie_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -247,7 +248,7 @@ class ZadanieController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+        $entity = $em->getRepository(Zadanie::class)->find($id);
         $oldEn = clone $entity;
 
         if (!$entity) {
@@ -304,7 +305,7 @@ class ZadanieController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Zadanie')->find($id);
+            $entity = $em->getRepository(Zadanie::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Zadanie entity.');
@@ -329,7 +330,7 @@ class ZadanieController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zadanie_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zadanie','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zadanie','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

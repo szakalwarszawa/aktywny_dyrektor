@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Form\AclRoleType;
 
@@ -115,7 +115,7 @@ class AclRoleController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz AclRole', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz AclRole', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -149,7 +149,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -174,7 +174,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -206,7 +206,7 @@ class AclRoleController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -221,7 +221,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -266,7 +266,7 @@ class AclRoleController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+            $entity = $em->getRepository(AclRole::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -291,7 +291,7 @@ class AclRoleController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('aclrole_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj AclRole','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj AclRole','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

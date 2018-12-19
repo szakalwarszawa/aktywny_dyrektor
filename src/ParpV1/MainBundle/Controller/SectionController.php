@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Form\SectionType;
 
@@ -34,37 +34,36 @@ class SectionController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Section')->findAll();
-    
-        $source = new Entity('ParpMainBundle:Section');
-    
+
+        $source = new Entity(Section::class);
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'section_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'section_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         $grid->isReadyForRedirect();
@@ -111,12 +110,12 @@ class SectionController extends Controller
      */
     private function createCreateForm(Section $entity)
     {
-        $form = $this->createForm(new SectionType(), $entity, array(
+        $form = $this->createForm(SectionType::class, $entity, array(
             'action' => $this->generateUrl('section_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Section', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Section', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -153,7 +152,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Nie ma sekcji o takim identyfikatorze.');
@@ -180,7 +179,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Section entity.');
@@ -205,7 +204,7 @@ class SectionController extends Controller
     */
     private function createEditForm(Section $entity)
     {
-        $form = $this->createForm(new SectionType(), $entity, array(
+        $form = $this->createForm(SectionType::class, $entity, array(
             'action' => $this->generateUrl('section_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -238,7 +237,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Section entity.');
@@ -277,7 +276,7 @@ class SectionController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+            $entity = $em->getRepository(Section::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Section entity.');
@@ -302,7 +301,7 @@ class SectionController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('section_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Usuń sekcję','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Usuń sekcję','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

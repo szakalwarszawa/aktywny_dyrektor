@@ -13,6 +13,8 @@ use Symfony\Component\DependencyInjection\Container;
 use ParpV1\MainBundle\Entity\UserUprawnienia;
 use ParpV1\MainBundle\Entity\UserGrupa;
 use ParpV1\MainBundle\Services\RedmineConnectService;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class AccessCheckerService
 {
@@ -25,11 +27,10 @@ class AccessCheckerService
         $this->doctrine = $OrmEntity;
         $this->container = $container;
         if (PHP_SAPI == 'cli') {
-            $this->container->enterScope('request');
-            $this->container->set('request', new \Symfony\Component\HttpFoundation\Request(), 'request');
+            $this->container->set('request', new Request(), 'request');
         }
     }
-    
+
     public function checkAccess($actionName)
     {
         $user = $this->container->get('security.token_storage')->getToken()->getUser();
@@ -42,7 +43,7 @@ class AccessCheckerService
             }
         }
         if (!$ret) {
-            throw new \Symfony\Component\Security\Core\Exception\AccessDeniedException("Brak uprawnień.");
+            throw new AccessDeniedException("Brak uprawnień.");
         }
     }
 }

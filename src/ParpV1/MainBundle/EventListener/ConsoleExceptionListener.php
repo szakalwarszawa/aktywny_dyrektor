@@ -2,7 +2,7 @@
 // src/Acme/DemoBundle/EventListener/ConsoleExceptionListener.php
 namespace ParpV1\MainBundle\EventListener;
 
-use Symfony\Component\Console\Event\ConsoleExceptionEvent;
+use Symfony\Component\Console\Event\ConsoleErrorEvent;
 use Psr\Log\LoggerInterface;
 
 class ConsoleExceptionListener
@@ -14,11 +14,11 @@ class ConsoleExceptionListener
         $this->logger = $logger;
     }
 
-    public function onConsoleException(ConsoleExceptionEvent $event)
+    public function onConsoleException(ConsoleErrorEvent $event)
     {
         $command = $event->getCommand();
         $exception = $event->getException();
-    
+
         $message = sprintf(
             '%s: %s (uncaught exception) at %s line %s while running console command `%s`',
             get_class($exception),
@@ -27,7 +27,7 @@ class ConsoleExceptionListener
             $exception->getLine(),
             $command->getName()
         );
-    
+
         $this->logger->error($message);
     }
 }

@@ -4,6 +4,12 @@ imports:
     - { resource: services.yml }
 
 framework:
+    cache:
+        pools:
+            ldap.cache:
+                adapter: cache.adapter.filesystem
+                public: true
+                default_lifetime: 86400
     #esi:             ~
     translator:
         enabled: false
