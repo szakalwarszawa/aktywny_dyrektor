@@ -34,9 +34,9 @@ class ADOrganizationalUnitController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpSoapBundle:ADOrganizationalUnit')->findAll();
+        //$entities = $em->getRepository(ADOrganizationalUnit::class)->findAll();
 
-        $source = new Entity('ParpSoapBundle:ADOrganizationalUnit');
+        $source = new Entity(ADOrganizationalUnit::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class ADOrganizationalUnitController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADOrganizationalUnit')->find($id);
+        $entity = $em->getRepository(ADOrganizationalUnit::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADOrganizationalUnit entity.');
@@ -173,7 +173,7 @@ class ADOrganizationalUnitController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADOrganizationalUnit')->find($id);
+        $entity = $em->getRepository(ADOrganizationalUnit::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADOrganizationalUnit entity.');
@@ -218,7 +218,7 @@ class ADOrganizationalUnitController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADOrganizationalUnit')->find($id);
+        $entity = $em->getRepository(ADOrganizationalUnit::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADOrganizationalUnit entity.');
@@ -253,7 +253,7 @@ class ADOrganizationalUnitController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpSoapBundle:ADOrganizationalUnit')->find($id);
+            $entity = $em->getRepository(ADOrganizationalUnit::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find ADOrganizationalUnit entity.');

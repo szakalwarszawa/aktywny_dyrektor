@@ -34,9 +34,9 @@ class ADUserController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpSoapBundle:ADUser')->findAll();
+        //$entities = $em->getRepository(ADUser::class)->findAll();
 
-        $source = new Entity('ParpSoapBundle:ADUser');
+        $source = new Entity(ADUser::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -144,7 +144,7 @@ class ADUserController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADUser')->find($id);
+        $entity = $em->getRepository(ADUser::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADUser entity.');
@@ -169,7 +169,7 @@ class ADUserController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADUser')->find($id);
+        $entity = $em->getRepository(ADUser::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADUser entity.');
@@ -214,7 +214,7 @@ class ADUserController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADUser')->find($id);
+        $entity = $em->getRepository(ADUser::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADUser entity.');
@@ -249,7 +249,7 @@ class ADUserController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpSoapBundle:ADUser')->find($id);
+            $entity = $em->getRepository(ADUser::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find ADUser entity.');

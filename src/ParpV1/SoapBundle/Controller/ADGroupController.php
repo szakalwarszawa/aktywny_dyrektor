@@ -34,9 +34,9 @@ class ADGroupController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpSoapBundle:ADGroup')->findAll();
+        //$entities = $em->getRepository(ADGroup::class)->findAll();
 
-        $source = new Entity('ParpSoapBundle:ADGroup');
+        $source = new Entity(ADGroup::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -173,7 +173,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -218,7 +218,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -253,7 +253,7 @@ class ADGroupController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+            $entity = $em->getRepository(ADGroup::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find ADGroup entity.');
