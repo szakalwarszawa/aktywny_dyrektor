@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer;
 
 class ZasobyType extends AbstractType
 {
@@ -30,7 +31,7 @@ class ZasobyType extends AbstractType
 
         $zablokujPolaPozaPoziomModul = $options['nie_moze_edytowac'] && $options['czy_wlasciciel_lub_powiernik'];
         $wlascicieleZasobow = $ldap->getWlascicieleZasobow();
-        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $transformer = new StringToArrayTransformer();
         $builder
             //->add('id')
             ->add('zasobSpecjalny', CheckboxType::class, array(

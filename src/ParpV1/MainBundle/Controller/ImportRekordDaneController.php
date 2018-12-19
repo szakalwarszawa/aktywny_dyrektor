@@ -8,6 +8,9 @@ use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Section;
+use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -271,7 +274,7 @@ class ImportRekordDaneController extends Controller
             }
 
             $dr =
-                $em->getRepository('ParpMainBundle:DaneRekord')
+                $em->getRepository(DaneRekord::class)
                     ->findOneBy(array('symbolRekordId' => $this->parseValue($row['SYMBOL'])));
 
             if ($dr == null || !in_array($dr->getSymbolRekordId(), $pomijajDaneRekord, true)) {
@@ -373,7 +376,7 @@ class ImportRekordDaneController extends Controller
         }
 
         //teraz powinien sprawdzac czy ktos mi nie zniknal
-        $drs = $em->getRepository('ParpMainBundle:DaneRekord')->findByNotHavingRekordIds($rekordIds);
+        $drs = $em->getRepository(DaneRekord::class)->findByNotHavingRekordIds($rekordIds);
         if (count($drs) > 0) {
             $ids = [];
             foreach ($drs as $d) {
@@ -447,7 +450,7 @@ class ImportRekordDaneController extends Controller
         }
         $department =
             $this->getDoctrine()
-                ->getRepository('ParpMainBundle:Departament')
+                ->getRepository(Departament::class)
                 ->findOneByNameInRekord($dr->getDepartament());
 
         if ($department == null) {
@@ -625,7 +628,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $d =
                     $this->getDoctrine()
                         ->getManager()
-                        ->getRepository('ParpMainBundle:Departament')
+                        ->getRepository(Departament::class)
                         ->findOneByNameInRekord($this->parseValue($row['OPIS'], false));
                 if ($d) {
                     $d->setNameInRekord($this->parseValue($row['KOD']));
@@ -796,12 +799,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
-        $nowi = $em->getRepository('ParpMainBundle:DaneRekord')->findNewPeople();
+        $nowi = $em->getRepository(DaneRekord::class)->findNewPeople();
         $data = [];
         foreach ($nowi as $dr) {
             $users = $this->getUserFromAllAD($dr);
             $departament =
-                $em->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($dr->getDepartament());
+                $em->getRepository(Departament::class)->findOneByNameInRekord($dr->getDepartament());
             $d =
                 $this->getObjectPropertiesAsArray($dr, [
                     'id',
@@ -821,7 +824,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         // Pobieramy listę Sekcji
         $sectionsEntity =
-            $this->getDoctrine()->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
+            $this->getDoctrine()->getRepository(Section::class)->findBy(array(), array('name' => 'asc'));
         $sections = array();
         foreach ($sectionsEntity as $tmp) {
             $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : 'bez departamentu';
@@ -911,7 +914,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $userFromAD = $ldapService->getUserFromAD($samaccountname);
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
-        $daneRekord = $objectManager->getRepository('ParpMainBundle:DaneRekord')->find($id);
+        $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
         $poprzednieDane = explode(' ', $userFromAD[0]['name']);
 
         if ($daneRekord->getNewUnproccessed() > 0) {
@@ -961,9 +964,9 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 //trzeba odebrac stare
                 $oldDepartament =
                     $this->getDoctrine()
-                        ->getRepository('ParpMainBundle:Departament')
+                        ->getRepository(Departament::class)
                         ->findOneByName($userFromAD[0]['department']);
-                $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByShortname($userFromAD[0]['division']);
+                $section = $objectManager->getRepository(Section::class)->findOneByShortname($userFromAD[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska =
                     $ldapService->getGrupyUsera(
                         $userFromAD[0],
@@ -975,9 +978,9 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
             $departament =
                 $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:Departament')
+                    ->getRepository(Departament::class)
                     ->findOneByNameInRekord($daneRekord->getDepartament());
-            $section = $objectManager->getRepository('ParpMainBundle:Section')->findOneByShortname($dane['form']['info']);
+            $section = $objectManager->getRepository(Section::class)->findOneByShortname($dane['form']['info']);
             if (null === $departament) {
                 $departament = $section->getDepartament();
             }
@@ -1018,11 +1021,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 // muchar: To wygląda na jakiś rozgrzebany kod. W encji UserZasoby nie ma getAdministratorZasobu. Jest
                 // w Zasob.
                 //                /** @var UserZasoby[] $userzasoby */
-                $userzasoby = $objectManager->getRepository('ParpMainBundle:UserZasoby')
+                $userzasoby = $objectManager->getRepository(UserZasoby::class)
                     ->findBy(['samaccountname' => $samaccountname]);
 
                 foreach ($userzasoby as $uz) {
-                    $zasob = $objectManager->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    $zasob = $objectManager->getRepository(Zasoby::class)->find($uz->getZasobId());
                     if ($uz->getZasobId()
                         && !in_array($zasob->getAdministratorZasobu(), $administratorzy, true)
                     ) {
@@ -1095,7 +1098,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $id = (int) $id;
         $em = $this->getDoctrine()->getManager();
-        $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+        $daneRekord = $em->getRepository(DaneRekord::class)->find($id);
 
         // 7 - nieaktywne, nieobsługiwane rekordy
         $daneRekord->setNewUnproccessed(7);
@@ -1129,7 +1132,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $UserRekordId = (int) $UserRekordId;
         $entityManager = $this->getDoctrine()->getManager();
-        $daneRekord = $entityManager->getRepository('ParpMainBundle:DaneRekord')->find($UserRekordId);
+        $daneRekord = $entityManager->getRepository(DaneRekord::class)->find($UserRekordId);
 
         // 2 - zmiana departamentu/sekcji/przelozonego, wrzucenie pracownika do problematycznych
         $daneRekord->setNewUnproccessed(2);

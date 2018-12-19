@@ -14,6 +14,7 @@ use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
@@ -34,9 +35,9 @@ class UserZasobyController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:UserZasoby')->findAll();
+        //$entities = $em->getRepository(UserZasoby::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:UserZasoby');
+        $source = new Entity(UserZasoby::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +149,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -173,7 +174,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -202,7 +203,7 @@ class UserZasobyController extends Controller
         $choicesPoziomDostepu = array();
 
         $em = $this->getDoctrine()->getManager();
-        $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($entity->getZasobId());
+        $zasob = $em->getRepository(Zasoby::class)->find($entity->getZasobId());
         $p1 = explode(",", $zasob->getModulFunkcja());
         foreach ($p1 as $p) {
             $p = trim($p);
@@ -236,7 +237,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -271,7 +272,7 @@ class UserZasobyController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+            $entity = $em->getRepository(UserZasoby::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find UserZasoby entity.');

@@ -34,9 +34,9 @@ class DaneRekordController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:DaneRekord')->findAll();
+        //$entities = $em->getRepository(DaneRekord::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:DaneRekord');
+        $source = new Entity(DaneRekord::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class DaneRekordController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+        $entity = $em->getRepository(DaneRekord::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find DaneRekord entity.');
@@ -173,7 +173,7 @@ class DaneRekordController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+        $entity = $em->getRepository(DaneRekord::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find DaneRekord entity.');
@@ -218,7 +218,7 @@ class DaneRekordController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+        $entity = $em->getRepository(DaneRekord::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find DaneRekord entity.');
@@ -253,7 +253,7 @@ class DaneRekordController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:DaneRekord')->find($id);
+            $entity = $em->getRepository(DaneRekord::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find DaneRekord entity.');

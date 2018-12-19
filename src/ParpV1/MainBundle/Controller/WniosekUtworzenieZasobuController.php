@@ -26,6 +26,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\WniosekEditor;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Entity\AclUserRole;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -52,7 +56,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $grid = $this->generateGrid($ktore);
         //$grid2 = $this->generateGrid("oczekujace");
         //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
 
         if ($grid->isReadyForRedirect() /* || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() */) {
             if ($grid->isReadyForExport()) {
@@ -87,8 +91,8 @@ class WniosekUtworzenieZasobuController extends Controller
 
 
         //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
-        $source = new Entity('ParpMainBundle:WniosekUtworzenieZasobu');
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $source = new Entity(WniosekUtworzenieZasobu::class);
         $tableAlias = $source->getTableAlias();
         //die($co);
         $sam = $this->getUser()->getUsername();
@@ -414,7 +418,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -435,7 +439,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
 //        var_dump($entity->getZasob()->getName()); die();
-        $comments = $em->getRepository('ParpMainBundle:Komentarz')->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
+        $comments = $em->getRepository(Komentarz::class)->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
 
         $deleteForm = $this->createDeleteForm($id);
         return array(
@@ -533,7 +537,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
@@ -565,7 +569,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
 
         if (!$entity) {
@@ -622,7 +626,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -653,7 +657,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+            $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -711,19 +715,19 @@ class WniosekUtworzenieZasobuController extends Controller
     {
 
         $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
 
         //print_r($uzs); die();
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
 
-        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editor = $em->getRepository(WniosekEditor::class)->findOneBy(array(
             'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
             'wniosek' => $entity->getWniosek()
             ));
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
-        $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editorsBezZastepstw = $em->getRepository(WniosekEditor::class)->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity->getWniosek()
             ));
@@ -865,7 +869,7 @@ class WniosekUtworzenieZasobuController extends Controller
         //var_dump($ret);die();
         if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
             //dziala zastepstwo, szukamy ktore
-            $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+            $zastepstwa = $this->getDoctrine()->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
             foreach ($zastepstwa as $z) {
                 if ($z->getKogoZastepuje() == ($ret['editor'] ? $ret['editor']->getSamaccountname() : '______NIE ZADZIALA______')) {
                     //var_dump($z); die();
@@ -895,7 +899,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
-        $wniosek = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $wniosek = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
         //print_r($uzs); die();
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -1123,8 +1127,8 @@ class WniosekUtworzenieZasobuController extends Controller
             case 'nadzorcaDomen':
                 //
                 $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_NADZORCA_DOMEN');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                $role = $em->getRepository(AclRole::class)->findOneByName('PARP_NADZORCA_DOMEN');
+                $users = $em->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
@@ -1135,8 +1139,8 @@ class WniosekUtworzenieZasobuController extends Controller
             case 'administratorZasobow':
                 //
                 $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                $role = $em->getRepository(AclRole::class)->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
+                $users = $em->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {

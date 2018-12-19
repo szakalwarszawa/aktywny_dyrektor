@@ -36,7 +36,7 @@ class PositionController extends Controller
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Position')->findAll();
 
-        $source = new Entity('ParpMainBundle:Position');
+        $source = new Entity(Position::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class PositionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Position')->find($id);
+        $entity = $em->getRepository(Position::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Position entity.');
@@ -173,7 +173,7 @@ class PositionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Position')->find($id);
+        $entity = $em->getRepository(Position::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Position entity.');
@@ -218,7 +218,7 @@ class PositionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Position')->find($id);
+        $entity = $em->getRepository(Position::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Position entity.');
@@ -253,7 +253,7 @@ class PositionController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Position')->find($id);
+            $entity = $em->getRepository(Position::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Position entity.');

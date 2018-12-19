@@ -34,9 +34,9 @@ class WniosekViewerController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->findAll();
+        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobowViewer::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer');
+        $source = new Entity(WniosekNadanieOdebranieZasobowViewer::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class WniosekViewerController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowViewer::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowViewer entity.');
@@ -173,7 +173,7 @@ class WniosekViewerController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowViewer::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowViewer entity.');
@@ -218,7 +218,7 @@ class WniosekViewerController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowViewer::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowViewer entity.');
@@ -253,7 +253,7 @@ class WniosekViewerController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowViewer')->find($id);
+            $entity = $em->getRepository(WniosekNadanieOdebranieZasobowViewer::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowViewer entity.');

@@ -149,7 +149,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -174,7 +174,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -221,7 +221,7 @@ class AclRoleController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+        $entity = $em->getRepository(AclRole::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclRole entity.');
@@ -266,7 +266,7 @@ class AclRoleController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:AclRole')->find($id);
+            $entity = $em->getRepository(AclRole::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find AclRole entity.');

@@ -57,9 +57,9 @@ class DepartamentController extends Controller
     protected function generateGrid($ktore)
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Departament')->findAll();
+        //$entities = $em->getRepository(Departament::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:Departament');
+        $source = new Entity(Departament::class);
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $ktore) {
@@ -178,7 +178,7 @@ class DepartamentController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Departament')->find($id);
+        $entity = $em->getRepository(Departament::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Departament entity.');
@@ -203,7 +203,7 @@ class DepartamentController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Departament')->find($id);
+        $entity = $em->getRepository(Departament::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Departament entity.');
@@ -248,7 +248,7 @@ class DepartamentController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Departament')->find($id);
+        $entity = $em->getRepository(Departament::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Departament entity.');
@@ -283,7 +283,7 @@ class DepartamentController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Departament')->find($id);
+            $entity = $em->getRepository(Departament::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Departament entity.');

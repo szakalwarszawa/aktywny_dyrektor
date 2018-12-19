@@ -34,9 +34,8 @@ class SectionController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Section')->findAll();
 
-        $source = new Entity('ParpMainBundle:Section');
+        $source = new Entity(Section::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -153,7 +152,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Nie ma sekcji o takim identyfikatorze.');
@@ -180,7 +179,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Section entity.');
@@ -238,7 +237,7 @@ class SectionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+        $entity = $em->getRepository(Section::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Section entity.');
@@ -277,7 +276,7 @@ class SectionController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Section')->find($id);
+            $entity = $em->getRepository(Section::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Section entity.');

@@ -38,7 +38,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
-        $doc = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $doc = $em->getRepository(Plik::class)->find($id);
 
         if (!$doc) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -102,7 +102,7 @@ class PlikController extends Controller
         $em = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Plik')->findAll();
 
-        $source = new Entity('ParpMainBundle:Plik');
+        $source = new Entity(Plik::class);
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
@@ -230,7 +230,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -255,7 +255,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -300,7 +300,7 @@ class PlikController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
@@ -334,7 +334,7 @@ class PlikController extends Controller
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
         $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:Plik')->find($id);
+        $entity = $em->getRepository(Plik::class)->find($id);
         $url = $this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId()));
 
         if ($form->isValid()) {

@@ -34,9 +34,9 @@ class AclActionController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:AclAction')->findAll();
+        //$entities = $em->getRepository(AclAction::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:AclAction');
+        $source = new Entity(AclAction::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class AclActionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclAction')->find($id);
+        $entity = $em->getRepository(AclAction::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclAction entity.');
@@ -173,7 +173,7 @@ class AclActionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclAction')->find($id);
+        $entity = $em->getRepository(AclAction::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclAction entity.');
@@ -218,7 +218,7 @@ class AclActionController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:AclAction')->find($id);
+        $entity = $em->getRepository(AclAction::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find AclAction entity.');
@@ -253,7 +253,7 @@ class AclActionController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:AclAction')->find($id);
+            $entity = $em->getRepository(AclAction::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find AclAction entity.');

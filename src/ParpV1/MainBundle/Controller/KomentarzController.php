@@ -34,9 +34,9 @@ class KomentarzController extends Controller
     public function indexAction($obiekt, $obiektId)
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Komentarz')->findAll();
+        //$entities = $em->getRepository(Komentarz::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:Komentarz');
+        $source = new Entity(Komentarz::class);
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
@@ -157,7 +157,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -182,7 +182,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -228,7 +228,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -267,7 +267,7 @@ class KomentarzController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+            $entity = $em->getRepository(Komentarz::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');

@@ -34,9 +34,9 @@ class WniosekEditorController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->findAll();
+        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor');
+        $source = new Entity(WniosekNadanieOdebranieZasobowEditor::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -173,7 +173,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -218,7 +218,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -253,7 +253,7 @@ class WniosekEditorController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+            $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');

@@ -23,6 +23,8 @@ use Symfony\Component\Validator\Constraints\File;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\Plik;
+use ParpV1\MainBundle\Entity\Komentarz;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\HistoriaWersji;
@@ -91,7 +93,7 @@ class VersionController extends Controller
                 }
             }
         }
-        $pliki = $em->getRepository('ParpMainBundle:Plik')->findBy(array(
+        $pliki = $em->getRepository(Plik::class)->findBy(array(
             'obiekt' => $repository,
             'obiektId' => $id
         ));
@@ -99,7 +101,7 @@ class VersionController extends Controller
             $entities2 = $this->getObjectHistory('Plik', $p->getId());
             $entities = array_merge($entities, $entities2);
         }
-        $komentarze = $em->getRepository('ParpMainBundle:Komentarz')->findBy(array(
+        $komentarze = $em->getRepository(Komentarz::class)->findBy(array(
             'obiekt' => $repository,
             'obiektId' => $id
         ));

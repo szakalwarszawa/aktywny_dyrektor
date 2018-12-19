@@ -34,9 +34,9 @@ class WniosekStatusController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekStatus')->findAll();
+        //$entities = $em->getRepository(WniosekStatus::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:WniosekStatus');
+        $source = new Entity(WniosekStatus::class);
 
         $tableAlias = $source->getTableAlias();
         //die($co);
@@ -155,7 +155,7 @@ class WniosekStatusController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
+        $entity = $em->getRepository(WniosekStatus::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
@@ -180,7 +180,7 @@ class WniosekStatusController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
+        $entity = $em->getRepository(WniosekStatus::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
@@ -225,7 +225,7 @@ class WniosekStatusController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
+        $entity = $em->getRepository(WniosekStatus::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekStatus entity.');
@@ -260,7 +260,7 @@ class WniosekStatusController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekStatus')->find($id);
+            $entity = $em->getRepository(WniosekStatus::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekStatus entity.');

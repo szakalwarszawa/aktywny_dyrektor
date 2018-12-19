@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Wniosek;
+use ParpV1\MainBundle\Entity\WniosekStatus;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\Komentarz;
@@ -41,7 +42,7 @@ class WniosekController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $wniosek = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+        $wniosek = $em->getRepository(Wniosek::class)->find($id);
 
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find Wniosek entity.');
@@ -60,7 +61,7 @@ class WniosekController extends Controller
             'editors' => $people['editors'],
         ];
 
-        $statusyEntities = $em->getRepository('ParpMainBundle:WniosekStatus')->findBy(['typWniosku' => $typWniosku]);
+        $statusyEntities = $em->getRepository(WniosekStatus::class)->findBy(['typWniosku' => $typWniosku]);
         $statusy = [];
         foreach ($statusyEntities as $e) {
             $statusy[$e->getId()] = $e->getNazwa();
@@ -134,7 +135,7 @@ class WniosekController extends Controller
             $komentarz->setObiektId($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId());
             $em->persist($komentarz);
 
-            $nowyStatus = $em->getRepository('ParpMainBundle:WniosekStatus')->find($dane['status']);
+            $nowyStatus = $em->getRepository(WniosekStatus::class)->find($dane['status']);
             $wniosek->setStatus($nowyStatus);
             $wniosek->setLockedBy(null);
             $wniosek->setLockedAt(null);
@@ -197,9 +198,9 @@ class WniosekController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Wniosek')->findAll();
+        //$entities = $em->getRepository(Wniosek::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:Wniosek');
+        $source = new Entity(Wniosek::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -311,7 +312,7 @@ class WniosekController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+        $entity = $em->getRepository(Wniosek::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Wniosek entity.');
@@ -336,7 +337,7 @@ class WniosekController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+        $entity = $em->getRepository(Wniosek::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Wniosek entity.');
@@ -381,7 +382,7 @@ class WniosekController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+        $entity = $em->getRepository(Wniosek::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Wniosek entity.');
@@ -416,7 +417,7 @@ class WniosekController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Wniosek')->find($id);
+            $entity = $em->getRepository(Wniosek::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Wniosek entity.');

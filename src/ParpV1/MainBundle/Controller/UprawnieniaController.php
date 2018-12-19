@@ -146,7 +146,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -173,7 +173,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -223,7 +223,7 @@ class UprawnieniaController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+        $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -263,7 +263,7 @@ class UprawnieniaController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Uprawnienia')->find($id);
+            $entity = $em->getRepository(Uprawnienia::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Uprawnienia entity.');
@@ -312,7 +312,7 @@ class UprawnieniaController extends Controller
         $nowyPoziomDostepuString = $this->stringUnCode($nowyPoziomDostepuB64);
 
         /** @var UserZasoby $obecnyPoziomDostepu */
-        $obecnyUserZasob= $manager->getRepository('ParpMainBundle:UserZasoby')->find($obecnyUserZasobId);
+        $obecnyUserZasob= $manager->getRepository(UserZasoby::class)->find($obecnyUserZasobId);
 
         if (null === $obecnyUserZasob) {
             throw new EntityNotFoundException('Nie ma UserZasobu o takim identyfikatorze!');

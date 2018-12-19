@@ -34,9 +34,9 @@ class GrupyUprawnienController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:GrupyUprawnien')->findAll();
+        //$entities = $em->getRepository(GrupyUprawnien::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:GrupyUprawnien');
+        $source = new Entity(GrupyUprawnien::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -148,7 +148,7 @@ class GrupyUprawnienController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
+        $entity = $em->getRepository(GrupyUprawnien::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
@@ -173,7 +173,7 @@ class GrupyUprawnienController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
+        $entity = $em->getRepository(GrupyUprawnien::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
@@ -218,7 +218,7 @@ class GrupyUprawnienController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
+        $entity = $em->getRepository(GrupyUprawnien::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
@@ -254,7 +254,7 @@ class GrupyUprawnienController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:GrupyUprawnien')->find($id);
+            $entity = $em->getRepository(GrupyUprawnien::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find GrupyUprawnien entity.');
