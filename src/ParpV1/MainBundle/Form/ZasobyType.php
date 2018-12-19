@@ -219,7 +219,8 @@ class ZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'widget' => 'single_text'
+                    'widget' => 'single_text',
+                    'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataZmianyZasobu', DateTimeType::class, array(
                     'attr' => array(
@@ -230,7 +231,8 @@ class ZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'widget' => 'single_text'
+                    'widget' => 'single_text',
+                    'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataUsunieciaZasobu', DateTimeType::class, array(
                     'attr' => array(
@@ -241,7 +243,8 @@ class ZasobyType extends AbstractType
                         'class' => 'col-sm-4 control-label',
                     ),
                     'required' => false,
-                    'widget' => 'single_text'
+                    'widget' => 'single_text',
+                    'format' => 'yyyy-MM-dd'
                 ))
             ;
     }
