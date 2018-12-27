@@ -22,6 +22,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use ParpV1\MainBundle\Entity\Engagement;
+use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Form\EngagementType;
 
 /**
@@ -41,9 +42,9 @@ class EngagementController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Engagement')->findAll();
+        //$entities = $em->getRepository(Engagement::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:Engagement');
+        $source = new Entity(Engagement::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -116,7 +117,7 @@ class EngagementController extends Controller
      */
     private function createCreateForm(Engagement $entity)
     {
-        $form = $this->createForm(new EngagementType(), $entity, array(
+        $form = $this->createForm(EngagementType::class, $entity, array(
             'action' => $this->generateUrl('engagement_create'),
             'method' => 'POST',
         ));
@@ -155,7 +156,7 @@ class EngagementController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Engagement')->find($id);
+        $entity = $em->getRepository(Engagement::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Engagement entity.');
@@ -180,7 +181,7 @@ class EngagementController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Engagement')->find($id);
+        $entity = $em->getRepository(Engagement::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Engagement entity.');
@@ -205,7 +206,7 @@ class EngagementController extends Controller
     */
     private function createEditForm(Engagement $entity)
     {
-        $form = $this->createForm(new EngagementType(), $entity, array(
+        $form = $this->createForm(EngagementType::class, $entity, array(
             'action' => $this->generateUrl('engagement_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
@@ -225,7 +226,7 @@ class EngagementController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Engagement')->find($id);
+        $entity = $em->getRepository(Engagement::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Engagement entity.');
@@ -260,7 +261,7 @@ class EngagementController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Engagement')->find($id);
+            $entity = $em->getRepository(Engagement::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Engagement entity.');
@@ -461,7 +462,7 @@ class EngagementController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $programy = [];
-        $ps = $em->getRepository('ParpMainBundle:Engagement')->findAll();
+        $ps = $em->getRepository(Engagement::class)->findAll();
         foreach ($ps as $p) {
             $programy[$p->getName()] = $p;
         }
@@ -472,7 +473,7 @@ class EngagementController extends Controller
         foreach ($dane as $id => $d) {
             //$daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($id);
             $rozbite = $this->get('samaccountname_generator')->rozbijFullname($id);
-            $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy([
+            $daneRekord = $em->getRepository(DaneRekord::class)->findOneBy([
                 'nazwisko' => $rozbite['nazwisko'],
                 'imie' => $rozbite['imie'],
             ]);
@@ -489,7 +490,7 @@ class EngagementController extends Controller
                 $usereng->setYear($rok);
                 foreach ($d as $program => $wpis) {
                     for ($i = 1; $i < 13; $i++) {
-                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        $zaangazownie = $em->getRepository(Engagement::class)->findOneByName($program);
                         if (null == $zaangazownie) {
                             if ($form->getData()['dodanieZaangazowan']) {
                                 $program2 = new Engagement();
@@ -507,7 +508,7 @@ class EngagementController extends Controller
                             }
                         }
 
-                        $zaangazownie = $em->getRepository('ParpMainBundle:Engagement')->findOneByName($program);
+                        $zaangazownie = $em->getRepository(Engagement::class)->findOneByName($program);
 
                         $ug = $em->getRepository('ParpMainBundle:UserEngagement')->findOneByCryteria(
                             $daneRekord->getLogin(),

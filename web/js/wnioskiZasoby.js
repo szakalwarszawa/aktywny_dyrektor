@@ -28,14 +28,7 @@ function usunUzytkownikaZwniosku(id, that){
     })
 
 }
-$(function () {
-    $('a, button').click(function () {
-        var href = $(this).attr('href');
-        if (href !== undefined) {
-            preventDoubleClick($(this));
-        }
-    })
-})
+
 $(document).ready(function(){
     wniosekPracownikSpozaParp();
     $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownikSpozaParp').change(wniosekPracownikSpozaParp);
@@ -144,18 +137,4 @@ function ajaxFormCall(formObject)
         responseData = JSON.parse(responseData);
         prompt(responseData.message, responseData.token);
     });
-}
-
-function preventDoubleClick(object)
-{
-    if (!(object instanceof jQuery)) {
-        object = $(object);
-    }
-
-    object.attr('disabled', 'disabled');
-    setTimeout(
-        function()
-        {
-            object.removeAttr('disabled');
-        }, 8000);
 }

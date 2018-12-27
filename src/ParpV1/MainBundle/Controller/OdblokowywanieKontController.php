@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Form\DaneRekordType;
 
@@ -35,20 +35,20 @@ class OdblokowywanieKontController extends Controller
         $defaultController = new DefaultController();
         $ldap = $this->get('ldap_service');
         // Sięgamy do AD:
-        
+
         $maDostep =
             in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
             in_array("PARP_ADMIN", $this->getUser()->getRoles())
         ;
         if (!$maDostep) {
-            throw new \ParpV1\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
+            throw new SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
         }
         $ADUsersTemp = $ldap->getAllFromAD("zablokowane");
         $ADUsers = array();
         foreach ($ADUsersTemp as $u) {
                 $ADUsers[] = $u;
         }
-        
+
         if (count($ADUsers) == 0) {
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }
@@ -87,10 +87,10 @@ class OdblokowywanieKontController extends Controller
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
         //$grid->addRowAction($rowAction4);
-        
+
 
         $grid->setLimits(array(20 => '20', 50 => '50', 100 => '100', 500 => '500', 1000 => '1000'));
-        
+
 
         return $grid->getGridResponse();
     }

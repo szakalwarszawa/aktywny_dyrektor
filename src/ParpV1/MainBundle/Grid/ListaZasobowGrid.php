@@ -84,7 +84,7 @@ class ListaZasobowGrid
                 )
             );
             $zasobAkcja->setColumn('akcja');
-            $zasobAkcja->manipulateRender(
+            $zasobAkcja->addManipulateRender(
                 function ($action, $row) {
                     return $this->adminRowAction($action, $row);
                 }
@@ -102,7 +102,7 @@ class ListaZasobowGrid
                 )
             );
             $zasobAkcja->setColumn('akcja');
-            $zasobAkcja->manipulateRender(
+            $zasobAkcja->addManipulateRender(
                 function ($action, $row) {
                     return $this->adminRowAction($action, $row);
                 }

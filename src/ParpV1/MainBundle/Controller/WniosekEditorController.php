@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobowEditor;
 use ParpV1\MainBundle\Form\WniosekNadanieOdebranieZasobowEditorType;
 
@@ -34,39 +34,39 @@ class WniosekEditorController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->findAll();
-    
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor');
-    
+        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->findAll();
+
+        $source = new Entity(WniosekNadanieOdebranieZasobowEditor::class);
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wnioseknadanieodebraniezasoboweditor_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasoboweditor_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -109,12 +109,12 @@ class WniosekEditorController extends Controller
      */
     private function createCreateForm(WniosekNadanieOdebranieZasobowEditor $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowEditorType(), $entity, array(
+        $form = $this->createForm(WniosekNadanieOdebranieZasobowEditorType::class, $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasoboweditor_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz WniosekNadanieOdebranieZasobowEditor', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz WniosekNadanieOdebranieZasobowEditor', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -148,7 +148,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -173,7 +173,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -198,12 +198,12 @@ class WniosekEditorController extends Controller
     */
     private function createEditForm(WniosekNadanieOdebranieZasobowEditor $entity)
     {
-        $form = $this->createForm(new WniosekNadanieOdebranieZasobowEditorType(), $entity, array(
+        $form = $this->createForm(WniosekNadanieOdebranieZasobowEditorType::class, $entity, array(
             'action' => $this->generateUrl('wnioseknadanieodebraniezasoboweditor_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -218,7 +218,7 @@ class WniosekEditorController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -253,7 +253,7 @@ class WniosekEditorController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobowEditor')->find($id);
+            $entity = $em->getRepository(WniosekNadanieOdebranieZasobowEditor::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobowEditor entity.');
@@ -278,7 +278,7 @@ class WniosekEditorController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wnioseknadanieodebraniezasoboweditor_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj WniosekNadanieOdebranieZasobowEditor','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj WniosekNadanieOdebranieZasobowEditor','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

@@ -33,7 +33,7 @@ class ZastepstwoController extends Controller
      */
     public function indexAction()
     {
-        $source = new Entity('ParpMainBundle:Zastepstwo');
+        $source = new Entity(Zastepstwo::class);
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -144,7 +144,7 @@ class ZastepstwoController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zastepstwo')->find($id);
+        $entity = $em->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
@@ -168,7 +168,7 @@ class ZastepstwoController extends Controller
     public function editAction($id)
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $entity = $entityManager->getRepository('ParpMainBundle:Zastepstwo')->find($id);
+        $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
@@ -205,7 +205,7 @@ class ZastepstwoController extends Controller
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -220,7 +220,7 @@ class ZastepstwoController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zastepstwo')->find($id);
+        $entity = $em->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
@@ -255,7 +255,7 @@ class ZastepstwoController extends Controller
 
         if ($form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
-            $entity = $entityManager->getRepository('ParpMainBundle:Zastepstwo')->find($id);
+            $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
@@ -285,7 +285,7 @@ class ZastepstwoController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zastepstwo_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zastępstwo','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zastępstwo','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

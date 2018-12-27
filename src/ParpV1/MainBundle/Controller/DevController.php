@@ -311,7 +311,7 @@ class DevController extends Controller
             }
         }
         $sql = implode(' ', $sqls);
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $em->getConnection()->exec($sql);
 /*
         $connection = $em->getConnection();
@@ -357,7 +357,7 @@ class DevController extends Controller
             }
             $sql = 'update entry set daneRekord_id = null;delete from entry; delete from dane_rekord;';
 
-            $em = $this->getDoctrine()->getEntityManager();
+            $em = $this->getDoctrine()->getManager();
             $em->getConnection()->exec($sql);
             echo 'wykonal sql';
             echo implode("\n\n<br><br>", $dns);
@@ -385,7 +385,7 @@ class DevController extends Controller
             }
         }
         $sql = implode(' ', $sqls);
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $em->getConnection()->exec($sql);
 
         echo implode("\n\n<br><br>", $sqls);
@@ -398,7 +398,7 @@ class DevController extends Controller
      */
     public function zasobNazwaAction($zid)
     {
-        $n = $this->get('renameService')->zasobNazwa($zid);
+        $n = $this->get('rename_service')->zasobNazwa($zid);
         die($n);
     }
 
@@ -618,7 +618,7 @@ class DevController extends Controller
     public function groupConcatAction()
     {
         $sql = "select group_concat(e.samaccountname) from ParpV1\\MainBundle\\Entity\\Entry e";
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $result= $em->createQuery($sql)->getResult();
         \Doctrine\Common\Util\Debug::dump($result);
         die('groupConcat');
@@ -787,7 +787,7 @@ class DevController extends Controller
      */
     public function getAdGroupsAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
 
         $exists = $this->get('ldap_service')->checkGroupExistsFromAD(null);
@@ -800,7 +800,7 @@ class DevController extends Controller
      */
     public function checkAdGroupsAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
         $ret = array('sa' => array(), 'sa multi' => array(), 'nie ma' => array());
@@ -895,7 +895,7 @@ class DevController extends Controller
      */
     public function fixZasobyWlascicieliAdminowAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
         $i = 0;
         foreach ($zasoby as $z) {
@@ -961,7 +961,7 @@ class DevController extends Controller
      */
     public function fixZasobyWlascicieliAdminowNadajMultiRoleAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $zasoby = $em->getRepository('ParpMainBundle:Zasoby')->findAll();
 
         $rolaWlasciciel = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_WLASCICIEL_ZASOBOW');
@@ -980,7 +980,7 @@ class DevController extends Controller
     protected function dodajRole($ludzie, $rola)
     {
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $arr = explode(',', $ludzie);
         foreach ($arr as $l) {
@@ -1001,7 +1001,7 @@ class DevController extends Controller
      */
     public function fixLoginsAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $dr = $em->getRepository('ParpMainBundle:DaneRekord')->findAll();
         foreach ($dr as $d) {
             $login = $this->get('samaccountname_generator')->generateSamaccountname($d->getImie(), $d->getNazwisko(), false);
@@ -1017,7 +1017,7 @@ class DevController extends Controller
      */
     public function findNamesChangedAndFixAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
@@ -1089,7 +1089,7 @@ class DevController extends Controller
      */
     public function getAllUsersAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
@@ -1122,7 +1122,7 @@ class DevController extends Controller
      */
     public function getAllUsersBySectionAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $pomijac = ['n/d', 'ND'];
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
@@ -1153,7 +1153,7 @@ class DevController extends Controller
      */
     public function fixKierownikowSekcjiAction()
     {
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
 
         $dr = $em->getRepository('ParpMainBundle:Section')->findAll();
         foreach ($dr as $d) {

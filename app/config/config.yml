@@ -4,9 +4,15 @@ imports:
     - { resource: services.yml }
 
 framework:
+    cache:
+        pools:
+            ldap.cache:
+                adapter: cache.adapter.filesystem
+                public: true
+                default_lifetime: 86400
     #esi:             ~
     translator:
-        enabled: false
+        enabled: true
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"

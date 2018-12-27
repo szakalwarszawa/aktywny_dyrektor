@@ -40,7 +40,6 @@ class UprawnieniaService
         $this->setContainer($container);
 
         if (PHP_SAPI == 'cli') {
-            $this->container->enterScope('request');
             $this->container->set('request', new Request(), 'request');
         }
     }

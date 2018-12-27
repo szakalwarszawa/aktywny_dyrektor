@@ -15,9 +15,11 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\ADUser;
 use ParpV1\MainBundle\Form\DaneRekordType;
 
 /**
@@ -38,7 +40,7 @@ class OdebranieUprawnienController extends Controller
 //         !!!!!!!!!!!!!!!!!! zarzadowi nie odbierac!!!! sobie tez nie bo jak mnie wypnie z VPN...
         $pominOsoby = ['jadwiga_lesisz', 'nina_dobrzynska', 'malgorzata_oleszczuk', 'czeslaw_testowy', 'text_testowy'];
         $em = $this->getDoctrine()->getManager();
-        $sams = $em->getRepository('ParpMainBundle:Entry')->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
+        $sams = $em->getRepository(Entry::class)->findOsobyKtoreJuzPrzetworzylPrzyOdbieraniu(['odbieranie_uprawnien']);
         $pominOsoby = array_merge($pominOsoby, $sams);
         //print_r($pominOsoby); die();
         $ldap = $this->get('ldap_service');
@@ -172,9 +174,9 @@ class OdebranieUprawnienController extends Controller
         $zdejmowaneGrupy = [];
         $zasobyId = [];
         foreach ($diff2 as $zdejmowanaGrupa) {
-            $zasob = $em->getRepository('ParpMainBundle:Zasoby')->findByGrupaAD($zdejmowanaGrupa);
+            $zasob = $em->getRepository(Zasoby::class)->findByGrupaAD($zdejmowanaGrupa);
             if ($zasob) {
-                $userzasob = $em->getRepository('ParpMainBundle:UserZasoby')->findBy([
+                $userzasob = $em->getRepository(UserZasoby::class)->findBy([
                     'samaccountname' => $this->getUser()->getUsername(),
                     'zasobId' => $zasob->getId()
                 ]);
@@ -212,12 +214,12 @@ class OdebranieUprawnienController extends Controller
     {
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
-        $userzasoby = $em->getRepository('ParpMainBundle:UserZasoby')->findAktywneDlaOsoby($user['samaccountname']);
+        $userzasoby = $em->getRepository(UserZasoby::class)->findAktywneDlaOsoby($user['samaccountname']);
         $ret = ['grupyAD' => [], 'zasobyBezGrupAD' => [], 'sumaZWnioskow' => []];
         $ret['grupyAD'] = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
 
         foreach ($userzasoby as $uz) {
-            $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+            $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
             //var_dump($z->getGrupyAD());
             if ($z->getGrupyAD()
                 || $z->getId() == 4311
@@ -307,12 +309,12 @@ class OdebranieUprawnienController extends Controller
     public function wykluczBIAction()
     {
         $em = $this->getDoctrine()->getManager();
-        $adusers = $em->getRepository('ParpSoapBundle:ADUser')->findPrzezDescription('BI');
+        $adusers = $em->getRepository(ADUser::class)->findPrzezDescription('BI');
         $sams = [];
         foreach ($adusers as $u) {
             $sams[] = $u['samaccountname'];
         }
-        $entries = $em->getRepository('ParpMainBundle:Entry')->findBy(['samaccountname' => $sams, 'createdBy' => 'odbieranie_uprawnien']);
+        $entries = $em->getRepository(Entry::class)->findBy(['samaccountname' => $sams, 'createdBy' => 'odbieranie_uprawnien']);
         $ids = [];
 
         //

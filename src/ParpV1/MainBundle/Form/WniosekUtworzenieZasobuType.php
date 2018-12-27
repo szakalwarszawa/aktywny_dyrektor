@@ -179,10 +179,11 @@ class WniosekUtworzenieZasobuType extends AbstractType
             } else {
                 if ($formPost === false) {
                     $zasobyService = $container->get('zasoby_service');
+                    $zasobyDlaUsera = $zasobyService->findZasobyDlaUsera($options['user']);
                     $builder->add('zmienianyZasob', ChoiceType::class, array(
                         'mapped' => true,
                         'label' => "Wybierz zasób",
-                        'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                        'choices' => array_flip($zasobyDlaUsera),
                         'attr' => array(
                             'class' => 'select2'
                         ),
@@ -206,16 +207,16 @@ class WniosekUtworzenieZasobuType extends AbstractType
                 'label' => false,
                 'ldap_service' => $container->get('ldap_service'),
                 'by_reference' => true,
-
             ));
         } elseif ("kasowanie" === $typ) {
-            $route = $container->get('request')->get('_route');
+            $route = $container->get('request_stack')->getCurrentRequest()->get('_route');
             if ($formPost === false && $route !== 'wniosekutworzeniezasobu_show') {
                 $zasobyService = $container->get('zasoby_service');
+                $zasobyDlaUsera = $zasobyService->findZasobyDlaUsera($options['user']);
                 $builder->add('zmienianyZasob', ChoiceType::class, array(
                     'mapped' => true,
                     'label' => "Wybierz zasób",
-                    'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                    'choices' => array_flip($zasobyDlaUsera),
                     'attr' => array(
                         'class' => 'select2'
                     ),

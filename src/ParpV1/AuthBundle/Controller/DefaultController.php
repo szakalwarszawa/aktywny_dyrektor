@@ -5,6 +5,7 @@ namespace ParpV1\AuthBundle\Controller;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use ParpV1\MainBundle\Entity\AclRole;
 
 class DefaultController extends Controller
 {
@@ -50,7 +51,7 @@ class DefaultController extends Controller
     private function getAkdRolesNames()
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $roles = $entityManager->getRepository('ParpMainBundle:AclRole')->findAll();
+        $roles = $entityManager->getRepository(AclRole::class)->findAll();
         foreach ($roles as $role) {
             $roleDostepne[] = $role->getName();
         }

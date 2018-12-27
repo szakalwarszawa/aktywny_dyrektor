@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Form\KomentarzType;
 
@@ -34,9 +34,9 @@ class KomentarzController extends Controller
     public function indexAction($obiekt, $obiektId)
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:Komentarz')->findAll();
+        //$entities = $em->getRepository(Komentarz::class)->findAll();
 
-        $source = new Entity('ParpMainBundle:Komentarz');
+        $source = new Entity(Komentarz::class);
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
@@ -114,12 +114,12 @@ class KomentarzController extends Controller
      */
     private function createCreateForm(Komentarz $entity)
     {
-        $form = $this->createForm(new KomentarzType(), $entity, array(
+        $form = $this->createForm(KomentarzType::class, $entity, array(
             'action' => $this->generateUrl('komentarz_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Komentarz', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Komentarz', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -157,7 +157,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -182,7 +182,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -208,12 +208,12 @@ class KomentarzController extends Controller
     */
     private function createEditForm(Komentarz $entity)
     {
-        $form = $this->createForm(new KomentarzType(), $entity, array(
+        $form = $this->createForm(KomentarzType::class, $entity, array(
             'action' => $this->generateUrl('komentarz_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -228,7 +228,7 @@ class KomentarzController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+        $entity = $em->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -267,7 +267,7 @@ class KomentarzController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:Komentarz')->find($id);
+            $entity = $em->getRepository(Komentarz::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -318,7 +318,7 @@ class KomentarzController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('komentarz_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Komentarz','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Komentarz','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

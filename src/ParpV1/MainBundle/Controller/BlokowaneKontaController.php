@@ -14,7 +14,6 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
@@ -26,6 +25,8 @@ use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Entity\Entry;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\Grid\Column\TextColumn;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\DaneRekord;
 
 /**
  * BlokowaneKontaController .
@@ -47,7 +48,7 @@ class BlokowaneKontaController extends Controller
     {
         $ldap = $this->get('ldap_service');
         $ADUsers = $ldap->getAllFromADIntW($ktorzy);
-        
+
         if (count($ADUsers) == 0) {
             return $this->render('ParpMainBundle:Default:NoData.html.twig');
         }
@@ -88,7 +89,7 @@ class BlokowaneKontaController extends Controller
         $em = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, $ktorzy);
-        $daneRekord = $em->getRepository("ParpMainBundle:DaneRekord")->findOneBy([
+        $daneRekord = $em->getRepository(DaneRekord::class)->findOneBy([
             'login' => $samaccountname
         ]);
 
@@ -96,7 +97,7 @@ class BlokowaneKontaController extends Controller
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
         $departamentRekord = "";
         if ($daneRekord) {
-            $departamentRekord = $em->getRepository("ParpMainBundle:Departament")->findOneBy([
+            $departamentRekord = $em->getRepository(Departament::class)->findOneBy([
                 'nameInRekord' => $daneRekord->getDepartament()
             ]);
         }
@@ -104,7 +105,7 @@ class BlokowaneKontaController extends Controller
         if ($request->getMethod() === "POST") {
             $data = $request->request->get('form');
             $ctrl = new DefaultController();
-            
+
             $entry = new Entry();
             $entry->setSamaccountname($samaccountname)
                 ->setActivateDeactivated(true)
@@ -114,14 +115,14 @@ class BlokowaneKontaController extends Controller
                 ->setCreatedBy($this->getUser()->getUsername());
 
             $ctrl->parseUserFormData($data, $entry);
-            
+
 
             $em->persist($entry);
             $em->flush();
-            
+
             return $this->redirect($this->generateUrl('main'));
         }
-        
+
         $dane = [
             'samaccountname' => $samaccountname,
             'daneRekord' => $daneRekord,
@@ -146,9 +147,9 @@ class BlokowaneKontaController extends Controller
     public function kontaDisabledPrzeniesAction(Request $request)
     {
         $ldap = $this->get('ldap_service');
-        
+
         $disabled = $ldap->getAllDisabled();
-        
+
         for ($i = 0; $i < count($disabled); $i++) {
             $d = $disabled[$i];
             $name = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($d['name']);
@@ -164,25 +165,25 @@ class BlokowaneKontaController extends Controller
             //var_dump($d);
         }
 
-        
-        
+
+
         $ctrl = new DefaultController();
         $grid = $ctrl->getUserGrid($this->get('grid'), $disabled, "nieobecni", $this->getUser()->getRoles());
 
         $grid->hideColumns(['thumbnailphoto', 'daneRekord', 'akcje']);
-        
+
         $akcje = new TextColumn(array('id' => 'akcje', 'title' => 'Przenieś do', 'source' => false, 'filterable' => false, 'sortable' => false));
 
         $grid->addColumn($akcje);
-        
+
         $ktorzy = "disabled";
-        
+
         if ($request->getMethod() == "POST") {
             $postData = $request->request->all();
             var_dump($postData);
             die("mam post");
         }
-        
+
         /*
             // Edycja konta
             $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
@@ -195,7 +196,7 @@ class BlokowaneKontaController extends Controller
         */
         $grid->isReadyForRedirect();
         //var_dump($rowAction2);
-        
+
         //print_r($users);
         //die();
         $keys = array_keys($disabled[0]);

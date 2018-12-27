@@ -5,11 +5,18 @@ namespace ParpV1\SoapBundle\Services;
 use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\Config\Definition\Exception\Exception;
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\Cache\Simple\FilesystemCache;
+use Psr\Cache\CacheItemPoolInterface;
+use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
 
 //use Memcached;
 
 class LdapService
 {
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cache;
 
     protected $dodatkoweOpcje = 'ekranEdycji';
     protected $ad_host;
@@ -43,7 +50,7 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(Container $container)
+    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool)
     {
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
@@ -82,6 +89,7 @@ class LdapService
                 //'sso' => false,
         );
         $this->adldap = new \Adldap\Adldap($configuration);
+        $this->cache = $cacheItemPool;
     }
 
     public function getAllManagersFromAD()
@@ -139,35 +147,19 @@ class LdapService
 
     public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
     {
+        $cache = $this->cache;
+        $cacheKey = 'ad_users_' . $tezNieobecni . '_' . $justDump . '_' . $struktura;
+        $cacheItem = $cache->getItem($cacheKey);
 
-        if ($this->_userCache === null) {
-            $this->_userCache = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
-//        } else {
-
-            /* wylaczam na czas odbierania uprawnien, bo zamula
-              $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
-             */
+        if ($cacheItem->isHit()) {
+            return unserialize($cacheItem->get());
         }
 
-        /* wylaczam na czas odbierania uprawnien, bo zamula
-          $zmiany = [];
-          foreach($this->zmianyDoWypchniecia as $z){
-          $zmiany[$z->getSamaccountname()][] = $z;
-          }
-          foreach($this->_userCache as &$u){
-          if(isset($zmiany[$u['samaccountname']])){
-          //mamy zmiany
-          $noweAttr = $this->parseZmianyUsera($u, $zmiany);
-          foreach($noweAttr as $k => $v){
-          if($v instanceof \Datetime)
-          $v = $v->format("Y-m-d h:I");
-          $u[$k] = $v." (".$u[$k].")";
-          }
-          }
-          }
-         */
+        $adUsers = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
+        $cacheItem->set(serialize($adUsers));
+        $cache->save($cacheItem);
 
-        return $this->_userCache;
+        return $adUsers;
     }
 
     public function getAllFromADIntW($ktorych = 'aktywni', $justDump = false, $struktura = null)
@@ -999,7 +991,11 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        return $this->adldap->group()->find($grupa);
+        try {
+            return $this->adldap->group()->find($grupa);
+        } catch (DebugContextErrorException $exception) {
+            return false;
+        }
     }
 
     public function getUsersWithRole($role)

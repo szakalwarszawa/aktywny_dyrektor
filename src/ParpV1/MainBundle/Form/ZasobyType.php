@@ -14,6 +14,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer;
 
 class ZasobyType extends AbstractType
 {
@@ -29,8 +30,8 @@ class ZasobyType extends AbstractType
         $admini = $ldap->getAdministratorzyZasobow();
 
         $zablokujPolaPozaPoziomModul = $options['nie_moze_edytowac'] && $options['czy_wlasciciel_lub_powiernik'];
-
-        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
+        $wlascicieleZasobow = $ldap->getWlascicieleZasobow();
+        $transformer = new StringToArrayTransformer();
         $builder
             //->add('id')
             ->add('zasobSpecjalny', CheckboxType::class, array(
@@ -43,14 +44,14 @@ class ZasobyType extends AbstractType
             ->add('biuro', HiddenType::class);
         if ($adminiMulti) {
             $builder->add($builder->create('wlascicielZasobu', ChoiceType::class, array(
-                'choices' => $ldap->getWlascicieleZasobow(),
+                'choices' => array_flip($wlascicieleZasobow),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer));
         } else {
             $builder->add('wlascicielZasobu', ChoiceType::class, array(
-                'choices' => $ldap->getWlascicieleZasobow(),
+                'choices' => array_flip($wlascicieleZasobow),
                 'multiple' => false,
                 'placeholder' => 'Wybierz wartość',
                 'constraints' => array(
@@ -64,20 +65,22 @@ class ZasobyType extends AbstractType
             ));
         }
 
+        $uzytkownicyAd = $ldap->getAllFromADforCombo();
+        $administratorzyTechniczniZasobow = $ldap->getAdministratorzyTechniczniZasobow();
         $builder->add($builder->create('powiernicyWlascicielaZasobu', ChoiceType::class, array(
-                'choices' => $ldap->getAllFromADforCombo(),
+                'choices' => array_flip($uzytkownicyAd),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorZasobu', ChoiceType::class, array(
-                'choices' => $ldap->getAllFromADforCombo(),
+                'choices' => array_flip($uzytkownicyAd),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
             ))->addModelTransformer($transformer))
             ->add($builder->create('administratorTechnicznyZasobu', ChoiceType::class, array(
-                'choices' => $ldap->getAdministratorzyTechniczniZasobow(),
+                'choices' => array_flip($administratorzyTechniczniZasobow),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul)
