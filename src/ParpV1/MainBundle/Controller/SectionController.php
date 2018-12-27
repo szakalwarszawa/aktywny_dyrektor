@@ -211,7 +211,7 @@ class SectionController extends Controller
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array(
                 'label' => 'Zapisz zmiany',
                 'attr' => array(
