@@ -300,6 +300,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $jestCoOdebrac = count($userZasoby) > 0;
         }
+
+        if (!empty($form->getData()->getPracownicySpozaParp()) && empty($form->getData()->getManagerSpozaParp())) {
+            $this->addFlash('danger', 'Nie wybrano managera pracowników spoza PARP');
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new'));
+        }
+
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $entityManager = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, '00_TWORZONY', false);
