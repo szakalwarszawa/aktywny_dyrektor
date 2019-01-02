@@ -301,7 +301,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $jestCoOdebrac = count($userZasoby) > 0;
         }
 
-        if(!empty($form->getData()->getPracownicySpozaParp()) && empty($form->getData()->getManagerSpozaParp())) {
+        if (!empty($form->getData()->getPracownicySpozaParp()) && empty($form->getData()->getManagerSpozaParp())) {
             $this->addFlash('danger', 'Nie wybrano managera pracowników spoza PARP');
 
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new'));
