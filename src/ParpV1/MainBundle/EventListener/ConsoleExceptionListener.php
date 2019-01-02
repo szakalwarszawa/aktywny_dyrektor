@@ -2,7 +2,7 @@
 // src/Acme/DemoBundle/EventListener/ConsoleExceptionListener.php
 namespace ParpV1\MainBundle\EventListener;
 
-use Symfony\Component\Console\Event\ConsoleErrorEvent;
+use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Psr\Log\LoggerInterface;
 
 class ConsoleExceptionListener
@@ -14,7 +14,7 @@ class ConsoleExceptionListener
         $this->logger = $logger;
     }
 
-    public function onConsoleException(ConsoleErrorEvent $event)
+    public function onConsoleException(ConsoleExceptionEvent $event)
     {
         $command = $event->getCommand();
         $exception = $event->getException();
