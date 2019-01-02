@@ -83,7 +83,6 @@
                 $('#form_access > div').each(function () {
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
-                    console.log('sprawdzam txt ' + txt + ' i classes ' + classes);
                     var show = false;
                     if (v) {
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien' + v) >= 0;
