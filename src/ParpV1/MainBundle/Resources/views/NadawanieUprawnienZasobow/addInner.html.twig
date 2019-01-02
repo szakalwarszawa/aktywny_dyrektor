@@ -74,7 +74,8 @@
 <script>
     function filtrujZasobUprawnienia() {
         var v = $('#form_grupy').val();
-        var s = $('#form_nazwafiltr').val().toUpperCase();
+        var s = $('#form_nazwafiltr').val().toUpperCase().trim();
+
         if (v || s) {
             $('#form_access > div').addClass('hidden');
             //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);
@@ -82,7 +83,6 @@
                 $('#form_access > div').each(function () {
                     var txt = $(this).text().toUpperCase();
                     var classes = $(this).attr('class');
-                    console.log('sprawdzam txt ' + txt + ' i classes ' + classes);
                     var show = false;
                     if (v) {
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien' + v) >= 0;
