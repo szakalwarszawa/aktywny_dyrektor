@@ -83,7 +83,7 @@ class ImportRekordDaneController extends Controller
     public function getSqlDoImportu()
     {
 
-        //$dataGraniczna = date("Y-m-d");
+        // w linii fragment 'AND mpr.KOD < 1000' - pomijamy pracownikow z dep o ID > 1000, Redmine #66470
         $sql = "SELECT
             p.SYMBOL,
             COUNT(*) as ile,
@@ -99,7 +99,7 @@ class ImportRekordDaneController extends Controller
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND
                 (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
-            join P_MPRACY departament on departament.KOD = mpr.KOD
+            join P_MPRACY departament on departament.KOD = mpr.KOD AND mpr.KOD < 1000
             JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND
                 (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
