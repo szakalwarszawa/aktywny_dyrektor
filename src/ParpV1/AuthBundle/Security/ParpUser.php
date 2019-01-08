@@ -3,14 +3,15 @@
 namespace ParpV1\AuthBundle\Security;
 
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Security\Core\User\EquatableInterface;
 
-class ParpUser implements UserInterface
+class ParpUser implements UserInterface, EquatableInterface, \Serializable
 {
     private $username;
     private $password;
     private $salt;
     private $roles;
-    
+
     public function __construct($username, $password, $salt, array $roles)
     {
         $this->username = $username;
@@ -43,7 +44,7 @@ class ParpUser implements UserInterface
     public function eraseCredentials()
     {
     }
-    
+
     public function getRolesHtml()
     {
         $ret = implode("</li><li class='list-group-item'>", $this->getRoles());
@@ -55,5 +56,52 @@ class ParpUser implements UserInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @see https://github.com/symfony/symfony/blob/3.4/src/Symfony/Component/Security/Core/User/EquatableInterface.php
+     */
+    public function isEqualTo(UserInterface $user)
+    {
+        if ($this->password !== $user->getPassword()) {
+            return false;
+        }
+
+        if ($this->salt !== $user->getSalt()) {
+            return false;
+        }
+
+        if ($this->username !== $user->getUsername()) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * @see https://symfony.com/doc/3.4/security/entity_provider.html#security-serialize-equatable
+     */
+    public function serialize()
+    {
+        return serialize(array(
+            $this->username,
+            $this->password,
+            $this->salt,
+            $this->roles,
+        ));
+    }
+
+    /**
+     * @see \Serializable::unserialize()
+     * @see https://symfony.com/doc/3.4/security/entity_provider.html#security-serialize-equatable
+    */
+    public function unserialize($serialized)
+    {
+        list (
+            $this->username,
+            $this->password,
+            $this->salt,
+            $this->roles,
+        ) = unserialize($serialized, array('allowed_classes' => false));
     }
 }

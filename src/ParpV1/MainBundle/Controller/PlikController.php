@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Plik;
 use ParpV1\MainBundle\Form\PlikType;
 use Symfony\Component\HttpFoundation\Response;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 
 /**
  * Plik controller.
@@ -99,7 +100,7 @@ class PlikController extends Controller
     public function indexAction($obiekt, $obiektId)
     {
         //die('a');
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository('ParpMainBundle:Plik')->findAll();
 
         $source = new Entity(Plik::class);
@@ -113,42 +114,43 @@ class PlikController extends Controller
         $grid->setRouteUrl($this->generateUrl('plik', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->setSource($source);
 
-        // Dodajemy kolumnę na akcje
+        $wniosekZablokowany = false;
+        if ('WniosekNadanieOdebranieZasobow' === $obiekt) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($obiektId);
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $obiektId);
+        }
+
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-
-        // Zdejmujemy filtr
         $grid->getColumn('akcje')->setFilterable(false)->setSafe(true);
 
-        // Edycja konta
+        if (!$wniosekZablokowany) {
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'plik_edit');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'plik_edit');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+            $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'plik_delete');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
-        // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'plik_delete');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
 
+            $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+        }
 
         $rowAction4 = new RowAction('<i class="fa fa-file"></i> Pobierz', 'plik_download');
         $rowAction4->setColumn('akcje');
         $rowAction4->addAttribute('class', 'btn btn-primary btn-xs');
-
-
-
-
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
         $grid->addRowAction($rowAction4);
 
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
-
-
         $grid->isReadyForRedirect();
-        return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId));
+
+        return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId, 'wniosek_zablokowany' => $wniosekZablokowany));
     }
     /**
      * Creates a new Plik entity.
@@ -162,12 +164,21 @@ class PlikController extends Controller
         $entity = new Plik();
         $form = $this->createCreateForm($entity);
         $form->handleRequest($request);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($entity->getObiektId());
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
+        }
 
         if ($form->isValid()) {
             $entity->upload();
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
+            $entityManager->persist($entity);
+            $entityManager->flush();
 
             $this->addFlash('warning', 'Plik został załączony.');
                 return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
@@ -253,12 +264,21 @@ class PlikController extends Controller
      */
     public function editAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository(Plik::class)->find($id);
+        $entity = $entityManager->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
+        }
+
+        if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($entity->getObiektId());
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
         }
 
         $editForm = $this->createEditForm($entity);
@@ -298,12 +318,21 @@ class PlikController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository(Plik::class)->find($id);
+        $entity = $entityManager->getRepository(Plik::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Plik entity.');
+        }
+
+        if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($entity->getObiektId());
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -312,7 +341,7 @@ class PlikController extends Controller
 
         if ($editForm->isValid()) {
             $entity->upload();
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('plik_edit', array('id' => $id)));
         }
@@ -333,16 +362,27 @@ class PlikController extends Controller
     {
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository(Plik::class)->find($id);
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $entity = $entityManager->getRepository(Plik::class)->find($id);
+        if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($entity->getObiektId());
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
+        }
+
+
         $url = $this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId()));
 
         if ($form->isValid()) {
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Plik entity.');
             }
-            $em->remove($entity);
-            $em->flush();
+            $entityManager->remove($entity);
+            $entityManager->flush();
         }
 
         return $this->redirect($url);

@@ -75,10 +75,13 @@ class HistoriaWersji extends AbstractLogEntry
             $kernel = $kernel->getKernel();
         }
         $request = $kernel->getContainer()->get('request_stack')->getCurrentRequest();
-        $url = $request->getUri();
-        //print_r($url);
-        $routeName = $request->get('_route');
-        //print_r($routeName); die();
+
+        $url = 'CLI';
+        $routeName = 'CLI';
+        if (null !== $request) {
+            $url = $request->getUri();
+            $routeName = $request->get('_route');
+        }
 
         $this->setUrl($url);
         $this->setRoute($routeName);
