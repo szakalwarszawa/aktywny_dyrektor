@@ -316,9 +316,9 @@ class ApiController extends Controller
 
                 foreach ($nabory as $nabor) {
                     $naborArr = array_filter(explode('/', $nabor));
-                    if (count($naborArr) >= 2) {
-                        $dzialanie = $naborArr[0];
-                        $nrNaboru = $naborArr[1];
+                    if (count($naborArr) >= 1) {
+                        $dzialanie = isset($naborArr[0])? $naborArr[0] : 'TYLKO_ROLA';
+                        $nrNaboru = isset($naborArr[1])? $naborArr[1] : 'TYLKO_ROLA';
 
                         foreach ($uprawnienia as $role) {
                             $uprawnienieLsi1420 = new UprawnienieLsi1420(
