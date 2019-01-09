@@ -21,6 +21,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  */
 class WniosekStatus
 {
+    const ANULOWANO_ADMINISTRACYJNIE = '101_ANULOWANO_ADMINISTRACYJNIE';
+    const ODEBRANO_ADMINISTRACYJNIE = '102_ODEBRANO_ADMINISTRACYJNIE';
+
     /**
      * @var integer
      *
@@ -29,16 +32,16 @@ class WniosekStatus
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
     private $deletedAt;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -46,7 +49,7 @@ class WniosekStatus
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $wnioski;
-    
+
     /**
      * @var string
      *
@@ -54,7 +57,7 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nazwa;
-    
+
     /**
      * @var string
      *
@@ -62,7 +65,7 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $nazwaSystemowa;
-    
+
     /**
      * @var string
      *
@@ -70,8 +73,8 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
-    
-    
+
+
     /**
      * @var string
      *
@@ -79,9 +82,9 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $viewers;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -89,8 +92,8 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $editors;
-    
-    
+
+
     /**
      * @var boolean
      *
@@ -98,9 +101,9 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $finished = false;
-    
-    
-    
+
+
+
     /**
      * @var string
      *
@@ -108,7 +111,7 @@ class WniosekStatus
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $typWniosku;
-    
+
     /**
      * Constructor
      */
@@ -246,7 +249,7 @@ class WniosekStatus
     {
         return $this->viewers;
     }
-    
+
 
     /**
      * Set editors
@@ -296,7 +299,7 @@ class WniosekStatus
     {
         return $this->finished;
     }
-    
+
     public function __toString()
     {
         return $this->getNazwa();

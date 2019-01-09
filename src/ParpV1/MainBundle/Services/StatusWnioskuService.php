@@ -20,6 +20,13 @@ use \ParpV1\MainBundle\Entity\Departament;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 
+/**
+ * Klasa StatusWnioskuService.
+ * Wszystko jest przeniesione z kontrolera.
+ * Zmiana statusu będzie odbywać się równiez z CLI dlatego została wydzielona.
+ * Do refaktoryzacji.
+ * @todo
+ */
 class StatusWnioskuService
 {
     private $mailerService;

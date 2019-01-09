@@ -1516,36 +1516,24 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ->getForm();
     }
 
-
     /**
-     * @Route("/dev/anulujadministracyjnie/{wniosek}/{opis}", name="poprawWnioskiKtorePominelyIBI", defaults={})
-     * @Template()
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     * @todo
-     *
+     * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
      */
-    public function poprawWnioskiKtorePominelyIBIAction(WniosekNadanieOdebranieZasobow $wniosek, $opis)
+    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
     {
-        $statusWnioskuService = $this->get('status_wniosku_service');
-        $statusWnioskuService->setWniosekStatus($wniosek, '099_ANULOWANY', false, null, $opis);
+        $statusyKoncowe = array(
+            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
+            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
+        );
 
-        $statusyKoncowe = array('099_ANULOWANY');
-        $czyStatusKoncowy = in_array('099_ANULOWANY', $statusyKoncowe);
-
-        if ($czyStatusKoncowy) {
+        if (in_array($status, $statusyKoncowe)) {
+            $statusWnioskuService = $this->get('status_wniosku_service');
+            $statusWnioskuService->setWniosekStatus($wniosek, $status, false, null, $komentarz);
             $wniosek->getWniosek()->zablokujKoncowoWniosek();
+            $this->getDoctrine()->getManager()->flush();
         }
 
-
-        $this->getDoctrine()->getManager()->flush();
-       die;
+        return new Response();
     }
 
     /**

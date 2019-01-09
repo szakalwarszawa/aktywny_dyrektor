@@ -11,19 +11,28 @@ use ParpV1\MainBundle\Entity\HistoriaWersji;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\WniosekNumer;
+use Doctrine\ORM\EntityManager;
 
+/**
+ * Klasa PersistListener
+ * Nasłuchuje event `prePersist`
+ */
 class PersistListener
 {
+    /**
+     * @var EntityManager
+     */
     private $entityManager;
 
-    private $router;
-
-    public function __construct(Router $router, $requestStack)
-    {
-        $this->router = $router;
-        $this->requestStack = $requestStack;
-    }
-
+    /**
+     * Metoda wywołana przed wrzuceniem do bazy danych.
+     * Sprawdza czy przeprowadzany persist jest powiązany z klasą `Wniosek`.
+     * Jeżeli tak, sprawdza czy dany obiekt nie jest ostatecznie zablokowany do edycji.
+     *
+     * @param LifecycleEventArgs $args
+     *
+     * @throws AccessDeniedException gdy wniosek jest zablokowany
+     */
     public function prePersist(LifecycleEventArgs $args)
     {
         $this->entityManager = $args->getObjectManager();
@@ -46,7 +55,6 @@ class PersistListener
             }
         }
 
-
         if ($wniosek !== null) {
             if ($wniosek->getIsBlocked()) {
                 throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
@@ -58,6 +66,11 @@ class PersistListener
 
 
     /**
+     * W obiekcie klasy HistoriaWersji zapisany jest wniosek w postaci dwóch kolumn
+     * określających klasę - w tym przypadku `WniosekNadanieOdebranieZasobow` oraz id.
+     *
+     * @param HistoriaWersji $historiaWersji
+     *
      * @return Wniosek|null
      */
     private function extractWniosekFromHistoriaWersji(HistoriaWersji $historiaWersji)
@@ -82,8 +95,8 @@ class PersistListener
     }
 
     /**
-     * Przyjmujemy tylko obiekt komentarza do klasy WniosekNadanieOdebranieZasobow.
-     * Zwracamy obiekt klasy WniosekNadanieOdebranieZasobow.
+     * W obiekcie klasy Komentarz zapisany jest wniosek w postaci dwóch kolumn
+     * określających klasę - w tym przypadku `WniosekNadanieOdebranieZasobow` oraz id.
      *
      * @param Komentarz $komentarz
      *
