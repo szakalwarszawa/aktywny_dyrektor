@@ -111,7 +111,6 @@ services:
         arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '%api_token_expire_minutes%']
     wniosek_edit_listener:
         class: ParpV1\MainBundle\EventListener\PersistListener
-        arguments: ['@router', '@request_stack']
         tags:
             - { name: doctrine.event_listener, event: prePersist }
     status_wniosku_service:
