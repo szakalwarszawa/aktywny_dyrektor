@@ -1519,12 +1519,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
      */
-    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
+    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $nazwaUzytkownika = null, $komentarz = null)
     {
         $statusyKoncowe = array(
             WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
             WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
         );
+
+        if (null !== $nazwaUzytkownika) {
+            $nazwa = 'dsa';
+        }
 
         if (in_array($status, $statusyKoncowe)) {
             $statusWnioskuService = $this->get('status_wniosku_service');
