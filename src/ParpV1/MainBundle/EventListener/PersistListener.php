@@ -56,7 +56,7 @@ class PersistListener
         }
 
         if ($wniosek !== null) {
-            if ($wniosek->getIsBlocked()) {
+            if ($wniosek->getWniosek()->getIsBlocked()) {
                 throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
             }
         }

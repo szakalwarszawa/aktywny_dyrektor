@@ -104,9 +104,12 @@ class NadawanieUprawnienZasobowController extends Controller
         //var_dump($samaccountnames); die('addRemoveAccessToUsersAction - mam tamten controller');
         $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($wniosekId);
 
-        if ($wniosek->getWniosek()->getIsBlocked()) {
-            throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+        if (null !== $wniosek) {
+            if ($wniosek->getWniosek()->getIsBlocked()) {
+                throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+            }
         }
+        
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
         if ($samt == '') {
