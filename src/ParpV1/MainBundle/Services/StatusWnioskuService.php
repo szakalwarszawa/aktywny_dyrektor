@@ -102,6 +102,7 @@ class StatusWnioskuService
             // echo '<br>setWniosekStatus '.$statusName.'<br>';
         // }
 
+   
         $entityManager = $this->entityManager;
         $status = $entityManager
             ->getRepository(WniosekStatus::class)

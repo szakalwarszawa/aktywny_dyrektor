@@ -17,6 +17,16 @@ use ParpV1\MainBundle\Entity\UserUprawnienia;
 use ParpV1\MainBundle\Entity\UserGrupa;
 use ParpV1\MainBundle\Services\RedmineConnectService;
 use Symfony\Component\HttpFoundation\Request;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use InvalidArgumentException;
+use DateTime;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Services\StatusWnioskuService;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use Psr\Cache\CacheItemPoolInterface;
+use ParpV1\MainBundle\Entity\Zasoby;
 
 /**
  * Class UprawnieniaService
@@ -24,20 +34,38 @@ use Symfony\Component\HttpFoundation\Request;
  */
 class UprawnieniaService
 {
+    const ZASOBY_CACHE_KEY = 'zasoby_z_grupami';
+
     /** @var EntityManager $doctrine */
     protected $doctrine;
     /** @var Container $container */
     protected $container;
 
     /**
+     * @var StatusWnioskuService
+     */
+    private $statusWnioskuService;
+
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $zasobyCache;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
      */
-    public function __construct(EntityManager $OrmEntity, Container $container)
-    {
+    public function __construct(
+        EntityManager $OrmEntity,
+        Container $container,
+        StatusWnioskuService $statusWnioskuService,
+        CacheItemPoolInterface $zasobyCache
+    ) {
         $this->setDoctrine($OrmEntity);
         $this->setContainer($container);
+        $this->statusWnioskuService = $statusWnioskuService;
+        $this->zasobyCache = $zasobyCache;
 
         if (PHP_SAPI == 'cli') {
             $this->container->set('request', new Request(), 'request');
@@ -588,5 +616,373 @@ class UprawnieniaService
     {
         $this->container = $container;
         return $this;
+    }
+
+
+    public function znajdzGrupeAD($uz, $z)
+    {
+        if (!$z instanceof Zasoby) {
+            $entityManager = $this->getDoctrine();
+            $z = $entityManager
+                ->getRepository(Zasoby::class)
+                ->findOneById($z);
+        }
+
+        $grupy = explode(';', $z->getGrupyAD());
+        $poziomy = explode(';', $z->getPoziomDostepu());
+        $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
+
+        if (!($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy))) {
+            //var_dump($grupy, $poziomy, $ktoryPoziom);
+        }
+
+        //$uz->getId()." ".$z->getId()." ".
+        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')') ; //$grupy[0];
+    }
+
+    public function znajdzPoziom($poziomy, $poziom)
+    {
+        $i = -1;
+        for ($i = 0; $i < count($poziomy); $i++) {
+            if (trim($poziomy[$i]) == trim($poziom) || strstr(trim($poziomy[$i]), trim($poziom)) !== false) {
+                return $i;
+            }
+        }
+        return $i;
+    }
+
+    /**
+     * Pobiera zasoby, wnioski danego użytkownika następnie
+     * na podstawie datyGranicznej odbiera zasoby przed datą
+     * i anuluje administracyjnie / odbiera administracyjnie (Nadaje taki status dla wniosku)
+     * lub odbiera pojedyńczy zasób we wniosku (w przypadku wniosku wiele-do-wielu).
+     *
+     * @param string $nazwaUzytkownika
+     * @param DateTime $dataGraniczna
+     *
+     * @throws InvalidArgumentException gdy nie podano nazwy użytkownika
+     *
+     * @return void
+     *
+     * @todo może to przenieść do innego serwisu?
+     */
+    public function odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, DateTime $dataGraniczna)
+    {
+        if (empty($nazwaUzytkownika)) {
+            throw new InvalidArgumentException('Nazwa użytkownika jest pusta.');
+        }
+
+        $entityManager = $this->getDoctrine();
+
+        $userZasoby = $entityManager
+            ->getRepository(UserZasoby::class)
+            ->findAktywneZasobyDlaUzytkownika($nazwaUzytkownika);
+
+        if (empty($userZasoby)) {
+            // Brak zasobów do odebrania
+            return;
+        }
+
+        $this->przeladujZasobyCache();
+        $zasobyDoUtworzeniaEntry = [];
+        foreach ($userZasoby as $userZasob) {
+            $wnioskiZasobyDoOdebrania = $this->pobierzWnioskiZasobyDoOdebrania($userZasob->getWniosek(), $dataGraniczna);
+             if (count($wnioskiZasobyDoOdebrania) && $wnioskiZasobyDoOdebrania['procesuj_zasob']) {
+                $wnioskiZasobyDoOdebrania['wniosek_nadanie_odebranie'] =  $userZasob->getWniosek();
+                $wnioskiZasobyDoOdebrania['user_zasob'] =  $userZasob;
+                $odebranyZasobId = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania);
+                if ($this->czyTworzycEntry($userZasob)
+                    && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']) {
+                    $zasobyDoUtworzeniaEntry[] = $userZasob;
+                }
+            }
+        }
+
+        if (!empty($zasobyDoUtworzeniaEntry)) {
+            $this->stworzEntry($zasobyDoUtworzeniaEntry, $nazwaUzytkownika);
+        }
+
+        $entityManager->flush();
+    }
+
+    /**
+     * Utworzenie obiektu entry.
+     *
+     * @param array $zasobyDoUtworzeniaEntry
+     * @param string $nazwaUzytkownika
+     *
+     * @return void
+     */
+    private function stworzEntry(array $zasobyDoUtowrzeniaEntry, $nazwaUzytkownika)
+    {
+        $grupyDoOdebrania = [];
+
+        foreach ($zasobyDoUtowrzeniaEntry as $zasob) {
+            $grupyDoOdebrania[] = $this->znajdzGrupeAD($zasob, $zasob->getZasobId());
+        }
+
+        $entry = new Entry();
+        $entry->setFromWhen(new Datetime());
+        $entry->setSamaccountname($nazwaUzytkownika);
+        $entry->setMemberOf('-'.implode(',-', $grupyDoOdebrania));
+        $entry->setCreatedBy('SYSTEM');
+        $entry->setOpis('Odebrano administracyjnie.');
+        $this
+            ->getDoctrine()
+            ->persist($entry);
+    }
+
+    /**
+     * Sprawdza czy trzeba stworzyć obiekt Entry służący do wypchnięcia zmian do AD.
+     *
+     * @param UserZasoby $userZasob
+     *
+     * @return bool
+     */
+    private function czyTworzycEntry(UserZasoby $userZasob)
+    {
+        $zasobId = $userZasob->getZasobId();
+
+        $zasobyCache = $this->zasobyCache;
+        $cacheKey = self::ZASOBY_CACHE_KEY;
+        $cacheItem = $zasobyCache->getItem($cacheKey);
+
+        if (!$cacheItem->isHit()) {
+            $zasobyZGrupami = $this->pobierzZasobyIdZGrupamiAd();
+            $cacheItem->set(serialize($zasobyZGrupami));
+            $zasobyCache->save($cacheItem);
+        }
+
+        $zasobyZGrupami = unserialize($cacheItem->get());
+
+        if (in_array($zasobId, $zasobyZGrupami)) {
+            return true;
+        }
+
+
+        return false;
+    }
+
+    /**
+     * Odświeża cache zasobow.
+     *
+     * @return void
+     */
+    private function przeladujZasobyCache()
+    {
+        $zasobyCache = $this->zasobyCache;
+        $cacheKey = self::ZASOBY_CACHE_KEY;
+        $cacheItem = $zasobyCache->getItem($cacheKey);
+        $zasobyZGrupami = $this->pobierzZasobyIdZGrupamiAd();
+        $cacheItem->set(serialize($zasobyZGrupami));
+        $zasobyCache->save($cacheItem);
+    }
+
+    /**
+     * Pobiera ID zasobów które mają grupy w AD.
+     *
+     * @return array
+     */
+    private function pobierzZasobyIdZGrupamiAd()
+    {
+        $entityManager = $this->getDoctrine();
+
+        $zasobyZGrupaAd = $entityManager
+            ->getRepository(Zasoby::class)
+            ->findZasobyIdZGrupaAd()
+        ;
+
+        $idGrup = [];
+        foreach ($zasobyZGrupaAd as $zasob) {
+            $idGrup[] = $zasob->getId();
+        }
+
+        return $idGrup;
+    }
+
+    /**
+     * Odbiera zasoby i anuluje wniosek jeżeli jest true opcja `wniosek_do_odebrania_administracyjnego`
+     * lub `wniosek_do_anulowania_administracyjnego` oraz jest podany `wniosek_nadanie_odebranie_id`.
+     * Do anulowania/odebrania administracyjnego wniosku opcja 'jeden_uzytkownik' musi być true.
+     *
+     * @param array $zasobDoOdebrania
+     *
+     * @return int
+     */
+    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania)
+    {
+        $resolver = new OptionsResolver();
+        $resolver
+            ->setRequired([
+                'user_zasob'
+            ])
+            ->setDefaults([
+                'wniosek_nadanie_odebranie' => null,
+                'jeden_uzytkownik' => false,
+                'status_przed_data' => false,
+                'procesuj_zasob' => false,
+                'wniosek_zakonczony' => false,
+                'wniosek_do_odebrania_administracyjnego' => false,
+                'wniosek_do_anulowania_administracyjnego' => false,
+                'brak_statusow_we_wniosku' => false,
+            ]);
+
+        $resolver->resolve($zasobDoOdebrania);
+
+        $status = $zasobDoOdebrania['wniosek_do_odebrania_administracyjnego']?
+            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE :
+            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE;
+        if ($zasobDoOdebrania['jeden_uzytkownik']) {
+            $this->statusWnioskuService->setWniosekStatus(
+                $zasobDoOdebrania['wniosek_nadanie_odebranie'],
+                $status,
+                false,
+                null,
+                $status
+            );
+
+            $zasobDoOdebrania['wniosek_nadanie_odebranie']
+                ->getWniosek()
+                ->zablokujKoncowoWniosek()
+            ;
+        }
+
+
+        $userZasob = $zasobDoOdebrania['user_zasob'];
+        $userZasob
+            ->setWniosekOdebranie(null)
+            ->setKtoOdebral('ADMINISTRACYJNIE')
+            ->setCzyOdebrane(true)
+           // ->setAktywneDo(new DateTime())
+            ->setDataOdebrania(new DateTime())
+            ->setPowodOdebrania($status)
+            ->setCzyAktywne(false)
+        ;
+
+        $entityManager = $this->getDoctrine();
+
+        $entityManager->persist($userZasob);
+    }
+
+    /**
+     * Pobiera wnioski i zasoby które mają być odebrane/anulowane
+     * utworzone przed podaną datą.
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+     * @param DateTime $dataGraniczna
+     *
+     * @return array
+     */
+    private function pobierzWnioskiZasobyDoOdebrania(
+        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow,
+        DateTime $dataGraniczna
+    ): array {
+
+        if ('10_PODZIELONY' === $wniosekNadanieOdebranieZasobow->getWniosek()->getStatus()->getNazwaSystemowa()) {
+            return array();
+        }
+
+        $wniosekStatusy = $wniosekNadanieOdebranieZasobow->getWniosek()->getStatusy();
+
+        $wynikSprawdzeniaHistorii = $this->okreslCzyWniosekDoProcesowania($wniosekStatusy, $dataGraniczna);
+        $jedenUzytkownikWeWniosku = $this->sprawdzCzyJedenUzytkownikWeWniosku($wniosekNadanieOdebranieZasobow);
+
+        if ($wynikSprawdzeniaHistorii['procesuj_zasob']) {
+            $wynikSprawdzeniaHistorii['jeden_uzytkownik'] = $jedenUzytkownikWeWniosku;
+
+            return $wynikSprawdzeniaHistorii;
+        }
+
+       return array();
+    }
+
+    /**
+     * Sprawdza czy we wniosku istnieje tylko jeden użytkownik
+     * 1 użytkownik -> wiele zasobów lub
+     * 1 użytkownik -> jeden zasób
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+     *
+     * @return bool
+     */
+    private function sprawdzCzyJedenUzytkownikWeWniosku(
+        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+        ): bool {
+        $pracownicyWeWniosku = explode(',', $wniosekNadanieOdebranieZasobow->getPracownicy());
+
+        return count($pracownicyWeWniosku) === 1? true: false;
+    }
+
+    /**
+     * Sprwadza statusy w danym wniosku.
+     * Jeżeli wniosek ma jeden z końcowych statusów (nadanych) określa go jako wniosek
+     * do odrzucenia administracyjnego. Jeżeli jest spełniony jeden z warunków + wystąpił przed podaną datą
+     * określamy rodzica tego zasobu (objekt WniosekNadanieOdebranieUprawnien) jako element
+     * do dalszego procesowania.
+     *
+     * @todo te końcowe statusy może jako stałe do klasy?
+     */
+    private function okreslCzyWniosekDoProcesowania(ArrayCollection $wniosekStatusy, DateTime $dataGraniczna): array
+    {
+        $statusPrzedData = false;
+        $wniosekZakonczony = false;
+        $wniosekDoOdebraniaAdministracyjnego = false;
+        $wniosekDoAnulowaniaAdministracyjnego = false;
+        $brakStatusowWeWniosku = false;
+        $procesujZasob = false;
+        $istniejeStatusDoPominiecia = false;
+
+        $nazwyStatusowKoncowychNadanych = [
+            '11_OPUBLIKOWANY',
+            '07_ROZPATRZONY_POZYTYWNIE'
+        ];
+
+        $nazwyStatusowDoPominiecia = [
+            '08_ROZPATRZONY_NEGATYWNIE',
+        ];
+
+        if (0 === count($wniosekStatusy)) {
+            $brakStatusowWeWniosku = true;
+        }
+
+        foreach ($wniosekStatusy as $status) {
+            $nazwaSystemowaStatusu = $status->getStatus()->getNazwaSystemowa();
+
+            if ($status->getCreatedAt() <= $dataGraniczna) {
+                $procesujZasob = true;
+                $statusPrzedData = true;
+            }
+
+            if (in_array($nazwaSystemowaStatusu, $nazwyStatusowDoPominiecia)) {
+                $istniejeStatusDoPominiecia = true;
+            }
+
+            if (true === $status->getStatus()->getFinished()) {
+                $wniosekZakonczony = true;
+            }
+
+            if (in_array($nazwaSystemowaStatusu, $nazwyStatusowKoncowychNadanych)) {
+                $wniosekDoOdebraniaAdministracyjnego = true;
+            }
+
+
+        }
+
+        if ($istniejeStatusDoPominiecia) {
+            $procesujZasob = false;
+        }
+
+        if ($procesujZasob && !$wniosekDoOdebraniaAdministracyjnego) {
+            $wniosekDoAnulowaniaAdministracyjnego = true;
+        }
+
+        return [
+            'procesuj_zasob'                            => $procesujZasob,
+            'status_przed_data'                         => $statusPrzedData,
+            'wniosek_zakonczony'                        => $wniosekZakonczony,
+            'wniosek_do_odebrania_administracyjnego'    => $wniosekDoOdebraniaAdministracyjnego,
+            'wniosek_do_anulowania_administracyjnego'   => $wniosekDoAnulowaniaAdministracyjnego,
+            'brak_statusow_we_wniosku'                  => $brakStatusowWeWniosku
+        ];
     }
 }

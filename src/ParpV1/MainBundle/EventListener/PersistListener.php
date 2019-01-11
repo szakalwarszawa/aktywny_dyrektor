@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\WniosekNumer;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Proxy\Proxy;
 
 /**
  * Klasa PersistListener
@@ -56,8 +57,16 @@ class PersistListener
         }
 
         if ($wniosek !== null) {
-            if ($wniosek->getWniosek()->getIsBlocked()) {
-                throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+            if ($wniosek instanceof Proxy) {
+                $wniosek = $this
+                    ->entityManager
+                    ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                    ->findOneById($wniosek->getId());
+            }
+            if ($wniosek !== null && !$wniosek instanceof Wniosek) {
+                if ($wniosek->getWniosek()->getIsBlocked()) {
+                    throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+                }
             }
         }
 
