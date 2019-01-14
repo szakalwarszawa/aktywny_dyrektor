@@ -22,6 +22,7 @@ use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\HistoriaWersji;
 use DateTime;
 use ParpV1\MainBundle\Entity\DaneRekord;
+use Exception;
 
 /**
  * RaportyIT controller.
@@ -669,6 +670,7 @@ class RaportyITController extends Controller
      * @Security("has_role('PARP_ADMIN')")
      *
      * @param string $departament
+     * @param bool $returnArray
      *
      * @return JsonResponse
      */
@@ -748,18 +750,23 @@ class RaportyITController extends Controller
      */
     public function anulujOdbierzAdministracyjnieDepartamentAction($skrotDepartamentu)
     {
+        ini_set('max_execution_time', 0);
         $zbiorZmian = $this->przegladZmianNaKoncieAction($skrotDepartamentu, true);
-        echo '<pre>';
 
         $uprawnieniaService = $this->get('uprawnienia_service');
-
+        $errors = [];
 
         foreach ($zbiorZmian as $klucz => $zmiana) {
-            $uprawnieniaService
+            try {
+                $uprawnieniaService
                 ->odbierzZasobyUzytkownikaOdDaty($klucz, new DateTime($zmiana['ostatnia_zmiana']), $zmiana['powod']);
+            } catch (Exception $exception) {
+                $errors[] = $klucz;
+            }
+
         }
 
-        return new JsonResponse([1]);
+        return new JsonResponse($errors);
     }
 
 

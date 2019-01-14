@@ -711,7 +711,7 @@ class UprawnieniaService
             $this->stworzEntry($zasobyDoUtworzeniaEntry, $nazwaUzytkownika);
         }
 
-      //  $entityManager->flush();
+        $entityManager->flush();
 
         return $przeprocesowaneWnioski;
     }
