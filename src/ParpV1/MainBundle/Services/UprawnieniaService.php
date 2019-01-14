@@ -901,6 +901,9 @@ class UprawnieniaService
                 $dane['wniosek_do_odebrania_administracyjnego'] = WniosekStatus::ODEBRANO_ADMINISTRACYJNIE;
 
                 $this->odbierzAnulujZasobyAdministracyjnie($dane, 'Odebrano administracyjnie');
+                if ($this->czyTworzycEntry($zasob)) {
+                    $this->stworzEntry([$zasob], $zasob->getSamaccountname());
+                }
             }
         }
 
