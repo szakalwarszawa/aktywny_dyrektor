@@ -659,14 +659,15 @@ class UprawnieniaService
      *
      * @param string $nazwaUzytkownika
      * @param DateTime $dataGraniczna
+     * @param string $komentarzOdebrania
      *
      * @throws InvalidArgumentException gdy nie podano nazwy użytkownika
      *
-     * @return void
+     * @return array
      *
      * @todo może to przenieść do innego serwisu?
      */
-    public function odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, DateTime $dataGraniczna)
+    public function odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, DateTime $dataGraniczna, $komentarzOdebrania = null)
     {
         if (empty($nazwaUzytkownika)) {
             throw new InvalidArgumentException('Nazwa użytkownika jest pusta.');
@@ -684,13 +685,19 @@ class UprawnieniaService
         }
 
         $this->przeladujZasobyCache();
-        $zasobyDoUtworzeniaEntry = [];
+        $przeprocesowaneWnioski = [];
         foreach ($userZasoby as $userZasob) {
             $wnioskiZasobyDoOdebrania = $this->pobierzWnioskiZasobyDoOdebrania($userZasob->getWniosek(), $dataGraniczna);
-             if (count($wnioskiZasobyDoOdebrania) && $wnioskiZasobyDoOdebrania['procesuj_zasob']) {
+            if (count($wnioskiZasobyDoOdebrania) && $wnioskiZasobyDoOdebrania['procesuj_zasob']) {
+                $wniosekNadanieOdebranieId = $userZasob->getWniosek()->getId();
+                $przeprocesowaneWnioski[$wniosekNadanieOdebranieId] = [];
+                $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['zasoby'][] = $userZasob->getId();
+                $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['komentarz'] = $komentarzOdebrania;
+
                 $wnioskiZasobyDoOdebrania['wniosek_nadanie_odebranie'] =  $userZasob->getWniosek();
                 $wnioskiZasobyDoOdebrania['user_zasob'] =  $userZasob;
-                $odebranyZasobId = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania);
+
+                $odebranyZasobId = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania, $komentarzOdebrania);
                 if ($this->czyTworzycEntry($userZasob)
                     && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']) {
                     $zasobyDoUtworzeniaEntry[] = $userZasob;
@@ -702,7 +709,9 @@ class UprawnieniaService
             $this->stworzEntry($zasobyDoUtworzeniaEntry, $nazwaUzytkownika);
         }
 
-        $entityManager->flush();
+      //  $entityManager->flush();
+
+        return $przeprocesowaneWnioski;
     }
 
     /**
@@ -739,7 +748,7 @@ class UprawnieniaService
      *
      * @return bool
      */
-    private function czyTworzycEntry(UserZasoby $userZasob)
+    private function czyTworzycEntry(UserZasoby $userZasob): bool
     {
         $zasobId = $userZasob->getZasobId();
 
@@ -783,7 +792,7 @@ class UprawnieniaService
      *
      * @return array
      */
-    private function pobierzZasobyIdZGrupamiAd()
+    private function pobierzZasobyIdZGrupamiAd(): array
     {
         $entityManager = $this->getDoctrine();
 
@@ -806,10 +815,11 @@ class UprawnieniaService
      * Do anulowania/odebrania administracyjnego wniosku opcja 'jeden_uzytkownik' musi być true.
      *
      * @param array $zasobDoOdebrania
+     * @param string $komentarzOdebrania
      *
      * @return int
      */
-    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania)
+    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null)
     {
         $resolver = new OptionsResolver();
         $resolver
@@ -847,7 +857,7 @@ class UprawnieniaService
             ;
         }
 
-
+        $status = null !== $komentarzOdebrania? $komentarzOdebrania : $status;
         $userZasob = $zasobDoOdebrania['user_zasob'];
         $userZasob
             ->setWniosekOdebranie(null)
@@ -893,7 +903,7 @@ class UprawnieniaService
             return $wynikSprawdzeniaHistorii;
         }
 
-       return array();
+        return array();
     }
 
     /**
@@ -907,7 +917,7 @@ class UprawnieniaService
      */
     private function sprawdzCzyJedenUzytkownikWeWniosku(
         WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
-        ): bool {
+    ): bool {
         $pracownicyWeWniosku = explode(',', $wniosekNadanieOdebranieZasobow->getPracownicy());
 
         return count($pracownicyWeWniosku) === 1? true: false;
@@ -964,8 +974,6 @@ class UprawnieniaService
             if (in_array($nazwaSystemowaStatusu, $nazwyStatusowKoncowychNadanych)) {
                 $wniosekDoOdebraniaAdministracyjnego = true;
             }
-
-
         }
 
         if ($istniejeStatusDoPominiecia) {

@@ -46,11 +46,11 @@ class PersistListener
             $wniosek = $workingObject->getWniosek();
         }
 
-        if ($workingObject instanceOf Komentarz) {
+        if ($workingObject instanceof Komentarz) {
             $wniosek = $this->extractWniosekFromKomentarz($workingObject);
         }
 
-        if ($workingObject instanceOf HistoriaWersji) {
+        if ($workingObject instanceof HistoriaWersji) {
             if (false !== strpos($workingObject->getRoute(), 'wnioseknadanieodebraniezasobow')) {
                 $wniosek = $this->extractWniosekFromHistoriaWersji($workingObject);
             }

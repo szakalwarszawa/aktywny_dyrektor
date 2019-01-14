@@ -227,7 +227,8 @@ class OdebranieUprawnienController extends Controller
                 //$uz->getPoziomDostepu() != "nie dotyczy" &&
                 //$uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ) {
-                $grupa = $this->znajdzGrupeAD($uz, $z);
+                $uprawnieniaService = $this->get('uprawnienia_service');
+                $grupa = $uprawnieniaService->znajdzGrupeAD($uz, $z);
                 if ($grupa != '') {
                     $grupawAD = $ldap->getGrupa($grupa);
                     if ($grupawAD) {
@@ -275,30 +276,6 @@ class OdebranieUprawnienController extends Controller
         }
         //var_dump($ret); die();
         return $ret;
-    }
-
-    protected function znajdzGrupeAD($uz, $z)
-    {
-        $grupy = explode(';', $z->getGrupyAD());
-        $poziomy = explode(';', $z->getPoziomDostepu());
-        $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
-
-        if (!($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy))) {
-            //var_dump($grupy, $poziomy, $ktoryPoziom);
-        }
-
-        //$uz->getId()." ".$z->getId()." ".
-        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')') ; //$grupy[0];
-    }
-    protected function znajdzPoziom($poziomy, $poziom)
-    {
-        $i = -1;
-        for ($i = 0; $i < count($poziomy); $i++) {
-            if (trim($poziomy[$i]) == trim($poziom) || strstr(trim($poziomy[$i]), trim($poziom)) !== false) {
-                return $i;
-            }
-        }
-        return $i;
     }
 
     /**

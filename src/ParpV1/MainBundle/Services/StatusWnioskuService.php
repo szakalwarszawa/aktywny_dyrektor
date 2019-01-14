@@ -102,14 +102,15 @@ class StatusWnioskuService
             // echo '<br>setWniosekStatus '.$statusName.'<br>';
         // }
 
-   
+
         $entityManager = $this->entityManager;
         $status = $entityManager
             ->getRepository(WniosekStatus::class)
             ->findOneBy(
                 array(
                     'nazwaSystemowa' => $statusName,
-        ));
+                )
+            );
         $wniosek->getWniosek()->setStatus($status);
         $wniosek->getWniosek()->setLockedBy(null);
         $wniosek->getWniosek()->setLockedAt(null);
@@ -328,7 +329,8 @@ class StatusWnioskuService
                                     "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                                 $this->session->getFlashBag()->add('warning', $message);
 
-                                $this->sendMailToAdminRejestru($message);
+                                //NIE MA TAKIEJ METODY TUTAJ
+                                //$this->sendMailToAdminRejestru($message);
 
                                 //die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
                             }
@@ -362,7 +364,8 @@ class StatusWnioskuService
                                 "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                             $this->session->getFlashBag()->add('warning', $message);
 
-                            $this->sendMailToAdminRejestru($message);
+                            //NIE MA TAKIEJ METODY TUTAJ
+                           // $this->sendMailToAdminRejestru($message);
                             //throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
                         }
                     }
@@ -392,7 +395,8 @@ class StatusWnioskuService
                                 "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                             $this->session->getFlashBag()->add('warning', $message);
 
-                            $this->sendMailToAdminRejestru($message);
+                            //NIE MA TAKIEJ METODY TUTAJ
+                            //$this->sendMailToAdminRejestru($message);
                         }
                     }
                 }
