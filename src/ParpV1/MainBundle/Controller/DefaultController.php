@@ -2583,9 +2583,9 @@ class DefaultController extends Controller
         $ldap = $this->container->get('ldap_service');
 
         if ($showall) {
-            $usersFromAD = $ldap->getAllFromAD('wszyscy');
+            $usersFromAD = $ldap->getAllFromAD('wszyscy', false, null, true);
         } else {
-            $usersFromAD = $ldap->getAllFromAD();
+            $usersFromAD = $ldap->getAllFromAD(false, false, null, true);
         }
 
         if (empty($usersFromAD)) {
