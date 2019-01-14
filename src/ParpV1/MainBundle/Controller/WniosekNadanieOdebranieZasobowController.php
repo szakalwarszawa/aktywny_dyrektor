@@ -1522,12 +1522,33 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @Security("has_role('PARP_ADMIN')")
      */
-    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
+    public function zablokujWniosekKoncowo(Request $request, WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
     {
-        $statusWnioskuService = $this->get('status_wniosku_service');
-        $statusWnioskuService->zablokujKoncowoWniosek($wniosek, $status, $komentarz);
+        $responseRedirect = $this->redirect(
+            $this->generateUrl('wnioseknadanieodebraniezasobow_show', array(
+                'id' => $wniosek->getId()
+            ))
+        );
+        $wniosekZakonczony = $wniosek->getWniosek()->getStatus()->getFinished();
 
-        return new Response();
+        if (WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status && $wniosekZakonczony) {
+            $this->addFlash('warning', 'Wniosek jest zakończony, nie można anulować.');
+
+            return $responseRedirect;
+        }
+
+        if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE === $status && !$wniosekZakonczony) {
+            $this->addFlash('warning', 'Wniosek nie jest zakończony, nie można odebrać.');
+
+            return $responseRedirect;
+        }
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        $uprawnieniaService->zablokujKoncowoWniosek($wniosek, $status, $komentarz, true);
+
+        $this->addFlash('danger', 'Zablokowano wniosek.');
+
+        return $responseRedirect;
     }
 
     /**

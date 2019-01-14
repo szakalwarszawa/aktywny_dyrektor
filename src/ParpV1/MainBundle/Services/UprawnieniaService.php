@@ -876,6 +876,49 @@ class UprawnieniaService
     }
 
     /**
+     * Metoda nadająca status finalny dla wniosku.
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosek
+     * @param string $status
+     * @param string $komentarz
+     * @param bool $odbierzZasoby
+     *
+     * @return bool
+     */
+    public function zablokujKoncowoWniosek(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null, $odbierzZasoby = false)
+    {
+        $statusyKoncowe = array(
+            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
+            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
+        );
+
+        if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE === $status && $odbierzZasoby) {
+            $userZasoby = $wniosek->getUserZasoby();
+            foreach ($userZasoby as $zasob) {
+                $dane = [];
+                $dane['user_zasob'] = $zasob;
+                $dane['jeden_uzytkownik'] = false;
+                $dane['wniosek_do_odebrania_administracyjnego'] = WniosekStatus::ODEBRANO_ADMINISTRACYJNIE;
+
+                $this->odbierzAnulujZasobyAdministracyjnie($dane, 'Odebrano administracyjnie');
+            }
+        }
+
+        if (in_array($status, $statusyKoncowe) && false === $wniosek->getWniosek()->getIsBlocked()) {
+            $statusWnioskuService = $this->statusWnioskuService;
+            $statusWnioskuService->setWniosekStatus($wniosek, $status, false, null, $komentarz);
+            $wniosek->getWniosek()->zablokujKoncowoWniosek();
+            $this
+                ->doctrine
+                ->flush();
+
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
      * Pobiera wnioski i zasoby które mają być odebrane/anulowane
      * utworzone przed podaną datą.
      *

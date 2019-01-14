@@ -20,6 +20,7 @@ use \ParpV1\MainBundle\Entity\Departament;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use ParpV1\MainBundle\Services\UprawnieniaService;
 
 /**
  * Klasa StatusWnioskuService.
@@ -524,34 +525,5 @@ class StatusWnioskuService
         $violations = $validator->validate($text, new Email(array('strict' => true)));
 
         return (0 !== count($violations)) ? false : true;
-    }
-
-    /**
-     * Metoda nadająca status finalny dla wniosku.
-     *
-     * @param WniosekNadanieOdebranieZasobow $wniosek
-     * @param string $status
-     * @param string $komentarz
-     *
-     * @return bool
-     */
-    public function zablokujKoncowoWniosek(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
-    {
-        $statusyKoncowe = array(
-            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
-            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
-        );
-
-        if (in_array($status, $statusyKoncowe) && false === $wniosek->getWniosek()->getIsBlocked()) {
-            $this->setWniosekStatus($wniosek, $status, false, null, $komentarz);
-            $wniosek->getWniosek()->zablokujKoncowoWniosek();
-            $this
-                ->entityManager
-                ->flush();
-
-            return true;
-        }
-
-        return false;
     }
 }
