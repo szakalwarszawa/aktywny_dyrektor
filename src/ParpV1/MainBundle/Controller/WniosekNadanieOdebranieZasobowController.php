@@ -34,6 +34,7 @@ use Symfony\Component\HttpFoundation\Response;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
@@ -1518,24 +1519,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
     /**
      * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
+     *
+     * @Security("has_role('PARP_ADMIN')")
      */
-    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $nazwaUzytkownika = null, $komentarz = null)
+    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
     {
-        $statusyKoncowe = array(
-            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
-            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
-        );
-
-        if (null !== $nazwaUzytkownika) {
-            $nazwa = 'dsa';
-        }
-
-        if (in_array($status, $statusyKoncowe)) {
-            $statusWnioskuService = $this->get('status_wniosku_service');
-            $statusWnioskuService->setWniosekStatus($wniosek, $status, false, null, $komentarz);
-            $wniosek->getWniosek()->zablokujKoncowoWniosek();
-            $this->getDoctrine()->getManager()->flush();
-        }
+        $statusWnioskuService = $this->get('status_wniosku_service');
+        $statusWnioskuService->zablokujKoncowoWniosek($wniosek, $status, $komentarz);
 
         return new Response();
     }

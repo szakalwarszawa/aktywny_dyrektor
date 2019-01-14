@@ -663,12 +663,14 @@ class UprawnieniaService
      *
      * @throws InvalidArgumentException gdy nie podano nazwy użytkownika
      *
-     * @return array
+     * @return bool|array
      *
-     * @todo może to przenieść do innego serwisu?
      */
-    public function odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, DateTime $dataGraniczna, $komentarzOdebrania = null)
-    {
+    public function odbierzZasobyUzytkownikaOdDaty(
+        $nazwaUzytkownika,
+        DateTime $dataGraniczna,
+        $komentarzOdebrania = null
+    ) {
         if (empty($nazwaUzytkownika)) {
             throw new InvalidArgumentException('Nazwa użytkownika jest pusta.');
         }
@@ -681,7 +683,7 @@ class UprawnieniaService
 
         if (empty($userZasoby)) {
             // Brak zasobów do odebrania
-            return;
+            return false;
         }
 
         $this->przeladujZasobyCache();
@@ -768,7 +770,6 @@ class UprawnieniaService
             return true;
         }
 
-
         return false;
     }
 
@@ -817,7 +818,7 @@ class UprawnieniaService
      * @param array $zasobDoOdebrania
      * @param string $komentarzOdebrania
      *
-     * @return int
+     * @return void
      */
     public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null)
     {
