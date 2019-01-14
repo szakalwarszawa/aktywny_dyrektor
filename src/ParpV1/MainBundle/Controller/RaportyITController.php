@@ -20,6 +20,7 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\HistoriaWersji;
+use DateTime;
 use ParpV1\MainBundle\Entity\DaneRekord;
 
 /**
@@ -144,7 +145,7 @@ class RaportyITController extends Controller
      */
     public function generujExcelAction($miesiac = null, $rok = null)
     {
-        $data = new \DateTime();
+        $data = new DateTime();
         $rok = null === $rok ? $data->format('Y') : $rok;
         $miesiac = null === $miesiac ? $data->format('m') : $miesiac;
 
@@ -252,7 +253,7 @@ class RaportyITController extends Controller
         foreach ($users as $u) {
             if ($u['accountExpires']) {
                 $rok = explode('-', $u['accountexpires'])[0];
-                $dataExpire = \DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
+                $dataExpire = DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
 
                 if ($rok == date('Y')) {
                     if ($rok < 3000 && $dataExpire->format('Y-m') == $ndata['rok'].'-'.$miesiac) {
@@ -447,7 +448,7 @@ class RaportyITController extends Controller
      */
     public function raportBssProcesuj($login)
     {
-        $now = new \Datetime();
+        $now = new DateTime();
         $datyKonca = [
             'departament' => $now,
             'sekcja'      => $now,
@@ -463,8 +464,8 @@ class RaportyITController extends Controller
         $entity = $em->getRepository(DaneRekord::class)->findOneByLogin($login);
 
         if ($entity === null) {
-            $min = new \DateTime('2001-01-01 00:00:00');
-            $max = new \DateTime('2101-01-01 00:00:00');
+            $min = new DateTime('2001-01-01 00:00:00');
+            $max = new DateTime('2101-01-01 00:00:00');
             $dana = [
                 'id'        => '54673547623',
                 'content'   => 'uprawnienia',
@@ -541,7 +542,7 @@ class RaportyITController extends Controller
      */
     protected function przygotujDaneRaportuBss(&$dane)
     {
-        $now = new \Datetime();
+        $now = new DateTime();
         usort($dane, function ($a, $b) {
             return $a['start'] < $b['start'];
         });
@@ -641,7 +642,7 @@ class RaportyITController extends Controller
     {
         $grupy = explode(',', $grupy);
         $entry = new Entry();
-        $entry->setFromWhen(new \Datetime());
+        $entry->setFromWhen(new DateTime());
         $entry->setSamaccountname($login);
         $entry->setMemberOf('+'.implode(',+', $grupy));
         $entry->setCreatedBy($this->getUser()->getUsername());
@@ -671,7 +672,7 @@ class RaportyITController extends Controller
      *
      * @return JsonResponse
      */
-    public function przegladZmianNaKoncieAction($departament)
+    public function przegladZmianNaKoncieAction($departament, $returnArray = false)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $zmianyUprawnien = $entityManager
@@ -696,8 +697,71 @@ class RaportyITController extends Controller
             $zbiorZmian = $this->odfiltrujDlaDepartamentu($zbiorZmian, $uzytkownicyOuNazwy);
         }
 
+        if ($returnArray) {
+            return $zbiorZmian;
+        }
+
         return new JsonResponse($zbiorZmian);
     }
+
+    /**
+     * Odbiera lub anuluje administracyjnie wnioski przed określoną
+     * datą dla konkretnego użytkownika.
+     *
+     * @param string $nazwaUzytkownika
+     * @param DateTime $dataGraniczna
+     *
+     * @Route("/anulujodbierzadministracyjnie/{nazwaUzytkownika}/{dataGraniczna}", name="anuluj_odbierz_administracyjnie")
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @return JsonResponse
+     */
+    public function anulujOdbierzAdministracyjnieAction($nazwaUzytkownika, DateTime $dataGraniczna)
+    {
+        $uprawnieniaService = $this->get('uprawnienia_service');
+
+        if (null !== $nazwaUzytkownika && null !== $dataGraniczna) {
+            $uprawnieniaService
+                ->odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, $dataGraniczna);
+
+                return new JsonResponse([1]);
+        }
+
+        return new JsonResponse([0]);
+    }
+
+    /**
+     * Odbiera lub anuluje administracyjnie wnioski przed datą graniczną.
+     * Czyli wnioski złożone przed np. zmianą departamentu.
+     *
+     * @param string $skrotDepartamentu
+     *
+     * @Route(
+     *  "/anulujodbierzadministracyjniedepartament/{skrotDepartamentu}",
+     *  name="anuluj_odbierz_administracyjnie_departament"
+     * )
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @return JsonResponse
+     */
+    public function anulujOdbierzAdministracyjnieDepartamentAction($skrotDepartamentu)
+    {
+        $zbiorZmian = $this->przegladZmianNaKoncieAction($skrotDepartamentu, true);
+        echo '<pre>';
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+
+
+        foreach ($zbiorZmian as $klucz => $zmiana) {
+            $uprawnieniaService
+                ->odbierzZasobyUzytkownikaOdDaty($klucz, new DateTime($zmiana['ostatnia_zmiana']), $zmiana['powod']);
+        }
+
+        return new JsonResponse([1]);
+    }
+
 
     /**
      * Usuwa z tablicy osoby które nie są w tablicy użytkowników
@@ -835,7 +899,7 @@ class RaportyITController extends Controller
     {
         $zasobyService = $this->get('zasoby_service');
 
-        $date = new \DateTime($date);
+        $date = new DateTime($date);
         $wnioskiByDate = $zasobyService->findAktywneWnioski($user, $date);
 
         return new JsonResponse($wnioskiByDate);
