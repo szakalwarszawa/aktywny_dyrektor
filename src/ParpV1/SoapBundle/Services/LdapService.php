@@ -1462,4 +1462,15 @@ class LdapService
 
         return $this->getPrzelozonyPracownika($przelozony['samaccountname']);
     }
+
+    /**
+     * Zresetowanie ldap.cache
+     *
+     * @return void
+     */
+    public function clearLdapCache()
+    {
+        $cache = $this->cache;
+        $cache->prune();
+    }
 }
