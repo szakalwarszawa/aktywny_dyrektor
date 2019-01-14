@@ -763,7 +763,6 @@ class RaportyITController extends Controller
             } catch (Exception $exception) {
                 $errors[] = $klucz;
             }
-
         }
 
         return new JsonResponse($errors);
