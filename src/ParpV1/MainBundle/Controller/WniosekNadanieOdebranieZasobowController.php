@@ -1518,11 +1518,20 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
 
     /**
+     * Końcowa blokada wniosku - uniemożliwia edytowanie go lub wprowadzanie zmian na powiązanych
+     * obiektach np. komentarzach w tym wniosku.
+     *
      * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosek
+     * @param string $status
+     * @param string $komentarz
+     *
+     * @return Response
      */
-    public function zablokujWniosekKoncowo(Request $request, WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
+    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
     {
         $responseRedirect = $this->redirect(
             $this->generateUrl('wnioseknadanieodebraniezasobow_show', array(

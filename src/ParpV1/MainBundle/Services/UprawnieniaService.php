@@ -864,7 +864,6 @@ class UprawnieniaService
             ->setWniosekOdebranie(null)
             ->setKtoOdebral('ADMINISTRACYJNIE')
             ->setCzyOdebrane(true)
-           // ->setAktywneDo(new DateTime())
             ->setDataOdebrania(new DateTime())
             ->setPowodOdebrania($status)
             ->setCzyAktywne(false)
@@ -885,8 +884,12 @@ class UprawnieniaService
      *
      * @return bool
      */
-    public function zablokujKoncowoWniosek(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null, $odbierzZasoby = false)
-    {
+    public function zablokujKoncowoWniosek(
+        WniosekNadanieOdebranieZasobow $wniosek,
+        $status,
+        $komentarz = null,
+        $odbierzZasoby = false
+    ): bool {
         $statusyKoncowe = array(
             WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
             WniosekStatus::ODEBRANO_ADMINISTRACYJNIE,
@@ -977,7 +980,12 @@ class UprawnieniaService
      * określamy rodzica tego zasobu (objekt WniosekNadanieOdebranieUprawnien) jako element
      * do dalszego procesowania.
      *
-     * @todo te końcowe statusy może jako stałe do klasy?
+     * @param ArrayCollection $wniosekStatusy
+     * @param DateTime $dataGraniczna
+     *
+     * @return array
+     *
+     * @todo podobno ma być brany tylko ostatni status, a nie wszystkie?
      */
     private function okreslCzyWniosekDoProcesowania(ArrayCollection $wniosekStatusy, DateTime $dataGraniczna): array
     {
