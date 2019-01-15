@@ -140,11 +140,11 @@
                 {% endif %}
 
                 {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN' in app.user.roles %}
-                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status' : '101_ANULOWANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Anuluj administracyjnie <i class="glyphicon glyphicon-flag">&nbsp;</i></a>
+                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status': '101_ANULOWANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Anuluj administracyjnie <i class="glyphicon glyphicon-flag">&nbsp;</i></a>
                 {% endif %}
 
                 {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN' in app.user.roles %}
-                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status' : '102_ODEBRANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Odbierz administracyjnie <i class="glyphicon glyphicon-fire">&nbsp;</i></a>
+                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status': '102_ODEBRANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Odbierz administracyjnie <i class="glyphicon glyphicon-fire">&nbsp;</i></a>
                 {% endif %}
 
             </div>
