@@ -9,13 +9,14 @@
         {{ flashMessage }}
     </div>
 {% endfor %}
-
-<center>
-    <div class="btn-group">
-        <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-        <a class="btn btn-primary btn-xs" href="{{ path('komentarz_new', {'obiekt': obiekt, 'obiektId': obiektId}) }}">Dodaj Komentarz</a>
-    </div>
-</center>
+{% if not wniosek_zablokowany %}
+    <center>
+        <div class="btn-group">
+            <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+            <a class="btn btn-primary btn-xs" href="{{ path('komentarz_new', {'obiekt': obiekt, 'obiektId': obiektId}) }}">Dodaj Komentarz</a>
+        </div>
+    </center>
+{% endif %}
 
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
 

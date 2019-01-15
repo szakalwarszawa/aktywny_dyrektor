@@ -26,7 +26,7 @@ services:
             - [ setAnnotationReader, [ "@annotation_reader" ] ]
     uprawnienia_service:
         class : ParpV1\MainBundle\Services\UprawnieniaService
-        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@status_wniosku_service', '@zasoby.cache']
         tags: ~
     zasoby_service:
         class : ParpV1\MainBundle\Services\ZasobyService
@@ -109,3 +109,10 @@ services:
     lsi_import_service:
         class: ParpV1\MainBundle\Services\Api\LsiImportService
         arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '%api_token_expire_minutes%']
+    wniosek_edit_listener:
+        class: ParpV1\MainBundle\EventListener\PersistListener
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+    status_wniosku_service:
+        class: ParpV1\MainBundle\Services\StatusWnioskuService
+        arguments: ['@parp.mailer', '@request_stack', '@session', '@ldap_service', '@doctrine.orm.entity_manager', '@security.token_storage']

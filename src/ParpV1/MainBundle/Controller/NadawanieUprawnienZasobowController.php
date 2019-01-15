@@ -39,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -102,6 +103,13 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         //var_dump($samaccountnames); die('addRemoveAccessToUsersAction - mam tamten controller');
         $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($wniosekId);
+
+        if (null !== $wniosek) {
+            if ($wniosek->getWniosek()->getIsBlocked()) {
+                throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+            }
+        }
+        
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
         if ($samt == '') {

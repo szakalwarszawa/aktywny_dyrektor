@@ -586,7 +586,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         } else {
-            var_dump($editForm->getErrorsAsString());
+          //  var_dump($editForm->getErrorsAsString());
             die('Blad formularza ');
         }
 

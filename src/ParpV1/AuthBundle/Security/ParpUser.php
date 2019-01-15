@@ -104,4 +104,9 @@ class ParpUser implements UserInterface, EquatableInterface, \Serializable
             $this->roles,
         ) = unserialize($serialized, array('allowed_classes' => false));
     }
+
+    public function __toString()
+    {
+        return $this->username;
+    }
 }

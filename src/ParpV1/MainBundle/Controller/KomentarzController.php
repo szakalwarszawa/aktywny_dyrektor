@@ -16,6 +16,7 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Form\KomentarzType;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 
 /**
  * Komentarz controller.
@@ -33,7 +34,7 @@ class KomentarzController extends Controller
      */
     public function indexAction($obiekt, $obiektId)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
         //$entities = $em->getRepository(Komentarz::class)->findAll();
 
         $source = new Entity(Komentarz::class);
@@ -46,36 +47,46 @@ class KomentarzController extends Controller
         $grid = $this->get('grid');
         $grid->setSource($source);
 
-        // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
-        $grid->addColumn($actionsColumn);
+        $wniosekZablokowany = false;
+        if ('WniosekNadanieOdebranieZasobow' === $obiekt) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($obiektId);
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $obiektId);
+        }
 
-        // Zdejmujemy filtr
-        $grid->getColumn('akcje')
-                ->setFilterable(false)
-                ->setSafe(true);
+        if (!$wniosekZablokowany) {
+            $actionsColumn = new ActionsColumn('akcje', 'Działania');
+            $grid->addColumn($actionsColumn);
 
-        // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'komentarz_edit');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+            // Zdejmujemy filtr
+            $grid->getColumn('akcje')
+                    ->setFilterable(false)
+                    ->setSafe(true);
 
-        // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'komentarz_delete');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+            // Edycja konta
+            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'komentarz_edit');
+            $rowAction2->setColumn('akcje');
+            $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+
+            // Edycja konta
+            $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'komentarz_delete');
+            $rowAction3->setColumn('akcje');
+            $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
 
 
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
+            $grid->addRowAction($rowAction2);
+            $grid->addRowAction($rowAction3);
 
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
+            $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+        }
 
         $grid->setRouteUrl($this->generateUrl('komentarz', array('obiekt' => $obiekt, 'obiektId' => $obiektId)));
         $grid->isReadyForRedirect();
-        return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId));
+        return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId, 'wniosek_zablokowany' => $wniosekZablokowany));
     }
     /**
      * Creates a new Komentarz entity.
@@ -180,9 +191,9 @@ class KomentarzController extends Controller
      */
     public function editAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository(Komentarz::class)->find($id);
+        $entity = $entityManager->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -226,9 +237,9 @@ class KomentarzController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository(Komentarz::class)->find($id);
+        $entity = $entityManager->getRepository(Komentarz::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -238,12 +249,21 @@ class KomentarzController extends Controller
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
 
+        if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+            $wniosekNadanieOdebranieZasobow = $entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($entity->getObiektId());
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
+        }
+
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            $em->flush();
+            $entityManager->flush();
             $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
@@ -266,8 +286,8 @@ class KomentarzController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository(Komentarz::class)->find($id);
+            $entityManager = $this->getDoctrine()->getManager();
+            $entity = $entityManager->getRepository(Komentarz::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find Komentarz entity.');
@@ -276,12 +296,21 @@ class KomentarzController extends Controller
             $obiekt = (string) $entity->getObiekt();
             $obiektId = $entity->getObiektId();
 
+            if ('WniosekNadanieOdebranieZasobow' === $entity->getObiekt()) {
+                $wniosekNadanieOdebranieZasobow = $entityManager
+                    ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                    ->findOneById($entity->getObiektId());
+                $accessCheckerService = $this->get('check_access');
+                $wniosekZablokowany = $accessCheckerService
+                    ->checkWniosekIsBlocked(WniosekNadanieOdebranieZasobow::class, $entity->getObiektId(), true);
+            }
+
             if ($entity->getSamaccountname() != $this->getUser()->getUsername()) {
                 $this->addFlash('warning', 'Nie możesz wprowadzać zmian w cudzych komentarzach!!!');
                 return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
             }
-            $em->remove($entity);
-            $em->flush();
+            $entityManager->remove($entity);
+            $entityManager->flush();
         }
 
         return $this->redirectToRoute($this->pokazRouteDoPrzekierowania($obiekt), array(

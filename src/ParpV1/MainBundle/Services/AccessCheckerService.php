@@ -15,16 +15,17 @@ use ParpV1\MainBundle\Entity\UserGrupa;
 use ParpV1\MainBundle\Services\RedmineConnectService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 
 class AccessCheckerService
 {
 
-    protected $doctrine;
+    protected $entityManager;
     protected $container;
 
-    public function __construct(EntityManager $OrmEntity, Container $container)
+    public function __construct(EntityManager $OrmEntity, Container $container = null)
     {
-        $this->doctrine = $OrmEntity;
+        $this->entityManager = $OrmEntity;
         $this->container = $container;
         if (PHP_SAPI == 'cli') {
             $this->container->set('request', new Request(), 'request');
@@ -45,5 +46,39 @@ class AccessCheckerService
         if (!$ret) {
             throw new AccessDeniedException("Brak uprawnień.");
         }
+    }
+
+    /**
+     * Sprawdza czy można przeprowadzić operację
+     * na danym wniosku lub powiązanym elemencie.
+     *
+     * @param mixed $object
+     *
+     * @return bool
+     */
+    public function checkWniosekIsBlocked($object, $id = null, $throwException = false)
+    {
+        $isBlocked = false;
+        if (WniosekNadanieOdebranieZasobow::class === $object) {
+            $wniosek = $this
+                ->entityManager
+                ->getRepository(WniosekNadanieOdebranieZasobow::class)
+                ->findOneById($id)
+            ;
+        }
+
+        if ($object instanceof WniosekNadanieOdebranieZasobow) {
+            $wniosek = $object;
+        }
+
+        if (null !== $wniosek) {
+            $isBlocked = $wniosek->getWniosek()->getIsBlocked();
+        }
+
+        if ($isBlocked && $throwException) {
+            throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+        }
+
+        return $isBlocked;
     }
 }

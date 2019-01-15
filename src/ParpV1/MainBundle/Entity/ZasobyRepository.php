@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use Doctrine\ORM\Query;
 
 /**
  * EntryRepository
@@ -39,6 +40,24 @@ class ZasobyRepository extends EntityRepository
             ->getQuery();
         $results = $query->getResult();
         return count($results) == 1 ? $results[0] : null;
+    }
+
+    /**
+     * Znajduje ID zasobów które mają grupy w AD.
+     * Czyli znajduje zasoby określone w AD.
+     *
+     * @return array
+     */
+    public function findZasobyIdZGrupaAd()
+    {
+        $queryBuilder = $this->createQueryBuilder('z');
+        $queryBuilder
+            ->select('z')
+            ->where('z.grupyAD is not null');
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
     }
 
     public function findListaZasobow($aktywne)

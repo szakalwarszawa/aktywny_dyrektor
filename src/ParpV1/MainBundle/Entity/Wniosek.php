@@ -25,7 +25,7 @@ class Wniosek
      * @GRID\Column(field="id", title="Numer")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -41,7 +41,7 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdBy;
-    
+
     /**
      * @var \DateTime
      *
@@ -49,7 +49,7 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdAt;
-    
+
     /**
      * @var string
      *
@@ -57,7 +57,7 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $lockedBy;
-    
+
     /**
      * @var \DateTime
      *
@@ -65,8 +65,8 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $lockedAt;
-    
-    
+
+
     /**
      * @var string
      *
@@ -74,7 +74,7 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $numer;
-    
+
     /**
      * @var string
      *
@@ -82,8 +82,8 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $jednostkaOrganizacyjna;
-    
-    
+
+
     /**
      * @var string
      *
@@ -91,8 +91,8 @@ class Wniosek
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $editors;
-    
-    
+
+
     /**
      * @var string
      *
@@ -100,8 +100,8 @@ class Wniosek
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $viewers;
-    
-    
+
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="WniosekStatus", inversedBy="wnioski")
@@ -111,8 +111,8 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $status;
-    
-    
+
+
     /**
      * @var string
      *
@@ -120,8 +120,8 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $statusname;
-        
-    
+
+
     /**
      * @ORM\OneToMany(targetEntity="Wniosek", mappedBy="parent")
      */
@@ -132,7 +132,7 @@ class Wniosek
      * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
      */
     private $parent;
-    
+
 
     /**
      * @var string
@@ -148,8 +148,8 @@ class Wniosek
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $editornames;
-    
-    
+
+
     /**
      * @var string
      *
@@ -158,17 +158,17 @@ class Wniosek
      * @GRID\Column(field="statusy.nazwa:group_concat", title="Statusy", filter="select", selectMulti="true")
      */
     private $statusy;
-    
-    
+
+
     /**
      *
      * @ORM\OneToOne(targetEntity="WniosekNadanieOdebranieZasobow", inversedBy="wniosek")
      * @ORM\JoinColumn(name="WniosekNadanieOdebranieZasobow_id", referencedColumnName="id")
      */
     private $wniosekNadanieOdebranieZasobow;
-    
-    
-    
+
+
+
     /**
      *
      * @ORM\OneToOne(targetEntity="WniosekUtworzenieZasobu", inversedBy="wniosek")
@@ -177,7 +177,7 @@ class Wniosek
     private $wniosekUtworzenieZasobu;
 
 
-    
+
     /**
      *
      * @ORM\OneToOne(targetEntity="WniosekNumer", inversedBy="wniosek")
@@ -185,8 +185,6 @@ class Wniosek
      */
     private $wniosekNumer;
 
-    
-    
     /**
      * @var string
      *
@@ -194,6 +192,11 @@ class Wniosek
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $ADentries;
+
+    /**
+     * @ORM\Column(type="boolean", name="is_blocked")
+     */
+    protected $isBlocked = false;
 
     /**
      * Get id
@@ -348,7 +351,7 @@ class Wniosek
     {
         return $this->numer;
     }
-    
+
     public function czyWtrakcieTworzenia()
     {
         return $this->numer  == "wniosek w trakcie tworzenia";
@@ -588,8 +591,8 @@ class Wniosek
     {
         return $this->parent;
     }
-    
-    
+
+
     public function getViewersNames()
     {
         $names = [];
@@ -598,7 +601,7 @@ class Wniosek
         }
         return implode(", ", $names);
     }
-    
+
     public function getEditorsNames()
     {
         if (substr($this->getStatus()->getNazwaSystemowa(), 0, 1) == "1") {
@@ -652,7 +655,7 @@ class Wniosek
         return $this->statusy->matching($sort);
         return $this->statusy;
     }
-    
+
     /**
      * Add editor
      *
@@ -837,5 +840,37 @@ class Wniosek
         $this->children = new \Doctrine\Common\Collections\ArrayCollection();
         $this->statusy = new \Doctrine\Common\Collections\ArrayCollection();
         $this->ADentries = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get isBlocked
+     */
+    public function getIsBlocked()
+    {
+        return $this->isBlocked;
+    }
+
+    /**
+     * Blokuje końcowo wniosek.
+     *
+     * @return Wniosek
+     */
+    public function zablokujKoncowoWniosek()
+    {
+        $this->isBlocked = true;
+
+        return $this;
+    }
+
+    /**
+     * Set isBlocked
+     *
+     * @return Wniosek
+     */
+    public function setIsBlocked($isBlocked)
+    {
+        $this->isBlocked = $isBlocked;
+
+        return $this;
     }
 }

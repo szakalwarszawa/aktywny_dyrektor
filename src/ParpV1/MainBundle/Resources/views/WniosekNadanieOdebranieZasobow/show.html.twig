@@ -1,6 +1,7 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
+    {% set status_ostatecznie_zablokowany = entity.wniosek.isBlocked %}
     <div class="col-sm-12">
         <div class="alert alert-info">
             <h3>Wniosek o {{ entity.odebranie ? "odebranie" : "nadanie" }} zasobów numer : {{ entity.wniosek.numer }}</h3>
@@ -56,7 +57,7 @@
                         {% set wniosek_do_linku = ((byl_juz_pierwszy_parent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                         {% endif %}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default" }}"
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}"
+                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}<hr/><b>Opis:</b><br/> {{ ss.opis }}"
                         >
                             {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
@@ -84,7 +85,7 @@
                 {% endif %}
             {% endif %}
             <div class="btn-group container">
-                {% if editor %}
+                {% if editor and not status_ostatecznie_zablokowany %}
                     {% if entity.userZasoby|length > 0 %}
                         <h4>Akcje:</h4>
                         {% if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
@@ -114,11 +115,11 @@
 
                 {% endif %}
 
-                {% if czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                {% if not status_ostatecznie_zablokowany and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI <i class="glyphicon glyphicon-ok-sign">&nbsp;</i></a>
                 {% endif %}
 
-                {% if lsi_import_token_form is defined and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                {% if not status_ostatecznie_zablokowany and lsi_import_token_form is defined and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
                     {{ form_start(lsi_import_token_form) }}
                         {{ form_widget(lsi_import_token_form.wniosek) }}
                         {{ form_widget(lsi_import_token_form.submit, {'attr': {'data-ajax': 'ajax', 'class': 'btn-primary', 'data-toggle': 'modal'}}) }}
@@ -126,7 +127,7 @@
                 {% endif %}
 
 
-                {% if canUnblock %}
+                {% if not status_ostatecznie_zablokowany and canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
                 {% endif %}
                 {% if app.user.username == 'marcin_lipinski' or app.user.username == 'kamil_jakacki' %}
@@ -134,8 +135,16 @@
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                 {% endif %}
 
-                {% if 'PARP_ADMIN' in app.user.roles %}
+                {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN' in app.user.roles %}
                     <a href="{{ path('wniosek_przekieruj', {'id': entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek  <i class="glyphicon glyphicon-arrow-right">&nbsp;</i></a>
+                {% endif %}
+
+                {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
+                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status': '101_ANULOWANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Anuluj administracyjnie <i class="glyphicon glyphicon-flag">&nbsp;</i></a>
+                {% endif %}
+
+                {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
+                    <a href="{{ path('zablokuj_wniosek_koncowo', {'wniosek': entity.id, 'status': '102_ODEBRANO_ADMINISTRACYJNIE'}) }}" class="btn btn-warning btn-purple">Odbierz administracyjnie <i class="glyphicon glyphicon-fire">&nbsp;</i></a>
                 {% endif %}
 
             </div>
@@ -274,7 +283,7 @@
                             </tr>
                         </tbody>
                     </table>
-                    {% if editor %}
+                    {% if editor and not status_ostatecznie_zablokowany %}
 
                     <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {id: entity.id}) }}" class="btn btn-success">Dodaj / usuń użytkowników do wniosku</a>
                     {% endif %}
@@ -283,7 +292,7 @@
             <div id="zasoby" class="tab-pane fade">
 
 
-                {% if editor %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-success">Dodaj uprawnienia</a>{% endif %}
+                {% if editor and not status_ostatecznie_zablokowany %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-success">Dodaj uprawnienia</a>{% endif %}
                 <table class="record_properties table table-striped tablesorter">
                     <thead>
                         <tr>
@@ -337,15 +346,15 @@
                                     {% endif %}
                                 </td>
                                 <td>
-                                {% if entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
+                                {% if not status_ostatecznie_zablokowany and entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
                                     <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id': z.id}) }}" class="btn btn-danger">Kasuj</a>
                                 {% endif %}
 
-                                {% if(entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
+                                {% if not status_ostatecznie_zablokowany and (entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
                                     <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning">Zobacz wniosek o nadanie uprawnień</a>
                                 {% else %}
-                                    {% if(z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id) %}
+                                    {% if not status_ostatecznie_zablokowany and (z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id) %}
                                         <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Zobacz wniosek o odebranie uprawnień</a>
                                     {% endif %}
                                 {% endif %}

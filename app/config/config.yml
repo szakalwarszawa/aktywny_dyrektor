@@ -10,9 +10,13 @@ framework:
                 adapter: cache.adapter.filesystem
                 public: true
                 default_lifetime: 86400
+            zasoby.cache:
+                adapter: cache.adapter.filesystem
+                public: true
+                default_lifetime: 86400
     #esi:             ~
     translator:
-        enabled: true
+        enabled: false
     secret:          "%secret%"
     router:
         resource: "%kernel.root_dir%/config/routing.yml"
