@@ -1523,7 +1523,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
      *
-     * @Security("has_role('PARP_ADMIN')")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
      * @param WniosekNadanieOdebranieZasobow $wniosek
      * @param string $status
