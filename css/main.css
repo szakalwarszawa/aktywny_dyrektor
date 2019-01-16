@@ -104,9 +104,9 @@ td .btn{
 .grid_footer .form-control{
     width:75px;
 }
-table{
-/*     table-layout: fixed; */
-}
+/* table{
+    table-layout: fixed;
+} */
 .alert-danger.acceptUser .close{
     display:none;
 }
@@ -141,6 +141,10 @@ table{
     height: 100vh;
 }
 
-/* .apostel div.well {
-    border: 1px solid black;
-} */
+.apostle .well {
+    margin-top: 100px;
+}
+
+.apostle .well img {
+    margin-bottom: 1rem;
+}
