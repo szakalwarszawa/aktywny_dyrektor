@@ -9,6 +9,31 @@ function guid() {
     s4() + '_' + s4() + s4() + s4();
 }
 $(document).ready(function(){
+    //--------------------------
+    // Internet Explorer 6-11
+    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+
+    if(isIE) {
+        var apostle = document.createElement('div');
+        var infoContainer = document.createElement('div');
+        var bulletin = document.createElement('p');
+        var confirmBtn = document.createElement('button');
+        apostle.addClass('apostle');
+        infoContainer.addClass('well col-lg-4 col-lg-offset-4');
+        confirmBtn.addClass('btn btn-primary');
+
+        bulletin.html(
+            '<p>To ja, Twój Aktywny Dyrektor (niektórzy wołają na mnie „AkD”).</p><p>Widzę i czuję, że chcesz uruchomić mnie za pomocą starej przeglądarki Internet Explorer.</p><p>Jeżeli nie musisz <span class="label label-warning"> nie rób tego </span> od pewnego czasu nie dogadujemy się z Explorerem (różnice pokoleniowe i kulturowe).</p><p>Najlepiej będzie, jeżeli użyjesz przeglądarki Firefox, Chrome lub Edge.</p>'
+        );
+
+        confirmBtn.text('Rozumiem');
+
+        apostle.append(infoContainer); 
+        infoContainer.append(bulletin, confirmBtn); 
+        $('body').append(apostle);
+    }
+
+//-------------------------------
     $("table").each(function(){
         if($(this).closest('.tab-pane').length == 0){
             var id = $(this).attr('id');
