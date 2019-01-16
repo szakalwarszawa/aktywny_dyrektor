@@ -11,7 +11,7 @@ function guid() {
 $(document).ready(function(){
     //--------------------------
     // Internet Explorer 6-11
-    var isIE = /*@cc_on!@*/false || !!document.documentMode;
+    var isIE = false || !!document.documentMode;
 
     if(isIE) {
         var apostle = document.createElement('div');
