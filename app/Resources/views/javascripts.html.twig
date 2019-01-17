@@ -18,7 +18,7 @@ $(document).ready(function(){
         var infoContainer = document.createElement('div');
         var bulletin = document.createElement('p');
         var confirmBtn = document.createElement('button');
-        var pedestal = document.createElement('img'); 
+        var pedestal = document.createElement('img');
         $(apostle).addClass('apostle');
         $(infoContainer).addClass('well col-lg-4 col-lg-offset-4');
         $(confirmBtn).addClass('btn btn-primary');
@@ -26,24 +26,24 @@ $(document).ready(function(){
 
         $(pedestal).attr({
             alt: "Oblicze aktywnego dyrektora",
-            title: "Aktywny Dyrektor", 
-            src: "../img/aktywny_dyrektor_logo"
+            title: "Aktywny Dyrektor",
+            src: "/img/aktywny_dyrektor_logo.png"
         })
 
         $(bulletin).html(
-            '<p>To ja, Twój Aktywny Dyrektor (niektórzy wołają na mnie „AkD”).</p><p>Widzę i czuję, że chcesz uruchomić mnie za pomocą starej przeglądarki Internet Explorer.</p><p>Jeżeli nie musisz <span class="label label-warning"> nie rób tego </span> od pewnego czasu nie dogadujemy się z Explorerem (różnice pokoleniowe i kulturowe).</p><p>Najlepiej będzie, jeżeli użyjesz przeglądarki Firefox, Chrome lub Edge.</p>'
+            '<p>To ja, Twój Aktywny Dyrektor (niektórzy wołają na mnie „AkD”).</p><p>Widzę i czuję, że chcesz uruchomić mnie za pomocą zabytkowej przeglądarki Internet Explorer.</p><p>Jeżeli nie musisz <span class="label label-warning">nie rób tego</span><p><p>Jak słusznie się domyślasz - od pewnego czasu nie dogadujemy się z Explorerem<br> (różnice pokoleniowe i kulturowe).</p><p>Najlepiej będzie, jeżeli użyjesz przeglądarki Firefox, Chrome lub Edge.</p>'
         );
 
         $(confirmBtn).text('Rozumiem');
 
-        $(apostle).append(infoContainer); 
-        $(infoContainer).append(pedestal, bulletin, confirmBtn); 
+        $(apostle).append(infoContainer);
+        $(infoContainer).append(pedestal, bulletin, confirmBtn);
         $('body').append(apostle);
     }
 
     confirmBtn.addEventListener("click", function() {
         $(apostle).hide();
-    })
+    });
 
 //-------------------------------
     $("table").each(function(){

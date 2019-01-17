@@ -136,15 +136,60 @@ td .btn{
 .apostle {
     position: absolute;
     top: 0;
-    background-color: rgba(0,0,0,.5);
+    background-color: rgba(0,0,0,.65);
     width: 100vw;
     height: 100vh;
 }
 
-.apostle .well {
-    margin-top: 100px;
+.apostle p {
+    font-family: "Calibri",Helvetica,Arial,sans-serif;
+    font-size: 1.8rem;
 }
 
-.apostle .well img {
-    margin-bottom: 1rem;
+.apostle .panel {
+    margin-top: 1vh;
+    padding: 2rem;
+    -webkit-transition: margin .5s;
+    transition: margin .5s;
+    text-align: center;
 }
+
+.apostle .panel .label-warning {
+    background-color: #f7a500;
+}
+
+.apostle .panel img {
+    margin: 2vh auto 5vh;
+    -webkit-transition: margin .3s;
+    transition: margin .3s;
+    width: 16%;
+    height: auto;
+}
+
+.apostle .panel button {
+    display: block;
+    margin: 1vh auto;
+}
+
+.apostle .panel .btn-primary {
+    background-color: #a6c4d6;
+    background-image: linear-gradient(#a6c4d6, #7aa8c0 60%, #4d8da9);
+}
+
+@media (min-height: 720px) { 
+    .apostle .panel {
+        margin-top: 100px;
+        -webkit-transition: margin .3s;
+        transition: margin .3s;
+    }
+
+    .apostle .panel img {
+        margin: 5vh auto 8vh;
+        -webkit-transition: margin .5s;
+        transition: margin .5s;
+    }
+
+    .apostle .panel button {
+        margin: 3vh auto 1vh;
+    }
+ }
