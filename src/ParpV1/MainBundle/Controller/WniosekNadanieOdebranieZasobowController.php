@@ -300,6 +300,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $jestCoOdebrac = count($userZasoby) > 0;
         }
+
+        if ($entity->getOdebranie() && 1 !== count($listaPracownikow)) {
+            $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
+            . 'zasobów można złożyć tylko dla jednej osoby.');
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new', array('odebranie' => 1)));
+        }
+
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $entityManager = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, '00_TWORZONY', false);
