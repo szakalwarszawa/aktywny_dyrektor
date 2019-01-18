@@ -9,6 +9,44 @@ function guid() {
     s4() + '_' + s4() + s4() + s4();
 }
 $(document).ready(function(){
+    //--------------------------
+    // Internet Explorer 6-11
+    var isIE = false || !!document.documentMode;
+
+    if (isIE) {
+        var apostle = document.createElement('div');
+        var infoContainer = document.createElement('div');
+        var bulletin = document.createElement('p');
+        var confirmBtn = document.createElement('button');
+        var pedestal = document.createElement('img');
+
+        $(apostle).addClass('apostle');
+        $(infoContainer).addClass('panel panel-warning col-lg-4 col-lg-offset-4');
+        $(confirmBtn).addClass('btn btn-primary');
+        $(pedestal).addClass('img-responsive');
+
+        $(pedestal).attr({
+            alt: "Oblicze aktywnego dyrektora",
+            title: "Aktywny Dyrektor",
+            src: "/img/aktywny_dyrektor_logo.png"
+        })
+
+        $(bulletin).html(
+            '<p>To ja, Twój Aktywny Dyrektor (niektórzy wołają na mnie „AkD”).</p><p>Widzę i czuję, że chcesz uruchomić mnie za pomocą zabytkowej przeglądarki Internet Explorer.</p><p>Jeżeli nie musisz <span class="label label-warning">nie rób tego</span><p><p>Jak słusznie się domyślasz - od pewnego czasu nie dogadujemy się z Explorerem<br> (różnice pokoleniowe i kulturowe).</p><p>Najlepiej będzie, jeżeli użyjesz przeglądarki Firefox, Chrome lub Edge.</p>'
+        );
+
+        $(confirmBtn).text('Rozumiem');
+
+        $(apostle).append(infoContainer);
+        $(infoContainer).append(pedestal, bulletin, confirmBtn);
+        $('body').append(apostle);
+    }
+
+    confirmBtn.addEventListener("click", function() {
+        $(apostle).hide();
+    });
+
+//-------------------------------
     $("table").each(function(){
         if($(this).closest('.tab-pane').length == 0){
             var id = $(this).attr('id');
