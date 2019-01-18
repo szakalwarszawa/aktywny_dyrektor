@@ -13,14 +13,15 @@ $(document).ready(function(){
     // Internet Explorer 6-11
     var isIE = false || !!document.documentMode;
 
-    if(isIE) {
+    if (isIE) {
         var apostle = document.createElement('div');
         var infoContainer = document.createElement('div');
         var bulletin = document.createElement('p');
         var confirmBtn = document.createElement('button');
         var pedestal = document.createElement('img');
+
         $(apostle).addClass('apostle');
-        $(infoContainer).addClass('well col-lg-4 col-lg-offset-4');
+        $(infoContainer).addClass('panel panel-warning col-lg-4 col-lg-offset-4');
         $(confirmBtn).addClass('btn btn-primary');
         $(pedestal).addClass('img-responsive');
 
