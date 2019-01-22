@@ -94,11 +94,11 @@ body .JColResizer>tbody>tr>th {
 }
 
 .red-tooltip+.tooltip>.tooltip-inner {
-    background-color: #f00;
+    background-color: #b61928;
 }
 
 .red-tooltip+.tooltip>.tooltip-arrow {
-    border-bottom-color: #f00;
+    border-bottom-color: #b61928;
 }
 
 .btn {
@@ -106,7 +106,7 @@ body .JColResizer>tbody>tr>th {
 }
 
 .btn:hover {
-    border-color: #f00 !important;
+    border-color: #b61928 !important;
 }
 
 td .btn {
@@ -160,7 +160,7 @@ td .btn {
 }
 
 .wiersz-cito {
-    background-color: #ffbe4e !important;
+    background-color: #f7a500 !important;
 }
 
 .grid-filter-select-query-from {
