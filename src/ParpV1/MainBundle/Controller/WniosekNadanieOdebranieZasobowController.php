@@ -1457,6 +1457,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $osoby = explode(';', $entity->getPracownicy());
             }
 
+            if ($entity->getOdebranie() && 1 !== count($osoby)) {
+                $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
+                . 'zasobów można złożyć tylko dla jednej osoby.');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));
+            }
+
             foreach ($entity->getUserZasoby() as $uz) {
                 if (!in_array($uz->getSamaccountname(), $osoby)) {
                     $em->remove($uz);
