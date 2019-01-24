@@ -165,7 +165,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
 
                         break;
-                    case 'zamkniete':
+                    case 'zakonczone':
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZakmniete).'\')');
 
                         break;

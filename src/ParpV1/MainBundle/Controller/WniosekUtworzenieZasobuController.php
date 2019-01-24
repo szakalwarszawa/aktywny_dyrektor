@@ -118,7 +118,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     case 'oczekujace':
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                         break;
-                    case 'zamkniete':
+                    case 'zakonczone':
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
                         break;
                 }
