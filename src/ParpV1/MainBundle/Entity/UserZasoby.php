@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * UserZasoby
@@ -245,9 +246,23 @@ class UserZasoby
      */
     protected $dataOdebrania;
 
+    /**
+     * @ORM\ManyToOne(targetEntity="UserZasoby", inversedBy="userZasobKlon")
+     * @ORM\JoinColumn(name="parent_id", referencedColumnName="id")
+     */
+    protected $parent;
+
+    /**
+     * @ORM\OneToMany(targetEntity="UserZasoby", mappedBy="parent")
+     */
+    protected $userZasobKlon;
+
     protected $_ADUser;
 
-
+    public function __construct()
+    {
+        $this->userZasobKlony = new ArrayCollection();
+    }
 
     /**
      * Set _ADUser
@@ -1088,5 +1103,29 @@ class UserZasoby
         $this->zasob = $zasob;
 
         return $this;
+    }
+
+    /**
+     * Set parent
+     *
+     * @param UserZasoby $parent
+     *
+     * @return UserZasoby
+     */
+    public function setParent(UserZasoby $parent)
+    {
+        $this->parent = $parent;
+
+        return $this;
+    }
+
+    /**
+     * Get parent
+     *
+     * @return UserZasoby
+     */
+    public function getParent()
+    {
+        return $this->parent;
     }
 }

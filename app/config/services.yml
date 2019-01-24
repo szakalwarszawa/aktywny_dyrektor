@@ -116,3 +116,6 @@ services:
     status_wniosku_service:
         class: ParpV1\MainBundle\Services\StatusWnioskuService
         arguments: ['@parp.mailer', '@request_stack', '@session', '@ldap_service', '@doctrine.orm.entity_manager', '@security.token_storage']
+    odbieranie_uprawnien_service:
+        class: ParpV1\MainBundle\Services\OdbieranieUprawnienService
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage']
