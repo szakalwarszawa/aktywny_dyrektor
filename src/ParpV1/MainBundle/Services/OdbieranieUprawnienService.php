@@ -7,6 +7,10 @@ use ParpV1\AuthBundle\Security\ParpUser;
 use Doctrine\ORM\EntityManagerInterface;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use ParpV1\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -34,10 +38,17 @@ class OdbieranieUprawnienService
         $this->currentUser = $tokenStorage->getToken()->getUser();
     }
 
-    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId)
+    /**
+     * Rozpoczyna proces odbierania uprawnień.
+     *
+     * @param array $dane
+     * @param int $wniosekId
+     * @param string $powodOdebrania
+     *
+     * @return void
+     */
+    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId, string $powodOdebrania)
     {
-      //  $powodOdebrania = $ndata['powod'];
-
         $zasobyDoZmiany = $this->przygotujDaneDoZmiany($dane);
         $entityManager = $this->entityManager;
 
@@ -46,40 +57,49 @@ class OdbieranieUprawnienService
             ->find($wniosekId)
         ;
 
-
+        $dokonaneZmiany = [];
         foreach ($zasobyDoZmiany as $userZasobId => $zasoby) {
-            $modulyDoWyciecia = [];
-            $poziomyDostepuDoWyciecia = [];
-            foreach ($zasoby as $daneUserZasob) {
-                $modulyDoWyciecia[] = $daneUserZasob['modul_zasobu'];
-                $poziomyDostepuDoWyciecia[] = $daneUserZasob['poziom_zasobu'];
-                $this->klonujUserZasobOdebrania($daneUserZasob, $wniosekNadanieOdebranieZasobow);
+            $noweUserZasoby = $this->podzielZasob($userZasobId);
+            foreach ($noweUserZasoby as $key => $userZasob) {
+                $modulZasobu = $userZasob->getModul();
+                $poziomDostepu = $userZasob->getPoziomDostepu();
+                if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
+                    $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
+                    $noweUserZasoby->remove($key);
+                }
+
             }
-
-
-            $this->wytnijModulyPoziomyUserZasobu($userZasobId, $modulyDoWyciecia, $poziomyDostepuDoWyciecia);
         }
         $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
 
         $entityManager->persist($wniosekNadanieOdebranieZasobow);
+    }
 
-       // die;
+    private function ustawJakoOdbierany(
+        UserZasoby $userZasob,
+        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow,
+        string $powodOdebrania
+    ): void {
+        $userZasob
+            ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
+            ->setPowodOdebrania($powodOdebrania)
+        ;
+
+        $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
+
+        $this
+            ->entityManager
+            ->persist($userZasob);
     }
 
     /**
-     * Z obiektu UserZasob wycina podane moduly oraz poziomy dostępu.
-     * Jeżeli zostaną wycięte wszystkie poziomy oraz moduły (czyli nie ma co odbierać)
-     * to usuwa obiekt z bazy. ID usuniętego obiektu nadal widnieje jako 'parent'
-     * nowo powstałych obiektów UserZasoby do odebrania i będzie można go przywrócić
-     * w przypadku odrzucenia wniosku o odebranie tego uprawnienia (zasobu).
+     * Dzieli Obiekt UserZasoby na oddzielne (moduły i poziomy dostępu oddzielnie).
      *
      * @param int $userZasobId
-     * @param array $moduly
-     * @param array $poziomyDostepu
      *
-     * @return bool
+     * @return ArrayCollection
      */
-    private function wytnijModulyPoziomyUserZasobu(int $userZasobId, array $moduly, array $poziomyDostepu): bool
+    private function podzielZasob(int $userZasobId): ArrayCollection
     {
         $userZasob = $this
             ->entityManager
@@ -87,85 +107,78 @@ class OdbieranieUprawnienService
             ->findOneById($userZasobId)
         ;
 
-        $userZasobModuly = explode(';', $userZasob->getModul());
-        $userZasobPoziomyDostepu = explode(';', $userZasob->getPoziomDostepu());
-
-        foreach ($userZasobModuly as $key => $userZasobModul) {
-            if (in_array($userZasobModul, $moduly)) {
-                unset($userZasobModuly[$key]);
-            }
-        }
-
-        foreach ($userZasobPoziomyDostepu as $key => $userZasobPoziomDostepu) {
-            if (in_array($userZasobPoziomDostepu, $poziomyDostepu)) {
-                unset($userZasobPoziomyDostepu[$key]);
-            }
-        }
-
-        $userZasob
-            ->setModul(implode(';', $userZasobModuly))
-            ->setPoziomDostepu(implode(';', $userZasobPoziomyDostepu))
-        ;
-
-        if (!(empty($userZasobModuly) && empty($userZasobPoziomyDostepu))) {
-            $this
-                ->entityManager
-                ->persist($userZasob)
-            ;
-
-            return true;
-        }
-
-        $this
-            ->entityManager
-            ->remove($userZasob);
-
-        return false;
-    }
-
-
-    /**
-     * Klonuje obiekt UserZasoby do encji.
-     * Nowe obiekty zawierają tylko moduł/poziom dostępu który
-     * ma być odebrany. Rodzic (klona) jest flagowany.
-     *
-     * @param array $daneUserZasob
-     *
-     * @throws \Exception Musi być zasób do odebrania
-     *
-     * @return void
-     */
-    private function klonujUserZasobOdebrania(
-        array $daneUserZasob,
-        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
-    ): void {
-        $userZasob = $this
-            ->entityManager
-            ->getRepository(UserZasoby::class)
-            ->findOneById($daneUserZasob['id_zasobu'])
-        ;
-
         if (null === $userZasob) {
             throw new \Exception('Musi być zasób do odebrania..');
         }
 
-        $userZasobDoUsuniecia = clone $userZasob;
-        $userZasobDoUsuniecia
-            ->setParent($userZasob)
-            ->setModul($daneUserZasob['modul_zasobu'])
-            ->setPoziomDostepu($daneUserZasob['poziom_zasobu'])
-            ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
+        $userZasobModuly = explode(';', $userZasob->getModul());
+        $userZasobPoziomDostepu = explode(';',  $userZasob->getPoziomDostepu());
+
+        $podzielonyZasob = IloczynKartezjanskiHelper::build([$userZasobModuly, $userZasobPoziomDostepu]);
+
+        $utworzoneUserZasoby = new ArrayCollection();
+        foreach ($podzielonyZasob as $modulPoziom) {
+            $nowyUserZasob = clone $userZasob;
+            $nowyUserZasob
+                ->setModul($modulPoziom[0])
+                ->setPoziomDostepu($modulPoziom[1])
+                ->setParent($userZasob)
+            ;
+
+            $this
+                ->entityManager
+                ->persist($nowyUserZasob)
+            ;
+
+            $utworzoneUserZasoby->add($nowyUserZasob);
+        }
+
+        $this
+            ->entityManager
+            ->remove($userZasob)
         ;
 
-        $this
-            ->entityManager
-            ->persist($userZasobDoUsuniecia);
+        return $utworzoneUserZasoby;
+    }
 
-        $userZasob->setIstniejeWniosekOdebranie(true);
-        $this
-            ->entityManager
-            ->persist($userZasob);
-}
+    /**
+     * Odnotowuje we wniosku które zasoby mają być odebrane (ich moduły oraz poziomy).
+     * W przypadku odrzucenia wniosku obiekty te zostaną usunięte z zakładki `Zasoby`
+     * dlatego pozostawiony komentarz będzie informacją co zawierał wniosek.
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+     * @param UserZasoby $userZasob
+     *
+     * @return void
+     */
+    private function dodajKomentarzOdebrania(
+        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow,
+        UserZasoby $userZasob
+    ): void {
+        $entityManager = $this->entityManager;
+        $zasob = $entityManager
+            ->getRepository(Zasoby::class)
+            ->findOneById($userZasob->getZasobId())
+        ;
+        $opisKomentarza = 'Zasób: ' . $zasob->getNazwa() .
+            '<br/>Moduł: ' . $userZasob->getModul() .
+            '<br/>Poziom dostepu: ' . $userZasob->getPoziomDostepu() .
+            '<br/>Powód odebrania: ' . $userZasob->getPowodOdebrania()
+        ;
+
+        $komentarz = new Komentarz();
+        $komentarz
+            ->setSamaccountname($this->getCurrentUser())
+            ->setTytul('Odbierany zasób')
+            ->setOpis($opisKomentarza)
+            ->setObiekt('WniosekNadanieOdebranieZasobow')
+            ->setObiektId($wniosekNadanieOdebranieZasobow->getId())
+        ;
+
+        $entityManager
+            ->persist($komentarz)
+        ;
+    }
 
     /**
      * Wyciąga z tablicy pojedyńcze wpisy nt zasobu i grupuje je.
@@ -228,6 +241,7 @@ class OdbieranieUprawnienService
             if (null === $userZasob->getParent()) {
                 throw new \Exception('Ten sposób odrzucenia wniosku nie jest wstecznie kompatybilny.');
             }
+
             $parentId = $userZasob->getParent()->getId();
             $zmianyModulPoziom[$parentId]['moduly'][] = (string) $userZasob->getModul();
             $zmianyModulPoziom[$parentId]['poziomy'][] = (string) $userZasob->getPoziomDostepu();
@@ -235,16 +249,22 @@ class OdbieranieUprawnienService
         }
 
         foreach ($zmianyModulPoziom as $userZasobId => $modulyPoziomy) {
+            $entityManager->getFilters()->disable('softdeleteable');
             $userZasob = $entityManager
                 ->getRepository(UserZasoby::class)
                 ->findOneById($userZasobId)
             ;
 
+            if (null !== $userZasob->getDeletedAt()) {
+                $userZasob->setDeletedAt(null);
+            }
+            $entityManager->getFilters()->enable('softdeleteable');
+
             $userZasobModuly = explode(';', $userZasob->getModul());
             $userZasobPoziomDostepu = explode(';',  $userZasob->getPoziomDostepu());
 
             foreach ($modulyPoziomy['moduly'] as $modul) {
-                if (!in_array($modul, $userZasobModuly)) {
+                if (!in_array($modul, $userZasobModuly) && !empty($modul)) {
                     $userZasobModuly[] = $modul;
                 }
             }
@@ -262,5 +282,15 @@ class OdbieranieUprawnienService
 
             $entityManager->persist($userZasob);
         }
+    }
+
+    /**
+     * Zwraca zalogowanego użytkownika z TokenStorage.
+     *
+     * @return ParpUser
+     */
+    private function getCurrentUser(): ParpUser
+    {
+        return $this->currentUser;
     }
 }
