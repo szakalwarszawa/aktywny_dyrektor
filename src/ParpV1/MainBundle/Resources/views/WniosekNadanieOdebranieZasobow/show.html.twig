@@ -38,10 +38,10 @@
                 <li><b>Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}: </b>
                 {% set przetworzone_powody = {} %}
                 {% for z in entity.userZasoby %}
-                    {% set powodWniosku = (wniosek_odebranie ? z.powodOdebrania : z.powodNadania) %}
-                    {% if powodWniosku not in przetworzone_powody %}
-                        {% set przetworzone_powody = przetworzone_powody|merge([powodWniosku]) %}
-                        <span class="btn celWniosku">{{ powodWniosku }}</span>
+                    {% set powod_wniosku = (wniosek_odebranie ? z.powodOdebrania : z.powodNadania) %}
+                    {% if powod_wniosku not in przetworzone_powody %}
+                        {% set przetworzone_powody = przetworzone_powody|merge([powod_wniosku]) %}
+                        <span class="btn celWniosku">{{ powod_wniosku }}</span>
                     {% endif %}
                 {% endfor %}
                 </li>
@@ -290,7 +290,7 @@
             </div>
             <div id="zasoby" class="tab-pane fade">
                 <br />
-                {% if editor and not status_ostatecznie_zablokowany %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-{{wniosek_odebranie ? 'danger' : 'success'}}">{{ wniosek_odebranie ? 'Dodaj uprawnienia do odebrania' : 'Dodaj uprawnienia' }}</a>{% endif %}
+                {% if editor and not status_ostatecznie_zablokowany %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-{{ wniosek_odebranie ? 'danger' : 'success' }}">{{ wniosek_odebranie ? 'Dodaj uprawnienia do odebrania' : 'Dodaj uprawnienia' }}</a>{% endif %}
                 <table class="record_properties table table-striped tablesorter">
                     <thead>
                         <tr>

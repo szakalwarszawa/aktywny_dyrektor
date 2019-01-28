@@ -53,7 +53,7 @@
                             {% for row in users %}
                             {% if row.czyAktywne %}
                                 <tr {{ row.wniosekOdebranie is null ? '' : 'class="alert-warning"' }}>
-                                    <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="{{row.id}}">{{ n }}</a></td>
+                                    <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="{{ row.id }}">{{ n }}</a></td>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}"
 
                                     >{{ row.samaccountname }}</a></td>

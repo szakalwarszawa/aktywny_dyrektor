@@ -47,7 +47,7 @@ class OdbieranieUprawnienService
      *
      * @return void
      */
-    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId, string $powodOdebrania)
+    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId, string $powodOdebrania): void
     {
         $zasobyDoZmiany = $this->przygotujDaneDoZmiany($dane);
         $entityManager = $this->entityManager;
@@ -67,7 +67,6 @@ class OdbieranieUprawnienService
                     $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
                     $noweUserZasoby->remove($key);
                 }
-
             }
         }
         $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
@@ -112,7 +111,7 @@ class OdbieranieUprawnienService
         }
 
         $userZasobModuly = explode(';', $userZasob->getModul());
-        $userZasobPoziomDostepu = explode(';',  $userZasob->getPoziomDostepu());
+        $userZasobPoziomDostepu = explode(';', $userZasob->getPoziomDostepu());
 
         $podzielonyZasob = IloczynKartezjanskiHelper::build([$userZasobModuly, $userZasobPoziomDostepu]);
 
@@ -224,7 +223,7 @@ class OdbieranieUprawnienService
      * Odnotowuje na zasobie, że nie jest już odbierany.
      *
      * @param WniosekNadanieOdebranieZasobow $wniosek
-     *
+     *••••••••••••
      * @return void
      */
     public function odrzucenieWniosku(WniosekNadanieOdebranieZasobow $wniosek): void
