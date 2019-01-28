@@ -2,6 +2,7 @@
 
 {% block body -%}
     {% set status_ostatecznie_zablokowany = entity.wniosek.isBlocked %}
+    {% set wniosek_odebranie = entity.odebranie %}
     <div class="col-sm-12">
         <div class="alert alert-info">
             <h3>Wniosek o {{ entity.odebranie ? "odebranie" : "nadanie" }} zasobów numer : {{ entity.wniosek.numer }}</h3>
@@ -34,15 +35,13 @@
                     {% endif %}
                 {% endfor %}
                 </li>
-                <li><b>Cel nadania/odebrania: </b>
-                {% set i = 0 %}
+                <li><b>Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}: </b>
                 {% set przetworzone_powody = {} %}
                 {% for z in entity.userZasoby %}
-                    {% set i = i + 1 %}
-                    {% if z.powodNadania not in przetworzone_powody %}
-                        {% set przetworzone_powody = przetworzone_powody|merge([z.powodNadania]) %}
-                        <span class="btn celWniosku">{{ z.powodNadania }}</span>
-{#                         {% if i != entity.userZasoby|length %},{% endif %} #}
+                    {% set powod_wniosku = (wniosek_odebranie ? z.powodOdebrania : z.powodNadania) %}
+                    {% if powod_wniosku not in przetworzone_powody %}
+                        {% set przetworzone_powody = przetworzone_powody|merge([powod_wniosku]) %}
+                        <span class="btn celWniosku">{{ powod_wniosku }}</span>
                     {% endif %}
                 {% endfor %}
                 </li>
@@ -290,9 +289,8 @@
                 </div>
             </div>
             <div id="zasoby" class="tab-pane fade">
-
-
-                {% if editor and not status_ostatecznie_zablokowany %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-success">Dodaj uprawnienia</a>{% endif %}
+                <br />
+                {% if editor and not status_ostatecznie_zablokowany %}<a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': (entity.odebranie ? 'removeResources' : 'addResources'), 'samaccountnames': entity.jsonSams}) }}" class="btn btn-{{ wniosek_odebranie ? 'danger' : 'success' }}">{{ wniosek_odebranie ? 'Dodaj uprawnienia do odebrania' : 'Dodaj uprawnienia' }}</a>{% endif %}
                 <table class="record_properties table table-striped tablesorter">
                     <thead>
                         <tr>
@@ -306,7 +304,7 @@
                             <th class="header">Aktywne do</th>
                             <th class="header">Kanał dostępu</th>
                             <th class="header">Uprawnienia administracyjne</th>
-                            <th class="header">Cel nadania/odebrania</th>
+                            <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             <th class="header">Akcje</th>
                         </tr>
                     </thead>
@@ -336,7 +334,7 @@
                                 <td>{{ z.kanalDostepu }}</td>
                                 <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
                                 <td>
-                                    {{ z.powodNadania }}
+                                    {% if wniosek_odebranie %}{{ z.powodOdebrania }}{% else %}{{ z.powodNadania }}{% endif %}
 
                                     {% if(z.czyOdebrane) %}
                                     <div class="alert alert-danger">
@@ -453,7 +451,7 @@
                                 <th class="header">Aktywne do</th>
                                 <th class="header">Kanał dostępu</th>
                                 <th class="header">Uprawnienia administracyjne</th>
-                                <th class="header">Cel nadania/odebrania</th>
+                                <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             </tr>
                         </thead>
                             <tbody>

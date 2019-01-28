@@ -712,14 +712,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE', true);
             if ($wniosek->getOdebranie()) {
-                /** @var UserZasoby $uz */
-                foreach ($wniosek->getUserZasoby() as $uz) {
-                    $cloneuz = clone $uz;//robimy klony by pozostal slad we wniosku na co byl skladany
-                    $uz->setWniosekOdebranie(null);//zdejmujemy wniosek z uz do ktorych byl przypisany
-                    $cloneuz->setWniosekOdebranie($wniosek);
-                    $cloneuz->setWniosek(null);//zeby nie bylo dubli przy oryginalnym wniosku
-                    $em->persist($cloneuz);
-                }
+                $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+                $odbieranieUprawnienService->odrzucenieWniosku($wniosek);
             }
         } elseif ($isAccepted == 'publish') {
             //przenosi do status 11
@@ -1064,6 +1058,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             ->findOneByName(trim($aduser[0]['department']));
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
+                }
+                if ($wniosek->getOdebranie()) {
+                    $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień');
                 }
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
