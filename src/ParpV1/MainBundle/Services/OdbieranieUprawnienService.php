@@ -240,7 +240,7 @@ class OdbieranieUprawnienService
      * Odnotowuje na zasobie, że nie jest już odbierany.
      *
      * @param WniosekNadanieOdebranieZasobow $wniosek
-     *••••••••••••
+     *
      * @return void
      */
     public function odrzucenieWniosku(WniosekNadanieOdebranieZasobow $wniosek): void
