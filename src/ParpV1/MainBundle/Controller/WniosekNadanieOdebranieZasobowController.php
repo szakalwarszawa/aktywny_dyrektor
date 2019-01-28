@@ -148,7 +148,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 }
                 //'00_TWORZONY', '10_PODZIELONY'
                 $statusyZakmniete =
-                    ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY', '11_OPUBLIKOWANY'];
+                    ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY', '11_OPUBLIKOWANY', '102_ODEBRANO_ADMINISTRACYJNIE', '101_ANULOWANO_ADMINISTRACYJNIE'];
                 switch ($ktore) {
                     case 'wtoku':
                         $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';

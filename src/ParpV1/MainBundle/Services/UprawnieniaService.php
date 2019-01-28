@@ -27,6 +27,8 @@ use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use Psr\Cache\CacheItemPoolInterface;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\AuthBundle\Security\ParpUser;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Class UprawnieniaService
@@ -52,6 +54,11 @@ class UprawnieniaService
     private $zasobyCache;
 
     /**
+     * @var ParpUser
+     */
+    private $currentUser;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
@@ -60,12 +67,14 @@ class UprawnieniaService
         EntityManager $OrmEntity,
         Container $container,
         StatusWnioskuService $statusWnioskuService,
-        CacheItemPoolInterface $zasobyCache
+        CacheItemPoolInterface $zasobyCache,
+        TokenStorage $tokenStorage
     ) {
         $this->setDoctrine($OrmEntity);
         $this->setContainer($container);
         $this->statusWnioskuService = $statusWnioskuService;
         $this->zasobyCache = $zasobyCache;
+        $this->currentUser = $tokenStorage->getToken()->getUser();
 
         if (PHP_SAPI == 'cli') {
             $this->container->set('request', new Request(), 'request');
@@ -820,7 +829,7 @@ class UprawnieniaService
      *
      * @return void
      */
-    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null)
+    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null): void
     {
         $resolver = new OptionsResolver();
         $resolver
@@ -860,18 +869,20 @@ class UprawnieniaService
 
         $status = null !== $komentarzOdebrania? $komentarzOdebrania : $status;
         $userZasob = $zasobDoOdebrania['user_zasob'];
-        $userZasob
-            ->setWniosekOdebranie(null)
-            ->setKtoOdebral('ADMINISTRACYJNIE')
-            ->setCzyOdebrane(true)
-            ->setDataOdebrania(new DateTime())
-            ->setPowodOdebrania($status)
-            ->setCzyAktywne(false)
-        ;
 
-        $entityManager = $this->getDoctrine();
+        if (null === $userZasob->getPowodOdebrania()) {
+            $userZasob
+                ->setWniosekOdebranie(null)
+                ->setKtoOdebral($this->currentUser)
+                ->setCzyOdebrane(true)
+                ->setDataOdebrania(new DateTime())
+                ->setPowodOdebrania($status)
+                ->setCzyAktywne(false)
+            ;
 
-        $entityManager->persist($userZasob);
+            $entityManager = $this->getDoctrine();
+            $entityManager->persist($userZasob);
+        }
     }
 
     /**
