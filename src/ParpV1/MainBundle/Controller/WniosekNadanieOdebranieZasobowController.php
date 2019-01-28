@@ -1059,6 +1059,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
                 }
+                if ($wniosek->getOdebranie()) {
+                    $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień');
+                }
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());

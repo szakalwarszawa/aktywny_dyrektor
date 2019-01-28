@@ -653,13 +653,19 @@ class NadawanieUprawnienZasobowController extends Controller
         $entityManager = $this->getDoctrine()->getManager();
         if (null !== $ndata) {
             $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
-            $odbieranieUprawnienService
+            $odbierzUprawnienia = $odbieranieUprawnienService
                 ->odbierzZasobyUzytkownika($ndata['access'], $wniosekId, $ndata['powod']);
+
+            $entityManager->flush();
+
+            if ($odbierzUprawnienia) {
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+            }
         }
 
-        $entityManager->flush();
+        $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień.');
 
-        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+        return $this->redirect($this->generateUrl('main'));
     }
 
     /**

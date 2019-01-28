@@ -45,9 +45,9 @@ class OdbieranieUprawnienService
      * @param int $wniosekId
      * @param string $powodOdebrania
      *
-     * @return void
+     * @return bool fałsz jeżeli jest to uproszczone odbieranie uprawnień
      */
-    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId, string $powodOdebrania): void
+    public function odbierzZasobyUzytkownika(array $dane, int $wniosekId, string $powodOdebrania): bool
     {
         $zasobyDoZmiany = $this->przygotujDaneDoZmiany($dane);
         $entityManager = $this->entityManager;
@@ -69,14 +69,28 @@ class OdbieranieUprawnienService
                 }
             }
         }
-        $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
+        if (null !== $wniosekNadanieOdebranieZasobow) {
+            $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
+            $entityManager->persist($wniosekNadanieOdebranieZasobow);
 
-        $entityManager->persist($wniosekNadanieOdebranieZasobow);
+            return true;
+        }
+
+        return false;
     }
 
+    /**
+     * Oznacza obiekt UserZasob jako odbierany.
+     *
+     * @param UserZasoby $userZasob
+     * @param WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
+     * @param string $powodOdebrania
+     *
+     * @return void
+     */
     private function ustawJakoOdbierany(
         UserZasoby $userZasob,
-        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow,
+        WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow = null,
         string $powodOdebrania
     ): void {
         $userZasob
@@ -84,7 +98,10 @@ class OdbieranieUprawnienService
             ->setPowodOdebrania($powodOdebrania)
         ;
 
-        $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
+
+        if (null !== $wniosekNadanieOdebranieZasobow) {
+            $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
+        }
 
         $this
             ->entityManager
