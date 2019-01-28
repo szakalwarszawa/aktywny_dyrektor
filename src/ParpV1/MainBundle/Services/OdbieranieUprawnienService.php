@@ -122,7 +122,6 @@ class OdbieranieUprawnienService
             $nowyUserZasob
                 ->setModul($modulPoziom[0])
                 ->setPoziomDostepu($modulPoziom[1])
-                ->setParent($userZasob)
             ;
 
             $this
@@ -222,9 +221,7 @@ class OdbieranieUprawnienService
     }
 
     /**
-     * Cofa zmiany dokonane na obiekcie UserZasoby czyli np. podzielenie modułów
-     * i poziomów dostępu na osobne obiekty (powstałe z rozszczepienia stringa
-     * oddzielanego średnikiem w metodzie klonujUserZasobOdebrania).
+     * Odnotowuje na zasobie, że nie jest już odbierany.
      *
      * @param WniosekNadanieOdebranieZasobow $wniosek
      *
@@ -238,46 +235,9 @@ class OdbieranieUprawnienService
 
         $zmianyModulPoziom = [];
         foreach ($userZasoby as $userZasob) {
-            if (null === $userZasob->getParent()) {
-                throw new \Exception('Ten sposób odrzucenia wniosku nie jest wstecznie kompatybilny.');
-            }
-
-            $parentId = $userZasob->getParent()->getId();
-            $zmianyModulPoziom[$parentId]['moduly'][] = (string) $userZasob->getModul();
-            $zmianyModulPoziom[$parentId]['poziomy'][] = (string) $userZasob->getPoziomDostepu();
-            $entityManager->remove($userZasob);
-        }
-
-        foreach ($zmianyModulPoziom as $userZasobId => $modulyPoziomy) {
-            $entityManager->getFilters()->disable('softdeleteable');
-            $userZasob = $entityManager
-                ->getRepository(UserZasoby::class)
-                ->findOneById($userZasobId)
-            ;
-
-            if (null !== $userZasob->getDeletedAt()) {
-                $userZasob->setDeletedAt(null);
-            }
-            $entityManager->getFilters()->enable('softdeleteable');
-
-            $userZasobModuly = explode(';', $userZasob->getModul());
-            $userZasobPoziomDostepu = explode(';',  $userZasob->getPoziomDostepu());
-
-            foreach ($modulyPoziomy['moduly'] as $modul) {
-                if (!in_array($modul, $userZasobModuly) && !empty($modul)) {
-                    $userZasobModuly[] = $modul;
-                }
-            }
-
-            foreach ($modulyPoziomy['poziomy'] as $poziom) {
-                if (!in_array($poziom, $userZasobPoziomDostepu)) {
-                    $userZasobPoziomDostepu[] = $poziom;
-                }
-            }
-
             $userZasob
-                ->setModul(implode(';', $userZasobModuly))
-                ->setPoziomDostepu(implode(';', $userZasobPoziomDostepu))
+                ->setWniosekOdebranie(null)
+                ->setPowodOdebrania(null)
             ;
 
             $entityManager->persist($userZasob);
