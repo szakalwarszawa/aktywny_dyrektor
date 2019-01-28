@@ -39,7 +39,7 @@ class LdapImportService
         $proccessed = array();
         $ADUsers = [];
         foreach ($ADUsers0 as $ADUser) {
-            if (strtolower(substr($ADUser['samaccountname'], 0, 1)) === $letter) {
+            if (mb_strtolower(substr($ADUser['samaccountname'], 0, 1)) === $letter) {
                 $ADUsers[] = $ADUser;
             }
         }
@@ -61,9 +61,9 @@ class LdapImportService
                 $ADUser->{$set}($item);
                 $manager->persist($ADUser);
             }
-            
+
             $grupyRekrusywnie = $ldap->getAllUserGroupsRecursivlyFromAD($ADUser['samaccountname']);
-            
+
             foreach ($ADUser->getADGroups() as $ADGroup) {
                 $ADUser->removeADGroup($ADGroup);
                 $ADGroup->removeADUser($ADUser);
@@ -81,7 +81,7 @@ class LdapImportService
             }
 
             $this->saveToLogFile($ADUser['samaccountname'], "users.log");
-            
+
             $proccessed[$ADUser['samaccountname']] = $ADUser['samaccountname'];
             $manager->flush();
         }
@@ -106,7 +106,7 @@ class LdapImportService
                 foreach ($adg as $k => $valarr) {
                     if (!in_array($k, $pomijajPola)) {
                         $set = "set".ucfirst($k);
-                        
+
                         if (method_exists($ADGroup, $set)) {
                             $val = array();
                             if (is_array($valarr)) {
@@ -145,11 +145,11 @@ class LdapImportService
         $msg = ($this->i++)." : ".$datetime->format("Y-m-d-H-I-s")." - ".$msg;
         file_put_contents($dir."/".$file, $msg."\r\n", FILE_APPEND);
     }
-    
+
     public function importOUsAction()
     {
         set_time_limit(60*60*6);
-        
+
         $manager = $this->container->get('doctrine')->getManager();
         $ldap = $this->container->get('ldap_service');
         // Sięgamy do AD:
@@ -168,7 +168,7 @@ class LdapImportService
                 }
                 foreach ($adou as $k => $valarr) {
                     $set = "set".ucfirst($k);
-                    
+
                     if (method_exists($ADOrganizationalUnit, $set)) {
                         $val = array();
                         if (is_array($valarr)) {
@@ -193,7 +193,7 @@ class LdapImportService
                         $members[$member['samaccountname']] = $member['samaccountname'];
                     }
                     $ADOrganizationalUnit->setMember(implode(";", $members));
-                    
+
                     foreach ($ADOrganizationalUnit->getADUsers() as $ADUser) {
                         $ADOrganizationalUnit->removeADUser($ADUser);
                     }
