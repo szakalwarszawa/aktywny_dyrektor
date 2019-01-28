@@ -777,31 +777,29 @@ class LdapAdminService
             $entry['c'] = 'PL';
             $entry['l'] = 'Warszawa';
             $entry['postalCode'] = '00-834';
-            //tu dopisac pozostale atrybuty
-            foreach ($entry as $k => $v) {
-                if (!is_array($v)) {
-                    if (strlen($v) == 0) {
+            $entry['extensionAttribute11'] = 'exchange.parp.gov.pl';
+
+            foreach ($entry as $key => $value) {
+                if (!is_array($value)) {
+                    if (strlen($value) == 0) {
                         //wywalamy puste wartosci do invalid syntax
                         if ($person->getId() == 4581) {
-                            echo('usuwam ' . $k . ' ' . $v);
+                            echo('usuwam ' . $key . ' ' . $value);
                         }
-                        unset($entry[$k]);
+                        unset($entry[$key]);
                     }
                 }
             }
 
-            // if (empty($accountExpires)) {
             $entry['useraccountcontrol'] = 544; // włączenie konta i wymuszenie zmiany hasla
-            //$entry["info"] = "aaa";//$person->getInfo();
             $section = $this->doctrine->getRepository('ParpMainBundle:Section')->findOneByName($person->getInfo());
             if ($section) {
-                $entry['division'] = $section->getName();//$section->getShortname();
+                $entry['division'] = $section->getName();
             } else {
                 $entry['division'] = 'n/d';
             }
             $description = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
-            //print_r(".".$person->getId());
-            //die();
+
             if (!empty($description)) {
                 $entry['description'] = $description->getShortname();
                 $entry['extensionAttribute14'] = $description->getShortname();
