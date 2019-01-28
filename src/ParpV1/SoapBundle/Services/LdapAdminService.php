@@ -783,9 +783,6 @@ class LdapAdminService
                 if (!is_array($value)) {
                     if (strlen($value) == 0) {
                         //wywalamy puste wartosci do invalid syntax
-                        if ($person->getId() == 4581) {
-                            echo('usuwam ' . $key . ' ' . $value);
-                        }
                         unset($entry[$key]);
                     }
                 }
