@@ -26,7 +26,7 @@ services:
             - [ setAnnotationReader, [ "@annotation_reader" ] ]
     uprawnienia_service:
         class : ParpV1\MainBundle\Services\UprawnieniaService
-        arguments : ["@doctrine.orm.entity_manager","@service_container", '@status_wniosku_service', '@zasoby.cache']
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@status_wniosku_service', '@zasoby.cache', '@security.token_storage']
         tags: ~
     zasoby_service:
         class : ParpV1\MainBundle\Services\ZasobyService
