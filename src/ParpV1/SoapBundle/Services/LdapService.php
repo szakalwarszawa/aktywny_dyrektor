@@ -33,6 +33,7 @@ class LdapService
         'name',
         'initials',
         'title',
+        'mail',
         'info',
         'department',
         'description',
