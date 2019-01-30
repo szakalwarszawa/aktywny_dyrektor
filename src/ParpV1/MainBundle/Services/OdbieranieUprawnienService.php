@@ -105,7 +105,7 @@ class OdbieranieUprawnienService
         $userZasob
             ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
-            ->setDataOdebrania(new DateTime)
+            ->setDataOdebrania(new DateTime())
         ;
 
 
