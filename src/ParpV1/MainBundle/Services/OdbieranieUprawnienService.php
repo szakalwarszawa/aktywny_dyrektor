@@ -11,6 +11,7 @@ use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
 use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -61,11 +62,20 @@ class OdbieranieUprawnienService
         foreach ($zasobyDoZmiany as $userZasobId => $zasoby) {
             $noweUserZasoby = $this->podzielZasob($userZasobId);
             foreach ($noweUserZasoby as $key => $userZasob) {
+
                 $modulZasobu = $userZasob->getModul();
                 $poziomDostepu = $userZasob->getPoziomDostepu();
                 if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
                     $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
                     $noweUserZasoby->remove($key);
+                }
+
+                if (null === $wniosekNadanieOdebranieZasobow) {
+                    $userZasob
+                        ->setDeletedAt(new DateTime())
+                    ;
+
+                    $entityManager->persist($userZasob);
                 }
             }
         }
@@ -133,6 +143,15 @@ class OdbieranieUprawnienService
         $podzielonyZasob = IloczynKartezjanskiHelper::build([$userZasobModuly, $userZasobPoziomDostepu]);
 
         $utworzoneUserZasoby = new ArrayCollection();
+
+        if (1 === count($podzielonyZasob)) {
+            $utworzoneUserZasoby
+                ->add($userZasob)
+            ;
+
+            return $utworzoneUserZasoby;
+        }
+
         foreach ($podzielonyZasob as $modulPoziom) {
             $nowyUserZasob = clone $userZasob;
             $nowyUserZasob
