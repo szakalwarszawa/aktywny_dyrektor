@@ -62,7 +62,6 @@ class OdbieranieUprawnienService
         foreach ($zasobyDoZmiany as $userZasobId => $zasoby) {
             $noweUserZasoby = $this->podzielZasob($userZasobId);
             foreach ($noweUserZasoby as $key => $userZasob) {
-
                 $modulZasobu = $userZasob->getModul();
                 $poziomDostepu = $userZasob->getPoziomDostepu();
                 if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
@@ -106,6 +105,7 @@ class OdbieranieUprawnienService
         $userZasob
             ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
+            ->setDataOdebrania(new DateTime())
         ;
 
 
