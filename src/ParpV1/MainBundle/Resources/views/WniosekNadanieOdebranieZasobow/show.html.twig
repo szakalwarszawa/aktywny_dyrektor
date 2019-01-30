@@ -305,6 +305,9 @@
                             <th class="header">Kanał dostępu</th>
                             <th class="header">Uprawnienia administracyjne</th>
                             <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
+                            {% if wniosek_odebranie %}
+                                <th class="header">Data odebrania</th>
+                            {% endif %}
                             <th class="header">Akcje</th>
                         </tr>
                     </thead>
@@ -343,6 +346,9 @@
                                     </div>
                                     {% endif %}
                                 </td>
+                                {% if wniosek_odebranie %}
+                                    <td>{{ z.dataOdebrania|date('Y-m-d H:i:s') }}</td>
+                                {% endif %}
                                 <td>
                                 {% if not status_ostatecznie_zablokowany and entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
