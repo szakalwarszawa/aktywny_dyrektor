@@ -231,3 +231,68 @@ td .btn {
         margin: 3vh auto 1vh;
     }
 }
+
+/* --------------formularz pracownicy spoza PARP----------------- */
+
+#add-outside-employee-btn {
+    position: absolute;
+    top: 0;
+}
+
+#add-outside-employee-btn.--full-width {
+    width: calc(100% - 31px);
+}
+
+#add-outside-employee-btn.--narrow {
+    width: 250px;
+    right: 16px;
+}
+
+#add-outside-employee-layer {
+    position: absolute;
+    top: 0;
+    width: 100vw;
+    min-height: 100vh;
+    min-height: 100%;
+}
+
+.modal-form-bg {
+    background-color: rgba(0, 0, 0, .65);
+}
+
+#add-outside-employee-layer .modal-form {
+    background: #fff;
+    margin-top: 20vh;
+    padding: 1rem;
+}
+
+.single-employee {
+    padding: 1rem;
+}
+
+.single-employee label {
+    width: 100%;
+}
+
+.single-employee:nth-child(even) {
+    background-color: rgba(0, 0, 0, .15);
+    border-radius: .25rem;
+}
+
+.single-employee:last-of-type {
+    margin-bottom: 1rem;
+}
+
+#fake-input {
+    position: absolute;
+    width: calc(100% - 31px);
+    overflow: hidden;
+    line-height: 2.5rem;
+}
+
+.status-board {
+    margin-top: 1rem;
+    padding: 1rem;
+    font-weight: 700;
+    color: #a94442;
+}
