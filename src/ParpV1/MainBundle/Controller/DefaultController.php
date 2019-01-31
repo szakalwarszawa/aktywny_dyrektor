@@ -975,8 +975,8 @@ class DefaultController extends Controller
                     'data-toggle' => 'select2',
                 ),
                 'choices'    => array(
-                    '0' => 'NIE',
-                    '1' => 'TAK',
+                    'NIE' => '0',
+                    'TAK' => '1',
                 ),
                 //'data' => @$defaultData["department"],
             ))
