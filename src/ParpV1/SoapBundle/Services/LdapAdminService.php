@@ -537,6 +537,10 @@ class LdapAdminService
         }
         ldap_unbind($ldapconn);
 
+        // po zapisaniu zmian w AD czyścimy cache
+        $ldap = $this->container->get('ldap_service');
+        $ldap->clearLdapCache();
+
         //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
         //$this->doctrine->persist($person);
@@ -837,6 +841,10 @@ class LdapAdminService
         }
 
         ldap_unbind($ldapconn);
+
+        // po zapisaniu zmian w AD czyścimy cache
+        $ldap = $this->container->get('ldap_service');
+        $ldap->clearLdapCache();
 
         //to wyrzucone bo nie zawsze zapisuje (jak nie wypoycha tylko pokazuje to nie ma zapisu) wiec flush jest w command!!!
         //$person->setIsImplemented(1);
