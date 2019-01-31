@@ -118,7 +118,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     case 'oczekujace':
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                         break;
-                    case 'zamkniete':
+                    case 'zakonczone':
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
                         break;
                 }
@@ -586,7 +586,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         } else {
-            var_dump($editForm->getErrorsAsString());
+          //  var_dump($editForm->getErrorsAsString());
             die('Blad formularza ');
         }
 

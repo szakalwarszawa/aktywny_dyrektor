@@ -146,13 +146,13 @@ class LdapService
         return $noweAttr;
     }
 
-    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
+    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null, $noCache = false)
     {
         $cache = $this->cache;
         $cacheKey = 'ad_users_' . $tezNieobecni . '_' . $justDump . '_' . $struktura;
         $cacheItem = $cache->getItem($cacheKey);
 
-        if ($cacheItem->isHit()) {
+        if ($cacheItem->isHit() && false === $noCache) {
             return unserialize($cacheItem->get());
         }
 
@@ -1471,6 +1471,6 @@ class LdapService
     public function clearLdapCache()
     {
         $cache = $this->cache;
-        $cache->clear();
+        $cache->prune();
     }
 }

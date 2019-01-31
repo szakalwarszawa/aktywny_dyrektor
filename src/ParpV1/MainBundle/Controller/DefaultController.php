@@ -496,6 +496,7 @@ class DefaultController extends Controller
             $zasoby[$i]['wniosekId'] = $uz->getWniosek() ? $uz->getWniosek()->getId() : 0;
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
             $zasoby[$i]['czyOdebrane'] = $uz->getCzyOdebrane();
+            $zasoby[$i]['data_odebrania'] = $uz->getDataOdebrania();
         }
 
         $names = explode(' ', $ADUser[0]['name']);
@@ -2583,9 +2584,9 @@ class DefaultController extends Controller
         $ldap = $this->container->get('ldap_service');
 
         if ($showall) {
-            $usersFromAD = $ldap->getAllFromAD('wszyscy');
+            $usersFromAD = $ldap->getAllFromAD('wszyscy', false, null, true);
         } else {
-            $usersFromAD = $ldap->getAllFromAD();
+            $usersFromAD = $ldap->getAllFromAD(false, false, null, true);
         }
 
         if (empty($usersFromAD)) {

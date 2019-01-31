@@ -184,7 +184,6 @@ class UserZasoby
      */
     protected $czyAktywne;
 
-
     /**
      * @var boolean
      *
@@ -246,8 +245,6 @@ class UserZasoby
     protected $dataOdebrania;
 
     protected $_ADUser;
-
-
 
     /**
      * Set _ADUser

@@ -39,6 +39,7 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -102,6 +103,13 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         //var_dump($samaccountnames); die('addRemoveAccessToUsersAction - mam tamten controller');
         $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($wniosekId);
+
+        if (null !== $wniosek) {
+            if ($wniosek->getWniosek()->getIsBlocked()) {
+                throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+            }
+        }
+
         $samt = json_decode($samaccountnames);
         //print_r($samaccountnames);
         if ($samt == '') {
@@ -465,8 +473,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             }
 
-
-
             switch ($ndata['action']) {
                 case 'addResources':
                     //check privileges - czy jest adminem zasobow
@@ -644,85 +650,22 @@ class NadawanieUprawnienZasobowController extends Controller
 
     protected function removeResourcesToUsersAction(Request $request, $ndata = null, $wniosekId = 0, $uzid = 0, $userzasob = null)
     {
-        $wniosek = $this->getDoctrine()->getManager()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($wniosekId);
-        $powod = $ndata['powod'];
-        //print_r($ndata); die();
-        //grupuje uprawnienia po uzid
-        $daneDoZmiany = [];
-        foreach ($ndata['access'] as $z) {
-            $data = explode(';', $z);
-            $id = $data[0];
-            $modul = $data[1];
-            $poziom = $data[2];
-            $daneDoZmiany[$id]['dane'][] = [
-                'modul' => $modul,
-                'poziom' => $poziom,
-                'odbierane' => 1
-            ];
-            $daneDoZmiany[$id]['moduly'][$modul] = $modul;
-            $daneDoZmiany[$id]['poziomy'][$poziom] = $poziom;
-            $daneDoZmiany[$id]['odbiera'][$modul.$poziom] = $modul.$poziom;
-        }
-        foreach ($daneDoZmiany as $id => $dane) {
-            $uz = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($id);
-            $uz->setWniosekOdebranie(null);
-            $wynik = $uz->podzielUprawnieniaPrzyOdbieraniu($dane);
+        $entityManager = $this->getDoctrine()->getManager();
+        if (null !== $ndata) {
+            $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+            $odbierzUprawnienia = $odbieranieUprawnienService
+                ->odbierzZasobyUzytkownika($ndata['access'], $wniosekId, $ndata['powod']);
 
-            //var_dump($dane, $wynik); die();
+            $entityManager->flush();
 
-            if (count($wynik['modulyKtoreZostaja']) != 0 && count($wynik['modulyKtoreZostaja']) != 0) {
-                //ustawiamy te co zostaja jesli sa
-                $uz->setModul($wynik['modulyKtoreZostaja']);
-                $uz->setPoziomdostepu($wynik['poziomyKtoreZostaja']);
-            } else {
-                $this->getDoctrine()->getManager()->remove($uz);
+            if ($odbierzUprawnienia) {
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
             }
-
-            foreach ($wynik['nowe'] as $d) {
-                if (trim($d['modul']) != '' && trim($d['poziom']) != '') {
-                    $noweUz = clone $uz;
-                    $noweUz->setModul($d['modul']);
-                    $noweUz->setPoziomdostepu($d['poziom']);
-                    if ($d['odbierane']) {
-                        $noweUz->setPowodOdebrania($powod);
-                        $noweUz->setCzyAktywne(false);
-                        if ($wniosek) {
-                            $noweUz->setWniosekOdebranie($wniosek);
-                            $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
-                        } else {
-                            $noweUz->setKtoOdebral($this->getUser()->getUsername());
-                            $noweUz->setCzyOdebrane(true);
-                            $noweUz->setAktywneDo(new \Datetime($ndata['fromWhen']));
-                            $noweUz->setDataOdebrania(new \Datetime($ndata['fromWhen']));
-                        }
-                    } else {
-                        $noweUz->setWniosekOdebranie(null);
-                    }
-                    $this->getDoctrine()->getManager()->persist($noweUz);
-                }
-            }
-
-
-            //var_dump($uz->getId(), $uz->getModul(), $uz->getPoziomdostepu(), $dane, $wynik);die();
-            $zasob = $this->getDoctrine()->getManager()->getRepository(Zasoby::class)->find($uz->getZasobId());
-
-            $zmianaupr[] = $zasob->getOpis();
         }
 
+        $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień.');
 
-        if ($wniosek) {
-            $wniosek->ustawPoleZasoby();
-        }
-
-        $this->getDoctrine()->getManager()->flush();
-
-        if ($wniosekId != 0) {
-            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
-        } else {
-            return $this->redirect($this->generateUrl('main'));
-        }
-
-        //return $this->redirect($this->generateUrl('main'));
+        return $this->redirect($this->generateUrl('main'));
     }
 
     /**

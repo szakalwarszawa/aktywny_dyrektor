@@ -201,6 +201,31 @@ class UserZasobyRepository extends EntityRepository
         return $a2;
     }
 
+    /**
+     * Znajduje aktywne zasoby dla podanego użytkownika.
+     *
+     * @param string $nazwaUzytkownika
+     *
+     * @return array
+     */
+    public function findAktywneZasobyDlaUzytkownika($nazwaUzytkownika)
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+        $queryBuilder
+            ->select('u')
+            ->where('u.deletedAt is null')
+            ->andWhere('w.deletedAt is null')
+            ->andWhere('u.wniosek is not null')
+            ->andWhere('u.samaccountname = :nazwaUzytkownika')
+            ->andWhere('u.powodOdebrania is null')
+            ->join('u.wniosek', 'w')
+            ->setParameter('nazwaUzytkownika', $nazwaUzytkownika)
+        ;
+
+        return $queryBuilder
+            ->getQuery()
+            ->getResult();
+    }
 
     /**
      * @param $samaccountname

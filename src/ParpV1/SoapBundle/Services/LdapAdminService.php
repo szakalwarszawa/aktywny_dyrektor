@@ -3,15 +3,16 @@
 namespace ParpV1\SoapBundle\Services;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\Definition\Exception\Exception;
+use Symfony\Component\Config\DefinitionExceptionException;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Serializer\Encoder\JsonEncode;
 use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
-use ParpV1\MainBundle\Exception\SecurityTestException;
+use ParpV1\MainBundleException\SecurityTestException;
 use Memcached;
+use Exception;
 
 /**
  * Class LdapAdminService
@@ -50,7 +51,7 @@ class LdapAdminService
     public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity)
     {
         if (!in_array('PARP_ADMIN', $tokenStorage->getToken()->getUser()->getRoles())) {
-            //throw new \Exception("Tylko administrator AkD może aktualizować zmiany w AD");
+            //throw new Exception("Tylko administrator AkD może aktualizować zmiany w AD");
             //echo ""; var_dump(debug_backtrace());
             throw new SecurityTestException('Tylko administrator AkD może aktualizować zmiany w AD');
         }
@@ -163,7 +164,7 @@ class LdapAdminService
             try {
                 $result = $this->getUserFromADInt($samaccountname, $cnname, $query);
                 $ldapstatus = 'Success';
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $ldapstatus = ($e->getMessage());
             }
             if ($ldapstatus !== 'Success') {
@@ -180,7 +181,7 @@ class LdapAdminService
      *
      * @return array
      *
-     * @throws \Exception
+     * @throws Exception
      */
     public function getUserFromADInt($samaccountname = null, $cnname = null, $query = null)
     {
@@ -231,7 +232,7 @@ class LdapAdminService
         $ldapstatus = $this->ldapError($ldapconn);
 
         if ($ldapstatus !== 'Success') {
-            $e = new \Exception($ldapstatus);
+            $e = new Exception($ldapstatus);
             throw $e;
         }
         ldap_unbind($ldapconn);
@@ -554,7 +555,13 @@ class LdapAdminService
      */
     public function getGrupa($grupa)
     {
-        return $this->adldap->group()->find($grupa);
+        try {
+            $grupaReturn = $this->adldap->group()->find($grupa);
+
+            return $grupaReturn;
+        } catch (Exception $exception) {
+            return false;
+        }
     }
 
     /**
@@ -823,7 +830,7 @@ class LdapAdminService
             //$this->addRemoveMemberOf($person, [["memberOf" => []]], $dn, $userdn, $ldapconn);
 
             $this->sendMailAboutNewUser($entry['name'], $entry['samaccountname']);
-        } catch (\Exception $exception) {
+        } catch (Exception $exception) {
             return "Error";
         }
 
@@ -896,7 +903,7 @@ class LdapAdminService
                     $sr=ldap_search($ldapconn, $dep->getOuAD().', '.$userdn, $filter, $justthese);
                     $info = ldap_get_entries($ldapconn, $sr);
                     ldap_free_result($sr);
-                } catch (\Exception $e) {
+                } catch (Exception $e) {
                     echo 'dodaje biuro '.$dep->getOuAD().', '.$userdn.'!!!!';
                 }
                 if ($info['count'] > 0) {
@@ -995,10 +1002,10 @@ class LdapAdminService
         $poszlo = false;
         if ($this->pushChanges) {
             try {
-                //throw new \Exception('a');
+                //throw new Exception('a');
                 ldap_modify($link_identifier, $dn, $entry);
                 $poszlo = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
@@ -1030,7 +1037,7 @@ class LdapAdminService
             try {
                 ldap_rename($link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn);
                 $poszlo = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
@@ -1057,7 +1064,7 @@ class LdapAdminService
             try {
                 ldap_mod_add($link_identifier, $dn, $entry);
                 $poszlo = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
@@ -1086,7 +1093,7 @@ class LdapAdminService
             try {
                 ldap_mod_del($link_identifier, $dn, $entry);
                 $poszlo = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
@@ -1115,7 +1122,7 @@ class LdapAdminService
             try {
                 ldap_add($linkIdentifier, $dn, $entry);
                 $poszlo = true;
-            } catch (\Exception $e) {
+            } catch (Exception $e) {
                 $this->output->writeln('<error>'.$e->getMessage().'</error>');
             }
         }
