@@ -339,7 +339,7 @@
                                 <td>
                                     {% if wniosek_odebranie %}{{ z.powodOdebrania }}{% else %}{{ z.powodNadania }}{% endif %}
 
-                                    {% if(z.czyOdebrane) %}
+                                    {% if(z.czyOdebrane and not wniosek_odebranie) %}
                                     <div class="alert alert-danger">
                                         <b>Odebrane</b>
                                         {{ z.powodOdebrania }}
