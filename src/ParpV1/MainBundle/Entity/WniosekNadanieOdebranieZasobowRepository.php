@@ -46,7 +46,6 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
             '08_ROZPATRZONY_NEGATYWNIE',
             '07_ROZPATRZONY_POZYTYWNIE',
             '11_OPUBLIKOWANY',
-            '11_OPUBLIKOWANY',
             '102_ODEBRANO_ADMINISTRACYJNIE',
             '101_ANULOWANO_ADMINISTRACYJNIE'
         ];
