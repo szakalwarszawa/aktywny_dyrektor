@@ -30,7 +30,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
                 wno.pracownicy,
                 GROUP_CONCAT(DISTINCT e.samaccountname SEPARATOR \', \') as edytorzy,
                 wno.zasoby'
-                )
+            )
             ->leftJoin('wno.userZasoby', 'uz')
             ->leftJoin('wno.wniosek', 'w')
             ->leftJoin('w.viewers', 'v')

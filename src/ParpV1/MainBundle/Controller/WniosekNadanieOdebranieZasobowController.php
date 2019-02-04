@@ -105,8 +105,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'ktore'      => $ktore,
                 'grid'       => $grid,
                 'zastepstwa' => $zastepstwa,
-            ]
-        );
+        ]);
     }
 
     /**

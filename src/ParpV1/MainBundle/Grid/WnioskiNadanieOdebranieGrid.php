@@ -175,9 +175,9 @@ class WnioskiNadanieOdebranieGrid
         $grid->addRowAction($rowAction);
 
         $rowAction = new RowAction(
-                ' Skasuj',
-                'wnioseknadanieodebraniezasobow_delete_form'
-            );
+            ' Skasuj',
+            'wnioseknadanieodebraniezasobow_delete_form'
+        );
         $rowAction
             ->setColumn('akcje')
             ->addAttribute('class', 'btn btn-danger btn-xs fa fa-delete')
