@@ -68,14 +68,6 @@ class OdbieranieUprawnienService
                     $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
                     $noweUserZasoby->remove($key);
                 }
-
-                if (null === $wniosekNadanieOdebranieZasobow) {
-                    $userZasob
-                        ->setDeletedAt(new DateTime())
-                    ;
-
-                    $entityManager->persist($userZasob);
-                }
             }
         }
         if (null !== $wniosekNadanieOdebranieZasobow) {
@@ -108,6 +100,13 @@ class OdbieranieUprawnienService
             ->setDataOdebrania(new DateTime())
         ;
 
+        if (null === $wniosekNadanieOdebranieZasobow) {
+            $userZasob
+                ->setCzyOdebrane(true)
+                ->setKtoOdebral($this->currentUser)
+                ->setCzyAktywne(false)
+            ;
+        }
 
         if (null !== $wniosekNadanieOdebranieZasobow) {
             $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
