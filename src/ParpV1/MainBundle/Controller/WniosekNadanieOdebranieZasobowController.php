@@ -202,12 +202,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $grid = $this->get('grid');
 
         $grid->setSource($source);
-        //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));
-        //$grid->addColumn($kolumnaZasobNazwa);
+
         if ($ktore == 'wszystkie') {
-            $grid->setDefaultFilters(array(
-                'wniosek.createdAt' => array('operator' => 'gte', 'from' => date('d.m.Y', strtotime('-14 day')))
-            ));
+            $grid->setDefaultFilters(
+                array(
+                    'wniosek.createdAt' => array('operator' => 'gte', 'from' => date('d.m.Y', strtotime('-14 day')))
+                )
+            );
         }
 
         // Dodajemy kolumnę na akcje
