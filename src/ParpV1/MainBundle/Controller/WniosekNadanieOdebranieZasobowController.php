@@ -68,203 +68,45 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
+     * @param Request $request
+     * @param string $ktore
+     *
      * @Route("/index/{ktore}", name="wnioseknadanieodebraniezasobow", defaults={"ktore" : "oczekujace"})
      *
      * @Template()
      */
-    public function indexAction($ktore = 'oczekujace')
+    public function indexAction(Request $request, $ktore = WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE)
     {
-        $em = $this->getDoctrine()->getManager();
-        $grid = $this->generateGrid($ktore); //"wtoku");
-        //$grid2 = $this->generateGrid("oczekujace");
-        //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em
+        $xmlHttpRequest = $request->isXmlHttpRequest();
+        $pustyGrid = false;
+        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $ktore && !$xmlHttpRequest) {
+            $pustyGrid = true;
+        }
+
+        $wnioskiNadanieOdebranieGrid = $this->get('wnioski_nadanie_odebranie_grid');
+        $grid = $wnioskiNadanieOdebranieGrid
+             ->setTypWniosku($ktore)
+             ->forceWyswietlGrid()
+             ->generateGrid($pustyGrid)
+         ;
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $zastepstwa = $entityManager
             ->getRepository(Zastepstwo::class)
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
 
-        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
-        if ($grid->isReadyForRedirect()) {
-            if ($grid->isReadyForExport()) {
-                return $grid->getExportResponse();
-            }
-
-            /*
-                if ($grid2->isReadyForExport())
-                {
-                    return $grid2->getExportResponse();
-                }
-
-                if ($grid3->isReadyForExport())
-                {
-                    return $grid3->getExportResponse();
-                }
-            */
-
-            // Url is the same for the grids
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
-        } else {
-            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array(
-                'ktore'      => $ktore,
-                'grid'       => $grid
-                /* , 'grid2' => $grid2, 'grid3' => $grid3 */,
-                'zastepstwa' => $zastepstwa,
-            ));
+        $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
+        if ($xmlHttpRequest) {
+            $szablonTwig = 'ParpMainBundle:Grid:ajax_grid.html.twig';
         }
-    }
 
-    /**
-     * @param $ktore
-     *
-     * @return \APY\DataGridBundle\Grid\Grid|object
-     */
-    protected function generateGrid($ktore)
-    {
-        $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->findAll();
-        $zastepstwa = $em
-            ->getRepository(Zastepstwo::class)
-            ->znajdzKogoZastepuje($this->getUser()->getUsername())
-        ;
-        $source = new Entity(WniosekNadanieOdebranieZasobow::class);
-        $tableAlias = $source->getTableAlias();
-        $sam = $this->getUser()->getUsername();
-
-
-        $source->manipulateQuery(
-            function ($query) use ($tableAlias, $zastepstwa, $ktore) {
-                //$query->select($tableAlias.", z.nazwa");
-
-                //$query->addSelect('group_concat(z.nazwa) zasobek');
-                $query->leftJoin($tableAlias.'.userZasoby', 'uz');
-                //$query->leftJoin('ParpV1\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
-                $query->leftJoin($tableAlias.'.wniosek', 'w');
-                $query->leftJoin('w.viewers', 'v');
-                $query->leftJoin('w.editors', 'e');
-                $query->leftJoin('w.status', 's');
-                //$query->andWhere('z.id = uz.zasobId');
-                if ($ktore != 'wszystkie') {
-                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-                }
-                //'00_TWORZONY', '10_PODZIELONY'
-                $statusyZakmniete =
-                    ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY', '11_OPUBLIKOWANY', '102_ODEBRANO_ADMINISTRACYJNIE', '101_ANULOWANO_ADMINISTRACYJNIE'];
-                switch ($ktore) {
-                    case 'wtoku':
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';
-                        //rdie($w);
-                        $query->andWhere($w);
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        $query->andWhere($tableAlias.
-                            '.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.
-                            implode('\',\'', $zastepstwa).
-                            '\'))');
-                        break;
-                    case 'oczekujace':
-                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-
-                        break;
-                    case 'zakonczone':
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZakmniete).'\')');
-
-                        break;
-                    case 'wszystkie':
-                        //$w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
-                        //rdie($w);
-                        //$query->andWhere($w);
-                        break;
-                }
-                //$query->andWhere('w.samaccountname = \''.$sam.'\'');
-                $query->addGroupBy($tableAlias.'.id');
-                //$query->addGroupBy('z.nazwa');
-
-
-                //die($query->getDQL());
-            }
+        return $grid->getGridResponse($szablonTwig, [
+                'ktore'      => $ktore,
+                'grid'       => $grid,
+                'zastepstwa' => $zastepstwa,
+            ]
         );
-
-        // kolorowanie wierszy
-        $source->manipulateRow(
-            function ($row) {
-
-                if ($row->getField('odebranie') == '1') {
-                    $row->setClass('wiersz-odebranie');
-                }
-
-                if ($row->getField('wniosek.createdBy') == 'magdalena_warecka' && $this->getUser()->getUsername() == 'marcin_lipinski') {
-                    $row->setClass('wiersz-cito'); // dla Marcina ;)
-                }
-                return $row;
-            }
-        );
-
-        $grid = $this->get('grid');
-
-        $grid->setSource($source);
-        //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));
-        //$grid->addColumn($kolumnaZasobNazwa);
-
-        // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
-        $grid->addColumn($actionsColumn);
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('pracownicy')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // Zdejmujemy filtr
-        $grid->getColumn('akcje')
-            ->setFilterable(false)
-            ->setSafe(true);
-
-        // Edycja konta
-        $rowAction1 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wnioseknadanieodebraniezasobow_edit');
-        $rowAction1->setColumn('akcje');
-        $rowAction1->addAttribute('class', 'btn btn-success btn-xs');
-
-        $rowAction2 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Pokaż', 'wnioseknadanieodebraniezasobow_show');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-info btn-xs');
-
-        // Edycja konta
-        $rowAction3 =
-            new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->addManipulateRender(
-            function ($action, $row) {
-                if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
-                    return $action;
-                } else {
-                    return null;
-                }
-            }
-        );
-        //die('a');
-
-
-        //$grid->addRowAction($rowAction1);
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
-
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
-
-        //$grid->isReadyForRedirect();
-        return $grid;
     }
 
     /**
