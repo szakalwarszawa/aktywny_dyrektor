@@ -18,6 +18,26 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
 class WniosekNadanieOdebranieZasobow
 {
     /**
+     * @var string
+     */
+    const WNIOSKI_WSZYSTKIE = 'wszystkie';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_W_TOKU = 'wtoku';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_OCZEKUJACE = 'oczekujace';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_ZAKONCZONE = 'zakonczone';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
