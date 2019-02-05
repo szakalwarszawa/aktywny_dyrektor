@@ -694,8 +694,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-
-
         if ($isAccepted == 'acceptAndPublish' && !in_array($status, [
                 '05_EDYCJA_ADMINISTRATOR',
                 '06_EDYCJA_TECHNICZNY',
