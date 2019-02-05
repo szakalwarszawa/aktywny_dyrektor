@@ -694,6 +694,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+
+
         if ($isAccepted == 'acceptAndPublish' && !in_array($status, [
                 '05_EDYCJA_ADMINISTRATOR',
                 '06_EDYCJA_TECHNICZNY',
@@ -869,20 +871,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus(
-                                        $wn,
-                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                        false
-                                    );
+                                    $this->setWniosekStatus($wn,'02_EDYCJA_PRZELOZONY', false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             } else {
-                                $this->setWniosekStatus(
-                                    $wniosek,
-                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                    false
-                                );
+                                $this->setWniosekStatus($wniosek,'02_EDYCJA_PRZELOZONY', false);
                             }
                             //$em->remove($wniosek);
                             if ($this->debug) {
@@ -899,11 +893,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     switch ($isAccepted) {
                         case 'accept':
                             //przenosi do status 2
-                            $this->setWniosekStatus(
-                                $wniosek,
-                                ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                false
-                            );
+                            $this->setWniosekStatus($wniosek,'02_EDYCJA_PRZELOZONY', false);
                             break;
                         case 'return':
                             //przenosi do status 1
@@ -928,7 +918,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         echo '<br><br>Tworzy nowy wniosek dla zasobu '.$z->getZasobId().
                                             '<br><br>';
                                     }
-                                    $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
+                                    $wn = new WniosekNadanieOdebranieZasobow();
                                     $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
                                     $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
                                     $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
@@ -938,6 +928,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         ->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                     $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
+                                    $wn->setOdebranie($wniosek->getWniosek()->getOdebranie());
 
                                     $this->get('wniosekNumer')->nadajPodNumer($wn, $wniosek, $numer++);
                                     $users = array();
@@ -956,12 +947,21 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus($wn, '03_EDYCJA_WLASCICIEL', false);
+
+                                    $this->setWniosekStatus(
+                                        $wniosek,
+                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                        false
+                                    );
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             } else {
-                                $this->setWniosekStatus($wniosek, '03_EDYCJA_WLASCICIEL', false);
+                                $this->setWniosekStatus(
+                                    $wniosek,
+                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                    false
+                                );
                             }
                             break;
                         case 'return':
@@ -1011,6 +1011,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->setWniosekStatus($wniosek, '06_EDYCJA_TECHNICZNY', false, $status);
                             break;
                         case 'return':
+                            if ($wniosek->getOdebranie()) {
+                                $this->setWniosekStatus($wniosek,'02_EDYCJA_PRZELOZONY', false);
+                                break;
+                            }
                             $maBycIbi = false;
                             foreach ($wniosek->getUSerZasoby() as $uz) {
                                 $maBycIbi =
