@@ -56,7 +56,7 @@
                         {% set wniosek_do_linku = ((byl_juz_pierwszy_parent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                         {% endif %}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default" }}"
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}<hr/><b>Opis:</b><br/> {{ ss.opis }}"
+                        data-toggle="popover" title="Data przekazania: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="Przekazany przez: {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}<hr/><b>Opis:</b><br/> {{ ss.opis }}"
                         >
                             {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
