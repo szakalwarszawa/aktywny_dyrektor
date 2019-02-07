@@ -251,6 +251,9 @@ td .btn {
 #add-outside-employee-layer {
     position: absolute;
     top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
     width: 100vw;
     min-height: 100vh;
     min-height: 100%;
@@ -264,6 +267,7 @@ td .btn {
     background: #fff;
     margin-top: 20vh;
     padding: 1rem;
+    border-radius: 3px;
 }
 
 .single-employee {
