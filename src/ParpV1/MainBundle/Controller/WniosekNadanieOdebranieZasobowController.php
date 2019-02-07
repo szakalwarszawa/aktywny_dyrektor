@@ -36,6 +36,7 @@ use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use DateTime;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -918,7 +919,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setAktywneDo($uz->getDataOdebrania());
+                        $uz->setDataOdebrania(new DateTime());
                     }
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());

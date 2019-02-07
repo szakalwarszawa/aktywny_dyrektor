@@ -326,14 +326,7 @@
                                 <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                 <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
                                 <td>{{ z.bezterminowo ? "TAK" : "NIE" }}</td>
-                                <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
-
-                                    {% if(z.czyOdebrane) %}
-                                    <div class="alert alert-danger">
-                                        <b>Odebrane</b>
-                                    </div>
-                                    {% endif %}
-                                </td>
+                                <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}</td>
                                 <td>{{ z.kanalDostepu }}</td>
                                 <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
                                 <td>
