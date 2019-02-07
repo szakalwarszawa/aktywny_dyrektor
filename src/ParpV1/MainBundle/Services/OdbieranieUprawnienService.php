@@ -6,6 +6,7 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Doctrine\ORM\EntityManagerInterface;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Services\ZasobyService;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
@@ -28,13 +29,22 @@ class OdbieranieUprawnienService
     private $currentUser;
 
     /**
+     * @var ZasobyService
+     */
+    private $zasobyService;
+
+    /**
      * Publiczny konstruktor
      *
      * @param EntityManagerInterface $entityManager
      * @param TokenStorage $tokenStorage
      */
-    public function __construct(EntityManagerInterface $entityManager, TokenStorage $tokenStorage)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TokenStorage $tokenStorage,
+        ZasobyService $zasobyService
+    ) {
+        $this->zasobyService = $zasobyService;
         $this->entityManager = $entityManager;
         $this->currentUser = $tokenStorage->getToken()->getUser();
     }
@@ -66,6 +76,10 @@ class OdbieranieUprawnienService
                 $poziomDostepu = $userZasob->getPoziomDostepu();
                 if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
                     $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
+                    $wniosekNadanieOdebranieZasobow
+                        ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasob))
+                    ;
+
                     $noweUserZasoby->remove($key);
                 }
             }
@@ -97,7 +111,6 @@ class OdbieranieUprawnienService
         $userZasob
             ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
-            ->setDataOdebrania(new DateTime())
         ;
 
         if (null === $wniosekNadanieOdebranieZasobow) {
@@ -105,6 +118,7 @@ class OdbieranieUprawnienService
                 ->setCzyOdebrane(true)
                 ->setKtoOdebral($this->currentUser)
                 ->setCzyAktywne(false)
+                ->setDataOdebrania(new DateTime())
             ;
         }
 

@@ -166,6 +166,14 @@ class WniosekNadanieOdebranieZasobow
     private $zasoby;
 
     /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true, name="zawiera_zasoby_z_ad")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zawieraZasobyZAd = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -585,5 +593,29 @@ class WniosekNadanieOdebranieZasobow
     public function getDataOdebrania()
     {
         return $this->dataOdebrania;
+    }
+
+    /**
+     * Get zawieraZasobyZAd
+     *
+     * @return boo
+     */
+    public function getZawieraZasobyZAd(): bool
+    {
+        return $this->zawieraZasobyZAd;
+    }
+
+    /**
+     * Set zawieraZasobyZAd
+     *
+     * @param bool $zawieraZasobyZAd
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setZawieraZasobyZAd(bool $zawieraZasobyZAd): self
+    {
+        $this->zawieraZasobyZAd = $zawieraZasobyZAd;
+
+        return $this;
     }
 }

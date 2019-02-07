@@ -493,7 +493,6 @@ class NadawanieUprawnienZasobowController extends Controller
                         foreach ($ndata['access'] as $a) {
                             $ps = explode(';', $a);
                             $userZasob = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($ps[0]);
-
                             $ids[] = $userZasob->getZasobId();
                         }
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
