@@ -11,7 +11,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * @ORM\Table(name="wniosek")
  * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\WniosekRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id,status.nazwa,createdBy,createdAt,lockedBy,pracownicy,userZasoby.opis:group_concat,editornames")
- * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt",                                                                                     timeAware=false)
+ * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt",timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  */
 class Wniosek
@@ -107,7 +107,7 @@ class Wniosek
      * @ORM\ManyToOne(targetEntity="WniosekStatus", inversedBy="wnioski")
      * @ORM\JoinColumn(name="status_id", referencedColumnName="id")
      * @GRID\Column(field="status.nazwa", title="Status")
-     * @ORM\OrderBy({"createdAtaaa" = "DESC"})
+     * @ORM\OrderBy({"createdAt" = "DESC"})
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $status;
@@ -356,27 +356,6 @@ class Wniosek
     {
         return $this->numer  == "wniosek w trakcie tworzenia";
     }
-    /**
-     * Get numer
-     *
-     * @return string
-     */
-    /*
-    public function getNumer()
-    {
-        $numer = $this->getWniosekNumer() ? $this->getWniosekNumer()->getNumer()."/".$this->getWniosekNumer()->getRok() : "Wniosek w trakcie tworzenia";
-        if($this->getParent()){
-            $p = $this->getParent();
-            $numer = $p->getWniosekNumer() ? $p->getWniosekNumer()->getNumer().".".$this->numer."/".$p->getWniosekNumer()->getRok() : "!!!!1!!!!";
-            if($this->getParent()->getParent()){
-                $p = $this->getParent()->getParent();
-                $numer = $p->getWniosekNumer() ? $p->getWniosekNumer()->getNumer().".".$this->getParent()->get_Numer().".".$this->numer."/".$p->getWniosekNumer()->getRok() : "!!!!2!!!!";
-            }
-        }
-
-        return $numer;
-    }
-    */
 
     /**
      * Set jednostkaOrganizacyjna
