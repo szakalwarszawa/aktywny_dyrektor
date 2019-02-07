@@ -6,8 +6,11 @@ $(document).ready(function () {
         ) !== null
     ) {
         //---przestawienie inputa w tryb: tylko do odczytu---
+        //---usuniecie zbednych elementow tagit-a---
         (function setTypeToReadonly() {
-            $('parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp').attr('type', 'readonly');
+            var input = $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp');
+            input.attr('readonly', 'readonly');
+            input.next('ul.tagit').remove();
         })();
 
         //---pokaz cialo formularza---
@@ -73,7 +76,6 @@ $(document).ready(function () {
 
         //---parsowanie wartości pól do JSONa---
         //---przekazywanie danych pracowników do inputa---
-        //---
         function passEmployeesToInputUp() {
             //console.info('passEmployeesToInputUp()');
 
@@ -178,7 +180,7 @@ $(document).ready(function () {
             });
         }
 
-        //---obsluga przycisku anuluj w modalu---NEW
+        //---obsluga przycisku anuluj w modalu---
         function cancel() {
             var cancelBtn = $('.cancel-btn');
             cancelBtn.on('click', function (event) {
