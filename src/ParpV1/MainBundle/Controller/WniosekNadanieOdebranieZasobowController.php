@@ -956,7 +956,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $uz->setDataOdebrania($dataOdebrania);
                         }
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setAktywneDo($uz->getDataOdebrania());
+                        $uz->setDataOdebrania(new DateTime());
                     }
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());
