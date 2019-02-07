@@ -36,6 +36,7 @@ use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use DateTime;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -767,12 +768,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         ->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                     $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
-                                    $wn->setOdebranie($wniosek->getWniosek()->getOdebranie());
+                                    $wn->setOdebranie($wniosek->getOdebranie());
 
                                     $this->get('wniosekNumer')->nadajPodNumer($wn, $wniosek, $numer++);
                                     $users = array();
                                     foreach ($z as $uz) {
                                         $nuz = clone $uz;
+                                        $nuz->setWniosekOdebranie($wn);
                                         $em->persist($nuz);
                                         $wn->setZasobId($nuz->getZasobId());
                                         $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
@@ -788,7 +790,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     }
 
                                     $this->setWniosekStatus(
-                                        $wniosek,
+                                        $wn,
                                         ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
                                         false
                                     );
@@ -911,7 +913,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setAktywneDo($uz->getDataOdebrania());
+                        $uz->setDataOdebrania(new DateTime());
                     }
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());
