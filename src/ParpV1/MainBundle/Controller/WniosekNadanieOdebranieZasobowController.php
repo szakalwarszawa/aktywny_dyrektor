@@ -36,6 +36,8 @@ use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use DateTime;
+use Exception;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -468,12 +470,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $statusWnioskuService->setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus);
     }
 
-
-
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/{isAccepted}/accept_reject/{publishForReal}", name="wnioseknadanieodebraniezasobow_accept_reject",
-     *                                                             defaults={"publishForReal" : false})
+     *                                                             defaults={"publishForReal" : false, "dataOdebrania": null})
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -501,6 +501,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
             }
         }
+
         $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
         $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
@@ -521,15 +522,31 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         if ($request->isMethod('POST')) {
             $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
+            if (!empty($txt)) {
+                $wniosek->setPowodZwrotu($txt);
 
-            $kom = new \ParpV1\MainBundle\Entity\Komentarz();
-            $kom->setObiekt('WniosekNadanieOdebranieZasobow');
-            $kom->setObiektId($id);
-            $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
-            $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUser()->getUsername());
-            $em->persist($kom);
+                $kom = new \ParpV1\MainBundle\Entity\Komentarz();
+                $kom->setObiekt('WniosekNadanieOdebranieZasobow');
+                $kom->setObiektId($id);
+                $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
+                $kom->setOpis($txt);
+                $kom->setSamaccountname($this->getUser()->getUsername());
+                $em->persist($kom);
+            } elseif (!empty($request->request->get('dataOdebrania'))) {
+                if ('acceptAndPublish' === $isAccepted) {
+                    try {
+                        $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                    } catch (\Exception $exception) {
+                        $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array(
+                            'id' => $id,
+                        )));
+                    }
+
+                }
+            }
+
         } else {
             $wniosek->setPowodZwrotu('');
         }
@@ -588,8 +605,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if ($publishForReal) {
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+                    if ($wniosek->getOdebranie()) {
+                        $uz->setDataOdebrania(new DateTime());
+                    }
 
                     $uz->setCzyNadane(true);
+
+                    $em->persist($uz);
                 }
                 $this->setWniosekStatus($wniosek, '11_OPUBLIKOWANY', false);
             }
@@ -751,6 +773,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             if (count($zasoby) > 1) {
                                 $this->setWniosekStatus($wniosek, '10_PODZIELONY', false);
                                 $numer = 1;
+                                $zasobyService = $this->get('zasoby_service');
                                 //teraz dla kazdego zasobu tworzy oddzielny wniosek
                                 foreach ($zasoby as $z) {
                                     if ($this->debug) {
@@ -776,14 +799,21 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $uz->setWniosekOdebranie($wn);
                                             $wn->setZasobId($uz->getId());
                                             $em->persist($uz);
+                                            $users[$uz->getSamaccountname()] = $uz->getSamaccountname();
+                                            $userZasobPersist = $uz;
                                         } else {
                                             $nuz = clone $uz;
                                             $nuz->setWniosek($wn);
                                             $em->persist($nuz);
                                             $wn->addUserZasoby($nuz);
                                             $wn->setZasobId($nuz->getId());
+                                            $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
+                                            $userZasobPersist = $nuz;;
                                         }
-                                        $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
+
+                                        $wn
+                                            ->setZawieraZasobyZAd($zasobyService->czyZasobMaGrupyAd($userZasobPersist))
+                                        ;
                                     }
 
                                     $wn->setPracownicy(implode(',', $users));
@@ -910,13 +940,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //print_r($biuro);    die();
                 }
                 if ($wniosek->getOdebranie()) {
-                    $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień');
+                    $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
+                    if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
+                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
+                    }
+                    $this->addFlash('danger', $flashMessage);
                 }
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
+                        if (!$wniosek->getZawieraZasobyZAd()) {
+                            if (!isset($dataOdebrania)) {
+                                $uz->setDataOdebrania(new DateTime());
+                            }
+                            $uz->setDataOdebrania($dataOdebrania);
+                        }
                         $uz->setKtoOdebral($this->getUser()->getUsername());
                         $uz->setAktywneDo($uz->getDataOdebrania());
                     }
@@ -1118,6 +1158,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $lsiImportTokenForm = $lsiImportTokenForm->createView();
         }
 
+        $potrzebnaDataOdebrania = function () use ($entity) {
+            $edycjaAdministratora = (
+                $entity
+                    ->getWniosek()
+                    ->getStatus()
+                    ->getNazwaSystemowa() === '05_EDYCJA_ADMINISTRATOR'
+            );
+            $wniosekOdebranie = $entity->getOdebranie();
+            $zawieraZasobyZAd = !$entity->getZawieraZasobyZAd();
+
+            if ($edycjaAdministratora && $wniosekOdebranie && $zawieraZasobyZAd) {
+                return true;
+            }
+
+            return false;
+        };
+
         return array(
             'grupyAD'               => $grupyAD,
             'entity'                => $entity,
@@ -1133,6 +1190,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'czyLsi'                => $czyLsi,
             'lsi_import_token_form' => $lsiImportTokenForm,
             'comments'              => $comments,
+            'potrzebna_data_odebrania' => $potrzebnaDataOdebrania(),
         );
     }
 

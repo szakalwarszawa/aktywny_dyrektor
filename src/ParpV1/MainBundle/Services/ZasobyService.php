@@ -9,6 +9,8 @@ use ParpV1\AuthBundle\Security\ParpUser;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
 use Doctrine\Common\Collections\ArrayCollection;
+use InvalidArgumentException;
+use Doctrine\ORM\EntityNotFoundException;
 
 class ZasobyService
 {
@@ -143,5 +145,39 @@ class ZasobyService
         }
 
         return false;
+    }
+
+    /**
+     * Sprawdza czy podany Zasob ma grupy w AD.
+     *
+     * @param UserZasoby|Zasoby $obiekt
+     *
+     * @throws InvalidArgumentException gdy $obiekt jest innej klasy niż UserZasoby lub Zasoby
+     * @throws EntityNotFoundException gdy nie odnaleziono obiektu Zasoby
+     *
+     * @return bool
+     */
+    public function czyZasobMaGrupyAd($obiekt)
+    {
+        if (!($obiekt instanceof UserZasoby || $obiekt instanceof Zasoby)) {
+            throw new InvalidArgumentException('Oczekiwano obiektu klasy Zasoby lub UserZasoby.');
+        }
+
+        if ($obiekt instanceof UserZasoby){
+            $zasobId = $obiekt->getZasobId();
+            $zasob = $this
+                ->entityManager
+                ->getRepository(Zasoby::class)
+                ->findOneById($zasobId)
+            ;
+
+            if (null === $zasob) {
+                throw new EntityNotFoundException();
+            }
+        }
+
+        $grupyAd = $zasob->getGrupyAD();
+
+        return empty($grupyAd)? false : true;
     }
 }
