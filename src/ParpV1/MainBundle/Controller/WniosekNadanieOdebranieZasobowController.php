@@ -767,33 +767,40 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         ->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                     $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
-                                    $wn->setOdebranie($wniosek->getWniosek()->getOdebranie());
+                                    $wn->setOdebranie($wniosek->getOdebranie());
 
                                     $this->get('wniosekNumer')->nadajPodNumer($wn, $wniosek, $numer++);
                                     $users = array();
                                     foreach ($z as $uz) {
-                                        $nuz = clone $uz;
-                                        $em->persist($nuz);
-                                        $wn->setZasobId($nuz->getZasobId());
+                                        if ($wn->getOdebranie()) {
+                                            $uz->setWniosekOdebranie($wn);
+                                            $wn->setZasobId($uz->getId());
+                                            $em->persist($uz);
+                                        } else {
+                                            $nuz = clone $uz;
+                                            $nuz->setWniosek($wn);
+                                            $em->persist($nuz);
+                                            $wn->addUserZasoby($nuz);
+                                            $wn->setZasobId($nuz->getId());
+                                        }
                                         $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
-                                        $nuz->setWniosek($wn);
-                                        $wn->addUserZasoby($nuz);
                                     }
+
                                     $wn->setPracownicy(implode(',', $users));
-                                    //klonuje wszystkie historie statusow
                                     foreach ($wniosek->getWniosek()->getStatusy() as $s) {
                                         $s2 = clone $s;
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
 
+                                    $wn->ustawPoleZasoby();
+                                    $em->persist($wn->getWniosek());
+                                    $em->persist($wn);
                                     $this->setWniosekStatus(
-                                        $wniosek,
+                                        $wn,
                                         ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
                                         false
                                     );
-                                    $em->persist($wn->getWniosek());
-                                    $em->persist($wn);
                                 }
                             } else {
                                 $this->setWniosekStatus(
