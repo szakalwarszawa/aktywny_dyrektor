@@ -163,7 +163,7 @@ class ZasobyService
             throw new InvalidArgumentException('Oczekiwano obiektu klasy Zasoby lub UserZasoby.');
         }
 
-        if ($obiekt instanceof UserZasoby){
+        if ($obiekt instanceof UserZasoby) {
             $zasobId = $obiekt->getZasobId();
             $zasob = $this
                 ->entityManager

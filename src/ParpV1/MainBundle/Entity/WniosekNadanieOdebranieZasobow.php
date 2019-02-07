@@ -595,27 +595,27 @@ class WniosekNadanieOdebranieZasobow
         return $this->dataOdebrania;
     }
 
-	/**
-	 * Get zawieraZasobyZAd
-	 *
-	 * @return boo
-	 */
-	public function getZawieraZasobyZAd(): bool
-	{
-		return $this->zawieraZasobyZAd;
-	}
+    /**
+     * Get zawieraZasobyZAd
+     *
+     * @return boo
+     */
+    public function getZawieraZasobyZAd(): bool
+    {
+        return $this->zawieraZasobyZAd;
+    }
 
-	/**
-	 * Set zawieraZasobyZAd
-	 *
-	 * @param bool $zawieraZasobyZAd
-	 *
-	 * @return WniosekNadanieOdebranieZasobow
-	 */
-	public function setZawieraZasobyZAd(bool $zawieraZasobyZAd): self
-	{
-		$this->zawieraZasobyZAd = $zawieraZasobyZAd;
+    /**
+     * Set zawieraZasobyZAd
+     *
+     * @param bool $zawieraZasobyZAd
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setZawieraZasobyZAd(bool $zawieraZasobyZAd): self
+    {
+        $this->zawieraZasobyZAd = $zawieraZasobyZAd;
 
-		return $this;
-	}
+        return $this;
+    }
 }

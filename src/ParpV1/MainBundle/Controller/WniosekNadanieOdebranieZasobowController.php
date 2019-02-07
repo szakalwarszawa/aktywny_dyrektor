@@ -473,7 +473,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/{isAccepted}/accept_reject/{publishForReal}", name="wnioseknadanieodebraniezasobow_accept_reject",
-     *                                                             defaults={"publishForReal" : false, "dataOdebrania": null})
+     *                                                             defaults={"publishForReal" : false})
      * @Method({"GET", "POST"})
      * @Template()
      */
@@ -543,10 +543,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             'id' => $id,
                         )));
                     }
-
                 }
             }
-
         } else {
             $wniosek->setPowodZwrotu('');
         }
@@ -808,7 +806,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $wn->addUserZasoby($nuz);
                                             $wn->setZasobId($nuz->getId());
                                             $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
-                                            $userZasobPersist = $nuz;;
+                                            $userZasobPersist = $nuz;
                                         }
 
                                         $wn
