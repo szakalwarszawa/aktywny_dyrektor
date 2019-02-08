@@ -300,3 +300,23 @@ td .btn {
     font-weight: 700;
     color: #a94442;
 }
+
+.in-train {
+    display: inline;
+    padding: .5rem;
+    color: #555;
+    font-size: 1.4rem;
+    line-height: 2.1rem;
+    background-color: #e4e4e4;
+    border: 1px solid #aaa;
+    border-radius: 4px;
+    cursor: default;
+}
+
+.in-train+.in-train {
+    margin-left: 1rem;
+}
+
+.in-train>i {
+    margin: 0 .4rem;
+}

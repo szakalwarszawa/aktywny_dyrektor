@@ -26,7 +26,7 @@ $(document).ready(function () {
         function buttonDisplayController() {
             //console.info('buttonDisplayController()');
             var addEmployeeBtn = $('#add-outside-employee-btn');
-            addEmployeeBtn.removeClass('--full-width');
+            // addEmployeeBtn.removeClass('--full-width');
             addEmployeeBtn.addClass('--narrow');
         }
 
@@ -36,6 +36,9 @@ $(document).ready(function () {
             var outsideEmployeeModalForm = $('#add-outside-employee-layer');
             outsideEmployeeModalForm.addClass('hidden');
             //console.log(outsideEmployeeModalForm);
+            //---ukrycie modala musi wywolac nasluchiwanie na widoku glownym---
+            //---(aby moc usunac dodanych pracownikach)---
+            //removeListener();
         }
 
         //---walidacja adresu email---
@@ -60,7 +63,7 @@ $(document).ready(function () {
 
         //---walidacja pol tekstowych---
         function isText(event, msg) {
-            var regx = /^([A-ZŚŻŹŃŁa-zęóąśłżźńć]{3,25})+$/;
+            var regx = /^([A-ZŚŻŹŃŁa-zęóąśłżźńć/-]{3,25})+$/;
             //console.log('text testing');
             //console.log('Pole tekstowe do przetestowania ', event.target.value);
             if (regx.test(event.target.value)) {
@@ -76,6 +79,7 @@ $(document).ready(function () {
 
         //---parsowanie wartości pól do JSONa---
         //---przekazywanie danych pracowników do inputa---
+        //---
         function passEmployeesToInputUp() {
             //console.info('passEmployeesToInputUp()');
 
@@ -120,23 +124,31 @@ $(document).ready(function () {
             var dataToDisplay = JSON.parse(dataToPass);
             //console.log(dataToDisplay);
             var space = ' ';
-            var glueEmail = ', email: ';
+            var glueEmail = '<i class="fa fa-envelope"/>';
             var employeesToDisplay = '';
+
+            //---wagoniki---
+            var inputTrainStart = '<div class="in-train">';
+            var inputTrainEnd = '</div>';
+            var removeIcon = '<i class="fa fa-trash-o"/>';
+            //---------------------------
             for (var i = 0; i < dataToDisplay.length; i++) {
                 var singlePerson = '';
                 singlePerson =
-                    ' ' +
+                    inputTrainStart +
                     dataToDisplay[i].name +
                     space +
                     dataToDisplay[i].surname +
                     glueEmail +
-                    dataToDisplay[i].email;
+                    dataToDisplay[i].email +
+                    // removeIcon +
+                    inputTrainEnd;
                 //console.log('Pracownik ', singlePerson);
                 employeesToDisplay += singlePerson;
             }
 
             //console.log('Pracownicy ', employeesToDisplay);
-            fakeInput.text(employeesToDisplay);
+            fakeInput.html(employeesToDisplay);
         }
 
         //---dodawanie na pola nasluchu odpalajacego walidacje---
@@ -199,9 +211,9 @@ $(document).ready(function () {
             var addEmployeeBtn = $(
                 '<button type="button">Dodaj zewnętrznego pracownika</button>'
             ).attr({
-                class: 'btn btn-primary --full-width',
+                class: 'btn btn-primary',
                 id: 'add-outside-employee-btn'
-            });
+            }); // --full-width
             //---3) wstrzyknij i wypozycjonuj przycisk
             addEmployeeBtn.appendTo(startingPoint.parent());
             //---4) dodaj nasłuch na przycisk
