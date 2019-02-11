@@ -598,9 +598,9 @@ class WniosekNadanieOdebranieZasobow
     /**
      * Get zawieraZasobyZAd
      *
-     * @return boo
+     * @return bool
      */
-    public function getZawieraZasobyZAd(): bool
+    public function getZawieraZasobyZAd()
     {
         return $this->zawieraZasobyZAd;
     }
