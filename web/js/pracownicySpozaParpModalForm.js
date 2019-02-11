@@ -1,246 +1,219 @@
 $(document).ready(function () {
-    //---sprawdzenie, czy na stronie wystepuje interesujacy nas input---
-    if (
-        document.getElementById(
-            'parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
-        ) !== null
-    ) {
-        //---przestawienie inputa w tryb: tylko do odczytu---
-        //---usuniecie zbednych elementow tagit-a---
-        (function setTypeToReadonly() {
-            var input = $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp');
-            input.attr('readonly', 'readonly');
-            input.next('ul.tagit').remove();
-        })();
+	//---sprawdzenie, czy na stronie wystepuje interesujacy nas input---
+	if (
+		document.getElementById(
+			'parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
+		) !== null &&
+		$('#general>h1:contains("nadanie")').length > 0
+	) {
+		//---przestawienie inputa w tryb: tylko do odczytu---
+		//---usuniecie zbednych elementow tagit-a---
+		(function setTypeToReadonly() {
+			var input = $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp');
+			input.attr('readonly', 'readonly');
+			input.next('ul.tagit').remove();
+		})();
 
-        //---pokaz cialo formularza---
-        function displayOutsideEmployeeForm() {
-            //console.info('displayOutsideEmployeeForm()');
-            var outsideEmployeeModalForm = $('#add-outside-employee-layer');
-            $('#add-outside-employee-layer').removeClass('hidden');
-            //console.log(outsideEmployeeModalForm);
-            inputsValidation();
-        }
+		//---pokaz cialo formularza---
+		function displayOutsideEmployeeForm() {
+			var outsideEmployeeModalForm = $('#add-outside-employee-layer');
+			$('#add-outside-employee-layer').removeClass('hidden');
+			inputsValidation();
+		}
 
-        //---kontrolowanie wyglądu przycisku dodawania pracowników spoza PARP---
-        function buttonDisplayController() {
-            //console.info('buttonDisplayController()');
-            var addEmployeeBtn = $('#add-outside-employee-btn');
-            // addEmployeeBtn.removeClass('--full-width');
-            addEmployeeBtn.addClass('--narrow');
-        }
+		//---kontrolowanie wyglądu przycisku dodawania pracowników spoza PARP---
+		function buttonDisplayController() {
+			var addEmployeeBtn = $('#add-outside-employee-btn');
+			addEmployeeBtn.addClass('--narrow');
+		}
 
-        //---ukrywanie modala---
-        function hideOutsideEmployeeForm() {
-            //console.info('hideOutsideEmployeeForm()');
-            var outsideEmployeeModalForm = $('#add-outside-employee-layer');
-            outsideEmployeeModalForm.addClass('hidden');
-            //console.log(outsideEmployeeModalForm);
-            //---ukrycie modala musi wywolac nasluchiwanie na widoku glownym---
-            //---(aby moc usunac dodanych pracownikach)---
-            //removeListener();
-        }
+		//---ukrywanie modala---
+		function hideOutsideEmployeeForm() {
+			var outsideEmployeeModalForm = $('#add-outside-employee-layer');
+			outsideEmployeeModalForm.addClass('hidden');
+			//---ukrycie modala musi wywolac nasluchiwanie na widoku glownym---
+			//---(aby moc usunac dodanych pracownikach)---
+			//removeListener();
+		}
 
-        //---walidacja adresu email---
-        function isEmail(event) {
-            console.log('Email testing');
-            //console.log(event.target);
-            //var outsideEmployeeEmail = $('.outside-employee-email');
-            console.log('Pole do przetestowania ', event.target);
-            // var regexp = /^([a-zA-Z0-9_\.\-])+\@(([a-zA-Z0-9\-])+\.)+([a-zA-Z0-9]{2,4})+$/;
-            var regexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-            if (regexp.test(event.target.value)) {
-                $('.status-board').text('').removeClass('alert alert-danger');
-                return true;
-            } else {
-                //event.target.after('<div>Podaj poprawny adres e-mail</div>');
-                $('.status-board').text('Podaj poprawny adres e-mail').addClass('alert alert-danger');
-                console.log('Podaj poprawny adres e-mail');
-                event.target.focus();
-                return false;
-            }
-        }
+		//---walidacja adresu email---
+		function isEmail(event) {
+			console.log('Pole do przetestowania ', event.target);
+			var regexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+			if (regexp.test(event.target.value)) {
+				$('.status-board').text('').removeClass('alert alert-danger');
+				return true;
+			} else {
+				$('.status-board').text('Podaj poprawny adres e-mail').addClass('alert alert-danger');
+				console.log('Podaj poprawny adres e-mail');
+				event.target.focus();
+				return false;
+			}
+		}
 
-        //---walidacja pol tekstowych---
-        function isText(event, msg) {
-            var regx = /^([A-ZŚŻŹŃŁa-zęóąśłżźńć/-]{3,25})+$/;
-            //console.log('text testing');
-            //console.log('Pole tekstowe do przetestowania ', event.target.value);
-            if (regx.test(event.target.value)) {
-                $('.status-board').text('').removeClass('alert alert-danger');
-                return true;
-            } else {
-                console.log("podaj imie i nazwisko");
-                $('.status-board').text(msg).addClass('alert alert-danger');
-                event.target.focus();
-                return false;
-            }
-        }
+		//---walidacja pol tekstowych---
+		function isText(event, msg) {
+			var regx = /^([A-ZŚŻŹŃŁa-zęóąśłżźńć/-]{3,25})+$/;
+			if (regx.test(event.target.value)) {
+				$('.status-board').text('').removeClass('alert alert-danger');
+				return true;
+			} else {
+				console.log("podaj imie i nazwisko");
+				$('.status-board').text(msg).addClass('alert alert-danger');
+				event.target.focus();
+				return false;
+			}
+		}
 
-        //---parsowanie wartości pól do JSONa---
-        //---przekazywanie danych pracowników do inputa---
-        //---
-        function passEmployeesToInputUp() {
-            //console.info('passEmployeesToInputUp()');
+		//---parsowanie wartości pól do JSONa---
+		//---przekazywanie danych pracowników do inputa---
+		//---
+		function passEmployeesToInputUp() {
+			var dataToPass = JSON.stringify(
+				$('.single-employee')
+				.map(function (index) {
+					var names = $(this)
+						.find('.outside-employee-name')
+						.val();
+					var surnames = $(this)
+						.find('.outside-employee-surname')
+						.val();
+					var emails = $(this)
+						.find('.outside-employee-email')
+						.val();
+					var singleEmployee = {
+						name: names,
+						surname: surnames,
+						email: emails
+					};
+					var singleEmployeeArr = [singleEmployee];
+					return singleEmployeeArr;
+				})
+				.get()
+			);
 
-            var employeesFields = $('.single-employee');
-            //console.log('Pracownicy', employeesFields, employeesFields.length);
+			var resultInput = $(
+				'#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
+			);
+			resultInput.removeClass('tagit-hidden-field');
+			resultInput.next('ul.tagit').remove();
+			resultInput.val(dataToPass);
 
-            var dataToPass = JSON.stringify(
-                $('.single-employee')
-                .map(function (index) {
-                    var names = $(this)
-                        .find('.outside-employee-name')
-                        .val();
-                    var surnames = $(this)
-                        .find('.outside-employee-surname')
-                        .val();
-                    var emails = $(this)
-                        .find('.outside-employee-email')
-                        .val();
-                    var singleEmployee = {
-                        name: names,
-                        surname: surnames,
-                        email: emails
-                    };
-                    var singleEmployeeArr = [singleEmployee];
-                    return singleEmployeeArr;
-                })
-                .get()
-            );
+			//---pole wyświetlania przykrywajace input---
+			var fakeInput = $('<div class="form-control" id="fake-input"></div>');
+			resultInput.before(fakeInput);
+			var dataToDisplay = JSON.parse(dataToPass);
+			var space = ' ';
+			var glueEmail = '<i class="fa fa-envelope"/>';
+			var employeesToDisplay = '';
 
-            //console.log(dataToPass);
-            var resultInput = $(
-                '#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
-            );
-            resultInput.removeClass('tagit-hidden-field');
-            resultInput.next('ul.tagit').remove();
-            //console.log(resultInput);
-            resultInput.val(dataToPass);
+			//---wagoniki---
+			var inputTrainStart = '<div class="in-train">';
+			var inputTrainEnd = '</div>';
+			// var removeIcon = '<i class="fa fa-trash-o"/>';
+			//---------------------------
+			for (var i = 0; i < dataToDisplay.length; i++) {
+				var singlePerson = '';
+				singlePerson =
+					inputTrainStart +
+					dataToDisplay[i].name +
+					space +
+					dataToDisplay[i].surname +
+					glueEmail +
+					dataToDisplay[i].email +
+					// removeIcon +
+					inputTrainEnd;
+				employeesToDisplay += singlePerson;
+			}
 
-            //---pole wyświetlania przykrywajace input---
-            var fakeInput = $('<div class="form-control" id="fake-input"></div>');
-            resultInput.before(fakeInput);
-            var dataToDisplay = JSON.parse(dataToPass);
-            //console.log(dataToDisplay);
-            var space = ' ';
-            var glueEmail = '<i class="fa fa-envelope"/>';
-            var employeesToDisplay = '';
+			//console.log('Pracownicy ', employeesToDisplay);
+			fakeInput.html(employeesToDisplay);
+		}
 
-            //---wagoniki---
-            var inputTrainStart = '<div class="in-train">';
-            var inputTrainEnd = '</div>';
-            var removeIcon = '<i class="fa fa-trash-o"/>';
-            //---------------------------
-            for (var i = 0; i < dataToDisplay.length; i++) {
-                var singlePerson = '';
-                singlePerson =
-                    inputTrainStart +
-                    dataToDisplay[i].name +
-                    space +
-                    dataToDisplay[i].surname +
-                    glueEmail +
-                    dataToDisplay[i].email +
-                    // removeIcon +
-                    inputTrainEnd;
-                //console.log('Pracownik ', singlePerson);
-                employeesToDisplay += singlePerson;
-            }
+		//---dodawanie na pola nasluchu odpalajacego walidacje---
+		function inputsValidation() {
+			var modalForm = $('.modal-form');
+			var employees = modalForm.find('.form-group');
+			employees.on('blur', '.outside-employee-email', function () {
+				isEmail(event);
+			});
+			employees.on('blur', '.outside-employee-name', function (event) {
+				isText(event, "Podaj imię");
+			});
+			employees.on('blur', '.outside-employee-surname', function (event) {
+				isText(event, "Podaj nazwisko");
+			});
+		}
 
-            //console.log('Pracownicy ', employeesToDisplay);
-            fakeInput.html(employeesToDisplay);
-        }
+		//---obsluga przycisku zatwierdz w modalu---
+		function confirmation() {
+			var confirmBtn = $('#submit-outside-employee');
+			confirmBtn.on('click', function (event) {
+				event.preventDefault();
+				if ($('.modal-form input').val().length > 0) {
+					passEmployeesToInputUp();
+					buttonDisplayController();
+					hideOutsideEmployeeForm();
+				} else {
+					$('.status-board').text('Pola nie mogą być puste').addClass('alert alert-danger');
+				}
 
-        //---dodawanie na pola nasluchu odpalajacego walidacje---
-        function inputsValidation() {
-            //console.log('inputsValidation()');
-            var modalForm = $('.modal-form');
+			});
+		}
 
-            var employees = modalForm.find('.form-group');
-            employees.on('blur', '.outside-employee-email', function () {
-                isEmail(event);
-            });
-            employees.on('blur', '.outside-employee-name', function (event) {
-                isText(event, "Podaj imię");
-            });
-            employees.on('blur', '.outside-employee-surname', function (event) {
-                isText(event, "Podaj nazwisko");
-            });
-        }
+		//---obsluga przycisku dodaj w modalu---
+		function addingInputs() {
+			var addBtn = $('#add-another-outside-employee');
+			addBtn.on('click', function (event) {
+				addInputsForNextEmployee();
+			});
+		}
 
-        //---obsluga przycisku zatwierdz w modalu---
-        function confirmation() {
-            var confirmBtn = $('#submit-outside-employee');
-            confirmBtn.on('click', function (event) {
-                event.preventDefault();
-                if ($('.modal-form input').val().length > 0) {
-                    passEmployeesToInputUp();
-                    buttonDisplayController();
-                    hideOutsideEmployeeForm();
-                } else {
-                    $('.status-board').text('Pola nie mogą być puste').addClass('alert alert-danger');
-                }
+		//---obsluga przycisku anuluj w modalu---
+		function cancel() {
+			var cancelBtn = $('.cancel-btn');
+			cancelBtn.on('click', function (event) {
+				hideOutsideEmployeeForm();
+			});
+		}
 
-            });
-        }
+		//---generowanie przycisku modalnego formularza w widoku---
+		(function showModalBtn() {
+			//---1) zaczep $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp')
+			var startingPoint = $(
+				'#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
+			);
+			//---2) stwórz przycisk $('#showOutsideEmployeeFormBtn')
+			var addEmployeeBtn = $(
+				'<button type="button">Dodaj zewnętrznego pracownika</button>'
+			).attr({
+				class: 'btn btn-primary',
+				id: 'add-outside-employee-btn'
+			}); // --full-width
+			//---3) wstrzyknij i wypozycjonuj przycisk
+			addEmployeeBtn.appendTo(startingPoint.parent());
+			//---4) dodaj nasłuch na przycisk
+			addEmployeeBtn.on('click', function (event) {
+				displayOutsideEmployeeForm();
+			});
+			//---5) dodaj nasluch przyciskow w modalu
+			confirmation();
+			addingInputs();
+			cancel();
+		})();
 
-        //---obsluga przycisku dodaj w modalu---
-        function addingInputs() {
-            var addBtn = $('#add-another-outside-employee');
-            addBtn.on('click', function (event) {
-                addInputsForNextEmployee();
-            });
-        }
+		//---zarzadzanie modalem---
+		function addInputsForNextEmployee() {
+			var template = $('<div class="single-employee"></div>');
+			template.html(
+				'<div class="form-group"><label for="outside-employee-name">Imię pracownika<input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika" minlength="3" maxlength="16" /></label></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika<input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika" minlength="2" maxlength="32" /></label></div><div class="form-group"><label for="outside-employee-email">Email pracownika<input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika" minlength="6" maxlength="64" /></label></div>'
+			);
 
-        //---obsluga przycisku anuluj w modalu---
-        function cancel() {
-            var cancelBtn = $('.cancel-btn');
-            cancelBtn.on('click', function (event) {
-                hideOutsideEmployeeForm();
-            });
-        }
+			$('.single-employee')
+				.last()
+				.after(template);
 
-        //---generowanie przycisku modalnego formularza w widoku---
-        (function showModalBtn() {
-            //console.info('showModalBtn()');
-            //---1) zaczep $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp')
-            var startingPoint = $(
-                '#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp'
-            );
-            //---2) stwórz przycisk $('#showOutsideEmployeeFormBtn')
-            var addEmployeeBtn = $(
-                '<button type="button">Dodaj zewnętrznego pracownika</button>'
-            ).attr({
-                class: 'btn btn-primary',
-                id: 'add-outside-employee-btn'
-            }); // --full-width
-            //---3) wstrzyknij i wypozycjonuj przycisk
-            addEmployeeBtn.appendTo(startingPoint.parent());
-            //---4) dodaj nasłuch na przycisk
-            addEmployeeBtn.on('click', function (event) {
-                displayOutsideEmployeeForm();
-            });
-            //---5) dodaj nasluch przyciskow w modalu
-            confirmation();
-            addingInputs();
-            cancel();
-        })();
-
-        //---zarzadzanie modalem---
-        function addInputsForNextEmployee() {
-            //console.info('addInputsForNextEmployee()');
-            var modalForm = $('.modal-form');
-
-            var template = $('<div class="single-employee"></div>');
-            template.html(
-                '<div class="form-group"><label for="outside-employee-name">Imię pracownika<input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika" minlength="3" maxlength="16" /></label></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika<input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika" minlength="2" maxlength="32" /></label></div><div class="form-group"><label for="outside-employee-email">Email pracownika<input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika" minlength="6" maxlength="64" /></label></div>'
-            );
-
-            $('.single-employee')
-                .last()
-                .after(template);
-
-            inputsValidation();
-        }
-    }
+			inputsValidation();
+		}
+	}
 });
