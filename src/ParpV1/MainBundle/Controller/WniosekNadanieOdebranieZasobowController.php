@@ -952,8 +952,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         if (!$wniosek->getZawieraZasobyZAd()) {
                             if (!isset($dataOdebrania)) {
                                 $uz->setDataOdebrania(new DateTime());
+                            } else {
+                                $uz->setDataOdebrania($dataOdebrania);
                             }
-                            $uz->setDataOdebrania($dataOdebrania);
                         }
                         $uz->setKtoOdebral($this->getUser()->getUsername());
                         $uz->setDataOdebrania(new DateTime());

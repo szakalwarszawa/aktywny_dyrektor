@@ -31,6 +31,7 @@ class IloczynKartezjanskiHelper
                 $result[] = $p;
             }
         }
+
         return $result;
     }
 }
