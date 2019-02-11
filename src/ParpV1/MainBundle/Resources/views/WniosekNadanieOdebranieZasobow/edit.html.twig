@@ -99,44 +99,50 @@
             </a>
         </div>
     </div>
-{# ---outsideEmployeesModalForm--- #}
+    <!-- outsideEmployeesModalForm -->
     <div class="container-fluid">
         <div class="modal-form-bg row hidden" id="add-outside-employee-layer">
             <form class="modal-form col-xs-12 col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3"
-                action="" role="form">
+                role="form">
                 <div class="single-employee">
                     <div class="form-group">
-                        <label for="outside-employee-name">Imię pracownika
-                            <input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika"
+                        <label for="outside-employee-name">Imię pracownika spoza PARP
+                            <input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika spoza PARP"
                                 minlength="3" maxlength="16" />
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="outside-employee-surname">Nazwisko pracownika
-                            <input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika"
+                        <label for="outside-employee-surname">Nazwisko pracownika spoza PARP
+                            <input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika spoza PARP"
                                 minlength="2" maxlength="32" />
                         </label>
                     </div>
                     <div class="form-group">
-                        <label for="outside-employee-email">Email pracownika
-                            <input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika"
+                        <label for="outside-employee-email">Email pracownika spoza PARP
+                            <input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika spoza PARP"
                                 minlength="6" maxlength="64" />
                         </label>
                     </div>
                 </div>
                 <div class="status-board">
+
                 </div>
                 <button id="add-another-outside-employee" type="button" class="btn btn-default">
-                    <i class="fas fa-plus" aria-hidden="true"></i>
+                    <i class="fa fa-plus" aria-hidden="true"></i>
                     Dodaj kolejnego pracownika
                 </button>
                 <button id="submit-outside-employee" type="button" class="btn btn-success">
-                    <i class="fas fa-check" aria-hidden="true"></i>
+                    <i class="fa fa-check" aria-hidden="true"></i>
                     Zatwierdź
+                </button>
+                <button id="submit-outside-employee" type="button" class="btn btn-primary cancel-btn">
+                    <i class="fa fa-arrow-left" aria-hidden="true"></i>
+                    Anuluj
                 </button>
             </form>
         </div>
     </div>
+
 <script type="text/javascript"src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 <script type="text/javascript"src="{{ asset('js/pracownicySpozaParpModalForm.js') }}"></script>
 {% endblock %}
