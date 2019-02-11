@@ -6,11 +6,13 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Doctrine\ORM\EntityManagerInterface;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Services\ZasobyService;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
 use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -27,13 +29,22 @@ class OdbieranieUprawnienService
     private $currentUser;
 
     /**
+     * @var ZasobyService
+     */
+    private $zasobyService;
+
+    /**
      * Publiczny konstruktor
      *
      * @param EntityManagerInterface $entityManager
      * @param TokenStorage $tokenStorage
      */
-    public function __construct(EntityManagerInterface $entityManager, TokenStorage $tokenStorage)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TokenStorage $tokenStorage,
+        ZasobyService $zasobyService
+    ) {
+        $this->zasobyService = $zasobyService;
         $this->entityManager = $entityManager;
         $this->currentUser = $tokenStorage->getToken()->getUser();
     }
@@ -65,6 +76,10 @@ class OdbieranieUprawnienService
                 $poziomDostepu = $userZasob->getPoziomDostepu();
                 if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
                     $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
+                    $wniosekNadanieOdebranieZasobow
+                        ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasob))
+                    ;
+
                     $noweUserZasoby->remove($key);
                 }
             }
@@ -98,6 +113,14 @@ class OdbieranieUprawnienService
             ->setPowodOdebrania($powodOdebrania)
         ;
 
+        if (null === $wniosekNadanieOdebranieZasobow) {
+            $userZasob
+                ->setCzyOdebrane(true)
+                ->setKtoOdebral($this->currentUser)
+                ->setCzyAktywne(false)
+                ->setDataOdebrania(new DateTime())
+            ;
+        }
 
         if (null !== $wniosekNadanieOdebranieZasobow) {
             $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
@@ -133,6 +156,15 @@ class OdbieranieUprawnienService
         $podzielonyZasob = IloczynKartezjanskiHelper::build([$userZasobModuly, $userZasobPoziomDostepu]);
 
         $utworzoneUserZasoby = new ArrayCollection();
+
+        if (1 === count($podzielonyZasob)) {
+            $utworzoneUserZasoby
+                ->add($userZasob)
+            ;
+
+            return $utworzoneUserZasoby;
+        }
+
         foreach ($podzielonyZasob as $modulPoziom) {
             $nowyUserZasob = clone $userZasob;
             $nowyUserZasob

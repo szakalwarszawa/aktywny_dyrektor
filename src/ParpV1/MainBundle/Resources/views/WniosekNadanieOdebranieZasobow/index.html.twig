@@ -45,28 +45,8 @@
 
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
-
-            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+            {{ grid(grid,'ParpMainBundle:Grid:grid_jquery_filters.html.twig') }}
         </div>
-{#
-        <div id="wtoku" class="tab-pane fade">
-
-
-            {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
-        </div>
-        <div id="zakonczone" class="tab-pane fade">
-
-
-            {{ grid(grid3,'ParpMainBundle:Default:index_grid.html.twig') }}
-        </div>
-#}
     </div>
 </div>
-
-
-
-
-
-
-
 {% endblock %}
