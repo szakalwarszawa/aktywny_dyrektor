@@ -13,6 +13,7 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -68,22 +69,35 @@ class OdbieranieUprawnienService
             ->find($wniosekId)
         ;
 
-        $dokonaneZmiany = [];
-        foreach ($zasobyDoZmiany as $userZasobId => $zasoby) {
-            $noweUserZasoby = $this->podzielZasob($userZasobId);
-            foreach ($noweUserZasoby as $key => $userZasob) {
-                $modulZasobu = $userZasob->getModul();
-                $poziomDostepu = $userZasob->getPoziomDostepu();
-                if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
-                    $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
-                    $wniosekNadanieOdebranieZasobow
-                        ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasob))
-                    ;
+        $podzieloneUserZasoby = [];
+        foreach ($zasobyDoZmiany as $userZasobId => $userZasoby) {
+            if (!isset($podzieloneUserZasoby[$userZasobId])) {
+                $podzieloneUserZasoby[$userZasobId] = $this->podzielZasob($userZasobId);
+            }
 
-                    $noweUserZasoby->remove($key);
-                }
+            foreach ($userZasoby as $userZasob) {
+                $criteria = Criteria::create();
+                $criteria
+                    ->where(
+                        Criteria::expr()
+                            ->eq('poziomDostepu', $userZasob['poziom_zasobu'])
+                    )
+                    ->andWhere(
+                        Criteria::expr()
+                            ->eq('modul', $userZasob['modul_zasobu'])
+                    )
+                ;
+
+                $userZasobDoWniosku = $podzieloneUserZasoby[$userZasobId]->matching($criteria);
+                $userZasobDoWniosku = $userZasobDoWniosku->current();
+
+                $this->ustawJakoOdbierany($userZasobDoWniosku, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
+                $wniosekNadanieOdebranieZasobow
+                    ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasobDoWniosku))
+                ;
             }
         }
+
         if (null !== $wniosekNadanieOdebranieZasobow) {
             $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
             $entityManager->persist($wniosekNadanieOdebranieZasobow);
