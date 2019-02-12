@@ -151,7 +151,13 @@
                                             <td>{{ row.poziomDostepu }}</td>
                                             <td>{{ row.aktywneOd }}</td>
                                             <td>{{ row.aktywneDo }}</td>
-                                            <td>{{ row.data_odebrania|date('Y-m-d H:i:s') }}</td>
+                                            <td>
+                                                {% if row.data_odebrania is null %}
+                                                    -
+                                                {% else %}
+                                                    {{ row.data_odebrania|date('Y-m-d H:i:s') }}
+                                                {% endif %}
+                                            </td>
                                             <td>{{ row.powodNadania }}
 
                                             {% if(row.czyOdebrane) %}
