@@ -11,6 +11,7 @@ $(document).ready(function () {
 		(function setTypeToReadonly() {
 			var input = $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp');
 			input.attr('readonly', 'readonly');
+			input.attr('type', 'hidden');
 			input.next('ul.tagit').remove();
 		})();
 
@@ -100,7 +101,12 @@ $(document).ready(function () {
 			resultInput.val(dataToPass);
 
 			//---pole wyświetlania przykrywajace input---
-			var fakeInput = $('<div class="form-control" id="fake-input"></div>');
+			if ($('.fake-input').length > 0) {
+				$('.fake-input')
+					.first()
+					.remove();
+			}
+			var fakeInput = $('<div class="fake-input"></div>');
 			resultInput.before(fakeInput);
 			var dataToDisplay = JSON.parse(dataToPass);
 			var space = ' ';
