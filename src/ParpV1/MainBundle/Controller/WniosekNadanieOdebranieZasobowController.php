@@ -80,8 +80,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     public function indexAction(Request $request, $ktore = WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE)
     {
         $xmlHttpRequest = $request->isXmlHttpRequest();
+        $ajaxGrid = $this->container->getParameter('ajax_grid_wnioskinadanieodebranie');
         $pustyGrid = false;
-        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $ktore && !$xmlHttpRequest) {
+        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $ktore && !$xmlHttpRequest && $ajaxGrid) {
             $pustyGrid = true;
         }
 
@@ -99,7 +100,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         ;
 
         $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
-        if ($xmlHttpRequest) {
+
+        if ($xmlHttpRequest && $ajaxGrid) {
             $szablonTwig = 'ParpMainBundle:Grid:ajax_grid.html.twig';
         }
 
@@ -107,6 +109,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'ktore'      => $ktore,
                 'grid'       => $grid,
                 'zastepstwa' => $zastepstwa,
+                'ajax_grid'  => $ajaxGrid
         ]);
     }
 

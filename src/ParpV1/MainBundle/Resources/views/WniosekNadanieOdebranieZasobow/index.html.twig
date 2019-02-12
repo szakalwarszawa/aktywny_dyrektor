@@ -45,7 +45,11 @@
 
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
-            {{ grid(grid,'ParpMainBundle:Grid:grid_jquery_filters.html.twig') }}
+            {% if ajax_grid %}
+                {{ grid(grid,'ParpMainBundle:Grid:grid_jquery_filters.html.twig') }}
+            {% else %}
+                {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+            {% endif %}
         </div>
     </div>
 </div>

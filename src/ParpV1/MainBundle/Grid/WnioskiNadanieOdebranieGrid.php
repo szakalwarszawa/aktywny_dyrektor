@@ -14,6 +14,7 @@ use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use DateTime;
 
 /**
  * Klasa WnioskiNadanieOdebranieGrid
@@ -46,17 +47,23 @@ class WnioskiNadanieOdebranieGrid
     private $currentUser;
 
     /**
+     * @var bool
+     */
+    private $ajaxGrid;
+
+    /**
      * Publiczny konstruktor.
      *
      * @param Grid              $grid
      * @param EntityManager     $entityManager
      * @param TokenStorage      $tokenStorage
      */
-    public function __construct(Grid $grid, EntityManager $entityManager, TokenStorage $tokenStorage)
+    public function __construct(Grid $grid, EntityManager $entityManager, TokenStorage $tokenStorage, bool $ajaxGrid)
     {
         $this->entityManager = $entityManager;
         $this->grid = $grid;
         $this->currentUser = $tokenStorage->getToken()->getUser();
+        $this->ajaxGrid = $ajaxGrid;
     }
 
     /**
@@ -142,6 +149,16 @@ class WnioskiNadanieOdebranieGrid
             ->setSafe(true);
 
         $grid = $this->dodajAkcjeGrid($grid);
+
+        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $this->typWniosku && !$this->ajaxGrid) {
+            $dataGraniczna = new DateTime('-14 days');
+            $grid->setDefaultFilters([
+                'utworzonyDnia' => [
+                    'operator' => 'gte',
+                    'from' => $dataGraniczna->format('Y-m-d')
+                ]
+            ]);
+        }
 
         return $grid;
     }
