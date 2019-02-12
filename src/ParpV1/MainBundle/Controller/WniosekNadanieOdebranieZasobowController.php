@@ -38,6 +38,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use DateTime;
 use Exception;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -127,9 +128,25 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $form->handleRequest($request);
         $jestCoOdebrac = false;
 
-        if (false === strpos($entity->getPracownicy(), ',')) {
-            $listaPracownikow =  array_filter(explode(';', $entity->getPracownicy()));
-        } else {
+        $listaPracownikowForm = json_decode($entity->getPracownicy(), true);
+        $listaPracownikow = [];
+        if (null !== $listaPracownikowForm) {
+            $resolver = new OptionsResolver();
+            $resolver
+                ->setRequired([
+                    'name',
+                    'surname',
+                    'email'
+                ]);
+
+            foreach ($listaPracownikowForm as $pracownik) {
+                $resolver->resolve($pracownik);
+                $pracownik = implode(' ', [$pracownik['name'], $pracownik['surname'], $pracownik['email']]);
+                $listaPracownikow[] = $pracownik;
+            }
+        }
+
+        if (null === $listaPracownikowForm) {
             $listaPracownikow = array_filter(explode(',', $entity->getPracownicy()));
         }
 
