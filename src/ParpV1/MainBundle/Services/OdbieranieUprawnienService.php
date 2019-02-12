@@ -92,9 +92,11 @@ class OdbieranieUprawnienService
                 $userZasobDoWniosku = $userZasobDoWniosku->current();
 
                 $this->ustawJakoOdbierany($userZasobDoWniosku, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
-                $wniosekNadanieOdebranieZasobow
-                    ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasobDoWniosku))
-                ;
+                if (null !== $wniosekNadanieOdebranieZasobow) {
+                    $wniosekNadanieOdebranieZasobow
+                        ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasobDoWniosku))
+                    ;
+                }
             }
         }
 
