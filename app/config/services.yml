@@ -121,4 +121,4 @@ services:
         arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '@zasoby_service']
     wnioski_nadanie_odebranie_grid:
         class: ParpV1\MainBundle\Grid\WnioskiNadanieOdebranieGrid
-        arguments: ['@grid', '@doctrine.orm.entity_manager', '@security.token_storage']
+        arguments: ['@grid', '@doctrine.orm.entity_manager', '@security.token_storage', '%ajax_grid_wnioskinadanieodebranie%']
