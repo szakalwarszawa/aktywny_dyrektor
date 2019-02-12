@@ -100,7 +100,12 @@ $(document).ready(function () {
 			resultInput.val(dataToPass);
 
 			//---pole wyświetlania przykrywajace input---
-			var fakeInput = $('<div class="form-control" id="fake-input"></div>');
+			if ($('.fake-input').length > 0) {
+				$('.fake-input')
+					.first()
+					.remove();
+			}
+			var fakeInput = $('<div class="fake-input"></div>');
 			resultInput.before(fakeInput);
 			var dataToDisplay = JSON.parse(dataToPass);
 			var space = ' ';
