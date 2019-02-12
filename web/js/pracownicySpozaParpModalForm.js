@@ -11,6 +11,7 @@ $(document).ready(function () {
 		(function setTypeToReadonly() {
 			var input = $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp');
 			input.attr('readonly', 'readonly');
+			input.attr('type', 'hidden');
 			input.next('ul.tagit').remove();
 		})();
 
