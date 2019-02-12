@@ -569,6 +569,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $wniosek->setPowodZwrotu('');
         }
 
+        if (!isset($dataOdebrania)) {
+            $dataOdebrania = new DateTime();
+        }
+
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
         if ($isAccepted == 'acceptAndPublish' && !in_array($status, [
                 '05_EDYCJA_ADMINISTRATOR',
@@ -967,18 +971,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
                         if (!$wniosek->getZawieraZasobyZAd()) {
-                            if (!isset($dataOdebrania)) {
-                                $uz->setDataOdebrania(new DateTime());
-                            } else {
-                                $uz->setDataOdebrania($dataOdebrania);
-                            }
+                            $uz->setDataOdebrania($dataOdebrania);
                         }
+
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setDataOdebrania(new DateTime());
                     }
+
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());
 
