@@ -138,7 +138,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             foreach ($listaPracownikowForm as $pracownik) {
                 $resolver->resolve($pracownik);
-                $pracownik = implode(' ',[$pracownik['name'], $pracownik['surname'], $pracownik['email']]);
+                $pracownik = implode(' ', [$pracownik['name'], $pracownik['surname'], $pracownik['email']]);
                 $listaPracownikow[] = $pracownik;
             }
         }
