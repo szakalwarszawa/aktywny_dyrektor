@@ -150,6 +150,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $listaPracownikow = array_filter(explode(',', $entity->getPracownicy()));
         }
 
+        $entity->setPracownicy(implode(',', $listaPracownikow));
+
         if ($entity->getOdebranie()) {
             $userZasoby = $this
                     ->getDoctrine()
