@@ -200,11 +200,17 @@ $(document).ready(function() {
 			});
 		}
 
+		function resizeLayer() {
+			var modalFormLayer = $('#add-outside-employee-layer');
+			modalFormLayer.height($(document).height());
+		}
+
 		//---obsluga przycisku dodaj w modalu---
 		function addingInputs() {
 			var addBtn = $('#add-another-outside-employee');
 			addBtn.on('click', function(event) {
 				addInputsForNextEmployee();
+				resizeLayer();
 			});
 		}
 
