@@ -12,7 +12,7 @@ class AkcjeWnioskuConstants
     /**
      * @var string
      */
-    const EDYTUJ = 'edytuj_wniosek';
+    const EDYTUJ = 'edit';
 
     /**
      * @var string
@@ -43,4 +43,19 @@ class AkcjeWnioskuConstants
      * @var string
      */
     const ODBLOKUJ = 'unblock';
+
+    /**
+     * @var string
+     */
+    const POKAZ = 'index';
+
+    /**
+     * @var string
+     */
+    const USUN = 'delete';
+
+    /**
+     * @var string
+     */
+    const DODAJ_PLIK = 'dodaj_plik';
 }

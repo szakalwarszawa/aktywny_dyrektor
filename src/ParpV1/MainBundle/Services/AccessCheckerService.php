@@ -23,6 +23,9 @@ use ParpV1\AuthBundle\Security\ParpUser;
 use ReflectionClass;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 use InvalidArgumentException;
+use ParpV1\MainBundle\Entity\Zasoby;
+use RecursiveArrayIterator;
+use RecursiveIteratorIterator;
 
 class AccessCheckerService
 {
@@ -99,7 +102,7 @@ class AccessCheckerService
     }
 
     /**
-     * Sprawdza czy użytkownik może wykonać daną akcję na wniosku.
+     * Sprawdza czy użytkownik może wykonać daną akcję na wniosku lub zasobie.
      * Przekierowuje na podstawie klasy do odpowiedniej metody.
      *
      * @param object $object
@@ -120,7 +123,55 @@ class AccessCheckerService
             return $this->checkActionWniosekUtworzenieZasobu($object, $action);
         }
 
+        if ($object instanceof Zasoby) {
+            return $this->checkActionZasoby($object, $action);
+        }
+
         throw new InvalidArgumentException('Obiekt klasy ' . get_class($object) . ' nie jest obsługiwany.');
+    }
+
+    /**
+     * Sprawdza czy dana akcja jest dozwolona na obiekcie Zasoby.
+     *
+     * @param Zasoby $zasob
+     * @param string $action
+     *
+     * @return bool
+     */
+    private function checkActionZasoby(Zasoby $zasob, string $action): bool
+    {
+        if (AkcjeWnioskuConstants::EDYTUJ === $action) {
+            return $this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW');
+        }
+
+        if (AkcjeWnioskuConstants::USUN === $action) {
+            return $this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW');
+        }
+
+        if (AkcjeWnioskuConstants::POKAZ === $action) {
+            if ($this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
+                return true;
+            }
+
+            $allowedUsers[] = $zasob->getWlascicielZasobu();
+            $allowedUsers[] = explode(',', str_replace(' ', '', $zasob->getAdministratorZasobu()));
+            $allowedUsers[] = explode(',', str_replace(' ', '', $zasob->getAdministratorTechnicznyZasobu()));
+            $allowedUsers[] = explode(',', str_replace(' ', '', $zasob->getPowiernicyWlascicielaZasobu()));
+
+            $iterator = new RecursiveIteratorIterator(new RecursiveArrayIterator($allowedUsers));
+            $allowedUsers = iterator_to_array($iterator, false);
+
+            $currentUserName = $this
+                ->currentUser
+                ->getUsername()
+            ;
+
+            return in_array($currentUserName, array_unique($allowedUsers));
+        }
+
+        if (AkcjeWnioskuConstants::DODAJ_PLIK) {
+            return $this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW');
+        }
     }
 
     /**
