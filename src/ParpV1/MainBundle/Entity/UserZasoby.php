@@ -25,16 +25,15 @@ class UserZasoby
     public function preUpdate()
     {
         if ($this->wniosek) {
-            try{
+            try {
                 $this->wniosek->ustawPoleZasoby();
             } catch (EntityNotFoundException $exception) {
                 return false;
             }
-
         }
 
         if ($this->wniosekOdebranie) {
-            try{
+            try {
                 $this->wniosekOdebranie->ustawPoleZasoby();
             } catch (EntityNotFoundException $exception) {
                 return false;

@@ -156,7 +156,7 @@ class OdbieranieUprawnienService
         DateTime $dataOdebrania = null
     ): void {
         $userZasob
-            //->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
+            ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
         ;
 
