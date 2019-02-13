@@ -31,6 +31,7 @@ use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -442,15 +443,14 @@ class WniosekUtworzenieZasobuController extends Controller
 //        var_dump($entity->getZasob()->getName()); die();
         $comments = $em->getRepository(Komentarz::class)->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
 
+        $accessCheckerService = $this->get('check_access');
         $deleteForm = $this->createDeleteForm($id);
+
         return array(
-            'canReturn' => true, /*(
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "04_EDYCJA_ADMINISTRATOR_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "05_EDYCJA_TECHNICZNY_O_ZASOB"
-            ),*/
-            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'canReturn' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ZWROC_DO_POPRAWY),
+            'canUnblock' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ODBLOKUJ),
             'editor' => $editor,
             'entity'      => $entity,
             'form'   => $editForm->createView(),

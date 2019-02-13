@@ -16,6 +16,13 @@ use ParpV1\MainBundle\Services\RedmineConnectService;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu;
+use ParpV1\MainBundle\Entity\AclAction;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\AuthBundle\Security\ParpUser;
+use ReflectionClass;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use InvalidArgumentException;
 
 class AccessCheckerService
 {
@@ -23,8 +30,14 @@ class AccessCheckerService
     protected $entityManager;
     protected $container;
 
-    public function __construct(EntityManager $OrmEntity, Container $container = null)
+    /**
+     * @var ParpUser
+     */
+    private $currentUser;
+
+    public function __construct(EntityManager $OrmEntity, Container $container = null, TokenStorage $tokenStorage)
     {
+        $this->currentUser = $tokenStorage->getToken()->getUser();
         $this->entityManager = $OrmEntity;
         $this->container = $container;
         if (PHP_SAPI == 'cli') {
@@ -34,8 +47,11 @@ class AccessCheckerService
 
     public function checkAccess($actionName)
     {
-        $user = $this->container->get('security.token_storage')->getToken()->getUser();
-        $action = $this->container->get('doctrine')->getRepository('ParpMainBundle:AclAction')->findOneBySkrot($actionName);
+        $user = $this->currentUser;
+        $action = $this
+            ->entityManager
+            ->getRepository(AclAction::class)
+            ->findOneBySkrot($actionName);
         $ret = true;
         if ($action) {
             $ret = false;
@@ -80,5 +96,102 @@ class AccessCheckerService
         }
 
         return $isBlocked;
+    }
+
+    /**
+     * Sprawdza czy użytkownik może wykonać daną akcję na wniosku.
+     * Przekierowuje na podstawie klasy do odpowiedniej metody.
+     *
+     * @param object $object
+     * @param string $action
+     *
+     * @throws InvalidArgumentException gdy argumentem $object jest nieobsługiwana klasa.
+     *
+     * @return bool
+     */
+    public function checkActionWniosek(object $object, string $action): bool
+    {
+        $this->availableAction($action);
+        if ($object instanceof WniosekNadanieOdebranieZasobow) {
+            return $this->checkActionWniosekNadanieOdebranieZasobow($object, $action);
+        }
+
+        if ($object instanceof WniosekUtworzenieZasobu) {
+            return $this->checkActionWniosekUtworzenieZasobu($object, $action);
+        }
+
+        throw new InvalidArgumentException('Obiekt klasy ' . get_class($object) . ' nie jest obsługiwany.');
+    }
+
+    /**
+     * Sprawdza czy dana akcja jest dozwolona na WniosekUtworzenieZasobu
+     *
+     * @param WniosekUtworzenieZasobu $wniosekUtworzenieZasobu
+     * @param string $action
+     *
+     * @return bool
+     */
+    private function checkActionWniosekUtworzenieZasobu(
+        WniosekUtworzenieZasobu $wniosekUtworzenieZasobu,
+        string $action
+    ): bool {
+        $wniosek = $wniosekUtworzenieZasobu->getWniosek();
+
+        if (AkcjeWnioskuConstants::ODBLOKUJ === $action) {
+            $lockedByCurrentUser = ($wniosek->getLockedBy() === $this->currentUser->getUsername());
+            $notAllowedStatus = [
+                '00_TWORZONY_O_ZASOB'
+            ];
+            $status = $wniosek->getStatus()->getNazwaSystemowa();
+
+            return ($lockedByCurrentUser && !in_array($status, $notAllowedStatus));
+        }
+
+        if (AkcjeWnioskuConstants::ZWROC_DO_POPRAWY === $action) {
+            $status = $wniosek->getStatus()->getNazwaSystemowa();
+            $notAllowedStatus = [
+                '00_TWORZONY_O_ZASOB',
+                '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'
+            ];
+
+            return (!in_array($status, $notAllowedStatus));
+        }
+    }
+
+    /**
+     * Metoda do zrobienia w przyszłości. Na razie obsługujemy tylko klasę WniosekUtworzenieZasobu.
+     *
+     * @todo
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosek
+     * @param string $action
+     *
+     * @return bool
+     */
+    private function checkActionWniosekNadanieOdebranieZasobow(
+        WniosekNadanieOdebranieZasobow $wniosek,
+        string $action
+    ): bool {
+        return true;
+    }
+
+    /**
+     * Sprwadza czy podana akcja na wniosku jest określona w stałych klasy AkcjeWnioskuConstants.
+     *
+     * @param string $action
+     *
+     * @throws InvalidArgumentException gdy akcja nie jest zdefiniowana.
+     */
+    private function availableAction(string $action): void
+    {
+        $akcjeWnioskuConstants = new ReflectionClass(AkcjeWnioskuConstants::class);
+        $wniosekActions = $akcjeWnioskuConstants->getConstants();
+
+        if (!in_array($action, $wniosekActions)) {
+            $exceptionMessage = 'Niepoprawna akcja na wniosku. Zdefiniowane: ' .
+                implode(', ', $wniosekActions) . '. (Podano: ' . $action . ')';
+
+            throw new InvalidArgumentException($exceptionMessage);
+        }
     }
 }
