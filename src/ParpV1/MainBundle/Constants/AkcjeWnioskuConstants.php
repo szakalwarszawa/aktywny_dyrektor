@@ -22,7 +22,12 @@ class AkcjeWnioskuConstants
     /**
      * @var string
      */
-    const ZWROC_DO_POPRAWY = 'zloz_do_poprawy';
+    const ZWROC_DO_POPRAWY = 'return';
+
+    /**
+     * @var string
+     */
+    const ZAAKCEPTUJ_WNIOSEK = 'accept';
 
     /**
      * @var string
@@ -37,5 +42,5 @@ class AkcjeWnioskuConstants
     /**
      * @var string
      */
-    const ODBLOKUJ = 'odblokuj_wniosek';
+    const ODBLOKUJ = 'unblock';
 }

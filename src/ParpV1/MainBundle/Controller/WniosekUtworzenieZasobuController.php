@@ -919,9 +919,15 @@ class WniosekUtworzenieZasobuController extends Controller
         } else {
             $wniosek->setPowodZwrotu('');
         }
-
+        $accessCheckerService = $this->get('check_access');
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-        if ($isAccepted === 'unblock') {
+        $editFailed = false;
+        if ($isAccepted === AkcjeWnioskuConstants::ODBLOKUJ) {
+            if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODBLOKUJ)) {
+                $editFailed = true;
+                $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
+            }
+
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
         } elseif ($isAccepted === 'reject') {
@@ -1062,7 +1068,9 @@ class WniosekUtworzenieZasobuController extends Controller
                 }
             }
         }
-        $em->flush();
+        if (!$editFailed) {
+            $em->flush();
+        }
 
         if ($isAccepted === 'unblock') {
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array()));
