@@ -187,25 +187,35 @@ class AccessCheckerService
         string $action
     ): bool {
         $wniosek = $wniosekUtworzenieZasobu->getWniosek();
+        $status = $wniosek->getStatus()->getNazwaSystemowa();
 
         if (AkcjeWnioskuConstants::ODBLOKUJ === $action) {
             $lockedByCurrentUser = ($wniosek->getLockedBy() === $this->currentUser->getUsername());
             $notAllowedStatus = [
                 '00_TWORZONY_O_ZASOB'
             ];
-            $status = $wniosek->getStatus()->getNazwaSystemowa();
 
             return ($lockedByCurrentUser && !in_array($status, $notAllowedStatus));
         }
 
         if (AkcjeWnioskuConstants::ZWROC_DO_POPRAWY === $action) {
-            $status = $wniosek->getStatus()->getNazwaSystemowa();
             $notAllowedStatus = [
                 '00_TWORZONY_O_ZASOB',
                 '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'
             ];
 
             return (!in_array($status, $notAllowedStatus));
+        }
+
+        if (AkcjeWnioskuConstants::EDYTUJ === $action) {
+            if ($wniosekUtworzenieZasobu->getTypWnioskuWycofanie()) {
+                $allowedStatus = [
+                    '00_TWORZONY_O_ZASOB',
+                    '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'
+                ];
+
+                return (in_array($status, $allowedStatus));
+            }
         }
     }
 

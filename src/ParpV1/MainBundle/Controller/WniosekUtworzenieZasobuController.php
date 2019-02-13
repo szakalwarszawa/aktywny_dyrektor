@@ -425,6 +425,7 @@ class WniosekUtworzenieZasobuController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
+
         $access = $this->checkAccess($entity);
         if (!$access['viewer'] && !$access['editor'] && !$readonly) {
             return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig', array('wniosek' => $entity, 'viewer' => 0));
@@ -572,6 +573,12 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
+        $accessCheckerService = $this->get('check_access');
+        if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::EDYTUJ)) {
+            $this->addFlash('danger', 'Na tym etapie edycja wniosku nie jest dozwolona!');
+
+            return $this->redirectToRoute('wniosekutworzeniezasobu_show', ['id' => $id]);
+        }
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
