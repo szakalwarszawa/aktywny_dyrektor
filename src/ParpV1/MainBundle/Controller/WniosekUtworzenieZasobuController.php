@@ -32,6 +32,7 @@ use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use DateTime;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -1070,7 +1071,22 @@ class WniosekUtworzenieZasobuController extends Controller
                         break;
                     case 'kasowanie':
                         $wniosek->getZmienianyZasob()->setPublished(false);
-                        //$wniosek->getZasob()->setPublished(false);
+
+                        $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+                        try {
+                            $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                        } catch (\Exception $exception) {
+                            $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array(
+                                'id' => $id
+                            )));
+                        }
+
+                        $odbieranieUprawnienService
+                            ->wyzerujUzytkownikowZasobu($wniosek->getZmienianyZasob(), $dataOdebrania)
+                        ;
+
                         break;
                 }
             }

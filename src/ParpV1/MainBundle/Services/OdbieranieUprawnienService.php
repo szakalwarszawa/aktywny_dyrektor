@@ -35,6 +35,11 @@ class OdbieranieUprawnienService
     private $zasobyService;
 
     /**
+     * @var string
+     */
+    const ZASOB_USUNIETY_POWOD = 'Zasób usunięty, odebrano uprawnienia.';
+
+    /**
      * Publiczny konstruktor
      *
      * @param EntityManagerInterface $entityManager
@@ -48,6 +53,30 @@ class OdbieranieUprawnienService
         $this->zasobyService = $zasobyService;
         $this->entityManager = $entityManager;
         $this->currentUser = $tokenStorage->getToken()->getUser();
+    }
+
+    /**
+     * Odbiera uprawnienia do zasobu wszytkim jego użytkownikom.
+     *
+     * @param Zasoby $zasob
+     * @param DateTime $dataOdebrania
+     *
+     * @return void
+     */
+    public function wyzerujUzytkownikowZasobu(Zasoby $zasob, DateTime $dataOdebrania): void
+    {
+        $entityManager = $this->entityManager;
+        $userZasoby = $entityManager
+            ->getRepository(UserZasoby::class)
+            ->findBy([
+                'zasobId' => $zasob->getId(),
+            ]);
+
+        if (!empty($userZasoby)) {
+            foreach ($userZasoby as $userZasob) {
+                $this->ustawJakoOdbierany($userZasob, null, self::ZASOB_USUNIETY_POWOD, $dataOdebrania);
+            }
+        }
     }
 
     /**
@@ -116,16 +145,18 @@ class OdbieranieUprawnienService
      * @param UserZasoby $userZasob
      * @param WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow
      * @param string $powodOdebrania
+     * @param DateTime $dataOdebrania
      *
      * @return void
      */
     private function ustawJakoOdbierany(
         UserZasoby $userZasob,
         WniosekNadanieOdebranieZasobow $wniosekNadanieOdebranieZasobow = null,
-        string $powodOdebrania
+        string $powodOdebrania,
+        DateTime $dataOdebrania = null
     ): void {
         $userZasob
-            ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
+            //->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
         ;
 
@@ -134,7 +165,7 @@ class OdbieranieUprawnienService
                 ->setCzyOdebrane(true)
                 ->setKtoOdebral($this->currentUser)
                 ->setCzyAktywne(false)
-                ->setDataOdebrania(new DateTime())
+                ->setDataOdebrania(null === $dataOdebrania? new DateTime() : $dataOdebrania)
             ;
         }
 
