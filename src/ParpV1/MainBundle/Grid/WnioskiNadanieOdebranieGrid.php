@@ -173,16 +173,6 @@ class WnioskiNadanieOdebranieGrid
     private function dodajAkcjeGrid(Grid $grid): Grid
     {
         $rowAction = new RowAction(
-            ' Edycja',
-            'wnioseknadanieodebraniezasobow_edit'
-        );
-        $rowAction
-            ->setColumn('akcje')
-            ->addAttribute('class', 'btn btn-success btn-xs glyphicon glyphicon-pencil')
-        ;
-        $grid->addRowAction($rowAction);
-
-        $rowAction = new RowAction(
             ' Pokaż',
             'wnioseknadanieodebraniezasobow_show'
         );
