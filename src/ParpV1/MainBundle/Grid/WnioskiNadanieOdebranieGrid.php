@@ -190,7 +190,7 @@ class WnioskiNadanieOdebranieGrid
             ->addAttribute('class', 'btn btn-danger btn-xs fa fa-delete')
             ->addManipulateRender(
                 function ($action, $row) {
-                    if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
+                    if ($row->getField('numerWniosku') === 'wniosek w trakcie tworzenia') {
                         return $action;
                     } else {
                         return null;
