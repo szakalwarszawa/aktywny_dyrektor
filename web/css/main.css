@@ -41,9 +41,12 @@ td {
 }
 
 form.dirty {
-	border: 3px solid rgba(26, 188, 156, 1);
-	;
-	background: rgba(26, 188, 156, 0.3);
+	/* border: 3px solid rgba(26, 188, 156, 1); */
+	border: 3px solid rgba(228, 122, 5);
+	padding: 1rem;
+	/* background: rgba(26, 188, 156, 0.3); */
+	background: rgba(122, 168, 192);
+
 }
 
 .hidden {
@@ -102,7 +105,7 @@ body .JColResizer>tbody>tr>th {
 }
 
 .btn {
-	border-color: #fff !important;
+	border-color: #fff;
 }
 
 .btn:hover {
@@ -266,20 +269,39 @@ td .btn {
 }
 
 .single-employee {
+	position: relative;
 	padding: 1rem;
 }
 
 .single-employee label {
 	width: 100%;
+	text-indent: 1.5rem;
 }
 
 .single-employee:nth-child(even) {
-	background-color: rgba(0, 0, 0, .15);
+	background-color: #e4e4e4;
 	border-radius: .25rem;
 }
 
 .single-employee:last-of-type {
 	margin-bottom: 1rem;
+}
+
+.single-employee:hover {
+	background-color: rgba(89, 130, 44, .3);
+}
+
+.single-employee .remove-outside-employee {
+	position: absolute;
+	display: block;
+	width: 2.2rem;
+	height: 2.2rem;
+	top: .4rem;
+	right: 1rem;
+	font-weight: 700;
+	border-radius: 50%;
+	border-color: #73a839;
+	border-bottom: 1px solid #59822c;
 }
 
 .fake-input {
@@ -304,6 +326,7 @@ td .btn {
 	padding: 1rem;
 	font-weight: 700;
 	color: #a94442;
+	display: none;
 }
 
 .in-train {
