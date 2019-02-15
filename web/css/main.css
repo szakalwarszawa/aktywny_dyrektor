@@ -42,11 +42,11 @@ td {
 
 form.dirty {
 	/* border: 3px solid rgba(26, 188, 156, 1); */
-	border: 3px solid rgba(228, 122, 5);
+	border: 3px dashed #b2dba1;
+	border-radius: 9px;
 	padding: 1rem;
 	/* background: rgba(26, 188, 156, 0.3); */
-	background: rgba(122, 168, 192);
-
+	background: #dff0d8;
 }
 
 .hidden {
@@ -76,7 +76,6 @@ body ul.tagit li {
 
 body .JColResizer>tbody>tr>td,
 body .JColResizer>tbody>tr>th {
-
 	padding: 5px !important;
 }
 
@@ -127,7 +126,6 @@ td .btn {
 }
 
 .celWniosku {
-
 	white-space: normal;
 	text-align: left;
 }
@@ -343,4 +341,29 @@ td .btn {
 
 .in-train>i {
 	margin: 0 .4rem;
+}
+
+/* ----------------/wnioseknadanieodebraniezasobow/index-------------- */
+
+#submitexport>i {
+	margin-right: 0.6rem;
+}
+
+.grid-filter-operator {
+	display: block;
+	margin-bottom: .3rem;
+}
+
+.grid-filter-operator>select {
+	width: 100%;
+	border-width: 1px;
+	padding: 3px 1px;
+}
+
+.grid-filter-input-query-from {
+	padding-left: .5rem;
+}
+
+#oczekujace .btn-group-xs {
+	margin-bottom: .5rem;
 }
