@@ -53,3 +53,6 @@ parameters:
         mail_do_raportu: ''
 
     api_token_expire_minutes: 5
+
+    # Czy grid na liście wniosków o nadanie/odebranie wyświetlać ajaxem #
+    ajax_grid_wnioskinadanieodebranie: false

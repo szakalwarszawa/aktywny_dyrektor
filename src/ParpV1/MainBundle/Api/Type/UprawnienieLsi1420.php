@@ -87,6 +87,14 @@ class UprawnienieLsi1420 implements \JsonSerializable
     public $operacja;
 
     /**
+     * @var boolean
+     *
+     * @JMS\Expose
+     * @JMS\Type("boolean")
+     */
+    public $hasEmailAd;
+
+    /**
      * Konstruktor.
      *
      * @param string $wniosek
@@ -106,7 +114,8 @@ class UprawnienieLsi1420 implements \JsonSerializable
         $numerNaboru,
         $operacja = self::GRANT_PRIVILAGE,
         $bezterminowo = true,
-        $aktywneDo = null
+        $aktywneDo = null,
+        $hasEmailAd = false
     ) {
         $this->wniosek = $this->sanitizeStr($wniosek);
         $this->uzytkownik = $this->sanitizeStr($uzytkownik);
@@ -115,6 +124,7 @@ class UprawnienieLsi1420 implements \JsonSerializable
         $this->numerNaboru = $this->sanitizeStr($numerNaboru);
         $this->operacja = $this->sanitizeStr($operacja);
         $this->bezterminowo = $this->sanitizeBool($bezterminowo);
+        $this->hasEmailAd = $this->sanitizeBool($hasEmailAd);
 
         $this->setAktywneDo($aktywneDo);
     }
@@ -130,13 +140,14 @@ class UprawnienieLsi1420 implements \JsonSerializable
             'uprawnienie' => $this->uprawnienie,
             'dzialanie' => $this->dzialanie,
             'numer_naboru' => $this->numerNaboru,
-            'operacja' => $this->operacja,
+            'operacja' => $this->operacja
         );
 
         if ($this->operacja === self::GRANT_PRIVILAGE) {
             $serialize = array_merge($serialize, array(
                 'bezterminowo' => $this->bezterminowo,
                 'aktywne_do' => $this->aktywneDo,
+                'has_email_ad' => $this->hasEmailAd
             ));
         }
 

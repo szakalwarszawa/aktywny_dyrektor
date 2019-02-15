@@ -367,3 +367,16 @@ td .btn {
 #oczekujace .btn-group-xs {
 	margin-bottom: .5rem;
 }
+
+/* ----------------------------------------- */
+footer.helpdesk {
+	margin: 3rem 2rem 0;
+	padding: 1rem;
+	border-top: 1px ridge rgba(14, 74, 109, 0.8);
+}
+
+.helpdesk small {
+	float: right;
+	margin: 0 2rem;
+
+}
