@@ -81,6 +81,14 @@ function beforeSubmit(event){
         nieWybrane = this.value == "" || nieWybrane;
     });
 
+
+    if ($('form[data-form="resources"]').length) {
+        if ($('#form_wybraneZasoby').val().length == 0) {
+            event.preventDefault();
+            alert('Należy wybrać przynajmniej jedno uprawnienie do zasobu dla wskazanego pracownika.');
+        }
+    }
+
     var message = '';
     var atLeastOne = false;
     if ($('input[data-required]').length > 0) {

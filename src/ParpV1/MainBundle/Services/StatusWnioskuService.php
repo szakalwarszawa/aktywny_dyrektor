@@ -10,6 +10,7 @@ use Symfony\Component\HttpFoundation\Session\Session;
 use ParpV1\SoapBundle\Services\LdapService;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Entity\WniosekEditor;
@@ -343,7 +344,22 @@ class StatusWnioskuService
                 }
                 break;
             case 'administrator':
-                //
+                $wniosekNadanieOdebranie = $wniosek->getWniosekNadanieOdebranieZasobow();
+                if ($wniosekNadanieOdebranie->getOdebranie() && null !== $wniosekNadanieOdebranie->getZasobId()) {
+                    $userZasobId = $wniosekNadanieOdebranie ->getZasobId();
+                    $userZasob = $entityManager->getRepository(UserZasoby::class)->find($userZasobId);
+                    $zasob = $entityManager->getRepository(Zasoby::class)->find($userZasob->getZasobId());
+                    $grupa = explode(',', $zasob->getAdministratorZasobu());
+                    foreach ($grupa as $osoba) {
+                        $mancn = str_replace('CN=', '', substr($osoba, 0, stripos($osoba, ',')));
+                        $osoba = trim($osoba);
+                        $ADManager = $this->getUserFromAD($osoba);
+                        if (count($ADManager) > 0) {
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                        }
+                    }
+                    break;
+                }
                 foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
                     $zasob = $entityManager->getRepository(Zasoby::class)->find($u->getZasobId());
                     $grupa = explode(',', $zasob->getAdministratorZasobu());

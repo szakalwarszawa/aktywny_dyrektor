@@ -18,6 +18,26 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
 class WniosekNadanieOdebranieZasobow
 {
     /**
+     * @var string
+     */
+    const WNIOSKI_WSZYSTKIE = 'wszystkie';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_W_TOKU = 'wtoku';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_OCZEKUJACE = 'oczekujace';
+
+    /**
+     * @var string
+     */
+    const WNIOSKI_ZAKONCZONE = 'zakonczone';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")
@@ -144,6 +164,14 @@ class WniosekNadanieOdebranieZasobow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $zasoby;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(type="boolean", nullable=true, name="zawiera_zasoby_z_ad")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $zawieraZasobyZAd = false;
 
     /**
      * Get id
@@ -565,5 +593,29 @@ class WniosekNadanieOdebranieZasobow
     public function getDataOdebrania()
     {
         return $this->dataOdebrania;
+    }
+
+    /**
+     * Get zawieraZasobyZAd
+     *
+     * @return bool
+     */
+    public function getZawieraZasobyZAd()
+    {
+        return $this->zawieraZasobyZAd;
+    }
+
+    /**
+     * Set zawieraZasobyZAd
+     *
+     * @param bool $zawieraZasobyZAd
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setZawieraZasobyZAd(bool $zawieraZasobyZAd): self
+    {
+        $this->zawieraZasobyZAd = $zawieraZasobyZAd;
+
+        return $this;
     }
 }

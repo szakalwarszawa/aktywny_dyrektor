@@ -34,7 +34,7 @@ services:
         tags: ~
     check_access:
         class : ParpV1\MainBundle\Services\AccessCheckerService
-        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@security.token_storage']
         tags: ~
     session.memcached:
         class: Memcached
@@ -118,4 +118,7 @@ services:
         arguments: ['@parp.mailer', '@request_stack', '@session', '@ldap_service', '@doctrine.orm.entity_manager', '@security.token_storage']
     odbieranie_uprawnien_service:
         class: ParpV1\MainBundle\Services\OdbieranieUprawnienService
-        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage']
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '@zasoby_service']
+    wnioski_nadanie_odebranie_grid:
+        class: ParpV1\MainBundle\Grid\WnioskiNadanieOdebranieGrid
+        arguments: ['@grid', '@doctrine.orm.entity_manager', '@security.token_storage', '%ajax_grid_wnioskinadanieodebranie%']

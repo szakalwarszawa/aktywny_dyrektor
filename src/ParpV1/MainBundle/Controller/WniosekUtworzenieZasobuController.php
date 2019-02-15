@@ -31,6 +31,8 @@ use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use DateTime;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -424,6 +426,7 @@ class WniosekUtworzenieZasobuController extends Controller
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
+
         $access = $this->checkAccess($entity);
         if (!$access['viewer'] && !$access['editor'] && !$readonly) {
             return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig', array('wniosek' => $entity, 'viewer' => 0));
@@ -442,15 +445,14 @@ class WniosekUtworzenieZasobuController extends Controller
 //        var_dump($entity->getZasob()->getName()); die();
         $comments = $em->getRepository(Komentarz::class)->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
 
+        $accessCheckerService = $this->get('check_access');
         $deleteForm = $this->createDeleteForm($id);
+
         return array(
-            'canReturn' => true, /*(
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "04_EDYCJA_ADMINISTRATOR_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "05_EDYCJA_TECHNICZNY_O_ZASOB"
-            ),*/
-            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'canReturn' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ZWROC_DO_POPRAWY),
+            'canUnblock' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ODBLOKUJ),
             'editor' => $editor,
             'entity'      => $entity,
             'form'   => $editForm->createView(),
@@ -572,6 +574,12 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
+        $accessCheckerService = $this->get('check_access');
+        if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::EDYTUJ)) {
+            $this->addFlash('danger', 'Na tym etapie edycja wniosku nie jest dozwolona!');
+
+            return $this->redirectToRoute('wniosekutworzeniezasobu_show', ['id' => $id]);
+        }
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -919,9 +927,15 @@ class WniosekUtworzenieZasobuController extends Controller
         } else {
             $wniosek->setPowodZwrotu('');
         }
-
+        $accessCheckerService = $this->get('check_access');
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-        if ($isAccepted === 'unblock') {
+        $editFailed = false;
+        if ($isAccepted === AkcjeWnioskuConstants::ODBLOKUJ) {
+            if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODBLOKUJ)) {
+                $editFailed = true;
+                $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
+            }
+
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
         } elseif ($isAccepted === 'reject') {
@@ -1057,12 +1071,29 @@ class WniosekUtworzenieZasobuController extends Controller
                         break;
                     case 'kasowanie':
                         $wniosek->getZmienianyZasob()->setPublished(false);
-                        //$wniosek->getZasob()->setPublished(false);
+
+                        $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+                        try {
+                            $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                        } catch (\Exception $exception) {
+                            $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array(
+                                'id' => $id
+                            )));
+                        }
+
+                        $odbieranieUprawnienService
+                            ->wyzerujUzytkownikowZasobu($wniosek->getZmienianyZasob(), $dataOdebrania)
+                        ;
+
                         break;
                 }
             }
         }
-        $em->flush();
+        if (!$editFailed) {
+            $em->flush();
+        }
 
         if ($isAccepted === 'unblock') {
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array()));

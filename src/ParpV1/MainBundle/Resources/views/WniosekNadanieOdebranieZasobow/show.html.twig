@@ -56,7 +56,7 @@
                         {% set wniosek_do_linku = ((byl_juz_pierwszy_parent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                         {% endif %}
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "success" : "danger") : "default" }}"
-                        data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}<hr/><b>Opis:</b><br/> {{ ss.opis }}"
+                        data-toggle="popover" title="Data przekazania: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="Przekazany przez: {{ ss.createdBy|showFullname }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosek_do_linku.numer }} {% endif %}<hr/><b>Opis:</b><br/> {{ ss.opis }}"
                         >
                             {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
@@ -99,7 +99,11 @@
 
                             {% endif %}
                             {% if(entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR") %}
-                                <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                {% if potrzebna_data_odebrania %}
+                                    <a data-toggle="collapse" data-target="#selectDate" class="btn btn-success">Wybierz datę odebrania i zaakceptuj <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                {% else %}
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                                {% endif %}
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Przekaż do administratora technicznego <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                             {% else %}
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}"
@@ -163,7 +167,26 @@
                         </div>
                     </div>
                 </form>
+            </div>
+            <div class="collapse" id="selectDate">
+                <form action="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish', publishForReal: false}) }}" method="POST" id="subFormAccept">
+                <br />
+                <div class="alert alert-warning">Pozostaw puste pole jeżeli automatycznie wstawić datę dzisiejszą.</div>
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label required" for="parp_mainbundle_komentarz_opis">Wybierz datę odebrania</label>
+                        <div class="col-sm-10">
+                           <input name="dataOdebrania" id="dataOdebrania" class="datepicker form-control" type="text" />
+                        </div>
+                    </div>
 
+                    <div class="form-group paddingTop20 container">
+                        <div class="col-sm-2">
+                        </div>
+                        <div class="col-sm-10">
+                        <button type="submit" class="btn btn-danger">Wykonaj akcje </button>
+                        </div>
+                    </div>
+                </form>
             </div>
             {% if(entity.powodZwrotu != "") %}
                 <div class="alert alert-danger">
@@ -305,6 +328,9 @@
                             <th class="header">Kanał dostępu</th>
                             <th class="header">Uprawnienia administracyjne</th>
                             <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
+                            {% if wniosek_odebranie %}
+                                <th class="header">Data odebrania</th>
+                            {% endif %}
                             <th class="header">Akcje</th>
                         </tr>
                     </thead>
@@ -323,26 +349,26 @@
                                 <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                 <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
                                 <td>{{ z.bezterminowo ? "TAK" : "NIE" }}</td>
-                                <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
-
-                                    {% if(z.czyOdebrane) %}
-                                    <div class="alert alert-danger">
-                                        <b>Odebrane</b>
-                                    </div>
-                                    {% endif %}
-                                </td>
+                                <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}</td>
                                 <td>{{ z.kanalDostepu }}</td>
                                 <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
                                 <td>
                                     {% if wniosek_odebranie %}{{ z.powodOdebrania }}{% else %}{{ z.powodNadania }}{% endif %}
 
-                                    {% if(z.czyOdebrane) %}
+                                    {% if(z.czyOdebrane and not wniosek_odebranie) %}
                                     <div class="alert alert-danger">
                                         <b>Odebrane</b>
                                         {{ z.powodOdebrania }}
                                     </div>
                                     {% endif %}
                                 </td>
+                                {% if wniosek_odebranie %}
+                                    {% if z.dataOdebrania is not empty %}
+                                        <td>{{ z.dataOdebrania|date('Y-m-d H:i:s') }}</td>
+                                        {% else %}
+                                        <td>-</td>
+                                    {% endif %}
+                                {% endif %}
                                 <td>
                                 {% if not status_ostatecznie_zablokowany and entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
