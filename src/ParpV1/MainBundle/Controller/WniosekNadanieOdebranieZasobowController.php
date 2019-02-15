@@ -36,6 +36,9 @@ use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use DateTime;
+use Exception;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -68,209 +71,47 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
+     * @param Request $request
+     * @param string $ktore
+     *
      * @Route("/index/{ktore}", name="wnioseknadanieodebraniezasobow", defaults={"ktore" : "oczekujace"})
      *
      * @Template()
      */
-    public function indexAction($ktore = 'oczekujace')
+    public function indexAction(Request $request, $ktore = WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE)
     {
-        $em = $this->getDoctrine()->getManager();
-        $grid = $this->generateGrid($ktore); //"wtoku");
-        //$grid2 = $this->generateGrid("oczekujace");
-        //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em
+        $xmlHttpRequest = $request->isXmlHttpRequest();
+        $ajaxGrid = $this->container->getParameter('ajax_grid_wnioskinadanieodebranie');
+        $pustyGrid = false;
+        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $ktore && !$xmlHttpRequest && $ajaxGrid) {
+            $pustyGrid = true;
+        }
+
+        $wnioskiNadanieOdebranieGrid = $this->get('wnioski_nadanie_odebranie_grid');
+        $grid = $wnioskiNadanieOdebranieGrid
+             ->setTypWniosku($ktore)
+             ->forceWyswietlGrid()
+             ->generateGrid($pustyGrid)
+         ;
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $zastepstwa = $entityManager
             ->getRepository(Zastepstwo::class)
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
 
-        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
-        if ($grid->isReadyForRedirect()) {
-            if ($grid->isReadyForExport()) {
-                return $grid->getExportResponse();
-            }
+        $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
 
-            /*
-                if ($grid2->isReadyForExport())
-                {
-                    return $grid2->getExportResponse();
-                }
+        if ($xmlHttpRequest && $ajaxGrid) {
+            $szablonTwig = 'ParpMainBundle:Grid:ajax_grid.html.twig';
+        }
 
-                if ($grid3->isReadyForExport())
-                {
-                    return $grid3->getExportResponse();
-                }
-            */
-
-            // Url is the same for the grids
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
-        } else {
-            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array(
+        return $grid->getGridResponse($szablonTwig, [
                 'ktore'      => $ktore,
-                'grid'       => $grid
-                /* , 'grid2' => $grid2, 'grid3' => $grid3 */,
+                'grid'       => $grid,
                 'zastepstwa' => $zastepstwa,
-            ));
-        }
-    }
-
-    /**
-     * @param $ktore
-     *
-     * @return \APY\DataGridBundle\Grid\Grid|object
-     */
-    protected function generateGrid($ktore)
-    {
-        $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->findAll();
-        $zastepstwa = $em
-            ->getRepository(Zastepstwo::class)
-            ->znajdzKogoZastepuje($this->getUser()->getUsername())
-        ;
-        $source = new Entity(WniosekNadanieOdebranieZasobow::class);
-        $tableAlias = $source->getTableAlias();
-        $sam = $this->getUser()->getUsername();
-
-
-        $source->manipulateQuery(
-            function ($query) use ($tableAlias, $zastepstwa, $ktore) {
-                //$query->select($tableAlias.", z.nazwa");
-
-                //$query->addSelect('group_concat(z.nazwa) zasobek');
-                $query->leftJoin($tableAlias.'.userZasoby', 'uz');
-                //$query->leftJoin('ParpV1\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
-                $query->leftJoin($tableAlias.'.wniosek', 'w');
-                $query->leftJoin('w.viewers', 'v');
-                $query->leftJoin('w.editors', 'e');
-                $query->leftJoin('w.status', 's');
-                //$query->andWhere('z.id = uz.zasobId');
-                if ($ktore != 'wszystkie') {
-                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-                }
-                //'00_TWORZONY', '10_PODZIELONY'
-                $statusyZakmniete =
-                    ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY', '11_OPUBLIKOWANY', '102_ODEBRANO_ADMINISTRACYJNIE', '101_ANULOWANO_ADMINISTRACYJNIE'];
-                switch ($ktore) {
-                    case 'wtoku':
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';
-                        //rdie($w);
-                        $query->andWhere($w);
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        $query->andWhere($tableAlias.
-                            '.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.
-                            implode('\',\'', $zastepstwa).
-                            '\'))');
-                        break;
-                    case 'oczekujace':
-                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-
-                        break;
-                    case 'zakonczone':
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZakmniete).'\')');
-
-                        break;
-                    case 'wszystkie':
-                        //$w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
-                        //rdie($w);
-                        //$query->andWhere($w);
-                        break;
-                }
-                //$query->andWhere('w.samaccountname = \''.$sam.'\'');
-                $query->addGroupBy($tableAlias.'.id');
-                //$query->addGroupBy('z.nazwa');
-
-
-                //die($query->getDQL());
-            }
-        );
-
-        // kolorowanie wierszy
-        $source->manipulateRow(
-            function ($row) {
-
-                if ($row->getField('odebranie') == '1') {
-                    $row->setClass('wiersz-odebranie');
-                }
-
-                if ($row->getField('wniosek.createdBy') == 'magdalena_warecka' && $this->getUser()->getUsername() == 'marcin_lipinski') {
-                    $row->setClass('wiersz-cito'); // dla Marcina ;)
-                }
-                return $row;
-            }
-        );
-
-        $grid = $this->get('grid');
-
-        $grid->setSource($source);
-
-        if ($ktore == 'wszystkie') {
-            $grid->setDefaultFilters(
-                array(
-                    'wniosek.createdAt' => array('operator' => 'gte', 'from' => date('d.m.Y', strtotime('-14 day')))
-                )
-            );
-        }
-
-        // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
-        $grid->addColumn($actionsColumn);
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('pracownicy')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // Zdejmujemy filtr
-        $grid->getColumn('akcje')
-            ->setFilterable(false)
-            ->setSafe(true);
-
-        // Edycja konta
-        $rowAction1 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wnioseknadanieodebraniezasobow_edit');
-        $rowAction1->setColumn('akcje');
-        $rowAction1->addAttribute('class', 'btn btn-success btn-xs');
-
-        $rowAction2 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Pokaż', 'wnioseknadanieodebraniezasobow_show');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-info btn-xs');
-
-        // Edycja konta
-        $rowAction3 =
-            new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->addManipulateRender(
-            function ($action, $row) {
-                if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
-                    return $action;
-                } else {
-                    return null;
-                }
-            }
-        );
-        //die('a');
-
-
-        //$grid->addRowAction($rowAction1);
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
-
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
-
-        //$grid->isReadyForRedirect();
-        return $grid;
+                'ajax_grid'  => $ajaxGrid
+        ]);
     }
 
     /**
@@ -287,11 +128,29 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $form->handleRequest($request);
         $jestCoOdebrac = false;
 
-        if (false === strpos($entity->getPracownicy(), ',')) {
-            $listaPracownikow =  array_filter(explode(';', $entity->getPracownicy()));
-        } else {
+        $listaPracownikowForm = json_decode($entity->getPracownicy(), true);
+        $listaPracownikow = [];
+        if (null !== $listaPracownikowForm) {
+            $resolver = new OptionsResolver();
+            $resolver
+                ->setRequired([
+                    'name',
+                    'surname',
+                    'email'
+                ]);
+
+            foreach ($listaPracownikowForm as $pracownik) {
+                $resolver->resolve($pracownik);
+                $pracownik = implode(' ', [$pracownik['name'], $pracownik['surname'], $pracownik['email']]);
+                $listaPracownikow[] = $pracownik;
+            }
+        }
+
+        if (null === $listaPracownikowForm) {
             $listaPracownikow = array_filter(explode(',', $entity->getPracownicy()));
         }
+
+        $entity->setPracownicy(implode(',', $listaPracownikow));
 
         if ($entity->getOdebranie()) {
             $userZasoby = $this
@@ -633,8 +492,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $statusWnioskuService->setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus);
     }
 
-
-
     /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/{isAccepted}/accept_reject/{publishForReal}", name="wnioseknadanieodebraniezasobow_accept_reject",
@@ -666,6 +523,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
             }
         }
+
         $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
         $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
@@ -686,17 +544,35 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         if ($request->isMethod('POST')) {
             $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
+            if (!empty($txt)) {
+                $wniosek->setPowodZwrotu($txt);
 
-            $kom = new \ParpV1\MainBundle\Entity\Komentarz();
-            $kom->setObiekt('WniosekNadanieOdebranieZasobow');
-            $kom->setObiektId($id);
-            $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
-            $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUser()->getUsername());
-            $em->persist($kom);
+                $kom = new \ParpV1\MainBundle\Entity\Komentarz();
+                $kom->setObiekt('WniosekNadanieOdebranieZasobow');
+                $kom->setObiektId($id);
+                $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
+                $kom->setOpis($txt);
+                $kom->setSamaccountname($this->getUser()->getUsername());
+                $em->persist($kom);
+            } elseif (!empty($request->request->get('dataOdebrania'))) {
+                if ('acceptAndPublish' === $isAccepted) {
+                    try {
+                        $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                    } catch (\Exception $exception) {
+                        $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array(
+                            'id' => $id,
+                        )));
+                    }
+                }
+            }
         } else {
             $wniosek->setPowodZwrotu('');
+        }
+
+        if (!isset($dataOdebrania)) {
+            $dataOdebrania = new DateTime();
         }
 
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
@@ -753,8 +629,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if ($publishForReal) {
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+                    if ($wniosek->getOdebranie()) {
+                        $uz->setDataOdebrania(new DateTime());
+                    }
 
                     $uz->setCzyNadane(true);
+
+                    $em->persist($uz);
                 }
                 $this->setWniosekStatus($wniosek, '11_OPUBLIKOWANY', false);
             }
@@ -875,20 +756,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus(
-                                        $wn,
-                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                        false
-                                    );
+                                    $this->setWniosekStatus($wn, '02_EDYCJA_PRZELOZONY', false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             } else {
-                                $this->setWniosekStatus(
-                                    $wniosek,
-                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                    false
-                                );
+                                $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
                             }
                             //$em->remove($wniosek);
                             if ($this->debug) {
@@ -905,11 +778,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     switch ($isAccepted) {
                         case 'accept':
                             //przenosi do status 2
-                            $this->setWniosekStatus(
-                                $wniosek,
-                                ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                false
-                            );
+                            $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
                             break;
                         case 'return':
                             //przenosi do status 1
@@ -928,13 +797,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             if (count($zasoby) > 1) {
                                 $this->setWniosekStatus($wniosek, '10_PODZIELONY', false);
                                 $numer = 1;
+                                $zasobyService = $this->get('zasoby_service');
                                 //teraz dla kazdego zasobu tworzy oddzielny wniosek
                                 foreach ($zasoby as $z) {
                                     if ($this->debug) {
                                         echo '<br><br>Tworzy nowy wniosek dla zasobu '.$z->getZasobId().
                                             '<br><br>';
                                     }
-                                    $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
+                                    $wn = new WniosekNadanieOdebranieZasobow();
                                     $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
                                     $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
                                     $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
@@ -944,30 +814,54 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         ->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                     $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
+                                    $wn->setOdebranie($wniosek->getOdebranie());
 
                                     $this->get('wniosekNumer')->nadajPodNumer($wn, $wniosek, $numer++);
                                     $users = array();
                                     foreach ($z as $uz) {
-                                        $nuz = clone $uz;
-                                        $em->persist($nuz);
-                                        $wn->setZasobId($nuz->getZasobId());
-                                        $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
-                                        $nuz->setWniosek($wn);
-                                        $wn->addUserZasoby($nuz);
+                                        if ($wn->getOdebranie()) {
+                                            $uz->setWniosekOdebranie($wn);
+                                            $wn->setZasobId($uz->getId());
+                                            $em->persist($uz);
+                                            $users[$uz->getSamaccountname()] = $uz->getSamaccountname();
+                                            $userZasobPersist = $uz;
+                                        } else {
+                                            $nuz = clone $uz;
+                                            $nuz->setWniosek($wn);
+                                            $em->persist($nuz);
+                                            $wn->addUserZasoby($nuz);
+                                            $wn->setZasobId($nuz->getId());
+                                            $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
+                                            $userZasobPersist = $nuz;
+                                        }
+
+                                        $wn
+                                            ->setZawieraZasobyZAd($zasobyService->czyZasobMaGrupyAd($userZasobPersist))
+                                        ;
                                     }
+
                                     $wn->setPracownicy(implode(',', $users));
-                                    //klonuje wszystkie historie statusow
                                     foreach ($wniosek->getWniosek()->getStatusy() as $s) {
                                         $s2 = clone $s;
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus($wn, '03_EDYCJA_WLASCICIEL', false);
+
+                                    $wn->ustawPoleZasoby();
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
+                                    $this->setWniosekStatus(
+                                        $wn,
+                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                        false
+                                    );
                                 }
                             } else {
-                                $this->setWniosekStatus($wniosek, '03_EDYCJA_WLASCICIEL', false);
+                                $this->setWniosekStatus(
+                                    $wniosek,
+                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                    false
+                                );
                             }
                             break;
                         case 'return':
@@ -1017,6 +911,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->setWniosekStatus($wniosek, '06_EDYCJA_TECHNICZNY', false, $status);
                             break;
                         case 'return':
+                            if ($wniosek->getOdebranie()) {
+                                $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
+                                break;
+                            }
                             $maBycIbi = false;
                             foreach ($wniosek->getUSerZasoby() as $uz) {
                                 $maBycIbi =
@@ -1066,16 +964,25 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     //print_r($biuro);    die();
                 }
                 if ($wniosek->getOdebranie()) {
-                    $this->addFlash('danger', 'Odnotowałem odebranie wskazanych uprawnień');
+                    $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
+                    if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
+                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
+                    }
+                    $this->addFlash('danger', $flashMessage);
                 }
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
+                        if (!$wniosek->getZawieraZasobyZAd()) {
+                            $uz->setDataOdebrania($dataOdebrania);
+                        }
+
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setAktywneDo($uz->getDataOdebrania());
                     }
+
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());
 
@@ -1274,6 +1181,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $lsiImportTokenForm = $lsiImportTokenForm->createView();
         }
 
+        $potrzebnaDataOdebrania = function () use ($entity) {
+            $edycjaAdministratora = (
+                $entity
+                    ->getWniosek()
+                    ->getStatus()
+                    ->getNazwaSystemowa() === '05_EDYCJA_ADMINISTRATOR'
+            );
+            $wniosekOdebranie = $entity->getOdebranie();
+            $zawieraZasobyZAd = !$entity->getZawieraZasobyZAd();
+
+            if ($edycjaAdministratora && $wniosekOdebranie && $zawieraZasobyZAd) {
+                return true;
+            }
+
+            return false;
+        };
+
         return array(
             'grupyAD'               => $grupyAD,
             'entity'                => $entity,
@@ -1289,6 +1213,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'czyLsi'                => $czyLsi,
             'lsi_import_token_form' => $lsiImportTokenForm,
             'comments'              => $comments,
+            'potrzebna_data_odebrania' => $potrzebnaDataOdebrania(),
         );
     }
 

@@ -6,12 +6,14 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Doctrine\ORM\EntityManagerInterface;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Services\ZasobyService;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
+use Doctrine\Common\Collections\Criteria;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -28,13 +30,22 @@ class OdbieranieUprawnienService
     private $currentUser;
 
     /**
+     * @var ZasobyService
+     */
+    private $zasobyService;
+
+    /**
      * Publiczny konstruktor
      *
      * @param EntityManagerInterface $entityManager
      * @param TokenStorage $tokenStorage
      */
-    public function __construct(EntityManagerInterface $entityManager, TokenStorage $tokenStorage)
-    {
+    public function __construct(
+        EntityManagerInterface $entityManager,
+        TokenStorage $tokenStorage,
+        ZasobyService $zasobyService
+    ) {
+        $this->zasobyService = $zasobyService;
         $this->entityManager = $entityManager;
         $this->currentUser = $tokenStorage->getToken()->getUser();
     }
@@ -58,26 +69,37 @@ class OdbieranieUprawnienService
             ->find($wniosekId)
         ;
 
-        $dokonaneZmiany = [];
-        foreach ($zasobyDoZmiany as $userZasobId => $zasoby) {
-            $noweUserZasoby = $this->podzielZasob($userZasobId);
-            foreach ($noweUserZasoby as $key => $userZasob) {
-                $modulZasobu = $userZasob->getModul();
-                $poziomDostepu = $userZasob->getPoziomDostepu();
-                if ($zasoby[0]['modul_zasobu'] === $modulZasobu && $zasoby[0]['poziom_zasobu'] === $poziomDostepu) {
-                    $this->ustawJakoOdbierany($userZasob, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
-                    $noweUserZasoby->remove($key);
-                }
+        $podzieloneUserZasoby = [];
+        foreach ($zasobyDoZmiany as $userZasobId => $userZasoby) {
+            if (!isset($podzieloneUserZasoby[$userZasobId])) {
+                $podzieloneUserZasoby[$userZasobId] = $this->podzielZasob($userZasobId);
+            }
 
-                if (null === $wniosekNadanieOdebranieZasobow) {
-                    $userZasob
-                        ->setDeletedAt(new DateTime())
+            foreach ($userZasoby as $userZasob) {
+                $criteria = Criteria::create();
+                $criteria
+                    ->where(
+                        Criteria::expr()
+                            ->eq('poziomDostepu', $userZasob['poziom_zasobu'])
+                    )
+                    ->andWhere(
+                        Criteria::expr()
+                            ->eq('modul', $userZasob['modul_zasobu'])
+                    )
+                ;
+
+                $userZasobDoWniosku = $podzieloneUserZasoby[$userZasobId]->matching($criteria);
+                $userZasobDoWniosku = $userZasobDoWniosku->current();
+
+                $this->ustawJakoOdbierany($userZasobDoWniosku, $wniosekNadanieOdebranieZasobow, $powodOdebrania);
+                if (null !== $wniosekNadanieOdebranieZasobow) {
+                    $wniosekNadanieOdebranieZasobow
+                        ->setZawieraZasobyZAd($this->zasobyService->czyZasobMaGrupyAd($userZasobDoWniosku))
                     ;
-
-                    $entityManager->persist($userZasob);
                 }
             }
         }
+
         if (null !== $wniosekNadanieOdebranieZasobow) {
             $wniosekNadanieOdebranieZasobow->ustawPoleZasoby();
             $entityManager->persist($wniosekNadanieOdebranieZasobow);
@@ -105,9 +127,16 @@ class OdbieranieUprawnienService
         $userZasob
             ->setWniosekOdebranie($wniosekNadanieOdebranieZasobow)
             ->setPowodOdebrania($powodOdebrania)
-            ->setDataOdebrania(new DateTime())
         ;
 
+        if (null === $wniosekNadanieOdebranieZasobow) {
+            $userZasob
+                ->setCzyOdebrane(true)
+                ->setKtoOdebral($this->currentUser)
+                ->setCzyAktywne(false)
+                ->setDataOdebrania(new DateTime())
+            ;
+        }
 
         if (null !== $wniosekNadanieOdebranieZasobow) {
             $this->dodajKomentarzOdebrania($wniosekNadanieOdebranieZasobow, $userZasob);
