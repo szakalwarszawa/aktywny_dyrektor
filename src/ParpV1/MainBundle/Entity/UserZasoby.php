@@ -538,7 +538,8 @@ class UserZasoby
      */
     public function setAktywneDo($aktywneDo)
     {
-        $this->aktywneDo = $aktywneDo;
+        // Redmine #73463: zmiana godziny ważności uprawnień
+        $this->aktywneDo = $aktywneDo->setTime(23, 59);
 
         return $this;
     }
