@@ -1,6 +1,6 @@
 //---Polyfill dla metody includes---
 if (!Array.prototype.includes) {
-	Array.prototype.includes = function(searchElement /*, fromIndex*/) {
+	Array.prototype.includes = function (searchElement /*, fromIndex*/ ) {
 		'use strict';
 		var O = Object(this);
 		var len = parseInt(O.length) || 0;
@@ -35,7 +35,7 @@ if (!Array.prototype.includes) {
 }
 
 //---po zaladowaniu dokumentu---
-$(document).ready(function() {
+$(document).ready(function () {
 	//---sprawdzenie, czy na stronie wystepuje interesujacy nas input---
 	if (
 		document.getElementById(
@@ -78,25 +78,25 @@ $(document).ready(function() {
 		function passEmployeesToInputUp() {
 			var dataToPass = JSON.stringify(
 				$('.single-employee')
-					.map(function(index) {
-						var names = $(this)
-							.find('.outside-employee-name')
-							.val();
-						var surnames = $(this)
-							.find('.outside-employee-surname')
-							.val();
-						var emails = $(this)
-							.find('.outside-employee-email')
-							.val();
-						var singleEmployee = {
-							name: names,
-							surname: surnames,
-							email: emails,
-						};
-						var singleEmployeeArr = [singleEmployee];
-						return singleEmployeeArr;
-					})
-					.get(),
+				.map(function (index) {
+					var names = $(this)
+						.find('.outside-employee-name')
+						.val();
+					var surnames = $(this)
+						.find('.outside-employee-surname')
+						.val();
+					var emails = $(this)
+						.find('.outside-employee-email')
+						.val();
+					var singleEmployee = {
+						name: names,
+						surname: surnames,
+						email: emails,
+					};
+					var singleEmployeeArr = [singleEmployee];
+					return singleEmployeeArr;
+				})
+				.get(),
 			);
 
 			var resultInput = $(
@@ -163,7 +163,7 @@ $(document).ready(function() {
 
 		function trimWhitespace() {
 			var inputsInModal = $('.modal-form input');
-			$.each(inputsInModal, function(idx, item) {
+			$.each(inputsInModal, function (idx, item) {
 				var text = $(item).val();
 				if (text.length > 0) {
 					text = text.trim();
@@ -195,14 +195,14 @@ $(document).ready(function() {
 				}
 			}
 
-			$.each(names, function(index, value) {
-				stringTesting(value, regNames, 'Podaj imię');
+			$.each(names, function (index, value) {
+				stringTesting(value, regNames, 'Podaj poprawne imię pracownika spoza PARP');
 			});
-			$.each(surnames, function(index, value) {
-				stringTesting(value, regSurnames, 'Podaj nazwisko');
+			$.each(surnames, function (index, value) {
+				stringTesting(value, regSurnames, 'Podaj poprawne nazwisko pracownika spoza PARP');
 			});
-			$.each(emails, function(index, value) {
-				stringTesting(value, regMail, 'Podaj adres e-mail');
+			$.each(emails, function (index, value) {
+				stringTesting(value, regMail, 'Podaj poprawny e-mail pracownika spoza PARP');
 			});
 
 			var isPassedValidation = status.includes('bad') ? false : true;
@@ -212,7 +212,7 @@ $(document).ready(function() {
 		//---obsluga przycisku zatwierdz w modalu---
 		function confirmation() {
 			var confirmBtn = $('#submit-outside-employee');
-			confirmBtn.on('click', function(event) {
+			confirmBtn.on('click', function (event) {
 				event.preventDefault();
 				trimWhitespace();
 				if (inputsValidation() === true) {
@@ -220,6 +220,8 @@ $(document).ready(function() {
 					passEmployeesToInputUp();
 					buttonDisplayController();
 					hideOutsideEmployeeForm();
+				} else {
+					resizeLayer();
 				}
 			});
 		}
@@ -231,14 +233,14 @@ $(document).ready(function() {
 		}
 
 		//---nasłuch na zmianę wymiarów okna---
-		$(window).resize(function() {
+		$(window).resize(function () {
 			resizeLayer();
 		});
 
 		//---obsluga przycisku dodaj w modalu---
 		function addingInputs() {
 			var addBtn = $('#add-another-outside-employee');
-			addBtn.on('click', function(event) {
+			addBtn.on('click', function (event) {
 				addInputsForNextEmployee();
 				resizeLayer();
 			});
@@ -255,7 +257,7 @@ $(document).ready(function() {
 		//---obsługa przycisku usun w modalu---
 		function removeEmployeeListener() {
 			var modalForm = $('.modal-form');
-			modalForm.on('click', '.remove-outside-employee', function(event) {
+			modalForm.on('click', '.remove-outside-employee', function (event) {
 				event.preventDefault;
 				removeEmployee(event);
 			});
@@ -264,7 +266,7 @@ $(document).ready(function() {
 		//---obsluga przycisku anuluj w modalu---
 		function cancel() {
 			var cancelBtn = $('.cancel-btn');
-			cancelBtn.on('click', function(event) {
+			cancelBtn.on('click', function (event) {
 				hideOutsideEmployeeForm();
 			});
 		}
@@ -285,7 +287,7 @@ $(document).ready(function() {
 			//---3) wstrzyknij i wypozycjonuj przycisk
 			addEmployeeBtn.appendTo(startingPoint.parent());
 			//---4) dodaj nasłuch na przycisk
-			addEmployeeBtn.on('click', function(event) {
+			addEmployeeBtn.on('click', function (event) {
 				displayOutsideEmployeeForm();
 			});
 			//---5) dodaj nasluch przyciskow w modalu
@@ -299,7 +301,7 @@ $(document).ready(function() {
 		function addInputsForNextEmployee() {
 			var template = $('<div class="single-employee"></div>');
 			template.html(
-				'<div class="form-group"><button class="remove-outside-employee btn btn-xs btn-success">X</button><label for="outside-employee-name">Imię pracownika<input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika" minlength="3" maxlength="16" /></label><div class="status-board for-name">Podaj pierwsze imię</div></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika<input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika" minlength="2" maxlength="32" /></label><div class="status-board for-surname">Podaj nazwisko</div></div><div class="form-group"><label for="outside-employee-email">Email pracownika<input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika" minlength="6" maxlength="64" /></label><div class="status-board for-email">Podaj adres e-mail</div></div>',
+				'<div class="form-group"><button class="remove-outside-employee btn btn-xs btn-success">X</button><label for="outside-employee-name">Imię pracownika spoza PARP<input type="text" class="form-control outside-employee-name" placeholder="Imię pracownika spoza PARP" minlength="3" maxlength="16" /></label><div class="status-board for-name">Podaj poprawne imię pracownika spoza PARP</div></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika spoza PARP<input type="text" class="form-control outside-employee-surname" placeholder="Nazwisko pracownika spoza PARP" minlength="2" maxlength="32" /></label><div class="status-board for-surname">Podaj poprawne nazwisko pracownika spoza PARP</div></div><div class="form-group"><label for="outside-employee-email">E-mail pracownika spoza PARP<input type="email" class="form-control outside-employee-email" placeholder="E-mail pracownika spoza PARP" minlength="6" maxlength="64" /></label><div class="status-board for-email">Podaj poprawny e-mail pracownika spoza PARP</div></div>',
 			);
 
 			$('.single-employee')
