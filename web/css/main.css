@@ -368,6 +368,19 @@ td .btn {
 	margin-bottom: .5rem;
 }
 
+/* ---------------przyciski dzialania--------------------- */
+td.grid-column-akcje.last-column.last-row {
+	padding: 0;
+}
+
+td.grid-column-akcje.last-column.last-row>div.btn-group-vertical>a.btn.btn-info.btn-xs {
+	float: left;
+	padding: 8px 12px;
+	font-size: 14px;
+	line-height: 1.42857143;
+	border-radius: 4px;
+}
+
 /* ----------------------------------------- */
 footer.helpdesk {
 	margin: 3rem 2rem 0;
