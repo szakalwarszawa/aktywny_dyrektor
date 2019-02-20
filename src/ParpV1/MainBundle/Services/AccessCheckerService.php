@@ -198,6 +198,14 @@ class AccessCheckerService
             return ($lockedByCurrentUser && !in_array($status, $notAllowedStatus));
         }
 
+        if (AkcjeWnioskuConstants::ODRZUC === $action) {
+            $notAllowedStatus = [
+                '00_TWORZONY_O_ZASOB'
+            ];
+
+            return !in_array($status, $notAllowedStatus);
+        }
+
         if (AkcjeWnioskuConstants::ZWROC_DO_POPRAWY === $action) {
             $notAllowedStatus = [
                 '00_TWORZONY_O_ZASOB',

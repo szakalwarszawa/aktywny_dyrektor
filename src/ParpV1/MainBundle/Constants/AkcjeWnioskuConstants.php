@@ -32,7 +32,7 @@ class AkcjeWnioskuConstants
     /**
      * @var string
      */
-    const ODRZUC = 'odrzuc_wniosek';
+    const ODRZUC = 'reject';
 
     /**
      * @var string

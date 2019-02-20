@@ -909,28 +909,31 @@ class WniosekUtworzenieZasobuController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         $wniosek = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
-        //print_r($uzs); die();
+        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
-        if ($request->isMethod('POST')) {
-            $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
 
-            $kom = new Komentarz();
-            $kom->setObiekt('WniosekUtworzenieZasobu');
-            $kom->setObiektId($id);
-            $kom->setTytul('Wniosek odbito z powodu:');
-            $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUser()->getUsername());
-            $em->persist($kom);
+        if ($request->isMethod('POST')) {
+            if (AkcjeWnioskuConstants::ODRZUC !== $isAccepted && '00_TWORZONY_O_ZASOB' !== $status) {
+                $txt = $request->get('powodZwrotu');
+                $wniosek->setPowodZwrotu($txt);
+
+                $kom = new Komentarz();
+                $kom->setObiekt('WniosekUtworzenieZasobu');
+                $kom->setObiektId($id);
+                $kom->setTytul('Wniosek odbito z powodu:');
+                $kom->setOpis($txt);
+                $kom->setSamaccountname($this->getUser()->getUsername());
+                $em->persist($kom);
+            }
         } else {
             $wniosek->setPowodZwrotu('');
         }
         $accessCheckerService = $this->get('check_access');
-        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
         $editFailed = false;
-        if ($isAccepted === AkcjeWnioskuConstants::ODBLOKUJ) {
+        if (AkcjeWnioskuConstants::ODBLOKUJ === $isAccepted) {
             if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODBLOKUJ)) {
                 $editFailed = true;
                 $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
@@ -938,8 +941,11 @@ class WniosekUtworzenieZasobuController extends Controller
 
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
-        } elseif ($isAccepted === 'reject') {
-            //przenosi do status 8
+        } elseif (AkcjeWnioskuConstants::ODRZUC === $isAccepted) {
+            if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODRZUC)) {
+                $editFailed = true;
+                $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
+            }
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', true);
         } elseif ($isAccepted === 'publish') {
             //przenosi do status 11
