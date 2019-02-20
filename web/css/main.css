@@ -41,12 +41,11 @@ td {
 }
 
 form.dirty {
-	/* border: 3px solid rgba(26, 188, 156, 1); */
-	border: 3px dashed #b2dba1;
+	border: .3rem dashed #b2dba1;
 	border-radius: 9px;
 	padding: 1rem;
-	/* background: rgba(26, 188, 156, 0.3); */
 	background: #dff0d8;
+	margin: -1.3rem;
 }
 
 .hidden {
