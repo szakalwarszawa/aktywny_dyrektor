@@ -76,9 +76,11 @@
                         class="btn btn-info">Zwrot do poprawy wniosek <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
 
                     {% endif %}
-                    <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'reject'}) }}');"
-                        class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>
 
+                    {% if entity.wniosek.status.nazwaSystemowa != '00_TWORZONY_O_ZASOB' %}
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'reject'}) }}');"
+                            class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i></a>
+                    {% endif %}
                 {% endif %}
 
                 {% if 'PARP_ADMIN' in app.user.roles and entity.wniosek.id > 0 %}
