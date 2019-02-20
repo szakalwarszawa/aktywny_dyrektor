@@ -1471,6 +1471,6 @@ class LdapService
     public function clearLdapCache()
     {
         $cache = $this->cache;
-        $cache->prune();
+        $cache->clear();
     }
 }
