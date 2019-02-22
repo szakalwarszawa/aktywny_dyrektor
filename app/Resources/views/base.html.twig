@@ -17,6 +17,7 @@
 
         {% block javascripts %}
             <script src="{{ asset('js/jquery-1.11.0.min.js') }}"></script>
+            <script src="{{ asset('js/app.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -180,10 +181,16 @@
 
         {% if app.user %}
             {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
-                <div class="text-center"><a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
+                <footer class="helpdesk">
+					<span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+					<a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+				</footer>
             {% endif %}
         {% else %}
-           <div class="text-center"><a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a></div>
+           <footer class="helpdesk">
+				<span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+				<a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+			</footer>
         {% endif %}
 
         {% include '::javascripts.html.twig' %}

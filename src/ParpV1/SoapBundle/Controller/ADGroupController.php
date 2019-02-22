@@ -13,7 +13,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\SoapBundle\Entity\ADGroup;
 use ParpV1\SoapBundle\Form\ADGroupType;
 
@@ -34,39 +34,39 @@ class ADGroupController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpSoapBundle:ADGroup')->findAll();
-    
-        $source = new Entity('ParpSoapBundle:ADGroup');
-    
+        //$entities = $em->getRepository(ADGroup::class)->findAll();
+
+        $source = new Entity(ADGroup::class);
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'adgroup_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'adgroup_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -109,12 +109,12 @@ class ADGroupController extends Controller
      */
     private function createCreateForm(ADGroup $entity)
     {
-        $form = $this->createForm(new ADGroupType(), $entity, array(
+        $form = $this->createForm(ADGroupType::class, $entity, array(
             'action' => $this->generateUrl('adgroup_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz ADGroup', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz ADGroup', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -148,7 +148,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -173,7 +173,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -198,12 +198,12 @@ class ADGroupController extends Controller
     */
     private function createEditForm(ADGroup $entity)
     {
-        $form = $this->createForm(new ADGroupType(), $entity, array(
+        $form = $this->createForm(ADGroupType::class, $entity, array(
             'action' => $this->generateUrl('adgroup_update', array('id' => $entity->getId())),
             'method' => 'PUT',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -218,7 +218,7 @@ class ADGroupController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+        $entity = $em->getRepository(ADGroup::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -253,7 +253,7 @@ class ADGroupController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpSoapBundle:ADGroup')->find($id);
+            $entity = $em->getRepository(ADGroup::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find ADGroup entity.');
@@ -278,7 +278,7 @@ class ADGroupController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('adgroup_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj ADGroup','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj ADGroup','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

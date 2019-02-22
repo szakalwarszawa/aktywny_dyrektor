@@ -301,6 +301,8 @@ class ApiController extends Controller
     {
         $eksport = array();
 
+        $ldapService = $this->get('ldap_service');
+        $usersToCreate = [];
         foreach ($wnioskowanyDostep as $dostep) {
             if (! $dostep instanceof UserZasoby) {
                 throw InvalidContentException('Oczekiwano kolekcji obiektów UserZasoby.');
@@ -314,12 +316,19 @@ class ApiController extends Controller
                 $bezterminowo = $dostep->getBezterminowo();
                 $aktywneDo = $dostep->getAktywneDo();
 
+                if (!isset($usersToCreate[$userName])) {
+                    $usersToCreate[$userName] = !empty($ldapService->getUserFromAd($userName)[0]['email']);
+                }
+
                 foreach ($nabory as $nabor) {
                     $naborArr = array_filter(explode('/', $nabor));
-                    if (count($naborArr) >= 2) {
-                        $dzialanie = $naborArr[0];
-                        $nrNaboru = $naborArr[1];
+                    if (count($naborArr) >= 1) {
+                        $dzialanie = isset($naborArr[0])? $naborArr[0] : 'TYLKO_ROLA';
+                        $nrNaboru = isset($naborArr[1])? $naborArr[1] : 'TYLKO_ROLA';
 
+                        if ('do wypełnienia przez właściciela zasobu' === $dzialanie) {
+                            $dzialanie = 'TYLKO_ROLA';
+                        }
                         foreach ($uprawnienia as $role) {
                             $uprawnienieLsi1420 = new UprawnienieLsi1420(
                                 $numerWniosku,
@@ -329,7 +338,8 @@ class ApiController extends Controller
                                 $nrNaboru,
                                 UprawnienieLsi1420::GRANT_PRIVILAGE,
                                 $bezterminowo,
-                                $aktywneDo
+                                $aktywneDo,
+                                $usersToCreate[$userName]
                             );
                             if (false === $uprawnienieLsi1420->isValid()) {
                                 throw new InvalidContentException('Dane uprawnienia nie są pełne.');

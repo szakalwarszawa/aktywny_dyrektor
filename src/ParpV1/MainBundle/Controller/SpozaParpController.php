@@ -13,8 +13,8 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Form\DaneRekordType;
 
 /**
@@ -33,14 +33,14 @@ class SpozaParpController extends Controller
     public function indexAction()
     {
         ;
-        
+
         $em = $this->getDoctrine()->getManager();
-        $wnioski = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findBy(
+        $wnioski = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->findBy(
             [
                 'pracownikSpozaParp' => 1
             ]
         );
-        
+
         $wynik = [];
         foreach ($wnioski as $wniosek) {
             foreach ($wniosek->getUserZasoby() as $uz) {
@@ -52,42 +52,42 @@ class SpozaParpController extends Controller
                 ];
             }
         }
-    
+
         echo "<pre>";
         print_r($wynik);
         die();
-    
+
         $source = new Vector($ADUsers);
-    
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'danerekord_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'danerekord_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();

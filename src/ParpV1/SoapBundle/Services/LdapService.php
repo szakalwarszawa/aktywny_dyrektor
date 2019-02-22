@@ -13,6 +13,10 @@ use ParpV1\MainBundle\Entity\Section;
 
 class LdapService
 {
+    /**
+     * @var CacheItemPoolInterface
+     */
+    private $cache;
 
     protected $dodatkoweOpcje = 'ekranEdycji';
     protected $ad_host;
@@ -29,6 +33,7 @@ class LdapService
         'name',
         'initials',
         'title',
+        'mail',
         'info',
         'department',
         'description',
@@ -46,7 +51,7 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(Container $container)
+    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool)
     {
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
@@ -85,6 +90,7 @@ class LdapService
                 //'sso' => false,
         );
         $this->adldap = new \Adldap\Adldap($configuration);
+        $this->cache = $cacheItemPool;
     }
 
     public function getAllManagersFromAD()
@@ -140,37 +146,21 @@ class LdapService
         return $noweAttr;
     }
 
-    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null)
+    public function getAllFromAD($tezNieobecni = false, $justDump = false, $struktura = null, $noCache = false)
     {
+        $cache = $this->cache;
+        $cacheKey = 'ad_users_' . $tezNieobecni . '_' . $justDump . '_' . $struktura;
+        $cacheItem = $cache->getItem($cacheKey);
 
-        if ($this->_userCache === null) {
-            $this->_userCache = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
-//        } else {
-
-            /* wylaczam na czas odbierania uprawnien, bo zamula
-              $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
-             */
+        if ($cacheItem->isHit() && false === $noCache) {
+            return unserialize($cacheItem->get());
         }
 
-        /* wylaczam na czas odbierania uprawnien, bo zamula
-          $zmiany = [];
-          foreach($this->zmianyDoWypchniecia as $z){
-          $zmiany[$z->getSamaccountname()][] = $z;
-          }
-          foreach($this->_userCache as &$u){
-          if(isset($zmiany[$u['samaccountname']])){
-          //mamy zmiany
-          $noweAttr = $this->parseZmianyUsera($u, $zmiany);
-          foreach($noweAttr as $k => $v){
-          if($v instanceof \Datetime)
-          $v = $v->format("Y-m-d h:I");
-          $u[$k] = $v." (".$u[$k].")";
-          }
-          }
-          }
-         */
+        $adUsers = $this->getAllFromADIntW($tezNieobecni, $justDump, $struktura);
+        $cacheItem->set(serialize($adUsers));
+        $cache->save($cacheItem);
 
-        return $this->_userCache;
+        return $adUsers;
     }
 
     public function getAllFromADIntW($ktorych = 'aktywni', $justDump = false, $struktura = null)
@@ -1002,7 +992,11 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        return $this->adldap->group()->find($grupa);
+        try {
+            return $this->adldap->group()->find($grupa);
+        } catch (DebugContextErrorException $exception) {
+            return false;
+        }
     }
 
     public function getUsersWithRole($role)
@@ -1477,5 +1471,16 @@ class LdapService
         $przelozony = $this->getPrzelozony($samaccountname);
 
         return $this->getPrzelozonyPracownika($przelozony['samaccountname']);
+    }
+
+    /**
+     * Zresetowanie ldap.cache
+     *
+     * @return void
+     */
+    public function clearLdapCache()
+    {
+        $cache = $this->cache;
+        $cache->clear();
     }
 }

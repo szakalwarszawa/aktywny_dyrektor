@@ -22,6 +22,17 @@ use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\ObjectNormalizer;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\ButtonType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\WniosekEditor;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Entity\AclUserRole;
+use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use DateTime;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -48,7 +59,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $grid = $this->generateGrid($ktore);
         //$grid2 = $this->generateGrid("oczekujace");
         //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
 
         if ($grid->isReadyForRedirect() /* || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() */) {
             if ($grid->isReadyForExport()) {
@@ -83,8 +94,8 @@ class WniosekUtworzenieZasobuController extends Controller
 
 
         //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
-        $source = new Entity('ParpMainBundle:WniosekUtworzenieZasobu');
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $source = new Entity(WniosekUtworzenieZasobu::class);
         $tableAlias = $source->getTableAlias();
         //die($co);
         $sam = $this->getUser()->getUsername();
@@ -109,7 +120,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     case 'oczekujace':
                         $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                         break;
-                    case 'zamkniete':
+                    case 'zakonczone':
                         $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
                         break;
                 }
@@ -145,7 +156,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosekutworzeniezasobu_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->manipulateRender(
+        $rowAction3->addManipulateRender(
             function ($action, $row) {
                 if ($row->getField('wniosek.numer') === 'wniosek w trakcie tworzenia') {
                     return $action;
@@ -265,29 +276,16 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createCreateForm(WniosekUtworzenieZasobu $entity)
     {
-        $form = $this->createForm(
-            new WniosekUtworzenieZasobuType(
-                //                $this->getUsersFromAD(),
-                //                $this->getManagers(),
-                //                $entity->getTyp(),
-                //                $entity,
-                //                $this
-            ),
-            $entity,
-            array(
+        $form = $this->createForm(WniosekUtworzenieZasobuType::class, $entity, array(
                 'action' => $this->generateUrl('wniosekutworzeniezasobu_create'),
                 'method' => 'POST',
-            //                'ADUsers' => $this->getUsersFromAD(),
-            //                'ADManagers' => $this->getManagers(),
                 'container' => $this->container,
                 'user'      => $this->getUser(),
-            )
-        );
-
-        $form->add('submit', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('submit2', 'submit', array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
-        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        ));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit2', SubmitType::class, array('label' => 'Utwórz Wniosek', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -352,7 +350,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($this->getUser()->getUsername());
 
-        $status = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
+        $status = $this->getDoctrine()->getManager()->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
 
         $entity = new WniosekUtworzenieZasobu();
         //var_dump($typ1, $typ2); die();
@@ -372,7 +370,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $entity->setLogin($ADUser[0]['samaccountname']);
         $entity->setDepartament($ADUser[0]['department']);
         $entity->setStanowisko($ADUser[0]['title']);
-        $departament = $this->getDoctrine()->getManager()->getRepository('ParpV1\MainBundle\Entity\Departament')->findOneByName($ADUser[0]['department']);
+        $departament = $this->getDoctrine()->getManager()->getRepository(Departament::class)->findOneByName($ADUser[0]['department']);
         if ($entity->getZasob()) {
             $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
         }
@@ -423,11 +421,12 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
+
         $access = $this->checkAccess($entity);
         if (!$access['viewer'] && !$access['editor'] && !$readonly) {
             return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig', array('wniosek' => $entity, 'viewer' => 0));
@@ -444,17 +443,16 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
 //        var_dump($entity->getZasob()->getName()); die();
-        $comments = $em->getRepository('ParpMainBundle:Komentarz')->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
+        $comments = $em->getRepository(Komentarz::class)->getCommentCount('WniosekUtworzenieZasobu', $entity->getId());
 
+        $accessCheckerService = $this->get('check_access');
         $deleteForm = $this->createDeleteForm($id);
+
         return array(
-            'canReturn' => true, /*(
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "00_TWORZONY_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "01_EDYCJA_WNIOSKODAWCA_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "04_EDYCJA_ADMINISTRATOR_O_ZASOB" &&
-                $entity->getWniosek()->getStatus()->getNazwaSystemowa() != "05_EDYCJA_TECHNICZNY_O_ZASOB"
-            ),*/
-            'canUnblock' => ($entity->getWniosek()->getLockedBy() == $this->getUser()->getUsername()),
+            'canReturn' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ZWROC_DO_POPRAWY),
+            'canUnblock' => $accessCheckerService
+                ->checkActionWniosek($entity, AkcjeWnioskuConstants::ODBLOKUJ),
             'editor' => $editor,
             'entity'      => $entity,
             'form'   => $editForm->createView(),
@@ -502,23 +500,17 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     private function createEditForm(WniosekUtworzenieZasobu $entity, $hideCheckboxes = true, $readonly = true)
     {
-        $form = $this->createForm(
-            new WniosekUtworzenieZasobuType(),
-            $entity,
-            array(
-                'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
-                'method' => 'PUT',
-                //                'ADUsers' => $this->getUsersFromAD(),
-                //                'ADManagers' => $this->getManagers(),
-                'container' => $this->container,
-                'user'      => $this->getUser(),
-            )
-        );
+        $form = $this->createForm(WniosekUtworzenieZasobuType::class, $entity, array(
+            'action' => $this->generateUrl('wniosekutworzeniezasobu_update', array('id' => $entity->getId())),
+            'method' => 'PUT',
+            'container' => $this->container,
+            'user'      => $this->getUser(),
+        ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('submit2', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej', 'button', array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej2', 'button', array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('submit2', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
 
 /*
         foreach($form->all() as $ff){
@@ -548,7 +540,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
@@ -580,8 +572,14 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
+        $accessCheckerService = $this->get('check_access');
+        if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::EDYTUJ)) {
+            $this->addFlash('danger', 'Na tym etapie edycja wniosku nie jest dozwolona!');
+
+            return $this->redirectToRoute('wniosekutworzeniezasobu_show', ['id' => $id]);
+        }
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -596,7 +594,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array('id' => $id)));
         } else {
-            var_dump($editForm->getErrorsAsString());
+          //  var_dump($editForm->getErrorsAsString());
             die('Blad formularza ');
         }
 
@@ -637,7 +635,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+        $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -668,7 +666,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
+            $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
@@ -694,7 +692,7 @@ class WniosekUtworzenieZasobuController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wniosekutworzeniezasobu_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Wniosek','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
@@ -726,19 +724,19 @@ class WniosekUtworzenieZasobuController extends Controller
     {
 
         $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
 
         //print_r($uzs); die();
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
 
-        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editor = $em->getRepository(WniosekEditor::class)->findOneBy(array(
             'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
             'wniosek' => $entity->getWniosek()
             ));
         //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
-        $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
+        $editorsBezZastepstw = $em->getRepository(WniosekEditor::class)->findOneBy(array(
             'samaccountname' => $this->getUser()->getUsername(),
             'wniosek' => $entity->getWniosek()
             ));
@@ -880,7 +878,7 @@ class WniosekUtworzenieZasobuController extends Controller
         //var_dump($ret);die();
         if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
             //dziala zastepstwo, szukamy ktore
-            $zastepstwa = $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()->getUsername());
+            $zastepstwa = $this->getDoctrine()->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
             foreach ($zastepstwa as $z) {
                 if ($z->getKogoZastepuje() == ($ret['editor'] ? $ret['editor']->getSamaccountname() : '______NIE ZADZIALA______')) {
                     //var_dump($z); die();
@@ -910,32 +908,44 @@ class WniosekUtworzenieZasobuController extends Controller
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
-        $wniosek = $em->getRepository('ParpMainBundle:WniosekUtworzenieZasobu')->find($id);
-        //print_r($uzs); die();
+        $wniosek = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
+        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
         }
-        if ($request->isMethod('POST')) {
-            $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
 
-            $kom = new Komentarz();
-            $kom->setObiekt('WniosekUtworzenieZasobu');
-            $kom->setObiektId($id);
-            $kom->setTytul('Wniosek odbito z powodu:');
-            $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUser()->getUsername());
-            $em->persist($kom);
+        if ($request->isMethod('POST')) {
+            if (AkcjeWnioskuConstants::ODRZUC !== $isAccepted && '00_TWORZONY_O_ZASOB' !== $status) {
+                $txt = $request->get('powodZwrotu');
+                $wniosek->setPowodZwrotu($txt);
+
+                $kom = new Komentarz();
+                $kom->setObiekt('WniosekUtworzenieZasobu');
+                $kom->setObiektId($id);
+                $kom->setTytul('Wniosek odbito z powodu:');
+                $kom->setOpis($txt);
+                $kom->setSamaccountname($this->getUser()->getUsername());
+                $em->persist($kom);
+            }
         } else {
             $wniosek->setPowodZwrotu('');
         }
+        $accessCheckerService = $this->get('check_access');
+        $editFailed = false;
+        if (AkcjeWnioskuConstants::ODBLOKUJ === $isAccepted) {
+            if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODBLOKUJ)) {
+                $editFailed = true;
+                $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
+            }
 
-        $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-        if ($isAccepted === 'unblock') {
             $wniosek->getWniosek()->setLockedBy(null);
             $wniosek->getWniosek()->setLockedAt(null);
-        } elseif ($isAccepted === 'reject') {
-            //przenosi do status 8
+        } elseif (AkcjeWnioskuConstants::ODRZUC === $isAccepted) {
+            if (!$accessCheckerService->checkActionWniosek($wniosek, AkcjeWnioskuConstants::ODRZUC)) {
+                $editFailed = true;
+                $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
+            }
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', true);
         } elseif ($isAccepted === 'publish') {
             //przenosi do status 11
@@ -1067,12 +1077,29 @@ class WniosekUtworzenieZasobuController extends Controller
                         break;
                     case 'kasowanie':
                         $wniosek->getZmienianyZasob()->setPublished(false);
-                        //$wniosek->getZasob()->setPublished(false);
+
+                        $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+                        try {
+                            $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                        } catch (\Exception $exception) {
+                            $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                            return $this->redirect($this->generateUrl('wniosekutworzeniezasobu_show', array(
+                                'id' => $id
+                            )));
+                        }
+
+                        $odbieranieUprawnienService
+                            ->wyzerujUzytkownikowZasobu($wniosek->getZmienianyZasob(), $dataOdebrania)
+                        ;
+
                         break;
                 }
             }
         }
-        $em->flush();
+        if (!$editFailed) {
+            $em->flush();
+        }
 
         if ($isAccepted === 'unblock') {
             return $this->redirect($this->generateUrl('wniosekutworzeniezasobu', array()));
@@ -1138,8 +1165,8 @@ class WniosekUtworzenieZasobuController extends Controller
             case 'nadzorcaDomen':
                 //
                 $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_NADZORCA_DOMEN');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                $role = $em->getRepository(AclRole::class)->findOneByName('PARP_NADZORCA_DOMEN');
+                $users = $em->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
@@ -1150,8 +1177,8 @@ class WniosekUtworzenieZasobuController extends Controller
             case 'administratorZasobow':
                 //
                 $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+                $role = $em->getRepository(AclRole::class)->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
+                $users = $em->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {

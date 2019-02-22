@@ -5,6 +5,7 @@ namespace ParpV1\SoapBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\SoapBundle\Entity\ADOrganizationalUnit;
 
 class ADOrganizationalUnitType extends AbstractType
 {
@@ -38,7 +39,7 @@ class ADOrganizationalUnitType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\SoapBundle\Entity\ADOrganizationalUnit'
+            'data_class' => ADOrganizationalUnit::class,
         ));
     }
 

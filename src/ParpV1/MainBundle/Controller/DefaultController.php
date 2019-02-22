@@ -10,12 +10,20 @@ use APY\DataGridBundle\Grid\Grid;
 use APY\DataGridBundle\Grid\Source\Vector;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\AclUserRole;
+use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\UserUprawnienia;
 use ParpV1\MainBundle\Entity\Section;
+use ParpV1\MainBundle\Entity\GrupyUprawnien;
+use ParpV1\MainBundle\Entity\Uprawnienia;
 use ParpV1\MainBundle\Entity\UserEngagement;
+use ParpV1\MainBundle\Entity\Engagement;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Entity\UserGrupa;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\Position;
 use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -85,7 +93,7 @@ class DefaultController extends Controller
                 }
             }
         } else {
-            $ADUsers = $this->getDoctrine()->getRepository('ParpMainBundle:Entry')->getTempEntriesAsUsers($ldap);
+            $ADUsers = $this->getDoctrine()->getRepository(Entry::class)->getTempEntriesAsUsers($ldap);
         }
 
         if (count($ADUsers) === 0) {
@@ -402,7 +410,7 @@ class DefaultController extends Controller
      */
     public function showUncommitedAction($id)
     {
-        $entry = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Entry')->find($id);
+        $entry = $this->getDoctrine()->getManager()->getRepository(Entry::class)->find($id);
 
         return $this->render('ParpMainBundle:Default:show.html.twig', array(
             'entry' => $entry,
@@ -452,7 +460,7 @@ class DefaultController extends Controller
         // pobierz uprawnienia poczatkowe
         $initialrights =
             $entityManager
-                ->getRepository('ParpMainBundle:UserGrupa')
+                ->getRepository(UserGrupa::class)
                 ->findBy([
                     'samaccountname' => $ADUser[0]['samaccountname']
                 ]);
@@ -469,11 +477,11 @@ class DefaultController extends Controller
 
         $zasoby =
             $entityManager
-                ->getRepository('ParpMainBundle:UserZasoby')
+                ->getRepository(UserZasoby::class)
                 ->findUserZasobyByAccountname($samaccountname);
 
         for ($i = 0; $i < count($zasoby); $i++) {
-            $uz = $this->getDoctrine()->getRepository('ParpMainBundle:UserZasoby')->find($zasoby[$i]['id']);
+            $uz = $this->getDoctrine()->getRepository(UserZasoby::class)->find($zasoby[$i]['id']);
 
             $zasoby[$i]['opisHtml'] = $uz->getOpisHtml();
             $zasoby[$i]['modul'] = $uz->getModul();
@@ -488,13 +496,14 @@ class DefaultController extends Controller
             $zasoby[$i]['wniosekId'] = $uz->getWniosek() ? $uz->getWniosek()->getId() : 0;
             $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
             $zasoby[$i]['czyOdebrane'] = $uz->getCzyOdebrane();
+            $zasoby[$i]['data_odebrania'] = $uz->getDataOdebrania();
         }
 
         $names = explode(' ', $ADUser[0]['name']);
         //var_dump($names); die();
         $daneRekord =
             $entityManager
-                ->getRepository('ParpMainBundle:DaneRekord')
+                ->getRepository(DaneRekord::class)
                 ->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
 
 
@@ -565,7 +574,7 @@ class DefaultController extends Controller
                 if ($rolesDiff) {
                     $roles =
                         $entityManager
-                            ->getRepository('ParpMainBundle:AclUserRole')
+                            ->getRepository(AclUserRole::class)
                             ->findBy([
                                'samaccountname' => $samaccountname
                             ]);
@@ -575,7 +584,7 @@ class DefaultController extends Controller
                     }
                     foreach ($roles2 as $r) {
                         $role = $entityManager
-                            ->getRepository('ParpMainBundle:AclRole')
+                            ->getRepository(AclRole::class)
                             ->findOneBy(['name' => $r]);
                         $us = new AclUserRole();
                         $us->setSamaccountname($samaccountname);
@@ -633,22 +642,22 @@ class DefaultController extends Controller
         }
         $uprawnienia =
             $entityManager
-                ->getRepository('ParpMainBundle:UserUprawnienia')
+                ->getRepository(UserUprawnienia::class)
                 ->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
         $historyEntries =
             $entityManager
-                ->getRepository('ParpMainBundle:Entry')
+                ->getRepository(Entry::class)
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
         $pendingEntries =
             $entityManager
-                ->getRepository('ParpMainBundle:Entry')
+                ->getRepository(Entry::class)
                 ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
 
         $up2grupaAd = array();
         foreach ($uprawnienia as $u) {
             $up =
                 $entityManager
-                    ->getRepository('ParpMainBundle:Uprawnienia')
+                    ->getRepository(Uprawnienia::class)
                     ->find($u->getUprawnienieId());
             if ($up->getGrupaAd()) {
                 $up2grupaAd[$up->getId()] = $up->getGrupaAd();
@@ -703,7 +712,7 @@ class DefaultController extends Controller
 
         // Pobieramy listę stanowisk
         $titlesEntity =
-            $manager->getRepository('ParpMainBundle:Position')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository(Position::class)->findBy(array(), array('name' => 'asc'));
         $titles = array();
         foreach ($titlesEntity as $tmp) {
             $titles[$tmp->getName()] = $tmp->getName();
@@ -712,7 +721,7 @@ class DefaultController extends Controller
         // Pobieramy listę Biur i Departamentów
         $departmentsEntity =
             $manager
-                ->getRepository('ParpMainBundle:Departament')
+                ->getRepository(Departament::class)
                 ->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
         $departments = array();
         foreach ($departmentsEntity as $tmp) {
@@ -720,7 +729,7 @@ class DefaultController extends Controller
         }
         // Pobieramy listę Sekcji
         $sectionsEntity =
-            $manager->getRepository('ParpMainBundle:Section')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository(Section::class)->findBy(array(), array('name' => 'asc'));
 
         $sections = array();
 
@@ -732,14 +741,14 @@ class DefaultController extends Controller
         // Pobieramy listę Uprawnien
         $rightsEntity =
             $manager
-                ->getRepository('ParpMainBundle:GrupyUprawnien')
+                ->getRepository(GrupyUprawnien::class)
                 ->findBy(array(), array('opis' => 'asc'));
         $rights = array();
         foreach ($rightsEntity as $tmp) {
             $rights[$tmp->getKod()] = $tmp->getOpis();
         }
         $rolesEntity =
-            $manager->getRepository('ParpMainBundle:AclRole')->findBy(array(), array('name' => 'asc'));
+            $manager->getRepository(AclRole::class)->findBy(array(), array('name' => 'asc'));
         $roles = array();
         foreach ($rolesEntity as $tmp) {
             $roles[$tmp->getName()] = $tmp->getOpis();
@@ -783,19 +792,17 @@ class DefaultController extends Controller
         $builder = $that->createFormBuilder($defaultData)
             ->add('samaccountname', TextType::class, array(
                 'required'   => false,
-                'read_only'  => true,
                 'label'      => 'Nazwa konta',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
                 ),
                 'attr'       => array(
                     'class'    => 'form-control',
-                    'readonly' => true //(!$admin)
+                    'readonly' => true
                 ),
             ))
             ->add('cn', TextType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Nazwisko i Imię', //'Imię i Nazwisko',//'Nazwisko i Imię',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -807,7 +814,6 @@ class DefaultController extends Controller
             ))
             ->add('initials', TextType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Inicjały',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -820,7 +826,6 @@ class DefaultController extends Controller
             ->add('title', ChoiceType::class, array(
                 //                'class' => 'ParpMainBundle:Position',
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Stanowisko',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -849,7 +854,6 @@ class DefaultController extends Controller
             ))
             ->add('info', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Sekcja',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -865,7 +869,6 @@ class DefaultController extends Controller
             ))
             ->add('department', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Biuro / Departament',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -881,7 +884,6 @@ class DefaultController extends Controller
             ))
             ->add('manager', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => (!$admin && !$kadry1 && !$kadry2),
                 'label'      => 'Przełożony',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -928,7 +930,6 @@ class DefaultController extends Controller
             ))
             ->add('initialrights', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => false,
                 'label'      => 'Uprawnienia początkowe',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -947,7 +948,6 @@ class DefaultController extends Controller
             ))
             ->add('roles', ChoiceType::class, array(
                 'required'   => false,
-                'read_only'  => (!$admin),
                 'label'      => 'Role w AkD',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -965,7 +965,6 @@ class DefaultController extends Controller
             ))
             ->add('isDisabled', ChoiceType::class, array(
                 'required'   => true,
-                'read_only'  => false,
                 'label'      => 'Konto wyłączone w AD',
                 'label_attr' => array(
                     'class' => 'col-sm-4 control-label',
@@ -976,8 +975,8 @@ class DefaultController extends Controller
                     'data-toggle' => 'select2',
                 ),
                 'choices'    => array(
-                    '0' => 'NIE',
-                    '1' => 'TAK',
+                    'NIE' => '0',
+                    'TAK' => '1',
                 ),
                 //'data' => @$defaultData["department"],
             ))
@@ -1292,7 +1291,7 @@ class DefaultController extends Controller
             $ou = ($this->container->getParameter('ad_ou'));
             $department =
                 $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:Departament')
+                    ->getRepository(Departament::class)
                     ->findOneBy(['name' => $entry->getDepartment()]);
             $distinguishedname = 'CN='.$entry->getCn().',OU='.$department->getShortname().','.$ou.',DC='.$tab[0].
                 ',DC='.$tab[1];
@@ -1390,10 +1389,10 @@ class DefaultController extends Controller
     {
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname);
-        $engagements = $this->getDoctrine()->getRepository('ParpMainBundle:Engagement')->findAll();
+        $engagements = $this->getDoctrine()->getRepository(Engagement::class)->findAll();
         $userEngagements =
             $this->getDoctrine()
-                ->getRepository('ParpMainBundle:UserEngagement')
+                ->getRepository(UserEngagement::class)
                 ->findBy(array('samaccountname' => $samaccountname));
 
         $em = $this->getDoctrine()->getManager();
@@ -1412,14 +1411,14 @@ class DefaultController extends Controller
 
             foreach ($dane['angaz'] as $key_angaz => $value_angaz) {
                 // var_dump($key_angaz);
-                $engagement = $em->getRepository('ParpMainBundle:Engagement')->findOneBy(array('name' => $key_angaz));
+                $engagement = $em->getRepository(Engagement::class)->findOneBy(array('name' => $key_angaz));
 
                 $last_value_angaz = '';
                 $last_month = null;
                 //petla po miesiacach
                 foreach ($value_angaz as $key_month => $value_month) {
                     $userEngagement =
-                        $em->getRepository('ParpMainBundle:UserEngagement')
+                        $em->getRepository(UserEngagement::class)
                             ->findOneByCryteria(
                                 $samaccountname,
                                 $engagement->getId(),
@@ -1480,7 +1479,7 @@ class DefaultController extends Controller
             ));
         }
 
-        $userEngagementsRepo = $em->getRepository('ParpMainBundle:UserEngagement');
+        $userEngagementsRepo = $em->getRepository(UserEngagement::class);
         $userEngagements = $userEngagementsRepo->findBySamaccountnameAndYear($samaccountname, $year);
 
         $dane = array();
@@ -1918,7 +1917,7 @@ class DefaultController extends Controller
         //echo date('H:i:s') , " Iterate worksheets" , $EOL;
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
-        $progs = $this->get('doctrine')->getManager()->getRepository('ParpMainBundle:Engagement')->findAll();
+        $progs = $this->get('doctrine')->getManager()->getRepository(Engagement::class)->findAll();
         $programy = array();
         foreach ($progs as $p) {
             $programy[$p->getName()] = $p;
@@ -1955,7 +1954,7 @@ class DefaultController extends Controller
                             $ue =
                                 $this->get('doctrine')
                                     ->getManager()
-                                    ->getRepository('ParpMainBundle:UserEngagement')
+                                    ->getRepository(UserEngagement::class)
                                     ->findOneBy($pars);
                             if ($ue == null) {
                                 //print_r($pars);
@@ -2095,7 +2094,7 @@ class DefaultController extends Controller
                 if ($dane[1] !== '' && $dane[1] !== '') {
                     // znajdz zasob
                     $zasob =
-                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneBy(['name' => trim($dane[0])]);
+                        $this->getDoctrine()->getRepository(Zasoby::class)->findOneBy(['name' => trim($dane[0])]);
                     if (!$zasob) {
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
@@ -2223,7 +2222,7 @@ class DefaultController extends Controller
                 if ($dane[1] !== '' && $dane[1] !== '' && !empty($ADUser)) {
                     // znajdz zasob
                     $zasob =
-                        $this->getDoctrine()->getRepository('ParpMainBundle:Zasoby')->findOneBy(['name' => trim($dane[2])]);
+                        $this->getDoctrine()->getRepository(Zasoby::class)->findOneBy(['name' => trim($dane[2])]);
                     if (!$zasob) {
                         //echo "nie znaleziono $dane[2] " . "<br>";
                         //nie rób nic na razie
@@ -2251,7 +2250,7 @@ class DefaultController extends Controller
                         $samaccountname = $ADUser[0]['samaccountname'];
                         $zasobid = $zasob->getId();
                         $dane['zasobId'] = $zasobid;
-                        if (key_exists($samaccountname, $tablica)) {
+                        if (array_key_exists($samaccountname, $tablica)) {
                             $klucz = $tablica[$samaccountname];
                             if (!in_array($zasobid, $klucz, true)) {
                                 $tablica[$samaccountname][] = array('zasobId' => $zasobid, 'dane' => $dane);
@@ -2271,7 +2270,7 @@ class DefaultController extends Controller
         foreach ($tablica as $samaccountname => $values) {
             $samsUserZasoby =
                 $this->getDoctrine()
-                    ->getRepository('ParpMainBundle:UserZasoby')
+                    ->getRepository(UserZasoby::class)
                     ->findByAccountnameAndEcm($samaccountname);
             foreach ($values as $value) {
                 //echo $key . ' ' . $value . "<br>";
@@ -2444,7 +2443,7 @@ class DefaultController extends Controller
         $userZasoby =
             $this
                 ->getDoctrine()
-                ->getRepository('ParpMainBundle:UserZasoby')
+                ->getRepository(UserZasoby::class)
                 ->findNameByAccountname($samaccountname);
 
         if (in_array('PARP_ADMIN', $this->getUser()->getRoles(), true)) {
@@ -2547,7 +2546,7 @@ class DefaultController extends Controller
     {
         $entityManager = $this->getDoctrine()->getManager();
 
-        $entry = $entityManager->getRepository('ParpMainBundle:Entry')->find($id);
+        $entry = $entityManager->getRepository(Entry::class)->find($id);
 
         if (null === $entry) {
             throw new EntityNotFoundException('Nie ma takiego wpisu w bazie.');
@@ -2585,9 +2584,9 @@ class DefaultController extends Controller
         $ldap = $this->container->get('ldap_service');
 
         if ($showall) {
-            $usersFromAD = $ldap->getAllFromAD('wszyscy');
+            $usersFromAD = $ldap->getAllFromAD('wszyscy', false, null, true);
         } else {
-            $usersFromAD = $ldap->getAllFromAD();
+            $usersFromAD = $ldap->getAllFromAD(false, false, null, true);
         }
 
         if (empty($usersFromAD)) {

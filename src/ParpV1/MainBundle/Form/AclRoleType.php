@@ -6,40 +6,29 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Form\DataTransformer\RoleTransformer;
 
 class AclRoleType extends AbstractType
 {
-
-
-    protected $ADUsers;
-    protected $em;
-
-    public function __construct($ADUsers, $em)
-    {
-        $this->ADUsers = $ADUsers;
-        $this->em = $em;
-    }
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new \ParpV1\MainBundle\Form\DataTransformer\RoleTransformer($this->em, $builder->getData());
+        $transformer = new RoleTransformer($options['entity_manager'], $builder->getData());
         $builder
-            //->add('deletedAt')
             ->add('name')
             ->add('opis')
             ->add('actions')
             ->add($builder->create('users', ChoiceType::class, array(
-                'choices' => $this->ADUsers,
+                'choices' => array_flip($options['ad_users']),
                 'multiple' => true,
                 'required' => false,
                 'attr' => array('class' => 'select2')
             ))
-
             ->addModelTransformer($transformer))
-            //->add('users')
         ;
     }
 
@@ -49,7 +38,9 @@ class AclRoleType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\AclRole'
+            'data_class' => AclRole::class,
+            'ad_users' => array(),
+            'entity_manager' => null,
         ));
     }
 

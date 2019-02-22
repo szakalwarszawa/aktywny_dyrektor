@@ -13,6 +13,7 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Validator\Constraints;
+use ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu;
 
 /**
  * Class WniosekUtworzenieZasobuType
@@ -57,9 +58,9 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
         $builder
             ->add('wniosekDomenowy', CheckboxType::class, $atrs)
-            ->add('wniosek', new WniosekType($ADUsers), array(
-                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Wniosek'))
-            //->add('deletedAt')
+            ->add('wniosek', WniosekType::class, array(
+                'label' => false,
+            ))
             ->add('imienazwisko', TextType::class, ['label' => 'Imię i nazwisko', 'attr' => ['readonly' => true]])
             ->add('login', TextType::class, ['attr' => ['readonly' => true]])
             ->add('departament', TextType::class, ['attr' => ['readonly' => true]])
@@ -67,9 +68,6 @@ class WniosekUtworzenieZasobuType extends AbstractType
             ->add('telefon')
             ->add('nrpokoju', TextType::class, ['required' => false, 'label' => 'Numer pokoju'])
             ->add('email')
-            //->add('proponowanaNazwa')
-
-            //->add('zasob')
             ->add('zmienionePola', TextType::class, ['attr' => ['readonly' => true]])
             ->add('zrealizowany', HiddenType::class);
 
@@ -77,87 +75,89 @@ class WniosekUtworzenieZasobuType extends AbstractType
             if ($entity->getTypWnioskuDoRejestru()) {
                 $builder->add(
                     'typWnioskuDoRejestru',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'do Rejestru']
                 );
             }
             if ($entity->getTypWnioskuDoUruchomienia()) {
                 $builder->add(
                     'typWnioskuDoUruchomienia',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']
                 );
             }
             if ($entity->getTypWnioskuZmianaInformacji()) {
                 $builder->add(
                     'typWnioskuZmianaInformacji',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']
                 );
             }
             if ($entity->getTypWnioskuZmianaWistniejacym()) {
                 $builder->add(
                     'typWnioskuZmianaWistniejacym',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'w istniejącym zasobie']
                 );
             }
             if ($entity->getTypWnioskuWycofanie()) {
                 $builder->add(
                     'typWnioskuWycofanie',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'z Rejestru']
                 );
             }
             if ($entity->getTypWnioskuWycofanieZinfrastruktury()) {
                 $builder->add(
                     'typWnioskuWycofanieZinfrastruktury',
-                    ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                    ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                     ['required' => false, 'label' => 'z infrastruktury PARP']
                 );
             }
         } else {
             $builder->add(
                 'typWnioskuDoRejestru',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'do Rejestru']
             );
 
             $builder->add(
                 'typWnioskuDoUruchomienia',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'do utworzenia (uruchomienia) w infrastrukturze PARP']
             );
 
             $builder->add(
                 'typWnioskuZmianaInformacji',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'informacji o zarejestrowanym zasobie']
             );
 
             $builder->add(
                 'typWnioskuZmianaWistniejacym',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'w istniejącym zasobie']
             );
 
             $builder->add(
                 'typWnioskuWycofanie',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'z Rejestru']
             );
 
             $builder->add(
                 'typWnioskuWycofanieZinfrastruktury',
-                ($hideCheckboxes ? 'hidden' : 'checkbox'),
+                ($hideCheckboxes ? HiddenType::class : CheckboxType::class),
                 ['required' => false, 'label' => 'z infrastruktury PARP']
             );
         }
 
         if ($typ == "nowy" || $typ == "") {
-            $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
+            $builder->add('zasob', ZasobyType::class, array(
                 'label' => false,
-                'data_class' => 'ParpV1\MainBundle\Entity\Zasoby',
+                'ldap_service' => $container->get('ldap_service'),
+                'nazwa_label' => $nazwaLabel,
+                'data_class' => Zasoby::class,
                 'by_reference' => true,
                 'constraints' => array(
                     new Constraints\Valid(),
@@ -179,10 +179,11 @@ class WniosekUtworzenieZasobuType extends AbstractType
             } else {
                 if ($formPost === false) {
                     $zasobyService = $container->get('zasoby_service');
+                    $zasobyDlaUsera = $zasobyService->findZasobyDlaUsera($options['user']);
                     $builder->add('zmienianyZasob', ChoiceType::class, array(
                         'mapped' => true,
                         'label' => "Wybierz zasób",
-                        'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                        'choices' => array_flip($zasobyDlaUsera),
                         'attr' => array(
                             'class' => 'select2'
                         ),
@@ -202,18 +203,20 @@ class WniosekUtworzenieZasobuType extends AbstractType
                     ));
                 }
             }
-            $builder->add('zasob', new ZasobyType($container, $nazwaLabel), array(
-                'label' => false, 'data_class' => 'ParpV1\MainBundle\Entity\Zasoby', 'by_reference' => true,
-
+            $builder->add('zasob', ZasobyType::class, array(
+                'label' => false,
+                'ldap_service' => $container->get('ldap_service'),
+                'by_reference' => true,
             ));
         } elseif ("kasowanie" === $typ) {
-            $route = $container->get('request')->get('_route');
+            $route = $container->get('request_stack')->getCurrentRequest()->get('_route');
             if ($formPost === false && $route !== 'wniosekutworzeniezasobu_show') {
                 $zasobyService = $container->get('zasoby_service');
+                $zasobyDlaUsera = $zasobyService->findZasobyDlaUsera($options['user']);
                 $builder->add('zmienianyZasob', ChoiceType::class, array(
                     'mapped' => true,
                     'label' => "Wybierz zasób",
-                    'choices' => $zasobyService->findZasobyDlaUsera($options['user']),
+                    'choices' => array_flip($zasobyDlaUsera),
                     'attr' => array(
                         'class' => 'select2'
                     ),
@@ -245,7 +248,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
-            'data_class' => 'ParpV1\MainBundle\Entity\WniosekUtworzenieZasobu',
+            'data_class' => WniosekUtworzenieZasobu::class,
             'ADUsers' => null,
             'ADManagers' => null,
             'hideCheckboxes' => false,

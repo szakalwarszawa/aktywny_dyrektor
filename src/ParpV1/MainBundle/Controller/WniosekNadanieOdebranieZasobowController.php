@@ -8,7 +8,13 @@ use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zastepstwo;
+use ParpV1\MainBundle\Entity\Komentarz;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\WniosekEditor;
+use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Exception\SecurityTestException;
@@ -25,9 +31,14 @@ use Symfony\Component\Console\Output\BufferedOutput;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Validator\Validation;
-use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Form\LsiImportTokenFormType;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use DateTime;
+use Exception;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -60,203 +71,47 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Lists all WniosekNadanieOdebranieZasobow entities.
      *
+     * @param Request $request
+     * @param string $ktore
+     *
      * @Route("/index/{ktore}", name="wnioseknadanieodebraniezasobow", defaults={"ktore" : "oczekujace"})
      *
      * @Template()
      */
-    public function indexAction($ktore = 'oczekujace')
+    public function indexAction(Request $request, $ktore = WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE)
     {
-        $em = $this->getDoctrine()->getManager();
-        $grid = $this->generateGrid($ktore); //"wtoku");
-        //$grid2 = $this->generateGrid("oczekujace");
-        //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em
-            ->getRepository('ParpMainBundle:Zastepstwo')
+        $xmlHttpRequest = $request->isXmlHttpRequest();
+        $ajaxGrid = $this->container->getParameter('ajax_grid_wnioskinadanieodebranie');
+        $pustyGrid = false;
+        if (WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE === $ktore && !$xmlHttpRequest && $ajaxGrid) {
+            $pustyGrid = true;
+        }
+
+        $wnioskiNadanieOdebranieGrid = $this->get('wnioski_nadanie_odebranie_grid');
+        $grid = $wnioskiNadanieOdebranieGrid
+             ->setTypWniosku($ktore)
+             ->forceWyswietlGrid()
+             ->generateGrid($pustyGrid)
+         ;
+
+        $entityManager = $this->getDoctrine()->getManager();
+        $zastepstwa = $entityManager
+            ->getRepository(Zastepstwo::class)
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
 
-        // if ($grid->isReadyForRedirect()) {// || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() )
-        if ($grid->isReadyForRedirect()) {
-            if ($grid->isReadyForExport()) {
-                return $grid->getExportResponse();
-            }
+        $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
 
-            /*
-                if ($grid2->isReadyForExport())
-                {
-                    return $grid2->getExportResponse();
-                }
-
-                if ($grid3->isReadyForExport())
-                {
-                    return $grid3->getExportResponse();
-                }
-            */
-
-            // Url is the same for the grids
-            return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
-        } else {
-            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig', array(
-                'ktore'      => $ktore,
-                'grid'       => $grid
-                /* , 'grid2' => $grid2, 'grid3' => $grid3 */,
-                'zastepstwa' => $zastepstwa,
-            ));
+        if ($xmlHttpRequest && $ajaxGrid) {
+            $szablonTwig = 'ParpMainBundle:Grid:ajax_grid.html.twig';
         }
-    }
 
-    /**
-     * @param $ktore
-     *
-     * @return \APY\DataGridBundle\Grid\Grid|object
-     */
-    protected function generateGrid($ktore)
-    {
-        $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->findAll();
-        $zastepstwa = $em
-            ->getRepository('ParpMainBundle:Zastepstwo')
-            ->znajdzKogoZastepuje($this->getUser()->getUsername())
-        ;
-        $source = new Entity('ParpMainBundle:WniosekNadanieOdebranieZasobow');
-        $tableAlias = $source->getTableAlias();
-        $sam = $this->getUser()->getUsername();
-
-
-        $source->manipulateQuery(
-            function ($query) use ($tableAlias, $zastepstwa, $ktore) {
-                //$query->select($tableAlias.", z.nazwa");
-
-                //$query->addSelect('group_concat(z.nazwa) zasobek');
-                $query->leftJoin($tableAlias.'.userZasoby', 'uz');
-                //$query->leftJoin('ParpV1\MainBundle\Entity\Zasoby', 'z', 'WITH', 'z.id = uz.zasobId');
-                $query->leftJoin($tableAlias.'.wniosek', 'w');
-                $query->leftJoin('w.viewers', 'v');
-                $query->leftJoin('w.editors', 'e');
-                $query->leftJoin('w.status', 's');
-                //$query->andWhere('z.id = uz.zasobId');
-                if ($ktore != 'wszystkie') {
-                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-                }
-                //'00_TWORZONY', '10_PODZIELONY'
-                $statusyZakmniete =
-                    ['08_ROZPATRZONY_NEGATYWNIE', '07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY', '11_OPUBLIKOWANY'];
-                switch ($ktore) {
-                    case 'wtoku':
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZakmniete).'\')';
-                        //rdie($w);
-                        $query->andWhere($w);
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        //$query->andWhere('e.samaccountname NOT IN (\''.implode('\',\'', $zastepstwa).'\')');
-                        $query->andWhere($tableAlias.
-                            '.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.
-                            implode('\',\'', $zastepstwa).
-                            '\'))');
-                        break;
-                    case 'oczekujace':
-                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
-
-                        break;
-                    case 'zamkniete':
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZakmniete).'\')');
-
-                        break;
-                    case 'wszystkie':
-                        //$w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\', \'00_TWORZONY\')';
-                        //rdie($w);
-                        //$query->andWhere($w);
-                        break;
-                }
-                //$query->andWhere('w.samaccountname = \''.$sam.'\'');
-                $query->addGroupBy($tableAlias.'.id');
-                //$query->addGroupBy('z.nazwa');
-
-
-                //die($query->getDQL());
-            }
-        );
-
-        // kolorowanie wierszy
-        $source->manipulateRow(
-            function ($row) {
-
-                if ($row->getField('odebranie') == '1') {
-                    $row->setClass('wiersz-odebranie');
-                }
-
-                if ($row->getField('wniosek.createdBy') == 'magdalena_warecka' && $this->getUser()->getUsername() == 'marcin_lipinski') {
-                    $row->setClass('wiersz-cito'); // dla Marcina ;)
-                }
-                return $row;
-            }
-        );
-
-        $grid = $this->get('grid');
-
-        $grid->setSource($source);
-        //$kolumnaZasobNazwa = new Column\TextColumn(array('id' => 'zasobek', 'field' => 'zasobek', 'source' => false, 'filterable' => true, 'primary' => false, 'title' => 'Zasoby', 'operators'=>array('like')));
-        //$grid->addColumn($kolumnaZasobNazwa);
-
-        // Dodajemy kolumnę na akcje
-        $actionsColumn = new ActionsColumn('akcje', 'Działania');
-        $grid->addColumn($actionsColumn);
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('pracownicy')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // dodanie spacji umożliwiających łamanie tekstu
-        $grid->getColumn('wniosek.editornames')->manipulateRenderCell(
-            function ($value, $row, $router) {
-                    return str_replace(array(";", ","), ', ', $value);
-            }
-        );
-
-        // Zdejmujemy filtr
-        $grid->getColumn('akcje')
-            ->setFilterable(false)
-            ->setSafe(true);
-
-        // Edycja konta
-        $rowAction1 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wnioseknadanieodebraniezasobow_edit');
-        $rowAction1->setColumn('akcje');
-        $rowAction1->addAttribute('class', 'btn btn-success btn-xs');
-
-        $rowAction2 =
-            new RowAction('<i class="glyphicon glyphicon-pencil"></i> Pokaż', 'wnioseknadanieodebraniezasobow_show');
-        $rowAction2->setColumn('akcje');
-        $rowAction2->addAttribute('class', 'btn btn-info btn-xs');
-
-        // Edycja konta
-        $rowAction3 =
-            new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wnioseknadanieodebraniezasobow_delete_form');
-        $rowAction3->setColumn('akcje');
-        $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-        $rowAction3->manipulateRender(
-            function ($action, $row) {
-                if ($row->getField('wniosek.numer') == 'wniosek w trakcie tworzenia') {
-                    return $action;
-                } else {
-                    return null;
-                }
-            }
-        );
-        //die('a');
-
-
-        //$grid->addRowAction($rowAction1);
-        $grid->addRowAction($rowAction2);
-        $grid->addRowAction($rowAction3);
-
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
-
-        //$grid->isReadyForRedirect();
-        return $grid;
+        return $grid->getGridResponse($szablonTwig, [
+                'ktore'      => $ktore,
+                'grid'       => $grid,
+                'zastepstwa' => $zastepstwa,
+                'ajax_grid'  => $ajaxGrid
+        ]);
     }
 
     /**
@@ -273,11 +128,29 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $form->handleRequest($request);
         $jestCoOdebrac = false;
 
-        if (false === strpos($entity->getPracownicy(), ',')) {
-            $listaPracownikow =  array_filter(explode(';', $entity->getPracownicy()));
-        } else {
+        $listaPracownikowForm = json_decode($entity->getPracownicy(), true);
+        $listaPracownikow = [];
+        if (null !== $listaPracownikowForm) {
+            $resolver = new OptionsResolver();
+            $resolver
+                ->setRequired([
+                    'name',
+                    'surname',
+                    'email'
+                ]);
+
+            foreach ($listaPracownikowForm as $pracownik) {
+                $resolver->resolve($pracownik);
+                $pracownik = implode(' ', [$pracownik['name'], $pracownik['surname'], $pracownik['email']]);
+                $listaPracownikow[] = $pracownik;
+            }
+        }
+
+        if (null === $listaPracownikowForm) {
             $listaPracownikow = array_filter(explode(',', $entity->getPracownicy()));
         }
+
+        $entity->setPracownicy(implode(',', $listaPracownikow));
 
         if ($entity->getOdebranie()) {
             $userZasoby = $this
@@ -292,6 +165,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $jestCoOdebrac = count($userZasoby) > 0;
         }
+
+        if ($entity->getOdebranie() && 1 !== count($listaPracownikow)) {
+            $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
+            . 'zasobów można złożyć tylko dla jednej osoby.');
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new', array('odebranie' => 1)));
+        }
+
         if ($form->isValid() && (($entity->getOdebranie() && $jestCoOdebrac) || !$entity->getOdebranie())) {
             $entityManager = $this->getDoctrine()->getManager();
             $this->setWniosekStatus($entity, '00_TWORZONY', false);
@@ -305,6 +186,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     745
                 );
             }
+
             $entity->ustawPoleZasoby();
             $entityManager->flush();
 
@@ -408,7 +290,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $managersSpozaParp =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpMainBundle:AclRole')
+                ->getRepository(AclRole::class)
                 ->findOneByName('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP');
 
         $managerzySpozaParp = [];
@@ -430,18 +312,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createCreateForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Przejdź do wyboru zasobów', 'attr' => array('class' => 'btn btn-success'))
         );
 
@@ -523,7 +403,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $status =
             $this->getDoctrine()
                 ->getManager()
-                ->getRepository('ParpV1\MainBundle\Entity\WniosekStatus')
+                ->getRepository(WniosekStatus::class)
                 ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);
@@ -535,190 +415,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'message'    => '',
             'userzasoby' => [],
         );
-    }
-
-    /**
-     * @param $wniosek
-     * @param $where
-     * @param $who
-     */
-    protected function addViewersEditors($wniosek, &$where, $who)
-    {
-        if ($this->debug) {
-            echo '<br>addViewersEditors '.$who.'<br>';
-        }
-
-        $ldap = $this->get('ldap_service');
-        $em = $this->getDoctrine()->getManager();
-        switch ($who) {
-            case 'wnioskodawca':
-                //
-                $where[$wniosek->getCreatedBy()] = $wniosek->getCreatedBy();
-                if ($this->debug) {
-                    echo '<br>added '.$wniosek->getCreatedBy().'<br>';
-                }
-                break;
-            case 'podmiot':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $adres = $u->getSamaccountname() . '@parp.gov.pl';
-                    if ($this->isValidEmail($adres)) {
-                        $where[$u->getSamaccountname()] = $u->getSamaccountname();
-                    }
-
-                    if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
-                    }
-                }
-                break;
-            case 'przelozony':
-                //bierze managera tworzacego - jednak nie , ma byc po podmiotach
-                //$ADUser = $this->getUserFromAD($wniosek->getCreatedBy());
-                if ($wniosek->getWniosekNadanieOdebranieZasobow()->getPracownikSpozaParp()) {
-                    //biore managera z pola managerSpoząParp
-                    $ADManager =
-                        $this->getUserFromAD($wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
-                    if (count($ADManager) == 0) {
-                        //die ("Blad 6578 Nie moge znalezc przelozonego dla osoby : ".$wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicySpozaParp()." z managerem ".$wniosek->getWniosekNadanieOdebranieZasobow()->getManagerSpozaParp());
-                    }
-                    //$przelozeni[$ADManager[0]['samaccountname']][] = $uz;
-                } else {
-                    //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
-                    $uss = explode(',', $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
-                    $ADUser = $this->getUserFromAD(trim($uss[0]));
-                    $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
-                }
-
-                if (count($ADManager) == 0 || $ADManager[0]['samaccountname'] == '') {
-                    print_r($ADManager);
-                    //print_r($uss);
-                    //die ("Blad 5426342 Nie moge znalezc przelozonego dla osoby : ".$ADUser[0]['samaccountname']." z managerem ".$ADUser[0]['manager']);
-                } else {
-                    //print_r($ADManager[0]['samaccountname']);
-                    $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                    if ($this->debug) {
-                        echo '<br>added '.$ADManager[0]['samaccountname'].'<br>';
-                    }
-                }
-                break;
-            case 'ibi':
-                //
-                $em = $this->getDoctrine()->getManager();
-                $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_IBI');
-                $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
-                foreach ($users as $u) {
-                    $where[$u->getSamaccountname()] = $u->getSamaccountname();
-                    if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
-                    }
-                }
-                break;
-            case 'wlasciciel':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    echo '.'.$u->getZasobId().'.';
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
-                    $grupa1 = explode(',', $zasob->getWlascicielZasobu());
-                    $grupa2 = explode(',', $zasob->getPowiernicyWlascicielaZasobu());
-                    $grupa = array_merge($grupa1, $grupa2);
-
-                    foreach ($grupa as $g) {
-                        if ($g != '') {
-                            $mancn = str_replace('CN=', '', substr($g, 0, stripos($g, ',')));
-                            $g = trim($g);
-                            //$g = $this->get('renameService')->fixImieNazwisko($g);
-                            //$g = $this->get('renameService')->fixImieNazwisko($g);
-                            $ADManager = $this->getUserFromAD($g);
-                            if (count($ADManager) > 0) {
-                                if ($this->debug) {
-                                    echo '<br>added '.$ADManager[0]['name'].'<br>';
-                                }
-                                $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                            } else {
-                                //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
-                                $message =
-                                    "Nie udało się znaleźć właściciela '".
-                                    $g.
-                                    "' dla zasobu '".
-                                    $zasob->getNazwa().
-                                    "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
-                                $this->get('session')->getFlashBag()->add('warning', $message);
-
-                                $this->sendMailToAdminRejestru($message);
-
-                                //die ("!!!!!!!!!!blad 111 nie moge znalezc usera ".$g);
-                            }
-                            //echo "<br>dodaje wlasciciela ".$g;
-                            //print_r($where);
-                        }
-                    }
-                }
-                break;
-            case 'administrator':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
-                    $grupa = explode(',', $zasob->getAdministratorZasobu());
-                    foreach ($grupa as $g) {
-                        $mancn = str_replace('CN=', '', substr($g, 0, stripos($g, ',')));
-                        $g = trim($g);
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $ADManager = $this->getUserFromAD($g);
-                        if (count($ADManager) > 0) {
-                            if ($this->debug) {
-                                echo '<br>added '.$ADManager[0]['name'].'<br>';
-                            }
-                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                        } else {
-                            $message =
-                                "Nie udało się znaleźć administratora '".
-                                $g.
-                                "' dla zasobu '".
-                                $zasob->getNazwa().
-                                "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
-                            $this->get('session')->getFlashBag()->add('warning', $message);
-
-                            $this->sendMailToAdminRejestru($message);
-                            //throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
-                        }
-                    }
-                }
-                break;
-            case 'techniczny':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($u->getZasobId());
-                    $grupa = explode(',', $zasob->getAdministratorTechnicznyZasobu());
-                    foreach ($grupa as $g) {
-                        //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
-                        //$g = $this->get('renameService')->fixImieNazwisko($g);
-                        $g = trim($g);
-                        $ADManager = $this->getUserFromAD($g);
-                        if (count($ADManager) > 0) {
-                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
-                            if ($this->debug) {
-                                echo '<br>added '.$ADManager[0]['name'].'<br>';
-                            }
-                        } else {
-                            $message =
-                                "Nie udało się znaleźć administratora technicznego '".
-                                $g.
-                                "' dla zasobu '".
-                                $zasob->getNazwa().
-                                "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
-                            $this->get('session')->getFlashBag()->add('warning', $message);
-
-                            $this->sendMailToAdminRejestru($message);
-                        }
-                    }
-                }
-                break;
-        }
-        foreach ($where as $k => $v) {
-            if ($k == '') {
-                die($who.' mam pustego usera !!!!!');
-            }
-        }
     }
 
     /**
@@ -740,7 +436,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 break;
             case 'dyrektor':
             default:
-                $skrotDepartamentu = $manager->getRepository('ParpMainBundle:Departament')
+                $skrotDepartamentu = $manager->getRepository(Departament::class)
                     ->findOneBy([
                         'name' => $ADUser['department']
                     ]);
@@ -765,8 +461,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $mails = ['kamil_jakacki@parp.gov.pl'];
 
         $em = $this->getDoctrine()->getManager();
-        $role = $em->getRepository('ParpMainBundle:AclRole')->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
-        $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($role);
+        $role = $em->getRepository(AclRole::class)->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
+        $users = $em->getRepository(AclUserRole::class)->findByRole($role);
         foreach ($users as $u) {
             $mails[] = $u->getSamaccountname().'@parp.gov.pl';
         }
@@ -792,167 +488,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null)
     {
-        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
-        if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
-            if ($wniosek->getOdebranie()) {
-                $this->get('parp.mailer')
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN
-                    );
-            } else {
-                $this->get('parp.mailer')
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
-                    );
-            }
-        } elseif ($rejected) {
-            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
-                //odrzucenie
-                $this->get('parp.mailer')
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
-                    );
-            } else {
-                //zwroct do poprzednika
-                $this->get('parp.mailer')
-                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
-            }
-        }
-        $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
-
-        $request = $this
-            ->container
-            ->get('request_stack')
-            ->getCurrentRequest();
-        $this->logg('setWniosekStatus START!', array(
-            'url'        => $request->getRequestUri(),
-            'user'       => $this->getUser()->getUsername(),
-            'wniosek.id' => $wniosek->getId(),
-            'statusName' => $statusName,
-            'rejected'   => $rejected,
-            'oldStatus'  => $oldStatus,
-            'isPost'     => $request->isMethod('POST'),
-            'zastepstwo' => $zastepstwo,
-        ));
-
-
-        if ($this->debug) {
-            echo '<br>setWniosekStatus '.$statusName.'<br>';
-        }
-
-        $em = $this->getDoctrine()->getManager();
-        $status = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($statusName);
-        $wniosek->getWniosek()->setStatus($status);
-        $wniosek->getWniosek()->setLockedBy(null);
-        $wniosek->getWniosek()->setLockedAt(null);
-        $viewers = array();
-        $editors = array();
-        $vs = explode(',', $status->getViewers());
-        foreach ($vs as $v) {
-            $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
-        }
-
-        $czyLsi = false;
-        $czyMaGrupyAD = false;
-        foreach ($wniosek->getUserZasoby() as $uz) {
-            $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
-            if ($z->getGrupyAd()) {
-                $czyMaGrupyAD = true;
-                $czyLsi = $uz->getZasobId() == 4420;
-            }
-        }
-
-        if ($statusName == '07_ROZPATRZONY_POZYTYWNIE' && $oldStatus != null && ($czyMaGrupyAD || $czyLsi)) {
-            //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
-            $os = $em->getRepository('ParpMainBundle:WniosekStatus')->findOneByNazwaSystemowa($oldStatus);
-            $es = explode(',', $os->getEditors());
-        } else {
-            $es = explode(',', $status->getEditors());
-        }
-
-        foreach ($es as $e) {
-            $this->addViewersEditors($wniosek->getWniosek(), $editors, $e);
-            //print_r($editors);
-        }
-
-        //kasuje viewerow
-        foreach ($wniosek->getWniosek()->getViewers() as $v) {
-            $wniosek->getWniosek()->removeViewer($v);
-            $em->remove($v);
-        }
-        //kasuje editorow
-        foreach ($wniosek->getWniosek()->getEditors() as $v) {
-            $wniosek->getWniosek()->removeEditor($v);
-            $em->remove($v);
-        }
-
-        //dodaje viewerow
-        foreach ($viewers as $v) {
-            $wv = new WniosekViewer();
-            $wv->setWniosek($wniosek->getWniosek());
-            $wniosek->getWniosek()->addViewer($wv);
-            $wv->setSamaccountname($v);
-            if ($this->debug) {
-                echo '<br>dodaje usera viewra '.$v;
-            }
-            $em->persist($wv);
-        }
-        $wniosek->getWniosek()->setViewernamesSet();
-
-        //dodaje editorow
-        foreach ($editors as $v) {
-//            die('MAM CIĘ');
-            $wv = new WniosekEditor();
-            $wv->setWniosek($wniosek->getWniosek());
-            $wniosek->getWniosek()->addEditor($wv);
-            $wv->setSamaccountname($v);
-            if ($this->debug) {
-                echo '<br>dodaje usera editora '.$v;
-            }
-            $em->persist($wv);
-        }
-        $wniosek->getWniosek()->setEditornamesSet();
-
-        //wstawia historie statusow
-        $sh = new \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow();
-        $sh->setZastepstwo($zastepstwo);
-        $sh->setWniosek($wniosek->getWniosek());
-        $wniosek->getWniosek()->addStatusy($sh);
-        $sh->setCreatedAt(new \Datetime());
-        $sh->setRejected($rejected);
-        $sh->setCreatedBy($this->getUser()->getUsername());
-        $sh->setStatus($status);
-        $sh->setStatusName($status->getNazwa());
-        $sh->setOpis($status->getNazwa());
-        $em->persist($sh);
-    }
-
-    /**
-     * @param $wniosek
-     * @return null
-     */
-    protected function sprawdzCzyDzialaZastepstwo($wniosek)
-    {
-        $ret = $this->checkAccess($wniosek);
-        //var_dump($wniosek, $ret);
-        if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
-            //dziala zastepstwo, szukamy ktore
-            $zastepstwa =
-                $this->getDoctrine()->getRepository('ParpMainBundle:Zastepstwo')->znajdzZastepstwa($this->getUser()
-                    ->getUsername());
-            foreach ($zastepstwa as $z) {
-                //var_dump($ret);
-                if ($ret['editor'] && $z->getKogoZastepuje() == $ret['editor']->getSamaccountname()) {
-                    //var_dump($z); die();
-                    return $z;
-                }
-            }
-        } else {
-            return null;
-        }
+        $statusWnioskuService = $this->get('status_wniosku_service');
+        $statusWnioskuService->setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus);
     }
 
     /**
@@ -980,8 +517,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $wniosek = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $wniosek = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
+        if ($wniosek !== null) {
+            if ($wniosek->getWniosek()->getIsBlocked()) {
+                throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+            }
+        }
+
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
         $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
         $acc = $this->checkAccess($wniosek);
@@ -1001,17 +544,35 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
         if ($request->isMethod('POST')) {
             $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
+            if (!empty($txt)) {
+                $wniosek->setPowodZwrotu($txt);
 
-            $kom = new \ParpV1\MainBundle\Entity\Komentarz();
-            $kom->setObiekt('WniosekNadanieOdebranieZasobow');
-            $kom->setObiektId($id);
-            $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
-            $kom->setOpis($txt);
-            $kom->setSamaccountname($this->getUser()->getUsername());
-            $em->persist($kom);
+                $kom = new \ParpV1\MainBundle\Entity\Komentarz();
+                $kom->setObiekt('WniosekNadanieOdebranieZasobow');
+                $kom->setObiektId($id);
+                $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
+                $kom->setOpis($txt);
+                $kom->setSamaccountname($this->getUser()->getUsername());
+                $em->persist($kom);
+            } elseif (!empty($request->request->get('dataOdebrania'))) {
+                if ('acceptAndPublish' === $isAccepted) {
+                    try {
+                        $dataOdebrania = new DateTime($request->request->get('dataOdebrania'));
+                    } catch (\Exception $exception) {
+                        $this->addFlash('danger', 'Wprowadzono niepoprawną datę odebrania!');
+
+                        return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array(
+                            'id' => $id,
+                        )));
+                    }
+                }
+            }
         } else {
             $wniosek->setPowodZwrotu('');
+        }
+
+        if (!isset($dataOdebrania)) {
+            $dataOdebrania = new DateTime();
         }
 
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
@@ -1033,14 +594,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             //przenosi do status 8
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE', true);
             if ($wniosek->getOdebranie()) {
-                /** @var UserZasoby $uz */
-                foreach ($wniosek->getUserZasoby() as $uz) {
-                    $cloneuz = clone $uz;//robimy klony by pozostal slad we wniosku na co byl skladany
-                    $uz->setWniosekOdebranie(null);//zdejmujemy wniosek z uz do ktorych byl przypisany
-                    $cloneuz->setWniosekOdebranie($wniosek);
-                    $cloneuz->setWniosek(null);//zeby nie bylo dubli przy oryginalnym wniosku
-                    $em->persist($cloneuz);
-                }
+                $odbieranieUprawnienService = $this->get('odbieranie_uprawnien_service');
+                $odbieranieUprawnienService->odrzucenieWniosku($wniosek);
             }
         } elseif ($isAccepted == 'publish') {
             //przenosi do status 11
@@ -1074,8 +629,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if ($publishForReal) {
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+                    if ($wniosek->getOdebranie()) {
+                        $uz->setDataOdebrania(new DateTime());
+                    }
 
                     $uz->setCzyNadane(true);
+
+                    $em->persist($uz);
                 }
                 $this->setWniosekStatus($wniosek, '11_OPUBLIKOWANY', false);
             }
@@ -1196,20 +756,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus(
-                                        $wn,
-                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                        false
-                                    );
+                                    $this->setWniosekStatus($wn, '02_EDYCJA_PRZELOZONY', false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
                                 }
                             } else {
-                                $this->setWniosekStatus(
-                                    $wniosek,
-                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                    false
-                                );
+                                $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
                             }
                             //$em->remove($wniosek);
                             if ($this->debug) {
@@ -1226,11 +778,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     switch ($isAccepted) {
                         case 'accept':
                             //przenosi do status 2
-                            $this->setWniosekStatus(
-                                $wniosek,
-                                ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '02_EDYCJA_PRZELOZONY'),
-                                false
-                            );
+                            $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
                             break;
                         case 'return':
                             //przenosi do status 1
@@ -1249,13 +797,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             if (count($zasoby) > 1) {
                                 $this->setWniosekStatus($wniosek, '10_PODZIELONY', false);
                                 $numer = 1;
+                                $zasobyService = $this->get('zasoby_service');
                                 //teraz dla kazdego zasobu tworzy oddzielny wniosek
                                 foreach ($zasoby as $z) {
                                     if ($this->debug) {
                                         echo '<br><br>Tworzy nowy wniosek dla zasobu '.$z->getZasobId().
                                             '<br><br>';
                                     }
-                                    $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
+                                    $wn = new WniosekNadanieOdebranieZasobow();
                                     $wn->getWniosek()->setCreatedBy($wniosek->getWniosek()->getCreatedBy());
                                     $wn->getWniosek()->setCreatedAt($wniosek->getWniosek()->getCreatedAt());
                                     $wn->getWniosek()->setLockedBy($wniosek->getWniosek()->getLockedBy());
@@ -1265,30 +814,54 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         ->getJednostkaOrganizacyjna());
                                     $wn->setPracownikSpozaParp($wniosek->getPracownikSpozaParp());
                                     $wn->setManagerSpozaParp($wniosek->getManagerSpozaParp());
+                                    $wn->setOdebranie($wniosek->getOdebranie());
 
                                     $this->get('wniosekNumer')->nadajPodNumer($wn, $wniosek, $numer++);
                                     $users = array();
                                     foreach ($z as $uz) {
-                                        $nuz = clone $uz;
-                                        $em->persist($nuz);
-                                        $wn->setZasobId($nuz->getZasobId());
-                                        $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
-                                        $nuz->setWniosek($wn);
-                                        $wn->addUserZasoby($nuz);
+                                        if ($wn->getOdebranie()) {
+                                            $uz->setWniosekOdebranie($wn);
+                                            $wn->setZasobId($uz->getId());
+                                            $em->persist($uz);
+                                            $users[$uz->getSamaccountname()] = $uz->getSamaccountname();
+                                            $userZasobPersist = $uz;
+                                        } else {
+                                            $nuz = clone $uz;
+                                            $nuz->setWniosek($wn);
+                                            $em->persist($nuz);
+                                            $wn->addUserZasoby($nuz);
+                                            $wn->setZasobId($nuz->getId());
+                                            $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
+                                            $userZasobPersist = $nuz;
+                                        }
+
+                                        $wn
+                                            ->setZawieraZasobyZAd($zasobyService->czyZasobMaGrupyAd($userZasobPersist))
+                                        ;
                                     }
+
                                     $wn->setPracownicy(implode(',', $users));
-                                    //klonuje wszystkie historie statusow
                                     foreach ($wniosek->getWniosek()->getStatusy() as $s) {
                                         $s2 = clone $s;
                                         $s2->setWniosek($wn->getWniosek());
                                         $em->persist($s2);
                                     }
-                                    $this->setWniosekStatus($wn, '03_EDYCJA_WLASCICIEL', false);
+
+                                    $wn->ustawPoleZasoby();
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
+                                    $this->setWniosekStatus(
+                                        $wn,
+                                        ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                        false
+                                    );
                                 }
                             } else {
-                                $this->setWniosekStatus($wniosek, '03_EDYCJA_WLASCICIEL', false);
+                                $this->setWniosekStatus(
+                                    $wniosek,
+                                    ($wniosek->getOdebranie() ? '05_EDYCJA_ADMINISTRATOR' : '03_EDYCJA_WLASCICIEL'),
+                                    false
+                                );
                             }
                             break;
                         case 'return':
@@ -1338,6 +911,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->setWniosekStatus($wniosek, '06_EDYCJA_TECHNICZNY', false, $status);
                             break;
                         case 'return':
+                            if ($wniosek->getOdebranie()) {
+                                $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
+                                break;
+                            }
                             $maBycIbi = false;
                             foreach ($wniosek->getUSerZasoby() as $uz) {
                                 $maBycIbi =
@@ -1381,19 +958,31 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                     $department =
                         $this->getDoctrine()
-                            ->getRepository('ParpMainBundle:Departament')
+                            ->getRepository(Departament::class)
                             ->findOneByName(trim($aduser[0]['department']));
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
                 }
+                if ($wniosek->getOdebranie()) {
+                    $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
+                    if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
+                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
+                    }
+                    $this->addFlash('danger', $flashMessage);
+                }
                 foreach ($wniosek->getUserZasoby() as $uz) {
-                    $z = $em->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
+                    $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
+
                     if ($wniosek->getOdebranie()) {
                         $uz->setCzyOdebrane(true);
+                        if (!$wniosek->getZawieraZasobyZAd()) {
+                            $uz->setDataOdebrania($dataOdebrania);
+                        }
+
                         $uz->setKtoOdebral($this->getUser()->getUsername());
-                        $uz->setAktywneDo($uz->getDataOdebrania());
                     }
+
                     if ($z->getGrupyAd()) {
                         $grupy = explode(';', $z->getGrupyAd());
 
@@ -1442,7 +1031,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         //}
                     } else {
                         //bez grup ad tworzymy zadanie i maila do admina
-                        $this->get('uprawnieniaservice')->wyslij(
+                        $this->get('uprawnienia_service')->wyslij(
                             array(
                                 'cn'             => '',
                                 'samaccountname' => $uz->getSamaccountname(),
@@ -1493,45 +1082,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     protected function checkAccess($entity, $onlyEditors = false, $username = null)
     {
-        if ($username === null) {
-            $username = $this->getUser()->getUsername();
-        }
+        $statusWnioskuService = $this->get('status_wniosku_service');
 
-        $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($username);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
-        }
-
-        $editor = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-            'samaccountname' => $zastepstwa,
-            'wniosek'        => $entity->getWniosek(),
-        ));
-
-        //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
-        $editorsBezZastepstw = $em->getRepository('ParpMainBundle:WniosekEditor')->findOneBy(array(
-                'samaccountname' => $username,
-                'wniosek'        => $entity->getWniosek(),
-            ));
-        if ($entity->getWniosek()->getLockedBy()) {
-            if ($entity->getWniosek()->getLockedBy() != $username) {
-                $editor = null;
-            }
-        } elseif ($editor) {
-            $entity->getWniosek()->setLockedBy($username);
-            $entity->getWniosek()->setLockedAt(new \Datetime());
-            $em->flush();
-        }
-
-        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
-                'samaccountname' => $zastepstwa,
-                'wniosek'        => $entity->getWniosek(),
-            ));
-        $ret = ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
-
-        //var_dump($ret);
-        return $ret;
+        return $statusWnioskuService->checkAccess($entity, $onlyEditors, $username);
     }
 
     /**
@@ -1545,7 +1098,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         $access = $this->checkAccess($entity);
 
@@ -1555,7 +1108,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 array('wniosek' => $entity, 'viewer' => 0)
             );
         }
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        $uzs = $em->getRepository(UserZasoby::class)->findByWniosekWithZasob($entity);
         //die(count($uzs).">");
         $editor = $access['editor'];
 
@@ -1613,10 +1166,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $deleteForm = $this->createDeleteForm($id);
         $comments =
-            $em->getRepository('ParpMainBundle:Komentarz')
+            $em->getRepository(Komentarz::class)
                 ->getCommentCount('WniosekNadanieOdebranieZasobow', $entity->getId());
 
-        $zastepstwa = $em->getRepository('ParpMainBundle:Zastepstwo')->znajdzKogoZastepuje($this->getUser()->getUsername());
+        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
 
         $lsiImportTokenForm = null;
         if ($czyLsi) {
@@ -1627,6 +1180,23 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $lsiImportTokenForm = $lsiImportTokenForm->createView();
         }
+
+        $potrzebnaDataOdebrania = function () use ($entity) {
+            $edycjaAdministratora = (
+                $entity
+                    ->getWniosek()
+                    ->getStatus()
+                    ->getNazwaSystemowa() === '05_EDYCJA_ADMINISTRATOR'
+            );
+            $wniosekOdebranie = $entity->getOdebranie();
+            $zawieraZasobyZAd = !$entity->getZawieraZasobyZAd();
+
+            if ($edycjaAdministratora && $wniosekOdebranie && $zawieraZasobyZAd) {
+                return true;
+            }
+
+            return false;
+        };
 
         return array(
             'grupyAD'               => $grupyAD,
@@ -1643,6 +1213,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'czyLsi'                => $czyLsi,
             'lsi_import_token_form' => $lsiImportTokenForm,
             'comments'              => $comments,
+            'potrzebna_data_odebrania' => $potrzebnaDataOdebrania(),
         );
     }
 
@@ -1674,7 +1245,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -1699,9 +1270,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
+        }
+        if ($entity->getWniosek()->getWniosek()->getIsBlocked()) {
+            throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
         }
         $wniosekId = $entity->getWniosek()->getId();
         $entity->getWniosek()->removeUserZasoby($entity);
@@ -1719,13 +1293,16 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      */
     public function editAction($id)
     {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entityManager = $this->getDoctrine()->getManager();
+        $entity = $entityManager->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
 
+        $accessCheckerService = $this->get('check_access');
+        $wniosekZablokowany = $accessCheckerService
+            ->checkWniosekIsBlocked($entity, null, true);
 
         $access = $this->checkAccess($entity);
         if (!$access['editor']) {
@@ -1738,7 +1315,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
 
-        $uzs = $em->getRepository('ParpMainBundle:UserZasoby')->findByWniosekWithZasob($entity);
+        $uzs = $entityManager->getRepository(UserZasoby::class)->findByWniosekWithZasob($entity);
 
         return array(
             'entity'      => $entity,
@@ -1758,21 +1335,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     private function createEditForm(WniosekNadanieOdebranieZasobow $entity)
     {
         $form =
-            $this->createForm(new WniosekNadanieOdebranieZasobowType(
-                $this->getUsersFromAD(),
-                $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
-                $entity
-            ), $entity, array(
+            $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl(
                     'wnioseknadanieodebraniezasobow_update',
                     array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
+                'ad_users' => $this->getUsersFromAD(),
+                'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
         $form->add(
             'submit',
-            'submit',
+            SubmitType::class,
             array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'))
         );
 
@@ -1789,11 +1364,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+        $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
         }
+
+        $accessCheckerService = $this->get('check_access');
+        $wniosekZablokowany = $accessCheckerService
+            ->checkWniosekIsBlocked($entity, null, true);
 
         $deleteForm = $this->createDeleteForm($id);
         $editForm = $this->createEditForm($entity);
@@ -1804,6 +1383,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $osoby = explode(',', $entity->getPracownicy());
             } else {
                 $osoby = explode(';', $entity->getPracownicy());
+            }
+
+            if ($entity->getOdebranie() && 1 !== count($osoby)) {
+                $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
+                . 'zasobów można złożyć tylko dla jednej osoby.');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));
             }
 
             foreach ($entity->getUserZasoby() as $uz) {
@@ -1839,7 +1425,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:WniosekNadanieOdebranieZasobow')->find($id);
+            $entity = $em->getRepository(WniosekNadanieOdebranieZasobow::class)->find($id);
+
+            $accessCheckerService = $this->get('check_access');
+            $wniosekZablokowany = $accessCheckerService
+                ->checkWniosekIsBlocked($entity, null, true);
+
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
@@ -1865,63 +1456,51 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('wnioseknadanieodebraniezasobow_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj wniosek', 'attr' => array('class' => 'btn btn-danger')))
             ->getForm();
     }
 
-
     /**
-     * @Route("/dev/poprawWnioskiKtorePominelyIBI", name="poprawWnioskiKtorePominelyIBI", defaults={})
-     * @Template()
+     * Końcowa blokada wniosku - uniemożliwia edytowanie go lub wprowadzanie zmian na powiązanych
+     * obiektach np. komentarzach w tym wniosku.
+     *
+     * @Route("/zablokujwniosekkoncowo/{wniosek}/{status}/{komentarz}", name="zablokuj_wniosek_koncowo")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @param WniosekNadanieOdebranieZasobow $wniosek
+     * @param string $status
+     * @param string $komentarz
+     *
+     * @return Response
      */
-    public function poprawWnioskiKtorePominelyIBIAction()
+    public function zablokujWniosekKoncowo(WniosekNadanieOdebranieZasobow $wniosek, $status, $komentarz = null)
     {
+        $responseRedirect = $this->redirect(
+            $this->generateUrl('wnioseknadanieodebraniezasobow_show', array(
+                'id' => $wniosek->getId()
+            ))
+        );
+        $wniosekZakonczony = $wniosek->getWniosek()->getStatus()->getFinished();
 
-        /*
-                $em = $this->getDoctrine()->getManager();
-                $ctrl = $this;
-                $wniochy = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->findById([150,844]);
-                foreach($wniochy as $wniosek){
-                    //tym trzeba cofnac do IBI
-                    $wniosek->getWniosek()->setLockedBy(null);
-                    $wniosek->getWniosek()->setLockedAt(null);
-                    $ctrl->setWniosekStatus($wniosek, "04_EDYCJA_IBI", true);
-                }
+        if (WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status && $wniosekZakonczony) {
+            $this->addFlash('warning', 'Wniosek jest zakończony, nie można anulować.');
 
-                $wniochy = $em->getRepository("ParpMainBundle:WniosekNadanieOdebranieZasobow")->findById([213,728]);
-                foreach($wniochy as $wniosek){
-                    //tym trzeba dodac IBI
-                    $wniosek->getWniosek()->setLockedBy(null);
-                    $wniosek->getWniosek()->setLockedAt(null);
-                    foreach($wniosek->getWniosek()->getStatusy() as $status){
-                        if($status->getStatusName() == "W akceptacji u właściciela zasobu"){
-                            $lastStatus = $status;
-                        }
-                        if($status->getStatusName() == "W akceptacji u administratora zasobu"){
-                            $nextStatus = $status;
-                        }
-                    }
-                    $interval = $nextStatus->getCreatedAt()->diff($lastStatus->getCreatedAt());
-                    $newDate = clone $lastStatus->getCreatedAt();
-                    $newDate = $newDate->add(new \Dateinterval('PT' . (int)(($interval->i/2)*60+($interval->s/2)) . 'S'));
-                    //var_dump($interval->i, $nextStatus->getCreatedAt(), $lastStatus->getCreatedAt(), $newDate);
-                    $ns = $em->getRepository("ParpMainBundle:WniosekStatus")->findOneByNazwaSystemowa("04_EDYCJA_IBI");
-                    $status = new \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow();
-                    $status->setStatus($ns);
-                    $status->setWniosek($wniosek->getWniosek());
-                    $wniosek->getWniosek()->addStatusy($status);
-                    $status->setRejected(false);
-                    $status->setCreatedBy("grzegorz_bialowarczu");
-                    $status->setCreatedAt($newDate);
-                    $status->setStatusname($ns->getNazwa());
-                    $status->setOpis($ns->getNazwa());
-                    $status->setRejected(false);
-                    //die();
-                    $em->persist($status);
-                }
-                $em->flush();
-                die(".".count($wniochy));
-        */
+            return $responseRedirect;
+        }
+
+        if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE === $status && !$wniosekZakonczony) {
+            $this->addFlash('warning', 'Wniosek nie jest zakończony, nie można odebrać.');
+
+            return $responseRedirect;
+        }
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        $uprawnieniaService->zablokujKoncowoWniosek($wniosek, $status, $komentarz, true);
+
+        $this->addFlash('danger', 'Zablokowano wniosek.');
+
+        return $responseRedirect;
     }
 
     /**
@@ -1946,20 +1525,5 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             var_dump(debug_backtrace(null, 1));
         }
         return $aduser;
-    }
-
-    /**
-     * Prywatna funkcja zwraca info czy podany tekst jest poprawnym adresem email
-     *
-     * @param string $text
-     *
-     * @return bolean
-     */
-    private function isValidEmail($text)
-    {
-        $validator = Validation::createValidator();
-        $violations = $validator->validate($text, new Email(array('strict' => true)));
-
-        return (0 !== count($violations)) ? false : true;
     }
 }

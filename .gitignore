@@ -4,6 +4,8 @@ app/config/*.yml
 app/logs/*
 bin/*
 vendor/*
-web/*
 work/logs/*
-
+/var/cache/*
+/var/logs/*
+!var/cache/.gitkeep
+!var/logs/.gitkeep

@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * UserZasoby
@@ -24,11 +25,19 @@ class UserZasoby
     public function preUpdate()
     {
         if ($this->wniosek) {
-            $this->wniosek->ustawPoleZasoby();
+            try {
+                $this->wniosek->ustawPoleZasoby();
+            } catch (EntityNotFoundException $exception) {
+                return false;
+            }
         }
 
         if ($this->wniosekOdebranie) {
-            $this->wniosekOdebranie->ustawPoleZasoby();
+            try {
+                $this->wniosekOdebranie->ustawPoleZasoby();
+            } catch (EntityNotFoundException $exception) {
+                return false;
+            }
         }
     }
     /**
@@ -184,7 +193,6 @@ class UserZasoby
      */
     protected $czyAktywne;
 
-
     /**
      * @var boolean
      *
@@ -246,8 +254,6 @@ class UserZasoby
     protected $dataOdebrania;
 
     protected $_ADUser;
-
-
 
     /**
      * Set _ADUser
@@ -532,6 +538,9 @@ class UserZasoby
      */
     public function setAktywneDo($aktywneDo)
     {
+        if (null !== $aktywneDo) {
+            $aktywneDo = $aktywneDo->setTime(23, 59);
+        }
         $this->aktywneDo = $aktywneDo;
 
         return $this;

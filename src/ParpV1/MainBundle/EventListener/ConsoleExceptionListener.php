@@ -18,7 +18,7 @@ class ConsoleExceptionListener
     {
         $command = $event->getCommand();
         $exception = $event->getException();
-    
+
         $message = sprintf(
             '%s: %s (uncaught exception) at %s line %s while running console command `%s`',
             get_class($exception),
@@ -27,7 +27,7 @@ class ConsoleExceptionListener
             $exception->getLine(),
             $command->getName()
         );
-    
+
         $this->logger->error($message);
     }
 }

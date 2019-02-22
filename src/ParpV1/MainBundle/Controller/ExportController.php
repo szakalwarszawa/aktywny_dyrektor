@@ -28,11 +28,11 @@ class ExportController extends Controller
         foreach ($ADUsers as $u) {
             $mapaOsob[$u['samaccountname']] = $u['name'];
         }
-        
+
         $manager = $this->getDoctrine()->getManager();
 
         /** @var Zasoby[] $zasoby */
-        $zasoby = $manager->getRepository("ParpMainBundle:Zasoby")->findBy([
+        $zasoby = $manager->getRepository(Zasoby::class)->findBy([
             'published' => $aktywne,
         ]);
 
@@ -50,7 +50,7 @@ class ExportController extends Controller
                 'Opis',
             ]
         ];
-        
+
         foreach ($zasoby as $zasob) {
             $data[] = [
                 'Id' => $zasob->getId(),
@@ -74,10 +74,10 @@ class ExportController extends Controller
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
         header('Content-Disposition: attachment;filename="zasoby.xls"');
         header('Cache-Control: max-age=0');
-        
+
           // Do your stuff here
           $writer = \PHPExcel_IOFactory::createWriter($phpExcelObject, 'Excel5');
-        
+
         $writer->save('php://output');
         die();
     }

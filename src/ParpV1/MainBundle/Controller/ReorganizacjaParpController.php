@@ -12,6 +12,13 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use ParpV1\MainBundle\Entity\ImportSekcjeUser;
+use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\Section;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\UserZasoby;
 
 /**
  * Klaster controller.
@@ -81,14 +88,14 @@ class ReorganizacjaParpController extends Controller
                 $u['name'] = isset($mapowanieNazwisk[$u['name']]) ? $mapowanieNazwisk[$u['name']] : $u['name'];
                 $name1 = trim(mb_strtoupper($u['name']));
                 $name2 = $this->get('samaccountname_generator')->ADnameToRekordName($u['name']);
-                $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name1]);
+                $import = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $name1]);
                 if (count($import) == 0) {
-                    $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name2]);
+                    $import = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $name2]);
                 }
-                $entry = $em->getRepository('ParpMainBundle:Entry')->findNowaSekcjaTYLKOuzywaneWreorganizacji2016($u['samaccountname']);
+                $entry = $em->getRepository(Entry::class)->findNowaSekcjaTYLKOuzywaneWreorganizacji2016($u['samaccountname']);
                 //die(".".count($entry).".".$u['samaccountname'].".");
                 $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
-                $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
+                $danerekord = $em->getRepository(DaneRekord::class)->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
                 $rekordDepartament = "_Nie_ma_departamentu_rekord_";
                 $rekordTitle = $u['title'];
                 if (!$danerekord) {
@@ -170,7 +177,7 @@ class ReorganizacjaParpController extends Controller
                     }
                     if ($danerekord) {
                         //wtedy bierzemy jednak z rekorda!!!
-                        $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
+                        $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
                         if (!$departament && $danerekord->getDepartament() > 500) {
                             die("Nie mam departamentu ".$danerekord->getDepartament());
                         }
@@ -190,7 +197,7 @@ class ReorganizacjaParpController extends Controller
                             $newDepartamentNazwa .= " w rekordzie  ___"; //$entry[0]->getDepartament();
                     }
                     $sekcja = count($entry) > 0 ? $entry[0]->getInfo() : $u['info'];
-                    $section = $em->getRepository('ParpMainBundle:Section')->findOneBy(['name' => $sekcja]);
+                    $section = $em->getRepository(Section::class)->findOneBy(['name' => $sekcja]);
                     $sekcjaSkrot = $section ? $section->getShortname() : "";
                     $coPowinienMiec = [
                         'dn' => $this->get('samaccountname_generator')->standarizeString('OU=' . $newDepartamentSkrot . ',OU=Zespoly_2016,OU=PARP Pracownicy,DC=' . $tab[0] . ',DC=' . $tab[1]),
@@ -254,7 +261,7 @@ class ReorganizacjaParpController extends Controller
 
                         if ($poprawNieZnaleziono && $nieZnaleziony) {
                             $ou = $this->get('ldap_service')->getOUfromDN($u);
-                            $dep = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['shortname' => $ou, 'nowaStruktura' => true]);
+                            $dep = $em->getRepository(Departament::class)->findOneBy(['shortname' => $ou, 'nowaStruktura' => true]);
                             $zmiany = [
                                 'description' => $ou,
                                 'department' => $dep->getName(),
@@ -314,12 +321,12 @@ class ReorganizacjaParpController extends Controller
         foreach ($users as $u) {
             $name1 = trim(mb_strtoupper($u['name']));
             $name2 = $this->get('samaccountname_generator')->ADnameToRekordName($u['name']);
-            $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name1]);
+            $import = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $name1]);
             if (count($import) == 0) {
-                $import = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $name2]);
+                $import = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $name2]);
             }
             $imieNazwisko = $this->get('samaccountname_generator')->ADnameToRekordNameAsArray($u['name']);
-            $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
+            $danerekord = $em->getRepository(DaneRekord::class)->findOneBy(['imie' => $imieNazwisko[1], 'nazwisko' => $imieNazwisko[0]]);
             if (!$danerekord) {
                 $bledy[] = [
                     'blad' => 'Nie znalazl danych w systemie rekord!!!',
@@ -365,7 +372,7 @@ class ReorganizacjaParpController extends Controller
                 $newDepartamentNazwa = $import[0]->getDepartament();
                 if ($danerekord) {
                     //wtedy bierzemy jednak z rekorda!!!
-                    $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
+                    $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
                     if (!$departament && $danerekord->getDepartament() > 500) {
                         die("Nie mam departamentu ".$danerekord->getDepartament());
                     }
@@ -493,13 +500,13 @@ class ReorganizacjaParpController extends Controller
             }
             if ($row['DEPARTAMENT'] > 500 && ($tylkoTeBD == "" || $tylkoTeBD == $row['DEPARTAMENT'])) {
                 //$login = $this->get('samaccountname_generator')->generateSamaccountname($c->parseValue($row['IMIE']), $c->parseValue($row['NAZWISKO']));
-                $danerekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBySymbolRekordId($c->parseValue($row['SYMBOL']));
+                $danerekord = $em->getRepository(DaneRekord::class)->findOneBySymbolRekordId($c->parseValue($row['SYMBOL']));
                 if (!$danerekord) {
                     die("Nie moge znalezc osoby !!! ".trim($row['NAZWISKO'])." ".trim($row['IMIE'])." - ".$row['SYMBOL']);
                 }
-                $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['nameInRekord' => $c->parseValue($row['DEPARTAMENT']), 'nowaStruktura' => true]);
+                $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $c->parseValue($row['DEPARTAMENT']), 'nowaStruktura' => true]);
                 $prac = mb_strtoupper($danerekord->getNazwisko()." ".$danerekord->getImie());//$c->parseValue($row['NAZWISKO'], false)." ".trim($c->parseValue['IMIE'], false);
-                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy(['pracownik' => $prac]);
+                $sekcja = $em->getRepository(ImportSekcjeUser::class)->findOneBy(['pracownik' => $prac]);
                 $login = $danerekord->getLogin();
                 if (count($tylkoTychUserow) == 0 || in_array($login, $tylkoTychUserow)) {
                     $aduser = $ldap->getUserFromAD($login);
@@ -718,7 +725,7 @@ class ReorganizacjaParpController extends Controller
             //pomijamy pierwszy rzad
             if ($i > 2) {
                 if (!in_array($row['B'], $pomijajZasoby) && trim($row['C']) != "") {
-                    $zasob = $em->getRepository('ParpMainBundle:Zasoby')->findOneByNazwa($row['B']);
+                    $zasob = $em->getRepository(Zasoby::class)->findOneByNazwa($row['B']);
                     if (!$zasob) {
                         $zrobione[] = [
                             'rzad' => $i,
@@ -808,7 +815,7 @@ class ReorganizacjaParpController extends Controller
         foreach ($sheetData as $row) {
             //pomijamy pierwszy rzad
             if ($i > 1 && $row['D'] != "" && $row['E'] != "") {
-                $importSekcjeArr = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy(['pracownik' => $row['E'], 'departament' =>$row['C']]);
+                $importSekcjeArr = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $row['E'], 'departament' =>$row['C']]);
                 if (count($importSekcjeArr) == 0) {
                     $importSekcje = new \ParpV1\MainBundle\Entity\ImportSekcjeUser();
                 } else {
@@ -853,7 +860,7 @@ class ReorganizacjaParpController extends Controller
             $users = $this->get('ldap_service')->getAllFromAD(false, false);
             //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
             foreach ($users as $u) {
-                $sekcja = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findBy([
+                $sekcja = $em->getRepository(ImportSekcjeUser::class)->findBy([
                     'pracownik' => strtoupper($u['name'])
                 ]);
                 $section = $u['division'];
@@ -892,7 +899,7 @@ class ReorganizacjaParpController extends Controller
             }
         } else {
             //sprawdza ktore grupy powinien miec user jako poczatkowe i sprawdza czy je ma
-            $isu = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findAll();
+            $isu = $em->getRepository(ImportSekcjeUser::class)->findAll();
             $ret = [];
             foreach ($isu as $u) {
                 $ret[] = [
@@ -946,12 +953,12 @@ class ReorganizacjaParpController extends Controller
     public function wyliczGrupyUsera($user)
     {
         $em = $this->getDoctrine()->getManager();
-        $userzasoby = $em->getRepository("ParpMainBundle:UserZasoby")->findAktywneDlaOsoby($user['samaccountname']);
+        $userzasoby = $em->getRepository(UserZasoby::class)->findAktywneDlaOsoby($user['samaccountname']);
         //$ret = [];
         $ret = $this->get('ldap_service')->getGrupyUsera($user, $this->get('ldap_service')->getOUfromDN($user), $user['division']);
 
         foreach ($userzasoby as $uz) {
-            $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
+            $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
             if ($z->getGrupyAD() &&
                 $uz->getPoziomDostepu() != "nie dotyczy" &&
                 $uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
@@ -1001,7 +1008,7 @@ class ReorganizacjaParpController extends Controller
         $ldap->output = $this;
         $ldapconn = $ldap->prepareConnection();
 
-        $em = $this->getDoctrine()->getEntityManager();
+        $em = $this->getDoctrine()->getManager();
         $pomijac = ["n/d","ND"];
         //$name = "Boceńska (Burakowska) Iwona";
         //die("tylko_nowe_nazwisko");
@@ -1015,13 +1022,13 @@ class ReorganizacjaParpController extends Controller
                 $manager = "";
                 $title = "";
                 if ($u['description'] != "" && $u['division'] != "" && !in_array($u['division'], $pomijac)) {
-                    $departament = $em->getRepository('ParpMainBundle:Departament')->findBy(['shortname' => $this->get('ldap_service')->getOUfromDN($u), 'nowaStruktura' => 1]);
+                    $departament = $em->getRepository(Departament::class)->findBy(['shortname' => $this->get('ldap_service')->getOUfromDN($u), 'nowaStruktura' => 1]);
 
                     if (count($departament) == 0) {
                         die("Nie mam departaMENTU ".$this->get('ldap_service')->getOUfromDN($u)." ".$u['description']);
                     }
 
-                    $section = $em->getRepository('ParpMainBundle:Section')->findBy(['departament' => $departament[0], 'shortname' => $u['division']]);
+                    $section = $em->getRepository(Section::class)->findBy(['departament' => $departament[0], 'shortname' => $u['division']]);
                     if (count($section) > 0) {
                         $manager = $section[0]->getKierownikDN();
                         $pominal = false;
@@ -1030,7 +1037,7 @@ class ReorganizacjaParpController extends Controller
                     }
                 }
                 //szukam tytulu osoby
-                $tytul = $em->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneByPracownik(strtoupper($u['name']));
+                $tytul = $em->getRepository(ImportSekcjeUser::class)->findOneByPracownik(strtoupper($u['name']));
                 if ($tytul) {
                     $title = strtolower($tytul->getStanowisko());
                     $pominal = false;
@@ -1171,7 +1178,7 @@ class ReorganizacjaParpController extends Controller
                     'nazwiskoDoSzukaniaWrekord' => $rname[0],
                 ];
                 //var_dump($u, $rname);
-                $daneRekord = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:DaneRekord')->findOneBy([
+                $daneRekord = $this->getDoctrine()->getManager()->getRepository(DaneRekord::class)->findOneBy([
                     'imie' => trim($rname[1]),
                     'nazwisko' => trim($rname[0]),
                 ]);
@@ -1179,7 +1186,7 @@ class ReorganizacjaParpController extends Controller
                     $dane['jestWrekordzie'] = 'TAK';
                     $dane['REKORDstanowisko'] = $daneRekord->getStanowisko();
 
-                    $departament = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:Departament')->findOneByNameInRekord($daneRekord->getDepartament());
+                    $departament = $this->getDoctrine()->getManager()->getRepository(Departament::class)->findOneByNameInRekord($daneRekord->getDepartament());
                     if ($departament) {
                         $dane['REKORDdepartament'] = $departament->getSkroconaNazwaRekord();
                     } else {
@@ -1187,7 +1194,7 @@ class ReorganizacjaParpController extends Controller
                         $dane['REKORDdepartament'] = "!!!nie ma departamentu w bazie!!!";
                     }
                 }
-                $daneImportSekcje = $this->getDoctrine()->getManager()->getRepository('ParpMainBundle:ImportSekcjeUser')->findOneBy([
+                $daneImportSekcje = $this->getDoctrine()->getManager()->getRepository(ImportSekcjeUser::class)->findOneBy([
                     'pracownik' => $rname[0]." ".$rname[1],
                 ]);
                 if ($daneImportSekcje) {
@@ -1220,7 +1227,7 @@ class ReorganizacjaParpController extends Controller
         foreach ($users as $u) {
             if (!isset($sekcje[$u['info']])) {
                 $sekcje[$u['info']] = $i;
-                $section = $em->getRepository('ParpMainBundle:Section')->findOneBy(['name' => $u['info']]);
+                $section = $em->getRepository(Section::class)->findOneBy(['name' => $u['info']]);
                 $data[$i++] = [
                     'info' => $u['info'],
                     'division' => $u['division'],
@@ -1255,7 +1262,7 @@ class ReorganizacjaParpController extends Controller
         foreach ($users as $u) {
             if (!isset($sekcje[$u['department']])) {
                 $sekcje[$u['department']] = $i;
-                $section = $em->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => $u['department']]);
+                $section = $em->getRepository(Departament::class)->findOneBy(['name' => $u['department']]);
                 $data[$i++] = [
                     'department' => "'".$u['department']."'",
                     'description' => "'".$u['description']."'",
@@ -1504,7 +1511,7 @@ class ReorganizacjaParpController extends Controller
                     $o['name'] = $mapManagers[$o['name']];
                 }
 
-                $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(
+                $departament = $em->getRepository(Departament::class)->findOneBy(
                     ['name' => $o['department'], 'nowaStruktura' => 1]
                 );
                 $o['dbDep'] = $departament ? $departament->getId() : 0;
@@ -1528,7 +1535,7 @@ class ReorganizacjaParpController extends Controller
 
 
 /*
-                $daneRekord = $em->getRepository('ParpMainBundle:DaneRekord')->findOneBy(
+                $daneRekord = $em->getRepository(DaneRekord::class)->findOneBy(
                     ['samaccountname' => $o['department'], 'nowaStruktura' => 1]
                 );
 */
@@ -1538,7 +1545,7 @@ class ReorganizacjaParpController extends Controller
                     $braki['bez dep']++;
                 }
 
-                $sekcja = $em->getRepository('ParpMainBundle:Section')->findOneBy(
+                $sekcja = $em->getRepository(Section::class)->findOneBy(
                     ['name' => $o['info']]
                 );
                 $o['dbSekcja'] = $sekcja ? $sekcja->getId() : 0;
@@ -1594,12 +1601,12 @@ class ReorganizacjaParpController extends Controller
                 if (count($aduser) > 0 && $w['samaccountname'] != "!!!") {
                     $zmian = 0;
                     echo "<br>zmiany dla ".$w['name']." ".$w['samaccountname']."<br>";
-                    $zmiany = new \ParpV1\MainBundle\Entity\Entry();
-                    $sekcja = $em->getRepository('ParpMainBundle:Section')->findOneBy(
+                    $zmiany = new Entry();
+                    $sekcja = $em->getRepository(Section::class)->findOneBy(
                         ['name' => $w['info']]
                     );
 
-                    $departament = $em->getRepository('ParpMainBundle:Departament')->findOneBy(
+                    $departament = $em->getRepository(Departament::class)->findOneBy(
                         ['name' => $w['department'], 'nowaStruktura' => 1]
                     );
                     if ($sekcja) {
@@ -1671,7 +1678,7 @@ class ReorganizacjaParpController extends Controller
         $em = $this->getDoctrine()->getManager();
         foreach ($data as $d) {
             if ($d['info'] != '') {
-                $dep = $em->getRepository('ParpMainBundle:Departament')->find($d['dbDep']);
+                $dep = $em->getRepository(Departament::class)->find($d['dbDep']);
                 if ($d['dbSekcja'] == 0) {
                     $short = $this->getSekcjaShortname($d['info']);
                     echo "<br>tworze sekcje ".$d['info']." ze skrotem $short<br>";
@@ -1682,7 +1689,7 @@ class ReorganizacjaParpController extends Controller
                     $s->setDepartament($dep);
                     $em->persist($s);
                 } else {
-                    $s = $em->getRepository('ParpMainBundle:Section')->find($d['dbSekcja']);
+                    $s = $em->getRepository(Section::class)->find($d['dbSekcja']);
                     echo "<br>update sekcji ".$d['info']." ".$d['dbSekcja']."<br>";
                     if ($d['dbDep'] != $dep->getId()) {
                         echo "<br>!!!!!!!!!!!!!!! nie zgadza sie dep !!!!<br>";

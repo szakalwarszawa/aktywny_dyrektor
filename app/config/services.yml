@@ -6,7 +6,7 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
         class: ParpV1\SoapBundle\Services\LdapService
-        arguments: ["@service_container"]
+        arguments: ["@service_container", '@ldap.cache']
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
@@ -23,10 +23,10 @@ services:
         tags:
             - { name: doctrine.event_subscriber, connection: default }
         calls:
-            - [ setAnnotationReader, [ @annotation_reader ] ]
+            - [ setAnnotationReader, [ "@annotation_reader" ] ]
     uprawnienia_service:
         class : ParpV1\MainBundle\Services\UprawnieniaService
-        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@status_wniosku_service', '@zasoby.cache', '@security.token_storage']
         tags: ~
     zasoby_service:
         class : ParpV1\MainBundle\Services\ZasobyService
@@ -34,17 +34,15 @@ services:
         tags: ~
     check_access:
         class : ParpV1\MainBundle\Services\AccessCheckerService
-        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@security.token_storage']
         tags: ~
     session.memcached:
         class: Memcached
-        arguments:
-            persistent_id: %session_memcached_prefix%
         calls:
             - [ addServer, [ %session_memcached_host%, %session_memcached_port% ]]
     session.handler.memcached:
         class:     Symfony\Component\HttpFoundation\Session\Storage\Handler\MemcachedSessionHandler
-        arguments: [@session.memcached, { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
+        arguments: ["@session.memcached", { prefix: %session_memcached_prefix%, expiretime: %session_memcached_expire% }]
     # KernelRequest listener
     extension.listener:
         class: ParpV1\MainBundle\Listener\DoctrineExtensionListener
@@ -64,12 +62,12 @@ services:
     kernel.listener.command_dispatch:
         class: ParpV1\MainBundle\EventListener\ConsoleExceptionListener
         arguments:
-            logger: "@logger"
+            - "@logger"
         tags:
             - { name: kernel.event_listener, event: console.exception }
     adcheck_service:
         class: ParpV1\MainBundle\Services\ADSecurityCheckService
-        arguments: ["@service_container" ]
+        arguments: ["@service_container"]
         tags: ~
     parp.administrator.glowne_bundle.event_listener.exception_listener:
         class: ParpV1\MainBundle\EventListener\ExceptionListener
@@ -111,3 +109,16 @@ services:
     lsi_import_service:
         class: ParpV1\MainBundle\Services\Api\LsiImportService
         arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '%api_token_expire_minutes%']
+    wniosek_edit_listener:
+        class: ParpV1\MainBundle\EventListener\PersistListener
+        tags:
+            - { name: doctrine.event_listener, event: prePersist }
+    status_wniosku_service:
+        class: ParpV1\MainBundle\Services\StatusWnioskuService
+        arguments: ['@parp.mailer', '@request_stack', '@session', '@ldap_service', '@doctrine.orm.entity_manager', '@security.token_storage']
+    odbieranie_uprawnien_service:
+        class: ParpV1\MainBundle\Services\OdbieranieUprawnienService
+        arguments: ['@doctrine.orm.entity_manager', '@security.token_storage', '@zasoby_service']
+    wnioski_nadanie_odebranie_grid:
+        class: ParpV1\MainBundle\Grid\WnioskiNadanieOdebranieGrid
+        arguments: ['@grid', '@doctrine.orm.entity_manager', '@security.token_storage', '%ajax_grid_wnioskinadanieodebranie%']

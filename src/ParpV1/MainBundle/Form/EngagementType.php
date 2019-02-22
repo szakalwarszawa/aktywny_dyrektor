@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Form;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Entity\Engagement;
 
 class EngagementType extends AbstractType
 {
@@ -16,7 +17,6 @@ class EngagementType extends AbstractType
     {
         $builder->add('name', null, array(
             'required' => false,
-            'read_only' => false,
             'label' => 'Nazwa źródła finansowania',
             'label_attr' => array(
                 'class' => 'col-sm-2 control-label',
@@ -32,7 +32,7 @@ class EngagementType extends AbstractType
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults(array(
-            'data_class' => 'ParpV1\MainBundle\Entity\Engagement'
+            'data_class' => Engagement::class,
         ));
     }
 

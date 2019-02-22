@@ -21,6 +21,9 @@ use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Grid\ListaZasobowGrid;
 use Doctrine\Common\Persistence\ObjectManager;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 
 /**
  * Zasoby controller.
@@ -63,7 +66,7 @@ class ZasobyController extends Controller
         );
     }
 
-    protected function sprawdzDostep($zasob)
+    protected function sprawdzDostep($zasob = null)
     {
 
         if ($zasob) {
@@ -125,12 +128,13 @@ class ZasobyController extends Controller
      */
     private function createCreateForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this), $entity, array(
+        $form = $this->createForm(ZasobyType::class, $entity, array(
             'action' => $this->generateUrl('zasoby_create'),
             'method' => 'POST',
+            'ldap_service' => $this->get('ldap_service')
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz Zasoby', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zasoby', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -157,15 +161,34 @@ class ZasobyController extends Controller
     /**
      * Displays a form to edit an existing Zasoby entity.
      *
-     * @Route("/{id}/edit", name="zasoby_edit")
+     * @Route("/{id}/edit/{readOnly}", name="zasoby_edit", defaults={"readonly": 0})
      * @Method("GET")
+     *
      * @Template()
      */
-    public function editAction($id)
+    public function editAction($id, $readOnly = false)
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
+
+        $accessCheckerService = $this->get('check_access');
+
+        if (!$readOnly) {
+            if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::EDYTUJ)) {
+                $this->addFlash('warning', 'Nie posiadasz uprawnień do edycji tego zasobu.');
+
+                return $this->redirect($this->generateUrl('zasoby'));
+            }
+        }
+
+        if ($readOnly) {
+            if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::POKAZ)) {
+                $this->addFlash('warning', 'Nie posiadasz uprawnień do podglądu tego zasobu.');
+
+                return $this->redirect($this->generateUrl('zasoby'));
+            }
+        }
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
@@ -187,14 +210,16 @@ class ZasobyController extends Controller
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
         $em = $this->getDoctrine()->getManager();
-        $uzs = $em->getRepository('ParpV1\MainBundle\Entity\UserZasoby')->findUsersByZasobId($id);
+        $uzs = $em->getRepository(UserZasoby::class)->findUsersByZasobId($id);
+
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
             'users' => $uzs,
             'grupy' => $grupy,
-            'grupyAd' => $grupyAd
+            'grupyAd' => $grupyAd,
+            'read_only' => $readOnly,
         );
     }
 
@@ -223,12 +248,15 @@ class ZasobyController extends Controller
     */
     private function createEditForm(Zasoby $entity)
     {
-        $form = $this->createForm(new ZasobyType($this, "Nazwa", $this->niemozeEdytowac, $this->czyJestWlascicielemLubPowiernikiem), $entity, array(
+        $form = $this->createForm(ZasobyType::class, $entity, array(
             'action' => $this->generateUrl('zasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'nie_moze_edytowac' => $this->niemozeEdytowac,
+            'czy_wlasciciel_lub_powiernik' => $this->czyJestWlascicielemLubPowiernikiem,
+            'ldap_service' => $this->get('ldap_service'),
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -244,14 +272,19 @@ class ZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
+        $entity = $em->getRepository(Zasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
         $this->sprawdzDostep($entity);
-        if (!in_array('PARP_ADMIN', $this->getUser()->getRoles()) && !in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles()) && !$this->czyJestWlascicielemLubPowiernikiem) {
-            die("nie masz uprawnien do edycji zasobow.");
+
+        $accessCheckerService = $this->get('check_access');
+
+        if (!$accessCheckerService->checkActionWniosek($entity, AkcjeWnioskuConstants::EDYTUJ)) {
+            $this->addFlash('warning', 'Nie posiadasz uprawnień do edycji tego zasobu.');
+
+            return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -276,7 +309,8 @@ class ZasobyController extends Controller
      * Deletes a Zasoby entity.
      *
      * @Route("/delete/{id}/{published}", name="zasoby_delete", defaults={"published" : 0})
-     * @Security("has_role('PARP_ADMIN') or has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
      * @param int $id
      * @param int $published
@@ -314,7 +348,8 @@ class ZasobyController extends Controller
      * Aktywuje nieaktywny zasób.
      *
      * @Route("/aktywuj_zasob/{id}", name="zasoby_aktywuj")
-     * @Security("has_role('PARP_ADMIN') or has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
      * @param int $id
      *
@@ -361,7 +396,7 @@ class ZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
@@ -376,30 +411,5 @@ class ZasobyController extends Controller
             $users[$u['samaccountname']] = $u['name'];
         }
         return $users;
-    }
-
-    /**
-     * Finds and displays a Zasoby entity.
-     *
-     * @Route("/{id}/show", name="zasoby_show")
-     * @Method("GET")
-     * @Template()
-     */
-    public function showAction($id)
-    {
-        $em = $this->getDoctrine()->getManager();
-
-        $entity = $em->getRepository('ParpMainBundle:Zasoby')->find($id);
-
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zasoby entity.');
-        }
-
-        $deleteForm = $this->createDeleteForm($id);
-
-        return array(
-            'entity'      => $entity,
-            'delete_form' => $deleteForm->createView(),
-        );
     }
 }

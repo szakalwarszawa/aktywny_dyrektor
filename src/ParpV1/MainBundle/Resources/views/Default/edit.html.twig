@@ -132,6 +132,7 @@
                                         <th>Kanał dostępu</th>
                                         <th>Aktywne od</th>
                                         <th>Aktywne do</th>
+                                        <th>Data odebrania</th>
                                         <th>Powód nadania/odebrania</th>
                                     </tr>
                                 </thead>
@@ -150,6 +151,13 @@
                                             <td>{{ row.poziomDostepu }}</td>
                                             <td>{{ row.aktywneOd }}</td>
                                             <td>{{ row.aktywneDo }}</td>
+                                            <td>
+                                                {% if row.data_odebrania is null %}
+                                                    -
+                                                {% else %}
+                                                    {{ row.data_odebrania|date('Y-m-d H:i:s') }}
+                                                {% endif %}
+                                            </td>
                                             <td>{{ row.powodNadania }}
 
                                             {% if(row.czyOdebrane) %}

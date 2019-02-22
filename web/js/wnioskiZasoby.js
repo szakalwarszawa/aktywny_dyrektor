@@ -28,14 +28,7 @@ function usunUzytkownikaZwniosku(id, that){
     })
 
 }
-$(function () {
-    $('a, button').click(function () {
-        var href = $(this).attr('href');
-        if (href !== undefined) {
-            preventDoubleClick($(this));
-        }
-    })
-})
+
 $(document).ready(function(){
     wniosekPracownikSpozaParp();
     $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownikSpozaParp').change(wniosekPracownikSpozaParp);
@@ -87,6 +80,14 @@ function beforeSubmit(event){
     $('.select2.multiwybor').each(function(){
         nieWybrane = this.value == "" || nieWybrane;
     });
+
+
+    if ($('form[data-form="resources"]').length) {
+        if ($('#form_wybraneZasoby').val().length == 0) {
+            event.preventDefault();
+            alert('Należy wybrać przynajmniej jedno uprawnienie do zasobu dla wskazanego pracownika.');
+        }
+    }
 
     var message = '';
     var atLeastOne = false;
@@ -144,18 +145,4 @@ function ajaxFormCall(formObject)
         responseData = JSON.parse(responseData);
         prompt(responseData.message, responseData.token);
     });
-}
-
-function preventDoubleClick(object)
-{
-    if (!(object instanceof jQuery)) {
-        object = $(object);
-    }
-
-    object.attr('disabled', 'disabled');
-    setTimeout(
-        function()
-        {
-            object.removeAttr('disabled');
-        }, 8000);
 }

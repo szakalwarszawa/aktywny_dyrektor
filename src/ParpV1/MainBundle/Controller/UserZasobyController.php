@@ -13,9 +13,10 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
-
 use ParpV1\MainBundle\Entity\UserZasoby;
+use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 /**
  * UserZasoby controller.
@@ -34,39 +35,39 @@ class UserZasobyController extends Controller
     public function indexAction()
     {
         $em = $this->getDoctrine()->getManager();
-        //$entities = $em->getRepository('ParpMainBundle:UserZasoby')->findAll();
-    
-        $source = new Entity('ParpMainBundle:UserZasoby');
-    
+        //$entities = $em->getRepository(UserZasoby::class)->findAll();
+
+        $source = new Entity(UserZasoby::class);
+
         $grid = $this->get('grid');
         $grid->setSource($source);
-    
+
         // Dodajemy kolumnę na akcje
         $actionsColumn = new ActionsColumn('akcje', 'Działania');
         $grid->addColumn($actionsColumn);
-    
+
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
                 ->setSafe(true);
-    
+
         // Edycja konta
         $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userzasoby_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
-    
+
         // Edycja konta
         $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'userzasoby_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
-    
-       
-    
+
+
+
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
-    
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-    
+
 
 
         $grid->isReadyForRedirect();
@@ -109,12 +110,12 @@ class UserZasobyController extends Controller
      */
     private function createCreateForm(UserZasoby $entity)
     {
-        $form = $this->createForm(new UserZasobyType(), $entity, array(
+        $form = $this->createForm(UserZasobyType::class, $entity, array(
             'action' => $this->generateUrl('userzasoby_create'),
             'method' => 'POST',
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Utwórz UserZasoby', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Utwórz UserZasoby', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -148,7 +149,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -173,7 +174,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -200,9 +201,9 @@ class UserZasobyController extends Controller
     {
         $choicesModul = array();
         $choicesPoziomDostepu = array();
-        
+
         $em = $this->getDoctrine()->getManager();
-        $zasob = $em->getRepository('ParpMainBundle:Zasoby')->find($entity->getZasobId());
+        $zasob = $em->getRepository(Zasoby::class)->find($entity->getZasobId());
         $p1 = explode(",", $zasob->getModulFunkcja());
         foreach ($p1 as $p) {
             $p = trim($p);
@@ -213,14 +214,15 @@ class UserZasobyController extends Controller
             $p = trim($p);
             $choicesPoziomDostepu[$p] = $p;
         }
-        
-        
-        $form = $this->createForm(new UserZasobyType($choicesModul, $choicesPoziomDostepu, false), $entity, array(
+
+
+        $form = $this->createForm(UserZasobyType::class, $entity, array(
             'action' => $this->generateUrl('userzasoby_update', array('id' => $entity->getId())),
             'method' => 'PUT',
+            'is_sub_form' => false,
         ));
 
-        $form->add('submit', 'submit', array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -235,7 +237,7 @@ class UserZasobyController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+        $entity = $em->getRepository(UserZasoby::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -270,7 +272,7 @@ class UserZasobyController extends Controller
 
         if ($form->isValid()) {
             $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository('ParpMainBundle:UserZasoby')->find($id);
+            $entity = $em->getRepository(UserZasoby::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find UserZasoby entity.');
@@ -295,7 +297,7 @@ class UserZasobyController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('userzasoby_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', 'submit', array('label' => 'Skasuj UserZasoby','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj UserZasoby','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }
