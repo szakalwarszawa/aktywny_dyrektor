@@ -1236,7 +1236,7 @@ class LdapService
             case 'dyrektor (p.o.)':
             case 'p.o. dyrektora':
             case 'rzecznik beneficjenta parp, dyrektor':
-            case 'dyrektor, Rzecznik Funduszy Europejskich PARP':
+            case 'dyrektor, rzecznik funduszy europejskich parp':
             case 'główny księgowy, dyrektor':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
