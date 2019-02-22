@@ -8,8 +8,8 @@ use Symfony\Component\DependencyInjection\Container;
 use Symfony\Component\Cache\Simple\FilesystemCache;
 use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
-use ParpV1\MainBundle\Entity\Departament;
-use ParpV1\MainBundle\Entity\Section;
+
+//use Memcached;
 
 class LdapService
 {
