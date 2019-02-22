@@ -1201,7 +1201,7 @@ class LdapService
                 $sekcja = $section->getShortname();
             }
             $skrotSekcjiRozbity = explode('.', $sekcja);
-            if ($skrotSekcjiRozbity[0] != $depshortname) {
+            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname)) {
                 throw new Exception('Niewłaściwy D/B ('.$depshortname.') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
                     .' #class:'.debug_backtrace()[1]['class'].'#function:'.debug_backtrace()[1]['function']);
             }
