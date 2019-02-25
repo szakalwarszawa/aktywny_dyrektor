@@ -1298,23 +1298,21 @@ class LdapService
             }
         }
 
-        // $pomijajSekcje = ['', 'n/d', 'BRAK'];
-        // if (in_array($stanowisko, $this->stanowiskaDyrektorzy, true) ||
-        //         in_array($stanowisko, $this->stanowiskaWiceDyrektorzy, true)
-        // ) {
-        //     //przeleciec rekurencyjnie wszystkich podwladnych
-        //     $sekcje = $this->getSekcjePodwladnych($user);
-        //     foreach ($sekcje as $s) {
-        //         if ($s != '') {
-        //             if (!in_array($s, $pomijajSekcje, true)) {
-        //                 $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $s . '-RW';
-        //                 if (!in_array($grupaDoDodania, $grupy, true)) {
-        //                     $grupy[] = $grupaDoDodania;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        if (in_array($stanowisko, $this->stanowiskaDyrektorzy, true)) {
+            //przeleciec rekurencyjnie wszystkich podwladnych
+            $sekcje = $this->getSekcjePodwladnych($user);
+            foreach ($sekcje as $sekcja) {
+                if ($sekcja != '' && !in_array($sekcja, $pomijajSekcje, true)) {
+                    if (explode('.', $sekcja)[1][0] === 'S') {
+                        $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $sekcja . '-RW';
+                        if (!in_array($grupaDoDodania, $grupy, true)) {
+                            $grupy[] = $grupaDoDodania;
+                            echo $grupaDoDodania."<br />\n";
+                        }
+                    }
+                }
+            }
+        }
 
         return $grupy;
     }
