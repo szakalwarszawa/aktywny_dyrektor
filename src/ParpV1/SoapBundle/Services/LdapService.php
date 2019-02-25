@@ -1201,7 +1201,7 @@ class LdapService
                 $sekcja = $section->getShortname();
             }
             $skrotSekcjiRozbity = explode('.', $sekcja);
-            if ($skrotSekcjiRozbity[0] != $depshortname) {
+            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname)) {
                 throw new Exception('Niewłaściwy D/B ('.$depshortname.') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
                     .' #class:'.debug_backtrace()[1]['class'].'#function:'.debug_backtrace()[1]['function']);
             }
@@ -1236,7 +1236,7 @@ class LdapService
             case 'dyrektor (p.o.)':
             case 'p.o. dyrektora':
             case 'rzecznik beneficjenta parp, dyrektor':
-            case 'dyrektor, Rzecznik Funduszy Europejskich PARP':
+            case 'dyrektor, rzecznik funduszy europejskich parp':
             case 'główny księgowy, dyrektor':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
@@ -1298,23 +1298,21 @@ class LdapService
             }
         }
 
-        // $pomijajSekcje = ['', 'n/d', 'BRAK'];
-        // if (in_array($stanowisko, $this->stanowiskaDyrektorzy, true) ||
-        //         in_array($stanowisko, $this->stanowiskaWiceDyrektorzy, true)
-        // ) {
-        //     //przeleciec rekurencyjnie wszystkich podwladnych
-        //     $sekcje = $this->getSekcjePodwladnych($user);
-        //     foreach ($sekcje as $s) {
-        //         if ($s != '') {
-        //             if (!in_array($s, $pomijajSekcje, true)) {
-        //                 $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $s . '-RW';
-        //                 if (!in_array($grupaDoDodania, $grupy, true)) {
-        //                     $grupy[] = $grupaDoDodania;
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+        if (in_array($stanowisko, $this->stanowiskaDyrektorzy, true)) {
+            //przeleciec rekurencyjnie wszystkich podwladnych
+            $sekcje = $this->getSekcjePodwladnych($user);
+            foreach ($sekcje as $sekcja) {
+                if ($sekcja != '' && !in_array($sekcja, $pomijajSekcje, true)) {
+                    if (explode('.', $sekcja)[1][0] === 'S') {
+                        $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $sekcja . '-RW';
+                        if (!in_array($grupaDoDodania, $grupy, true)) {
+                            $grupy[] = $grupaDoDodania;
+                            echo $grupaDoDodania."<br />\n";
+                        }
+                    }
+                }
+            }
+        }
 
         return $grupy;
     }
