@@ -122,14 +122,13 @@ class ExceptionListener implements EventSubscriberInterface
                 } elseif (!$wyjatek instanceof LsiException) {
                     $komunikat_systemowy = $wyjatek->getCode() . ' ' . $wyjatek->getMessage();
 
-    //                $temat = $wyjatek->getCode(); // kod ten jest ubogi i nie wiele mówi, dlatego zastąpiony opisem
                     $opis = $wyjatek->getMessage();
                     $temat = $opis;
                     $kategoria = 10; # Zgłoszone przez system
 
                     $redmine = $this->kernel->getContainer()->get('parp.redmine');
                     // putZgloszenieBeneficjenta($id_beneficjenta, $temat, $opis, $kategoria, $uri = null, $czy_prywatna = true,$komunikat_systemowy = null,$zgloszenie_id = null,$podmiot = null,$email = null, $telefon = null, $imie_nazwisko = null);
-                    $json = $redmine->putZgloszenieBeneficjenta($userId, $temat, $opis, $kategoria, null, true, $komunikat_systemowy, null, null, $email, null, $imie_nazwisko);
+                    $json = $redmine->putZgloszenieBeneficjenta($userId, $temat, $wyjatek, $kategoria, null, true, $komunikat_systemowy, null, null, $email, null, $imie_nazwisko);
 
                     // wyciagnij numer zgłoszenia
                     $tablica = json_decode($json, true);
