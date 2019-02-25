@@ -1405,7 +1405,11 @@ class DefaultController extends Controller
         }
 
         if ($request->getMethod() === 'POST') {
-            $dane = $this->get('request')->request->all();
+            $request = $this
+                ->get('request_stack')
+                ->getCurrentRequest()
+            ;
+            $dane = $request->request->all();
             //var_dump($dane);
             $year = !empty($dane['year']) ? $dane['year'] : $year;
 
@@ -1900,8 +1904,9 @@ class DefaultController extends Controller
      */
     protected function wczytajPlikZaangazowania($file)
     {
-
-        $rok = $this->get('request')->request->all()['form']['rok'];
+        $requestStack = $this->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
+        $rok = $request->request->all()['form']['rok'];
         $this->ADUsers = $this->get('ldap_service')->getAllFromAD();
 
         $dane = array();

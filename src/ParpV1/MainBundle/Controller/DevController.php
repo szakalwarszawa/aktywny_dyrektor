@@ -491,7 +491,8 @@ class DevController extends Controller
         if (null !== $tokenStorage && null !== $tokenStorage->getToken() && $tokenStorage->getToken()->isAuthenticated()) {
             $username = ($tokenStorage->getToken()->getUsername());
         }
-        $request = $this->get('request');
+        $requestStack = $this->get('request_stack');
+        $request = $requestStack->getCurrentRequest();
         $url = $request->getUri();
         //print_r($url);
         $route = $request->get('_route');
