@@ -1107,6 +1107,7 @@ class LdapService
             case 'dyrektor (p.o.)':
             case 'główny księgowy,dyrektor':
             case 'główny księgowy, dyrektor':
+            case 'główny księgowy':
             case 'dyrektor, Rzecznik Funduszy Europejskich PARP':
                 $ret = 'manager';
                 break;
@@ -1128,11 +1129,16 @@ class LdapService
         'dyrektor',
         'dyrektor (p.o.)',
         'p.o. dyrektora',
-        'koordynator projektu',
         'rzecznik beneficjenta parp, dyrektor',
         'główny księgowy, dyrektor',
+        'główny księgowy',
     ];
-    protected $stanowiskaWiceDyrektorzy = ['zastępca dyrektora', 'zastępca dyrektora (p.o.)'];
+
+    protected $stanowiskaWiceDyrektorzy = [
+        'zastępca dyrektora',
+        'zastępca dyrektora (p.o.)',
+        'p.o. zastępcy dyrektora',
+    ];
 
     public function getSekcjePodwladnych($manager)
     {
@@ -1146,9 +1152,8 @@ class LdapService
                 }
                 $stanowisko = mb_strtolower(trim($user['title']));
                 if (in_array($stanowisko, $this->stanowiskaWiceDyrektorzy, true)) {
-                    //robimy merge z jego podwladnymi
-                    $podwladni2 = $this->getSekcjePodwladnych($user);
-                    $podwladni = array_merge($podwladni, $podwladni2);
+                    $podwladniWiceDyrektora = $this->getSekcjePodwladnych($user);
+                    $podwladni = array_merge($podwladni, $podwladniWiceDyrektora);
                 }
             }
         }
@@ -1237,7 +1242,7 @@ class LdapService
             case 'p.o. dyrektora':
             case 'rzecznik beneficjenta parp, dyrektor':
             case 'dyrektor, rzecznik funduszy europejskich parp':
-            case 'główny księgowy, dyrektor':
+            case 'główny księgowy':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 $grupy[] = 'INT-Olimp';
