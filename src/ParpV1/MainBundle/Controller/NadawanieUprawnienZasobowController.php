@@ -893,7 +893,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             if ($oz->getAktywneDo() == '' || $oz->getBezterminowo()) {
                                 $z->setAktywneDo(null);
                             } else {
-                                $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                                $z->setAktywneDo($oz->getAktywneDo());
                             }
                         }
                             //die(".".$oz->getId());
