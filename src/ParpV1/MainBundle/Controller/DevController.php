@@ -33,6 +33,7 @@ use ParpV1\MainBundle\Entity\HistoriaWersji;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use DateTime;
 
 /**
  * Zasoby controller.
@@ -3176,5 +3177,93 @@ class DevController extends Controller
         }
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane]);
+    }
+
+    /**
+     * Odbiera grupy których pracownik nie ma w UPP
+     * UWAGA: używać tylko w chwili/dniu zmiany D/B, sekcji i tylko w przypadku,
+     * gdy AkD nie odebrał uprawnień automatycznie.
+     *
+     * @Route("/reset_grup/{login}", name="reset_grup")
+     *
+     * @param string $login
+     *
+     */
+    public function resetGrupAdAction($login)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $ldapService = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+
+        $ADUser = $ldapAdmin->getUserFromAD($login);
+        $grupyWszystkie = $ADUser[0]['memberOf'];
+        $grupyNaPodstawieSekcjiOrazStanowiska = $ldapService->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
+        $grupyDoOdebrania = array_diff($ADUser[0]['memberOf'], $grupyNaPodstawieSekcjiOrazStanowiska);
+
+        $dane[] = [
+            'aktualne w AD' => $grupyWszystkie,
+            'NaPodstawieSekcjiOrazStanowiska' => $grupyNaPodstawieSekcjiOrazStanowiska,
+            'do ddebrania/odebrane' => $grupyDoOdebrania,
+        ];
+
+        $entry = new Entry();
+        $entry->setFromWhen(new Datetime());
+        $entry->setSamaccountname($login);
+        $entry->setMemberOf('-'.implode(',-', $grupyDoOdebrania));
+        $entry->setCreatedBy('SYSTEM');
+        $entry->setOpis('Odebrano administracyjnie.');
+
+        $entityManager->persist($entry);
+        $entityManager->flush();
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Grupy pracownika ' . $login . ' w AD']);
+    }
+
+    /**
+     * Redmine 73723: Godzina wygaśnięcia kont w AD
+     * Wydłuża ważnośc kont w AD do końca dnia (23:59) lub
+     * ustawia "Konto nigdy nie wygasa"
+     *
+     * @Route("/korektaAccountExpires", name="korektaAccountExpires")
+     */
+    public function korektaAccountExpiresAction()
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD('wszyscyWszyscy');
+        $dzis = new \Datetime();
+        $dane = [];
+
+        foreach ($users as $u) {
+            if ($u['accountExpires']) {
+                $dateParts = explode('-', $u['accountExpires']);
+                if ($dateParts[0] >= 2019) {
+                    $userRekord = $entityManager->getRepository('ParpMainBundle:DaneRekord')->findOneBy(['login' => trim($u['samaccountname'])]);
+                    if ($userRekord && $userRekord->getUmowa() == 'na czas nieokreślony') {
+                        $expiry = new \Datetime('3000-01-01'); // data podmieniana przy wypychaniu do AD
+                    } else {
+                        $expiry = new \Datetime($u['accountExpires']);
+                        $expiry->format('Y-m-d H:i:s');
+                        $expiry->setTime(23, 59);
+                    }
+
+                    $entry = new Entry();
+                    $entry->setFromWhen($dzis);
+                    $entry->setSamaccountname($u['samaccountname']);
+                    $entry->setAccountExpires($expiry);
+                    $entry->setIsImplemented(0);
+                    $entityManager->persist($entry);
+                    $dane[] = [
+                        'D/B' => $u['description'],
+                        'samaccountname' => $u['samaccountname'],
+                        'accountExpires' => $u['accountExpires'],
+                        'accountExpires NEW' => $expiry,
+                    ];
+                }
+            }
+        }
+        $entityManager->flush();
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Korekta accountExpires w AD']);
     }
 }
