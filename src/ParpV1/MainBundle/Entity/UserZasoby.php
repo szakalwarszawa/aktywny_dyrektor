@@ -539,7 +539,11 @@ class UserZasoby
     public function setAktywneDo($aktywneDo)
     {
         if (null !== $aktywneDo) {
-            $aktywneDo = $aktywneDo->setTime(23, 59);
+            if (is_object($aktywneDo)) {
+                $aktywneDo = $aktywneDo->setTime(23, 59);
+            } else {
+                $aktywneDo = str_replace('00:00:00', '23:58:00', $aktywneDo);
+            }
         }
         $this->aktywneDo = $aktywneDo;
 
