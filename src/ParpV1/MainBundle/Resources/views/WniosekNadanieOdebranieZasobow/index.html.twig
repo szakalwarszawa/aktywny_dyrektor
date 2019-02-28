@@ -12,16 +12,14 @@
         </div>
     {% endfor %}
 
-    <h1>Lista Wniosków o nadanie zasobów </h1>
+    <h1>Lista wniosków o nadanie zasobów</h1>
 
-
-        <center>
-            <div class="btn-group">
-                <a class="btn btn-success btn" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj Wniosek o nadanie uprawnień do zasobów</a>
-                <a class="btn btn-danger btn" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie: 1}) }}">Dodaj Wniosek o odebranie uprawnień do zasobów</a>
-
+        <div class="row">
+            <div class="btn-group col-xs-12 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+                <a class="btn btn-success btn col-md-6 fa fa-plus" href="{{ path('wnioseknadanieodebraniezasobow_new') }}">Dodaj wniosek o nadanie uprawnień</a>
+                <a class="btn btn-danger btn col-md-6 fa fa-minus" href="{{ path('wnioseknadanieodebraniezasobow_new', {odebranie: 1}) }}">Dodaj wniosek o odebranie uprawnień</a>
             </div>
-        </center>
+        </div>
     {% if(zastepstwa|length > 0) %}
         <div class="alert alert-danger">
             <button type="button" class="close" data-dismiss="alert">&times;</button>

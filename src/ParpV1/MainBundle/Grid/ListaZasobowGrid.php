@@ -8,6 +8,7 @@ use APY\DataGridBundle\Grid\Column;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
+use APY\DataGridBundle\Grid\Row;
 
 class ListaZasobowGrid
 {
@@ -61,15 +62,35 @@ class ListaZasobowGrid
         ));
 
         $zasobAkcja = new RowAction(
-            '<i class="glyphicon glyphicon-pencil"></i> Edycja',
+            '<i class="fa fa-pencil"></i> Edycja',
             'zasoby_edit',
             null,
             null,
             array(
-                'class' => 'btn btn-success btn-xs',
+                'class' => 'btn btn-info btn-xs',
             )
         );
         $zasobAkcja->setColumn('akcja');
+        $zasobAkcja->addManipulateRender(
+            function ($action, $row) {
+                return $this->adminRowAction($action, $row);
+            }
+        );
+        $siatka->addRowAction($zasobAkcja);
+
+        $zasobAkcja = new RowAction(
+            '<i class="fa fa-search"></i> Podgląd',
+            'zasoby_edit',
+            null,
+            null,
+            array(
+                'class' => 'btn btn-info btn-xs',
+            )
+        );
+        $zasobAkcja
+            ->setColumn('akcja')
+            ->setRouteParameters(['id', 'readOnly' => true])
+        ;
         $siatka->addRowAction($zasobAkcja);
 
         if ($this->parameters['aktywne']) {
@@ -126,14 +147,10 @@ class ListaZasobowGrid
      *
      * @return null|RowAction
      */
-    private function adminRowAction($action, $row)
+    private function adminRowAction(RowAction $action, Row $row)
     {
-        $roleDozwolone = array(
-            'PARP_ADMIN',
-            'PARP_ADMIN_REJESTRU_ZASOBOW',
-        );
-        if (in_array('PARP_ADMIN', $this->parameters['uzytkownik']->getRoles())
-            || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->parameters['uzytkownik']->getRoles())) {
+        $userRoles = $this->parameters['uzytkownik']->getRoles();
+        if (in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $userRoles)) {
             return $action;
         }
 

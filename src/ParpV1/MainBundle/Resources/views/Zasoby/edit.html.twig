@@ -2,6 +2,11 @@
 
 {% block body -%}
     <div class="col-sm-12">
+    {% if read_only %}
+        <div class="alert alert-warning">
+            Jesteś w trybie <strong>podglądu</strong> zasobu.
+        </div>
+    {% endif %}
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#grupyad">Grupy AD</a></li>
@@ -168,6 +173,11 @@
     </div>
 
 <script>
+    {% if read_only %}
+        $(document).ready(function () {
+            $('input, textarea, button, select').attr('disabled', true);
+        });
+    {% endif %}
     $('form').submit(function () {
         $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('disabled', false);
         $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('readonly', false);

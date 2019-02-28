@@ -1,4 +1,41 @@
-$(document).ready(function() {
+//---Polyfill dla metody includes---
+if (!Array.prototype.includes) {
+	Array.prototype.includes = function (searchElement /*, fromIndex*/ ) {
+		'use strict';
+		var O = Object(this);
+		var len = parseInt(O.length) || 0;
+		if (len === 0) {
+			return false;
+		}
+		var n = parseInt(arguments[1]) || 0;
+		var k;
+		if (n >= 0) {
+			k = n;
+		} else {
+			k = len + n;
+			if (k < 0) {
+				k = 0;
+			}
+		}
+		var currentElement;
+		while (k < len) {
+			currentElement = O[k];
+			if (
+				searchElement === currentElement ||
+				(searchElement !== searchElement &&
+					currentElement !== currentElement)
+			) {
+				// NaN !== NaN
+				return true;
+			}
+			k++;
+		}
+		return false;
+	};
+}
+
+//---po zaladowaniu dokumentu---
+$(document).ready(function () {
 	//---sprawdzenie, czy na stronie wystepuje interesujacy nas input---
 	if (
 		document.getElementById(
@@ -7,6 +44,7 @@ $(document).ready(function() {
 		$('#general>h1:contains("nadanie")').length > 0
 	) {
 		//---przestawienie inputa w tryb: tylko do odczytu---
+		//---przestawienie typu inputa na ukryty
 		//---usuniecie zbednych elementow tagit-a---
 		(function setTypeToReadonly() {
 			var input = $(
@@ -19,9 +57,8 @@ $(document).ready(function() {
 
 		//---pokaz cialo formularza---
 		function displayOutsideEmployeeForm() {
-			var outsideEmployeeModalForm = $('#add-outside-employee-layer');
 			$('#add-outside-employee-layer').removeClass('hidden');
-			inputsListeners();
+			resizeLayer();
 		}
 
 		//---kontrolowanie wyglądu przycisku dodawania pracowników spoza PARP---
@@ -34,73 +71,32 @@ $(document).ready(function() {
 		function hideOutsideEmployeeForm() {
 			var outsideEmployeeModalForm = $('#add-outside-employee-layer');
 			outsideEmployeeModalForm.addClass('hidden');
-			//---ukrycie modala musi wywolac nasluchiwanie na widoku glownym---
-			//---(aby moc usunac dodanych pracownikach)---
-			//removeListener();
-		}
-
-		//---walidacja adresu email---
-		function isEmail(event) {
-			console.log('Pole do przetestowania ', event.target);
-			var regexp = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-			if (regexp.test(event.target.value)) {
-				$('.status-board')
-					.text('')
-					.removeClass('alert alert-danger');
-				return true;
-			} else {
-				$('.status-board')
-					.text('Podaj poprawny adres e-mail')
-					.addClass('alert alert-danger');
-				console.log('Podaj poprawny adres e-mail');
-				event.target.focus();
-				return false;
-			}
-		}
-
-		//---walidacja pol tekstowych---
-		function isText(event, msg) {
-			var regx = /^([A-ZŚŻŹŃŁa-zęóąśłżźńć/-]{3,25})+$/;
-			if (regx.test(event.target.value)) {
-				$('.status-board')
-					.text('')
-					.removeClass('alert alert-danger');
-				return true;
-			} else {
-				console.log('podaj imie i nazwisko');
-				$('.status-board')
-					.text(msg)
-					.addClass('alert alert-danger');
-				event.target.focus();
-				return false;
-			}
 		}
 
 		//---parsowanie wartości pól do JSONa---
 		//---przekazywanie danych pracowników do inputa---
-		//---
 		function passEmployeesToInputUp() {
 			var dataToPass = JSON.stringify(
 				$('.single-employee')
-					.map(function(index) {
-						var names = $(this)
-							.find('.outside-employee-name')
-							.val();
-						var surnames = $(this)
-							.find('.outside-employee-surname')
-							.val();
-						var emails = $(this)
-							.find('.outside-employee-email')
-							.val();
-						var singleEmployee = {
-							name: names,
-							surname: surnames,
-							email: emails,
-						};
-						var singleEmployeeArr = [singleEmployee];
-						return singleEmployeeArr;
-					})
-					.get(),
+				.map(function (index) {
+					var names = $(this)
+						.find('.outside-employee-name')
+						.val();
+					var surnames = $(this)
+						.find('.outside-employee-surname')
+						.val();
+					var emails = $(this)
+						.find('.outside-employee-email')
+						.val();
+					var singleEmployee = {
+						name: names,
+						surname: surnames,
+						email: emails,
+					};
+					var singleEmployeeArr = [singleEmployee];
+					return singleEmployeeArr;
+				})
+				.get(),
 			);
 
 			var resultInput = $(
@@ -126,7 +122,7 @@ $(document).ready(function() {
 			//---wagoniki---
 			var inputTrainStart = '<div class="in-train">';
 			var inputTrainEnd = '</div>';
-			// var removeIcon = '<i class="fa fa-trash-o"/>';
+
 			//---------------------------
 			for (var i = 0; i < dataToDisplay.length; i++) {
 				var singlePerson = '';
@@ -137,98 +133,151 @@ $(document).ready(function() {
 					dataToDisplay[i].surname +
 					glueEmail +
 					dataToDisplay[i].email +
-					// removeIcon +
 					inputTrainEnd;
+
 				employeesToDisplay += singlePerson;
 			}
 
-			//console.log('Pracownicy ', employeesToDisplay);
 			fakeInput.html(employeesToDisplay);
 		}
 
-		//---dodawanie na pola nasluchu odpalajacego walidacje---
-		function inputsListeners() {
-			var modalForm = $('.modal-form');
-			var employees = modalForm.find('.form-group');
-			employees.on('blur', '.outside-employee-email', function() {
-				isEmail(event);
-			});
-			employees.on('blur', '.outside-employee-name', function(event) {
-				isText(event, 'Podaj imię');
-			});
-			employees.on('blur', '.outside-employee-surname', function(event) {
-				isText(event, 'Podaj nazwisko');
-			});
+		function hideAllert(element) {
+			$(element)
+				.parent()
+				.parent()
+				.children('.status-board')
+				.text('')
+				.removeClass('alert alert-danger')
+				.hide();
 		}
 
-		function isEmpty() {
-			console.log('isEmpty()');
+		function showAllert(element, allertTxt) {
+			$(element)
+				.parent()
+				.parent()
+				.children('.status-board')
+				.text(allertTxt)
+				.addClass('alert alert-danger')
+				.show();
+		}
+
+		function trimWhitespace() {
 			var inputsInModal = $('.modal-form input');
-			var inputsLengthsTab = [];
-			$.each(inputsInModal, function(index, value) {
-				inputsLengthsTab.push(
-					$(value)
-						.val()
-						.trim().length,
-				);
-				console.log(index, inputsLengthsTab);
-			});
-			//console.log(inputsLengthsTab.includes(0));
-			return inputsLengthsTab.includes(0);
-		}
-
-		//---obsluga przycisku zatwierdz w modalu---
-		function confirmation() {
-			//console.log('confirm');
-			var confirmBtn = $('#submit-outside-employee');
-			confirmBtn.on('click', function(event) {
-				event.preventDefault();
-				var inputsInModal = $('.modal-form input');
-				//var inputsInModal = document.querySelectorAll('.modal-form input');
-				console.log('inputs in modal form: ', inputsInModal);
-				if (!isEmpty()) {
-					console.log('nie zawiera pustych', !isEmpty());
-					passEmployeesToInputUp();
-					buttonDisplayController();
-					hideOutsideEmployeeForm();
-				} else {
-					console.log('zawiera puste', !isEmpty());
-					$('.status-board')
-						.text('Pola nie mogą być puste')
-						.addClass('alert alert-danger');
+			$.each(inputsInModal, function (idx, item) {
+				var text = $(item).val();
+				if (text.length > 0) {
+					text = text.trim();
+					item = $(item).val(text);
+					return item;
 				}
 			});
 		}
 
+		//---walidacja pól---
+		function inputsValidation() {
+			var names = $('.outside-employee-name');
+			var surnames = $('.outside-employee-surname');
+			var emails = $('.outside-employee-email');
+			var regSurnames = /^([A-ZŚŻĆŹŹŃŁ]{1}[A-ZŚŻĆŹŹŃŁa-zęóąśłżźńć/-]{1,24})+$/;
+			var regNames = /^([A-ZŚŻŹŃŁ]{1}[a-zęóąśłżźńć]{2,15})+$/; ///^([A-ZŚŻŹŃŁa-zęóąśłżźńć]{3,16})+$/
+			var regMail = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+			var status = [];
+
+			//---testowanie pól wg wzorca + wyswietlanie komunikatu---
+			function stringTesting(inputsToTest, reg, msg) {
+				if (reg.test($(inputsToTest).val())) {
+					hideAllert(inputsToTest);
+					status.push('ok');
+				} else {
+					console.log(msg);
+					showAllert(inputsToTest, msg);
+					status.push('bad');
+				}
+			}
+
+			$.each(names, function (index, value) {
+				stringTesting(value, regNames, 'Podaj poprawne imię pracownika spoza PARP');
+			});
+			$.each(surnames, function (index, value) {
+				stringTesting(value, regSurnames, 'Podaj poprawne nazwisko pracownika spoza PARP');
+			});
+			$.each(emails, function (index, value) {
+				stringTesting(value, regMail, 'Podaj poprawny e-mail pracownika spoza PARP');
+			});
+
+			var isPassedValidation = status.includes('bad') ? false : true;
+			return isPassedValidation;
+		}
+
+		//---obsluga przycisku zatwierdz w modalu---
+		function confirmation() {
+			var confirmBtn = $('#submit-outside-employee');
+			confirmBtn.on('click', function (event) {
+				event.preventDefault();
+				trimWhitespace();
+				if (inputsValidation() === true) {
+					console.info('Dane przeszły walidację');
+					passEmployeesToInputUp();
+					buttonDisplayController();
+					hideOutsideEmployeeForm();
+				} else {
+					resizeLayer();
+				}
+			});
+		}
+
+		//---dynamiczne dostosowanie wymiarów warstwy---
 		function resizeLayer() {
 			var modalFormLayer = $('#add-outside-employee-layer');
 			modalFormLayer.height($(document).height());
 		}
 
+		//---nasłuch na zmianę wymiarów okna---
+		$(window).resize(function () {
+			resizeLayer();
+		});
+
 		//---obsluga przycisku dodaj w modalu---
 		function addingInputs() {
 			var addBtn = $('#add-another-outside-employee');
-			addBtn.on('click', function(event) {
+			addBtn.on('click', function (event) {
 				addInputsForNextEmployee();
 				resizeLayer();
+			});
+		}
+
+		//---usuwanie pracownika z formularza---
+		function removeEmployee(evFromClick) {
+			$(evFromClick.target)
+				.parent()
+				.parent()
+				.remove();
+		}
+
+		//---obsługa przycisku usun w modalu---
+		function removeEmployeeListener() {
+			var modalForm = $('.modal-form');
+			modalForm.on('click', '.remove-outside-employee', function (event) {
+				event.preventDefault;
+				removeEmployee(event);
 			});
 		}
 
 		//---obsluga przycisku anuluj w modalu---
 		function cancel() {
 			var cancelBtn = $('.cancel-btn');
-			cancelBtn.on('click', function(event) {
+			cancelBtn.on('click', function (event) {
 				hideOutsideEmployeeForm();
 			});
 		}
 
 		//---generowanie przycisku modalnego formularza w widoku---
 		(function showModalBtn() {
-			//---1) zaczep $('#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp')
+			//---1) zaczep $("#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp")
 			var startingPoint = $(
 				'#parp_mainbundle_wnioseknadanieodebraniezasobow_pracownicySpozaParp',
 			);
-			//---2) stwórz przycisk $('#showOutsideEmployeeFormBtn')
+			//---2) stwórz przycisk $("#showOutsideEmployeeFormBtn")
 			var addEmployeeBtn = $(
 				'<button type="button">Dodaj zewnętrznego pracownika</button>',
 			).attr({
@@ -238,27 +287,26 @@ $(document).ready(function() {
 			//---3) wstrzyknij i wypozycjonuj przycisk
 			addEmployeeBtn.appendTo(startingPoint.parent());
 			//---4) dodaj nasłuch na przycisk
-			addEmployeeBtn.on('click', function(event) {
+			addEmployeeBtn.on('click', function (event) {
 				displayOutsideEmployeeForm();
 			});
 			//---5) dodaj nasluch przyciskow w modalu
-			confirmation();
 			addingInputs();
+			confirmation();
 			cancel();
+			removeEmployeeListener();
 		})();
 
 		//---zarzadzanie modalem---
 		function addInputsForNextEmployee() {
 			var template = $('<div class="single-employee"></div>');
 			template.html(
-				'<div class="form-group"><label for="outside-employee-name">Imię pracownika<input type="text" class="form-control outside-employee-name" placeholder="Wpisz imię pracownika" minlength="3" maxlength="16" /></label></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika<input type="text" class="form-control outside-employee-surname" placeholder="Wpisz nazwisko pracownika" minlength="2" maxlength="32" /></label></div><div class="form-group"><label for="outside-employee-email">Email pracownika<input type="email" class="form-control outside-employee-email" placeholder="Podaj adres email pracownika" minlength="6" maxlength="64" /></label></div>',
+				'<div class="form-group"><button class="remove-outside-employee btn btn-xs btn-success">X</button><label for="outside-employee-name">Imię pracownika spoza PARP<input type="text" class="form-control outside-employee-name" placeholder="Imię pracownika spoza PARP" minlength="3" maxlength="16" /></label><div class="status-board for-name">Podaj poprawne imię pracownika spoza PARP</div></div><div class="form-group"><label for="outside-employee-surname">Nazwisko pracownika spoza PARP<input type="text" class="form-control outside-employee-surname" placeholder="Nazwisko pracownika spoza PARP" minlength="2" maxlength="32" /></label><div class="status-board for-surname">Podaj poprawne nazwisko pracownika spoza PARP</div></div><div class="form-group"><label for="outside-employee-email">E-mail pracownika spoza PARP<input type="email" class="form-control outside-employee-email" placeholder="E-mail pracownika spoza PARP" minlength="6" maxlength="64" /></label><div class="status-board for-email">Podaj poprawny e-mail pracownika spoza PARP</div></div>',
 			);
 
 			$('.single-employee')
 				.last()
 				.after(template);
-
-			inputsListeners();
 		}
 	}
 });

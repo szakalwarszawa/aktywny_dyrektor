@@ -143,7 +143,8 @@ class ParpUserProvider implements UserProviderInterface
             'PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW',
             'PARP_ADMIN',
             'PARP_ADMIN_ZASOBOW',
-            'PARP_ADMIN_TECHNICZNY_ZASOBOW'
+            'PARP_ADMIN_TECHNICZNY_ZASOBOW',
+            'PARP_ADMIN_REJESTRU_ZASOBOW'
         );
     }
 

@@ -535,7 +535,7 @@ class Entry
         $repl = array('a', 'c', 'e', 'l', 'n', 'o', 's', 'z', 'z');
 
         $samaccountname = strlen($samaccountname) > 20 ? substr($samaccountname, 0, 20) : $samaccountname;
-        $samaccountname = strtolower($samaccountname);
+        $samaccountname = mb_strtolower($samaccountname);
         $samaccountname = str_replace($find, $repl, $samaccountname);
         $this->samaccountname = $samaccountname;
 
