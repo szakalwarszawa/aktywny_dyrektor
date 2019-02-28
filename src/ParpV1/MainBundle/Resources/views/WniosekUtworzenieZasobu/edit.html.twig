@@ -66,7 +66,7 @@
                         {% if not (
                             entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" or
                             entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB") %}
-                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa != '03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW' ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa in ['00_TWORZONY_O_ZASOB', '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'] ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                         {% endif %}
 
                     {% endif %}
