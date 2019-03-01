@@ -32,9 +32,9 @@ class SamaccountnameGeneratorService
         $letters_array = str_split($letters);
         $find =    array('ą', 'ć', 'ę', 'ł', 'ń', 'ó', 'ś', 'ź', 'ż', 'Ą', 'Ć', 'Ę', 'Ł', 'Ń', 'Ó', 'Ś', 'Ź', 'Ż');
         $replace = array('a', 'c', 'e', 'l', 'n', 'o', 's', 'z', 'z', 'a', 'c', 'e', 'l', 'n', 'o', 's', 'z', 'z');
-        $imie = strtolower(str_replace($find, $replace, $imie));
+        $imie = mb_strtolower(str_replace($find, $replace, $imie));
         $nazwiskoCzesci = explode('-', $nazwisko);
-        $nazwisko = strtolower(str_replace($find, $replace, $nazwiskoCzesci[0]));
+        $nazwisko = mb_strtolower(str_replace($find, $replace, $nazwiskoCzesci[0]));
         $ret2 = $imie.'_'.$nazwisko;
         $ret2_array = str_split($ret2);
         $ret = '';

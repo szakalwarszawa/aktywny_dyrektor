@@ -881,7 +881,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             if ($oz->getAktywneDo() == '' || $oz->getBezterminowo()) {
                                 $z->setAktywneDo(null);
                             } else {
-                                $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                                $z->setAktywneDo($oz->getAktywneDo());
                             }
                             $z->setKanalDostepu($oz->getKanalDostepu());
                             $z->setUprawnieniaAdministracyjne($oz->getUprawnieniaAdministracyjne());
@@ -893,10 +893,9 @@ class NadawanieUprawnienZasobowController extends Controller
                             if ($oz->getAktywneDo() == '' || $oz->getBezterminowo()) {
                                 $z->setAktywneDo(null);
                             } else {
-                                $z->setAktywneDo(new \DateTime($oz->getAktywneDo()));
+                                $z->setAktywneDo($oz->getAktywneDo());
                             }
                         }
-                            //die(".".$oz->getId());
                             $z->setCzyAktywne($wniosekId == 0);
                             $z->setCzyNadane(false);
                             $z->setWniosek($wniosek);
@@ -904,25 +903,13 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setPowodNadania($powod);
                             $z->setSamaccountname($currentsam);
 
-                            //\Doctrine\Common\Util\Debug::dump($z);die();
-
                             $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {
                             $this->addFlash('warning', $msg);
                         }
                             $zmianaupr[] = $zasob->getOpis();
-                            //print_r( );
-/*
-                        }
-                        else{
-                            $msg2 = ( "!!! pomijamy usera ".$currentsam." i zasob ".$oz->getZasobId()." bo juz go ma !");
-                            $this->addFlash('notice', $msg2);
 
-                            //$this->addFlash('warning', $msg);
-                        }
-*/
                         if (count($zmianaupr) > 0 && $wniosekId == 0) {
-                            //var_dump($currentsam, $zmianaupr); die();
                             $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                         }
                     }

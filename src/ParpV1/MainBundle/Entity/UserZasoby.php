@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * UserZasoby
@@ -24,11 +25,19 @@ class UserZasoby
     public function preUpdate()
     {
         if ($this->wniosek) {
-            $this->wniosek->ustawPoleZasoby();
+            try {
+                $this->wniosek->ustawPoleZasoby();
+            } catch (EntityNotFoundException $exception) {
+                return false;
+            }
         }
 
         if ($this->wniosekOdebranie) {
-            $this->wniosekOdebranie->ustawPoleZasoby();
+            try {
+                $this->wniosekOdebranie->ustawPoleZasoby();
+            } catch (EntityNotFoundException $exception) {
+                return false;
+            }
         }
     }
     /**
@@ -529,8 +538,14 @@ class UserZasoby
      */
     public function setAktywneDo($aktywneDo)
     {
-        // Redmine #73463: zmiana godziny ważności uprawnień
-        $this->aktywneDo = $aktywneDo->setTime(23, 59);
+        if (null !== $aktywneDo) {
+            if (is_object($aktywneDo)) {
+                $aktywneDo = $aktywneDo->setTime(23, 59);
+            } else {
+                $aktywneDo = str_replace('00:00:00', '23:58:00', $aktywneDo);
+            }
+        }
+        $this->aktywneDo = $aktywneDo;
 
         return $this;
     }

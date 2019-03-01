@@ -42,6 +42,8 @@ parameters:
     session_max_idle_time: 3600
     pusz_to_ad: true
     rekord_db: "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost"
+    rekord_db_user: ''
+    rekord_db_password: ''
 
     router.request_context.host: aktywnydyrektor.parp.gov.pl
     router.request_context.scheme: https

@@ -11,6 +11,7 @@
 namespace ParpV1\MainBundle\Services;
 
 use Symfony\Component\DependencyInjection\Container;
+use Symfony\Component\HttpFoundation\RequestStack;
 
 /**
  * Usługa dostępna systemowo, której zadaniem jest komunikacja z systemem Redmine.
@@ -54,12 +55,17 @@ class RedmineConnectService
      * @var int
      */
     private $redmine_projekt;
-    
+
     /*
      * Kontener
      *
      */
     private $container;
+
+    /**
+     * @var RequestStack
+     */
+    private $requestStack;
 
     /**
      * Konstruktor klasy.
@@ -69,17 +75,27 @@ class RedmineConnectService
      * @param string $redmine_uzytkownik
      * @param string $redmine_haslo
      * @param int    $redmine_projekt
+     * @param Container $container
+     * @param RequestStack $requestStack
      *
      * @todo Autoryzacja przy pomocy klucza API, zamiast loginu i hasła
      */
-    public function __construct($redmine_protokol, $redmine_serwer, $redmine_uzytkownik, $redmine_haslo, $redmine_projekt, Container $container)
-    {
+    public function __construct(
+        string $redmine_protokol,
+        string $redmine_serwer,
+        string $redmine_uzytkownik,
+        string $redmine_haslo,
+        int $redmine_projekt,
+        Container $container,
+        RequestStack $requestStack
+    ) {
         $this->redmine_protokol = $redmine_protokol;
         $this->redmine_serwer = $redmine_serwer;
         $this->redmine_uzytkownik = $redmine_uzytkownik;
         $this->redmine_haslo = $redmine_haslo;
         $this->redmine_projekt = $redmine_projekt;
         $this->container =  $container;
+        $this->requestStack = $requestStack;
     }
 
     /**
@@ -206,7 +222,7 @@ class RedmineConnectService
         curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, 0);
 
         $odpowiedz = curl_exec($curl);
-        
+
         if ($errno = curl_errno($curl)) {
             $error_message = curl_strerror($errno);
             throw new \Exception('Błąd cURL(' . $errno . '): ' . $error_message . ', adres: ' . $this->redmine_protokol . '://' . $this->redmine_uzytkownik . ':' . $this->redmine_haslo . '@' . $this->redmine_serwer . '/issues.json?cf_2=' . $id_beneficjenta);
@@ -219,11 +235,11 @@ class RedmineConnectService
 
     public function dodajNotatke($zgloszenie_id, $notatka = null, $czy_prywatna = true)
     {
-        
+
         if (!$notatka) {
             $notatka = $this->przygotujTresc();
         }
-        
+
         $adres = $this->redmine_protokol . '://' . $this->redmine_serwer . '/issues/' . $zgloszenie_id . '.json';
 
         // Składamy tablicę z danymi
@@ -274,16 +290,22 @@ class RedmineConnectService
     private function przygotujTresc()
     {
 
-        $clientIP = $this->container->get('request')->getClientIp();
-              
-        $path = $this->container->get('request')->get('_route');
-        $request = $this->container->get('request')->headers->all();
-        $browser = $this->container->get('request')->headers->get('User-Agent');
+        $request = $this
+            ->requestStack
+            ->getCurrentRequest()
+        ;
 
-        // usuniecie danych sesji ze zgloszenia:
+        $clientIp = $request
+            ->getClientIp()
+        ;
+
+        $path = $request->get('_route');
+        $request = $request->headers->all();
+        $browser = $request->headers->get('User-Agent');
+
         unset($request['cookie']);
-        
-        $tresc = '<b>IP</b> : ' . $clientIP . "<br/>";
+
+        $tresc = '<b>IP</b> : ' . $clientIp . "<br/>";
         $tresc .= '<b>path</b> : ' . $path . "<br/>";
         $tresc .= '<b>request</b> : ' . print_r($request, true) . "<br/>";
         $tresc .= '<b>browser</b> : ' . $browser . "<br/>";

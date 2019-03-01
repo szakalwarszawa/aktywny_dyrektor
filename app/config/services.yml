@@ -34,7 +34,7 @@ services:
         tags: ~
     check_access:
         class : ParpV1\MainBundle\Services\AccessCheckerService
-        arguments : ["@doctrine.orm.entity_manager","@service_container"]
+        arguments : ["@doctrine.orm.entity_manager","@service_container", '@security.token_storage']
         tags: ~
     session.memcached:
         class: Memcached
@@ -58,7 +58,7 @@ services:
             #- { name: doctrine.event_listener, event: preUpdate, connection: default }
     parp.redmine:
         class: ParpV1\MainBundle\Services\RedmineConnectService
-        arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container"]
+        arguments: ['%redmine_protokol%','%redmine_serwer%','%redmine_uzytkownik%','%redmine_haslo%','%redmine_projekt%',"@service_container", '@request_stack']
     kernel.listener.command_dispatch:
         class: ParpV1\MainBundle\EventListener\ConsoleExceptionListener
         arguments:

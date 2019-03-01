@@ -719,21 +719,18 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             \PDO::ATTR_ERRMODE            => \PDO::ERRMODE_EXCEPTION, //throws exceptions whenever a db error occurs
             \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES uft8'  //>= PHP 5.3.6
         );
-        ////srv-rekorddb01.parp.local/bazy/PARP_KP.FDB
-        $str_conn =
-            $this->container->getParameter('rekord_db'); //"firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost";
-        //$str_conn = "firebird:dbname=/bazy/PARP_KP.FDB;host=srv-rekorddb01.parp.local";
-        $userdb = 'SYSDBA';
-        $passdb = 'masterkey';
+
+        $str_conn = $this->container->getParameter('rekord_db');
+        $userdb = $this->container->getParameter('rekord_db_user');
+        $passdb = $this->container->getParameter('rekord_db_password');
+
         try {
-            $conn = new \PDO($str_conn, $userdb, $passdb);//, $options);
+            $conn = new \PDO($str_conn, $userdb, $passdb);
             $conn->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_EXCEPTION);
-            //echo 'Connected to database';
 
             $statement = $conn->query($sql);
             $rows = $statement->fetchAll(\PDO::FETCH_ASSOC);
 
-            //echo "<pre>"; print_r($rows);
             return $rows;
         } catch (PDOException $e) {
             echo $e->getMessage();
@@ -744,13 +741,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         if ($db = \ibase_connect(
             'localhost:/var/www/parp/PARP_KP.FDB',
-            'SYSDBA',
-            'masterkey'
-        )
-        ) {
-            //echo 'Connected to the database.';
-
-            $result = \ibase_query($db, $sql); // assume $tr is a transaction
+            'user',
+            'pass'
+        )) {
+            $result = \ibase_query($db, $sql);
 
             $count = 0;
             while ($row = ibase_fetch_assoc($result)) {
@@ -759,10 +753,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }
 
             \ibase_close($db);
-            //die('a');
-            //echo "<pre>";
+
             return $rows;
-            //print_r($this->outputCSV($rows)); die();
         } else {
             echo 'Connection failed.';
         }
