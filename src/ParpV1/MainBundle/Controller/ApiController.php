@@ -261,8 +261,9 @@ class ApiController extends Controller
             ->getNazwaSystemowa()
         ;
 
-        if ($statusWniosku !== '07_ROZPATRZONY_POZYTYWNIE') {
-            $komunikat = 'Wniosek o nadanie uprawnień nie posiada statusu "07_ROZPATRZONY_POZYTYWNIE".';
+        if (!in_array($statusWniosku, ['07_ROZPATRZONY_POZYTYWNIE', '05_EDYCJA_ADMINISTRATOR'])) {
+            $komunikat = 'Wniosek nie jest w statusie "07_ROZPATRZONY_POZYTYWNIE" lub "05_EDYCJA_ADMINISTRATOR".';
+
             return new Json403ForbiddenResponse($komunikat);
         }
 
