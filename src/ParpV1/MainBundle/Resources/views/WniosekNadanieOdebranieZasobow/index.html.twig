@@ -39,13 +39,19 @@
         <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wtoku'}) }}">W toku</a></li>
         <li class="{{ ktore == "zakonczone" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'zakonczone'}) }}">Zakończone</a></li>
         {% if app.user.hasRole('PARP_ADMIN') %}
-            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wszystkie'}) }}">Wszystkie</a></li>
+            <li class="{{ ktore == "wszystkie" ? 'active' : '' }}"><a  href="{{ path('wnioseknadanieodebraniezasobow', {'ktore': 'wszystkie'}) }}">Wyszukiwarka wniosków</a></li>
         {% endif %}
     </ul>
 
     <div class="tab-content">
         <div id="oczekujace" class="tab-pane fade in active">
             {% if ajax_grid %}
+                 {% if ktore == 'wszystkie' %}
+                    <br />
+                    <div class="alert alert-info">
+                        Aby skorzystać z wyszukiwarki uzupełnij jeden lub więcej filtrów i zatwierdź przyciskiem 'Szukaj' lub klawiszem Enter.
+                    </div>
+                {% endif %}
                 {{ grid(grid,'ParpMainBundle:Grid:grid_jquery_filters.html.twig') }}
             {% else %}
                 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
