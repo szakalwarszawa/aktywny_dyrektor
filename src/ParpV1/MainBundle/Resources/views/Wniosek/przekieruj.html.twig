@@ -2,13 +2,6 @@
 
 {% block body -%}
     <div class="col-sm-12">
-        <div class="alert alert-danger">
-            !!!!!!!!!!!!!!!!!!!!!!!!!!!
-            Ten ekran służy do ręcznego ustawienia statusu wniosku i osób odpowiedzialnych za dalsze procedowanie wniosku!!!
-            Używać tylko w szczególnych przypadkach i używać BARDZO OSTROŻNIE!
-            !!!!!!!!!!!!!!!!!!!!!!
-        </div>
-
         <div class="col-sm-6">
             <h2>To jest</h2>
             <table class="table">
@@ -46,19 +39,43 @@
         </div>
         <div class="col-sm-6">
             <h2>To ma być</h2>
-            {{ form(form) }}
             <div class="alert alert-danger">
-                !!!!!!!!!!!!!!!!!!!!!!!!!!!
-                Ten ekran służy do ręcznego ustawienia statusu wniosku i osób odpowiedzialnych za dalsze procedowanie wniosku!!!
-                Używać tylko w szczególnych przypadkach i używać BARDZO OSTROŻNIE!
-                !!!!!!!!!!!!!!!!!!!!!!
+                Ten ekran służy do ręcznego ustawienia statusu wniosku i osób odpowiedzialnych za dalsze procedowanie wniosku!<br />
+                Używać tylko w szczególnych przypadkach i używać BARDZO OSTROŻNIE!<hr />
+                <b>Jednorazowo możesz zmienić status wniosku (osoby we wniosku zostaną przydzielone automatycznie) lub osoby we wniosku. Użyj przycisku poniżej aby przełączyć formularz.</b> <br />
+                <input
+                    id="form_type_change"
+                    type="checkbox"
+                    data-toggle="toggle"
+                    data-on="Edytuj status"
+                    data-off="Edytuj osoby"
+                    data-onstyle="info"
+                    data-offstyle="danger"
+                    data-width="200"
+                    checked
+                />
             </div>
+            {{ form_start(form) }}
+                {{ form_label(form.status) }}
+                {{ form_widget(form.status, {'attr': {'class': 'form-control', 'data-change-status': true}}) }}
+
+                {{ form_label(form.viewers, null, {'label_attr': {'class': 'col-sm-4 control-label'}}) }}
+                {{ form_widget(form.viewers, {'attr': {'class': 'form-control select2', 'disabled': 'disabled', 'data-change-person': true}}) }}
+
+                {{ form_label(form.editors, null, {'label_attr': {'class': 'col-sm-4 control-label'}}) }}
+                {{ form_widget(form.editors, {'attr': {'class': 'form-control select2', 'disabled': 'disabled', 'data-change-person': true}}) }}
+
+                {{ form_label(form.powod, null, {'label_attr': {'class': 'col-sm-4 control-label'}}) }}
+                {{ form_widget(form.powod, {'attr': {'class': 'form-control'}}) }}
+
+                {{ form_widget(form.zapisz, {'attr': {'class': 'btn btn-danger col-sm-12'}}) }}
+            {{ form_end(form) }}
         </div>
     </div>
 <script>
     $(document).ready(function () {
         $('form').submit(function (e) {
-            var msg = $('#form_powod').val();
+            var msg = $('#parp_mainbundle_przekierowaniewniosku_powod').val();
             if (msg == '') {
                 alert('Musisz podac powod!!!');
                 e.preventDefault();
@@ -67,6 +84,16 @@
                 return true;
             }
         });
+
+        $('#form_type_change').change(function () {
+            if ($(this).prop('checked')) {
+                $('[data-change-status]').removeAttr('disabled');
+                $('[data-change-person]').prop('disabled','disabled');
+            } else {
+                $('[data-change-person]').removeAttr('disabled');
+                $('[data-change-status]').prop('disabled','disabled');
+            }
+        })
     });
 </script>
 {% endblock %}

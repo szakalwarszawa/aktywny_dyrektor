@@ -23,6 +23,9 @@ use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Form\WniosekType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Doctrine\ORM\EntityNotFoundException;
+use ParpV1\MainBundle\Constants\TypWnioskuConstants;
+use ParpV1\MainBundle\Form\PrzekierowanieWnioskuFormType;
 
 /**
  * Wniosek controller.
@@ -33,161 +36,68 @@ class WniosekController extends Controller
 {
 
     /**
-     * @Security("has_role('PARP_ADMIN')")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
      * @Route("/{id}/przekierujWniosek", name="wniosek_przekieruj")
      * @Template()
      */
     public function przekierujAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
 
-        $wniosek = $em->getRepository(Wniosek::class)->find($id);
+        $wniosek = $entityManager
+            ->getRepository(Wniosek::class)
+            ->findOneBy([
+                'id' => $id
+            ]);
 
         if (!$wniosek) {
-            throw $this->createNotFoundException('Unable to find Wniosek entity.');
-        }
-        $typWniosku = $wniosek->getWniosekNadanieOdebranieZasobow() ? 'wniosekONadanieUprawnien' : 'wniosekOUtworzenieZasobu';
-        $people = ['viewrs' => [], 'editors' => []];
-        foreach ($wniosek->getViewers() as $v) {
-            $people['viewers'][$v->getSamaccountname()] = $v->getSamaccountname();
-        }
-        foreach ($wniosek->getEditors() as $v) {
-            $people['editors'][$v->getSamaccountname()] = $v->getSamaccountname();
-        }
-        $dane = [
-            'status' => $wniosek->getStatus()->getId(),
-            'viewers' => $people['viewers'],
-            'editors' => $people['editors'],
-        ];
-
-        $statusyEntities = $em->getRepository(WniosekStatus::class)->findBy(['typWniosku' => $typWniosku]);
-        $statusy = [];
-        foreach ($statusyEntities as $e) {
-            $statusy[$e->getId()] = $e->getNazwa();
+            throw new EntityNotFoundException('Nie odnaleziono wniosku ID ' . $id);
         }
 
-        $viewersEditors = $this->getUsersFromADWithRole("");
-        $builder = $this->createFormBuilder($dane)
-                ->add('status', ChoiceType::class, array(
-                    'required' => false,
-                    'label' => 'Status',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control'
-                    ),
-                    'choices' => array_flip($statusy)
-                ))
-                ->add('viewers', ChoiceType::class, array(
-                    'required' => false,
-                    'label' => 'Viewers',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2'
-                    ),
-                    'choices' => array_flip($viewersEditors),
-                    'multiple' => true,
-                    'expanded' => false
-                ))
-                ->add('editors', ChoiceType::class, array(
-                    'required' => false,
-                    'label' => 'Editors',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control select2'
-                    ),
-                    'choices' => array_flip($viewersEditors),
-                    'multiple' => true,
-                    'expanded' => false
-                ))
-                ->add('powod', TextareaType::class, array(
-                    'required' => false,
-                    'label' => 'Powód',
-                    'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
-                    ),
-                    'attr' => array(
-                        'class' => 'form-control'
-                    ),
-                ))
-                ->add('zapisz', SubmitType::class, array(
-                        'attr' => array(
-                            'class' => 'btn btn-danger col-sm-12'
-                        ),
-                    ));
+        $typWniosku = $wniosek->getWniosekNadanieOdebranieZasobow() ?
+            TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW :
+            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU;
 
-                $form = $builder->setAction($this->generateUrl('wniosek_przekieruj', ['id' => $id]))->setMethod('POST')->getForm();
+        $ldapService = $this->get('ldap_service');
+        $adUsers = $ldapService->getAllUsersNamesLogins();
+        $form = $this->createForm(PrzekierowanieWnioskuFormType::class, null, [
+            'wniosek' => $wniosek,
+            'entity_manager' => $entityManager,
+            'ad_users' => $adUsers,
+            'action' => $this->generateUrl('wniosek_przekieruj', ['id' => $id]),
+        ]);
 
-        if ($request->getMethod() == "POST") {
-            $form->handleRequest($request);
-            $dane = $form->getData();
-            $komentarz = new Komentarz();
-            $komentarz->setSamaccountname($this->getUser()->getUsername());
-            $komentarz->setTytul("Ręczne przekierowanie wniosku");
-            $komentarz->setOpis($dane['powod']);
-            $komentarz->setObiekt($typWniosku == 'wniosekONadanieUprawnien' ? "WniosekNadanieOdebranieZasobow" : "WniosekUtworzenieZasobu");
-            $komentarz->setObiektId($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId());
-            $em->persist($komentarz);
+        $form->handleRequest($request);
 
-            $nowyStatus = $em->getRepository(WniosekStatus::class)->find($dane['status']);
-            $wniosek->setStatus($nowyStatus);
-            $wniosek->setLockedBy(null);
-            $wniosek->setLockedAt(null);
+        if ($form->isValid() && $form->isSubmitted()) {
+            $przekierowanieWnioskuService = $this->get('przekierowanie_wniosku_service');
+            $przekierowanieWnioskuService
+                ->setWniosek($wniosek)
+                ->doFlush()
+                ->przekierujWniosekForm($form)
+            ;
 
-            foreach ($wniosek->getViewers() as $v) {
-                $em->remove($v);
-            }
-            foreach ($wniosek->getEditors() as $v) {
-                $em->remove($v);
-            }
-            foreach ($dane['viewers'] as $v) {
-                $nv = new WniosekViewer();
-                $nv->setSamaccountname($v);
-                $nv->setWniosek($wniosek);
-                $wniosek->addViewer($nv);
-                $em->persist($nv);
-            }
+            $redirectRouteName = TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku ?
+                'wniosekutworzeniezasobu_edit' :
+                'wnioseknadanieodebraniezasobow_show'
+            ;
+            $idWniosku = $przekierowanieWnioskuService
+                ->getDzieckoWniosku($wniosek)
+                ->getId()
+            ;
 
-            foreach ($dane['editors'] as $v) {
-                $nv = new WniosekEditor();
-                $nv->setSamaccountname($v);
-                $nv->setWniosek($wniosek);
-                $wniosek->addEditor($nv);
-                $em->persist($nv);
-            }
-
-            $em->flush();
-
-            return $this->redirect($this->generateUrl(($typWniosku == 'wniosekONadanieUprawnien' ? 'wnioseknadanieodebraniezasobow_show' : 'wniosekutworzeniezasobu_edit'), ['id' => ($typWniosku == 'wniosekONadanieUprawnien' ? $wniosek->getWniosekNadanieOdebranieZasobow()->getId() : $wniosek->getWniosekUtworzenieZasobu()->getId())]));
+            return $this->redirect($this->generateUrl($redirectRouteName, ['id' => $idWniosku]));
         }
-
 
         return array(
-            'wniosek'      => $wniosek,
-            'form' => $form->createView()
+            'wniosek'   => $wniosek,
+            'form'      => $form->createView()
         );
     }
-
-    private function getUsersFromADWithRole($role)
-    {
-        $ldap = $this->get('ldap_service');
-        $ADUsers = $ldap->getAllFromAD();
-        $users = array();
-        foreach ($ADUsers as &$u) {
-            if (in_array($role, $u['roles']) || $role == "") {
-                $users[$u['samaccountname']] = $u['name'];
-            }
-        }
-        //echo "<pre>"; var_dump($users); die();
-        return $users;
-    }
-
 
     /**
      * Lists all Wniosek entities.

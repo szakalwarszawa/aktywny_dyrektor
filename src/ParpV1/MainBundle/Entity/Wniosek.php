@@ -457,7 +457,7 @@ class Wniosek
         foreach ($this->getViewers() as $v) {
             $names[] = $v->getSamaccountname();
         }
-        $this->setViewernames(implode(",", $names));
+        $this->setViewernames(implode(",", array_unique($names)));
 
         return $this;
     }
@@ -498,7 +498,7 @@ class Wniosek
         foreach ($this->getEditors() as $v) {
             $names[] = $v->getSamaccountname();
         }
-        $this->setEditornames(implode(",", $names));
+        $this->setEditornames(implode(",", array_unique($names)));
 
         return $this;
     }
@@ -571,17 +571,20 @@ class Wniosek
         return $this->parent;
     }
 
-
-    public function getViewersNames()
+    public function getViewersNames($asArray = false)
     {
         $names = [];
         foreach ($this->getViewers() as $v) {
             $names[$v->getSamaccountname()] = $v->getSamaccountname();
         }
+        if ($asArray) {
+            return $names;
+        }
+
         return implode(", ", $names);
     }
 
-    public function getEditorsNames()
+    public function getEditorsNames($asArray = false)
     {
         if (substr($this->getStatus()->getNazwaSystemowa(), 0, 1) == "1") {
             return "";
@@ -590,6 +593,10 @@ class Wniosek
         foreach ($this->getEditors() as $v) {
             $names[$v->getSamaccountname()] = $v->getSamaccountname();
         }
+        if ($asArray) {
+            return $names;
+        }
+
         return implode(", ", $names);
     }
 

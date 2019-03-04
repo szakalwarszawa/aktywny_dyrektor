@@ -122,3 +122,9 @@ services:
     wnioski_nadanie_odebranie_grid:
         class: ParpV1\MainBundle\Grid\WnioskiNadanieOdebranieGrid
         arguments: ['@grid', '@doctrine.orm.entity_manager', '@security.token_storage', '%ajax_grid_wnioskinadanieodebranie%']
+    przekierowanie_wniosku_service:
+        class: ParpV1\MainBundle\Services\PrzekierowanieWnioskuService
+        arguments: ['@doctrine.orm.entity_manager', '@user_service', '@status_wniosku_service', '@session']
+    user_service:
+        class: ParpV1\MainBundle\Services\UserService
+        arguments: ['@security.token_storage']

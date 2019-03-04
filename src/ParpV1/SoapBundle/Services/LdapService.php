@@ -163,6 +163,22 @@ class LdapService
         return $adUsers;
     }
 
+    /**
+     * Pobiera wszystkich użytkowników z AD (tylko nazwa użytkownika + imię nazwisko)
+     *
+     * @return array
+     */
+    public function getAllUsersNamesLogins(): array
+    {
+        $users = [];
+        $adUsers = $this->getAllFromAD();
+        foreach ($adUsers as $adUser) {
+            $users[$adUser['samaccountname']] = $adUser['name'];
+        }
+
+        return $users;
+    }
+
     public function getAllFromADIntW($ktorych = 'aktywni', $justDump = false, $struktura = null)
     {
         //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
