@@ -112,7 +112,7 @@ class PrzekierowanieWnioskuService
         $trescKomentarza = '';
         $statusWniosku = $this->wniosek->getStatus();
         if ($statusWniosku->getId() !== $formData['status'] && !empty($formData['status'])) {
-            if (null !== $formData['status']){
+            if (null !== $formData['status']) {
                 $nowyStatus = $entityManager
                     ->getRepository(WniosekStatus::class)
                     ->find($formData['status']);
