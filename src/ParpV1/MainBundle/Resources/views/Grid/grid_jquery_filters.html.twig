@@ -1,5 +1,43 @@
 {% extends 'APYDataGridBundle::blocks_js.jquery.html.twig' %}
 
+{% block grid %}
+    <div class="grid" style="margin-top: 15px; margin-left: auto; margin-right: auto;">
+    {% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is same as(false) %}
+        <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
+            <a class="btn btn-primary btn" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
+            <input type="button" onclick="return {{ grid.hash }}_submitForm(this);" id="searchButton" class="btn btn-info" value="{{ 'Szukaj'|trans }}"/>
+            <div class="grid_body row">
+                <table class="table table-hover table-striped table-bordered">
+                {% if grid.isTitleSectionVisible %}
+                    {{ grid_titles(grid) }}
+                {% endif %}
+                {% if grid.isFilterSectionVisible %}
+                    {{ grid_filters(grid) }}
+                {% endif %}
+                {{ grid_rows(grid) }}
+                </table>
+            </div>
+            <div class="grid_footer">
+            {% if grid.isPagerSectionVisible %}
+                {{ grid_pager(grid) }}
+            {% endif %}
+            {% if grid.tweaks|length > 0 %}
+                {{ grid_tweaks(grid) }}
+            {% endif %}
+            {% if grid.exports|length > 0 %}
+                {{ grid_exports(grid) }}
+            {% endif %}
+            </div>
+            {% if withjs %}
+                {{ grid_scripts(grid) }}
+            {% endif %}
+        </form>
+    {% else %}
+        {{ grid_no_data(grid) }}
+    {% endif %}
+    </div>
+{% endblock %}
+
 {% block grid_filters %}
     <tr class="grid-row-filters">
     {% for column in grid.columns %}
@@ -14,7 +52,7 @@
     {% set actions = column.getActionsToRender(row) %}
     <ul class="grid-row-actions">
     {% for action in actions %}
-        <li>
+        <li style="list-style-type: none;">
         {% if action.enabled %}
             <a href="{{ url(action.route, column.routeParameters(row, action), false) }}" target="{{ action.target }}"{% if action.confirm %} onclick="return confirm('{{ action.confirmMessage }}')"{% endif %}{% for name, value in action.attributes %} {{ name }}="{{ value }}" {% endfor %}>{{ action.title|trans }}</a>
         {% else %}
@@ -44,3 +82,78 @@
         {{ grid_no_result(grid) }}
     {% endfor %}
 {% endblock grid_rows %}
+
+{% block grid_exports %}
+<div class="exports form-inline" style="float:right">
+    {% spaceless %}
+        {{ 'Export'|trans }}
+            <select class="form-control" style="width: auto" name="{{ grid.hash }}[{{ constant('APY\\DataGridBundle\\Grid\\Grid::REQUEST_QUERY_EXPORT') }}]">
+            <option value="-1"></option>
+            {% for key, export in grid.exports %}
+            <option value="{{ key }}">{{ export.title|trans }}</option>
+            {% endfor %}
+        </select>
+        <input class="btn btn-primary" type="submit" value="{{ 'Export'|trans }}"/>
+    {% endspaceless %}
+</div>
+{% endblock grid_exports %}
+
+{% block grid_scripts_submit_form %}
+function {{ grid.hash }}_submitForm(event, form)
+{
+    if (event.type != 'keypress' || event.which == 13) {
+        var data = '';
+        drawGridSpinner();
+        $('.grid-filter-operator select, .grid-filter-input-query-from, .grid-filter-input-query-to, .grid-filter-select-query-from, .grid-filter-select-query-to', form).each(function () {
+            if ($(this).is(':disabled') == false) {
+                var name = $(this).attr('name');
+                var value = $(this).val();
+                if (value != null) {
+                    if ($(this).attr('multiple') == 'multiple') {
+                        for(var i= 0; i < value.length; i++)
+                        {
+                            data += '&' + name + '=' + value[i];
+                        }
+                    } else {
+                        data += '&' + name + '=' + value;
+                    }
+                } else {
+                    data += '&' + name + '=';
+                }
+            }
+        });
+
+        {{ grid.hash }}_goto('{{ grid.routeUrl }}', data.substring(1), 'POST');
+
+        return false;
+    }
+}
+
+function drawGridSpinner()
+{
+    var loadingSpinnerHtml = '<i style="text-align: center; font-size:48px;" class="fa fa-spinner fa-spin"></i>';
+    if (!$('.load-spinner').length) {
+        $('.grid-row-filters').after('<tr class="load-spinner"><td colspan="100%" style="text-align: center; width: 20px">' + loadingSpinnerHtml + '</td></tr>');
+        $('.grid-row-cells').remove();
+    }
+}
+{% endblock grid_scripts_submit_form %}
+
+{% block grid_scripts_goto %}
+function {{ grid.hash }}_goto(url, data, type)
+{
+    drawGridSpinner();
+    type = type || 'GET';
+    data = data || [];
+
+    $.ajax({
+        url: url,
+        data: data,
+        type: type
+    }).done(function( msg ) {
+        $('#{{ grid.hash }}').parent().replaceWith(msg);
+    });
+
+    return false
+}
+{% endblock grid_scripts_goto %}

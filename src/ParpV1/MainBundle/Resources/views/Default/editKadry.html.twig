@@ -240,6 +240,10 @@
         $('#form_info option').attr('disabled', true);
         $('#form_info optgroup[label={{ user.description }}] option').attr('disabled', false);
 
+        function zaznaczUstawieniePoczatkowych(){
+            $('#form_ustawUprawnieniaPoczatkowe').attr('checked', true);
+        }
+
         {# Z nieznanych mi przyczyn, pod FF nie wybiera właściwie wartości pola z sekcją. #}
         $(document).ready(function() {
             $('#form_info').val("{{ user.info }}");
