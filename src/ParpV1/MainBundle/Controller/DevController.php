@@ -3205,13 +3205,16 @@ class DevController extends Controller
             'NaPodstawieSekcjiOrazStanowiska' => $grupyNaPodstawieSekcjiOrazStanowiska,
             'do ddebrania/odebrane' => $grupyDoOdebrania,
         ];
+        $grupyDoOdebraniaCsv = '-'.implode(',-', $grupyDoOdebrania);
+        $grupyDoNadaniaCsv = ',+'.implode(',+', $grupyNaPodstawieSekcjiOrazStanowiska);
+        $grupyDoOdebraniaNadania = $grupyDoOdebraniaCsv.$grupyDoNadaniaCsv;
 
         $entry = new Entry();
         $entry->setFromWhen(new Datetime());
         $entry->setSamaccountname($login);
-        $entry->setMemberOf('-'.implode(',-', $grupyDoOdebrania));
+        $entry->setMemberOf($grupyDoOdebraniaNadania);
         $entry->setCreatedBy('SYSTEM');
-        $entry->setOpis('Odebrano administracyjnie.');
+        $entry->setOpis('Grupy zmieniono administracyjnie.');
 
         $entityManager->persist($entry);
         $entityManager->flush();
