@@ -160,6 +160,20 @@ class WnioskiNadanieOdebranieGrid
             ]);
         }
 
+        $vector->manipulateRow(
+            function ($row) {
+                if ($row->getField('odebranie')) {
+                    $row->setClass('wiersz-odebranie');
+                }
+
+                if ($row->getField('utworzonyPrzez') === 'magdalena_warecka'
+                    && $this->getCurrentUser()->getUsername() === 'marcin_lipinski') {
+                    $row->setClass('wiersz-cito');
+                }
+                return $row;
+            }
+        );
+
         return $grid;
     }
 
@@ -264,7 +278,7 @@ class WnioskiNadanieOdebranieGrid
                 'field'   => 'utworzonyDnia',
                 'source'  => true,
                 'title'   => 'Utworzony dnia',
-                'format' => 'd/m/Y',
+                'format' => 'd-m-Y',
             ]),
             new Column\TextColumn([
                 'id'      => 'zablokowanyPrzez',
@@ -289,6 +303,12 @@ class WnioskiNadanieOdebranieGrid
                 'field'   => 'zasoby',
                 'source'  => true,
                 'title'   => 'Zasoby',
+            ]),
+            new Column\BooleanColumn([
+                'id'      => 'odebranie',
+                'field'   => 'odebranie',
+                'source'  => true,
+                'visible' => false,
             ]),
         ];
     }
