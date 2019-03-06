@@ -149,7 +149,13 @@ class AccessCheckerService
         }
 
         if (AkcjeWnioskuConstants::POKAZ === $action) {
-            if ($this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
+            $userRoles = $this->currentUser->getRoles();
+            $allowedRoles = [
+                'PARP_ADMIN_REJESTRU_ZASOBOW',
+                'PARP_IBI'
+            ];
+
+            if (!empty(array_intersect($userRoles, $allowedRoles))) {
                 return true;
             }
 
