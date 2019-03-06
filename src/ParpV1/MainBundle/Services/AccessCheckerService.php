@@ -216,14 +216,12 @@ class AccessCheckerService
         }
 
         if (AkcjeWnioskuConstants::EDYTUJ === $action) {
-            if ($wniosekUtworzenieZasobu->getTypWnioskuWycofanie()) {
                 $allowedStatus = [
                     '00_TWORZONY_O_ZASOB',
                     '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'
                 ];
 
                 return (in_array($status, $allowedStatus));
-            }
         }
     }
 
