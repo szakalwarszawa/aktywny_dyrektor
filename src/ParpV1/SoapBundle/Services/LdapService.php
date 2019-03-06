@@ -1156,6 +1156,7 @@ class LdapService
         'p.o. zastępcy dyrektora',
         'główny księgowy, z-ca dyrektora',
         'główny księgowy, zastępca dyrektora',
+        'główny księgowy - p.o. zastępcy dyrektora',
     ];
 
     public function getSekcjePodwladnych($manager)
@@ -1273,6 +1274,7 @@ class LdapService
             case 'p.o. zastępcy dyrektora':
             case 'główny księgowy, z-ca dyrektora':
             case 'główny księgowy, zastępca dyrektora':
+            case 'główny księgowy - p.o. zastępcy dyrektora':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 $grupy[] = 'INT-Olimp';
@@ -1367,6 +1369,7 @@ class LdapService
         'główny księgowy',
         'główny księgowy, z-ca dyrektora',
         'główny księgowy, zastępca dyrektora',
+        'główny księgowy - p.o. zastępcy dyrektora',
         'rzecznik beneficjenta parp, dyrektor',
         'rzecznik beneficjenta parp',
     ];
