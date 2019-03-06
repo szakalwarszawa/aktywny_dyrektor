@@ -128,7 +128,7 @@
                                 <tr>
                                     <td>
                                         {% if uz.wniosek is not null %}
-                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">{{ uz.wniosek.id }}</a>
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': uz.wniosek.id}) }}">{{ uz.wniosek.id }}</a>
                                         {% else %}
                                             Bez wniosku
                                         {% endif %}
@@ -136,7 +136,7 @@
                                     <td>
 
                                         {% if uz.wniosek is not null %}
-                                            <a href="{{ path('wnioseknadanieodebraniezasobow_edit', {'id': uz.wniosek.id}) }}">Wniosek  o {{ uz.wniosek.odebranie ? "odebranie" : "nadanie" }} uprawnień numer: {{ uz.wniosek.wniosek.numer }} </a>
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': uz.wniosek.id}) }}">Wniosek  o {{ uz.wniosek.odebranie ? "odebranie" : "nadanie" }} uprawnień numer: {{ uz.wniosek.wniosek.numer }} </a>
                                         {% else %}
                                             Nie odebrane
                                         {% endif %}
