@@ -224,6 +224,8 @@ class AccessCheckerService
 
                 return (in_array($status, $allowedStatus));
             }
+
+            return true;
         }
     }
 

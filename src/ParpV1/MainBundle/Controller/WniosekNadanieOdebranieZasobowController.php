@@ -166,6 +166,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $jestCoOdebrac = count($userZasoby) > 0;
         }
 
+        if (!empty($form->getData()->getPracownicySpozaParp()) && empty($form->getData()->getManagerSpozaParp())) {
+            $this->addFlash('danger', 'Nie wybrano managera pracowników spoza PARP');
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new', [
+                'odebranie' => $entity->getOdebranie()? 1 : 0
+            ]));
+        }
+
         if ($entity->getOdebranie() && 1 !== count($listaPracownikow)) {
             $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
             . 'zasobów można złożyć tylko dla jednej osoby.');
