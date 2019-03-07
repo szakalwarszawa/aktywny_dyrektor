@@ -14,6 +14,13 @@ use ParpV1\MainBundle\Helper\IloczynKartezjanskiHelper;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
 use Doctrine\Common\Collections\Criteria;
+use Symfony\Component\Form\Form;
+use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
+use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
+use ReflectionClass;
+use InvalidArgumentException;
+use ParpV1\MainBundle\Entity\Section;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -35,6 +42,11 @@ class OdbieranieUprawnienService
     private $zasobyService;
 
     /**
+     * @var UprawnieniaService
+     */
+    private $uprawnieniaService;
+
+    /**
      * @var string
      */
     const ZASOB_USUNIETY_POWOD = 'Zasób usunięty, odebrano uprawnienia.';
@@ -48,11 +60,13 @@ class OdbieranieUprawnienService
     public function __construct(
         EntityManagerInterface $entityManager,
         TokenStorage $tokenStorage,
-        ZasobyService $zasobyService
+        ZasobyService $zasobyService,
+        UprawnieniaService $uprawnieniaService
     ) {
         $this->zasobyService = $zasobyService;
         $this->entityManager = $entityManager;
         $this->currentUser = $tokenStorage->getToken()->getUser();
+        $this->uprawnieniaService = $uprawnieniaService;
     }
 
     /**
@@ -347,5 +361,115 @@ class OdbieranieUprawnienService
     private function getCurrentUser(): ParpUser
     {
         return $this->currentUser;
+    }
+
+    /**
+     * Okresla zmianę na koncie i zeruje uprawnienia.
+     *
+     * @param array $oldData
+     * @param Form $form
+     *
+     * @return array
+     */
+    public function obsluzFormularzUprawnienPoczatkowych(array $oldData, Form $form): array
+    {
+        $formData = $form->getData();
+        $wyzwalacz = $this->okreslZmianeUzytkownika($oldData, $formData);
+
+        $accountName = $formData['samaccountname'];
+        $nieCzyszczoneWyzwalacze = [
+            WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC,
+        ];
+
+        if ($wyzwalacz && !in_array($wyzwalacz, $nieCzyszczoneWyzwalacze)) {
+            $powodOdebrania = $this->getPowodOdebraniaWyzwalacz($wyzwalacz);
+            $uprawnieniaService = $this->uprawnieniaService;
+            $przeprocesowaneZasoby = $uprawnieniaService
+                ->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true)
+            ;
+
+
+            return $przeprocesowaneZasoby;
+        }
+
+        return [];
+    }
+
+    /**
+     * Pobiera ze stałej odpowiedni powód wpisywany do komentarza w trakcie odebrania uprawnienia.
+     *
+     * @param string $trigger
+     *
+     * @return string
+     */
+    private function getPowodOdebraniaWyzwalacz(string $trigger): string
+    {
+        $wyzwalaczeConstants = new ReflectionClass(WyzwalaczeConstants::class);
+        $triggerConstantsValues = $wyzwalaczeConstants
+            ->getConstants()
+        ;
+
+        $constantKey = null;
+        foreach ($triggerConstantsValues as $key => $value) {
+            if ($trigger === $value) {
+                $constantKey = $key;
+            }
+        }
+
+        if (null === $constantKey) {
+            throw new InvalidArgumentException('Nie odnaleziono podanego wyzwalacza.');
+        }
+
+        return $wyzwalaczeConstants->getConstant($constantKey . WyzwalaczeConstants::TITLE_SEPARATOR);
+    }
+
+    /**
+     * Określa które pole w formularzu edycji użytkownika zostało zmienione.
+     * Zwraca wyzwalacz który powoduje reset uprawnień początkowych.
+     * Porównywane są dane wchodzące i wychodzące z formularza klasy EdycjaUzytkownikaFormType.
+     *
+     * @todo ZMIANA_STANOWISKA pewnie musi byc okreslone jakieś stanowisko
+     *
+     * @param array $oldData
+     * @param array $formData
+     *
+     * @return string
+     */
+    private function okreslZmianeUzytkownika(array $oldData, array $formData): string
+    {
+        $wyzwalacz = WyzwalaczeConstants::RESET_DO_UPRAWNIEN_POCZATKOWYCH;
+
+        $kontoWylaczone = $formData['isDisabled'];
+        if ($kontoWylaczone) {
+            $powodWylaczenia = $formData['disableDescription'];
+
+            if (EdycjaUzytkownikaFormType::WYLACZENIE_KONTA_NIEOBECNOSC === $powodWylaczenia) {
+                $wyzwalacz = WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC;
+            }
+
+            if (EdycjaUzytkownikaFormType::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $powodWylaczenia) {
+                $wyzwalacz = WyzwalaczeConstants::ROZWIAZANIE_UMOWY_O_PRACE;
+            }
+        }
+
+        $stareStanowisko = $oldData['title'];
+        $noweStanowisko = $formData['title'];
+        if ($stareStanowisko !== $noweStanowisko) {
+            $wyzwalacz = WyzwalaczeConstants::ZMIANA_STANOWISKA;
+        }
+
+        $staraSekcja = $oldData['info'];
+        $nowaSekcja = $formData['info'];
+        if ($staraSekcja !== $nowaSekcja) {
+            $wyzwalacz = WyzwalaczeConstants::ZMIANA_SEKCJI;
+        }
+
+        $staryDepartament = $oldData['department'];
+        $nowyDepartament = $formData['department'];
+        if ($staryDepartament !== $nowyDepartament) {
+            $wyzwalacz = WyzwalaczeConstants::ZMIANA_DEPARTAMENTU;
+        }
+
+        return $wyzwalacz;
     }
 }
