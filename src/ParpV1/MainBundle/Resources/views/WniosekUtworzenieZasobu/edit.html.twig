@@ -83,7 +83,7 @@
                     {% endif %}
                 {% endif %}
 
-                {% if 'PARP_ADMIN' in app.user.roles and entity.wniosek.id > 0 %}
+                {% if 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles and entity.wniosek.id > 0 %}
                     <a href="{{ path('wniosek_przekieruj', {'id': entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek <i class="glyphicon glyphicon-arrow-right">&nbsp;</i></a>
                 {% endif %}
             </div>
