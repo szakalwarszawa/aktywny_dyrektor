@@ -220,9 +220,6 @@ class WniosekUtworzenieZasobuController extends Controller
             $this->ustawTyp($entity, 'parp_mainbundle_wniosekutworzeniezasobu_typWnioskuWycofanieZinfrastruktury');
         }
 
-
-                //die(".".$entity->getTyp());
-
         $form = $this->createCreateForm($entity, $entity->getTyp());
         $form->handleRequest($request);
             ///die('d');
@@ -241,6 +238,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     break;
                 case 'zmiana':
                     $entity->getZmienianyZasob()->addWnioskiZmieniajaceZasob($entity);
+                    $entity->getZasob()->setZasobWTrakcieZmiany(true);
                     break;
             }
             if ($entity->getZasob()) {
@@ -352,37 +350,46 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $status = $this->getDoctrine()->getManager()->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa('00_TWORZONY_O_ZASOB');
 
-        $entity = new WniosekUtworzenieZasobu();
-        //var_dump($typ1, $typ2); die();
-        $this->ustawTyp($entity, $typ1);
+        $wniosekUtworzenieZasobu = new WniosekUtworzenieZasobu();
+
+        $this->ustawTyp($wniosekUtworzenieZasobu, $typ1);
         if ($typ2 !== '') {
-            $this->ustawTyp($entity, $typ2);
+            $this->ustawTyp($wniosekUtworzenieZasobu, $typ2);
         }
 
-        $entity->getWniosek()->setCreatedAt(new \Datetime());
-        $entity->getWniosek()->setLockedAt(new \Datetime());
-        $entity->getWniosek()->setCreatedBy($this->getUser()->getUsername());
-        $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
-        $entity->getWniosek()->setNumer('wniosek w trakcie tworzenia');
-        $entity->getWniosek()->setJednostkaOrganizacyjna($ADUser[0]['department']);
-        $entity->getWniosek()->setStatus($status);
-        $entity->setImienazwisko($ADUser[0]['name']);
-        $entity->setLogin($ADUser[0]['samaccountname']);
-        $entity->setDepartament($ADUser[0]['department']);
-        $entity->setStanowisko($ADUser[0]['title']);
+        $wniosekUtworzenieZasobuWniosek = ($wniosekUtworzenieZasobu->getWniosek())
+            ->setCreatedAt(new Datetime())
+            ->setLockedAt(new Datetime())
+            ->setCreatedBy($this->getUser()->getUsername())
+            ->setLockedBy($this->getUser()->getUsername())
+            ->setNumer('wniosek w trakcie tworzenia')
+            ->setJednostkaOrganizacyjna($ADUser[0]['department'])
+            ->setStatus($status)
+        ;
+        $wniosekUtworzenieZasobu
+            ->setImienazwisko($ADUser[0]['name'])
+            ->setLogin($ADUser[0]['samaccountname'])
+            ->setDepartament($ADUser[0]['department'])
+            ->setStanowisko($ADUser[0]['title'])
+        ;
+
+
+
         $departament = $this->getDoctrine()->getManager()->getRepository(Departament::class)->findOneByName($ADUser[0]['department']);
-        if ($entity->getZasob()) {
-            $entity->getZasob()->setKomorkaOrgazniacyjna($departament);
+        if ($wniosekUtworzenieZasobu->getZasob()) {
+            $wniosekUtworzenieZasobu->getZasob()->setKomorkaOrgazniacyjna($departament);
         }
-        $form   = $this->createCreateForm($entity);
-        $this->getDoctrine()->getManager()->persist($entity->getWniosek());
 
-
-        //echo "<pre>"; print_r($ADUser); die();
+        $form = $this->createCreateForm($wniosekUtworzenieZasobu);
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+        $entityManager->persist($wniosekUtworzenieZasobuWniosek);
 
         return array(
             'editor' => false,
-            'entity' => $entity,
+            'entity' => $wniosekUtworzenieZasobu,
             'form'   => $form->createView(),
             'message' => '',
             'readonly' => false,
@@ -916,7 +923,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
 
         if ($request->isMethod('POST')) {
-            if (AkcjeWnioskuConstants::ODRZUC !== $isAccepted && '00_TWORZONY_O_ZASOB' !== $status) {
+            if (AkcjeWnioskuConstants::ZWROC_DO_POPRAWY === $isAccepted && '00_TWORZONY_O_ZASOB' !== $status) {
                 $txt = $request->get('powodZwrotu');
                 $wniosek->setPowodZwrotu($txt);
 

@@ -341,6 +341,13 @@ class Zasoby
     protected $zasobSpecjalny = false;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="zasob_w_trakcie_zmiany", type="boolean", nullable=true)
+     */
+    protected $zasobWTrakcieZmiany = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -1545,4 +1552,28 @@ class Zasoby
 
         return $grupa;
     }
+
+	/**
+	 * Get zasobWTrakcieZmiany
+	 *
+	 * @return bool
+	 */
+	public function getZasobWTrakcieZmiany()
+	{
+		return $this->zasobWTrakcieZmiany;
+	}
+
+	/**
+	 * Set zasobWTrakcieZmiany
+	 *
+	 * @param bool $zasobWTrakcieZmiany
+	 *
+	 * @return self
+	 */
+	public function setZasobWTrakcieZmiany(bool $zasobWTrakcieZmiany)
+	{
+		$this->zasobWTrakcieZmiany = $zasobWTrakcieZmiany;
+
+		return $this;
+	}
 }
