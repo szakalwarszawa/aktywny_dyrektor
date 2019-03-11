@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
+
 /**
  * Entry
  *
@@ -15,7 +16,6 @@ use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
  */
 class Entry
 {
-
     /**
      */
     public function preUpdate()
