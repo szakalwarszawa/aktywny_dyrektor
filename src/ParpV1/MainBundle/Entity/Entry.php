@@ -939,27 +939,27 @@ class Entry
         return $this->memberOf;
     }
 
-	/**
-	 * Get odebranieZasobowEntry
-	 *
-	 * @return OdebranieZasobowEntry
-	 */
-	public function getOdebranieZasobowEntry()
-	{
-		return $this->odebranieZasobowEntry;
-	}
+    /**
+     * Get odebranieZasobowEntry
+     *
+     * @return OdebranieZasobowEntry
+     */
+    public function getOdebranieZasobowEntry()
+    {
+        return $this->odebranieZasobowEntry;
+    }
 
-	/**
-	 * Set odebranieZasobowEntry
-	 *
-	 * @param OdebranieZasobowEntry $odebranieZasobowEntry
-	 *
-	 * @return self
-	 */
-	public function setOdebranieZasobowEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
-	{
-		$this->odebranieZasobowEntry = $odebranieZasobowEntry;
+    /**
+     * Set odebranieZasobowEntry
+     *
+     * @param OdebranieZasobowEntry $odebranieZasobowEntry
+     *
+     * @return self
+     */
+    public function setOdebranieZasobowEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
+    {
+        $this->odebranieZasobowEntry = $odebranieZasobowEntry;
 
-		return $this;
-	}
+        return $this;
+    }
 }
