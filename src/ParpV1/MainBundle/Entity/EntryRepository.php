@@ -129,21 +129,35 @@ class EntryRepository extends EntityRepository
     public function findZmianaDepartamentuUzytkownika($samaccountname)
     {
 /*      Zapytaie testowe:
-        select max(fromwhen)
-        from entry
-        where samaccountname = 'hubert_gorecki'
-        and distinguishedname is not null
-        group by distinguishedname
-        limit 1,1
+        SELECT
+            e.samaccountname,
+            e.fromWhen,
+            e.department,
+            e.distinguishedname,
+            d.shortname
+        FROM
+            entry e
+            left join departament d on d.name = e.department
+        where
+            e.department is not null
+            and e.samaccountname = 'hubert_gorecki'
+            and e.distinguishedname not like CONCAT('%OU=', d.shortname, '%')
+        order by
+            e.fromWhen desc
+        limit
+            1
 */
         $queryBuilder = $this->createQueryBuilder('z');
         $queryBuilder
-            ->select('MAX(z.fromWhen) as data_zmiany')
-            ->where('z.distinguishedName is not null')
+            ->select('z.fromWhen as data_zmiany')
+            ->leftJoin('ParpMainBundle:Departament', 'd')
+            ->where('z.department is not null')
             ->andWhere('z.samaccountname = :samaccountname')
-            ->groupBy('z.distinguishedName')
+            ->andWhere('d.name = z.department')
+            ->andWhere('d.nowaStruktura = 1')
+            ->andWhere("z.distinguishedName not like CONCAT('%OU=',d.shortname,',%')")
             ->setParameters(array('samaccountname' => $samaccountname))
-            ->setFirstResult(1)
+            ->orderBy('z.fromWhen', 'DESC')
             ->setMaxResults(1);
 
         $query = $queryBuilder->getQuery();
