@@ -464,7 +464,18 @@ class OdbieranieUprawnienService
         $stareStanowisko = $oldData['title'];
         $noweStanowisko = $formData['title'];
         if ($stareStanowisko !== $noweStanowisko) {
-            $wyzwalacz = WyzwalaczeConstants::ZMIANA_STANOWISKA;
+            $stanowiskaZmiany = [
+                'kierownik',
+                'ekspert',
+                'zastępca dyrektora',
+                'dyrektor',
+                'główny księgowy, dyrektor',
+                'zastępca prezesa',
+                'prezes'
+            ];
+            if (in_array($noweStanowisko, $stanowiskaZmiany)) {
+                $wyzwalacz = WyzwalaczeConstants::ZMIANA_STANOWISKA;
+            }
         }
 
         $staraSekcja = $oldData['info'];
