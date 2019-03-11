@@ -1553,27 +1553,27 @@ class Zasoby
         return $grupa;
     }
 
-	/**
-	 * Get zasobWTrakcieZmiany
-	 *
-	 * @return bool
-	 */
-	public function getZasobWTrakcieZmiany()
-	{
-		return $this->zasobWTrakcieZmiany;
-	}
+    /**
+     * Get zasobWTrakcieZmiany
+     *
+     * @return bool
+     */
+    public function getZasobWTrakcieZmiany()
+    {
+        return $this->zasobWTrakcieZmiany;
+    }
 
-	/**
-	 * Set zasobWTrakcieZmiany
-	 *
-	 * @param bool $zasobWTrakcieZmiany
-	 *
-	 * @return self
-	 */
-	public function setZasobWTrakcieZmiany(bool $zasobWTrakcieZmiany)
-	{
-		$this->zasobWTrakcieZmiany = $zasobWTrakcieZmiany;
+    /**
+     * Set zasobWTrakcieZmiany
+     *
+     * @param bool $zasobWTrakcieZmiany
+     *
+     * @return self
+     */
+    public function setZasobWTrakcieZmiany(bool $zasobWTrakcieZmiany)
+    {
+        $this->zasobWTrakcieZmiany = $zasobWTrakcieZmiany;
 
-		return $this;
-	}
+        return $this;
+    }
 }
