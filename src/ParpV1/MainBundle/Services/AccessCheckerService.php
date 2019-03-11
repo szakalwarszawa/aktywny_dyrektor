@@ -152,6 +152,7 @@ class AccessCheckerService
             $userRoles = $this->currentUser->getRoles();
             $allowedRoles = [
                 'PARP_ADMIN_REJESTRU_ZASOBOW',
+                'PARP_ADMIN',
                 'PARP_IBI'
             ];
 
