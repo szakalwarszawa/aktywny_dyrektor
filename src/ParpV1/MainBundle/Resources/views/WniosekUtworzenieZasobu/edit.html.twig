@@ -59,10 +59,12 @@
                         <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdminRejestru'}) }}');"  class="btn btn-success">Odbij do administratora rejestru zasobów<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
                     {% endif %}
                     {% if entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" %}
-                        <a data-toggle="collapse" data-target="#selectDate" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
-
+                        {% if entity.typ == 'kasowanie' %}
+                            <a data-toggle="collapse" data-target="#selectDate" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            {% else %}
+                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        {% endif %}
                     {% else %}
-
                         {% if not (
                             entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" or
                             entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB") %}
@@ -104,7 +106,7 @@
                     </div>
                 </form>
             </div>
-            {% if entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" %}
+            {% if entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" and entity.typ == "kasowanie" %}
                 <div class="collapse" id="selectDate">
                     <form action="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" method="POST" id="subFormAccept">
                     <br />
