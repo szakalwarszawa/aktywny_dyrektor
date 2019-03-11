@@ -21,6 +21,8 @@ use ReflectionClass;
 use InvalidArgumentException;
 use ParpV1\MainBundle\Entity\Section;
 use Doctrine\ORM\EntityNotFoundException;
+use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Klasa OdbieranieUprawnienService
@@ -364,14 +366,15 @@ class OdbieranieUprawnienService
     }
 
     /**
-     * Okresla zmianę na koncie i zeruje uprawnienia.
+     * Okresla zmianę na koncie i tworzy obiekt OdebranieZasobowEntry
+     * używany później (przy wypychaniu zmian do AD) do wyzerowania zasobów użytkownika.
      *
      * @param array $oldData
      * @param Form $form
      *
-     * @return array
+     * @return null|OdebranieZasobowEntry
      */
-    public function obsluzFormularzUprawnienPoczatkowych(array $oldData, Form $form): array
+    public function utworzOdebranieZasobowEntry(array $oldData, Form $form)
     {
         $formData = $form->getData();
         $wyzwalacz = $this->okreslZmianeUzytkownika($oldData, $formData);
@@ -383,16 +386,22 @@ class OdbieranieUprawnienService
 
         if ($wyzwalacz && !in_array($wyzwalacz, $nieCzyszczoneWyzwalacze)) {
             $powodOdebrania = $this->getPowodOdebraniaWyzwalacz($wyzwalacz);
-            $uprawnieniaService = $this->uprawnieniaService;
-            $przeprocesowaneZasoby = $uprawnieniaService
-                ->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true)
+
+            $odebranieZasobowEntry = new OdebranieZasobowEntry();
+            $odebranieZasobowEntry
+                ->setUzytkownik($accountName)
+                ->setPowodOdebrania($powodOdebrania)
             ;
 
+            $this
+                ->entityManager
+                ->persist($odebranieZasobowEntry)
+            ;
 
-            return $przeprocesowaneZasoby;
+            return $odebranieZasobowEntry;
         }
 
-        return [];
+        return null;
     }
 
     /**

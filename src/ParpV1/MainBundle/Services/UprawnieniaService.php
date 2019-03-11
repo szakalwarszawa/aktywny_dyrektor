@@ -29,6 +29,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Class UprawnieniaService
@@ -658,6 +659,21 @@ class UprawnieniaService
             }
         }
         return $i;
+    }
+
+    /**
+     * Wywołuje metodę odbierzZasobyUzytkownikaOdDaty z parametrami obiektu OdebranieZasobowEntry.
+     *
+     * @param OdebranieZasobowEntry $odebranieZasobowEntry
+     *
+     * @return bool|array
+     */
+    public function odbierzZasobyUzytkownikaZEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
+    {
+        $accountName = $odebranieZasobowEntry->getUzytkownik();
+        $powodOdebrania = $odebranieZasobowEntry->getPowodOdebrania();
+
+        return $this->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true);
     }
 
     /**

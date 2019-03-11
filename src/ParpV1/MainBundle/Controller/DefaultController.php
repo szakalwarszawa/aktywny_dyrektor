@@ -626,23 +626,15 @@ class DefaultController extends Controller
                         $entry->setFromWhen(new \DateTime('today'));
                     }
 
+                    $odebranieZasobowEntry = ($this->get('odbieranie_uprawnien_service'))
+                        ->utworzOdebranieZasobowEntry($oldData, $form, $entry)
+                    ;
+
+                    $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
+
                     $entityManager->persist($entry);
 
                     $this->addFlash('warning', 'Zmiany do AD zostały wprowadzone');
-                }
-
-                $formData = $form->getData();
-                if ($formData['ustawUprawnieniaPoczatkowe']) {
-                    $responseData = ($this->get('odbieranie_uprawnien_service'))
-                        ->obsluzFormularzUprawnienPoczatkowych($oldData, $form)
-                    ;
-
-                    $przeprocesowaneWnioski = [];
-                    foreach ($responseData as $dane) {
-                        $przeprocesowaneWnioski[] = $dane['wniosek_nadanie_odebranie'];
-                    }
-
-                    $this->addFlash('danger', 'Przeprocesowane wnioski: ' . implode(', ', $przeprocesowaneWnioski));
                 }
 
                 $entityManager->flush();
