@@ -46,44 +46,29 @@ class EntryRepository extends EntityRepository
     public function getTempEntriesAsUsers($ldap)
     {
         $rets = array();
-        /*
-            samaccountname: "aktywny_dyrektor",
-name: "Dyrektor Aktywny",
-initials: "AD2",
-title: "Dyrektor (p.o.)",
-info: "fdsfd",
-department: "Biuro Informatyki",
-description: "BI",
-division: "fdsfd",
-lastlogon: "1601-01-01 01:00:00",
-manager: "CN=Lipiński Marcin,OU=BA,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST",
-thumbnailphoto: "",
-useraccountcontrol: "INTERDOMAIN_TRUST_ACCOUNT,NOT_DELEGATED,",
-accountexpires: ""
-            */
         $new = $this->findByIsImplementedAndFromWhen();
         foreach ($new as $e) {
             $ADUser = $ldap->getUserFromAD($e->getSamaccountname());
-            //print_r($ADUser);
+
             if (count($ADUser) == 0) {
                 $ret = array();
-                $ret['id'] = $e->getId(); // aktywny_dyrektor
-                $ret['samaccountname'] = $e->getSamaccountname(); // aktywny_dyrektor
-                $ret['name'] = $e->getCn(); // Dyrektor Aktywny
-                $ret['initials'] = $e->getInitials(); // AD2
-                $ret['title'] = $e->getTitle(); // Dyrektor (p.o.)
-                $ret['info'] = $e->getInfo(); // fdsfd
-                $ret['department'] = $e->getDepartment(); // Biuro Informatyki
-                $ret['description'] = "";//$e->getDescription(); // BI
-                $ret['division'] = $e->getDivision(); // fdsfd
-                $ret['lastlogon'] = "";//$e->getLastlogon(); // 1601-01-01 01:00:00
-                $ret['manager'] = $e->getManager(); // CN=Lipiński Marcin,OU=BA,OU=Zespoly,OU=PARP Pracownicy,DC=AD,DC=TEST
+                $ret['id'] = $e->getId();
+                $ret['samaccountname'] = $e->getSamaccountname();
+                $ret['name'] = $e->getCn();
+                $ret['initials'] = $e->getInitials();
+                $ret['title'] = $e->getTitle();
+                $ret['info'] = $e->getInfo();
+                $ret['department'] = $e->getDepartment();
+                $ret['description'] = "";
+                $ret['division'] = $e->getDivision();
+                $ret['lastlogon'] = "";
+                $ret['manager'] = $e->getManager();
                 $ret['thumbnailphoto'] = "";
-                $ret['useraccountcontrol'] = "";//$e->getUseraccountcontrol(); // INTERDOMAIN_TRUST_ACCOUNT,NOT_DELEGATED,
+                $ret['useraccountcontrol'] = "";
 
-                $ret['accountexpires'] = "";//$e->getAccountexpires(); //""
-                $ret['isDisabled'] = $e->getIsDisabled(); // fdsfd
-                $ret['disableDescription'] = $e->getDisableDescription(); // fdsfd
+                $ret['accountexpires'] = "";
+                $ret['isDisabled'] = $e->getIsDisabled();
+                $ret['disableDescription'] = $e->getDisableDescription();
                 $ret['accountExpires'] = "";
                 $ret['email'] = "";
                 $ret['cn'] = "";
@@ -132,5 +117,52 @@ accountexpires: ""
         $results = $query->getResult();
 
         return $results;
+    }
+
+    /**
+     * Zwraca datę ostatniej zmiany D/B
+     *
+     * @param  string $samaccountname
+     *
+     * @return Datetime|null
+     */
+    public function findZmianaDepartamentuUzytkownika($samaccountname)
+    {
+/*      Zapytaie testowe:
+        SELECT
+            e.samaccountname,
+            e.fromWhen,
+            e.department,
+            e.distinguishedname,
+            d.shortname
+        FROM
+            entry e
+            left join departament d on d.name = e.department
+        where
+            e.department is not null
+            and e.samaccountname = 'hubert_gorecki'
+            and e.distinguishedname not like CONCAT('%OU=', d.shortname, '%')
+        order by
+            e.fromWhen desc
+        limit
+            1
+*/
+        $queryBuilder = $this->createQueryBuilder('z');
+        $queryBuilder
+            ->select('z.fromWhen as data_zmiany')
+            ->leftJoin('ParpMainBundle:Departament', 'd')
+            ->where('z.department is not null')
+            ->andWhere('z.samaccountname = :samaccountname')
+            ->andWhere('d.name = z.department')
+            ->andWhere('d.nowaStruktura = 1')
+            ->andWhere("z.distinguishedName not like CONCAT('%OU=',d.shortname,',%')")
+            ->setParameters(array('samaccountname' => $samaccountname))
+            ->orderBy('z.fromWhen', 'DESC')
+            ->setMaxResults(1);
+
+        $query = $queryBuilder->getQuery();
+        $dataZmiany = $query->getResult();
+
+        return $dataZmiany;
     }
 }
