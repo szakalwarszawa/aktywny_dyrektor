@@ -278,7 +278,7 @@ class CzyszczenieStarychWnioskowCommand extends Command
                     ->zablokujKoncowoWniosek(
                         $wniosekNadanieOdebranieZasobow,
                         WniosekStatus::ANULOWANO_ADMINISTRACYJNIE,
-                        'Wniosek przedawniony.'
+                        self::DEFAULT_REASON
                     );
             }
 
