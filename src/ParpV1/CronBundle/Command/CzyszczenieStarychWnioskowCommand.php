@@ -318,7 +318,14 @@ class CzyszczenieStarychWnioskowCommand extends Command
         return null;
     }
 
-    private function exportApplicationsToFile(array $applicationsData)
+    /**
+     * Eksportuje dane z tablicy do pliku.
+     *
+     * @param array $applicationsData
+     *
+     * @return string
+     */
+    private function exportApplicationsToFile(array $applicationsData): string
     {
         $exportPath = $this->exportPath;
         $fileName = (new DateTime())->format('Y-m-d_h-i-s') . '_anulowanie_wnioskow.json';
@@ -331,6 +338,8 @@ class CzyszczenieStarychWnioskowCommand extends Command
         $this
             ->symfonyStyle
             ->section('Przeprocesowane wnioski zostały zapisane w pliku <info>' . $filePathName . '</info>');
+
+        return $fileName;
     }
 
     /**
