@@ -9,7 +9,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use DateTime;
 use Symfony\Component\Console\Style\SymfonyStyle;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
-use Doctrine\ORM\Query\ResultSetMapping;
 use Symfony\Component\Console\Input\InputOption;
 use ParpV1\CronBundle\Exception\UnknownFileTypeException;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -405,50 +404,5 @@ class CzyszczenieStarychWnioskowCommand extends Command
                 ->setMessage($optionalMessage)
             ;
         }
-    }
-
-    /**
-     * Znajduje trwające wnioski przed podaną datą.
-     *
-     * @todo metoda przyszłościowa (prawdopodobnie)
-     *
-     * @param DateTime $date
-     *
-     * @return array
-     */
-    private function znajdzOtwarteWnioskiPrzedData(DateTime $date)
-    {
-        $rsm = new ResultSetMapping();
-        $rsm->addEntityResult(WniosekNadanieOdebranieZasobow::class, 'wnoz');
-        $rsm->addFieldResult('wnoz', 'wnoz_id', 'id');
-
-        $rsm->addJoinedEntityResult('ParpMainBundle:Wniosek','w','wnoz', 'wniosekNadanieOdebranieZasobow');
-        $query = $this
-            ->entityManager
-            ->createNativeQuery(
-                'SELECT
-                wnoz.id as wnoz_id
-            FROM wniosek w
-            INNER JOIN wniosek_historia_statusow whs
-                ON whs.id = (
-                    SELECT id
-                    FROM wniosek_historia_statusow whs1
-                    WHERE whs1.wniosek_id = w.id
-                    ORDER BY whs1.createdAt DESC
-                    LIMIT 1
-                )
-            LEFT JOIN wniosek_nadanie_odebranie_zasobow wnoz
-                ON w.WniosekNadanieOdebranieZasobow_id = wnoz.id
-            LEFT JOIN wniosek_status ws
-                on whs.status_id = ws.id
-            WHERE ws.finished = 0
-                AND whs.createdAt < ?
-                AND w.WniosekNadanieOdebranieZasobow_id is not null
-                AND wnoz.deletedAt is null
-            ', $rsm)
-            ->setParameter(1, $date->format('Y-m-d'));
-
-
-        return $query->getArrayResult();
     }
 }
