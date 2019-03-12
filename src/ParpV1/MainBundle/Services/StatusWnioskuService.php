@@ -62,35 +62,6 @@ class StatusWnioskuService
      */
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null, $komentarz = null)
     {
-        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
-        if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
-            if ($wniosek->getOdebranie()) {
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN
-                    );
-            } else {
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
-                    );
-            }
-        } elseif ($rejected) {
-            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
-                //odrzucenie
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
-                    );
-            } else {
-                //zwroct do poprzednika
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
-            }
-        }
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
 
         $entityManager = $this->entityManager;
@@ -191,6 +162,39 @@ class StatusWnioskuService
         $opis = null !== $komentarz? $komentarz : $status->getNazwa();
         $sh->setOpis($opis);
         $entityManager->persist($sh);
+
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
+        if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
+            if ($wniosek->getOdebranie()) {
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN
+                    );
+            } else {
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
+                    );
+            }
+        } elseif ($rejected) {
+            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
+                //odrzucenie
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
+                    );
+            } else {
+                //zwroct do poprzednika
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
+            }
+        } elseif ($statusName == '02_EDYCJA_PRZELOZONY') {
+            $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
+        }
     }
 
     /**

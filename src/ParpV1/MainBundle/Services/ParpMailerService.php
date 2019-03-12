@@ -61,6 +61,7 @@ class ParpMailerService
     const TEMPLATE_WNIOSEKZASOBZREALIZOWANIE = 'wniosekZasobZrealizowanie.html.twig';
     const TEMPLATE_WNIOSEKZASOBZWROCENIE = 'wniosekZasobZwrocenie.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIEBI = 'pracownikWylaczenieKontaAd.html.twig';
+    const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -353,6 +354,10 @@ class ParpMailerService
             foreach ($wniosek->getWniosek()->getEditors() as $e) {
                 $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
+        } elseif (in_array($template, [ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK])) {
+            foreach ($wniosek->getWniosek()->getEditors() as $editor) {
+                $odbiorcy[] = $this->getUserMail($editor->getSamaccountname());
+            }
         }
         $odbiorcy = array_unique($odbiorcy);
 
@@ -601,6 +606,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI               => '[BI] Nowy pracownik: ',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE       => '[BI] Nowe konto Exchange: ',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => 'Wyłączenie konta w Exchange: ',
+            ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
