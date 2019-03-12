@@ -287,8 +287,11 @@ class CzyszczenieStarychWnioskowCommand extends Command
                 'wniosek_id' => $wniosekNadanieOdebranieZasobowId,
                 'status' => $status? 'success' : 'fail'
             ];
-            $cancelledApplications[] = $tempArray;
-            $this->addProgress('Procesowany wniosek ID: ' . $wniosekNadanieOdebranieZasobowId);
+
+            if (null !== $wniosekNadanieOdebranieZasobowId) {
+                $cancelledApplications[] = $tempArray;
+                $this->addProgress('Procesowany wniosek ID: ' . $wniosekNadanieOdebranieZasobowId);
+            }
         }
 
         $this
