@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Entry
@@ -15,7 +16,6 @@ use Symfony\Component\Validator\Constraints as Assert;
  */
 class Entry
 {
-
     /**
      */
     public function preUpdate()
@@ -264,7 +264,15 @@ class Entry
      */
     private $activateDeactivated = false;
 
-
+    /**
+     * Powiązane z wypchnięciem zmian do AD - reset zasobów użytkownika.
+     *
+     * @var OdebranieZasobowEntry
+     *
+     * @ORM\OneToOne(targetEntity="OdebranieZasobowEntry")
+     * @ORM\JoinColumn(name="odebranie_zasobow_entry_id", referencedColumnName="id", nullable=true)
+     */
+    protected $odebranieZasobowEntry = null;
 
     /**
      * @var string
@@ -929,5 +937,29 @@ class Entry
     public function getMemberOf()
     {
         return $this->memberOf;
+    }
+
+    /**
+     * Get odebranieZasobowEntry
+     *
+     * @return OdebranieZasobowEntry
+     */
+    public function getOdebranieZasobowEntry()
+    {
+        return $this->odebranieZasobowEntry;
+    }
+
+    /**
+     * Set odebranieZasobowEntry
+     *
+     * @param OdebranieZasobowEntry $odebranieZasobowEntry
+     *
+     * @return self
+     */
+    public function setOdebranieZasobowEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
+    {
+        $this->odebranieZasobowEntry = $odebranieZasobowEntry;
+
+        return $this;
     }
 }
