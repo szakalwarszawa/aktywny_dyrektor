@@ -58,3 +58,6 @@ parameters:
 
     # Czy grid na liście wniosków o nadanie/odebranie wyświetlać ajaxem #
     ajax_grid_wnioskinadanieodebranie: false
+
+    # Katalog używany przez komendy CLI do zapisu plików #
+    katalog_eksportow_cli: setup/export_cli/
