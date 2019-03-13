@@ -166,7 +166,7 @@ class CzyszczenieStarychWnioskowCommand extends Command
 
         $this->setFileType($sourceFile);
         $arrayFileContent = $this->contentToArray($sourceFile);
-        $this->initializeProgressBar($output, $arrayFileContent);
+        $this->initializeProgressBar($output, count($arrayFileContent));
 
         return $this->cancelApplications($arrayFileContent);
     }
@@ -175,15 +175,15 @@ class CzyszczenieStarychWnioskowCommand extends Command
      * Uruchamia pasek postępu.
      *
      * @param OutputInterface
-     * @param array $arrayFileContent
+     * @param int $maxBarValue
      *
      * @return void
      */
-    private function initializeProgressBar(OutputInterface $output, array $arrayFileContent): void
+    private function initializeProgressBar(OutputInterface $output, int $maxBarValue): void
     {
         ProgressBar::setFormatDefinition('customBar', ' %current%/%max% [%bar%] %percent%% -- %message%');
         $this
-            ->progressBar = new ProgressBar($output, count($arrayFileContent))
+            ->progressBar = new ProgressBar($output, $maxBarValue)
         ;
         $this
             ->progressBar
