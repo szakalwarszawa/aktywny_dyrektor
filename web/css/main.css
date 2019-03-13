@@ -73,8 +73,8 @@ body ul.tagit li {
 	width: 100%;
 }
 
-body .JColResizer > tbody > tr > td,
-body .JColResizer > tbody > tr > th {
+body .JColResizer>tbody>tr>td,
+body .JColResizer>tbody>tr>th {
 	padding: 5px !important;
 }
 
@@ -94,11 +94,11 @@ body .JColResizer > tbody > tr > th {
 	padding-top: 20px;
 }
 
-.red-tooltip + .tooltip > .tooltip-inner {
+.red-tooltip+.tooltip>.tooltip-inner {
 	background-color: #b61928;
 }
 
-.red-tooltip + .tooltip > .tooltip-arrow {
+.red-tooltip+.tooltip>.tooltip-arrow {
 	border-bottom-color: #b61928;
 }
 
@@ -141,13 +141,13 @@ td .btn {
 	display: none;
 }
 
-.tab-content > form > .tab-pane,
-.pill-content > form > .pill-pane {
+.tab-content>form>.tab-pane,
+.pill-content>form>.pill-pane {
 	display: none;
 }
 
-.tab-content > form > .active,
-.pill-content > form > .active {
+.tab-content>form>.active,
+.pill-content>form>.active {
 	display: block;
 }
 
@@ -339,13 +339,13 @@ td .btn {
 	cursor: default;
 }
 
-.in-train > i {
+.in-train>i {
 	margin: 0 0.4rem;
 }
 
 /* ----------------/wnioseknadanieodebraniezasobow/index-------------- */
 
-#submitexport > i {
+#submitexport>i {
 	margin-right: 0.6rem;
 }
 
@@ -354,7 +354,7 @@ td .btn {
 	margin-bottom: 0.3rem;
 }
 
-.grid-filter-operator > select {
+.grid-filter-operator>select {
 	width: 100%;
 	border-width: 1px;
 	padding: 3px 1px;
@@ -379,11 +379,11 @@ td.grid-column-akcje.last-column {
 	padding: 0;
 }
 
-td.grid-column-akcje.last-column > div.btn-group-vertical {
+td.grid-column-akcje.last-column>div.btn-group-vertical {
 	display: block;
 }
 
-td.grid-column-akcje.last-column > div.btn-group-vertical > a.btn.btn-xs {
+td.grid-column-akcje.last-column>div.btn-group-vertical>a.btn.btn-xs {
 	float: left;
 }
 
@@ -401,4 +401,13 @@ footer.helpdesk {
 .helpdesk small {
 	float: right;
 	margin: 0 2rem;
+}
+
+/* ---------------przyciski-------------------------- */
+#general>div>.record_properties+a {
+	border: 4px solid blue;
+}
+
+#zasoby>br+a {
+	border: 4px solid blue;
 }
