@@ -128,3 +128,8 @@ services:
     user_service:
         class: ParpV1\MainBundle\Services\UserService
         arguments: ['@security.token_storage']
+    czyszczenie_starych_wnioskow_command:
+        class: ParpV1\CronBundle\Command\CzyszczenieStarychWnioskowCommand
+        arguments: ['@uprawnienia_service', '@doctrine.orm.entity_manager', '%katalog_eksportow_cli%']
+        tags:
+            - { name: 'console.command' }

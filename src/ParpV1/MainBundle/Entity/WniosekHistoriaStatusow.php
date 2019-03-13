@@ -25,7 +25,7 @@ class WniosekHistoriaStatusow
      * @GRID\Column(field="id", title="Numer")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -49,7 +49,7 @@ class WniosekHistoriaStatusow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdBy;
-    
+
     /**
      * @var \DateTime
      *
@@ -57,7 +57,7 @@ class WniosekHistoriaStatusow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $createdAt;
-  
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Wniosek", inversedBy="statusy")
@@ -66,7 +66,7 @@ class WniosekHistoriaStatusow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosek;
-    
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="WniosekStatus")
@@ -75,8 +75,8 @@ class WniosekHistoriaStatusow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $status;
-    
-    
+
+
     /**
      * @var string
      *
@@ -84,7 +84,7 @@ class WniosekHistoriaStatusow
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $statusname;
-    
+
     /**
      * @var string
      *
@@ -93,7 +93,7 @@ class WniosekHistoriaStatusow
      */
     private $opis;
 
-    
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Zastepstwo", inversedBy="wniosekHistoriaStatusu")
@@ -169,6 +169,9 @@ class WniosekHistoriaStatusow
      */
     public function setCreatedBy($createdBy)
     {
+        if (null === $createdBy && 'cli' === PHP_SAPI) {
+            $createdBy = 'Console';
+        }
         $this->createdBy = $createdBy;
 
         return $this;

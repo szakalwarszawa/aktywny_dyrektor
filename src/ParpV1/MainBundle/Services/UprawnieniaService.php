@@ -60,6 +60,11 @@ class UprawnieniaService
     private $currentUser;
 
     /**
+     * @var bool
+     */
+    private $doFlush = true;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
@@ -75,8 +80,10 @@ class UprawnieniaService
         $this->setContainer($container);
         $this->statusWnioskuService = $statusWnioskuService;
         $this->zasobyCache = $zasobyCache;
-        $this->currentUser = $tokenStorage->getToken()->getUser();
 
+        if (null !== $tokenStorage->getToken()) {
+            $this->currentUser = $tokenStorage->getToken()->getUser();
+        }
         if (PHP_SAPI == 'cli') {
             $this->container->set('request', new Request(), 'request');
         }
@@ -960,12 +967,18 @@ class UprawnieniaService
         }
 
         if (in_array($status, $statusyKoncowe) && false === $wniosek->getWniosek()->getIsBlocked()) {
+            if ($wniosek->getWniosek()->getStatus()->getFinished() &&
+                WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status) {
+                return false;
+            }
             $statusWnioskuService = $this->statusWnioskuService;
             $statusWnioskuService->setWniosekStatus($wniosek, $status, false, null, $komentarz);
             $wniosek->getWniosek()->zablokujKoncowoWniosek();
-            $this
-                ->doctrine
-                ->flush();
+            if ($this->doFlush) {
+                $this
+                    ->doctrine
+                    ->flush();
+            }
 
             return true;
         }
@@ -1100,5 +1113,18 @@ class UprawnieniaService
             'wniosek_do_anulowania_administracyjnego'   => $wniosekDoAnulowaniaAdministracyjnego,
             'brak_statusow_we_wniosku'                  => $brakStatusowWeWniosku
         ];
+    }
+
+    /**
+     * Zmienia właściwość `doFlush`.
+     * Dla zachowania wstecznej kombatybilności domyślna wartość to true.
+     *
+     * @param bool $doFlush
+     *
+     * @return void
+     */
+    public function switchFlush(bool $doFlush = true): void
+    {
+        $this->doFlush = $doFlush;
     }
 }

@@ -64,8 +64,8 @@ class PersistListener
                     ->findOneById($wniosek->getId());
             }
             if ($wniosek !== null && !$wniosek instanceof Wniosek) {
-                if ($wniosek->getWniosek()->getIsBlocked()) {
-                    throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+                if ($wniosek->getWniosek()->getIsBlocked() && 'cli' !== PHP_SAPI) {
+                    throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany. ID: ' . $wniosek->getWniosek()->getId());
                 }
             }
         }
