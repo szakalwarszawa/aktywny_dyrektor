@@ -405,9 +405,9 @@ footer.helpdesk {
 
 /* ---------------przyciski-------------------------- */
 #general>div>.record_properties+a {
-	border: 4px solid blue;
+	display: none;
 }
 
 #zasoby>br+a {
-	border: 4px solid blue;
+	display: none;
 }
