@@ -403,11 +403,13 @@ footer.helpdesk {
 	margin: 0 2rem;
 }
 
-/* ---------------przyciski-------------------------- */
+/* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
+/* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
 #general>div>.record_properties+a {
 	display: none;
 }
 
+/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
 #zasoby>br+a {
 	display: none;
 }
