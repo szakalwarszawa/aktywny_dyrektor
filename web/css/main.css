@@ -49,12 +49,10 @@ form.dirty {
 	border-radius: 9px;
 	padding: 1rem;
 	background: #dff0d8;
-	margin: 2rem 0 1rem;
+	margin: 2rem -1.3rem 1rem;
 	position: relative;
 	top: -1.3rem;
 	bottom: -1.3rem;
-	left: -1.3rem;
-	right: -1.3rem;
 }
 
 .hidden {
