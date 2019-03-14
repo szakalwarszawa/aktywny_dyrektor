@@ -26,7 +26,7 @@ class Section
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -61,9 +61,9 @@ class Section
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
-    
-    
-    
+
+
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Departament", inversedBy="section")
@@ -73,8 +73,8 @@ class Section
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $departament;
-    
-    
+
+
     /**
      * @var string
      *
@@ -241,5 +241,15 @@ class Section
     public function getDepartament()
     {
         return $this->departament;
+    }
+
+    /**
+     * Obiekt jako string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
     }
 }

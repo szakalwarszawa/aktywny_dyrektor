@@ -709,7 +709,7 @@ class UprawnieniaService
 
         $userZasoby = $entityManager
             ->getRepository(UserZasoby::class)
-            ->findAktywneZasobyDlaUzytkownika($nazwaUzytkownika);
+            ->findZasobyUzytkownika($nazwaUzytkownika);
 
         if (empty($userZasoby)) {
             // Brak zasobów do odebrania

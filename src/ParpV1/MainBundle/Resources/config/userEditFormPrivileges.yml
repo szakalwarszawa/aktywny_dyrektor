@@ -1,0 +1,5 @@
+parameters:
+  user_edit_form_config:
+    privileges:
+      show:
+        - ['PARP_ADMIN', 'PARP_ADMIN_ZASOBOW']

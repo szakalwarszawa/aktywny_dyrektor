@@ -128,3 +128,6 @@ services:
     user_service:
         class: ParpV1\MainBundle\Services\UserService
         arguments: ['@security.token_storage']
+    edycja_uzytkownika_service:
+        class: ParpV1\MainBundle\Services\EdycjaUzytkownikaService
+        arguments: ['@ldap_service', '@doctrine.orm.entity_manager']

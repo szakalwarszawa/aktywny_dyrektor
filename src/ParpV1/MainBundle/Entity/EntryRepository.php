@@ -165,4 +165,43 @@ class EntryRepository extends EntityRepository
 
         return $dataZmiany;
     }
+
+    /**
+     * Wyszukuje dokonane i oczekujące zmiany użytkownika.
+     *
+     * @param string $username
+     * @param bool $groupByImplemented
+     *
+     * @return array
+     */
+    public function findUserChanges(string $username, bool $groupByImplemented = true): array
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder
+            ->select('e')
+            ->where('e.samaccountname = :username')
+            ->setParameter('username', $username)
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $groupedResult = [];
+        if ($groupByImplemented) {
+            foreach ($result as $row) {
+                if ($row->getIsImplemented()) {
+                    $groupedResult['aktywne'][] = $row;
+                    continue;
+                }
+                $groupedResult['nieaktywne'][] = $row;
+            }
+
+            return $groupedResult;
+        }
+
+        return $result;
+    }
 }

@@ -1,0 +1,42 @@
+<div class="tabContent">
+    {% if user_changes.nieaktywne is defined %}
+        <table class="table table-hover table-responsive" id="oczekujaceTable">
+            <thead>
+                <tr>
+                    <th>Lp.</th>
+                    <th>Imię i nazwisko</th>
+                    <th>Inicjały</th>
+                    <th>Departament</th>
+                    <th>Sekcja</th>
+                    <th>Manager</th>
+                    <th>Stanowisko</th>
+                    <th>Info</th>
+                    <th>Uprawnienia początkowe</th>
+                    <th>Ad zmiana</th>
+                    <th>Od kiedy</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in user_changes.nieaktywne %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ row.cn }}</td>
+                        <td>{{ row.initials }}</td>
+                        <td>{{ row.department }}</td>
+                        <td>{{ row.division }}</td>
+                        <td>{{ row.manager }}</td>
+                        <td>{{ row.title }}</td>
+                        <td>{{ row.info }}</td>
+                        <td>{{ row.initialrights }}</td>
+                        <td>{{ row.distinguishedName }}</td>
+                        <td>{{ row.fromWhen|date('Y-m-d H:i:s') }}</td>
+                        <td><a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a></td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    {% else %}
+        <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
+    {% endif %}
+
+</div>

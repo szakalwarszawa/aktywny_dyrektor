@@ -45,6 +45,8 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
+use ParpV1\MainBundle\Services\EdycjaUzytkownikaService;
+use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
 
 /**
  * Class DefaultController
@@ -429,92 +431,43 @@ class DefaultController extends Controller
      */
     public function editAction($samaccountname, Request $request)
     {
-        $currentUser = $this->getUser();
         $entityManager = $this->getDoctrine()->getManager();
 
-        if (null === $currentUser) {
-            throw new UnsupportedUserException();
-        }
+        $form = $this->createForm(EdycjaUzytkownikaFormType::class, null, [
+            'entity_manager' => $entityManager,
+            'username' => $samaccountname,
+            'typ_formularza' => EdycjaUzytkownikaFormType::TYP_EDYCJA
+        ]);
 
-        $admin = in_array('PARP_ADMIN', $currentUser->getRoles(), true);
-        $kadry1 = in_array('PARP_BZK_1', $currentUser->getRoles(), true);
-        $kadry2 = in_array('PARP_BZK_2', $currentUser->getRoles(), true);
 
-        // Sięgamy do AD:
-        $ldap = $this->get('ldap_service');
-        $ldap->setDodatkoweOpcje('ekranEdycji');
+        $form->handleRequest($request);
 
-        $ADUser = $ldap->getUserFromAD($samaccountname, null, null, 'wszyscyWszyscy');
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                $this
+                    ->addFlash('warning', 'Formularz zawiera błędy!')
+                ;
+            }
 
-        if (false !== strpos($ADUser[0]['manager'], 'CN=')) {
-            // wyciagnij imie i nazwisko managera z nazwy domenowej
-            $ADUser[0]['manager'] =
-                mb_substr(
-                    $ADUser[0]['manager'],
-                    mb_strpos($ADUser[0]['manager'], '=') + 1,
-                    (mb_strpos($ADUser[0]['manager'], ',OU')) - (mb_strpos($ADUser[0]['manager'], '=') + 1)
-                );
-        }
+            if ($form->isValid()) {
+                $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
+                $edycjaUzytkownikaFormService
+                    ->setForm($form)
+                    ->saveEntry()
+                ;
+                    // ->compareDataCreateEntry();
+                $entityManager->flush();
 
-        $defaultData = $ADUser[0];
-
-        // pobierz uprawnienia poczatkowe
-        $initialrights =
-            $entityManager
-                ->getRepository(UserGrupa::class)
-                ->findBy([
-                    'samaccountname' => $ADUser[0]['samaccountname']
-                ]);
-
-        $defaultData['initialrights'] = null;
-
-        if (!empty($initialrights)) {
-            foreach ($initialrights as $initialright) {
-                $defaultData['initialrights'][] = $initialright->getGrupa();
+                $this
+                    ->addFlash('success', 'Utworzono entry');
             }
         }
 
-        $previousData = $defaultData;
 
-        $zasoby =
-            $entityManager
-                ->getRepository(UserZasoby::class)
-                ->findUserZasobyByAccountname($samaccountname);
-
-        for ($i = 0; $i < count($zasoby); $i++) {
-            $uz = $this->getDoctrine()->getRepository(UserZasoby::class)->find($zasoby[$i]['id']);
-
-            $zasoby[$i]['opisHtml'] = $uz->getOpisHtml();
-            $zasoby[$i]['modul'] = $uz->getModul();
-            $zasoby[$i]['loginDoZasobu'] = $uz->getLoginDoZasobu();
-            $zasoby[$i]['poziomDostepu'] = $uz->getPoziomDostepu();
-            $zasoby[$i]['aktywneOd'] = $uz->getAktywneOd() ? $uz->getAktywneOd()->format('Y-m-d') : '';
-            $zasoby[$i]['aktywneDo'] = $uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '';
-            $zasoby[$i]['kanalDostepu'] = $uz->getKanalDostepu();
-            $zasoby[$i]['powodOdebrania'] = $uz->getPowodOdebrania();
-            $zasoby[$i]['powodNadania'] = $uz->getPowodNadania();
-            $zasoby[$i]['czyAktywne'] = $uz->getCzyAktywne();
-            $zasoby[$i]['wniosekId'] = $uz->getWniosek() ? $uz->getWniosek()->getId() : 0;
-            $zasoby[$i]['wniosekNumer'] = $uz->getWniosek() ? $uz->getWniosek()->getWniosek()->getNumer() : 0;
-            $zasoby[$i]['czyOdebrane'] = $uz->getCzyOdebrane();
-            $zasoby[$i]['data_odebrania'] = $uz->getDataOdebrania();
-        }
-
-        $names = explode(' ', $ADUser[0]['name']);
-        //var_dump($names); die();
-        $daneRekord =
-            $entityManager
-                ->getRepository(DaneRekord::class)
-                ->findOneBy(array('imie' => $names[1], 'nazwisko' => $names[0]));
-
-
-        $form = $this->createUserEditForm($this, $defaultData, false, false, $daneRekord);
-        $form->handleRequest($request);
-
-        $ustawUprawnieniaPoczatkowe = $request->isMethod('POST') && true === $form->get('ustawUprawnieniaPoczatkowe')->getData();
-
-        if ($form->isValid() || $ustawUprawnieniaPoczatkowe) {
+        if ($form->isSubmitted() && $form->isValid() && false) {
             $newData = $form->getData();
+
+            //die('KONTROLER');
 
             if ($kadry1 || $kadry2) {
                 return $this->parseUserKadry($samaccountname, $newData, $previousData, $ustawUprawnieniaPoczatkowe);
@@ -522,18 +475,7 @@ class DefaultController extends Controller
                 die('Nie masz uprawnien by edytowac uzytkownikow!!!');
             }
 
-//            $sekcja = $form->get('info')->getData();
-//            $oldSection = $form->get('info')->getData();
-//            //echo ".".$oldSection.".";
-//            if ('' !== $newSection) {
-//                $section = new Section();
-//                $section->setName($newSection);
-//                $section->setShortName($newSection);
-//                $this->getDoctrine()->getManager()->persist($section);
-//                $newData['info'] = $newSection;
-//                unset($newData['infoNew']);
-//            }
-            //die($newSection);
+
             $newrights = $newData['initialrights'];
             $oldData = $previousData;
 
@@ -641,179 +583,34 @@ class DefaultController extends Controller
 
                 return $this->redirectToRoute('main');
             }
-        } elseif ($request->isMethod('POST')) {
-            var_export($this->getErrorMessages($form));
-            //var_dump((string) $form->getErrors(true, true));
-            var_export((string) $form->getErrors(true));
-            die('invalid form '.$form->getErrorsAsString());
-        }
-        $uprawnienia =
-            $entityManager
-                ->getRepository(UserUprawnienia::class)
-                ->findBy(array('samaccountname' => $samaccountname));//, 'czyAktywne' => true));
-        $historyEntries =
-            $entityManager
-                ->getRepository(Entry::class)
-                ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 1));
-        $pendingEntries =
-            $entityManager
-                ->getRepository(Entry::class)
-                ->findBy(array('samaccountname' => $samaccountname, 'isImplemented' => 0));
-
-        $up2grupaAd = array();
-        foreach ($uprawnienia as $u) {
-            $up =
-                $entityManager
-                    ->getRepository(Uprawnienia::class)
-                    ->find($u->getUprawnienieId());
-            if ($up->getGrupaAd()) {
-                $up2grupaAd[$up->getId()] = $up->getGrupaAd();
-            }
-        }
-        $grupyAd = $ADUser[0]['memberOf'];
-
-        $userGroupsTemp = $ldap->getAllUserGroupsRecursivlyFromAD($ADUser[0]['samaccountname']);
-        $userGroups = [];
-        foreach ($userGroupsTemp as $ug) {
-            if (is_array($ug)) {
-                $userGroups[] = $ug['dn'];
-            }
         }
 
-        $tmpl =
-            $kadry1 || $kadry2 ? 'ParpMainBundle:Default:editKadry.html.twig' : 'ParpMainBundle:Default:edit.html.twig';
-        //die($tmpl);
+        $userChanges = $entityManager
+            ->getRepository(Entry::class)
+            ->findUserChanges($samaccountname, true)
+        ;
+
+        $rekordData = $entityManager
+            ->getRepository(DaneRekord::class)
+            ->findOneBy([
+                'login' => $samaccountname
+            ])
+        ;
+
+        $userResources =
+            $entityManager
+                ->getRepository(UserZasoby::class)
+                ->findZasobyUzytkownika($samaccountname);
+
         $tplData = array(
-            'userGroups'     => $userGroups,
-            'user'           => $ADUser[0],
+            'username'           => $samaccountname,
             'form'           => $form->createView(),
-            'zasoby'         => $zasoby,
-            'uprawnienia'    => $uprawnienia,
-            'grupyAd'        => $grupyAd,
-            'up2grupaAd'     => $up2grupaAd,
-            'pendingEntries' => $pendingEntries,
-            'historyEntries' => $historyEntries,
-            'dane_rekord'    => $daneRekord,
-            'guid'           => $this->generateGUID(),
+            'zasoby_uzytkownika'    => $userResources,
+            'user_changes'   => $userChanges,
+            'dane_rekord'    => $rekordData
         );
 
-        return $this->render($tmpl, $tplData);
-    }
-
-    /**
-     * @param $that
-     * @param array|Entry $defaultData
-     * @param bool $wymusUproszczonyFormularz
-     * @param bool $nowy
-     * @param null $dane_rekord
-     * @return mixed
-     */
-    public function createUserEditForm(
-        $that,
-        $defaultData,
-        $wymusUproszczonyFormularz = false,
-        $nowy = false,
-        $dane_rekord = null
-    ) {
-        $manager = $that->getDoctrine()->getManager();
-
-        // Pobieramy listę stanowisk
-        $titlesEntity =
-            $manager->getRepository(Position::class)->findBy(array(), array('name' => 'asc'));
-        $titles = array();
-        foreach ($titlesEntity as $tmp) {
-            $titles[$tmp->getName()] = $tmp->getName();
-        }
-
-        // Pobieramy listę Biur i Departamentów
-        $departmentsEntity =
-            $manager
-                ->getRepository(Departament::class)
-                ->findBy(array('nowaStruktura' => 1), array('name' => 'asc'));
-        $departments = array();
-        foreach ($departmentsEntity as $tmp) {
-            $departments[$tmp->getName()] = $tmp->getName();
-        }
-        // Pobieramy listę Sekcji
-        $sectionsEntity =
-            $manager->getRepository(Section::class)->findBy(array(), array('name' => 'asc'));
-
-        $sections = array();
-
-        foreach ($sectionsEntity as $tmp) {
-            $dep = $tmp->getDepartament() ? $tmp->getDepartament()->getShortname() : 'bez departamentu';
-            $sections[$dep][$tmp->getName()] = $tmp->getName();
-        }
-
-        // Pobieramy listę Uprawnien
-        $rightsEntity =
-            $manager
-                ->getRepository(GrupyUprawnien::class)
-                ->findBy(array(), array('opis' => 'asc'));
-        $rights = array();
-        foreach ($rightsEntity as $tmp) {
-            $rights[$tmp->getKod()] = $tmp->getOpis();
-        }
-        $rolesEntity =
-            $manager->getRepository(AclRole::class)->findBy(array(), array('name' => 'asc'));
-        $roles = array();
-        foreach ($rolesEntity as $tmp) {
-            $roles[$tmp->getName()] = $tmp->getOpis();
-        }
-        $now = new \Datetime();
-
-        $ldap = $that->get('ldap_service');
-        $aduser = $ldap->getUserFromAD($that->getUser()->getUsername());
-        $admin = in_array('PARP_ADMIN', $that->getUser()->getRoles(), true);
-        $kadry1 = in_array('PARP_BZK_1', $that->getUser()->getRoles(), true);
-        $kadry2 = in_array('PARP_BZK_2', $that->getUser()->getRoles(), true);
-        $pracownikTymczasowy = !$nowy && $dane_rekord === null;
-        $przelozeni = $ldap->getPrzelozeniJakoName();
-
-        $manago = '';
-        try {
-            if (is_array($defaultData)) {
-                $manago = $defaultData['manager'];
-                $info = isset($defaultData['info']) ?  $defaultData['info'] : '';
-                $initialRights = isset($defaultData['initialrights']) ? $defaultData['initialrights'] : null;
-            } else {
-                $manago = $defaultData->getManager();
-                $info   = $defaultData->getInfo();
-                $initialRights = $defaultData->getInitialrights();
-            }
-        } catch (\Exception $e) {
-        }
-
-        if (!in_array($manago, $przelozeni, true)) {
-            $przelozeni[$manago] = $manago;
-        }
-        asort($przelozeni);
-        //var_dump($przelozeni);
-        if ($wymusUproszczonyFormularz) {
-            $admin = false;
-            $kadry1 = true;
-            $kadry2 = false;
-        }
-
-        $form = $this->createForm(EdycjaUzytkownikaFormType::class, $defaultData, [
-            'opcje' => [
-                'admin' => $admin,
-                'kadry1' => $kadry1,
-                'kadry2' => $kadry2,
-                'pracownik_tymczasowy' => $pracownikTymczasowy,
-                'titles' => $titles,
-                'sections' => $sections,
-                'info' => $info,
-                'departments' => $departments,
-                'przelozeni' => $przelozeni,
-                'rights' => $rights,
-                'nowy' => $nowy,
-                'initial_rights' => $initialRights,
-                'roles' => $roles,
-            ]
-        ]);
-
-        return $form;
+        return $this->render('ParpMainBundle:Default:edit.html.twig', $tplData);
     }
 
     /**
