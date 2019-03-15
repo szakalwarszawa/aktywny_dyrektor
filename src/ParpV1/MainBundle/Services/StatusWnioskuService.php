@@ -22,6 +22,7 @@ use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
 use ParpV1\MainBundle\Services\UprawnieniaService;
+use ParpV1\MainBundle\Constants\TypWnioskuConstants;
 
 /**
  * Klasa StatusWnioskuService.
@@ -53,58 +54,17 @@ class StatusWnioskuService
         $this->session = $session;
         $this->ldapService = $ldapService;
         $this->entityManager = $entityManager;
-        $this->currentUser = $tokenStorage->getToken()->getUser();
+        if (null !== $tokenStorage->getToken()) {
+            $this->currentUser = $tokenStorage->getToken()->getUser();
+        }
     }
 
+    /**
+     * @todo do refaktoryzacji tego sie nie da czytać ani wprowadzać zmian, tfu
+     */
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null, $komentarz = null)
     {
-        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
-        if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
-            if ($wniosek->getOdebranie()) {
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN
-                    );
-            } else {
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
-                    );
-            }
-        } elseif ($rejected) {
-            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
-                //odrzucenie
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
-                    );
-            } else {
-                //zwroct do poprzednika
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
-            }
-        }
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
-        $request = $this->request;
-       /* $this->logg('setWniosekStatus START!', array(
-            'url'        => $request->getRequestUri(),
-            'user'       => $this->getUser()->getUsername(),
-            'wniosek.id' => $wniosek->getId(),
-            'statusName' => $statusName,
-            'rejected'   => $rejected,
-            'oldStatus'  => $oldStatus,
-            'isPost'     => $request->isMethod('POST'),
-            'zastepstwo' => $zastepstwo,
-        ));*/
-
-
-        // if ($this->debug) {
-            // echo '<br>setWniosekStatus '.$statusName.'<br>';
-        // }
-
 
         $entityManager = $this->entityManager;
         $status = $entityManager
@@ -124,16 +84,22 @@ class StatusWnioskuService
             $this->addViewersEditors($wniosek->getWniosek(), $viewers, $v);
         }
 
+        $typWniosku = $wniosek->getWniosek()->getWniosekUtworzenieZasobu() ?
+            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU:
+            TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW;
+
         $czyLsi = false;
         $czyMaGrupyAD = false;
-        foreach ($wniosek->getUserZasoby() as $uz) {
-            $z = $entityManager->getRepository(Zasoby::class)->find($uz->getZasobId());
-            if ($z->getGrupyAd()) {
-                $czyMaGrupyAD = true;
-                $czyLsi = $uz->getZasobId() == 4420;
+
+        if (TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW === $typWniosku) {
+            foreach ($wniosek->getUserZasoby() as $uz) {
+                $z = $entityManager->getRepository(Zasoby::class)->find($uz->getZasobId());
+                if ($z->getGrupyAd()) {
+                    $czyMaGrupyAD = true;
+                    $czyLsi = $uz->getZasobId() == 4420;
+                }
             }
         }
-
         if ($statusName == '07_ROZPATRZONY_POZYTYWNIE' && $oldStatus != null && ($czyMaGrupyAD || $czyLsi)) {
             //jak ma grupy AD do opublikowania to zostawiamy edytorow tych co byli
             $os = $entityManager->getRepository(WniosekStatus::class)->findOneByNazwaSystemowa($oldStatus);
@@ -198,6 +164,39 @@ class StatusWnioskuService
         $opis = null !== $komentarz? $komentarz : $status->getNazwa();
         $sh->setOpis($opis);
         $entityManager->persist($sh);
+
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
+        if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
+            if ($wniosek->getOdebranie()) {
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN
+                    );
+            } else {
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
+                    );
+            }
+        } elseif ($rejected) {
+            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
+                //odrzucenie
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien(
+                        $wniosek,
+                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
+                    );
+            } else {
+                //zwroct do poprzednika
+                $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
+            }
+        } elseif ($statusName == '02_EDYCJA_PRZELOZONY') {
+            $this->mailerService
+                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
+        }
     }
 
     /**
@@ -206,6 +205,9 @@ class StatusWnioskuService
      */
     protected function sprawdzCzyDzialaZastepstwo($wniosek)
     {
+        if ('cli' === PHP_SAPI) {
+            return null;
+        }
         $ret = $this->checkAccess($wniosek);
         //var_dump($wniosek, $ret);
         if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
@@ -232,13 +234,18 @@ class StatusWnioskuService
      */
     protected function addViewersEditors($wniosek, &$where, $who)
     {
-        // if ($this->debug) {
-            // echo '<br>addViewersEditors '.$who.'<br>';
-        // }
-
-        $ldap = $this->ldapService;
         $entityManager = $this->entityManager;
+        $typWniosku = $wniosek->getWniosekUtworzenieZasobu() ?
+            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU:
+            TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW;
         switch ($who) {
+            case 'nadzorcaDomen':
+                $role = $entityManager->getRepository(AclRole::class)->findBy(['name' => 'PARP_NADZORCA_DOMEN']);
+                $users = $entityManager->getRepository(AclUserRole::class)->findByRole($role);
+                foreach ($users as $u) {
+                    $where[$u->getSamaccountname()] = $u->getSamaccountname();
+                }
+                break;
             case 'wnioskodawca':
                 //
                 $where[$wniosek->getCreatedBy()] = $wniosek->getCreatedBy();
@@ -302,10 +309,18 @@ class StatusWnioskuService
                 }
                 break;
             case 'wlasciciel':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    echo '.'.$u->getZasobId().'.';
-                    $zasob = $entityManager->getRepository(Zasoby::class)->find($u->getZasobId());
+                if (TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku) {
+                    $userZasoby = [$wniosek->getWniosekUtworzenieZasobu()->getZmienianyZasob()];
+                } elseif (TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW === $typWniosku) {
+                    $userZasoby = $wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby();
+                }
+
+                foreach ($userZasoby as $u) {
+                    if (TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku) {
+                        $zasob = $u;
+                    } else {
+                        $zasob = $entityManager->getRepository(Zasoby::class)->find($u->getZasobId());
+                    }
                     $grupa1 = explode(',', $zasob->getWlascicielZasobu());
                     $grupa2 = explode(',', $zasob->getPowiernicyWlascicielaZasobu());
                     $grupa = array_merge($grupa1, $grupa2);
@@ -343,7 +358,21 @@ class StatusWnioskuService
                     }
                 }
                 break;
+            case 'administratorZasobow':
             case 'administrator':
+                if (TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku) {
+                    $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZmienianyZasob();
+                    $grupa = explode(',', $zasob->getAdministratorZasobu());
+                    foreach ($grupa as $osoba) {
+                        $mancn = str_replace('CN=', '', substr($osoba, 0, stripos($osoba, ',')));
+                        $osoba = trim($osoba);
+                        $ADManager = $this->getUserFromAD($osoba);
+                        if (count($ADManager) > 0) {
+                            $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
+                        }
+                    }
+                    break;
+                }
                 $wniosekNadanieOdebranie = $wniosek->getWniosekNadanieOdebranieZasobow();
                 if ($wniosekNadanieOdebranie->getOdebranie() && null !== $wniosekNadanieOdebranie->getZasobId()) {
                     $userZasobId = $wniosekNadanieOdebranie ->getZasobId();
@@ -390,9 +419,17 @@ class StatusWnioskuService
                 }
                 break;
             case 'techniczny':
-                //
-                foreach ($wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby() as $u) {
-                    $zasob = $entityManager->getRepository(Zasoby::class)->find($u->getZasobId());
+                if (TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku) {
+                    $userZasoby = [$wniosek->getWniosekUtworzenieZasobu()->getZmienianyZasob()];
+                } else {
+                    $userZasoby = $wniosek->getWniosekNadanieOdebranieZasobow()->getUserZasoby();
+                }
+                foreach ($userZasoby as $u) {
+                    $zasob = $u;
+                    if (!$u instanceof Zasoby) {
+                        $zasob = $entityManager->getRepository(Zasoby::class)->find($u->getZasobId());
+                    }
+
                     $grupa = explode(',', $zasob->getAdministratorTechnicznyZasobu());
                     foreach ($grupa as $g) {
                         //$mancn = str_replace("CN=", "", substr($g, 0, stripos($g, ',')));
@@ -435,7 +472,7 @@ class StatusWnioskuService
      */
     public function checkAccess($entity, $onlyEditors = false, $username = null)
     {
-        if ($username === null) {
+        if ($username === null && 'cli' !== PHP_SAPI) {
             $username = $this->currentUser->getUsername();
         }
 
@@ -484,11 +521,11 @@ class StatusWnioskuService
             $aduser = $ldap->getUserFromAD($samaccountname, null, null, 'nieobecni');
         }
 
-        if (empty($aduser)) {
+       /* if (empty($aduser)) {
             echo "Problem z ".$samaccountname."<br/>";
             echo "<pre>";
             var_dump(debug_backtrace(null, 1));
-        }
+        }*/
         return $aduser;
     }
 

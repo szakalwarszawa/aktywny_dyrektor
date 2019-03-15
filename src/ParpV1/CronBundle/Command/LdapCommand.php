@@ -277,6 +277,24 @@ class LdapCommand extends ContainerAwareCommand
                                 $zmiana->setPublishedBy($this->samaccountname);
                                 $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
+
+                                if ($zmiana->getOdebranieZasobowEntry()) {
+                                    $uprawnieniaService = $this->getContainer()->get('uprawnienia_service');
+                                    $responseData = $uprawnieniaService
+                                        ->odbierzZasobyUzytkownikaZEntry($zmiana->getOdebranieZasobowEntry())
+                                    ;
+
+                                    $przeprocesowaneWnioski = [];
+                                    foreach ($responseData as $dane) {
+                                        $przeprocesowaneWnioski[] = $dane['wniosek_nadanie_odebranie'];
+                                    }
+
+                                    if (!empty($przeprocesowaneWnioski)) {
+                                        $output->writeln('<info>Przeprocesowane wnioski: ' . implode(', ', $przeprocesowaneWnioski) . '</info>');
+                                        $output->writeln('<error>Odebrano użytkownikowi uprawnienia do zasobu posiadającego grupy w AD!</error>', false);
+                                        $output->writeln('<error>Trzeba wypchnąć ponownie zmiany.</error>', false);
+                                    }
+                                }
                                 //if($liczbaZmian == 0) echo ("zero zian ");
                             }
                         } else {
@@ -298,6 +316,24 @@ class LdapCommand extends ContainerAwareCommand
                                 $zmiana->setPublishedBy($this->samaccountname);
                                 $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
+
+                                if ($zmiana->getOdebranieZasobowEntry()) {
+                                    $uprawnieniaService = $this->getContainer()->get('uprawnienia_service');
+                                    $responseData = $uprawnieniaService
+                                        ->odbierzZasobyUzytkownikaZEntry($zmiana->getOdebranieZasobowEntry())
+                                    ;
+
+                                    $przeprocesowaneWnioski = [];
+                                    foreach ($responseData as $dane) {
+                                        $przeprocesowaneWnioski[] = $dane['wniosek_nadanie_odebranie'];
+                                    }
+
+                                    if (!empty($przeprocesowaneWnioski)) {
+                                        $output->writeln('<info>Przeprocesowane wnioski: ' . implode(', ', $przeprocesowaneWnioski) . '</info>');
+                                        $output->writeln('<error>Odebrano użytkownikowi uprawnienia do zasobu posiadającego grupy w AD!</error>', false);
+                                        $output->writeln('<error>Trzeba wypchnąć ponownie zmiany.</error>', false);
+                                    }
+                                }
                             }
                         } else {
                             $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);

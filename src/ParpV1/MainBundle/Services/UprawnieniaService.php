@@ -29,6 +29,7 @@ use Psr\Cache\CacheItemPoolInterface;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Class UprawnieniaService
@@ -59,6 +60,11 @@ class UprawnieniaService
     private $currentUser;
 
     /**
+     * @var bool
+     */
+    private $doFlush = true;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
@@ -74,8 +80,10 @@ class UprawnieniaService
         $this->setContainer($container);
         $this->statusWnioskuService = $statusWnioskuService;
         $this->zasobyCache = $zasobyCache;
-        $this->currentUser = $tokenStorage->getToken()->getUser();
 
+        if (null !== $tokenStorage->getToken()) {
+            $this->currentUser = $tokenStorage->getToken()->getUser();
+        }
         if (PHP_SAPI == 'cli') {
             $this->container->set('request', new Request(), 'request');
         }
@@ -661,24 +669,44 @@ class UprawnieniaService
     }
 
     /**
+     * Wywołuje metodę odbierzZasobyUzytkownikaOdDaty z parametrami obiektu OdebranieZasobowEntry.
+     *
+     * @param OdebranieZasobowEntry $odebranieZasobowEntry
+     *
+     * @return bool|array
+     */
+    public function odbierzZasobyUzytkownikaZEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
+    {
+        $accountName = $odebranieZasobowEntry->getUzytkownik();
+        $powodOdebrania = $odebranieZasobowEntry->getPowodOdebrania();
+
+        return $this->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true);
+    }
+
+    /**
      * Pobiera zasoby, wnioski danego użytkownika następnie
      * na podstawie datyGranicznej odbiera zasoby przed datą
      * i anuluje administracyjnie / odbiera administracyjnie (Nadaje taki status dla wniosku)
      * lub odbiera pojedyńczy zasób we wniosku (w przypadku wniosku wiele-do-wielu).
+     * Metoda domyślnie wykonuje flush, aby tego nie robić $doFlush musi być FALSE.
      *
      * @param string $nazwaUzytkownika
      * @param DateTime $dataGraniczna
      * @param string $komentarzOdebrania
+     * @param bool $doFlush
+     * @param bool $returnTylkoUserZasoby zwróci tablicę zawierająca tylko
+     *      przeprocesowane UserZasoby oraz informację czy zostało stworzone entry do AD.
      *
      * @throws InvalidArgumentException gdy nie podano nazwy użytkownika
      *
      * @return bool|array
-     *
      */
     public function odbierzZasobyUzytkownikaOdDaty(
         $nazwaUzytkownika,
         DateTime $dataGraniczna,
-        $komentarzOdebrania = null
+        $komentarzOdebrania = null,
+        $doFlush = true,
+        $returnTylkoUserZasoby = false
     ) {
         if (empty($nazwaUzytkownika)) {
             throw new InvalidArgumentException('Nazwa użytkownika jest pusta.');
@@ -697,6 +725,7 @@ class UprawnieniaService
 
         $this->przeladujZasobyCache();
         $przeprocesowaneWnioski = [];
+        $odebraneUserZasoby = [];
         foreach ($userZasoby as $userZasob) {
             $wnioskiZasobyDoOdebrania = $this->pobierzWnioskiZasobyDoOdebrania($userZasob->getWniosek(), $dataGraniczna);
             if (count($wnioskiZasobyDoOdebrania) && $wnioskiZasobyDoOdebrania['procesuj_zasob']) {
@@ -704,6 +733,15 @@ class UprawnieniaService
                 $przeprocesowaneWnioski[$wniosekNadanieOdebranieId] = [];
                 $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['zasoby'][] = $userZasob->getId();
                 $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['komentarz'] = $komentarzOdebrania;
+                $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['stworzono_entry'] = false;
+
+                $odebraneUserZasoby[$userZasob->getId()] = [];
+                $odebraneUserZasoby[$userZasob->getId()]['zasob'] = $userZasob->getZasobId();
+                $odebraneUserZasoby[$userZasob->getId()]['stworzono_entry'] = false;
+                $odebraneUserZasoby[$userZasob->getId()]['wniosek_nadanie_odebranie'] = $userZasob
+                    ->getWniosek()
+                    ->getId()
+                ;
 
                 $wnioskiZasobyDoOdebrania['wniosek_nadanie_odebranie'] =  $userZasob->getWniosek();
                 $wnioskiZasobyDoOdebrania['user_zasob'] =  $userZasob;
@@ -712,6 +750,8 @@ class UprawnieniaService
                 if ($this->czyTworzycEntry($userZasob)
                     && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']) {
                     $zasobyDoUtworzeniaEntry[] = $userZasob;
+                    $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['stworzono_entry'] = true;
+                    $odebraneUserZasoby[$userZasob->getId()]['stworzono_entry'] = true;
                 }
             }
         }
@@ -719,8 +759,13 @@ class UprawnieniaService
         if (!empty($zasobyDoUtworzeniaEntry)) {
             $this->stworzEntry($zasobyDoUtworzeniaEntry, $nazwaUzytkownika);
         }
+        if ($doFlush) {
+            $entityManager->flush();
+        }
 
-        $entityManager->flush();
+        if ($returnTylkoUserZasoby) {
+            return $odebraneUserZasoby;
+        }
 
         return $przeprocesowaneWnioski;
     }
@@ -922,12 +967,18 @@ class UprawnieniaService
         }
 
         if (in_array($status, $statusyKoncowe) && false === $wniosek->getWniosek()->getIsBlocked()) {
+            if ($wniosek->getWniosek()->getStatus()->getFinished() &&
+                WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status) {
+                return false;
+            }
             $statusWnioskuService = $this->statusWnioskuService;
             $statusWnioskuService->setWniosekStatus($wniosek, $status, false, null, $komentarz);
             $wniosek->getWniosek()->zablokujKoncowoWniosek();
-            $this
-                ->doctrine
-                ->flush();
+            if ($this->doFlush) {
+                $this
+                    ->doctrine
+                    ->flush();
+            }
 
             return true;
         }
@@ -950,6 +1001,10 @@ class UprawnieniaService
     ): array {
 
         if ('10_PODZIELONY' === $wniosekNadanieOdebranieZasobow->getWniosek()->getStatus()->getNazwaSystemowa()) {
+            return array();
+        }
+
+        if ($wniosekNadanieOdebranieZasobow->getWniosek()->getIsBlocked()) {
             return array();
         }
 
@@ -1058,5 +1113,18 @@ class UprawnieniaService
             'wniosek_do_anulowania_administracyjnego'   => $wniosekDoAnulowaniaAdministracyjnego,
             'brak_statusow_we_wniosku'                  => $brakStatusowWeWniosku
         ];
+    }
+
+    /**
+     * Zmienia właściwość `doFlush`.
+     * Dla zachowania wstecznej kombatybilności domyślna wartość to true.
+     *
+     * @param bool $doFlush
+     *
+     * @return void
+     */
+    public function switchFlush(bool $doFlush = true): void
+    {
+        $this->doFlush = $doFlush;
     }
 }

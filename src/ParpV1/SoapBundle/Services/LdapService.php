@@ -163,6 +163,22 @@ class LdapService
         return $adUsers;
     }
 
+    /**
+     * Pobiera wszystkich użytkowników z AD (tylko nazwa użytkownika + imię nazwisko)
+     *
+     * @return array
+     */
+    public function getAllUsersNamesLogins(): array
+    {
+        $users = [];
+        $adUsers = $this->getAllFromAD();
+        foreach ($adUsers as $adUser) {
+            $users[$adUser['samaccountname']] = $adUser['name'];
+        }
+
+        return $users;
+    }
+
     public function getAllFromADIntW($ktorych = 'aktywni', $justDump = false, $struktura = null)
     {
         //wywlam na czas odbierania $this->zmianyDoWypchniecia = $this->container->get('doctrine')->getManager()->getRepository('ParpMainBundle:Entry')->findByIsImplemented(0, ['samaccountname' => 'ASC', 'id' => 'ASC']);
@@ -1138,6 +1154,9 @@ class LdapService
         'zastępca dyrektora',
         'zastępca dyrektora (p.o.)',
         'p.o. zastępcy dyrektora',
+        'główny księgowy, z-ca dyrektora',
+        'główny księgowy, zastępca dyrektora',
+        'główny księgowy - p.o. zastępcy dyrektora',
     ];
 
     public function getSekcjePodwladnych($manager)
@@ -1253,6 +1272,9 @@ class LdapService
             case 'zastępca dyrektora':
             case 'zastępca dyrektora (p.o.)':
             case 'p.o. zastępcy dyrektora':
+            case 'główny księgowy, z-ca dyrektora':
+            case 'główny księgowy, zastępca dyrektora':
+            case 'główny księgowy - p.o. zastępcy dyrektora':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 $grupy[] = 'INT-Olimp';
@@ -1345,6 +1367,9 @@ class LdapService
         'koordynator projektu',
         'główny księgowy, dyrektor',
         'główny księgowy',
+        'główny księgowy, z-ca dyrektora',
+        'główny księgowy, zastępca dyrektora',
+        'główny księgowy - p.o. zastępcy dyrektora',
         'rzecznik beneficjenta parp, dyrektor',
         'rzecznik beneficjenta parp',
     ];
