@@ -117,7 +117,7 @@ class ZasobyType extends AbstractType
 
             ->add('dataZakonczeniaWdrozenia', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker',
+                        'class' => '',
                         'placeholder' => 'wpisz tle grup AD ile poziomo dostepu',
                         'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
