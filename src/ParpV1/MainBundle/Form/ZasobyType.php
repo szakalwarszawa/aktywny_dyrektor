@@ -4,7 +4,7 @@ namespace ParpV1\MainBundle\Form;
 
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -115,7 +115,7 @@ class ZasobyType extends AbstractType
             ))
 
 
-            ->add('dataZakonczeniaWdrozenia', DateTimeType::class, array(
+            ->add('dataZakonczeniaWdrozenia', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker',
                         'placeholder' => 'wpisz tle grup AD ile poziomo dostepu',
@@ -135,7 +135,7 @@ class ZasobyType extends AbstractType
             ))
             ->add('nazwaWykonawcy', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('asystaTechniczna', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
-            ->add('dataWygasnieciaAsystyTechnicznej', DateTimeType::class, array(
+            ->add('dataWygasnieciaAsystyTechnicznej', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
@@ -163,7 +163,7 @@ class ZasobyType extends AbstractType
             $builder->add('technologia', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('testyBezpieczenstwa', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('testyWydajnosciowe', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
-            ->add('dataZleceniaOstatniegoPrzegladuUprawnien', DateTimeType::class, array(
+            ->add('dataZleceniaOstatniegoPrzegladuUprawnien', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
@@ -179,7 +179,7 @@ class ZasobyType extends AbstractType
 
                 ))
             ->add('interwalPrzegladuUprawnien', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
-            ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', DateTimeType::class, array(
+            ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
@@ -195,7 +195,7 @@ class ZasobyType extends AbstractType
 
                 ))
             ->add('interwalPrzegladuAktywnosci', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
-            ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', DateTimeType::class, array(
+            ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
@@ -211,7 +211,7 @@ class ZasobyType extends AbstractType
 
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
-            ->add('dataUtworzeniaZasobu', DateTimeType::class, array(
+            ->add('dataUtworzeniaZasobu', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
@@ -223,7 +223,7 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
-            ->add('dataZmianyZasobu', DateTimeType::class, array(
+            ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
@@ -235,7 +235,7 @@ class ZasobyType extends AbstractType
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
-            ->add('dataUsunieciaZasobu', DateTimeType::class, array(
+            ->add('dataUsunieciaZasobu', DateType::class, array(
                     'attr' => array(
                         'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
