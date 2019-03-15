@@ -47,7 +47,7 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaService;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
-
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 /**
  * Class DefaultController
  * @package ParpV1\MainBundle\Controller
@@ -123,6 +123,10 @@ class DefaultController extends Controller
      * @param $ADUsers
      * @param $ktorzy
      * @param $roles
+     *
+     * @todo przenieść do osobnej klasy
+     *
+     *
      * @return Grid
      */
     public function getUserGrid(Grid $grid, $ADUsers, $ktorzy, $roles)
@@ -217,14 +221,6 @@ class DefaultController extends Controller
             $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
             // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
-            $rowAction3->setColumn('akcje');
-            $rowAction3->setRouteParameters(
-                array('samaccountname')
-            );
-            $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
-
-            // Edycja konta
             $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
             $rowAction4->setColumn('akcje');
             $rowAction4->setRouteParameters(
@@ -234,7 +230,6 @@ class DefaultController extends Controller
 
             //        $grid->addRowAction($rowAction1);
             $grid->addRowAction($rowAction2);
-            $grid->addRowAction($rowAction3);
             $grid->addRowAction($rowAction4);
         } elseif ($ktorzy === 'zablokowane2') {
             $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
@@ -421,15 +416,18 @@ class DefaultController extends Controller
     }
 
     /**
+     * Akcja edycji użytkownika.
+     *
      * @Route("/user/{samaccountname}/edit", name="userEdit")
-     * @Route("/user/{id}/edit", name="user_edit")
-     * @param         $samaccountname
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW') or has_role('PARP_BZK_1')")
+     *
      * @param Request $request
+     * @param string $samaccountname
      *
      * @return Response
-     * @throws SecurityTestException
      */
-    public function editAction($samaccountname, Request $request)
+    public function editAction(Request $request, string $samaccountname): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
 
@@ -445,145 +443,35 @@ class DefaultController extends Controller
         if ($form->isSubmitted()) {
             if (!$form->isValid()) {
                 $this
-                    ->addFlash('warning', 'Formularz zawiera błędy!')
+                    ->addFlash('warning', 'Formularz zawiera błędy!' . (string) $form->getErrors(false, true))
                 ;
             }
 
             if ($form->isValid()) {
                 $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
-                $edycjaUzytkownikaFormService
+                $saveEntryResult = $edycjaUzytkownikaFormService
                     ->setForm($form)
                     ->saveEntry()
                 ;
-                    // ->compareDataCreateEntry();
-                $entityManager->flush();
 
-                $this
-                    ->addFlash('success', 'Utworzono entry');
+                if (false !== $saveEntryResult) {
+                    $entityManager->flush();
+
+                    $this
+                        ->addFlash('success', 'Utworzono wpis zmiany.');
+                }
+
+                if (false === $saveEntryResult) {
+                    $this
+                        ->addFlash('warning', 'Nie znaleziono zmian w formularzu.');
+                }
+
+                return $this->redirectToRoute('userEdit', [
+                    'samaccountname' => $samaccountname
+                ]);
             }
         }
 
-
-        if ($form->isSubmitted() && $form->isValid() && false) {
-            $newData = $form->getData();
-
-            //die('KONTROLER');
-
-            if ($kadry1 || $kadry2) {
-                return $this->parseUserKadry($samaccountname, $newData, $previousData, $ustawUprawnieniaPoczatkowe);
-            } elseif (!$admin) {
-                die('Nie masz uprawnien by edytowac uzytkownikow!!!');
-            }
-
-
-            $newrights = $newData['initialrights'];
-            $oldData = $previousData;
-
-            $roznicauprawnien = (($newData['initialrights'] != $oldData['initialrights']));
-
-            unset(
-                $newData['initialrights'],
-                $oldData['initialrights'],
-                $newData['memberOf'],
-                $oldData['memberOf'],
-                $newData['fromWhen'],
-                $oldData['fromWhen']
-            );
-
-            //hack by dalo sie puste inicjaly wprowadzic
-            if ('' === $newData['initials']) {
-                $newData['initials'] = 'puste';
-            }
-            //$ndata['division'] = "";
-            if (0 === $newData['isDisabled']) {
-                $newData['disableDescription'] = $newData['description'];
-            }
-
-            $roles1 = $oldData['roles'];
-            unset($oldData['roles']);
-            $roles2 = $newData['roles'];
-            unset($newData['roles']);
-
-            $rolesDiff = $roles1 !== $roles2;
-
-            if (0 < count($this->arrayDiff($newData, $oldData)) ||
-                $roznicauprawnien ||
-                $rolesDiff ||
-                $ustawUprawnieniaPoczatkowe
-            ) {
-                // Mamy zmianę, teraz trzeba wyodrebnić co to za zmiana
-                // Tworzymy nowy wpis w bazie danych
-                $newData = $this->arrayDiff($newData, $oldData);
-                if ($rolesDiff) {
-                    $roles =
-                        $entityManager
-                            ->getRepository(AclUserRole::class)
-                            ->findBy([
-                               'samaccountname' => $samaccountname
-                            ]);
-
-                    foreach ($roles as $r) {
-                        $entityManager->remove($r);
-                    }
-                    foreach ($roles2 as $r) {
-                        $role = $entityManager
-                            ->getRepository(AclRole::class)
-                            ->findOneBy(['name' => $r]);
-                        $us = new AclUserRole();
-                        $us->setSamaccountname($samaccountname);
-                        $us->setRole($role);
-                        $entityManager->persist($us);
-                    }
-                    $this->addFlash('warning', 'Role zostały zmienione');
-                }
-
-                if (true === $roznicauprawnien ||
-                    true === $ustawUprawnieniaPoczatkowe ||
-                    0 < count($this->arrayDiff($newData, $oldData))) {
-                    //sprawdzamy tu by dalo sie zarzadzac uprawnieniami!
-                    $this->get('adcheck_service')->checkIfUserCanBeEdited($samaccountname);
-
-                    $entry = new Entry($this->getUser()->getUsername());
-                    $entry
-                        ->setSamaccountname($samaccountname)
-                        ->setDistinguishedName($previousData['distinguishedname'])
-                    ;
-
-                    if (true === $roznicauprawnien && true === $ustawUprawnieniaPoczatkowe) {
-                        $value = implode(',', $newrights);
-                        $entry->setInitialrights($value);
-                    }
-
-                    $this->parseUserFormData($newData, $entry);
-
-                    if (($roznicauprawnien ||
-                        isset($newData['department']) ||
-                        isset($newData['info'])) &&
-                        true === $ustawUprawnieniaPoczatkowe
-                    ) {
-                        $this->nadajUprawnieniaPoczatkowe($ADUser, $entry, $newData);
-                    }
-
-                    if (!$entry->getFromWhen()) {
-                        $entry->setFromWhen(new \DateTime('today'));
-                    }
-
-                    $odebranieZasobowEntry = ($this->get('odbieranie_uprawnien_service'))
-                        ->utworzOdebranieZasobowEntry($oldData, $form, $entry)
-                    ;
-
-                    $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
-
-                    $entityManager->persist($entry);
-
-                    $this->addFlash('warning', 'Zmiany do AD zostały wprowadzone');
-                }
-
-                $entityManager->flush();
-
-                return $this->redirectToRoute('main');
-            }
-        }
 
         $userChanges = $entityManager
             ->getRepository(Entry::class)
@@ -2135,37 +2023,37 @@ class DefaultController extends Controller
     /**
      * Usuwa zbędny wpis ze zmian oczekujących na implementację do AD
      *
-     * @Route("/delete_pending/{id}", name="delete_pending")
-     *
      * @param int $id
      *
+     * @Route("/delete_pending/{id}", name="delete_pending")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW') or has_role('PARP_BZK_1')")
+     *
      * @return RedirectResponse
+     *
      * @throws EntityNotFoundException
      */
-    public function deletePendingAction($id)
+    public function deletePendingAction($id): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $entry = $entityManager->getRepository(Entry::class)->find($id);
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+        $entry = $entityManager
+            ->getRepository(Entry::class)
+            ->find($id)
+        ;
 
         if (null === $entry) {
             throw new EntityNotFoundException('Nie ma takiego wpisu w bazie.');
         }
 
-//        try {
-            $entityManager->remove($entry);
-            $entityManager->flush();
+        $entityManager->remove($entry);
+        $entityManager->flush();
 
-            $this->addFlash('notice', 'Usunięto oczekujący wpis');
-//        } catch (\Exception $exception) {
-//            $this->addFlash('warning', 'Nie udało się usunąć oczekujący wpis');
-//        }
+        $this->addFlash('danger', 'Usunięto oczekujący wpis');
 
-        $url = $this->generateUrl('userEdit', ['samaccountname' => $entry->getSamaccountname()]);
-
-        return $this->redirect(
-            sprintf('%s#%s', $url, '#czekajaceAD')
-        );
+        return $this->redirectToRoute('userEdit', ['samaccountname' => $entry->getSamaccountname()]);
     }
 
     /**

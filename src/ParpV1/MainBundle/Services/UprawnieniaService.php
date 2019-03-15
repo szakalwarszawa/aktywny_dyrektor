@@ -30,6 +30,7 @@ use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\AuthBundle\Security\ParpUser;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class UprawnieniaService
@@ -709,7 +710,7 @@ class UprawnieniaService
 
         $userZasoby = $entityManager
             ->getRepository(UserZasoby::class)
-            ->findZasobyUzytkownika($nazwaUzytkownika);
+            ->findAktywneZasobyDlaUzytkownika($nazwaUzytkownika);
 
         if (empty($userZasoby)) {
             // Brak zasobów do odebrania

@@ -2,6 +2,8 @@
 
 namespace ParpV1\MainBundle\Tool;
 
+use InvalidArgumentException;
+
 /**
  * Klasa narzędzia AdStringTool.
  * Zawiera metody pomocnicze przy operacjach na wartościach z AD.
@@ -24,6 +26,57 @@ class AdStringTool
     const DC = 'DC=';
 
     /**
+     * Podmienia element w stringu Active Directory na podany.
+     *
+     * @param string $adString
+     * @param string $valueKey - self::CN np.
+     * @param string $replaceTo - wartość która zostanie wstawiona w miejsce $valueKey
+     * @param int $ouIndex - AD string zawiera kilka wartości OU, przy zamianie
+     *      trzeba podać który ma być zamieniony.
+     *
+     * @return string
+     */
+    public static function replaceValue(string $adString, string $valueKey, string $replaceTo, int $ouIndex = 0): string
+    {
+        $adStringParts = self::ldapExplodeUtf($adString);
+        unset($adStringParts['count']);
+
+        $loopIndex = 0;
+        if ($valueKey !== self::CN) {
+            foreach ($adStringParts as $key => $value) {
+                if (false !== strpos($value, $valueKey)) {
+                    if ($ouIndex === $loopIndex) {
+                        $tempArray = explode('=', $value);
+                        $tempArray[count($tempArray)-1] = $replaceTo;
+                        $adStringParts[$key] = implode('=', $tempArray);
+                    }
+                    $loopIndex++;
+                }
+            }
+
+            if ($loopIndex <= $ouIndex) {
+                throw new InvalidArgumentException(
+                    'Podany AD string nie posiada tylu (min: 0, max: ' . ($loopIndex-1) . ') kluczy ' . $valueKey
+                );
+            }
+
+            return implode(',', $adStringParts);
+        }
+
+        foreach ($adStringParts as $key => $value) {
+            $containsKey = strpos($value, $valueKey);
+            if (false !== $containsKey) {
+                $tempArray = explode('=', $value);
+                $tempArray[count($tempArray)-1] = $replaceTo;
+                $adStringParts[$key] = implode('=', $tempArray);
+            }
+        }
+
+        return implode(',', $adStringParts);
+
+    }
+
+    /**
      * Pobiera tylko określoną ze stringa Active Directory.
      *
      * @param string $adString
@@ -41,8 +94,8 @@ class AdStringTool
         $stringContainer = [];
         foreach ($adStringParts as $key => $value) {
             if (is_string($value)) {
-                $containsCn = strpos($value, $valueKey);
-                if (false !== $containsCn) {
+                $containsKey = strpos($value, $valueKey);
+                if (false !== $containsKey) {
                     if ($returnArray) {
                         $stringContainer[] = substr($value, strlen($valueKey));
                         continue;

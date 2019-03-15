@@ -1197,10 +1197,13 @@ class LdapService
         $stanowisko = mb_strtolower(trim($user['title']));
         $entityManager = $this->container->get('doctrine')->getManager();
 
-        $departament = $entityManager->getRepository(Departament::class)->findOneBy([
-            'shortname' => $depshortname,
-            'nowaStruktura' => 1,
-        ]);
+        if (!$depshortname instanceof Departament) {
+            $departament = $entityManager->getRepository(Departament::class)->findOneBy([
+                'shortname' => $depshortname,
+                'nowaStruktura' => 1,
+            ]);
+            $depshortname = $departament;
+        }
 
         $pomijajSekcje = ['ND', 'BRAK', 'N/D', 'n/d', ''];
         $grupy = [
@@ -1214,10 +1217,14 @@ class LdapService
         if (!empty($sekcja) && !in_array($sekcja, $pomijajSekcje, true)) {
             // poniższy warunek do usuniecia, jeśli zostaną wszędzie przerobione odwołania do getGrupyUsera z nazw sekcji na skróty.
             if (strstr($sekcja, '.') === false) {
-                $section = $entityManager->getRepository(Section::class)->findOneBy([
-                    'departament' => $departament->getId(),
-                    'name' => $sekcja
-                ]);
+                if (!$sekcja instanceof Section) {
+                    $section = $entityManager->getRepository(Section::class)->findOneBy([
+                        'departament' => $departament->getId(),
+                        'name' => $sekcja
+                    ]);
+                } else {
+                    $section = $sekcja;
+                }
                 if (null === $section) {
                     throw new Exception('Nie znaleziono sekcji: '.$sekcja.' w departamencie: '.$depshortname.' (pracownik: '.$user['name'].')'
                         .' #class:'.debug_backtrace()[1]['class'].' #function:'.debug_backtrace()[1]['function']);
@@ -1225,8 +1232,9 @@ class LdapService
                 $sekcja = $section->getShortname();
             }
             $skrotSekcjiRozbity = explode('.', $sekcja);
-            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname)) {
-                throw new Exception('Niewłaściwy D/B ('.$depshortname.') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
+
+            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname->getShortname())) {
+                throw new Exception('Niewłaściwy D/B ('.$depshortname->getShortname().') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
                     .' #class:'.debug_backtrace()[1]['class'].'#function:'.debug_backtrace()[1]['function']);
             }
             if ($skrotSekcjiRozbity[1][0] === 'S') {
@@ -1313,11 +1321,11 @@ class LdapService
         // }
 
         for ($i = 0; $i < count($grupy); $i++) {
-            $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname, $grupy[$i]));
+            $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname->getShortname(), $grupy[$i]));
         }
 
-        if (null!==$departament && !empty($departament->getGrupyAD())) {
-            $grupyDepartamentowe = explode(';', $departament->getGrupyAD());
+        if (null!==$depshortname && !empty($depshortname->getGrupyAD())) {
+            $grupyDepartamentowe = explode(';', $depshortname->getGrupyAD());
             foreach ($grupyDepartamentowe as $grupaDep) {
                 if ($grupaDep != '') {
                     $grupy[] = $grupaDep;
@@ -1331,7 +1339,7 @@ class LdapService
             foreach ($sekcje as $sekcja) {
                 if ($sekcja != '' && !in_array($sekcja, $pomijajSekcje, true)) {
                     if (explode('.', $sekcja)[1][0] === 'S') {
-                        $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $sekcja . '-RW';
+                        $grupaDoDodania = 'SGG-' . $depshortname->getShortname() . '-Wewn-' . $sekcja . '-RW';
                         if (!in_array($grupaDoDodania, $grupy, true)) {
                             $grupy[] = $grupaDoDodania;
                             echo $grupaDoDodania."<br />\n";

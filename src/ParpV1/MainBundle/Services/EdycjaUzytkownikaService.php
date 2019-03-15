@@ -7,7 +7,6 @@ use Symfony\Component\Form\Exception\UnexpectedTypeException;
 use Symfony\Component\Form\FormInterface;
 use LogicException;
 use ReflectionClass;
-use InvalidArgumentException;
 use UnexpectedValueException;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\SoapBundle\Services\LdapService;
@@ -17,6 +16,8 @@ use ParpV1\MainBundle\Constants\TakNieInterface;
 use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
 use ParpV1\MainBundle\Constants\PowodAnulowaniaWnioskuConstants;
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
+use ParpV1\MainBundle\Tool\AdStringTool;
 
 class EdycjaUzytkownikaService
 {
@@ -73,6 +74,15 @@ class EdycjaUzytkownikaService
         return $this;
     }
 
+    /**
+     * Sprawdza czy są zmiany formularz <=> AD.
+     * Jeżeli są to tworzy entry do wypchnięcia.
+     * Jeżeli został zmieniony atrybut przez który trzeba będzie anulować wnioski - robi to.
+     *
+     * @return void|bool
+     *
+     * @throws UnexpectedValueException gdy zmieniono pole niepodlegające zmianie
+     */
     public function saveEntry()
     {
         $form = $this->form;
@@ -82,22 +92,63 @@ class EdycjaUzytkownikaService
         }
 
         $formData = $form->getData();
+        $adUserHelper = $this->getAdUserHelper($formData[AdUserConstants::LOGIN]);
+        $changedElements = $this->compareDataCreateEntry($adUserHelper);
 
-        $changedElements = $this->compareDataCreateEntry();
-        $reason = $this->specifyCancellationReason($changedElements, $formData);
+        if (empty($changedElements)) {
+            return false;
+        }
+
+        foreach ($changedElements as $element) {
+            if (!in_array($element, AdUserConstants::getElementsAllowedToChange())) {
+                throw new UnexpectedValueException('Zmieniono pole niepodlegające zmianie w AkD!');
+            }
+        }
+
+        $createOdebranieZasobowEntry = false;
+        if (!empty(array_intersect($changedElements, AdUserConstants::getResetTriggers()))) {
+            $createOdebranieZasobowEntry = true;
+            $reason = $this->specifyCancellationReason($changedElements, $formData);
+        }
 
         $entry = new Entry();
         $entry
+            ->setCn($formData[AdUserConstants::IMIE_NAZWISKO])
             ->setAccountExpires($formData[AdUserConstants::WYGASA])
             ->setDepartment($formData[AdUserConstants::DEPARTAMENT_NAZWA])
             ->setInfo($formData[AdUserConstants::SEKCJA_NAZWA])
+            ->setTitle($formData[AdUserConstants::STANOWISKO])
             ->setSamaccountname($formData[AdUserConstants::LOGIN])
             ->setIsDisabled($formData[AdUserConstants::WYLACZONE])
-            ->setOpis($reason)
+            ->setOpis(isset($reason)? $reason : null)
             ->setAccountExpires($formData[AdUserConstants::WYGASA])
-            ->setManager($formData[AdUserConstants::PRZELOZONY])
+            ->setManager(
+                AdStringTool::replaceValue(
+                    $adUserHelper::getPrzelozony(false),
+                    AdStringTool::CN,
+                    $formData[AdUserConstants::PRZELOZONY]
+                )
+            )
+            ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($formData['zmianaOd'])
         ;
+
+        if ($createOdebranieZasobowEntry) {
+            $entry = $this->grantInitialRights($entry, $formData, $formData[AdUserConstants::LOGIN]);
+
+            $odebranieZasobowEntry = new OdebranieZasobowEntry();
+            $odebranieZasobowEntry
+                ->setPowodOdebrania($reason)
+                ->setUzytkownik($formData[AdUserConstants::LOGIN])
+            ;
+
+            $this
+                ->entityManager
+                ->persist($odebranieZasobowEntry)
+            ;
+
+            $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
+        }
 
         $this
             ->entityManager
@@ -106,7 +157,38 @@ class EdycjaUzytkownikaService
     }
 
     /**
+     * Na podstawie nowych danych z formularza nadaje uprawnienia
+     * początkowe do wypchnięcia w entry.
+     *
+     * @param Entry $entry
+     * @param array $newData - do nadania uprawnień początkowych
+     *      potrzebny jest w zasadzie tylko departament (obj), sekcja (obj)
+     *      z kluczami z klasy stałych AdUserConstants
+     * @param string $username
+     */
+    public function grantInitialRights(Entry $entry, array $newData, string $username): Entry
+    {
+        $adUserData = $this
+            ->ldapService
+            ->getUserFromAD($username)
+        ;
+        $initialRights = $this
+            ->ldapService
+            ->getGrupyUsera(
+                current($adUserData),
+                $newData[AdUserConstants::DEPARTAMENT_NAZWA],
+                $newData[AdUserConstants::SEKCJA_NAZWA]
+            );
+
+        $entry->addGrupyAD($initialRights, '+');
+
+        return $entry;
+    }
+
+    /**
      * Porównuje zmiany na formularzu edycji użytkownikami z Active Directory.
+     *
+     * @param AdUserHelper|null $adUserHelper
      *
      * @throws LogicException gdy nie zdefiniowano formularza
      * @throws UnexpectedValueException gdy przekazano niepoprawny formularz
@@ -118,7 +200,7 @@ class EdycjaUzytkownikaService
      *
      * @return
      */
-    public function compareDataCreateEntry()
+    private function compareDataCreateEntry(AdUserHelper $adUserHelper = null)
     {
         $form = $this->form;
 
@@ -126,37 +208,35 @@ class EdycjaUzytkownikaService
             throw new LogicException('Nie zdefiniowano formularza.');
         }
 
-        $formData = $form->getData();
         $formDataFiltered = $this->removeNonAdElements($form->getData());
 
         if (!isset($formDataFiltered[AdUserConstants::LOGIN])) {
             throw new UnexpectedValueException('Formularz niepoprawny');
         }
-
-        $adUserData = $this
-            ->ldapService
-            ->getUserFromAD($formDataFiltered[AdUserConstants::LOGIN])
-        ;
-
-        $adUserHelper = new AdUserHelper($adUserData, $this->entityManager);
+        if (null === $adUserHelper) {
+            $adUserHelper = $this->getAdUserHelper($formDataFiltered[AdUserConstants::LOGIN]);
+        }
 
         $changedElements = $this->compareData($formDataFiltered, $adUserHelper);
 
         return $changedElements;
-
-        if ($changedElements) {
-            $applicationCancellationReason = $this->specifyCancellationReason($changedElements, $formData);
-          //  $this->addChangeEntry($formDataFiltered[AdUserConstants::LOGIN], $applicationCancellationReason);
-        }
     }
 
-
-    private function addChangeEntry($username, $applicationCancellationReason)
+    /**
+     * Zwraca obiekt AdUserHelper na podstawie loginu użytkownika.
+     *
+     * @param string
+     *
+     * @return AdUserHelper
+     */
+    public function getAdUserHelper(string $login): AdUserHelper
     {
+        $adUserData = $this
+            ->ldapService
+            ->getUserFromAD($login)
+        ;
 
-        var_dump($applicationCancellationReason);
-
-        die;
+        return new AdUserHelper($adUserData, $this->entityManager);
     }
 
     /**
@@ -176,8 +256,7 @@ class EdycjaUzytkownikaService
     {
         $powodyAnulowaniaWnioskuConstants = new ReflectionClass(PowodAnulowaniaWnioskuConstants::class);
         $triggerConstKeys = (new ReflectionClass(AdUserConstants::class))
-        ->getConstants();
-
+            ->getConstants();
 
         $specifyReason = function ($trigger) use ($powodyAnulowaniaWnioskuConstants, $triggerConstKeys) {
             $triggerConst = null;
@@ -197,7 +276,6 @@ class EdycjaUzytkownikaService
         $applicationCancellationReason = null;
         if (in_array(AdUserConstants::WYLACZONE, $changedElements)
             && TakNieInterface::TAK === $formData[AdUserConstants::WYLACZONE]) {
-                $trigger = AdUserConstants::WYLACZONE;
             if (!isset($changedElements['DISABLE'])) {
                 throw new LogicException('Nie określono powodu wyłączenia.');
             }
@@ -205,12 +283,10 @@ class EdycjaUzytkownikaService
         }
 
         if (1 < count($changedElements) && null === $applicationCancellationReason) {
-            $trigger = AdUserConstants::FORCE_CLEAN;
             $applicationCancellationReason = PowodAnulowaniaWnioskuConstants::DEFAULT_TITLE;
         }
 
         if (null === $applicationCancellationReason) {
-            $trigger = current($changedElements);
             $applicationCancellationReason = $specifyReason(current($changedElements));
         }
 

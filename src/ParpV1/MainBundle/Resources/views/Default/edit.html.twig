@@ -16,7 +16,12 @@
                 <a data-toggle="tab" href="#historia">Historia zmian</a>
             </li>
             <li>
-                <a data-toggle="tab" href="#oczekujace">Oczekujące zmiany</a>
+                <a data-toggle="tab" href="#oczekujace">
+                    Oczekujące zmiany
+                    {% if user_changes.nieaktywne is defined %}
+                        <span class="label label-danger">{{ user_changes.nieaktywne|length }}</span>
+                    {% endif %}
+                </a>
             </li>
             <li>
                 <a data-toggle="tab" href="#komentarze">Komentarze</a>

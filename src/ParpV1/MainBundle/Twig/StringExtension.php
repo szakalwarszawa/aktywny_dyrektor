@@ -2,6 +2,10 @@
 
 namespace ParpV1\MainBundle\Twig;
 
+use Twig_SimpleFilter;
+use ReflectionClass;
+use ParpV1\MainBundle\Tool\AdStringTool;
+
 /**
  * Class StringExtension
  * @package ParpV1\MainBundle\Twig
@@ -44,7 +48,32 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('showFullname', array($this, 'showFullname')),
             new \Twig_SimpleFilter('base64Decode', array($this, 'base64DecodeFilter')),
             new \Twig_SimpleFilter('base64Encode', array($this, 'base64EncodeFilter')),
+            new Twig_SimpleFilter('parseAdString', [$this, 'parseAdString']),
         );
+    }
+
+    /**
+     * Parsuje string Active Directory do żądanej wartości.
+     *
+     * @param string $value
+     * @param string $key
+     *
+     * @return string
+     */
+    public function parseAdString(string $value, string $key): string
+    {
+        $availableKeys = (new ReflectionClass(AdStringTool::class))
+            ->getConstants();
+        if (in_array($key, array_keys($availableKeys))) {
+            $adClearValue = AdStringTool::getValue($value, $key);
+            if (false !== strpos($adClearValue, '=')) {
+                $adClearValue = str_replace('=', '', $adClearValue);
+            }
+
+            return $adClearValue;
+        }
+
+        return $key;
     }
 
     /**

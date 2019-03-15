@@ -14,7 +14,7 @@
     {% set imie_nazwisko = attribute(form, constant(ad_user_constants ~ '::IMIE_NAZWISKO')) %}
     <div class="form-group {% if not imie_nazwisko.vars.valid %}has-error{% endif %}">
         {{ form_label(imie_nazwisko) }}
-        {{ form_widget(imie_nazwisko) }}
+        {{ form_widget(imie_nazwisko, {attr: {'readonly': 'readonly', 'disabled': 'disabled'}}) }}
         {{ form_errors(imie_nazwisko, {attr: {'class': 'alert-danger'}}) }}
         <hr/>
     </div>
@@ -23,16 +23,35 @@
     {% set departament = attribute(form, constant(ad_user_constants ~ '::DEPARTAMENT_NAZWA')) %}
     <div class="form-group {% if not departament.vars.valid %}has-error{% endif %}">
         {{ form_label(departament) }}
-        {{ form_widget(departament) }}
+        {{ form_widget(departament, {attr: {'readonly': 'readonly', 'disabled': 'disabled'}}) }}
         {{ form_errors(departament) }}
+        {% if departament.vars.value is empty %}
+            <div class="alert alert-danger">
+                <b>Uwaga!</b> Departament powinien być ustawiony w rekordzie? Nie jest możliwa edycja tego pola z tego miejsca.
+                {% if dane_rekord is not null and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
+                    <hr />
+                    <a class="btn btn-primary" href="{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}">
+                        <i class="fa fa-briefcase"></i>
+                        Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych
+                    </a>
+                {% endif %}
+            </div>
+        {% endif %}
         <hr/>
+    </div>
+
+    {# ZAANGAŻOWANIE #}
+    <div class="form-group">
+        {% if username is defined %}
+            <a class="btn btn-primary" href="{{ path('engageUser', {samaccountname: username}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a>
+        {% endif %}
     </div>
 
     {# STANOWISKO #}
     {% set stanowisko = attribute(form, constant(ad_user_constants ~ '::STANOWISKO')) %}
     <div class="form-group {% if not stanowisko.vars.valid %}has-error{% endif %}">
         {{ form_label(stanowisko) }}
-        {{ form_widget(stanowisko) }}
+        {{ form_widget(stanowisko, {attr: {'readonly': 'readonly', 'disabled': 'disabled'}}) }}
         {{ form_errors(stanowisko) }}
         <hr/>
     </div>
@@ -83,12 +102,14 @@
     </div>
 
     {# PRZYWRÓĆ UPRAWNIENIA POCZĄTKOWE #}
+    {#
+    FEATURE
     <div>
         {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
         {{ form_widget(form.ustawUprawnieniaPoczatkowe) }}
         {{ form_errors(form.ustawUprawnieniaPoczatkowe) }}
         <hr/>
-    </div>
+    </div> #}
 
     {# ZMIANY OBOWIĄZUJĄ OD #}
     <div class="form-group {% if not form.zmianaOd.vars.valid %}has-error{% endif %}">

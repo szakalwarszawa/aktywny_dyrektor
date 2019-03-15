@@ -106,10 +106,27 @@ class AdUserConstants
     public static function getResetTriggers(): array
     {
         return [
-            self::WYLACZONE,
+            self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
             self::SEKCJA_NAZWA,
             self::DEPARTAMENT_NAZWA,
-            self::STANOWISKO
+            self::STANOWISKO,
+            self::SEKCJA_NAZWA
+        ];
+    }
+
+    /**
+     * Zwraca elementy formularza EdycjaUzytkownikaService które mogą być zmieniane.
+     *
+     * @return array
+     */
+    public static function getElementsAllowedToChange(): array
+    {
+        return [
+            self::POWOD_WYLACZENIA,
+            self::PRZELOZONY,
+            self::SEKCJA_NAZWA,
+            self::WYGASA,
+            self::WYLACZONE
         ];
     }
 }

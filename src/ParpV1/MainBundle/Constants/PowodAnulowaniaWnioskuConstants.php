@@ -33,7 +33,7 @@ class PowodAnulowaniaWnioskuConstants
     /**
      * @var string
      */
-    const STANOWISKO_TITLE = 'Zmiana stanwowiska';
+    const STANOWISKO_TITLE = 'Zmiana stanowiska';
 
     /**
      * @var string

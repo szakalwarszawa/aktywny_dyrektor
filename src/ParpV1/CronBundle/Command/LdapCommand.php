@@ -20,6 +20,7 @@ use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Filesystem\Filesystem;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
+use ParpV1\MainBundle\Helper\AdUserHelper;
 
 /**
  * Class LdapCommand
@@ -140,6 +141,8 @@ class LdapCommand extends ContainerAwareCommand
                 // Sprawdzamy po kolei co się zmieniło i zbieramy to cezamem do kupy
                 foreach ($zmiany as $zmiana) {
                     $userNowData = $ldap->getUserFromAllAD($zmiana->getSamaccountname());
+
+                    $adUserHelper = new AdUserHelper($userNowData['user'], $em);
                     $userNow = $userNowData['user'];
                     $ktorzy = $userNowData['ktorzy'];
 
@@ -162,7 +165,8 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Wygaszenie konta: ' . $zmiana->getAccountExpires()->format('d-m-Y H:i:s'));
                             }
                         }
-                        if ($zmiana->getDepartment()) {
+
+                        if ($zmiana->getDepartment() !== $adUserHelper::getDepartamentNazwa()) {
                             $liczbaZmian++;
                             if ($userNow[0]['department']) {
                                 $output->writeln('  - Zmiana biura: ' . $userNow[0]['department'] . ' -> ' . $zmiana->getDepartment());
@@ -170,7 +174,8 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie biura: ' . $zmiana->getDepartment());
                             }
                         }
-                        if ($zmiana->getInfo() != null) {
+
+                        if ($zmiana->getInfo() !== $adUserHelper::getSekcja()) {
                             $liczbaZmian++;
                             if ($userNow[0]['info']) {
                                 $output->writeln('  - Zmiana sekcji: ' . $userNow[0]['info'] . ' -> ' . $zmiana->getInfo());
@@ -186,7 +191,7 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d": ""));
                             }
                         }
-                        if ($zmiana->getCn()) {
+                        if ($zmiana->getCn() !== $adUserHelper::getImieNazwisko()) {
                             $liczbaZmian++;
                             if ($userNow[0]['cn']) {
                                 $output->writeln('  - Zmiana imienia i nazwiska: ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
@@ -194,7 +199,7 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn().$zmiana->getId());
                             }
                         }
-                        if ($zmiana->getManager()) {
+                        if ($zmiana->getManager() !== $adUserHelper::getPrzelozony(false)) {
                             $liczbaZmian++;
                             if ($userNow[0]['manager']) {
                                 $output->writeln('  - Zmiana przełożonego: ' . $userNow[0]['manager'] . ' -> ' . $zmiana->getManager());
@@ -202,7 +207,7 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie przełożonego: ' . $zmiana->getManager());
                             }
                         }
-                        if ($zmiana->getTitle()) {
+                        if ($zmiana->getTitle() !== $adUserHelper::getStanowisko()) {
                             $liczbaZmian++;
                             if ($userNow[0]['title']) {
                                 $output->writeln('  - Zmiana stanowiska: ' . $userNow[0]['title'] . ' -> ' . $zmiana->getTitle());
@@ -210,14 +215,14 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie stanowiska: ' . $zmiana->getTitle());
                             }
                         }
-                        if ($zmiana->getInitials() && $zmiana->getInitials() != "puste") {
+                        /*if ($zmiana->getInitials() && $zmiana->getInitials() != "puste") {
                             $liczbaZmian++;
                             if ($userNow[0]['initials']) {
                                 $output->writeln('  - Zmiana inicjałów: ' . $userNow[0]['initials'] . ' -> ' . $zmiana->getInitials());
                             } else {
                                 $output->writeln('  - Nadanie inicjałów: ' . $zmiana->getInitials());
                             }
-                        }
+                        }*/
 
                         if ($zmiana->getInitialrights()) {
                             $liczbaZmian++;
@@ -235,16 +240,13 @@ class LdapCommand extends ContainerAwareCommand
                                 $output->writeln('  - Nadanie uprawnień początkowych: ' . $zmiana->getInitialrights());
                             }
                         }
-                        if ($userNow[0]['isDisabled'] != $zmiana->getIsDisabled()) {
+                        if (($zmiana->getIsDisabled() !== $adUserHelper::getCzyWylaczone())) {
                             $liczbaZmian++;
-
                             if ($zmiana->getIsDisabled()) {
                                 $output->writeln('  - Wyłączenie konta w domenie');
                             } else {
                                 $output->writeln('  - Włączenie konta w domenie');
                             }
-                        } else {
-                            $zmiana->setIsDisabled(null);
                         }
 
                         if ($zmiana->getMemberOf()) {

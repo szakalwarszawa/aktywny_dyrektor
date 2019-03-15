@@ -2,13 +2,11 @@
 
 namespace ParpV1\MainBundle\Form;
 
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use DateTime;
 use Doctrine\ORM\EntityManager;
@@ -136,13 +134,14 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'data' => $adUserHelper->getStanowisko(true),
             ])
             ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Biuro / Departament',
                 'class' => Departament::class,
                 'choice_label' => 'name',
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
+                'placeholder' => 'Proszę wybrać',
                 'data' => $adUserHelper->getDepartamentNazwa(false, true),
             ])
             ->add(AdUserConstants::PRZELOZONY, ChoiceType::class, [
@@ -160,6 +159,14 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'required' => false,
                 'label' => 'Sekcja',
                 'class' => Section::class,
+                'query_builder' => function (EntityRepository $entityRepository) use ($adUserHelper) {
+                    return $entityRepository
+                        ->createQueryBuilder('s')
+                        ->join('s.departament', 'd')
+                        ->where('d.shortname = :short')
+                        ->setParameter('short', $adUserHelper::getDepartamentNazwa(true))
+                    ;
+                },
                 'group_by' => function ($choiceObject) {
                     $departament = $choiceObject->getDepartament()?
                         $choiceObject
@@ -169,6 +176,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
 
                     return $departament;
                 },
+                'placeholder' => 'Proszę wybrać',
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
@@ -201,10 +209,12 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 ],
                 'placeholder' => 'Proszę wybrać',
             ])
+            /*
+            @feature
             ->add('ustawUprawnieniaPoczatkowe', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Resetuj do uprawnień początkowych'
-            ])
+            ])*/
             ->add('zmianaOd', DateTimeType::class, [
                 'label' => 'Zmiana obowiązuje od',
                 'required' => false,
@@ -232,6 +242,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     ->get($error['element'])
                     ->addError($formError)
                 ;
+
                 $formEvent
                     ->getForm()
                     ->addError($formError)
@@ -242,6 +253,24 @@ class EdycjaUzytkownikaFormType extends AbstractType
         $builder
             ->addEventListener(FormEvents::PRE_SET_DATA, $eventListener)
         ;
+        $builder
+            ->get(AdUserConstants::POWOD_WYLACZENIA)
+            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $formEvent) {
+                $disableReason = $formEvent->getData();
+                $form = $formEvent->getForm();
+                $isDisabled = $form
+                    ->getParent()
+                    ->get(AdUserConstants::WYLACZONE)
+                    ->getData()
+                ;
+
+                if (TakNieInterface::TAK === $isDisabled && empty($disableReason)) {
+                    $formError = new FormError('Musisz podać powód wyłączenia konta.');
+                    $form
+                        ->addError($formError)
+                    ;
+                }
+            });
     }
 
     /**

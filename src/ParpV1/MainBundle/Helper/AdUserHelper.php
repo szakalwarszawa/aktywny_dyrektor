@@ -50,6 +50,16 @@ class AdUserHelper
     }
 
     /**
+     * Zwraca użytkownika z AD.
+     *
+     * @return array
+     */
+    public static function getAdUser(): array
+    {
+        return self::$adUser;
+    }
+
+    /**
      * Zwraca imię i nazwisko.
      *
      * @return string

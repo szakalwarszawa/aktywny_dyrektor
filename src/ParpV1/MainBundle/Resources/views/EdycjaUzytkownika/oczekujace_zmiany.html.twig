@@ -5,14 +5,11 @@
                 <tr>
                     <th>Lp.</th>
                     <th>Imię i nazwisko</th>
-                    <th>Inicjały</th>
                     <th>Departament</th>
-                    <th>Sekcja</th>
-                    <th>Manager</th>
+                    <th>Przełożony</th>
                     <th>Stanowisko</th>
-                    <th>Info</th>
+                    <th>Sekcja</th>
                     <th>Uprawnienia początkowe</th>
-                    <th>Ad zmiana</th>
                     <th>Od kiedy</th>
                 </tr>
             </thead>
@@ -21,16 +18,21 @@
                     <tr>
                         <td>{{ loop.index }}</td>
                         <td>{{ row.cn }}</td>
-                        <td>{{ row.initials }}</td>
                         <td>{{ row.department }}</td>
-                        <td>{{ row.division }}</td>
-                        <td>{{ row.manager }}</td>
+                        <td>{{ row.manager|parseAdString('CN') }}</td>
                         <td>{{ row.title }}</td>
                         <td>{{ row.info }}</td>
-                        <td>{{ row.initialrights }}</td>
-                        <td>{{ row.distinguishedName }}</td>
+                        <td>
+                            {% if row.odebranieZasobowEntry is not null %}
+                                <i>Tak ({{ row.odebranieZasobowEntry.powodOdebrania }})</i>
+                                {% else %}
+                                    <i>Nie</i>
+                            {% endif %}
+                        </td>
                         <td>{{ row.fromWhen|date('Y-m-d H:i:s') }}</td>
-                        <td><a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a></td>
+                        <td>
+                            <a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a>
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
