@@ -29,9 +29,9 @@
             {% if grid.tweaks|length > 0 %}
                 {{ grid_tweaks(grid) }}
             {% endif %}
-            {% if grid.exports|length > 0 %}
+            {# {% if grid.exports|length > 0 %}
                 {{ grid_exports(grid) }}
-            {% endif %}
+            {% endif %} #}
             </div>
             {% if withjs %}
                 {{ grid_scripts(grid) }}
