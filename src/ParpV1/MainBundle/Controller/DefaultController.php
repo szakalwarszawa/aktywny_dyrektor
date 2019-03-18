@@ -48,6 +48,7 @@ use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaService;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+
 /**
  * Class DefaultController
  * @package ParpV1\MainBundle\Controller
@@ -770,10 +771,9 @@ class DefaultController extends Controller
         ]);
 
         $form->handleRequest($request);
-
-        if ($form->isValid()) {
-
-            $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
+        if ($form->isSubmitted()) {
+            if ($form->isValid()) {
+                $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
                 $saveEntryResult = $edycjaUzytkownikaFormService
                     ->setForm($form)
                     ->saveNewEntry()
@@ -781,37 +781,17 @@ class DefaultController extends Controller
 
                 if (!$saveEntryResult->hasErrors()) {
                     $entityManager->flush();
+                    $this
+                        ->addFlash('sucess', 'Utworzono użytkownika');
+
+                    return $this->redirectToRoute('main');
                 }
-                die('ok');
 
-            $entityManager->persist($entry);
-            $entityManager->flush();
-
-            $now = new \Datetime();
-            $dane = [
-                'imie_nazwisko'                       => $entry->getCn(),
-                'login'                               => $entry->getSamaccountname(),
-                'departament'                         => $entry->getDepartment(),
-                'data_nadania_uprawnien_poczatkowych' => $now->format('Y-m-d'),
-            ];
-
-            $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
-            $dane['tytul'] = $entry->getCn();
-            $dane['stanowisko'] = $entry->getTitle();
-            $dane['umowa_od'] = $now->format('Y-m-d');
-
-            // wysłanie zgłoszenia do [BI]:
-            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
-
-            // dodaktowe zgłoszenie do [BI] dla administratorów serwera Exchange:
-            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE, $dane);
-
-            // wysłanie zgłoszenia do [BA] jako dyrektor D/B:
-            $dane['nadawca'] = [$department->getDyrektor() . '@parp.gov.pl' => $department->getDyrektor()];
-            $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBA, $dane);
-
-            return $this->redirect($this->generateUrl('show_uncommited', array('id' => $entry->getId())));
+                $this
+                    ->addFlash('danger', 'Wystąpił błąd. ' . $saveEntryResult->getErrorsAsString());
+            }
         }
+
 
         return $this->render(
             'ParpMainBundle:Default:add.html.twig',
