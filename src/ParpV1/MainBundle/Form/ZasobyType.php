@@ -123,7 +123,7 @@ class ZasobyType extends AbstractType
                     ),
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
 					),
 					'required' => false,
 					'html5' => false,
@@ -173,7 +173,7 @@ class ZasobyType extends AbstractType
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -190,7 +190,7 @@ class ZasobyType extends AbstractType
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -207,7 +207,7 @@ class ZasobyType extends AbstractType
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -221,7 +221,7 @@ class ZasobyType extends AbstractType
                     ),
                     'label' => 'Data utworzenia zasobu',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -234,7 +234,7 @@ class ZasobyType extends AbstractType
                     ),
                     'label' => 'Data ostatniej zmiany zasobu',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -247,7 +247,7 @@ class ZasobyType extends AbstractType
                     ),
                     'label' => 'Data usunięcia zasobu',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
