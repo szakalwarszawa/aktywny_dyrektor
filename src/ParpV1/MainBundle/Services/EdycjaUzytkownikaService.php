@@ -18,6 +18,10 @@ use ParpV1\MainBundle\Constants\PowodAnulowaniaWnioskuConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Entity\Section;
+use ParpV1\MainBundle\Entity\Departament;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class EdycjaUzytkownikaService
 {
@@ -37,14 +41,40 @@ class EdycjaUzytkownikaService
     private $entityManager;
 
     /**
+     * @var UserService
+     */
+    private $userService;
+
+    /**
+     * @var ArrayCollection
+     */
+    private $errors;
+
+    /**
+     * @var array
+     */
+    private $adParameters;
+
+    /**
      * Publiczny konstruktor
      *
      * @param Form $form
      */
-    public function __construct(LdapService $ldapService, EntityManager $entityManager)
-    {
+    public function __construct(
+        LdapService $ldapService,
+        EntityManager $entityManager,
+        UserService $userService,
+        string $baseAdDomain,
+        string $baseAdOu
+    ) {
         $this->ldapService = $ldapService;
         $this->entityManager = $entityManager;
+        $this->userService = $userService;
+        $this->errors = new ArrayCollection();
+        $this->adParameters = [
+            'ad_domain' => $baseAdDomain,
+            'ad_ou' => $baseAdOu
+        ];
     }
 
     /**
@@ -74,16 +104,124 @@ class EdycjaUzytkownikaService
         return $this;
     }
 
+    public function saveNewEntry()
+    {
+        $form = $this->form;
+
+        if (null === $form) {
+            throw new LogicException('Nie zdefiniowano formularza.');
+        }
+
+        $formData = $form->getData();
+        $validSectionDepartment = $this->isValidSectionDepartment(
+            $formData[AdUserConstants::SEKCJA_NAZWA],
+            $formData[AdUserConstants::DEPARTAMENT_NAZWA]
+        );
+
+        if (!$validSectionDepartment) {
+            $this
+                ->errors
+                ->add([
+                    'message' => 'Wybrana sekcja nie istnieje w podanym departamencie.'
+                ])
+            ;
+
+            return $this;
+        }
+
+        $entry = new Entry(
+            $this
+                ->userService
+                ->getCurrentUser()
+                ->getUsername()
+        );
+        $adStringTool = new AdStringTool($this->adParameters['ad_domain'], $this->adParameters['ad_ou']);
+        $entry
+            ->setCn($formData[AdUserConstants::IMIE_NAZWISKO])
+            ->setAccountExpires($formData[AdUserConstants::WYGASA])
+            ->setDepartment($formData[AdUserConstants::DEPARTAMENT_NAZWA])
+            ->setInfo($formData[AdUserConstants::SEKCJA_NAZWA])
+            ->setDivision($formData[AdUserConstants::SEKCJA_NAZWA]->getShortname())
+            ->setTitle($formData[AdUserConstants::STANOWISKO])
+            ->setSamaccountname($formData[AdUserConstants::LOGIN])
+            ->setOpis('Nowe konto')
+            ->setAccountExpires($formData[AdUserConstants::WYGASA])
+            ->setManager($formData[AdUserConstants::PRZELOZONY])
+            ->setFromWhen($formData['zmianaOd'])
+            ->setDistinguishedName(
+                $adStringTool::createBaseUserString(
+                    $formData[AdUserConstants::IMIE_NAZWISKO],
+                    $formData[AdUserConstants::DEPARTAMENT_NAZWA]->getShortname()
+                )
+            )
+            ->setActivateDeactivated(true)
+        ;
+
+        $this
+            ->entityManager
+            ->persist($entry)
+        ;
+
+        return $this;
+    }
+
+    /**
+     * Tworzy nowe entry na podstawie danych z formularza (lub danych z kluczami formularza).
+     *
+     * @param array $formData
+     * @param AdUserHelper $adUserHelper
+     * @param string $description
+     *
+     * @return bool
+     */
+    private function createEntry(array $formData)
+    {
+        $entry = new Entry(
+            $this
+                ->userService
+                ->getCurrentUser()
+                ->getUsername()
+        );
+        $entry
+            ->setCn($formData[AdUserConstants::IMIE_NAZWISKO])
+            ->setAccountExpires($formData[AdUserConstants::WYGASA])
+            ->setDepartment($formData[AdUserConstants::DEPARTAMENT_NAZWA])
+            ->setInfo($formData[AdUserConstants::SEKCJA_NAZWA])
+            ->setTitle($formData[AdUserConstants::STANOWISKO])
+            ->setSamaccountname($formData[AdUserConstants::LOGIN])
+            ->setOpis('Nowe konto')
+            ->setAccountExpires($formData[AdUserConstants::WYGASA])
+            ->setManager($formData[AdUserConstants::PRZELOZONY])
+            ->setFromWhen($formData['zmianaOd'])
+        ;
+
+        return $entry;
+    }
+
+    /**
+     * Sprawdza czy wybrana sekcja i departament są poprawne.
+     * Czy nie została wybrana sekcja spoza departamentu.
+     *
+     * @param Section $section
+     * @param Departament $departament
+     *
+     * @return bool
+     */
+    private function isValidSectionDepartment(Section $section, Departament $department): bool
+    {
+        return $section->getDepartament() === $department;
+    }
+
     /**
      * Sprawdza czy są zmiany formularz <=> AD.
      * Jeżeli są to tworzy entry do wypchnięcia.
      * Jeżeli został zmieniony atrybut przez który trzeba będzie anulować wnioski - robi to.
      *
-     * @return void|bool
+     * @return bool
      *
      * @throws UnexpectedValueException gdy zmieniono pole niepodlegające zmianie
      */
-    public function saveEntry()
+    public function saveEditEntry(): bool
     {
         $form = $this->form;
 
@@ -99,13 +237,18 @@ class EdycjaUzytkownikaService
             return false;
         }
 
-        foreach ($changedElements as $element) {
-            if (!in_array($element, AdUserConstants::getElementsAllowedToChange())) {
-                throw new UnexpectedValueException('Zmieniono pole niepodlegające zmianie w AkD!');
+        if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
+            foreach ($changedElements as $element) {
+                if (!in_array($element, AdUserConstants::getElementsAllowedToChange())) {
+                    throw new UnexpectedValueException(
+                        'Zmieniono pole niepodlegające zmianie w AkD! Twoje role na to nie pozwalają.'
+                    );
+                }
             }
         }
 
         $createOdebranieZasobowEntry = false;
+        $reason = null;
         if (!empty(array_intersect($changedElements, AdUserConstants::getResetTriggers()))) {
             $createOdebranieZasobowEntry = true;
             $reason = $this->specifyCancellationReason($changedElements, $formData);
@@ -154,6 +297,8 @@ class EdycjaUzytkownikaService
             ->entityManager
             ->persist($entry)
         ;
+
+        return true;
     }
 
     /**
@@ -377,5 +522,15 @@ class EdycjaUzytkownikaService
         }
 
         return $elements;
+    }
+
+    /**
+     * Czy są jakieś błędy.
+     *
+     * @return bool
+     */
+    public function hasErrors(): bool
+    {
+        return 0 < count($this->errors);
     }
 }

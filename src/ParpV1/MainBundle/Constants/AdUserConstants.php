@@ -84,6 +84,11 @@ class AdUserConstants
     /**
      * @var string
      */
+    const AD_STRING = 'distinguishedname';
+
+    /**
+     * @var string
+     */
     const WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY = 'wyl_konta_rozwiazanie_umowy';
 
     /**
@@ -101,6 +106,10 @@ class AdUserConstants
     /**
      * Zwraca wyzwalacze przy których będą resetowane uprawnienia do podstawowych.
      *
+     * @todo Stanowisko jest wyłączone ponieważ trzeba obsłużyć w jakim przypadku ma byc resetowane
+     *      np. zmiana stanowiska z młodszego specjalisty -> dyrektora i odwrotnie
+     *      do tego służy nowy checkbox w słowniku
+     *
      * @return array
      */
     public static function getResetTriggers(): array
@@ -109,13 +118,13 @@ class AdUserConstants
             self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
             self::SEKCJA_NAZWA,
             self::DEPARTAMENT_NAZWA,
-            self::STANOWISKO,
+            //self::STANOWISKO,
             self::SEKCJA_NAZWA
         ];
     }
 
     /**
-     * Zwraca elementy formularza EdycjaUzytkownikaService które mogą być zmieniane.
+     * Zwraca elementy SKRÓCONEGO formularza EdycjaUzytkownikaService które mogą być zmieniane.
      *
      * @return array
      */

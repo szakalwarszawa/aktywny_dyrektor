@@ -38,10 +38,14 @@ class AdUserHelper
      * @param array $adUserArray - tablica pochodząca z seriwsu
      *      LDAP SERVICE, metody getUserFromAD()
      */
-    public function __construct(array $adUserArray, EntityManager $entityManager = null)
+    public function __construct(array $adUserArray, EntityManager $entityManager = null, bool $throwException = true)
     {
-        if (empty($adUserArray)) {
+        if (empty($adUserArray) && $throwException) {
             throw new InvalidArgumentException('Brak danych użytkownika.');
+        }
+
+        if (empty($adUserArray) && !$throwException) {
+            return false;
         }
 
         self::$entityManager = $entityManager;
@@ -87,6 +91,14 @@ class AdUserHelper
     public static function getEmail(): string
     {
         return self::$adUser[AdUserConstants::EMAIL];
+    }
+
+    /**
+     * Zwraca distinguishedname
+     */
+    public static function getAdString(): string
+    {
+        return self::$adUser[AdUserConstants::AD_STRING];
     }
 
     /**

@@ -26,22 +26,12 @@ use ParpV1\MainBundle\Entity\AclRole;
 use Doctrine\ORM\EntityRepository;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use Doctrine\Common\Collections\ArrayCollection;
-use ParpV1\MainBundle\Services\UserService;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
- * Formularz przeniesiony do osobnej klasy z Main/DefaultController
- * Potrzebne są metadane z tego formularza do sprawdzania zmian.
- *
- * @todo trzeba przenieść z formularza html`owe atrybuty do twiga
- * @todo ogarnąć te readonly -> przekazać do szablonu przy renderowaniu
- * @todo poprawić szablon twigowy
- * @todo ogarnąć opcje formularza - jest ich za dużo i to jakieś głupoty są...
- * @todo refaktoryzacja
- *
- * ----
- *
  * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
  * Opiera się na kluczach tablicy zwracanej z AD które są zdefiniowane
  * w klasie AdUserConstants. W miejsca stałych lepiej nie wsadzać nic innego.
@@ -62,14 +52,10 @@ class EdycjaUzytkownikaFormType extends AbstractType
     private $entityManager;
 
     /**
-     * @var UserService
-     */
-    private $userService;
-
-    public $xd;
-
-    /**
      * Typ formularza do edycji.
+     * Umożliwia on edycję tylko wybranych pól.
+     * Używany przy edycji użykownika przez PARP_BZK_1.
+     * Skrócony formularz.
      *
      * @var int
      */
@@ -77,6 +63,9 @@ class EdycjaUzytkownikaFormType extends AbstractType
 
     /**
      * Typ formularza nowego użytkownika.
+     * Umożliwia edycję wszystkich pól.
+     * Używany przy edycji użytkownika przez rolę PARP_ADMIN_REJESTRU_ZASOBOW.
+     * Pełny formularz.
      *
      * @var int
      */
@@ -87,10 +76,9 @@ class EdycjaUzytkownikaFormType extends AbstractType
      *
      * @param LdapService $ldapService
      */
-    public function __construct(LdapService $ldapService, UserService $userService)
+    public function __construct(LdapService $ldapService)
     {
         $this->ldapService = $ldapService;
-        $this->currentUser = $userService;
     }
 
     /**
@@ -99,16 +87,21 @@ class EdycjaUzytkownikaFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $adUser = $this
+        $formType = $options['form_type'];
+        $adUserHelper = null;
+        if (self::TYP_EDYCJA === $formType) {
+            $adUser = $this
             ->ldapService
             ->getUserFromAD($options['username'])
-        ;
-        $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);
+            ;
+            $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);
+        }
+
         $this->entityManager = $options['entity_manager'];
 
         $builder
             ->add(AdUserConstants::LOGIN, TextType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Nazwa konta',
                 'constraints' => [
                     new Assert\NotBlank()
@@ -116,22 +109,23 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'data' => $options['username'],
             ])
             ->add(AdUserConstants::IMIE_NAZWISKO, TextType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Imię i nazwisko',
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
-                'data' => $adUserHelper->getImieNazwisko(),
+                'data' => $adUserHelper? $adUserHelper->getImieNazwisko() : null,
             ])
             ->add(AdUserConstants::STANOWISKO, EntityType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Stanowisko',
                 'class' => Position::class,
                 'choice_label' => 'name',
                 'constraints' => [
                     new Assert\NotBlank()
-            ],
-                'data' => $adUserHelper->getStanowisko(true),
+                ],
+                'placeholder' => 'Proszę wybrać',
+                'data' => $adUserHelper? $adUserHelper->getStanowisko(true) : null,
             ])
             ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
                 'required' => true,
@@ -142,10 +136,10 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     new Assert\NotBlank()
                 ],
                 'placeholder' => 'Proszę wybrać',
-                'data' => $adUserHelper->getDepartamentNazwa(false, true),
+                'data' => $adUserHelper? $adUserHelper->getDepartamentNazwa(false, true) : null,
             ])
             ->add(AdUserConstants::PRZELOZONY, ChoiceType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Przełożony',
                 'choices' => $this
                     ->ldapService
@@ -153,18 +147,25 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
-                'data' => $adUserHelper->getPrzelozony(),
+                'placeholder' => 'Proszę wybrać',
+                'data' => $adUserHelper? $adUserHelper->getPrzelozony() : null,
             ])
             ->add(AdUserConstants::SEKCJA_NAZWA, EntityType::class, [
-                'required' => false,
+                'required' => true,
                 'label' => 'Sekcja',
                 'class' => Section::class,
                 'query_builder' => function (EntityRepository $entityRepository) use ($adUserHelper) {
+                    if (!$adUserHelper) {
+                        return $entityRepository
+                            ->createQueryBuilder('s')
+                        ;
+                    }
+
                     return $entityRepository
                         ->createQueryBuilder('s')
                         ->join('s.departament', 'd')
                         ->where('d.shortname = :short')
-                        ->setParameter('short', $adUserHelper::getDepartamentNazwa(true))
+                        ->setParameter('short', $adUserHelper? $adUserHelper::getDepartamentNazwa(true) : null)
                     ;
                 },
                 'group_by' => function ($choiceObject) {
@@ -180,97 +181,122 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
-                'data' => $adUserHelper->getSekcja(false, true),
+                'data' => $adUserHelper? $adUserHelper->getSekcja(false, true) : null,
             ])
             ->add(AdUserConstants::WYGASA, DateType::class, [
                 'required' => false,
                 'label' => 'Data wygaśnięcia konta',
-                'data' => $adUserHelper->getKiedyWygasa(),
+                'data' => $adUserHelper? $adUserHelper->getKiedyWygasa() : null,
             ])
-            ->add(AdUserConstants::WYLACZONE, ChoiceType::class, [
-                'required' => false,
-                'label' => 'Konto wyłączone w AD',
-                'choices' => [
-                    'Tak' => TakNieInterface::TAK,
-                    'Nie' => TakNieInterface::NIE,
-                ],
-                'constraints' => [
-                    new Assert\NotNull()
-                ],
-                'placeholder' => 'Proszę wybrać',
-                'data' => $adUserHelper->getCzyWylaczone(),
-            ])
-            ->add(AdUserConstants::POWOD_WYLACZENIA, ChoiceType::class, [
-                'required' => false,
-                'label' => 'Powód wyłączenia',
-                'choices' => [
-                    'Konto wyłączono z powodu rozwiązania stosunku pracy' => AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
-                    'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
-                ],
-                'placeholder' => 'Proszę wybrać',
-            ])
+        ;
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->add(AdUserConstants::WYLACZONE, ChoiceType::class, [
+                    'required' => false,
+                    'label' => 'Konto wyłączone w AD',
+                    'choices' => [
+                        'Tak' => TakNieInterface::TAK,
+                        'Nie' => TakNieInterface::NIE,
+                    ],
+                    'constraints' => [
+                        new Assert\NotNull()
+                    ],
+                    'placeholder' => 'Proszę wybrać',
+                    'data' => $adUserHelper? $adUserHelper->getCzyWylaczone() : null,
+                ])
+                ->add(AdUserConstants::POWOD_WYLACZENIA, ChoiceType::class, [
+                    'required' => false,
+                    'label' => 'Powód wyłączenia',
+                    'choices' => [
+                        'Konto wyłączono z powodu rozwiązania stosunku pracy' => AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
+                        'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
+                    ],
+                    'placeholder' => 'Proszę wybrać',
+                ])
+            ;
+        }
             /*
             @feature
             ->add('ustawUprawnieniaPoczatkowe', CheckboxType::class, [
                 'required' => false,
                 'label' => 'Resetuj do uprawnień początkowych'
             ])*/
+        $builder
             ->add('zmianaOd', DateTimeType::class, [
                 'label' => 'Zmiana obowiązuje od',
                 'required' => false,
                 'data' => new DateTime()
             ])
-            ->add('roles', EntityType::class, [
-                'label' => 'Role w AkD',
-                'class' => AclRole::class,
-                'choice_label' => 'name',
-                'multiple' => true,
-                'expanded' => false,
-                'data' => $this->getRoleUzytkownika($options['username'])
+        ;
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->add('roles', EntityType::class, [
+                    'label' => 'Role w AkD',
+                    'class' => AclRole::class,
+                    'choice_label' => 'name',
+                    'multiple' => true,
+                    'expanded' => false,
+                    'data' => $adUserHelper? $this->getUserRoles($options['username']) : null
+                ])
+            ;
+        }
+
+        $builder
+            ->add('shortForm', HiddenType::class, [
+                'data' => $options['short_form'],
+            ])
+            ->add('formType', HiddenType::class, [
+                'data' => $formType,
             ])
             ->add('zapisz', SubmitType::class)
         ;
 
         $builder->setMethod('POST');
 
-        $eventListener = function (FormEvent $formEvent) use ($adUserHelper) {
-            $getDataErrors = $adUserHelper::getErrors();
-            $form = $formEvent->getForm();
-            foreach ($getDataErrors as $error) {
-                $formError = new FormError($error['message']);
-                $form
-                    ->get($error['element'])
-                    ->addError($formError)
-                ;
-
-                $formEvent
-                    ->getForm()
-                    ->addError($formError)
-                ;
-            }
-        };
-
-        $builder
-            ->addEventListener(FormEvents::PRE_SET_DATA, $eventListener)
-        ;
-        $builder
-            ->get(AdUserConstants::POWOD_WYLACZENIA)
-            ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $formEvent) {
-                $disableReason = $formEvent->getData();
+        if ($adUserHelper) {
+            $eventListener = function (FormEvent $formEvent) use ($adUserHelper) {
+                $getDataErrors = $adUserHelper::getErrors();
                 $form = $formEvent->getForm();
-                $isDisabled = $form
-                    ->getParent()
-                    ->get(AdUserConstants::WYLACZONE)
-                    ->getData()
-                ;
-
-                if (TakNieInterface::TAK === $isDisabled && empty($disableReason)) {
-                    $formError = new FormError('Musisz podać powód wyłączenia konta.');
+                foreach ($getDataErrors as $error) {
+                    $formError = new FormError($error['message']);
                     $form
+                        ->get($error['element'])
+                        ->addError($formError)
+                    ;
+
+                    $formEvent
+                        ->getForm()
                         ->addError($formError)
                     ;
                 }
-            });
+            };
+
+            $builder
+                ->addEventListener(FormEvents::PRE_SET_DATA, $eventListener)
+            ;
+        }
+
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->get(AdUserConstants::POWOD_WYLACZENIA)
+                ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $formEvent) {
+                    $disableReason = $formEvent->getData();
+                    $form = $formEvent->getForm();
+                    $isDisabled = $form
+                        ->getParent()
+                        ->get(AdUserConstants::WYLACZONE)
+                        ->getData()
+                    ;
+
+                    if (TakNieInterface::TAK === $isDisabled && empty($disableReason)) {
+                        $formError = new FormError('Musisz podać powód wyłączenia konta.');
+                        $form
+                            ->addError($formError)
+                        ;
+                    }
+                })
+            ;
+        }
     }
 
     /**
@@ -280,7 +306,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
      *
      * @return ArrayCollection
      */
-    private function getRoleUzytkownika(string $username): ArrayCollection
+    private function getUserRoles(string $username): ArrayCollection
     {
         $entityManager = $this->entityManager;
         $userRoles = $entityManager
@@ -305,19 +331,20 @@ class EdycjaUzytkownikaFormType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => null,
-            'opcje' => []
+            'short_form' => true,
+            'username' => ''
         ));
 
         $resolver->setRequired([
             'entity_manager',
             'username',
-            'typ_formularza'
+            'form_type'
         ]);
 
         $resolver
-            ->setAllowedTypes('opcje', 'array')
+            ->setAllowedTypes('short_form', 'bool')
             ->setAllowedTypes('username', 'string')
-            ->setAllowedTypes('typ_formularza', 'int')
+            ->setAllowedTypes('form_type', 'int')
             ->setAllowedTypes('entity_manager', EntityManager::class)
         ;
     }

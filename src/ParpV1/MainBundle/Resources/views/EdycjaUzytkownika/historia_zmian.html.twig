@@ -6,7 +6,7 @@
                     <th>Lp.</th>
                     <th>Imię i nazwisko</th>
                     <th>Departament</th>
-                    <th>Manager</th>
+                    <th>Przełożony</th>
                     <th>Stanowisko</th>
                     <th>Sekcja</th>
                     <th>Uprawnienia początkowe</th>
@@ -19,7 +19,7 @@
                         <td>{{ loop.index }}</td>
                         <td>{{ row.cn }}</td>
                         <td>{{ row.department }}</td>
-                        <td>{{ row.manager }}</td>
+                        <td>{{ row.manager|parseAdString('CN') }}</td>
                         <td>{{ row.title }}</td>
                         <td>{{ row.info }}</td>
                         <td>

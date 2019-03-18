@@ -23,13 +23,19 @@
                     {% endif %}
                 </a>
             </li>
-            <li>
-                <a data-toggle="tab" href="#komentarze">Komentarze</a>
-            </li>
+            {% if username is defined %}
+                <li>
+                    <a data-toggle="tab" href="#komentarze">Komentarze</a>
+                </li>
+            {% endif %}
         </ul>
 
         <div class="tab-content">
-            <h3>{{ username }}</h3>
+            <h3>
+                {% block header %}
+                    {{ username }}
+                {% endblock %}
+            </h3>
             <hr />
 
             <div id="general" class="tab-pane fade in active">
@@ -51,10 +57,11 @@
             <div id="oczekujace" class="tab-pane fade">
                 {% include 'ParpMainBundle:EdycjaUzytkownika:oczekujace_zmiany.html.twig' %}
             </div>
-
-            <div id="komentarze" class="tab-pane fade">
-                {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'User', obiektId: username})) }}
-            </div>
+            {% if username is defined %}
+                <div id="komentarze" class="tab-pane fade">
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'User', obiektId: username})) }}
+                </div>
+            {% endif %}
         </div>
 
     </div>

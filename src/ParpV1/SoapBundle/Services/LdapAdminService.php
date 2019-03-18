@@ -286,10 +286,14 @@ class LdapAdminService
      */
     public function saveEntity($ldapUser, $person)
     {
-        if (null === $ldapUser) {
+        if (null === $ldapUser || !is_array($ldapUser)) {
             $ldapUser = $this->getUserFromAD($person->getSamaccountname());
         }
-        $adUserHelper = new AdUserHelper($ldapUser);
+
+        $adUserHelper = null;
+        if (!empty($ldapUser)) {
+            $adUserHelper = new AdUserHelper($ldapUser);
+        }
 
         $this->lastEntryId = $person->getId();
         $this->lastEntry = $person;
@@ -329,9 +333,9 @@ class LdapAdminService
             }
         }
 
-
-        if ($person->getManager() !== $adUserHelper::getPrzelozony(false)) {
+        if (null === $adUserHelper || ($person->getManager() !== $adUserHelper::getPrzelozony(false))) {
             $manager = $person->getManager();
+
             if ($manager === 'BRAK') {
                 $entry['manager'] = [];
             } elseif (strstr($manager, 'CN=') === false) {
@@ -368,7 +372,7 @@ class LdapAdminService
 
 
 
-        if ($person->getTitle() !== $adUserHelper::getStanowisko()) {
+        if (null === $adUserHelper || ($person->getTitle() !== $adUserHelper::getStanowisko())) {
             $entry['title'] = $this->mapowanieStanowisk($person->getTitle());
         }
 
@@ -391,7 +395,7 @@ class LdapAdminService
         $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($person->getDepartment()), 'nowaStruktura' => true]);
 
 
-        if ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa()) {
+        if (null === $adUserHelper || ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa())) {
             $entry['department'] = $person->getDepartment();
             if (!empty($department)) {
                 $entry['description'] = $department->getShortname();
@@ -451,7 +455,7 @@ class LdapAdminService
             }
         }*/
 
-        if ($person->getInfo() != null) {
+        if (null === $adUserHelper || ($person->getInfo() !== $adUserHelper::getSekcja())) {
             if ($person->getInfo() === 'BRAK' || $person->getInfo() === '') {
                 $entry['info'] = []; //"n/d";
                 //$entry['division'] = []; //"n/d";
@@ -515,7 +519,7 @@ class LdapAdminService
         // zmiana departamentu musi byc ostnia operacją ponieważ zmienimi rownież
         // kontener pracownika. Jezeli zmodyfikujemy go wczecniej to pozowatłe operacje mogą
         // nie znaleśc obiektu w ad (zmieniamy przeciez distinguishedName!).
-        if ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa()) {
+        if (null === $adUserHelper || ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa())) {
             // zmien ds pracownika
             //$userAD = $this->getUserFromAD($person->getSamaccountname());
             $parent = 'OU=' . $entry['description'] . ',' . $userdn;
@@ -528,7 +532,7 @@ class LdapAdminService
             $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $cn, $parent, true);
 
             $ldapstatus = $this->ldapError($ldapconn);
-        } elseif ($person->getCn() !== $adUserHelper::getImieNazwisko()) {
+        } elseif (null === $adUserHelper || ($person->getCn() !== $adUserHelper::getImieNazwisko())) {
             //zmieniamy tylko cn
             $cn = $person->getCn();
 

@@ -1441,7 +1441,7 @@ class LdapService
         return $ADManager;
     }
 
-    public function getPrzelozeniJakoName()
+    public function getPrzelozeniJakoName($tablicaZLoginem = false)
     {
         if ($this->_userCache === null) {
             $this->_userCache = $this->getAllFromAD();
@@ -1450,7 +1450,12 @@ class LdapService
         $ret = [];
         foreach ($this->_userCache as $u) {
             if (in_array(trim($u['title']), $this->stanowiska, true)) {
-                $ret[$u['name']] = $u['name'];
+                if ($tablicaZLoginem) {
+                    $ret[$u['name']] = $u['samaccountname'];
+                } else {
+                    $ret[$u['name']] = $u['name'];
+                }
+
             }
         }
 

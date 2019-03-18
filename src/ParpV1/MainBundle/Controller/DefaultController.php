@@ -431,10 +431,16 @@ class DefaultController extends Controller
     {
         $entityManager = $this->getDoctrine()->getManager();
 
+        $shortForm = true;
+        if ($this->getUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
+            $shortForm = false;
+        }
+
         $form = $this->createForm(EdycjaUzytkownikaFormType::class, null, [
             'entity_manager' => $entityManager,
             'username' => $samaccountname,
-            'typ_formularza' => EdycjaUzytkownikaFormType::TYP_EDYCJA
+            'form_type' => EdycjaUzytkownikaFormType::TYP_EDYCJA,
+            'short_form' => $shortForm
         ]);
 
 
@@ -451,7 +457,7 @@ class DefaultController extends Controller
                 $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
                 $saveEntryResult = $edycjaUzytkownikaFormService
                     ->setForm($form)
-                    ->saveEntry()
+                    ->saveEditEntry()
                 ;
 
                 if (false !== $saveEntryResult) {
@@ -490,15 +496,15 @@ class DefaultController extends Controller
                 ->getRepository(UserZasoby::class)
                 ->findZasobyUzytkownika($samaccountname);
 
-        $tplData = array(
-            'username'           => $samaccountname,
-            'form'           => $form->createView(),
-            'zasoby_uzytkownika'    => $userResources,
-            'user_changes'   => $userChanges,
-            'dane_rekord'    => $rekordData
+        $viewData = array(
+            'username' => $samaccountname,
+            'form' => $form->createView(),
+            'zasoby_uzytkownika' => $userResources,
+            'user_changes' => $userChanges,
+            'dane_rekord' => $rekordData
         );
 
-        return $this->render('ParpMainBundle:Default:edit.html.twig', $tplData);
+        return $this->render('ParpMainBundle:Default:edit.html.twig', $viewData);
     }
 
     /**
@@ -744,7 +750,9 @@ class DefaultController extends Controller
 
     /**
      * @Route("/user/add", name="userAdd")
-     * @Template()
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW') or has_role('PARP_BZK_1')")
+     *
      * @param Request $request
      *
      * @return RedirectResponse|Response
@@ -752,46 +760,29 @@ class DefaultController extends Controller
      */
     public function addAction(Request $request)
     {
-        $mozeTuByc =
-            in_array('PARP_ADMIN', $this->getUser()->getRoles(), true) ||
-            in_array('PARP_BZK_2', $this->getUser()->getRoles(), true);
-        if (!$mozeTuByc) {
-            throw new SecurityTestException('Nie masz uprawnień by tworzyć użytkowników!');
-        }
-
         $entityManager = $this->getDoctrine()->getManager();
 
-
-        $entry = new Entry($this->getUser()->getUsername());
-        $form = $this->createUserEditForm($this, $entry, false, true);
+        $form = $this->createForm(EdycjaUzytkownikaFormType::class, null, [
+            'entity_manager' => $entityManager,
+            'username' => '',
+            'form_type' => EdycjaUzytkownikaFormType::TYP_NOWY,
+            'short_form' => false
+        ]);
 
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $this->get('adcheck_service')->checkIfUserCanBeEdited($entry->getSamaccountname());
 
-            $tab = explode('.', $this->container->getParameter('ad_domain'));
-            $ou = ($this->container->getParameter('ad_ou'));
-            $department =
-                $this->getDoctrine()
-                    ->getRepository(Departament::class)
-                    ->findOneBy(['name' => $entry->getDepartment()]);
-            $distinguishedname = 'CN='.$entry->getCn().',OU='.$department->getShortname().','.$ou.',DC='.$tab[0].
-                ',DC='.$tab[1];
+            $edycjaUzytkownikaFormService = $this->get('edycja_uzytkownika_service');
+                $saveEntryResult = $edycjaUzytkownikaFormService
+                    ->setForm($form)
+                    ->saveNewEntry()
+                ;
 
-            $entry->setDistinguishedName($distinguishedname);
-
-            $entry->setFromWhen(new \DateTime($entry->getFromWhen()));
-
-            $data = new \DateTime($entry->getAccountExpires());
-            if ($data) {
-                $data->setTime(23, 59);
-                $entry->setAccountExpires($data);
-            }
-
-            // FIXME: Tu wydaje mi się że coś jest nie tak.
-            // $value = implode(',', [$entry->getInitialrights()]);
-            // $entry->setInitialrights($value);
+                if (!$saveEntryResult->hasErrors()) {
+                    $entityManager->flush();
+                }
+                die('ok');
 
             $entityManager->persist($entry);
             $entityManager->flush();

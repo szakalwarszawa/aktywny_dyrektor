@@ -26,6 +26,60 @@ class AdStringTool
     const DC = 'DC=';
 
     /**
+     * Domena AD z parametrów.
+     * np. `test.local`
+     *
+     * @var string|null
+     */
+    private static $baseAdDomain = null;
+
+    /**
+     * OU z parametrów.
+     *
+     * @var string|null
+     */
+    private static $baseAdOu = null;
+
+    /**
+     * Publiczny konstruktor
+     *
+     * @param string $baseAdDomain
+     * @param stirng $baseAdOu
+     */
+    public function __construct(string $baseAdDomain = null, string $baseAdOu = null)
+    {
+        self::$baseAdDomain = $baseAdDomain;
+        self::$baseAdOu = $baseAdOu;
+    }
+
+    /**
+     * Buduje string AD dla podanej nazwy użytkownika z ze skrótem departamentu.
+     * Zwraca postać typu "CN=Janusz Tracz,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=test,DC=local"
+     *
+     * @param string $commonName - np. Janusz Tracz
+     * @param string $departmentShort - np. BI
+     *
+     * @return string
+     */
+    public static function createBaseUserString(string $commonName, string $departmentShort): string
+    {
+        $domainComponent = explode('.', self::$baseAdDomain);
+        if (2 !== count($domainComponent)) {
+            throw new InvalidArgumentException('Nieprawidłowo ustawiony parametr OU.');
+        }
+
+        $stringParts = [
+            self::CN . $commonName,
+            self::OU . $departmentShort,
+            self::$baseAdOu,
+            self::DC . current($domainComponent),
+            self::DC . end($domainComponent)
+        ];
+
+        return implode(',', $stringParts);
+    }
+
+    /**
      * Podmienia element w stringu Active Directory na podany.
      *
      * @param string $adString

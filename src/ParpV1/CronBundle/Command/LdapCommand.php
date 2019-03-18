@@ -21,6 +21,7 @@ use Symfony\Component\Filesystem\Filesystem;
 use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use ParpV1\MainBundle\Helper\AdUserHelper;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class LdapCommand
@@ -142,7 +143,7 @@ class LdapCommand extends ContainerAwareCommand
                 foreach ($zmiany as $zmiana) {
                     $userNowData = $ldap->getUserFromAllAD($zmiana->getSamaccountname());
 
-                    $adUserHelper = new AdUserHelper($userNowData['user'], $em);
+                    $adUserHelper = new AdUserHelper($userNowData['user'], $em, false);
                     $userNow = $userNowData['user'];
                     $ktorzy = $userNowData['ktorzy'];
 
@@ -442,7 +443,7 @@ class LdapCommand extends ContainerAwareCommand
                 if ($isCreating) {
                     $ldapstatus = $ldap->createEntity($zmiana);
                 } else {
-                    $ldapstatus = $ldap->saveEntity($zmiana->getDistinguishedName(), $zmiana);
+                    $ldapstatus = $ldap->saveEntity($zmiana->getSamaccountname(), $zmiana);
                 }
             }
             $i++;
