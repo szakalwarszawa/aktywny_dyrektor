@@ -124,10 +124,10 @@ class ZasobyType extends AbstractType
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
-                    ),
-                    'required' => false,
-                    'widget' => 'single_text'
-
+					),
+					'required' => false
+                    // 'required' => false,
+                    // 'widget' => 'single_text'
                 ))
             ->add('wykonawca', ChoiceType::class, array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny"),
