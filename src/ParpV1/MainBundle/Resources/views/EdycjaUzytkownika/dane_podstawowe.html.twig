@@ -1,8 +1,8 @@
 {# Pola formularza które są powiązane z danymi wychodzącymi z AD są określone stałą #}
 {% set ad_user_constants = 'ParpV1\\MainBundle\\Constants\\AdUserConstants' %}
 {# Atrybuty elementu zależne od tego czy jest to skrócony formularz #}
-{% set common_attr = form.shortForm.vars.value == true? {attr: {'readonly': 'readonly', 'disabled': 'disabled'}} : {} %}
-{% set form_type_new = form.formType.vars.value == constant('ParpV1\\MainBundle\\Form\\EdycjaUzytkownikaFormType::TYP_NOWY')? true : false %}
+{% set common_attr = form.shortForm.vars.value == true ? {attr: {'readonly': 'readonly', 'disabled': 'disabled'}} : {} %}
+{% set form_type_new = form.formType.vars.value == constant('ParpV1\\MainBundle\\Form\\EdycjaUzytkownikaFormType::TYP_NOWY') ? true : false %}
 {{ form_start(form) }}
     {# LOGIN UŻYTKOWNIKA #}
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
