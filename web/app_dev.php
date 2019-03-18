@@ -22,6 +22,11 @@ foreach ($ipDozwolone as $ip) {
        }
 }
 
+if (true === $dostepZabroniony) {
+       header('HTTP/1.0 403 Forbidden');
+       exit('Brak uprawnień do korzystania z zasobu.');
+}
+
 // Koniec sprawdzania IP.
 
 
