@@ -124,9 +124,9 @@ class ZasobyType extends AbstractType
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
                         'class' => '',
-					),
-					'required' => false,
-					'html5' => false,
+                    ),
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text'
                 ))
             ->add('wykonawca', ChoiceType::class, array(
@@ -137,17 +137,17 @@ class ZasobyType extends AbstractType
             ->add('asystaTechniczna', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('dataWygasnieciaAsystyTechnicznej', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker', 
-						'placeholder' => 'rrrr-mm-dd (wpisz datę wygaśnięcia)', 
-						'readonly' => $zablokujPolaPozaPoziomModul, 
-						'disabled' => $zablokujPolaPozaPoziomModul
-					),
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę wygaśnięcia)',
+                        'readonly' => $zablokujPolaPozaPoziomModul,
+                        'disabled' => $zablokujPolaPozaPoziomModul
+                    ),
                     'label' => 'Data wygaśnięcia asysty technicznej',
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text'
                 ));
             $builder->add($builder->create('dokumentacjaFormalna', ChoiceType::class, array(
@@ -169,30 +169,30 @@ class ZasobyType extends AbstractType
             ->add('testyWydajnosciowe', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuUprawnien', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker', 
-						'placeholder' => 'rrrr-mm-dd (wpisz datę ostatniego przeglądu)',
-						'readonly' => $zablokujPolaPozaPoziomModul, 
-						'disabled' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę ostatniego przeglądu)',
+                        'readonly' => $zablokujPolaPozaPoziomModul,
+                        'disabled' => $zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
-					'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
+                    'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalPrzegladuUprawnien', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker',
-						'placeholder' => 'rrrr-mm-dd (wpisz datę)',
-						'readonly' => $zablokujPolaPozaPoziomModul
-					),
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę)',
+                        'readonly' => $zablokujPolaPozaPoziomModul
+                    ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu aktywności',
 //                'format' => 'dd-MM-yyyy',
@@ -200,18 +200,18 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalPrzegladuAktywnosci', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker',
-						'placeholder' => 'rrrr-mm-dd (wpisz datę)',
-						'readonly' => $zablokujPolaPozaPoziomModul
-					),
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę)',
+                        'readonly' => $zablokujPolaPozaPoziomModul
+                    ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniej zmiany haseł',
 //                'format' => 'dd-MM-yyyy',
@@ -219,54 +219,54 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataUtworzeniaZasobu', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker',
-						'placeholder' => 'rrrr-mm-dd (wpisz datę utworzenia zasobu)',
-						'readonly' => $zablokujPolaPozaPoziomModul
-					),
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę utworzenia zasobu)',
+                        'readonly' => $zablokujPolaPozaPoziomModul
+                    ),
                     'label' => 'Data utworzenia zasobu',
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker',
-						'placeholder' => 'rrrr-mm-dd (wpisz datę zmiany)',
-						'readonly' => $zablokujPolaPozaPoziomModul
-					),
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę zmiany)',
+                        'readonly' => $zablokujPolaPozaPoziomModul
+                    ),
                     'label' => 'Data ostatniej zmiany zasobu',
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataUsunieciaZasobu', DateType::class, array(
                     'attr' => array(
-						'class' => 'datepicker',
-						'placeholder' => 'rrrr-mm-dd (wpisz datę usunięcia zasobu)',
-						'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę usunięcia zasobu)',
+                        'readonly' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data usunięcia zasobu',
                     'label_attr' => array(
                         'class' => '',
                     ),
-					'required' => false,
-					'html5' => false,
+                    'required' => false,
+                    'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
