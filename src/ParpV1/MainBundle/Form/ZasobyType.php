@@ -115,10 +115,10 @@ class ZasobyType extends AbstractType
             ))
 
 
-            ->add('dataZakonczeniaWdrozenia', DateType::class, array(
+            ->add('dataZakonczeniaWdrozenia', TextType::class, array(
                     'attr' => array(
-                        'class' => '',
-                        'placeholder' => 'wpisz tle grup AD ile poziomo dostepu',
+                        'class' => 'datepicker',
+                        'placeholder' => 'wpisz datę zakończenia wdrożenia',
                         'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data zakończenia wdrożenia',
