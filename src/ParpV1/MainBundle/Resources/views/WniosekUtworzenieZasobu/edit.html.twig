@@ -269,7 +269,7 @@
                     {% endif %}
 
                     {% if(entity.typ == "kasowanie") %}
-                        {{ form_row(form.zmienianyZasob), {'label_attr': {'class': 'col-lg-3' }, 'attr': {'class': 'col-lg-9' }}) }}
+                        {{ form_row(form.zmienianyZasob) }}
                     {% else %}
                         {% if form.zasob is defined %}
                         {{ form_widget(form.zasob) }}
