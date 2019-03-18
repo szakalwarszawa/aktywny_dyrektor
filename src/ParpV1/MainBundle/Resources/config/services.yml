@@ -1,6 +1,3 @@
-imports:
-    - { resource: userEditFormPrivileges.yml }
-
 services:
   edycja_uzytkownika_form_type:
     class: ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType
