@@ -115,19 +115,19 @@ class ZasobyType extends AbstractType
             ))
 
 
-            ->add('dataZakonczeniaWdrozenia', TextType::class, array(
+            ->add('dataZakonczeniaWdrozenia', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker',
-                        'placeholder' => 'wpisz datę zakończenia wdrożenia',
+                        'placeholder' => 'rrrr-mm-dd (wpisz datę zakończenia wdrożenia)',
                         'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data zakończenia wdrożenia',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
 					),
-					'required' => false
-                    // 'required' => false,
-                    // 'widget' => 'single_text'
+					'required' => false,
+					'html5' => false,
+                    'widget' => 'single_text'
                 ))
             ->add('wykonawca', ChoiceType::class, array(
                 'choices' => array('PARP' => 'PARP', "P/Z" => "P/Z", "Zewnętrzny" => "Zewnętrzny"),
