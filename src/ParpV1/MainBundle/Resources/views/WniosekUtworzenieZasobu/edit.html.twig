@@ -272,7 +272,7 @@
                         {{ form_row(form.zmienianyZasob) }}
                     {% else %}
                         {% if form.zasob is defined %}
-                        {{ form_widget(form.zasob) }}
+                        <div class="col-sm-10 col-lg-9">{{ form_widget(form.zasob) }}</div>
                         {% endif %}
                     {% endif %}
 

@@ -243,11 +243,11 @@ class ZasobyType extends AbstractType
                 ))
             ->add('dataUsunieciaZasobu', DateType::class, array(
                     'attr' => array(
-                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'col-lg-9 datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data usunięcia zasobu',
                     'label_attr' => array(
-                        'class' => '',
+                        'class' => 'col-lg-3',
                     ),
 					'required' => false,
 					'html5' => false,
