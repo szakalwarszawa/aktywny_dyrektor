@@ -55,13 +55,17 @@ class StringExtension extends \Twig_Extension
     /**
      * Parsuje string Active Directory do żądanej wartości.
      *
-     * @param string $value
+     * @param string|null $value
      * @param string $key
      *
      * @return string
      */
-    public function parseAdString(string $value, string $key): string
+    public function parseAdString(string $value = null, string $key): string
     {
+        if (null === $value) {
+            return $value;
+        }
+
         $availableKeys = (new ReflectionClass(AdStringTool::class))
             ->getConstants();
         if (in_array($key, array_keys($availableKeys))) {
