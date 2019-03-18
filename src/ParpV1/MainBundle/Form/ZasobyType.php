@@ -137,13 +137,14 @@ class ZasobyType extends AbstractType
             ->add('asystaTechniczna', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('dataWygasnieciaAsystyTechnicznej', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data wygaśnięcia asysty technicznej',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text'
                 ));
             $builder->add($builder->create('dokumentacjaFormalna', ChoiceType::class, array(
@@ -165,7 +166,7 @@ class ZasobyType extends AbstractType
             ->add('testyWydajnosciowe', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuUprawnien', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
@@ -174,14 +175,15 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalPrzegladuUprawnien', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu aktywności',
@@ -190,14 +192,15 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalPrzegladuAktywnosci', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniej zmiany haseł',
@@ -206,44 +209,48 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text'
 
                 ))
             ->add('interwalZmianyHaselKontaAdministracyjnychISerwisowych', null, ['attr' => ['readonly' => $zablokujPolaPozaPoziomModul]])
             ->add('dataUtworzeniaZasobu', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data utworzenia zasobu',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data ostatniej zmiany zasobu',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataUsunieciaZasobu', DateType::class, array(
                     'attr' => array(
-                        'class' => 'form-control datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
+                        'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
                     ),
                     'label' => 'Data usunięcia zasobu',
                     'label_attr' => array(
                         'class' => 'col-sm-4 control-label',
                     ),
-                    'required' => false,
+					'required' => false,
+					'html5' => false,
                     'widget' => 'single_text',
                     'format' => 'yyyy-MM-dd'
                 ))
