@@ -1,0 +1,125 @@
+<ul class="nav nav-tabs" style="margin-top: 5px">
+    <li class="active">
+        <a data-toggle="tab" href="#zasobyActive">Zasoby użytkownika - aktywne</a>
+    </li>
+    <li>
+        <a data-toggle="tab" href="#zasobyNotActive">Zasoby użytkownika - nieaktywne</a>
+    </li>
+</ul>
+<div class="tab-content">
+    <div id="zasobyActive" class="tab-pane fade in active">
+        <table class="table table-responsive table-hover">
+            <thead>
+                <th>Lp.</th>
+                <th>Nazwa zasobu</th>
+                <th>Poziom dostepu</th>
+                <th>Kanał dostępu</th>
+                <th>Aktywne od</th>
+                <th>Aktywne do</th>
+                <th>Powód nadania</th>
+                <th>Wniosek</th>
+            </thead>
+            <tbody>
+                {% if zasoby_uzytkownika.aktywne is defined %}
+                    {% for zasob in zasoby_uzytkownika.aktywne %}
+                        {% set user_zasob = zasob.user_zasob %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}.
+                            </td>
+                            <td>
+                                {{ zasob.nazwa_zasobu }}
+                            </td>
+                            <td style="word-break: break-all">
+                                {{ user_zasob.poziomDostepu }}
+                            </td>
+                            <td style="word-break: break-all">
+                                {{ user_zasob.kanalDostepu }}
+                            </td>
+                            <td>
+                                {{ user_zasob.aktywneOd|date('Y-m-d') }}
+                            </td>
+                            <td>
+                                {% if user_zasob.aktywneDo is not null %}
+                                    {{ user_zasob.aktywneDo|date('Y-m-d') }}
+                                    {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ user_zasob.powodNadania }}
+                            </td>
+                            <td>
+                                <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: user_zasob.wniosek.id}) }}">{{ user_zasob.wniosek.wniosek.numer }}</a>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="100%">Brak aktywnych zasobów.</td>
+                        </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+
+    <div id="zasobyNotActive" class="tab-pane fade in">
+        <table class="table responsive table-hover">
+            <thead>
+                <th>Lp.</th>
+                <th>Nazwa zasobu</th>
+                <th>Poziom dostepu</th>
+                <th>Kanał dostępu</th>
+                <th>Aktywne od</th>
+                <th>Aktywne do</th>
+                <th>Powód odebrania</th>
+                <th>Wniosek odebrania</th>
+            </thead>
+            <tbody>
+                {% if zasoby_uzytkownika.nieaktywne is defined %}
+                    {% for zasob in zasoby_uzytkownika.nieaktywne %}
+                        {% set user_zasob = zasob.user_zasob %}
+                        <tr>
+                            <td>
+                                {{ loop.index }}.
+                            </td>
+                            <td>
+                                {{ zasob.nazwa_zasobu }}
+                            </td>
+                            <td style="word-break: break-all">
+                                {{ user_zasob.poziomDostepu }}
+                            </td>
+                            <td style="word-break: break-all">
+                                {{ user_zasob.kanalDostepu }}
+                            </td>
+                            <td>
+                                {{ user_zasob.aktywneOd|date('Y-m-d') }}
+                            </td>
+                            <td>
+                                {% if user_zasob.aktywneDo is not null %}
+                                    {{ user_zasob.aktywneDo|date('Y-m-d') }}
+                                    {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{ user_zasob.powodOdebrania }}
+                            </td>
+                            <td>
+                                {% if user_zasob.wniosekOdebranie is not empty %}
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: user_zasob.wniosekOdebranie.id}) }}">{{ user_zasob.wniosekOdebranie.wniosek.numer }}</a>
+                                    {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="100%">Brak nieaktywnych zasobów.</td>
+                        </tr>
+                {% endif %}
+            </tbody>
+        </table>
+    </div>
+</div>
