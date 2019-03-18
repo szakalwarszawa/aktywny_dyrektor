@@ -54,7 +54,9 @@ class StatusWnioskuService
         $this->session = $session;
         $this->ldapService = $ldapService;
         $this->entityManager = $entityManager;
-        $this->currentUser = $tokenStorage->getToken()->getUser();
+        if (null !== $tokenStorage->getToken()) {
+            $this->currentUser = $tokenStorage->getToken()->getUser();
+        }
     }
 
     /**
@@ -203,6 +205,9 @@ class StatusWnioskuService
      */
     protected function sprawdzCzyDzialaZastepstwo($wniosek)
     {
+        if ('cli' === PHP_SAPI) {
+            return null;
+        }
         $ret = $this->checkAccess($wniosek);
         //var_dump($wniosek, $ret);
         if ($wniosek->getId() && $ret['editorsBezZastepstw'] == null) {
@@ -467,7 +472,7 @@ class StatusWnioskuService
      */
     public function checkAccess($entity, $onlyEditors = false, $username = null)
     {
-        if ($username === null) {
+        if ($username === null && 'cli' !== PHP_SAPI) {
             $username = $this->currentUser->getUsername();
         }
 
@@ -516,11 +521,11 @@ class StatusWnioskuService
             $aduser = $ldap->getUserFromAD($samaccountname, null, null, 'nieobecni');
         }
 
-        if (empty($aduser)) {
+       /* if (empty($aduser)) {
             echo "Problem z ".$samaccountname."<br/>";
             echo "<pre>";
             var_dump(debug_backtrace(null, 1));
-        }
+        }*/
         return $aduser;
     }
 

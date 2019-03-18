@@ -10,7 +10,7 @@
 }
 
 .popover {
-	height: 175px;
+	padding: 0;
 }
 
 .btn-purple {
@@ -40,12 +40,20 @@ td {
 	padding: 5px;
 }
 
+form:not(.dirty) {
+	margin: 1rem 0;
+	padding: 1rem 0;
+}
+
 form.dirty {
-	border: .3rem dashed #b2dba1;
+	border: 0.3rem dashed #b2dba1;
 	border-radius: 9px;
 	padding: 1rem;
 	background: #dff0d8;
-	margin: -1.3rem;
+	margin: 2rem -1.3rem 1rem;
+	position: relative;
+	top: -1.3rem;
+	bottom: -1.3rem;
 }
 
 .hidden {
@@ -401,4 +409,15 @@ footer.helpdesk {
 .helpdesk small {
 	float: right;
 	margin: 0 2rem;
+}
+
+/* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
+/* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
+#general > div > .record_properties + a {
+	display: none;
+}
+
+/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
+#zasoby > br + a {
+	display: none;
 }
