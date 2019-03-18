@@ -1455,7 +1455,6 @@ class LdapService
                 } else {
                     $ret[$u['name']] = $u['name'];
                 }
-
             }
         }
 

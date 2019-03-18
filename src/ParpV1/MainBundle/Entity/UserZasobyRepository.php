@@ -241,10 +241,7 @@ class UserZasobyRepository extends EntityRepository
     {
         $queryBuilder = $this->createQueryBuilder('u');
         $queryBuilder
-            ->select('
-                u as userZasob,
-                z.nazwa as nazwa_zasobu'
-            )
+            ->select('u as userZasob, z.nazwa as nazwa_zasobu')
             ->where('u.deletedAt is null')
             ->andWhere('z.deletedAt is null')
             ->andWhere('u.samaccountname = :username')
@@ -260,13 +257,11 @@ class UserZasobyRepository extends EntityRepository
 
         $groupedResources = [];
         foreach ($result as $singleRow) {
-            $mergedArray = array_merge(
-                [
+            $mergedArray = array_merge([
                     'user_zasob' => $singleRow['userZasob']
-                ],[
+                ], [
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
-                ]
-            );
+                ]);
             if (true === $singleRow['userZasob']->getCzyAktywne()) {
                 $groupedResources['aktywne'][] = $mergedArray;
                 continue;

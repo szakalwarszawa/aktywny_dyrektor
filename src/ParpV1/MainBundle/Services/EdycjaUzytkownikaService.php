@@ -481,7 +481,6 @@ class EdycjaUzytkownikaService
                 if ($formData[AdUserConstants::POWOD_WYLACZENIA] !== TakNieInterface::NIE) {
                     throw new LogicException('Konto wyłączane bez wybrania powodu lub nieobsługiwany powód.');
                 }
-
             }
 
             switch ($formData[AdUserConstants::POWOD_WYLACZENIA]) {
@@ -532,5 +531,20 @@ class EdycjaUzytkownikaService
     public function hasErrors(): bool
     {
         return 0 < count($this->errors);
+    }
+
+    /**
+     * Zwraca błędy jako string.
+     *
+     * @return string
+     */
+    public function getErrorsAsString(): string
+    {
+        $text = '';
+        foreach ($this->errors as $error) {
+            $text .= $error['message'];
+        }
+
+        return $text;
     }
 }

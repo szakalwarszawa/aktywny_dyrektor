@@ -127,7 +127,6 @@ class AdStringTool
         }
 
         return implode(',', $adStringParts);
-
     }
 
     /**
@@ -160,7 +159,7 @@ class AdStringTool
             }
         }
 
-        if ($returnArray){
+        if ($returnArray) {
             return $stringContainer;
         }
 
