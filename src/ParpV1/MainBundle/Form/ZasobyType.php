@@ -138,10 +138,11 @@ class ZasobyType extends AbstractType
             ->add('dataWygasnieciaAsystyTechnicznej', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
-                    ),
+					),
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
                     'label' => 'Data wygaśnięcia asysty technicznej',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => '',
                     ),
 					'required' => false,
 					'html5' => false,
@@ -169,7 +170,8 @@ class ZasobyType extends AbstractType
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul, 'disabled' => $zablokujPolaPozaPoziomModul
                     ),
 //                'widget' => 'single_text',
-                    'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
+					'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
 //                'format' => 'dd-MM-yyyy',
 //                'input' => 'datetime',
                     'label_attr' => array(
@@ -184,7 +186,8 @@ class ZasobyType extends AbstractType
             ->add('dataZleceniaOstatniegoPrzegladuAktywnosci', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
-                    ),
+					),
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu aktywności',
 //                'format' => 'dd-MM-yyyy',
@@ -201,7 +204,8 @@ class ZasobyType extends AbstractType
             ->add('dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
-                    ),
+					),
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniej zmiany haseł',
 //                'format' => 'dd-MM-yyyy',
@@ -218,7 +222,8 @@ class ZasobyType extends AbstractType
             ->add('dataUtworzeniaZasobu', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
-                    ),
+					),
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
                     'label' => 'Data utworzenia zasobu',
                     'label_attr' => array(
                         'class' => '',
@@ -231,7 +236,8 @@ class ZasobyType extends AbstractType
             ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
                         'class' => 'datepicker', 'readonly' => $zablokujPolaPozaPoziomModul
-                    ),
+					),
+					'placeholder' => 'rrrr-mm-dd (wpisz datę)',
                     'label' => 'Data ostatniej zmiany zasobu',
                     'label_attr' => array(
                         'class' => '',

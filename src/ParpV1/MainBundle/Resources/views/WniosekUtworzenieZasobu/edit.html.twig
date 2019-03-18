@@ -272,7 +272,7 @@
                         {{ form_row(form.zmienianyZasob) }}
                     {% else %}
                         {% if form.zasob is defined %}
-                        <div class="col-sm-10 col-lg-9">{{ form_widget(form.zasob) }}</div>
+                        {{ form_widget(form.zasob), {'label_attr': {'class': 'col-lg-3' }, 'attr': {'class': 'col-lg-9' }}) }}
                         {% endif %}
                     {% endif %}
 
