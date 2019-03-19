@@ -425,5 +425,5 @@ footer.helpdesk {
 /* -------------- wyjatki do bootstrapa ------------- */
 
 .user-edit .form-control {
-	width: inherit;
+	width: unset;
 }
