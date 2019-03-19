@@ -1,0 +1,4 @@
+services:
+  ldap_connection:
+    class: ParpV1\LdapBundle\Service\LdapConnection
+    arguments: ['%ad_host%', '%ad_user%', '%ad_password%', '%base_dn%']

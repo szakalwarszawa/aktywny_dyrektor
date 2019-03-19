@@ -89,7 +89,7 @@ class LdapService
             'ad_port' => '389',
                 //'sso' => false,
         );
-        $this->adldap = new \Adldap\Adldap($configuration);
+       // $this->adldap = new \Adldap\Adldap($configuration);
         $this->cache = $cacheItemPool;
     }
 
