@@ -421,9 +421,3 @@ footer.helpdesk {
 #zasoby > br + a {
 	display: none;
 }
-
-/* -------------- wyjatki do bootstrapa ------------- */
-
-.user-edit .form-control {
-	width: unset;
-}
