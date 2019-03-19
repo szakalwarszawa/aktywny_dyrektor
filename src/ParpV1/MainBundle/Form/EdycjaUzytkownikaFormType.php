@@ -228,6 +228,8 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'data' => new DateTime()
             ])
         ;
+        /*
+        @feature
         if (self::TYP_NOWY !== $formType) {
             $builder
                 ->add('roles', EntityType::class, [
@@ -240,6 +242,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 ])
             ;
         }
+        */
 
         $builder
             ->add('shortForm', HiddenType::class, [
