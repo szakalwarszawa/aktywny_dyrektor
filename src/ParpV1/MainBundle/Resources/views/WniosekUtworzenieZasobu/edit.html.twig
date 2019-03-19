@@ -156,8 +156,8 @@
                 <div class="tabContent">
                     {% if not readonly %}
                     <div class="form-group">
-                        <label class="col-sm-2  control-label"></label>
-                        <div class="col-sm-10 pull-right">{{ form_widget(form.dalej, {'attr': {'onclick': 'submitFirstForm(event)' }}) }}  </div>
+                        <label class="col-sm-2 col-lg-3 control-label"></label>
+                        <div class="col-sm-10 col-lg-9 pull-right">{{ form_widget(form.dalej, {'attr': {'onclick': 'submitFirstForm(event)' }}) }}  </div>
                     </div>
                     {% endif %}
                     <table class="table bordered">
@@ -172,24 +172,24 @@
                         <tr>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 ">{{ form.vars.value.typWnioskuDoRejestru ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoRejestru ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         do Rejestru
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuZmianaInformacji ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaInformacji ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         informacji o zarejestrowanym zasobie
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuWycofanie ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanie ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         z Rejestru
                                     </div>
                                 </div>
@@ -198,24 +198,24 @@
                         <tr>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuDoUruchomienia ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoUruchomienia ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         do utworzenia (uruchomienia) w infrastrukturze PARP
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuZmianaWistniejacym ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaWistniejacym ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         w istniejącym zasobie
                                     </div>
                                 </div>
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2">{{ form.vars.value.typWnioskuWycofanieZinfrastruktury ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
-                                    <div class="col-sm-10">
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanieZinfrastruktury ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-10 col-lg-9">
                                         z infrastruktury PARP
                                     </div>
                                 </div>
@@ -232,18 +232,18 @@
                     {{ form_row(form.nrpokoju) }}
                     {{ form_row(form.email) }}
                     <div class="form-group">
-                        <label class="col-sm-2  control-label">Osoby które widzą wniosek</label >
-                        <div class="col-sm-10">{{ entity.wniosek.viewernames|replace({',': ', '}) }}</div>
+                        <label class="col-sm-2 col-lg-3 control-label">Osoby które widzą wniosek</label >
+                        <div class="col-sm-10 col-lg-9">{{ entity.wniosek.viewernames|replace({',': ', '}) }}</div>
                     </div>
 
                     <div class="form-group">
-                        <label class="col-sm-2  control-label">Osoby które mogą edytować wniosek</label>
-                        <div class="col-sm-10">{{ entity.wniosek.editornames|replace({',': ', '}) }}</div>
+                        <label class="col-sm-2 col-lg-3 control-label">Osoby które mogą edytować wniosek</label>
+                        <div class="col-sm-10 col-lg-9">{{ entity.wniosek.editornames|replace({',': ', '}) }}</div>
                     </div>
                     {% if not readonly %}
                     <div class="form-group">
-                        <label class="col-sm-2  control-label"></label>
-                        <div class="col-sm-10 pull-right">{{ form_widget(form.dalej2, {'attr': {'onclick': 'submitFirstForm(event)' }}) }}  </div>
+                        <label class="col-sm-2 col-lg-3 control-label"></label>
+                        <div class="col-sm-10 col-lg-9 pull-right">{{ form_widget(form.dalej2, {'attr': {'onclick': 'submitFirstForm(event)' }}) }}  </div>
                     </div>
                     {% endif %}
                 </div>
@@ -253,13 +253,13 @@
                 <div class="tabContent">
                     {% if not readonly %}
                     <div class="form-group">
-                        <label class="col-sm-10  control-label"></label>
-                        <div class="col-sm-2 pull-right">{{ form_widget(form.submit2) }}  </div>
+                        <label class="col-sm-10 col-lg-9 control-label"></label>
+                        <div class="col-sm-2 col-lg-3 pull-right">{{ form_widget(form.submit2) }}  </div>
                     </div>
                     {% endif %}
                     {% if(entity.typ == "zmiana") %}
                         <div class="form-group">
-                            <label class="col-sm-2  control-label">Wybierz zasób do zmiany</label>
+                            <label class="col-sm-2 control-label">Wybierz zasób do zmiany</label>
                             <div class="col-sm-10">{{ form_widget(form.zmienianyZasob) }}  </div>
                         </div>
                         {{ form_row(form.zmienionePola) }}
@@ -279,8 +279,8 @@
 
                     {% if not readonly %}
                     <div class="form-group">
-                        <label class="col-sm-10  control-label"></label>
-                        <div class="col-sm-2 pull-right">{{ form_widget(form.submit) }}  </div>
+                        <label class="col-sm-10 col-lg-9 control-label"></label>
+                        <div class="col-sm-2 col-lg-3 pull-right">{{ form_widget(form.submit) }}  </div>
                     </div>
                     {% endif %}
                     {# {{ form_rest(form) }}   #}
