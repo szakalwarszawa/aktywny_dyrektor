@@ -63,13 +63,20 @@ class ZasobyRepository extends EntityRepository
     public function findListaZasobow($aktywne)
     {
         $query = $this->createQueryBuilder('z')
-                ->leftJoin('z.wniosekUtworzenieZasobu', 'w')
-                ->andWhere('z.published = '.($aktywne ? "1" : "0"))
-                ->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)')
-                ->getQuery()
-                ->getArrayResult();
+            ->leftJoin('z.wniosekUtworzenieZasobu', 'w')
+            ->andWhere('z.published = '.($aktywne ? "1" : "0"))
+            ->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)')
+        ;
 
-        return $query;
+        if (!$aktywne) {
+            $query
+                ->andWhere('z.zasobWTrakcieZmiany = 0 or z.zasobWTrakcieZmiany is null')
+            ;
+        }
+
+        return $query
+            ->getQuery()
+            ->getArrayResult();
     }
 
     /**
