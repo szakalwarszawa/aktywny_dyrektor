@@ -47,13 +47,6 @@ $(document).ready(function () {
 });
 
 function submitWniosekType(e) {
-	//-----------------------------
-	console.log("EVENT: ", e, e.target);
-	var inputWlascicielZasobu = $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_wlascicielZasobu');
-	console.log(inputWlascicielZasobu);
-	console.log(inputWlascicielZasobu.val());
-
-	//-----------------------------
 	console.log('submitWniosekType');
 	var typy = [];
 	$('input[type=checkbox]').each(function () {
@@ -73,3 +66,21 @@ function submitWniosekType(e) {
 		window.location.href = href;
 	}
 }
+
+$(document).ready(function () {
+	//-----------------------------
+	var submitBottom = $('#parp_mainbundle_wniosekutworzeniezasobu_submit');
+	var submitTop = $('#parp_mainbundle_wniosekutworzeniezasobu_submit2');
+
+
+	var inputWlascicielZasobu = $('#parp_mainbundle_wniosekutworzeniezasobu_zasob_wlascicielZasobu');
+	console.log(inputWlascicielZasobu);
+	console.log(inputWlascicielZasobu.val());
+
+
+	$(submitBottom).on('click', function (e) {
+
+		console.log("EVENT: ", e, e.target);
+	});
+	//-----------------------------
+});
