@@ -321,10 +321,13 @@ class Entry
      * @param \DateTime $accountExpires
      * @return Entry
      */
-    public function setAccountExpires($accountExpires)
+    public function setAccountExpires($accountExpires = null)
     {
-        // Redmine #51829: wydłużenie okresu ważności kont w AD do końca podanego dnia
-        $this->accountExpires = $accountExpires->setTime(23, 59);
+        $this->accountExpires = $accountExpires;
+        if (null !== $accountExpires) {
+            $this->accountExpires = $accountExpires->setTime(23, 59);
+        }
+
 
         return $this;
     }

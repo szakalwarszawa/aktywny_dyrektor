@@ -10,6 +10,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Intl\Exception\MethodNotImplementedException;
+use Doctrine\ORM\Query\Expr\Join;
 
 /**
  * Class UserZasobyRepository
@@ -225,6 +226,50 @@ class UserZasobyRepository extends EntityRepository
         return $queryBuilder
             ->getQuery()
             ->getResult();
+    }
+
+    /**
+     * Zwraca zasoby użytkownika.
+     *
+     * @todo zasob powinien być w normalnej obiektowej relacji UserZasoby#zasob -> Zasoby
+     *
+     * @param string $username
+     *
+     * @return array
+     */
+    public function findZasobyUzytkownika(string $username): array
+    {
+        $queryBuilder = $this->createQueryBuilder('u');
+        $queryBuilder
+            ->select('u as userZasob, z.nazwa as nazwa_zasobu')
+            ->where('u.deletedAt is null')
+            ->andWhere('z.deletedAt is null')
+            ->andWhere('u.samaccountname = :username')
+            ->join('u.wniosek', 'w')
+            ->join(Zasoby::class, 'z', Join::WITH, 'z.id = u.zasobId')
+            ->setParameter('username', $username)
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $groupedResources = [];
+        foreach ($result as $singleRow) {
+            $mergedArray = array_merge([
+                    'user_zasob' => $singleRow['userZasob']
+                ], [
+                    'nazwa_zasobu' => $singleRow['nazwa_zasobu']
+                ]);
+            if (true === $singleRow['userZasob']->getCzyAktywne()) {
+                $groupedResources['aktywne'][] = $mergedArray;
+                continue;
+            }
+            $groupedResources['nieaktywne'][] = $mergedArray;
+        }
+
+        return $groupedResources;
     }
 
     /**
