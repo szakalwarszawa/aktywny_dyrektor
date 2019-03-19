@@ -519,7 +519,6 @@ class EdycjaUzytkownikaService
         $removeKeys = array_keys(array_diff_key($elements, array_flip($adArrayKeys)));
 
         foreach ($elements as $key => $value) {
-
             if (in_array($key, $removeKeys)) {
                 unset($elements[$key]);
             }
