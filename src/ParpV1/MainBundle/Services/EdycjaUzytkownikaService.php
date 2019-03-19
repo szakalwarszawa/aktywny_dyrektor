@@ -462,6 +462,10 @@ class EdycjaUzytkownikaService
             $changes[] = AdUserConstants::STANOWISKO;
         }
 
+        if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {
+            $changes [] = AdUserConstants::WYGASA;
+        }
+
         if ($formData[AdUserConstants::DEPARTAMENT_NAZWA] !== $adUserHelper::getDepartamentNazwa(false, true)) {
             $changes[] = AdUserConstants::DEPARTAMENT_NAZWA;
         }
@@ -540,11 +544,11 @@ class EdycjaUzytkownikaService
      */
     public function getErrorsAsString(): string
     {
-        $text = '';
+        $errorStringParts = [];
         foreach ($this->errors as $error) {
-            $text .= $error['message'];
+            $errorStringParts[] = $error['message'];
         }
 
-        return $text;
+        return implode(',', $errorStringParts);
     }
 }
