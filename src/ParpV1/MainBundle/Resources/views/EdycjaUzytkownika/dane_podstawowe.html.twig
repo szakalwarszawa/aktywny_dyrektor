@@ -7,7 +7,7 @@
     {# LOGIN UŻYTKOWNIKA #}
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
     <div class="form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}">
-        {{ form_label(login_uzytkownika, {'label_attr': {'class': 'col-sm-3'}}) }}
+        {{ form_label(login_uzytkownika, {attr: {'class': 'col-sm-3'}}) }}
         {{ form_widget(login_uzytkownika, common_attr) }}
         {{ form_errors(login_uzytkownika) }}
         <hr/>
