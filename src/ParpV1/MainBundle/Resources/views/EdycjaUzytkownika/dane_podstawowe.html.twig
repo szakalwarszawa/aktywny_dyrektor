@@ -1,14 +1,14 @@
 {# Pola formularza które są powiązane z danymi wychodzącymi z AD są określone stałą #}
 {% set ad_user_constants = 'ParpV1\\MainBundle\\Constants\\AdUserConstants' %}
 {# Atrybuty elementu zależne od tego czy jest to skrócony formularz #}
-{% set common_attr = form.shortForm.vars.value == true ? {attr: {'readonly': 'readonly', 'disabled': 'disabled', 'class': 'col-sm-8 col-lg-5'}} : {attr: {'class': 'col-sm-8 col-lg-5'}} %}
+{% set common_attr = form.shortForm.vars.value == true ? {attr: {'readonly': 'readonly', 'disabled': 'disabled'}} : {} %}
 {% set form_type_new = form.formType.vars.value == constant('ParpV1\\MainBundle\\Form\\EdycjaUzytkownikaFormType::TYP_NOWY') ? true : false %}
 {{ form_start(form, {attr: {'class': 'user-edit'}}) }}
     {# LOGIN UŻYTKOWNIKA #}
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
     <div class="form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}">
-        {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-lg-offset-1 col-lg-3 col-lg-offset-2'}}) }}
-        {{ form_widget(login_uzytkownika, common_attr) }}
+        {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-lg-offset-1 col-lg-3 col-lg-offset-3'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(login_uzytkownika, common_attr) }}</div>
         {{ form_errors(login_uzytkownika) }}
         <hr/>
     </div>
@@ -63,7 +63,7 @@
     {% set sekcja = attribute(form, constant(ad_user_constants ~ '::SEKCJA_NAZWA')) %}
     <div class="form-group {% if not sekcja.vars.valid %}has-error{% endif %}">
         {{ form_label(sekcja) }}
-        <div class='col-sm-8 col-lg-5'>{{ form_widget(sekcja, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+        <div class='col-sm-8 col-lg-5'>{{ form_widget(sekcja) }}</div>
         {{ form_errors(sekcja) }}
         <hr/>
     </div>
@@ -72,7 +72,7 @@
     {% set przelozony = attribute(form, constant(ad_user_constants ~ '::PRZELOZONY')) %}
     <div class="form-group {% if not przelozony.vars.valid %}has-error{% endif %}">
         {{ form_label(przelozony) }}
-        <div class='col-sm-8 col-lg-5'>{{ form_widget(przelozony, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+        <div class='col-sm-8 col-lg-5'>{{ form_widget(przelozony) }}</div>
         {{ form_errors(przelozony) }}
         <hr/>
     </div>
@@ -81,7 +81,7 @@
     {% set kiedy_wygasa = attribute(form, constant(ad_user_constants ~ '::WYGASA')) %}
     <div class="form-group {% if not kiedy_wygasa.vars.valid %}has-error{% endif %}">
         {{ form_label(kiedy_wygasa) }}
-        <div class='col-sm-8 col-lg-5'>{{ form_widget(kiedy_wygasa, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+        <div class='col-sm-8 col-lg-5'>{{ form_widget(kiedy_wygasa) }}</div>
         {{ form_errors(kiedy_wygasa) }}
         <hr/>
     </div>
@@ -91,7 +91,7 @@
         {% set konto_wylaczone = attribute(form, constant(ad_user_constants ~ '::WYLACZONE')) %}
         <div class="form-group {% if not konto_wylaczone.vars.valid %}has-error{% endif %}">
             {{ form_label(konto_wylaczone) }}
-            <div class='col-sm-8 col-lg-5'>{{ form_widget(konto_wylaczone, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+            <div class='col-sm-8 col-lg-5'>{{ form_widget(konto_wylaczone) }}</div>
             {{ form_errors(konto_wylaczone) }}
             <hr/>
         </div>
@@ -100,7 +100,7 @@
         {% set powod_wylaczenia = attribute(form, constant(ad_user_constants ~ '::POWOD_WYLACZENIA')) %}
         <div class="form-group {% if not powod_wylaczenia.vars.valid %}has-error{% endif %}">
             {{ form_label(powod_wylaczenia) }}
-            <div class='col-sm-8 col-lg-5'>{{ form_widget(powod_wylaczenia, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+            <div class='col-sm-8 col-lg-5'>{{ form_widget(powod_wylaczenia) }}</div>
             {{ form_errors(powod_wylaczenia) }}
             <hr/>
         </div>
@@ -109,7 +109,7 @@
     {# ZMIANY OBOWIĄZUJĄ OD #}
     <div class="form-group {% if not form.zmianaOd.vars.valid %}has-error{% endif %}">
         {{ form_label(form.zmianaOd) }}
-        <div class='col-sm-8 col-lg-5'>{{ form_widget(form.zmianaOd, {attr: {'class': 'col-sm-8 col-lg-5'}}) }}</div>
+        <div class='col-sm-8 col-lg-5'>{{ form_widget(form.zmianaOd) }}</div>
         {{ form_errors(form.zmianaOd) }}
         <hr/>
     </div>
