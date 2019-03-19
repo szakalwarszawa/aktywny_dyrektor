@@ -953,7 +953,17 @@ class WniosekUtworzenieZasobuController extends Controller
                 $editFailed = true;
                 $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
             }
+            $txt = $request->get('powodZwrotu');
+            $wniosek->setPowodZwrotu($txt);
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', true);
+
+            $kom = new Komentarz();
+            $kom->setObiekt('WniosekUtworzenieZasobu');
+            $kom->setObiektId($id);
+            $kom->setTytul('Wniosek odrzucony z powodu');
+            $kom->setOpis($txt);
+            $kom->setSamaccountname($this->getUser()->getUsername());
+            $em->persist($kom);
         } elseif ($isAccepted === 'publish') {
             //przenosi do status 11
 
