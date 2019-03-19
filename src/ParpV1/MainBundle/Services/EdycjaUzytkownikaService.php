@@ -544,11 +544,11 @@ class EdycjaUzytkownikaService
      */
     public function getErrorsAsString(): string
     {
-        $text = '';
+        $errorStringParts = [];
         foreach ($this->errors as $error) {
-            $text .= $error['message'];
+            $errorStringParts[] = $error['message'];
         }
 
-        return $text;
+        return implode(',', $errorStringParts);
     }
 }
