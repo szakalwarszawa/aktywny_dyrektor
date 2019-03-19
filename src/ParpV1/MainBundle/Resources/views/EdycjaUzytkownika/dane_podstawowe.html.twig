@@ -7,10 +7,9 @@
     {# LOGIN UŻYTKOWNIKA #}
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
     <div class="form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}">
-        {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-lg-offset-1 col-lg-3 col-lg-offset-3'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(login_uzytkownika, common_attr) }}</div>
+        {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-sm-offset-1 col-lg-2 col-lg-offset-2'}}) }}
+        <div class='col-sm-8 col-lg-4'>{{ form_widget(login_uzytkownika, common_attr) }}</div>
         {{ form_errors(login_uzytkownika) }}
-        <hr/>
     </div>
 
     {# IMIĘ I NAZWISKO #}
@@ -19,7 +18,6 @@
         {{ form_label(imie_nazwisko) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(imie_nazwisko, common_attr) }}</div>
         {{ form_errors(imie_nazwisko, {attr: {'class': 'alert-danger'}}) }}
-        <hr/>
     </div>
 
     {# DEPARTAMENT / BIURO #}
@@ -40,7 +38,7 @@
                 {% endif %}
             </div>
         {% endif %}
-        <hr/>
+        
     </div>
 
     {# ZAANGAŻOWANIE #}
@@ -56,7 +54,6 @@
         {{ form_label(stanowisko) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(stanowisko, common_attr) }}</div>
         {{ form_errors(stanowisko) }}
-        <hr/>
     </div>
 
     {# SEKCJA #}
@@ -65,7 +62,6 @@
         {{ form_label(sekcja) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(sekcja) }}</div>
         {{ form_errors(sekcja) }}
-        <hr/>
     </div>
 
     {# PRZEŁOŻONY #}
@@ -74,7 +70,6 @@
         {{ form_label(przelozony) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(przelozony) }}</div>
         {{ form_errors(przelozony) }}
-        <hr/>
     </div>
 
     {# KIEDY WYGASA #}
@@ -83,7 +78,6 @@
         {{ form_label(kiedy_wygasa) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(kiedy_wygasa) }}</div>
         {{ form_errors(kiedy_wygasa) }}
-        <hr/>
     </div>
 
     {% if not form_type_new %}
@@ -93,7 +87,6 @@
             {{ form_label(konto_wylaczone) }}
             <div class='col-sm-8 col-lg-5'>{{ form_widget(konto_wylaczone) }}</div>
             {{ form_errors(konto_wylaczone) }}
-            <hr/>
         </div>
 
         {# POWÓD WYŁĄCZENIA KONTA W AD #}
@@ -102,7 +95,6 @@
             {{ form_label(powod_wylaczenia) }}
             <div class='col-sm-8 col-lg-5'>{{ form_widget(powod_wylaczenia) }}</div>
             {{ form_errors(powod_wylaczenia) }}
-            <hr/>
         </div>
     {% endif %}
 
@@ -111,7 +103,6 @@
         {{ form_label(form.zmianaOd) }}
         <div class='col-sm-8 col-lg-5'>{{ form_widget(form.zmianaOd) }}</div>
         {{ form_errors(form.zmianaOd) }}
-        <hr/>
     </div>
 
     {# PRZYWRÓĆ UPRAWNIENIA POCZĄTKOWE #}
@@ -121,7 +112,6 @@
         {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
         {{ form_widget(form.ustawUprawnieniaPoczatkowe, {attr: {'class': 'col-sm-8 col-lg-5'}) }}
         {{ form_errors(form.ustawUprawnieniaPoczatkowe) }}
-        <hr/>
     </div> #}
 
     {# ROLE W AKD #}
@@ -131,7 +121,6 @@
                 {{ form_label(form.roles) }}
                 {{ form_widget(form.roles, {attr: {'readonly': 'readonly', 'disabled': 'disabled', 'data-toggle': 'select2'}}) }}
                 {{ form_errors(form.roles) }}
-                <hr/>
             </div>
         {% endif %}
     #}
