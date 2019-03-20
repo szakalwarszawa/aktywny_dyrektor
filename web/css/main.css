@@ -438,8 +438,8 @@ select.form-control
 	margin-left: 1rem;
 }
 
-/* @media (min-width: 768px) {
-	.user-edit .btn {
+@media (min-width: 768px) {
+	.user-edit .btn.col-sm-2 {
 		width: 25%;
 	}
-} */
+}
