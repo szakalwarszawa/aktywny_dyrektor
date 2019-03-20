@@ -432,6 +432,8 @@ select.form-control + select.form-control {
 	margin-left: 1rem;
 }
 
-select.form-control + .sr-only + select.form-control {
+select.form-control
+	+ .sr-only
+	+ select.form-control:not(#parp_mainbundle_edycjauzytkownika_zmianaOd_time_minute) {
 	margin-left: 1rem;
 }
