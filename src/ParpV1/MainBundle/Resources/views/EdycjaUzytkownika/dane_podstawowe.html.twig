@@ -91,7 +91,7 @@
 
         {# POWÓD WYŁĄCZENIA KONTA W AD #}
         {% set powod_wylaczenia = attribute(form, constant(ad_user_constants ~ '::POWOD_WYLACZENIA')) %}
-        <div class="form-group hidden {% if not powod_wylaczenia.vars.valid %}has-error{% endif %}">
+        <div id='powod_wylaczenia_w_ad' class="form-group hidden {% if not powod_wylaczenia.vars.valid %}has-error{% endif %}">
             {{ form_label(powod_wylaczenia, 'Powód wyłączenia w Active Directory', {'label_attr': {'class': 'col-md-offset-1 col-lg-1 col-lg-offset-2'}}) }}
             <div class='col-sm-8 col-lg-6'>{{ form_widget(powod_wylaczenia) }}</div>
             {{ form_errors(powod_wylaczenia) }}
