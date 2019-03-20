@@ -451,3 +451,9 @@ select.form-control
 		vertical-align: middle;
 	}
 }
+
+@media (max-width: 768px) {
+	.user-edit label.col-sm-2 {
+		width: 25%;
+	}
+}
