@@ -428,6 +428,13 @@ footer.helpdesk {
 	right: 15px;
 }
 
+@media (max-width: 768px) {
+	.user-edit .form-group > .btn {
+		width: calc(100% - 30px);
+		left: 15px;
+	}
+}
+
 select.form-control + select.form-control {
 	margin-left: 1rem;
 }
