@@ -473,6 +473,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $metadata = $em->getClassMetadata("ParpV1\\MainBundle\\Entity\\Zasoby");
+
         $z1 = array();
         $z2 = array();
         foreach ($metadata->getFieldNames() as $fm) {
@@ -489,8 +490,14 @@ class WniosekUtworzenieZasobuController extends Controller
             $z2[$fm] = $val2;
         }
 
-        $delta = array_diff($z1, $z2);
+        #75358 RM
 
+        $delta = array_diff($z1, $z2);
+        $deltaFiltered = array_diff_assoc($z1, $z2);
+
+        if (isset($deltaFiltered['daneOsobowe'])) {
+            $delta['daneOsobowe'] = $deltaFiltered['daneOsobowe'];
+        }
 
         unset($delta['id']);
         return $delta;
@@ -1081,6 +1088,7 @@ class WniosekUtworzenieZasobuController extends Controller
                         //powinien wprowadzic zmiany!!!
 
                         $delta = $this->obliczZmienionePola($wniosek);
+
                         //var_dump($delta);
                         foreach ($delta as $k => $v) {
                             $getter = 'set'.ucfirst($k);
