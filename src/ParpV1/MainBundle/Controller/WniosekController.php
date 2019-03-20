@@ -78,6 +78,7 @@ class WniosekController extends Controller
             $przekierowanieWnioskuService
                 ->setWniosek($wniosek)
                 ->doFlush()
+                ->setTypWniosku($typWniosku)
                 ->przekierujWniosekForm($form)
             ;
 
