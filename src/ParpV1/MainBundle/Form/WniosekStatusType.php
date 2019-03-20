@@ -30,7 +30,13 @@ class WniosekStatusType extends AbstractType
         $transformer = new \ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer();
         $builder
             ->add('nazwa')
-            ->add('typWniosku', ChoiceType::class, ['choices' => ['wniosekONadanieUprawnien' => 'wniosek o Nadanie Uprawnień', 'wniosekOUtworzenieZasobu' => 'wniosek o utworzenie zasobu']])
+            ->add('typWniosku', ChoiceType::class, [
+                'choices' => [
+                    'Wniosek o nadanie uprawnień' => 'wniosekONadanieUprawnien',
+                    'Wniosek o utworzenie zasobu' => 'wniosekOUtworzenieZasobu'
+                    ]
+                ])
+
             ->add('nazwaSystemowa')
             ->add('finished')
             ->add('opis')
@@ -39,7 +45,7 @@ class WniosekStatusType extends AbstractType
                 'attr' => array(
                     'class' => 'select2'
                 ),
-                'choices' => $this->role,
+                'choices' => array_flip($this->role),
                 'required' => false,
                 'label' => 'Kto widzi wniosek o tym statusie'
             ))->addModelTransformer($transformer))
@@ -48,7 +54,7 @@ class WniosekStatusType extends AbstractType
                 'attr' => array(
                     'class' => 'select2'
                 ),
-                'choices' => $this->role,
+                'choices' =>array_flip($this->role),
                 'required' => false,
                 'label' => 'Kto może edytować wniosek o tym statusie'
             ))->addModelTransformer($transformer))
