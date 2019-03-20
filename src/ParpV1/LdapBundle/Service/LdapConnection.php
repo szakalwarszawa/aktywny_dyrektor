@@ -4,11 +4,14 @@ namespace ParpV1\LdapBundle\Service;
 
 use Adldap\Configuration\DomainConfiguration;
 use Adldap\Schemas\ActiveDirectory;
-use Symfony\Component\OptionsResolver\OptionsResolver;
 use Adldap\Adldap;
 use Adldap\Exceptions\AdldapException;
 use Adldap\Auth\BindException;
 use Symfony\Component\VarDumper\VarDumper;
+use Adldap\Connections\Provider;
+use LogicException;
+use Adldap\Connections\ProviderInterface;
+use Adldap\Query\Factory;
 
 class LdapConnection
 {
@@ -76,10 +79,16 @@ class LdapConnection
      * @param string $username
      * @param string $password
      *
+     * @todo
+     *
      * @return bool
      */
     public function authLdap(string $username, string $password): bool
     {
+        if (empty($username) || empty($password)) {
+            throw new \InvalidArgumentException('Nazwa użytkownika i hasło nie mogą być puste!');
+        }
+
         if (null === $this->adLdap) {
             throw new AdldapException('Brak połączenia z AD.');
         }
@@ -90,14 +99,14 @@ class LdapConnection
             ->adLdap
             ->getDefaultProvider()
         ;
-/*
+
         $search = $provider->search();
 
         $us = $search->findBy('samaccountname', 'pawel_fedoruk');
 
         VarDumper::dump($us);
         die;
-*/
+
         try {
             $provider
                 ->auth()
@@ -153,6 +162,46 @@ class LdapConnection
                 'type' => $type,
                 'message' => $message
             ])
+        ;
+    }
+
+    /**
+     * Czy jest połączenie z AD.
+     *
+     * @return bool
+     */
+    public function isConnected(): bool
+    {
+        return null !== $this->adLdap;
+    }
+
+    /**
+     * Get adLdap
+     *
+     * @return AdLdap|null
+     */
+    public function getAdLdap()
+    {
+        return $this->adLdap;
+    }
+
+    /**
+     * Get Search Factory obiekt
+     *
+     * @return Factory
+     *
+     * @throws LogicException gdy nie jest nawiązane połączenie
+     */
+    public function getSearchFactory(): Factory
+    {
+        if (null === $this->adLdap) {
+            throw new LogicException('Nie nawiązano połączenia.');
+        }
+
+        return $this
+            ->adLdap
+            ->getDefaultProvider()
+            ->search()
         ;
     }
 }
