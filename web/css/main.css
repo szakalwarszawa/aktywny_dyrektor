@@ -458,5 +458,6 @@ select.form-control
 @media (max-width: 768px) {
 	.user-edit label.col-sm-2 {
 		width: 100%;
+		text-indent: 1rem;
 	}
 }
