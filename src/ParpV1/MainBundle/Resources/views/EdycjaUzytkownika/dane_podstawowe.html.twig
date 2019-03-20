@@ -44,7 +44,7 @@
     {# ZAANGAŻOWANIE #}
     <div class="form-group">
         {% if username is defined %}
-            <a class="btn btn-primary col-sm-2 col-xs-4 col-xs-offset-8 col-sm-offset-8 col-md-2 col-md-offset-9 col-lg-offset-6" href="{{ path('engageUser', {samaccountname: username}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a>
+            <a class="btn btn-primary col-sm-2 col-xs-4 col-xs-offset-8 col-sm-offset-7 col-md-2 col-md-offset-9 col-lg-offset-6" href="{{ path('engageUser', {samaccountname: username}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a>
         {% endif %}
     </div>
 
@@ -127,6 +127,6 @@
 
     {# ZAPISZ #}
     <div class="form-group">
-        {{ form_widget(form.zapisz, {attr: {'class': 'btn-success col-xs-4 col-sm-2 col-xs-offset-8 col-sm-offset-8 col-md-offset-9 col-md-2 col-lg-offset-6'}}) }}
+        {{ form_widget(form.zapisz, {attr: {'class': 'btn-success col-xs-4 col-sm-2 col-xs-offset-8 col-sm-offset-7 col-md-offset-9 col-md-2 col-lg-offset-6'}}) }}
     </div>
 {{ form_end(form) }}
