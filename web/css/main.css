@@ -438,7 +438,7 @@ select.form-control
 	margin-left: 1rem;
 }
 
-@media (min-width: 768px) {
+@media (min-width: 768px) and (max-width: 992px) {
 	.user-edit .btn.col-sm-2 {
 		width: 25%;
 	}
