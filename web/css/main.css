@@ -421,3 +421,17 @@ footer.helpdesk {
 #zasoby > br + a {
 	display: none;
 }
+
+/* --------------- user edit -------------- */
+.user-edit .form-group > .btn {
+	position: relative;
+	right: 15px;
+}
+
+select.form-control + select.form-control {
+	margin-left: 1rem;
+}
+
+select.form-control + .sr-only + select.form-control {
+	margin-left: 1rem;
+}
