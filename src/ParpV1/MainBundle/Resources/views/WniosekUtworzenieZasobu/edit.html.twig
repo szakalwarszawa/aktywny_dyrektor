@@ -272,7 +272,7 @@
                         {{ form_row(form.zmienianyZasob) }}
                     {% else %}
                         {% if form.zasob is defined %}
-                        {{ form_widget(form.zasob, {'attr': {'novalidate': 'novalidate'}}) }}
+                        {{ form_widget(form.zasob) }}
                         {% endif %}
                     {% endif %}
 
