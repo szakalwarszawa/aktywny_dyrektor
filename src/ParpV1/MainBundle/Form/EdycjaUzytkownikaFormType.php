@@ -22,14 +22,11 @@ use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Entity\Section;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use ParpV1\MainBundle\Constants\TakNieInterface;
-use ParpV1\MainBundle\Entity\AclRole;
 use Doctrine\ORM\EntityRepository;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
-use Symfony\Component\Form\Extension\Core\Type\DateTimeType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
@@ -222,12 +219,16 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'label' => 'Resetuj do uprawnień początkowych'
             ])*/
         $builder
-            ->add('zmianaOd', DateTimeType::class, [
+            ->add('zmianaOd', DateType::class, [
                 'label' => 'Zmiana obowiązuje od',
                 'required' => false,
-                'data' => new DateTime()
+                'data' => new DateTime(),
+                'widget' => 'single_text',
+                'html5' => false,
             ])
         ;
+        /*
+        @feature
         if (self::TYP_NOWY !== $formType) {
             $builder
                 ->add('roles', EntityType::class, [
@@ -240,6 +241,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 ])
             ;
         }
+        */
 
         $builder
             ->add('shortForm', HiddenType::class, [

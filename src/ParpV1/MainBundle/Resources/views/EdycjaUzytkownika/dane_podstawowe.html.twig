@@ -124,15 +124,17 @@
         <hr/>
     </div> #}
 
-    {% if not form_type_new %}
-        {# ROLE W AKD #}
-        <div class="form-group {% if not form.roles.vars.valid %}has-error{% endif %}">
-            {{ form_label(form.roles) }}
-            {{ form_widget(form.roles, {attr: {'readonly': 'readonly', 'disabled': 'disabled', 'data-toggle': 'select2'}}) }}
-            {{ form_errors(form.roles) }}
-            <hr/>
-        </div>
-    {% endif %}
+    {# ROLE W AKD #}
+    {# TODO BĘDZIE W NOWEJ ZAKŁADCE -> PRZENIEŚĆ
+        {% if not form_type_new %}
+            <div class="form-group {% if not form.roles.vars.valid %}has-error{% endif %}">
+                {{ form_label(form.roles) }}
+                {{ form_widget(form.roles, {attr: {'readonly': 'readonly', 'disabled': 'disabled', 'data-toggle': 'select2'}}) }}
+                {{ form_errors(form.roles) }}
+                <hr/>
+            </div>
+        {% endif %}
+    #}
 
     {# ZAPISZ #}
     <div>

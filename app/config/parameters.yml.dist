@@ -37,6 +37,7 @@ parameters:
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
     ad_password :
+    base_dn: 'DC=test,DC=local'
     ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
     grupy_ou : "PARP Grupy"
     session_max_idle_time: 3600
@@ -61,3 +62,6 @@ parameters:
 
     # Katalog używany przez komendy CLI do zapisu plików #
     katalog_eksportow_cli: setup/export_cli/
+
+    # Czas opóźnienia 'zmiana obowiązuje od' przy edycji użytkownika #
+    ad_push_delay: '30 minutes'
