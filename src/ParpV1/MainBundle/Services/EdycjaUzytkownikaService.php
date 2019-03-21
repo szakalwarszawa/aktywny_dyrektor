@@ -238,8 +238,8 @@ class EdycjaUzytkownikaService
         }
 
         if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
-            foreach ($changedElements as $element) {
-                if (!in_array($element, AdUserConstants::getElementsAllowedToChange())) {
+            foreach ($changedElements as $key => $element) {
+                if (!in_array($element, AdUserConstants::getElementsAllowedToChange()) && is_int($key)) {
                     throw new UnexpectedValueException(
                         'Zmieniono pole niepodlegające zmianie w AkD! Twoje role na to nie pozwalają.'
                     );
