@@ -960,8 +960,8 @@ class WniosekUtworzenieZasobuController extends Controller
                 $editFailed = true;
                 $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
             }
-            $txt = $request->get('powodZwrotu');
-            $wniosek->setPowodZwrotu($txt);
+            $powodZwrotu = $request->get('powodZwrotu');
+            $wniosek->setPowodZwrotu($powodZwrotu);
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', true);
 
             $kom = new Komentarz();
