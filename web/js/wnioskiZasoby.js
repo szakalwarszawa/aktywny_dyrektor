@@ -46,7 +46,7 @@ $(document).ready(function () {
 		//autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'}
 	});
 
-	$('.inputAktywneDo').on('input', function () { //input zamiast change, by wybranie aktualnej daty nie odpalało zdarzenia
+	$('.inputAktywneDo').on('mouseout', function () { // zamiast change, który nie łapał wyboru daty dzisiejszej
 		var v = $(this).val();
 		var row = $(this).closest('tr');
 		console.info(v);
