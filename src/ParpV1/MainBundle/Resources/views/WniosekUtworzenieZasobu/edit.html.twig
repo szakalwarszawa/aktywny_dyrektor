@@ -356,7 +356,7 @@
             var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id': val});
             console.log(href);
             $.get(href, function (data) {
-				console.log(data); // data test
+				//console.log(data); // data test
                 for (k in data) {
                     var v = data[k];
                     var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_" + k;
