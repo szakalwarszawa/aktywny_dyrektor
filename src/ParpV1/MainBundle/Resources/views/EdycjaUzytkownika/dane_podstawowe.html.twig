@@ -100,7 +100,7 @@
     {# ZMIANY OBOWIĄZUJĄ OD #}
     <div class='form-group {% if not form.zmianaOd.vars.valid %}has-error{% endif %}'>
         {{ form_label(form.zmianaOd, 'Zmiana obowiązuje od', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(form.zmianaOd) }}</div>
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(form.zmianaOd, {attr: {'class': 'datepicker'}}) }}</div>
         {{ form_errors(form.zmianaOd) }}
     </div>
 
