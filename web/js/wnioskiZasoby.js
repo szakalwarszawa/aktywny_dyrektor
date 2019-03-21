@@ -49,7 +49,6 @@ $(document).ready(function () {
 	$('.inputAktywneDo').on('mouseout', function () { // zamiast change, który nie łapał wyboru daty dzisiejszej
 		var v = $(this).val();
 		var row = $(this).closest('tr');
-		console.info(v);
 
 		if (v != "") {
 			$('.inputBezterminowo', $(row)).prop('checked', false);
