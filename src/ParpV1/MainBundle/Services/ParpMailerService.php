@@ -336,6 +336,34 @@ class ParpMailerService
         }
     }
 
+    public function sendEmailWniosekOczekujacy($wniosek, $template)
+    {
+        $odbiorcy = [];
+        $data = [];
+        $loginy = [];
+
+        foreach ($wniosek->getWniosek()->getEditors() as $editor) {
+            $odbiorcy[] = $this->getUserMail($editor->getSamaccountname());
+        }
+
+        $odbiorcy = array_unique($odbiorcy);
+
+        if (!$wniosek->getPracownikSpozaParp()) {
+            foreach ($wniosek->getUserZasoby() as $userZasob) {
+                $loginy[] = $userZasob->getSamaccountname();
+            }
+        }
+        $loginy = array_unique($loginy);
+
+        $data = [
+            'odbiorcy'                           => $odbiorcy,
+            'login'                              => $loginy,
+            'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
+        ];
+
+        $this->sendEmailByType($template, $data);
+    }
+
     public function sendEmailWniosekNadanieOdebranieUprawnien($wniosek, $template)
     {
         $odbiorcy = [
@@ -568,6 +596,9 @@ class ParpMailerService
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA:
                 $wymaganePola = array_merge($wymaganePola, ['departament']);
+                unset($wymaganePola[1]);
+                break;
+            case ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK:
                 unset($wymaganePola[1]);
                 break;
         }
