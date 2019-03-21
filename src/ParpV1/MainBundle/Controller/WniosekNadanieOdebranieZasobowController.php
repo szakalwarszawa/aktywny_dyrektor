@@ -768,11 +768,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $this->setWniosekStatus($wn, '02_EDYCJA_PRZELOZONY', false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
-                                    $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wn, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
+                                    $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wn, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                                 }
                             } else {
                                 $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
-                                $this->get('parp.mailer')->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
+                                $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                             }
                             if ($this->debug) {
                                 die('<br>wszystko poszlo ok');
