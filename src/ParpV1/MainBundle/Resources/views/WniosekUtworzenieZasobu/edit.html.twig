@@ -358,18 +358,19 @@
             $.get(href, function (data) {
 				console.log(data); // data test
                 for (k in data) {
+					console.log("---------START of loop ", k);
                     var v = data[k];
-					console.warn("v ", v);
-					console.warn("k ", k);
+					console.info("v ", v);
+					console.info("k ", k);
                     var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_" + k;
-					console.warn("sel ", sel);
+					console.info("sel ", sel);
                     if ($(sel).is('input[type="checkbox"]')) {
                         if (data[k] == true) {
 							console.error("1");
                             $(sel).prop('checked', true);
                         } else {
                             $(sel).prop('checked', false);
-							console.error("1");
+							console.error("2");
                         }
                     }
 
@@ -380,8 +381,8 @@
 							console.error("4");
                             var vs = v.split(";");
                             for (var i = 0; i < vs.length; i++) {
-								console.info("vs ", vs);
-								console.info("vs[i] ", vs[i]);
+								console.warn("vs ", vs);
+								console.warn("vs[i] ", vs[i]);
                                 $(sel).tagit('createTag', vs[i]);
                             }
                         }
@@ -398,6 +399,7 @@
                             $(sel).val(v);
                         }
                     }
+					console.log("---------END of loop ", k);
                 }
             });
         })
