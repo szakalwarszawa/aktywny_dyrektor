@@ -968,7 +968,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $kom->setObiekt('WniosekUtworzenieZasobu');
             $kom->setObiektId($id);
             $kom->setTytul('Wniosek odrzucony z powodu');
-            $kom->setOpis($txt);
+            $kom->setOpis($powodZwrotu);
             $kom->setSamaccountname($this->getUser()->getUsername());
             $em->persist($kom);
         } elseif ($isAccepted === 'publish') {
@@ -1046,10 +1046,30 @@ class WniosekUtworzenieZasobuController extends Controller
                             $this->setWniosekStatus($wniosek, '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', false);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'return':
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_WLASCICIEL_O_ZASOB', true);
