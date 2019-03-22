@@ -1057,7 +1057,7 @@ class WniosekUtworzenieZasobuController extends Controller
                             $kom->setOpis($powodZwrotu);
                             $kom->setSamaccountname($this->getUser()->getUsername());
                             $em->persist($kom);
-                        break;
+                            break;
                         case 'moveToAdminTechniczny':
 
                             $powodZwrotu = $request->get('powodZwrotu');
