@@ -367,8 +367,8 @@
 
     if ($('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').hasClass('select2')) {
         $('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').select2().on('change', function () {
-            //var val = $(this).val();
-            console.log(val);
+            var val = $(this).val();
+            //console.log(val);
             var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id': val});
             //console.log(href);
             $.get(href, function (data) {
