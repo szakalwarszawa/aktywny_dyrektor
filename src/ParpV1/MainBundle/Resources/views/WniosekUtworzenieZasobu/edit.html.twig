@@ -396,7 +396,11 @@
                             //$(sel).select2("updateResults");
                         } else {
 							console.error("7");
-                            $(sel).val(v);
+							if (typeof v === "object" && v !== null) {
+								$(sel).val(v.timestamp / 1000);
+							} else {
+								 $(sel).val(v);
+							}
                         }
                     }
 					console.log("---------END of loop ", k);
