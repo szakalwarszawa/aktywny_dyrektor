@@ -12,8 +12,6 @@ use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Constants\TypWnioskuConstants;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
-use Symfony\Component\Form\FormEvents;
-use Symfony\Component\Form\FormEvent;
 
 /**
  * Klasa formularza przekierowania wniosku
@@ -26,6 +24,7 @@ class PrzekierowanieWnioskuFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
+        $currentEditors = $options['wniosek']->getEditorsNames(true);
         $builder
             ->add('status', ChoiceType::class, [
                 'required' => false,
@@ -48,7 +47,7 @@ class PrzekierowanieWnioskuFormType extends AbstractType
                 'required' => false,
                 'label' => 'Editors',
                 'choices' => array_flip($options['ad_users']),
-                'data' => array_flip($options['wniosek']->getEditorsNames(true)),
+                'data' => empty($currentEditors)? null : $currentEditors,
                 'multiple' => true,
                 'expanded' => false
             ])

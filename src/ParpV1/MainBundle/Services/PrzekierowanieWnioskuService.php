@@ -49,6 +49,11 @@ class PrzekierowanieWnioskuService
     private $doFlush = false;
 
     /**
+     * @var string|null
+     */
+    private $typWniosku = null;
+
+    /**
      * @var string
      */
     const TYTUL_KOMENTARZA = 'Ręczne przekierowanie wniosku';
@@ -111,6 +116,8 @@ class PrzekierowanieWnioskuService
         $entityManager = $this->entityManager;
         $trescKomentarza = '';
         $statusWniosku = $this->wniosek->getStatus();
+
+
         if ($statusWniosku->getId() !== $formData['status'] && !empty($formData['status'])) {
             if (null !== $formData['status']) {
                 $nowyStatus = $entityManager
@@ -302,15 +309,20 @@ class PrzekierowanieWnioskuService
      *
      * @return void
      */
-    private function dodajKomentarzPrzekierowania(array $formData, $listaZmian = ''): void
+    private function dodajKomentarzPrzekierowania(array $formData, string $listaZmian = ''): void
     {
+        $typWniosku = $this->okreslTypWniosku();
+        if (null !== $this->typWniosku) {
+            $typWniosku = $this->typWniosku;
+        }
+
         $komentarz = new Komentarz();
         $dzieckoWniosku = $this->getDzieckoWniosku();
         $komentarz
             ->setSamaccountname($this->userService->getCurrentUser())
             ->setTytul(self::TYTUL_KOMENTARZA)
             ->setOpis($formData['powod'] . $listaZmian)
-            ->setObiekt($this->okreslTypWniosku())
+            ->setObiekt($typWniosku)
             ->setObiektId($dzieckoWniosku->getId())
         ;
 
@@ -374,7 +386,7 @@ class PrzekierowanieWnioskuService
             $wniosek = $this->wniosek;
         }
 
-        $typWniosku = $wniosek->getWniosekNadanieOdebranieZasobow() ?
+        $typWniosku = null !== $wniosek->getWniosekNadanieOdebranieZasobow() ?
             TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW :
             TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU;
 
@@ -403,6 +415,20 @@ class PrzekierowanieWnioskuService
     public function doFlush(): PrzekierowanieWnioskuService
     {
         $this->doFlush = true;
+
+        return $this;
+    }
+
+    /**
+     * Ustawia typ wniosku.
+     *
+     * @param string $typWniosku
+     *
+     * @return PrzekierowanieWnioskuService
+     */
+    public function setTypWniosku(string $typWniosku): PrzekierowanieWnioskuService
+    {
+        $this->typWniosku = $typWniosku;
 
         return $this;
     }

@@ -473,6 +473,7 @@ class WniosekUtworzenieZasobuController extends Controller
     {
         $em = $this->getDoctrine()->getManager();
         $metadata = $em->getClassMetadata("ParpV1\\MainBundle\\Entity\\Zasoby");
+
         $z1 = array();
         $z2 = array();
         foreach ($metadata->getFieldNames() as $fm) {
@@ -489,8 +490,14 @@ class WniosekUtworzenieZasobuController extends Controller
             $z2[$fm] = $val2;
         }
 
-        $delta = array_diff($z1, $z2);
+        #75358 RM
 
+        $delta = array_diff($z1, $z2);
+        $deltaFiltered = array_diff_assoc($z1, $z2);
+
+        if (isset($deltaFiltered['daneOsobowe'])) {
+            $delta['daneOsobowe'] = $deltaFiltered['daneOsobowe'];
+        }
 
         unset($delta['id']);
         return $delta;
@@ -953,7 +960,17 @@ class WniosekUtworzenieZasobuController extends Controller
                 $editFailed = true;
                 $this->addFlash('danger', 'Akcja `' . $isAccepted . '` nie powiodła się.');
             }
+            $powodZwrotu = $request->get('powodZwrotu');
+            $wniosek->setPowodZwrotu($powodZwrotu);
             $this->setWniosekStatus($wniosek, '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', true);
+
+            $kom = new Komentarz();
+            $kom->setObiekt('WniosekUtworzenieZasobu');
+            $kom->setObiektId($id);
+            $kom->setTytul('Wniosek odrzucony z powodu');
+            $kom->setOpis($powodZwrotu);
+            $kom->setSamaccountname($this->getUser()->getUsername());
+            $em->persist($kom);
         } elseif ($isAccepted === 'publish') {
             //przenosi do status 11
 
@@ -1029,10 +1046,30 @@ class WniosekUtworzenieZasobuController extends Controller
                             $this->setWniosekStatus($wniosek, '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', false);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'return':
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_WLASCICIEL_O_ZASOB', true);
@@ -1071,6 +1108,7 @@ class WniosekUtworzenieZasobuController extends Controller
                         //powinien wprowadzic zmiany!!!
 
                         $delta = $this->obliczZmienionePola($wniosek);
+
                         //var_dump($delta);
                         foreach ($delta as $k => $v) {
                             $getter = 'set'.ucfirst($k);
