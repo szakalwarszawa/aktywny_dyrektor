@@ -356,35 +356,46 @@
             var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id': val});
             console.log(href);
             $.get(href, function (data) {
-				//console.log(data); // data test
+				console.log(data); // data test
                 for (k in data) {
                     var v = data[k];
+					console.warn("v ", v);
+					console.warn("k ", k);
                     var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_" + k;
+					console.warn("sel ", sel);
                     if ($(sel).is('input[type="checkbox"]')) {
                         if (data[k] == true) {
+							console.error("1");
                             $(sel).prop('checked', true);
                         } else {
                             $(sel).prop('checked', false);
+							console.error("1");
                         }
                     }
 
                     if ($(sel).hasClass('tagit-hidden-field')) {
+						console.error("3");
                         $(sel).tagit('removeAll');
                         if (v) {
+							console.error("4");
                             var vs = v.split(";");
                             for (var i = 0; i < vs.length; i++) {
+								console.info("vs ", vs);
+								console.info("vs[i] ", vs[i]);
                                 $(sel).tagit('createTag', vs[i]);
                             }
                         }
                     } else {
+						console.error("5");
                         if ($(sel).hasClass('select2')) {
+							console.error("6");
                             $(sel).val(v.split(","));
                             $(sel).select2().trigger('change');
                             //$(sel).select2("data", v, true);
                             //$(sel).select2("updateResults");
                         } else {
+							console.error("7");
                             $(sel).val(v);
-
                         }
                     }
                 }
