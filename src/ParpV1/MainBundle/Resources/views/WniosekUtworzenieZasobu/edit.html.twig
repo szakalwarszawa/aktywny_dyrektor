@@ -356,7 +356,7 @@
 		var year = a.getFullYear();
 		var month = months[a.getMonth()];
 		var date = a.getDate();
-		// var hour = a.getHours();
+		var hour = a.getHours();
 		// var min = a.getMinutes();
 		// var sec = a.getSeconds();
 		var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes(); 
@@ -406,7 +406,7 @@
                         }
                     } else {
 						console.error("5");
-                        if ($(sel).hasClass('select2')) {
+                        if ($(sel).hasClass('select2') && v !== null) {
 							console.error("6");
                             $(sel).val(v.split(","));
                             $(sel).select2().trigger('change');
