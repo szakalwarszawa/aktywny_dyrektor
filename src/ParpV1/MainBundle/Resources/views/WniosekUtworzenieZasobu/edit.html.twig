@@ -349,7 +349,6 @@
 <script type="text/javascript"src="{{ asset('js/custom-required-validation.js') }}"></script>
 
 <script>
-	
 	function timeConverter(UNIX_timestamp){
 		var a = new Date(UNIX_timestamp * 1000);
 		var months = ['styczeń','luty','marzec','kwiecień','maj','czerwiec','lipiec','sierpień','wrzesień','październik','listopad','grudzień'];
@@ -357,63 +356,48 @@
 		var month = months[a.getMonth()];
 		var date = a.getDate();
 		var hour = a.getHours();
-		// var min = a.getMinutes();
-		// var sec = a.getSeconds();
-		var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes(); 
-		var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
-		var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
-		// var time = date + ' ' + month + ' ' + year;
+		// --- gdyby trzeba było pokazać datę wraz z godziną odkomentuj 3 poniższe linie ---
+		// var min = a.getMinutes() < 10 ? '0' + a.getMinutes() : a.getMinutes();
+		// var sec = a.getSeconds() < 10 ? '0' + a.getSeconds() : a.getSeconds();
+		// var time = date + ' ' + month + ' ' + year + ' ' + hour + ':' + min + ':' + sec ;
+		var time = date + ' ' + month + ' ' + year;
 		return time;
 	}
 
 
     if ($('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').hasClass('select2')) {
         $('#parp_mainbundle_wniosekutworzeniezasobu_zmienianyZasob').select2().on('change', function () {
-            var val = $(this).val();
+            //var val = $(this).val();
             console.log(val);
             var href = Routing.generate('wniosekutworzeniezasobu_wczytaj_dane_zasobu', {'id': val});
-            console.log(href);
+            //console.log(href);
             $.get(href, function (data) {
-				console.log(data); // data test
                 for (k in data) {
-					console.log("---------START of loop ", k);
                     var v = data[k];
-					console.info("v ", v);
-					console.info("k ", k);
                     var sel = "#parp_mainbundle_wniosekutworzeniezasobu_zasob_" + k;
-					console.info("sel ", sel);
                     if ($(sel).is('input[type="checkbox"]')) {
                         if (data[k] == true) {
-							console.error("1");
                             $(sel).prop('checked', true);
                         } else {
                             $(sel).prop('checked', false);
-							console.error("2");
                         }
                     }
 
                     if ($(sel).hasClass('tagit-hidden-field')) {
-						console.error("3");
                         $(sel).tagit('removeAll');
                         if (v) {
-							console.error("4");
                             var vs = v.split(";");
                             for (var i = 0; i < vs.length; i++) {
-								console.warn("vs ", vs);
-								console.warn("vs[i] ", vs[i]);
                                 $(sel).tagit('createTag', vs[i]);
                             }
                         }
                     } else {
-						console.error("5");
                         if ($(sel).hasClass('select2') && v !== null) {
-							console.error("6");
                             $(sel).val(v.split(","));
                             $(sel).select2().trigger('change');
                             //$(sel).select2("data", v, true);
                             //$(sel).select2("updateResults");
                         } else {
-							console.error("7");
 							if (typeof v === "object" && v !== null) {
 								$(sel).val(timeConverter(v.timestamp));
 							} else {
@@ -421,7 +405,6 @@
 							}
                         }
                     }
-					console.log("---------END of loop ", k);
                 }
             });
         })
