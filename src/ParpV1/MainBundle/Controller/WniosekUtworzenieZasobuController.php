@@ -1059,7 +1059,6 @@ class WniosekUtworzenieZasobuController extends Controller
                             $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
-
                             $powodZwrotu = $request->get('powodZwrotu');
                             $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
