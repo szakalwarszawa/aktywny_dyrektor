@@ -1053,11 +1053,11 @@ class WniosekUtworzenieZasobuController extends Controller
                             $kom = new Komentarz();
                             $kom->setObiekt('WniosekUtworzenieZasobu');
                             $kom->setObiektId($id);
-                            $kom->setTytul('Wniosek odrzucony z powodu');
+                            $kom->setTytul('Wniosek odbity');
                             $kom->setOpis($powodZwrotu);
                             $kom->setSamaccountname($this->getUser()->getUsername());
                             $em->persist($kom);
-                            break;
+                        break;
                         case 'moveToAdminTechniczny':
 
                             $powodZwrotu = $request->get('powodZwrotu');
@@ -1067,7 +1067,7 @@ class WniosekUtworzenieZasobuController extends Controller
                             $kom = new Komentarz();
                             $kom->setObiekt('WniosekUtworzenieZasobu');
                             $kom->setObiektId($id);
-                            $kom->setTytul('Wniosek odrzucony z powodu');
+                            $kom->setTytul('Wniosek odbity');
                             $kom->setOpis($powodZwrotu);
                             $kom->setSamaccountname($this->getUser()->getUsername());
                             $em->persist($kom);
