@@ -281,7 +281,10 @@ class LdapCommand extends ContainerAwareCommand
                                 $zmiana->setPublishedAt(new \Datetime());
                                 $em->persist($zmiana);
 
-                                if ($zmiana->getOdebranieZasobowEntry()) {
+                               /*
+                               // WYŁĄCZONE TYMCZASOWO
+                               // @todo
+                               if ($zmiana->getOdebranieZasobowEntry()) {
                                     $uprawnieniaService = $this->getContainer()->get('uprawnienia_service');
                                     $responseData = $uprawnieniaService
                                         ->odbierzZasobyUzytkownikaZEntry($zmiana->getOdebranieZasobowEntry())
@@ -297,7 +300,7 @@ class LdapCommand extends ContainerAwareCommand
                                         $output->writeln('<error>Odebrano użytkownikowi uprawnienia do zasobu posiadającego grupy w AD!</error>', false);
                                         $output->writeln('<error>Trzeba wypchnąć ponownie zmiany.</error>', false);
                                     }
-                                }
+                                }*/
                                 //if($liczbaZmian == 0) echo ("zero zian ");
                             }
                         } else {

@@ -723,9 +723,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             }
                             if ($this->debug) {
                                 echo '<pre>';
+                                \Doctrine\Common\Util\Debug::dump($przelozeni);
+                                echo '</pre>';
                             }
-                            \Doctrine\Common\Util\Debug::dump($przelozeni);
-                            echo '</pre>';
                             if (count($przelozeni) > 1) {
                                 $numer = 1;
                                 //teraz dla kazdego przelozonego tworzy oddzielny wniosek
@@ -736,6 +736,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             ' wzietego z osoby  '.$p[0]->getSamaccountname().
                                             ' :<br><br>';
                                     }
+
 
                                     // Fixme: To powinno być zrobione przy pomocy `__clone()`
                                     $wn = new \ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow();
@@ -767,11 +768,12 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $this->setWniosekStatus($wn, '02_EDYCJA_PRZELOZONY', false);
                                     $em->persist($wn->getWniosek());
                                     $em->persist($wn);
+                                    $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wn, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                                 }
                             } else {
                                 $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
+                                $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                             }
-                            //$em->remove($wniosek);
                             if ($this->debug) {
                                 die('<br>wszystko poszlo ok');
                             }
@@ -785,11 +787,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 case '01_EDYCJA_WNIOSKODAWCA':
                     switch ($isAccepted) {
                         case 'accept':
-                            //przenosi do status 2
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
+                            $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                             break;
                         case 'return':
-                            //przenosi do status 1
                             die('blad 45 nie powinno miec miejsca');
                             break;
                     }
