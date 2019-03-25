@@ -184,6 +184,8 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'required' => false,
                 'label' => 'Data wygaśnięcia konta',
                 'data' => $adUserHelper? $adUserHelper->getKiedyWygasa() : null,
+                'widget' => 'single_text',
+                'html5' => false,
             ])
         ;
         if (self::TYP_NOWY !== $formType) {
