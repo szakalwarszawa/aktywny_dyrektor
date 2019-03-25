@@ -75,7 +75,7 @@
     {% set kiedy_wygasa = attribute(form, constant(ad_user_constants ~ '::WYGASA')) %}
     <div class='form-group {% if not kiedy_wygasa.vars.valid %}has-error{% endif %}'>
         {{ form_label(kiedy_wygasa, 'Data wygaśnięcia konta', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(kiedy_wygasa) }}</div>
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(kiedy_wygasa, {attr: {'class': 'datepicker', 'placeholder': 'Wybierz datę wygaśnięcia'}}) }}</div>
         {{ form_errors(kiedy_wygasa) }}
     </div>
 
