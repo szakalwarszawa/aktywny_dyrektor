@@ -3,115 +3,105 @@
 {# Atrybuty elementu zależne od tego czy jest to skrócony formularz #}
 {% set common_attr = form.shortForm.vars.value == true ? {attr: {'readonly': 'readonly', 'disabled': 'disabled'}} : {} %}
 {% set form_type_new = form.formType.vars.value == constant('ParpV1\\MainBundle\\Form\\EdycjaUzytkownikaFormType::TYP_NOWY') ? true : false %}
-{{ form_start(form) }}
+{{ form_start(form, {attr: {'class': 'user-edit'}}) }}
     {# LOGIN UŻYTKOWNIKA #}
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
-    <div class="form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}">
-        {{ form_label(login_uzytkownika) }}
-        {{ form_widget(login_uzytkownika, common_attr) }}
+    <div class='form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}'>
+        {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(login_uzytkownika, common_attr) }}</div>
         {{ form_errors(login_uzytkownika) }}
-        <hr/>
     </div>
 
     {# IMIĘ I NAZWISKO #}
     {% set imie_nazwisko = attribute(form, constant(ad_user_constants ~ '::IMIE_NAZWISKO')) %}
-    <div class="form-group {% if not imie_nazwisko.vars.valid %}has-error{% endif %}">
-        {{ form_label(imie_nazwisko) }}
-        {{ form_widget(imie_nazwisko, common_attr) }}
+    <div class='form-group {% if not imie_nazwisko.vars.valid %}has-error{% endif %}'>
+        {{ form_label(imie_nazwisko, 'Imię i nazwisko', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(imie_nazwisko, common_attr) }}</div>
         {{ form_errors(imie_nazwisko, {attr: {'class': 'alert-danger'}}) }}
-        <hr/>
     </div>
 
     {# DEPARTAMENT / BIURO #}
     {% set departament = attribute(form, constant(ad_user_constants ~ '::DEPARTAMENT_NAZWA')) %}
-    <div class="form-group {% if not departament.vars.valid %}has-error{% endif %}">
-        {{ form_label(departament) }}
-        {{ form_widget(departament, common_attr) }}
+    <div class='form-group {% if not departament.vars.valid %}has-error{% endif %}'>
+        {{ form_label(departament, 'Biuro / Departament', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(departament, common_attr) }}</div>
         {{ form_errors(departament) }}
         {% if departament.vars.value is empty and dane_rekord is defined %}
-            <div class="alert alert-danger">
+            <div class='alert alert-danger'>
                 <b>Uwaga!</b> Departament powinien być ustawiony w rekordzie? Nie jest możliwa edycja tego pola z tego miejsca.
                 {% if dane_rekord is not null and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
                     <hr />
-                    <a class="btn btn-primary" href="{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}">
-                        <i class="fa fa-briefcase"></i>
+                    <a class='btn btn-primary' href='{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}'>
+                        <i class='fa fa-briefcase'></i>
                         Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych
                     </a>
                 {% endif %}
             </div>
         {% endif %}
-        <hr/>
     </div>
 
     {# ZAANGAŻOWANIE #}
-    <div class="form-group">
+    <div class='form-group'>
         {% if username is defined %}
-            <a class="btn btn-primary" href="{{ path('engageUser', {samaccountname: username}) }}"><i class="fa fa-puzzle-piece"></i> Zaangażowanie</a>
+            <a class='btn btn-primary col-sm-2 col-xs-12 col-sm-offset-8 col-md-2 col-md-offset-9 col-lg-offset-7' href='{{ path('engageUser', {samaccountname: username}) }}'><i class='fa fa-puzzle-piece'></i> Zaangażowanie</a>
         {% endif %}
     </div>
 
     {# STANOWISKO #}
     {% set stanowisko = attribute(form, constant(ad_user_constants ~ '::STANOWISKO')) %}
-    <div class="form-group {% if not stanowisko.vars.valid %}has-error{% endif %}">
-        {{ form_label(stanowisko) }}
-        {{ form_widget(stanowisko, common_attr) }}
+    <div class='form-group {% if not stanowisko.vars.valid %}has-error{% endif %}'>
+        {{ form_label(stanowisko, 'Stanowisko', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(stanowisko, common_attr) }}</div>
         {{ form_errors(stanowisko) }}
-        <hr/>
     </div>
 
     {# SEKCJA #}
     {% set sekcja = attribute(form, constant(ad_user_constants ~ '::SEKCJA_NAZWA')) %}
-    <div class="form-group {% if not sekcja.vars.valid %}has-error{% endif %}">
-        {{ form_label(sekcja) }}
-        {{ form_widget(sekcja) }}
+    <div class='form-group {% if not sekcja.vars.valid %}has-error{% endif %}'>
+        {{ form_label(sekcja, 'Sekcja', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(sekcja) }}</div>
         {{ form_errors(sekcja) }}
-        <hr/>
     </div>
 
     {# PRZEŁOŻONY #}
     {% set przelozony = attribute(form, constant(ad_user_constants ~ '::PRZELOZONY')) %}
-    <div class="form-group {% if not przelozony.vars.valid %}has-error{% endif %}">
-        {{ form_label(przelozony) }}
-        {{ form_widget(przelozony) }}
+    <div class='form-group {% if not przelozony.vars.valid %}has-error{% endif %}'>
+        {{ form_label(przelozony, 'Przełożony', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(przelozony) }}</div>
         {{ form_errors(przelozony) }}
-        <hr/>
     </div>
 
     {# KIEDY WYGASA #}
     {% set kiedy_wygasa = attribute(form, constant(ad_user_constants ~ '::WYGASA')) %}
-    <div class="form-group {% if not kiedy_wygasa.vars.valid %}has-error{% endif %}">
-        {{ form_label(kiedy_wygasa) }}
-        {{ form_widget(kiedy_wygasa) }}
+    <div class='form-group {% if not kiedy_wygasa.vars.valid %}has-error{% endif %}'>
+        {{ form_label(kiedy_wygasa, 'Data wygaśnięcia konta', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(kiedy_wygasa) }}</div>
         {{ form_errors(kiedy_wygasa) }}
-        <hr/>
     </div>
 
     {% if not form_type_new %}
         {# KONTO WYŁĄCZONE W AD #}
         {% set konto_wylaczone = attribute(form, constant(ad_user_constants ~ '::WYLACZONE')) %}
-        <div class="form-group {% if not konto_wylaczone.vars.valid %}has-error{% endif %}">
-            {{ form_label(konto_wylaczone) }}
-            {{ form_widget(konto_wylaczone) }}
+        <div class='form-group {% if not konto_wylaczone.vars.valid %}has-error{% endif %}'>
+            {{ form_label(konto_wylaczone, 'Czy konto wyłączone w AD', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+            <div class='col-sm-8 col-lg-6'>{{ form_widget(konto_wylaczone) }}</div>
             {{ form_errors(konto_wylaczone) }}
-            <hr/>
         </div>
 
         {# POWÓD WYŁĄCZENIA KONTA W AD #}
         {% set powod_wylaczenia = attribute(form, constant(ad_user_constants ~ '::POWOD_WYLACZENIA')) %}
-        <div class="form-group {% if not powod_wylaczenia.vars.valid %}has-error{% endif %}">
-            {{ form_label(powod_wylaczenia) }}
-            {{ form_widget(powod_wylaczenia) }}
+        <div id='powod_wylaczenia_w_ad' class='form-group hidden {% if not powod_wylaczenia.vars.valid %}has-error{% endif %}'>
+            {{ form_label(powod_wylaczenia, 'Powód wyłączenia w Active Directory', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+            <div class='col-sm-8 col-lg-6'>{{ form_widget(powod_wylaczenia) }}</div>
             {{ form_errors(powod_wylaczenia) }}
-            <hr/>
         </div>
     {% endif %}
 
     {# ZMIANY OBOWIĄZUJĄ OD #}
-    <div class="form-group {% if not form.zmianaOd.vars.valid %}has-error{% endif %}">
-        {{ form_label(form.zmianaOd) }}
-        {{ form_widget(form.zmianaOd) }}
+    <div class='form-group {% if not form.zmianaOd.vars.valid %}has-error{% endif %}'>
+        {{ form_label(form.zmianaOd, 'Zmiana obowiązuje od', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(form.zmianaOd, {attr: {'class': 'datepicker'}}) }}</div>
         {{ form_errors(form.zmianaOd) }}
-        <hr/>
     </div>
 
     {# PRZYWRÓĆ UPRAWNIENIA POCZĄTKOWE #}
@@ -119,25 +109,23 @@
     FEATURE
     <div>
         {{ form_label(form.ustawUprawnieniaPoczatkowe) }}
-        {{ form_widget(form.ustawUprawnieniaPoczatkowe) }}
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(form.ustawUprawnieniaPoczatkowe)</div> }}
         {{ form_errors(form.ustawUprawnieniaPoczatkowe) }}
-        <hr/>
     </div> #}
 
     {# ROLE W AKD #}
     {# TODO BĘDZIE W NOWEJ ZAKŁADCE -> PRZENIEŚĆ
         {% if not form_type_new %}
-            <div class="form-group {% if not form.roles.vars.valid %}has-error{% endif %}">
+            <div class='form-group {% if not form.roles.vars.valid %}has-error{% endif %}'>
                 {{ form_label(form.roles) }}
                 {{ form_widget(form.roles, {attr: {'readonly': 'readonly', 'disabled': 'disabled', 'data-toggle': 'select2'}}) }}
                 {{ form_errors(form.roles) }}
-                <hr/>
             </div>
         {% endif %}
     #}
 
     {# ZAPISZ #}
-    <div>
-        {{ form_widget(form.zapisz) }}
+    <div class='form-group'>
+        {{ form_widget(form.zapisz, {attr: {'class': 'btn-success col-xs-12 col-sm-2 col-sm-offset-8 col-md-offset-9 col-md-2 col-lg-offset-7'}}) }}
     </div>
 {{ form_end(form) }}

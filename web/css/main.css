@@ -81,8 +81,8 @@ body ul.tagit li {
 	width: 100%;
 }
 
-.JColResizer > tbody > tr > td,
-.JColResizer > tbody > tr > th {
+.JColResizer>tbody>tr>td,
+.JColResizer>tbody>tr>th {
 	padding: 5px;
 }
 
@@ -106,11 +106,11 @@ body ul.tagit li {
 	padding-top: 20px;
 }
 
-.red-tooltip + .tooltip > .tooltip-inner {
+.red-tooltip+.tooltip>.tooltip-inner {
 	background-color: #b61928;
 }
 
-.red-tooltip + .tooltip > .tooltip-arrow {
+.red-tooltip+.tooltip>.tooltip-arrow {
 	border-bottom-color: #b61928;
 }
 
@@ -153,13 +153,13 @@ td .btn {
 	display: none;
 }
 
-.tab-content > form > .tab-pane,
-.pill-content > form > .pill-pane {
+.tab-content>form>.tab-pane,
+.pill-content>form>.pill-pane {
 	display: none;
 }
 
-.tab-content > form > .active,
-.pill-content > form > .active {
+.tab-content>form>.active,
+.pill-content>form>.active {
 	display: block;
 }
 
@@ -351,13 +351,13 @@ td .btn {
 	cursor: default;
 }
 
-.in-train > i {
+.in-train>i {
 	margin: 0 0.4rem;
 }
 
 /* ----------------/wnioseknadanieodebraniezasobow/index-------------- */
 
-#submitexport > i {
+#submitexport>i {
 	margin-right: 0.6rem;
 }
 
@@ -366,7 +366,7 @@ td .btn {
 	margin-bottom: 0.3rem;
 }
 
-.grid-filter-operator > select {
+.grid-filter-operator>select {
 	width: 100%;
 	border-width: 1px;
 	padding: 3px 1px;
@@ -391,11 +391,11 @@ td.grid-column-akcje.last-column {
 	padding: 0;
 }
 
-td.grid-column-akcje.last-column > div.btn-group-vertical {
+td.grid-column-akcje.last-column>div.btn-group-vertical {
 	display: block;
 }
 
-td.grid-column-akcje.last-column > div.btn-group-vertical > a.btn.btn-xs {
+td.grid-column-akcje.last-column>div.btn-group-vertical>a.btn.btn-xs {
 	float: left;
 }
 
@@ -417,19 +417,53 @@ footer.helpdesk {
 
 /* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
 /* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
-#general > div > .record_properties + a {
+#general>div>.record_properties+a {
 	display: none;
 }
 
 /* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
-#zasoby > br + a {
+#zasoby>br+a {
 	display: none;
 }
 
-/* -------- Różnice między przeglądarkami ---------------- */
+/* --------------- user edit -------------- */
+.user-edit .form-group>.btn {
+	position: relative;
+	right: 15px;
+}
 
-/* @screen and (-webkit-min-device-pixel-ratio) {
-	input[type="date"] {
-		line-height: 1.42857143;
+select.form-control+select.form-control {
+	margin-left: 1rem;
+}
+
+select.form-control+.sr-only+select.form-control:not(#parp_mainbundle_edycjauzytkownika_zmianaOd_time_minute) {
+	margin-left: 1rem;
+}
+
+@media (min-width: 768px) and (max-width: 992px) {
+	.user-edit .btn.col-sm-2 {
+		width: 25%;
 	}
-} */
+
+	.user-edit label.col-sm-2 {
+		width: 25%;
+	}
+}
+
+@media (max-width: 768px) {
+	.user-edit .form-inline .form-control {
+		display: inline-block;
+		width: auto;
+		vertical-align: middle;
+	}
+
+	.user-edit label.col-sm-2 {
+		width: 100%;
+		text-indent: 1rem;
+	}
+
+	.user-edit .form-group>.btn {
+		width: calc(100% - 30px);
+		left: 15px;
+	}
+}
