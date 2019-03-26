@@ -5,3 +5,9 @@ services:
   ldap_fetch:
     class: ParpV1\LdapBundle\Service\LdapFetch
     arguments: ['@ldap_connection']
+  update_from_entry:
+    class: ParpV1\LdapBundle\Service\AdUser\UpdateFromEntryService
+    arguments: ['@ldap_fetch', '@doctrine.orm.entity_manager', '@change_compare_service']
+  change_compare_service:
+    class: ParpV1\LdapBundle\Service\AdUser\ChangeCompareService
+    arguments: ['@doctrine.orm.entity_manager']
