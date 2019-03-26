@@ -923,6 +923,8 @@ class RaportyITController extends Controller
 
     /**
      * @Route("/kombajnAnulowaniaPrzedData/{nazwaUzytkownika}/{dataGraniczna}", name="kombajn_anulowania")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
     public function jednorazowyKombajnAnulowaniaWnioskowPrzedData(string $nazwaUzytkownika, DateTime $dataGraniczna)
     {
@@ -964,7 +966,8 @@ class RaportyITController extends Controller
 
         $this->getDoctrine()->getManager()->flush();
 
-        VarDumper::dump($this->logWpis); die;
+        VarDumper::dump($this->logWpis);
+        die;
     }
 
     /**
