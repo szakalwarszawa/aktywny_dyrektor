@@ -11,7 +11,6 @@ use Symfony\Component\Console\Question\ConfirmationQuestion;
 use ParpV1\MainBundle\Entity\Entry;
 use DateTime;
 
-
 /**
  * Klasa komendy OdnotowanieTerminowychCommand
  * Odnotowuje w AkD i odbiera uprawnienia po terminie z AD.
