@@ -62,6 +62,7 @@ class ParpMailerService
     const TEMPLATE_WNIOSEKZASOBZWROCENIE = 'wniosekZasobZwrocenie.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIEBI = 'pracownikWylaczenieKontaAd.html.twig';
     const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
+    const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -83,6 +84,8 @@ class ParpMailerService
     private $ldap;
 
     private $idSrodowiska;
+
+    private $doFlush = true;
 
     /**
      * EmailerService constructor.
@@ -142,6 +145,13 @@ class ParpMailerService
 
         $recipientArray= $this->getRecipient($recipient);
 
+
+        $transport = (new \Swift_SmtpTransport('localhost', 1025))
+        ;
+
+        $mailer = new Swift_Mailer($transport);
+
+
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
@@ -172,7 +182,10 @@ class ParpMailerService
             $email->setUzytkownik($uzytkownik);
         }
         $this->entityManager->persist($email);
-        $this->entityManager->flush();
+        if ($this->doFlush) {
+            $this->entityManager->flush();
+        }
+
 
         return $sent;
     }
@@ -612,6 +625,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE       => '[BI] Nowe konto Exchange: ',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => 'Wyłączenie konta w Exchange: ',
             ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
+            self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
@@ -650,5 +664,17 @@ class ParpMailerService
 
             return $recipient;
         }
+    }
+
+    /**
+     * Wyłączenie flusha
+     *
+     * @return self
+     */
+    public function disableFlush(): self
+    {
+        $this->doFlush = false;
+
+        return $this;
     }
 }

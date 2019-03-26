@@ -23,11 +23,16 @@ use ParpV1\MainBundle\Entity\HistoriaWersji;
 use DateTime;
 use ParpV1\MainBundle\Entity\DaneRekord;
 use Exception;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Entity\WniosekStatus;
+use ParpV1\MainBundle\Services\ParpMailerService;
 
 /**
  * RaportyIT controller.
  * @Security("has_role('PARP_ADMIN')")
  * @Route("/RaportyIT")
+ *
+ * @todo to jest do usunięcia całkowitego
  */
 class RaportyITController extends Controller
 {
@@ -55,6 +60,11 @@ class RaportyITController extends Controller
     protected $ostatniDepartament = null;
     protected $sumaUprawnien = [];
     protected $user = null;
+
+    /**
+     * @var array
+     */
+    private $logWpis = [];
 
     /**
      * @Route("/generujRaport", name="raportIT1")
@@ -909,5 +919,163 @@ class RaportyITController extends Controller
         $wnioskiByDate = $zasobyService->findAktywneWnioski($user, $date);
 
         return new JsonResponse($wnioskiByDate);
+    }
+
+    /**
+     * @Route("/kombajnAnulowaniaPrzedData/{nazwaUzytkownika}/{dataGraniczna}", name="kombajn_anulowania")
+     */
+    public function jednorazowyKombajnAnulowaniaWnioskowPrzedData(string $nazwaUzytkownika, DateTime $dataGraniczna)
+    {
+        $zasobyService = $this->get('zasoby_service');
+
+        /**
+         * Tablica zawierajaca liste UserZasoby (id user_zasob, id zasob, id_wniosekNadanieOdebranie)
+         * złożone przed i po dacie.
+         * Klucze: ['przed_data'], ['po_dacie']
+         *
+         * @var array
+         */
+        $wnioskiPoDacie = $zasobyService->findAktywneWnioski($nazwaUzytkownika, $dataGraniczna);
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        $uprawnieniaService->setWypchnijEntryPrzyAnulowaniu(false);
+
+        $zasobyZGrupamiAd = $uprawnieniaService->pobierzZasobyIdZGrupamiAd();
+
+        $przeprocesowane = $uprawnieniaService->odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, $dataGraniczna, 'Odebrano z powodu zmiany departamentu/sekcji/stanowiska.', false, true);
+
+        $zasobyService = $this->get('zasoby_service');
+
+        $przeprocesowaneBezGrup = [];
+        $przeprocesowaneZGrupami = [];
+        foreach ($przeprocesowane as $jedenZasob) {
+            if (in_array($jedenZasob['zasob'], $zasobyZGrupamiAd)) {
+                $przeprocesowaneZGrupami[] = $jedenZasob;
+            } else {
+                $przeprocesowaneBezGrup[] = $jedenZasob;
+            }
+        }
+
+        $this->wyslijInfoDoAdministratorow($nazwaUzytkownika, $przeprocesowaneBezGrup, $dataGraniczna);
+
+        if (isset($wnioskiPoDacie[$nazwaUzytkownika]['po_dacie'])) {
+            $this->wyzerujGrupyAdNadajNowePodstawowe($wnioskiPoDacie[$nazwaUzytkownika]['po_dacie'], $nazwaUzytkownika);
+        }
+
+        $this->getDoctrine()->getManager()->flush();
+
+        VarDumper::dump($this->logWpis); die;
+    }
+
+    /**
+     * Trzeba tylko zrobić żeby zerowało mu grupy i nadało z tych wniosków
+     *
+     * @param array $doNadaniaAd
+     * @param string $nazwaUzytkownika
+     *
+     * @return void
+     */
+    private function wyzerujGrupyAdNadajNowePodstawowe($doNadaniaAd, $nazwaUzytkownika)
+    {
+        $ldapService = $this->get('ldap_service');
+        $adUser = $ldapService->getUserFromAD($nazwaUzytkownika)[0];
+        $wszystkiePosiadaneDoUsuniecia = $adUser['memberOf'];
+        $entityManager = $this->getDoctrine()->getManager();
+        if (!empty($wszystkiePosiadaneDoUsuniecia)) {
+            $entry = new Entry();
+            $entry
+                ->setSamaccountname($nazwaUzytkownika)
+                ->setMemberOf('-' . implode(',-', $wszystkiePosiadaneDoUsuniecia))
+                ->setFromWhen(new DateTime())
+            ;
+            $entityManager->persist($entry);
+            $this->logWpis[$nazwaUzytkownika]['usunieto_podstawowe'] = $wszystkiePosiadaneDoUsuniecia;
+        }
+        $podstawoweUprawnienia = $ldapService->getGrupyUsera($adUser, $adUser['description'], $adUser['division']);
+
+        if (!empty($podstawoweUprawnienia)) {
+            $entry = new Entry();
+            $entry
+                ->setSamaccountname($nazwaUzytkownika)
+                ->setMemberOf('+' . implode(',+', $podstawoweUprawnienia))
+                ->setFromWhen(new DateTime())
+            ;
+            $entityManager->persist($entry);
+            $this->logWpis[$nazwaUzytkownika]['nadano_podstawowe'] = $podstawoweUprawnienia;
+        }
+
+        $grupyDoNadania = [];
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        foreach ($doNadaniaAd as $wpis) {
+            if ($wpis['grupy_ad']) {
+                $zasob = $entityManager
+                    ->getRepository(Zasoby::class)
+                    ->findOneById($wpis['zasob_id'])
+                ;
+                $userZasob = $entityManager
+                    ->getRepository(UserZasoby::class)
+                    ->findOneById($wpis['user_zasoby_id'])
+                ;
+
+                $grupyDoNadania[] = $uprawnieniaService->znajdzGrupeAD($userZasob, $zasob);
+            }
+        }
+
+        if (!empty($grupyDoNadania)) {
+            $this->logWpis[$nazwaUzytkownika]['grupy_z_wnioskow'] = $grupyDoNadania;
+            $entry = new Entry();
+            $entry
+                ->setSamaccountname($nazwaUzytkownika)
+                ->setMemberOf('+' . implode(',+', $grupyDoNadania))
+                ->setFromWhen(new DateTime())
+            ;
+
+            $entityManager->persist($entry);
+        }
+    }
+    /**
+     * Wysyła mail do adminów zasobów żeby przejrzeli użytkowników.
+     *
+     * @param string $nazwaUzytkownika
+     * @param array $procesowaneZasoby
+     * @param DateTime $dataZmiany
+     *
+     * @return void
+     */
+    private function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany)
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $odebraneZasoby = [];
+        foreach ($przeprocesowneZasoby as $zasob) {
+            if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE  === $zasob['status']) {
+                $userZasob = $entityManager
+                    ->getRepository(UserZasoby::class)
+                    ->findOneById($zasob['user_zasob'])
+                ;
+
+                $zasob = $entityManager
+                    ->getRepository(Zasoby::class)
+                    ->findOneById($zasob['zasob'])
+                ;
+
+                $odebraneZasoby[$zasob->getId()]['object'] = $zasob;
+                $odebraneZasoby[$zasob->getId()]['modul'][] = $userZasob->getModul();
+                $odebraneZasoby[$zasob->getId()]['poziom'][] = $userZasob->getPoziomDostepu();
+            }
+        }
+
+        $mailer = $this->get('parp.mailer');
+        $mailer->disableFlush();
+        foreach ($odebraneZasoby as $odebrany) {
+            $odebrany['odbiorcy'] = [$mailer->getUserMail($odebrany['object']->getWlascicielZasobu())];
+            $odebrany['imie_nazwisko'] = $odebrany['object']->getWlascicielZasobu();
+            $odebrany['login'] = $odebrany['object']->getWlascicielZasobu();
+            $odebrany['dotyczy'] = $nazwaUzytkownika;
+            $odebrany['data_zmiany'] = $dataZmiany;
+            $mailer->sendEmailByType(ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY, $odebrany);
+        }
+
+        $this->logWpis[$nazwaUzytkownika]['wyslano_mail_do_admina'] = $odebraneZasoby;
     }
 }
