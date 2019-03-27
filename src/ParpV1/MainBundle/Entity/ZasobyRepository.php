@@ -53,7 +53,10 @@ class ZasobyRepository extends EntityRepository
         $queryBuilder = $this->createQueryBuilder('z');
         $queryBuilder
             ->select('z')
-            ->where('z.grupyAD is not null');
+            ->where('z.grupyAD is not null')
+            ->andWhere('z.deletedAt is null')
+            ->andWhere('z.published = 1')
+        ;
 
         return $queryBuilder
             ->getQuery()
