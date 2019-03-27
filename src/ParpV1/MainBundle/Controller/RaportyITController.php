@@ -672,19 +672,23 @@ class RaportyITController extends Controller
      * @see https://redmine.parp.gov.pl/issues/58977
      *
      * @Route(
-     *  "/przegladUprawnien/{departament}",
+     *  "/przegladUprawnien/{departament}/{format}",
      *  name="przeglad_uprawnien",
-     *  defaults={"departament" = ""}
+     *  defaults={
+     *      "departament" = "",
+     *      "format" = "",
+     *  }
      * )
      *
      * @Security("has_role('PARP_ADMIN')")
      *
      * @param string $departament
+     * @param string $format
      * @param bool $returnArray
      *
      * @return JsonResponse
      */
-    public function przegladZmianNaKoncieAction($departament, $returnArray = false)
+    public function przegladZmianNaKoncieAction($departament, $returnArray = false, $format = null)
     {
         $entityManager = $this->getDoctrine()->getManager();
         $zmianyUprawnien = $entityManager
@@ -707,6 +711,10 @@ class RaportyITController extends Controller
             }
 
             $zbiorZmian = $this->odfiltrujDlaDepartamentu($zbiorZmian, $uzytkownicyOuNazwy);
+        }
+
+        if ('html' === $format) {
+            return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $zbiorZmian]);
         }
 
         if ($returnArray) {
@@ -844,7 +852,7 @@ class RaportyITController extends Controller
                 }
             }
 
-            if (null !== $division || null !== $info) {
+            if ((null !== $division && null !== $info) || (null == $division && null !== $info)) {
                 if ($dataZmiany > $zmiany[$nazwaKonta]['ostatnia_zmiana']) {
                     $zmiany[$nazwaKonta]['ostatnia_zmiana'] = $dataZmiany;
                     $zmiany[$nazwaKonta]['powod'] = 'DIVISION/INFO';
