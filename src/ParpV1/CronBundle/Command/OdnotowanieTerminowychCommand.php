@@ -9,6 +9,8 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\UserZasoby;
 use DateTime;
 
 /**
@@ -156,6 +158,13 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         }
     }
 
+    /**
+     * Zwraca nazwy kont pracowników D/B
+     *
+     * @param string $departament Skrót D/B
+     *
+     * @return array
+     */
     protected function pracownicyDepartmentu($departament)
     {
         $ldapService = $this->getContainer()->get('ldap_service');
@@ -174,15 +183,31 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         return $pracownicyOuLoginy;
     }
 
-    protected function znajdzGrupeAD($uz, $z)
+    /**
+     * Znajduje grupę AD na podstawie poziomu dostępu.
+     *
+     * @param Zasoby $zasob
+     * @param UserZasoby $userZasoby
+     *
+     * @return string
+     */
+    protected function znajdzGrupeAD(UserZasoby $userZasoby, Zasoby $zasob)
     {
-        $grupy = explode(';', $z->getGrupyAD());
-        $poziomy = explode(';', $z->getPoziomDostepu());
-        $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
+        $grupy = explode(';', $zasob->getGrupyAD());
+        $poziomy = explode(';', $zasob->getPoziomDostepu());
+        $ktoryPoziom = $this->znajdzPoziom($poziomy, $userZasoby->getPoziomDostepu());
 
-        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')') ;
+        return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$zasob->getNazwa().'" ('.$grupy[0].')');
     }
 
+    /**
+     * Zwraca indeks poziomu dla grupy AD
+     *
+     * @param array $poziomy
+     * @param string $poziom
+     *
+     * @return int
+     */
     protected function znajdzPoziom($poziomy, $poziom)
     {
         $i = -1;
