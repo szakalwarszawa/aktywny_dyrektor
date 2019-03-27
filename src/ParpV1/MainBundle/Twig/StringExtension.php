@@ -60,8 +60,12 @@ class StringExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function parseAdString(string $value, string $key): string
+    public function parseAdString(string $value = null, string $key): string
     {
+        if (null === $value) {
+            return '';
+        }
+
         $availableKeys = (new ReflectionClass(AdStringTool::class))
             ->getConstants();
         if (in_array($key, array_keys($availableKeys))) {

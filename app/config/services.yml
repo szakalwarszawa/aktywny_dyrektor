@@ -128,9 +128,6 @@ services:
     user_service:
         class: ParpV1\MainBundle\Services\UserService
         arguments: ['@security.token_storage']
-    edycja_uzytkownika_service:
-        class: ParpV1\MainBundle\Services\EdycjaUzytkownikaService
-        arguments: ['@ldap_service', '@doctrine.orm.entity_manager', '@user_service', '%ad_domain%', '%ad_ou%']
     czyszczenie_starych_wnioskow_command:
         class: ParpV1\CronBundle\Command\CzyszczenieStarychWnioskowCommand
         arguments: ['@uprawnienia_service', '@doctrine.orm.entity_manager', '%katalog_eksportow_cli%']
