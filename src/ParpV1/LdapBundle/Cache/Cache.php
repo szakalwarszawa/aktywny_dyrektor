@@ -9,6 +9,8 @@ use UnexpectedValueException;
  * Klasa Cache
  * Nakładka na CacheHitInterface dodatkowo serializująca lub odserializująca.
  * Umożliwia wyczyszczenie cache.
+ *
+ * @todo rzeczywistego poola dla tych keszy zrobić
  */
 class Cache implements CacheHitInterface
 {
@@ -88,15 +90,15 @@ class Cache implements CacheHitInterface
             ->getItem($key)
         ;
 
-            if (!is_string($value)) {
-                $value = serialize($value);
-            }
+        if (!is_string($value)) {
+            $value = serialize($value);
+        }
 
-            $cacheItem->set($value);
-            $this
-                ->cache
-                ->save($cacheItem)
-            ;
+        $cacheItem->set($value);
+        $this
+            ->cache
+            ->save($cacheItem)
+        ;
 
         return true;
     }

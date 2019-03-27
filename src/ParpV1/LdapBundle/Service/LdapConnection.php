@@ -85,7 +85,7 @@ class LdapConnection
      */
     public function authLdap(string $username, string $password): bool
     {
-        if (empty($username) || empty($password)) {
+      /*  if (empty($username) || empty($password)) {
             throw new \InvalidArgumentException('Nazwa użytkownika i hasło nie mogą być puste!');
         }
 
@@ -116,7 +116,9 @@ class LdapConnection
             return true;
         } catch (BindException $exception) {
             return false;
-        }
+        }*/
+
+        return false;
     }
 
     /**
@@ -135,7 +137,7 @@ class LdapConnection
 
         try {
             $adLdap->connect();
-        } catch(BindException $exception) {
+        } catch (BindException $exception) {
             $this->addError('danger', 'Wystąpił błąd połączenia z AD.');
 
             return $this;

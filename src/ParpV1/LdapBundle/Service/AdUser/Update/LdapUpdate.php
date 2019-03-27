@@ -74,7 +74,6 @@ class LdapUpdate implements MessageCollectorInterface
         }
 
         if (null !== $group) {
-
             if (!$adUser->inGroup($group)) {
                 $group->addMember($adUser);
 
@@ -90,13 +89,13 @@ class LdapUpdate implements MessageCollectorInterface
             }
         }
 
-            $message = (new WarningMessage('Nie odnaleziono w AD grupy ' . $group))
-                ->setTarget(AdUserConstants::GRUPY_AD)
-            ;
-            $this
-                ->messageCollector
-                ->add($message)
-            ;
+        $message = (new WarningMessage('Nie odnaleziono w AD grupy ' . $group))
+            ->setTarget(AdUserConstants::GRUPY_AD)
+        ;
+        $this
+            ->messageCollector
+            ->add($message)
+        ;
 
         return false;
     }
