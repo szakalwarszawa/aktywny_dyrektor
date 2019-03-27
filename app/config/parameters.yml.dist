@@ -62,3 +62,6 @@ parameters:
 
     # Katalog używany przez komendy CLI do zapisu plików #
     katalog_eksportow_cli: setup/export_cli/
+
+    # Czas opóźnienia 'zmiana obowiązuje od' przy edycji użytkownika #
+    ad_push_delay: '30 minutes'

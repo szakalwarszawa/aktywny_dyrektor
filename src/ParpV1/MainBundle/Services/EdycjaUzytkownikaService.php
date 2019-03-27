@@ -13,7 +13,6 @@ use ParpV1\SoapBundle\Services\LdapService;
 use ParpV1\MainBundle\Helper\AdUserHelper;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Constants\TakNieInterface;
-use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
 use ParpV1\MainBundle\Constants\PowodAnulowaniaWnioskuConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
@@ -22,6 +21,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\Departament;
 use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 class EdycjaUzytkownikaService
 {
@@ -56,6 +56,13 @@ class EdycjaUzytkownikaService
     private $adParameters;
 
     /**
+     * Czas opóźnienia 'zmiana obowiązuje od'
+     *
+     * @var string
+     */
+    private $adPushDelay = '30 minutes';
+
+    /**
      * Publiczny konstruktor
      *
      * @param Form $form
@@ -65,7 +72,8 @@ class EdycjaUzytkownikaService
         EntityManager $entityManager,
         UserService $userService,
         string $baseAdDomain,
-        string $baseAdOu
+        string $baseAdOu,
+        string $adPushDelay
     ) {
         $this->ldapService = $ldapService;
         $this->entityManager = $entityManager;
@@ -75,6 +83,7 @@ class EdycjaUzytkownikaService
             'ad_domain' => $baseAdDomain,
             'ad_ou' => $baseAdOu
         ];
+        $this->adPushDelay = $adPushDelay;
     }
 
     /**
@@ -238,8 +247,8 @@ class EdycjaUzytkownikaService
         }
 
         if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
-            foreach ($changedElements as $element) {
-                if (!in_array($element, AdUserConstants::getElementsAllowedToChange())) {
+            foreach ($changedElements as $key => $element) {
+                if (!in_array($element, AdUserConstants::getElementsAllowedToChange()) && is_int($key)) {
                     throw new UnexpectedValueException(
                         'Zmieniono pole niepodlegające zmianie w AkD! Twoje role na to nie pozwalają.'
                     );
@@ -253,6 +262,19 @@ class EdycjaUzytkownikaService
             $createOdebranieZasobowEntry = true;
             $reason = $this->specifyCancellationReason($changedElements, $formData);
         }
+
+        $changeDate = function (DateTime $date) {
+            $currentDate = new DateTime('today');
+            if (0 === ($date->diff($currentDate))->days) {
+                $newDate = (new DateTime())
+                    ->modify('+' . $this->adPushDelay)
+                ;
+
+                return $newDate;
+            }
+
+            return $date;
+        };
 
         $entry = new Entry();
         $entry
@@ -273,7 +295,7 @@ class EdycjaUzytkownikaService
                 )
             )
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
-            ->setFromWhen($formData['zmianaOd'])
+            ->setFromWhen($changeDate($formData['zmianaOd']))
         ;
 
         if ($createOdebranieZasobowEntry) {
@@ -462,6 +484,10 @@ class EdycjaUzytkownikaService
             $changes[] = AdUserConstants::STANOWISKO;
         }
 
+        if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {
+            $changes [] = AdUserConstants::WYGASA;
+        }
+
         if ($formData[AdUserConstants::DEPARTAMENT_NAZWA] !== $adUserHelper::getDepartamentNazwa(false, true)) {
             $changes[] = AdUserConstants::DEPARTAMENT_NAZWA;
         }
@@ -540,11 +566,11 @@ class EdycjaUzytkownikaService
      */
     public function getErrorsAsString(): string
     {
-        $text = '';
+        $errorStringParts = [];
         foreach ($this->errors as $error) {
-            $text .= $error['message'];
+            $errorStringParts[] = $error['message'];
         }
 
-        return $text;
+        return implode(',', $errorStringParts);
     }
 }

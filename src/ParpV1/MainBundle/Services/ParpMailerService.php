@@ -336,6 +336,34 @@ class ParpMailerService
         }
     }
 
+    public function sendEmailWniosekOczekujacy($wniosek, $template)
+    {
+        $odbiorcy = [];
+        $data = [];
+        $loginy = [];
+
+        foreach ($wniosek->getWniosek()->getEditors() as $editor) {
+            $odbiorcy[] = $this->getUserMail($editor->getSamaccountname());
+        }
+
+        $odbiorcy = array_unique($odbiorcy);
+
+        if (!$wniosek->getPracownikSpozaParp()) {
+            foreach ($wniosek->getUserZasoby() as $userZasob) {
+                $loginy[] = $userZasob->getSamaccountname();
+            }
+        }
+        $loginy = array_unique($loginy);
+
+        $data = [
+            'odbiorcy'                           => $odbiorcy,
+            'login'                              => $loginy,
+            'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
+        ];
+
+        $this->sendEmailByType($template, $data);
+    }
+
     public function sendEmailWniosekNadanieOdebranieUprawnien($wniosek, $template)
     {
         $odbiorcy = [
@@ -355,6 +383,8 @@ class ParpMailerService
                 $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
             }
         } elseif (in_array($template, [ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK])) {
+            // wysyłamy tylko do przełożonego
+            $odbiorcy = [];
             foreach ($wniosek->getWniosek()->getEditors() as $editor) {
                 $odbiorcy[] = $this->getUserMail($editor->getSamaccountname());
             }
@@ -376,7 +406,7 @@ class ParpMailerService
                     'nazwa_zasobu'             => $zasob->getNazwa(),
                     'data_odebrania_uprawnien' => $this->formatDateForDisplay($userZasob->getAktywneDo()),
                     'data_zwrocenia'           => $this->formatDateForDisplay(new \Datetime()),
-                    'powod'                    => '' //$userZasob->getPowodOdebrania(),
+                    'powod'                    => '',//$userZasob->getPowodOdebrania(),
                 ];
                 switch ($template) {
                     case ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE:
@@ -384,6 +414,9 @@ class ParpMailerService
                         break;
                     case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
                         $data['powod'] = $wniosek->getPowodZwrotu();
+                        break;
+                    case ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK:
+                        $data['odbiorcy'] = $odbiorcy;
                         break;
                 }
                 $this->sendEmailByType($template, $data);
@@ -563,6 +596,9 @@ class ParpMailerService
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA:
                 $wymaganePola = array_merge($wymaganePola, ['departament']);
+                unset($wymaganePola[1]);
+                break;
+            case ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK:
                 unset($wymaganePola[1]);
                 break;
         }
