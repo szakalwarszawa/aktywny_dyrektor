@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\CronBundle\Command;
 
@@ -56,7 +56,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             if ($czyKontynuowac->ask($input, $output, $pytanie)) {
                 $output->writeln('<comment>Rozpoczynam odbieranie...</comment>');
                 foreach ($zasob as $zasobyDoOdebrania) {
-                    $this->odbierzUprawnieniaPrzeterminowane($output, $zasobyDoOdebrania, $tylkoTest);
+                    $this->odbierzUprawnieniaPrzeterminowane($output, (int) $zasobyDoOdebrania, $tylkoTest);
                 }
             }
         }
@@ -71,17 +71,12 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
      *
      * @return void
      */
-    protected function odbierzUprawnieniaPrzeterminowane(OutputInterface $output, int $idZasobu, $tylkoTest = null)
+    protected function odbierzUprawnieniaPrzeterminowane(OutputInterface $output, int $idZasobu, bool $tylkoTest)
     {
         $pomijajKonta = [];
 
         // pomijaj Zarząd:
         $pomijajKonta = $this->pracownicyDepartmentu('ZA');
-
-        if ($idZasobu === 4705) {
-            // pomijamy pracowników DKM
-            $pomijajKonta = array_merge($pomijajKonta, $this->pracownicyDepartmentu('DKM'));
-        }
 
         $entityManager = $this
                             ->getContainer()
@@ -165,7 +160,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
      *
      * @return array
      */
-    protected function pracownicyDepartmentu($departament)
+    protected function pracownicyDepartmentu(string $departament): array
     {
         $ldapService = $this->getContainer()->get('ldap_service');
         $pracownicyOu = $ldapService->getUsersFromOU($departament);
@@ -189,9 +184,9 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
      * @param Zasoby $zasob
      * @param UserZasoby $userZasoby
      *
-     * @return string
+     * @return string Nazwa grupy w AD
      */
-    protected function znajdzGrupeAD(UserZasoby $userZasoby, Zasoby $zasob)
+    protected function znajdzGrupeAD(UserZasoby $userZasoby, Zasoby $zasob): string
     {
         $grupy = explode(';', $zasob->getGrupyAD());
         $poziomy = explode(';', $zasob->getPoziomDostepu());
@@ -208,7 +203,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
      *
      * @return int
      */
-    protected function znajdzPoziom($poziomy, $poziom)
+    protected function znajdzPoziom($poziomy, $poziom): int
     {
         $i = -1;
         for ($i = 0; $i < count($poziomy); $i++) {
