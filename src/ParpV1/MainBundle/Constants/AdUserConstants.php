@@ -2,7 +2,7 @@
 
 namespace ParpV1\MainBundle\Constants;
 
-use ParpV1\LdapBundle\Constraints\Attributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 
 /**
  * Klasa AdUserConstants

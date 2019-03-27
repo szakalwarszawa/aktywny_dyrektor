@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\Constraints;
+namespace ParpV1\LdapBundle\Constants;
 
 class Attributes
 {

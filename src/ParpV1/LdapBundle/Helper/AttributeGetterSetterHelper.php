@@ -2,7 +2,7 @@
 
 namespace ParpV1\LdapBundle\Helper;
 
-use ParpV1\LdapBundle\Constraints\Attributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 use ReflectionClass;
 
 /**

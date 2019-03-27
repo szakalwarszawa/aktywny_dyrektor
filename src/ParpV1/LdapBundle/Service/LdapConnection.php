@@ -8,10 +8,9 @@ use Adldap\Adldap;
 use Adldap\Exceptions\AdldapException;
 use Adldap\Auth\BindException;
 use Symfony\Component\VarDumper\VarDumper;
-use Adldap\Connections\Provider;
 use LogicException;
-use Adldap\Connections\ProviderInterface;
 use Adldap\Query\Factory;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class LdapConnection
 {
@@ -48,6 +47,7 @@ class LdapConnection
             'base_dn' => $baseDn,
         ]);
 
+        $this->errors = new ArrayCollection();
         $this->ldapConnect();
     }
 

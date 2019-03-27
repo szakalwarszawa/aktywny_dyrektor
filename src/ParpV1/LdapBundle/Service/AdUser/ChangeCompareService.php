@@ -5,7 +5,7 @@ namespace ParpV1\LdapBundle\Service\AdUser;
 use ParpV1\MainBundle\Entity\Entry;
 use Doctrine\ORM\EntityManager;
 use ReflectionClass;
-use ParpV1\LdapBundle\Constraints\Attributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 
 /**
@@ -36,7 +36,7 @@ class ChangeCompareService
      *
      * @return array - zmienione atrybuty oraz ich wartości
      */
-    public function compare(Entry $entry, array $deficientAdUser): array
+    public function compareByEntry(Entry $entry, array $deficientAdUser): array
     {
         $possibleChangeKeys = $this->findEntryAdAttributes();
 
@@ -52,6 +52,22 @@ class ChangeCompareService
         }
 
         return $changes;
+    }
+
+    /**
+     * Zwraca jakie atrybuty zostały zmienione.
+     * Porównanie Tablica <=> AD
+     *
+     * a może zmiana do osobnego obiektu
+     * ->setOld
+     * ->setNew
+     * ->getOld
+     * ->getNew
+     */
+    public function compareByArray(array $changesArray, array $deficientAdUser): array
+    {
+        //need resolver
+        return [];
     }
 
     /**

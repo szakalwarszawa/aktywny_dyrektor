@@ -2,114 +2,149 @@
 
 namespace ParpV1\LdapBundle\Service;
 
-use ParpV1\LdapBundle\Constraints\SearchBy;
-use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\LdapBundle\Constants\SearchBy;
 use Adldap\Models\User;
-use ParpV1\LdapBundle\Constraints\AllowedToFetchAttributes;
-use ParpV1\MainBundle\Constants\AdUserConstants;
-use ParpV1\MainBundle\Tool\AdStringTool;
-
+use ParpV1\LdapBundle\AdUser\AdUser;
+use Adldap\Models\Group;
+use ParpV1\LdapBundle\Cache\AdUserCache;
+use ParpV1\LdapBundle\Cache\AdGroupCache;
 
 class LdapFetch
 {
-    /**
-     * Użytkownik zwrócony jako pełny obiekt - WSZYSTKIE ATRYBUTY
-     *
-     * @var int
-     */
-    const FULL_USER_OBJECT = 1;
-
-    /**
-     * Użytkownik okrojony do atrybutów określonych w klasie AllowedToFetchAttributes.
-     *
-     * @var int
-     */
-    const DEFICIENT_USER_OBJECT = 2;
-
     /**
      * @var LdapConnection
      */
     private $ldapConnection;
 
-    public function __construct(LdapConnection $ldapConnection)
+    /**
+     * Odświeżenie cache przed operacją.
+     *
+     * @var bool
+     */
+    private $refreshCache = false;
+
+    /**
+     * @var AdUserCache
+     */
+    private $adUserCache;
+
+    /**
+     * @var AdGroupCache
+     */
+    private $adGroupCache;
+
+    /**
+     * Publiczny konsturktor
+     *
+     * @param LdapConnection $ldapConnection
+     */
+    public function __construct(LdapConnection $ldapConnection, AdUserCache $adUserCache, AdGroupCache $adGroupCache)
     {
         $this->ldapConnection = $ldapConnection;
+        $this->adUserCache = $adUserCache;
+        $this->adGroupCache = $adGroupCache;
     }
 
     /**
-     * Pobiera obiekt użytkownika z AD
+     * Pobiera obiekt użytkownika z AD.
+     * Najpierw uderza do cache.
+     * Jeżeli parametr `refreshCache` jest true - mimo odnalezienia
+     * obiektu w cache - odświeża go.
      *
      * @param string $username
      * @param string $byAttribute - atrybut według którego jest szukany
+     * @param bool $useCache - czy użyć cache
      *
      * @return null|array|User
      */
     public function fetchAdUser(
         string $username,
         string $byAttribute = SearchBy::LOGIN,
-        int $returnType = self::DEFICIENT_USER_OBJECT
-    ) {
-        $searchFactory = $this
-            ->ldapConnection
-            ->getSearchFactory()
-        ;
-
-        $searchResult = $searchFactory->findBy($byAttribute, $username);
-
-        if (!$searchResult) {
-            return null;
+        bool $useCache = true
+    ): AdUser {
+        $adUser = false;
+        if ($useCache) {
+            $adUser = $this
+                ->adUserCache
+                ->getItem($username)
+            ;
         }
 
-        if (self::FULL_USER_OBJECT === $returnType) {
-            return $searchResult;
+        if (false === $adUser || !$useCache) {
+            $searchFactory = $this
+                ->ldapConnection
+                ->getSearchFactory()
+            ;
+
+            $adUser = $searchFactory->findBy($byAttribute, $username);
+
+            if (!$adUser) {
+                return null;
+            }
+
+            $this
+                ->adUserCache
+                ->saveItem($username, $adUser)
+            ;
         }
 
-        $userAttributes = $searchResult->getAttributes();
-        $allowedToFetchAttributes = AllowedToFetchAttributes::getAll();
-        $returnArray = [];
-        foreach ($allowedToFetchAttributes as $attributeName) {
-            $returnArray[$attributeName] = isset($userAttributes[$attributeName])? current($userAttributes[$attributeName]) : null;
-        }
 
-        $returnArray[AdUserConstants::GRUPY_AD] = $this->getUserAdGroups($searchResult);
-        $returnArray[AdUserConstants::WYLACZONE] = $searchResult->isDisabled();
-
-
-        return $returnArray;
+        return new AdUser($adUser);
     }
 
     /**
-     * Zwraca grupy użytkownika jako tablicę.
+     * Pobiera obiekt grupy z AD.
      *
-     * @param User $adUser
+     * @param string $groupName
+     * @param bool $useCache - czy użyć cache
      *
-     * @return array
+     * @return Group|bool
      */
-    private function getUserAdGroups(User $adUser): array
+    public function fetchGroup(string $groupName, bool $useCache = true)
     {
-        $userGroups = $adUser->getMemberOf();
-
-        $tempArray = [];
-        foreach ($userGroups as $group) {
-            $tempArray[] = AdStringTool::getValue($group, AdStringTool::CN);
+        $group =  false;
+        if ($useCache) {
+            $group = $this
+                ->adGroupCache
+                ->getItem($groupName)
+            ;
         }
 
-        return $tempArray;
+        if (false === $group || !$useCache) {
+            $searchFactory = $this
+                ->ldapConnection
+                ->getSearchFactory()
+            ;
+
+            $group = $searchFactory
+                ->groups()
+                ->find($groupName)
+            ;
+
+            if (!$group) {
+                return null;
+            }
+
+            $this
+                ->adGroupCache
+                ->saveItem($groupName, $group)
+            ;
+        }
+
+        return $group;
     }
 
     /**
-     * A potrzebne jest zwrócenie wszystkich grup?
+     * Ustawia parametr `refreshCache` na true.
+     * Spowoduje to pobieranie świeżego obiektu bezpośrednio z AD
+     * i zaktualizowanie go w cache.
+     *
+     * @return LdapFetch
      */
-    public function findAllAdGroups()
+    public function refreshCache(): LdapFetch
     {
-        $searchFactory = $this
-            ->ldapConnection
-            ->getSearchFactory()
-        ;
-        $adGroups = $searchFactory->read()->where('objectClass', 'group')->get();
+        $this->refreshCache(true);
 
-
-       VarDumper::dump($adGroups); die;
+        return $this;
     }
-
 }

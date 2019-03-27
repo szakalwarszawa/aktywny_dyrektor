@@ -1,8 +1,8 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\Constraints;
+namespace ParpV1\LdapBundle\Constants;
 
-use ParpV1\LdapBundle\Constraints\Attributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 
 /**
  * Klasa określająca jakie atrybuty mogą być zwrócone z AD
