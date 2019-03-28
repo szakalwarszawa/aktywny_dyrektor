@@ -3,12 +3,15 @@
 namespace ParpV1\LdapBundle\Service;
 
 use ParpV1\LdapBundle\Constants\SearchBy;
-use Adldap\Models\User;
 use ParpV1\LdapBundle\AdUser\AdUser;
 use Adldap\Models\Group;
 use ParpV1\LdapBundle\Cache\AdUserCache;
 use ParpV1\LdapBundle\Cache\AdGroupCache;
+use ParpV1\LdapBundle\Connection\LdapConnection;
 
+/**
+ * Klasa odpowiedzialna za pobieranie danych z AD.
+ */
 class LdapFetch
 {
     /**
