@@ -1,9 +1,9 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\MessageCollector\Message;
+namespace ParpV1\LdapBundle\DataCollection\Message\Messages;
 
-use ParpV1\LdapBundle\MessageCollector\Message\Message;
-use ParpV1\LdapBundle\MessageCollector\Constants\Types;
+use ParpV1\LdapBundle\DataCollection\Message\Message;
+use ParpV1\LdapBundle\DataCollection\Message\Constants\Types;
 
 /**
  * WarningMessage

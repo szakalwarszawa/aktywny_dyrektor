@@ -7,17 +7,19 @@ use ParpV1\LdapBundle\Service\LdapFetch;
 use ParpV1\LdapBundle\Service\AdUser\ChangeCompareService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Adldap\Models\Group;
-use ParpV1\LdapBundle\MessageCollector\Message\InfoMessage;
-use ParpV1\LdapBundle\MessageCollector\MessageCollectorInterface;
-use ParpV1\LdapBundle\MessageCollector\Collector;
-use ParpV1\LdapBundle\MessageCollector\Message\WarningMessage;
+use ParpV1\LdapBundle\DataCollector\Collector;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\Constants\SearchBy;
+use Doctrine\Common\Collections\ArrayCollection;
+use ParpV1\LdapBundle\AdUser\AdUser;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
+use ParpV1\LdapBundle\DataCollection\Message\Messages;
 
 /**
  * LdapUpdate
  */
-class LdapUpdate implements MessageCollectorInterface
+class LdapUpdate
 {
     /**
      * @var string
@@ -40,9 +42,9 @@ class LdapUpdate implements MessageCollectorInterface
     protected $ldapFetch;
 
     /**
-     * @var Collector|null
+     * @var ArrayCollection
      */
-    protected $messageCollector = null;
+    protected $responseMessages;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -58,6 +60,7 @@ class LdapUpdate implements MessageCollectorInterface
         if (null === $this->messageCollector) {
             $this->messageCollector = new Collector();
         }
+        $this->responseMessages = new ArrayCollection();
     }
 
     /**
@@ -85,7 +88,7 @@ class LdapUpdate implements MessageCollectorInterface
             if (!$adUser->inGroup($group)) {
                 $group->addMember($adUser);
 
-                $message = (new InfoMessage('Dodano do grupy ' . $group->getName()))
+                $message = (new Message\InfoMessage('Dodano do grupy ' . $group->getName()))
                     ->setTarget(AdUserConstants::GRUPY_AD)
                 ;
                 $this
@@ -97,7 +100,7 @@ class LdapUpdate implements MessageCollectorInterface
             }
         }
 
-        $message = (new WarningMessage('Nie odnaleziono w AD grupy ' . $group))
+        $message = (new Message\WarningMessage('Nie odnaleziono w AD grupy ' . $group))
             ->setTarget(AdUserConstants::GRUPY_AD)
         ;
         $this
@@ -133,7 +136,7 @@ class LdapUpdate implements MessageCollectorInterface
             if ($adUser->inGroup($group)) {
                 $group->removeMember($adUser);
 
-                $message = (new InfoMessage('Usunięto z grupy ' . $group->getName()))
+                $message = (new Message\InfoMessage('Usunięto z grupy ' . $group->getName()))
                     ->setTarget(AdUserConstants::GRUPY_AD)
                 ;
                 $this
@@ -145,7 +148,7 @@ class LdapUpdate implements MessageCollectorInterface
             }
         }
 
-        $message = (new WarningMessage('Nie odnaleziono w AD grupy ' . $group))
+        $message = (new Message\WarningMessage('Nie odnaleziono w AD grupy ' . $group))
             ->setTarget(AdUserConstants::GRUPY_AD)
         ;
         $this
@@ -196,40 +199,33 @@ class LdapUpdate implements MessageCollectorInterface
     }
 
     /**
-     * @see MessageCollectorInterface
-     */
-    public function setCollector(Collector $collector = null): void
-    {
-        if (null === $collector) {
-            $this->messageCollector = new Collector();
-        }
-        if ($collector instanceof Collector) {
-            $this->messageCollector = $collector;
-        }
-    }
-
-    /**
-     * @see MessageCollectorInterface
-     */
-    public function getCollector(): Collector
-    {
-        return $this->messageCollector;
-    }
-
-    /**
      * Set LdapFetch
+     *
+     * @return void
      */
-    public function setLdapFetch(LdapFetch $ldapFetch)
+    public function setLdapFetch(LdapFetch $ldapFetch): void
     {
         $this->ldapFetch = $ldapFetch;
     }
 
     /**
      * Set ChangeCompareService
+     *
+     * @return void
      */
-    public function setChangeCompareService(ChangeCompareService $changeCompareService)
+    public function setChangeCompareService(ChangeCompareService $changeCompareService): void
     {
         $this->changeCompareService = $changeCompareService;
+    }
+
+    /**
+     * Inicjalizuje nową kolekcję ArrayCollection
+     *
+     * @return void
+     */
+    public function setNewResponseMessagesCollection(): void
+    {
+        $this->responseMessages = new ArrayCollection();
     }
 
     /**
@@ -244,5 +240,93 @@ class LdapUpdate implements MessageCollectorInterface
         $this->searchBy = $searchBy;
 
         return $this;
+    }
+
+    /**
+     * Na podstawie kolekcji obiektów klasy AdUserChange wypycha zmiany do AD.
+     *
+     * @param ArrayCollection $changes
+     * @param AdUser $adUser
+     *
+     * @return self
+     */
+    public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser): self
+    {
+        $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+
+        foreach ($changes as $value) {
+            if ($value instanceof AdUserChange) {
+                $newValue = $value->getNew();
+                if ($newValue instanceof DateTime) {
+                    $newValue = LdapTimeHelper::unixToLdap($newValue->getTimestamp());
+                }
+
+                if (AdUserConstants::GRUPY_AD === $value->getTarget()) {
+                    $this->setGroupsAttribute($newValue, $writableUserObject);
+
+                    continue;
+                }
+
+                if (AdUserConstants::PRZELOZONY === $value->getTarget()) {
+                    $ldapFetchedUser = $this
+                        ->ldapFetch
+                        ->fetchAdUser($newValue, SearchBy::CN_AD_STRING, false)
+                    ;
+
+                    if (null === $ldapFetchedUser) {
+                        $messageText = 'Nie udało się odszukać przełożonego o nazwisku ' . $newValue;
+                        $message = new Messages\ErrorMessage($messageText, $value->getTarget());
+                        $this
+                            ->responseMessages
+                            ->add($message)
+                        ;
+
+                        return $this;
+                    }
+
+                    $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
+                }
+
+                $writableUserObject->setAttribute($value->getTarget(), $newValue);
+            }
+
+            $messageText = 'Zmiana z: ' . (null !== $value->getOld()? $value->getOld() : 'BRAK') .
+                ', na: ' . $value->getNew();
+            $message = new Messages\InfoMessage($messageText, $value->getTarget());
+            $this
+                ->responseMessages
+                ->add($message)
+            ;
+        }
+
+        $writableUserObject->save();
+
+        return $this;
+    }
+
+    /**
+     * Zwraca kolekcję wiadomości dla użytkownika.
+     *
+     * @return ArrayCollection
+     */
+    public function getResponseMessages(): ArrayCollection
+    {
+        return $this->responseMessages;
+    }
+
+    /**
+     * Zwraca czy istnieje błąd niepozwalający na poprawne wypchnięcie zmian.
+     *
+     * @return bool
+     */
+    public function hasError(): bool
+    {
+        foreach ($this->responseMessages as $message) {
+            if ($message instanceof Messages\ErrorMessage) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }

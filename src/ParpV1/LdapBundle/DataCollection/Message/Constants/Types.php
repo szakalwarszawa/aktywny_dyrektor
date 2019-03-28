@@ -1,6 +1,6 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\MessageCollector\Constants;
+namespace ParpV1\LdapBundle\DataCollection\Message\Constants;
 
 /**
  * Typy kolekcjonowanych wiadomości.

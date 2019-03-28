@@ -55,7 +55,7 @@ class LdapFetch
      * @param string $byAttribute - atrybut według którego jest szukany
      * @param bool $useCache - czy użyć cache
      *
-     * @return null|array|User
+     * @return null|array|AdUser
      */
     public function fetchAdUser(
         string $username,

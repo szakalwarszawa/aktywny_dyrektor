@@ -1,26 +1,31 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\Update;
+namespace ParpV1\LdapBundle\Service\AdUser\Update;
 
-use Adldap\Models\User;
-use ParpV1\LdapBundle\Service\LdapFetch;
-use Symfony\Component\VarDumper\VarDumper;
-use ParpV1\LdapBundle\Service\AdUser\ChangeCompareService;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Adldap\Models\Group;
-use ParpV1\LdapBundle\MessageCollector\Message\InfoMessage;
-use ParpV1\LdapBundle\MessageCollector\MessageCollectorInterface;
-use ParpV1\LdapBundle\MessageCollector\Collector;
-use ParpV1\LdapBundle\MessageCollector\Message\WarningMessage;
-use ParpV1\LdapBundle\Update\LdapUpdate;
+use ParpV1\LdapBundle\Service\AdUser\Update\LdapUpdate;
 use ParpV1\MainBundle\Constants\AdUserConstants;
+use Doctrine\ORM\EntityManager;
+use ParpV1\LdapBundle\Constants\SearchBy;
+use ParpV1\LdapBundle\AdUser\AdUser;
 
 /**
  * UpdateFromArray
- * @todo
  */
 final class UpdateFromArray extends LdapUpdate
 {
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
+     * @param EntityManager $entityManager
+     */
+    public function __construct(EntityManager $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
     public function update(array $updateArray): self
     {
         $userLogin = $updateArray[AdUserConstants::LOGIN];
@@ -38,7 +43,7 @@ final class UpdateFromArray extends LdapUpdate
             ->compareByArray($updateArray, $adUser->getUser())
         ;
 
-        die('');
+        $this->pushChangesToAd($changes, $adUser);
 
         return $this;
     }

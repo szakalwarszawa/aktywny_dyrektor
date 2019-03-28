@@ -78,4 +78,9 @@ class Attributes
      * @var string
      */
     const AD_STRING = 'distinguishedname';
+
+    /**
+     * @var string
+     */
+    const CN_AD_STRING = 'cn';
 }

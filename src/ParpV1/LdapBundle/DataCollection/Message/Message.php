@@ -1,16 +1,20 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\LdapBundle\MessageCollector\Message;
+namespace ParpV1\LdapBundle\DataCollection\Message;
 
-use ParpV1\LdapBundle\MessageCollector\Message\MessageInterface;
-use ParpV1\LdapBundle\MessageCollector\Constants\Types;
+use ParpV1\LdapBundle\DataCollection\CollectorInterface;
 
 /**
- * Message
+ * Obiekt wiadomości do użytkownika.
  */
-class Message implements MessageInterface
+class Message implements CollectorInterface
 {
     /**
+     * Typ kolekcji.
+     */
+    protected $rootType = 'message';
+
+        /**
      * @var string
      */
     protected $type;
@@ -31,7 +35,7 @@ class Message implements MessageInterface
     public function __construct(string $message, string $target = null)
     {
         $this->message = $message;
-        $this->target = null;
+        $this->target = $target;
     }
 
     /**
@@ -61,7 +65,11 @@ class Message implements MessageInterface
     }
 
     /**
-     * @see MessageInterface
+     * Set target
+     *
+     * @param string
+     *
+     * @return self
      */
     public function setTarget(string $target)
     {
@@ -71,20 +79,10 @@ class Message implements MessageInterface
     }
 
     /**
-     * @see MessageInterface
+     * @see CollectorInterface
      */
-    public function getType(): string
+    public function getRootType(): string
     {
-        return $this->type;
-    }
-
-    /**
-     * @see MessageInterface
-     */
-    public function setType(string $type)
-    {
-        $this->type = $type;
-
-        return $this;
+        return $this->rootType;
     }
 }
