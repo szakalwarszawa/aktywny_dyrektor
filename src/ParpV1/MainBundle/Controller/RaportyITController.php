@@ -930,11 +930,11 @@ class RaportyITController extends Controller
     }
 
     /**
-     * @Route("/kombajnAnulowaniaPrzedData/{nazwaUzytkownika}/{dataGraniczna}", name="kombajn_anulowania")
+     * @Route("/kombajnAnulowaniaPrzedData/{nazwaUzytkownika}/{dataGraniczna}/{wprowadzZmiany}", name="kombajn_anulowania")
      *
      * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
-    public function jednorazowyKombajnAnulowaniaWnioskowPrzedData(string $nazwaUzytkownika, DateTime $dataGraniczna)
+    public function jednorazowyKombajnAnulowaniaWnioskowPrzedData(string $nazwaUzytkownika, DateTime $dataGraniczna, bool $wprowadzZmiany = false)
     {
         $zasobyService = $this->get('zasoby_service');
 
@@ -972,7 +972,9 @@ class RaportyITController extends Controller
             $this->wyzerujGrupyAdNadajNowePodstawowe($wnioskiPoDacie[$nazwaUzytkownika]['po_dacie'], $nazwaUzytkownika);
         }
 
-        $this->getDoctrine()->getManager()->flush();
+        if ($wprowadzZmiany) {
+            $this->getDoctrine()->getManager()->flush();
+        }
 
         VarDumper::dump($this->logWpis);
         die;
