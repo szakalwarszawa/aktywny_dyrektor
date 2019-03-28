@@ -27,7 +27,7 @@ services:
     arguments: ['@doctrine.orm.entity_manager']
   ldap.ad_user_cache:
     class: ParpV1\LdapBundle\Cache\AdUserCache
-    arguments: ['@ldap.cache']
+    arguments: ['@ldap.ad_user.cache']
   ldap.ad_group_cache:
     class: ParpV1\LdapBundle\Cache\AdGroupCache
-    arguments: ['@ldap.cache']
+    arguments: ['@ldap.ad_group.cache']
