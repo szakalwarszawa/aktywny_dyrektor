@@ -61,7 +61,7 @@ class LdapFetch
         string $username,
         string $byAttribute = SearchBy::LOGIN,
         bool $useCache = true
-    ): AdUser {
+    ) {
         $adUser = false;
         if ($useCache) {
             $adUser = $this

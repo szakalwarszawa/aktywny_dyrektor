@@ -12,6 +12,7 @@ use ParpV1\LdapBundle\MessageCollector\MessageCollectorInterface;
 use ParpV1\LdapBundle\MessageCollector\Collector;
 use ParpV1\LdapBundle\MessageCollector\Message\WarningMessage;
 use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\LdapBundle\Constants\SearchBy;
 
 /**
  * LdapUpdate
@@ -42,6 +43,13 @@ class LdapUpdate implements MessageCollectorInterface
      * @var Collector|null
      */
     protected $messageCollector = null;
+
+    /**
+     * Klucz po której szuka użytkownika w AD.
+     *
+     * @var string
+     */
+    public $searchBy = SearchBy::LOGIN;
 
     public function __construct(LdapFetch $ldapFetch, ChangeCompareService $changeCompareService)
     {
@@ -222,5 +230,19 @@ class LdapUpdate implements MessageCollectorInterface
     public function setChangeCompareService(ChangeCompareService $changeCompareService)
     {
         $this->changeCompareService = $changeCompareService;
+    }
+
+    /**
+     * Set searchBy
+     *
+     * @param string $searchBy
+     *
+     * @return self
+     */
+    public function setSearchBy(string $searchBy): self
+    {
+        $this->searchBy = $searchBy;
+
+        return $this;
     }
 }

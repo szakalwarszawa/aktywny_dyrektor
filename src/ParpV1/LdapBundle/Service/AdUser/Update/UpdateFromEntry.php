@@ -46,7 +46,7 @@ final class UpdateFromEntry extends LdapUpdate
         $userLogin = $entry->$userLoginGetter();
         $adUser = $this
             ->ldapFetch
-            ->fetchAdUser($userLogin, SearchBy::LOGIN, false)
+            ->fetchAdUser($userLogin, $this->searchBy, false)
         ;
 
         if (null === $adUser) {
