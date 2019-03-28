@@ -1,6 +1,6 @@
 services:
   ldap.connection:
-    class: ParpV1\LdapBundle\Service\LdapConnection
+    class: ParpV1\LdapBundle\Connection\LdapConnection
     arguments: ['%ad_host%', '%ad_user%', '%ad_password%', '%base_dn%']
   ldap.fetch:
     class: ParpV1\LdapBundle\Service\LdapFetch
