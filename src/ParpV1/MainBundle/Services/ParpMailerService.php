@@ -145,13 +145,6 @@ class ParpMailerService
 
         $recipientArray= $this->getRecipient($recipient);
 
-
-        $transport = (new \Swift_SmtpTransport('localhost', 1025))
-        ;
-
-        $mailer = new Swift_Mailer($transport);
-
-
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
             ->setSubject($subject)
