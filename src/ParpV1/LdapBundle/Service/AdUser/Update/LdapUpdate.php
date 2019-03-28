@@ -12,9 +12,9 @@ use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\Constants\SearchBy;
 use Doctrine\Common\Collections\ArrayCollection;
 use ParpV1\LdapBundle\AdUser\AdUser;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * LdapUpdate
@@ -47,6 +47,13 @@ class LdapUpdate
     protected $responseMessages;
 
     /**
+     * Czy to będzie tylko symulacja wprowdzenia zmian.
+     *
+     * @param bool
+     */
+    protected $simulateProcess = false;
+
+    /**
      * Klucz po której szuka użytkownika w AD.
      *
      * @var string
@@ -57,9 +64,6 @@ class LdapUpdate
     {
         $this->ldapFetch = $ldapFetch;
         $this->changeCompareService = $changeCompareService;
-        if (null === $this->messageCollector) {
-            $this->messageCollector = new Collector();
-        }
         $this->responseMessages = new ArrayCollection();
     }
 
@@ -73,6 +77,8 @@ class LdapUpdate
      */
     private function groupAdd(User $adUser, $group): bool
     {
+        $simulateProcess = $this->simulateProcess;
+        $groupCopy = $group;
         if (!$group instanceof Group) {
             if (self::ADD_GROUP_SIGN === substr($group, 0, 1)) {
                 $group = ltrim($group, self::ADD_GROUP_SIGN);
@@ -86,13 +92,15 @@ class LdapUpdate
 
         if (null !== $group) {
             if (!$adUser->inGroup($group)) {
-                $group->addMember($adUser);
+                if (!$simulateProcess) {
+                    $group->addMember($adUser);
+                }
 
-                $message = (new Message\InfoMessage('Dodano do grupy ' . $group->getName()))
+                $message = (new Messages\InfoMessage('Dodano do grupy - ' . $group->getName()))
                     ->setTarget(AdUserConstants::GRUPY_AD)
                 ;
                 $this
-                    ->messageCollector
+                    ->responseMessages
                     ->add($message)
                 ;
 
@@ -100,11 +108,11 @@ class LdapUpdate
             }
         }
 
-        $message = (new Message\WarningMessage('Nie odnaleziono w AD grupy ' . $group))
+        $message = (new Messages\WarningMessage('[Dodaj] Nie odnaleziono w AD grupy - ' . $groupCopy))
             ->setTarget(AdUserConstants::GRUPY_AD)
         ;
         $this
-            ->messageCollector
+            ->responseMessages
             ->add($message)
         ;
 
@@ -121,6 +129,8 @@ class LdapUpdate
      */
     private function groupRemove(User $adUser, $group): bool
     {
+        $simulateProcess = $this->simulateProcess;
+        $groupCopy = $group;
         if (!$group instanceof Group) {
             if (self::REMOVE_GROUP_SIGN === substr($group, 0, 1)) {
                 $group = ltrim($group, self::REMOVE_GROUP_SIGN);
@@ -134,13 +144,15 @@ class LdapUpdate
 
         if (false !== $group) {
             if ($adUser->inGroup($group)) {
-                $group->removeMember($adUser);
+                if (!$simulateProcess) {
+                    $group->removeMember($adUser);
+                }
 
-                $message = (new Message\InfoMessage('Usunięto z grupy ' . $group->getName()))
+                $message = (new Messages\InfoMessage('Usunięto z grupy - ' . $group->getName()))
                     ->setTarget(AdUserConstants::GRUPY_AD)
                 ;
                 $this
-                    ->messageCollector
+                    ->responseMessages
                     ->add($message)
                 ;
 
@@ -148,11 +160,11 @@ class LdapUpdate
             }
         }
 
-        $message = (new Message\WarningMessage('Nie odnaleziono w AD grupy ' . $group))
+        $message = (new Messages\WarningMessage('[Usuń] Nie odnaleziono w AD grupy - ' . $groupCopy))
             ->setTarget(AdUserConstants::GRUPY_AD)
         ;
         $this
-            ->messageCollector
+            ->responseMessages
             ->add($message)
         ;
 
@@ -252,8 +264,8 @@ class LdapUpdate
      */
     public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser): self
     {
+        $simulateProcess = $this->simulateProcess;
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-
         foreach ($changes as $value) {
             if ($value instanceof AdUserChange) {
                 $newValue = $value->getNew();
@@ -287,7 +299,9 @@ class LdapUpdate
                     $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
                 }
 
-                $writableUserObject->setAttribute($value->getTarget(), $newValue);
+                if (!$simulateProcess) {
+                    $writableUserObject->setAttribute($value->getTarget(), $newValue);
+                }
             }
 
             $messageText = 'Zmiana z: ' . (null !== $value->getOld()? $value->getOld() : 'BRAK') .
@@ -299,7 +313,9 @@ class LdapUpdate
             ;
         }
 
-        $writableUserObject->save();
+        if (!$simulateProcess) {
+            $writableUserObject->save();
+        }
 
         return $this;
     }
@@ -328,5 +344,20 @@ class LdapUpdate
         }
 
         return false;
+    }
+
+    /**
+     * Przełączenie flagi odpowiadającej za wykonanie tylko symulacji wypchnięcia.
+     * Zmiany nie będą wprowadzone do AD.
+     * Musi być wywołane przed akcją `update` bo zmiany grup są od razu wypychane
+     * bez konieczności użycia `->save()` na użytkowniku!!
+     *
+     * @return self
+     */
+    public function doSimulateProcess(): self
+    {
+        $this->simulateProcess = true;
+
+        return $this;
     }
 }
