@@ -356,6 +356,18 @@ class StatusWnioskuService
                 }
                 break;
             case 'administratorZasobow':
+                $role = $entityManager
+                    ->getRepository(AclRole::class)
+                    ->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW')
+                ;
+                $users = $entityManager
+                    ->getRepository(AclUserRole::class)
+                    ->findByRole($role);
+
+                foreach ($users as $user) {
+                    $where[$user->getSamaccountname()] = $user->getSamaccountname();
+                }
+                break;
             case 'administrator':
                 if (TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU === $typWniosku) {
                     $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZmienianyZasob();

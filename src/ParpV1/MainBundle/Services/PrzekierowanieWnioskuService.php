@@ -208,7 +208,13 @@ class PrzekierowanieWnioskuService
 
         $wniosek
             ->setEditornamesSet()
-            ->setViewernamesSet();
+            ->setViewernamesSet()
+        ;
+
+        $this
+            ->entityManager
+            ->persist($wniosek)
+        ;
     }
 
     /**
