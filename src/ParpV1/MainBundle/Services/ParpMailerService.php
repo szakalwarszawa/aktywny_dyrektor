@@ -71,7 +71,7 @@ class ParpMailerService
     private $entityManager;
 
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     private $mailer;
 
@@ -94,10 +94,11 @@ class ParpMailerService
      * @param EntityManager $entityManager
      * @param Swift_Mailer $mailer
      * @param TokenStorage $tokenStorage
+     * @param string $mailerHost
+     * @param string $mailerPort
      */
     public function __construct(
         EntityManager $entityManager,
-        \Swift_Mailer $mailer,
         TokenStorage $tokenStorage,
         $templating,
         $ldap,
@@ -105,7 +106,6 @@ class ParpMailerService
         string $mailerHost,
         string $mailerPort
     ) {
-
         $this->entityManager = $entityManager;
         $transport = new Swift_SmtpTransport($mailerHost, $mailerPort);
         $this->mailer = new Swift_Mailer($transport);
