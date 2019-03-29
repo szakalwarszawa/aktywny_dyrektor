@@ -377,8 +377,8 @@
                             }
                         }
                     } else {
-                        if ($(sel).hasClass('select2')) {
-                            $(sel).val(v.split(","));
+                        if ($(sel).hasClass('select2') && v.length >= 0 && v !== null) {
+                            $(sel).val(v.split(";"));// było ,
                             $(sel).select2().trigger('change');
                             //$(sel).select2("data", v, true);
                             //$(sel).select2("updateResults");
