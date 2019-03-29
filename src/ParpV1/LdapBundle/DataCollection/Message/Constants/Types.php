@@ -4,6 +4,7 @@ namespace ParpV1\LdapBundle\DataCollection\Message\Constants;
 
 /**
  * Typy kolekcjonowanych wiadomości.
+ * Posługują również za wyróżnik klasy CSS.
  */
 class Types
 {
@@ -12,7 +13,7 @@ class Types
      *
      * @var string
      */
-    const ERROR = 'error';
+    const ERROR = 'danger';
 
     /**
      * Typ ostrzeżenie - kontynuowanie akcji.

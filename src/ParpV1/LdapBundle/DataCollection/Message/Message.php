@@ -32,7 +32,7 @@ class Message implements CollectorInterface
     /**
      * @param string $message
      */
-    public function __construct(string $message, string $target = null)
+    public function __construct(string $message = '', string $target = null)
     {
         $this->message = $message;
         $this->target = $target;
@@ -84,5 +84,15 @@ class Message implements CollectorInterface
     public function getRootType(): string
     {
         return $this->rootType;
+    }
+
+    /**
+     * Get $type
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
     }
 }

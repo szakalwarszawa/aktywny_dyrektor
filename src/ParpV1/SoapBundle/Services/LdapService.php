@@ -10,6 +10,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Section;
+use ParpV1\LdapBundle\Connection\LdapConnection;
+use ParpV1\LdapBundle\Service\LdapFetch;
 
 class LdapService
 {
@@ -17,6 +19,11 @@ class LdapService
      * @var CacheItemPoolInterface
      */
     private $cache;
+
+    /**
+     * @var LdapFech
+     */
+    private $ldapFetch;
 
     protected $dodatkoweOpcje = 'ekranEdycji';
     protected $ad_host;
@@ -51,7 +58,7 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
     {
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
@@ -69,6 +76,7 @@ class LdapService
             $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
         //die($this->patch);
+        $this->cache = $cacheItemPool;
 
         $configuration = array(
             //'user_id_key' => 'samaccountname',
@@ -90,7 +98,7 @@ class LdapService
                 //'sso' => false,
         );
        // $this->adldap = new \Adldap\Adldap($configuration);
-        $this->cache = $cacheItemPool;
+       $this->adldap = $ldapConnection->getAdLdap();
     }
 
     public function getAllManagersFromAD()

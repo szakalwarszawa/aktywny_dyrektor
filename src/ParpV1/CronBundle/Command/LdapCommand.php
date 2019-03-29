@@ -22,6 +22,7 @@ use SensioLabs\AnsiConverter\AnsiToHtmlConverter;
 use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use ParpV1\MainBundle\Helper\AdUserHelper;
 use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Entity\Entry;
 
 /**
  * Class LdapCommand
@@ -135,7 +136,7 @@ class LdapCommand extends ContainerAwareCommand
             $output->writeln('<info> [  OK  ]</info>');
 
             $output->writeln('<comment>Szukam zmian w Aktywnym Dyrektorze...          </comment>', false);
-            $zmiany = $doctrine->getRepository('ParpMainBundle:Entry')->findByIsImplementedAndFromWhen($this->ids);
+            $zmiany = $doctrine->getRepository(Entry::class)->findByIsImplementedAndFromWhen($this->ids);
             $output->writeln('<info> [  OK  ]</info>');
 
             if ($zmiany) {
@@ -146,7 +147,6 @@ class LdapCommand extends ContainerAwareCommand
                     $adUserHelper = new AdUserHelper($userNowData['user'], $em, false);
                     $userNow = $userNowData['user'];
                     $ktorzy = $userNowData['ktorzy'];
-
                     if ($userNow) {
                         $liczbaZmian = 0;
                         if ($ktorzy == "aktywne") {

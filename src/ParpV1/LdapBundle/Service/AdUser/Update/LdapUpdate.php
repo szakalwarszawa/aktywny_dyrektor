@@ -15,6 +15,9 @@ use ParpV1\LdapBundle\AdUser\AdUser;
 use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
 use Symfony\Component\VarDumper\VarDumper;
+use DateTime;
+use ParpV1\LdapBundle\Helper\LdapTimeHelper;
+use ParpV1\LdapBundle\DataCollection\Message\Message;
 
 /**
  * LdapUpdate
@@ -95,26 +98,29 @@ class LdapUpdate
                 if (!$simulateProcess) {
                     $group->addMember($adUser);
                 }
-
-                $message = (new Messages\InfoMessage('Dodano do grupy - ' . $group->getName()))
-                    ->setTarget(AdUserConstants::GRUPY_AD)
-                ;
-                $this
-                    ->responseMessages
-                    ->add($message)
-                ;
+                $this->addMessage(
+                    new Messages\InfoMessage(),
+                    'Dodano do grupy - ' . $group->getName(),
+                    AdUserConstants::GRUPY_AD
+                );
 
                 return true;
             }
+
+            $this->addMessage(
+                new Messages\InfoMessage(),
+                'Użytkownik jest już w grupie - ' . $group->getName(),
+                AdUserConstants::GRUPY_AD
+            );
+
+            return true;
         }
 
-        $message = (new Messages\WarningMessage('[Dodaj] Nie odnaleziono w AD grupy - ' . $groupCopy))
-            ->setTarget(AdUserConstants::GRUPY_AD)
-        ;
-        $this
-            ->responseMessages
-            ->add($message)
-        ;
+        $this->addMessage(
+            new Messages\WarningMessage(),
+            '[Dodaj] Nie odnaleziono w AD grupy - ' . $groupCopy,
+            AdUserConstants::GRUPY_AD
+        );
 
         return false;
     }
@@ -148,27 +154,54 @@ class LdapUpdate
                     $group->removeMember($adUser);
                 }
 
-                $message = (new Messages\InfoMessage('Usunięto z grupy - ' . $group->getName()))
-                    ->setTarget(AdUserConstants::GRUPY_AD)
-                ;
-                $this
-                    ->responseMessages
-                    ->add($message)
-                ;
+                $this->addMessage(
+                    new Messages\InfoMessage(),
+                    'Usunięto z grupy - ' . $group->getName(),
+                    AdUserConstants::GRUPY_AD
+                );
 
                 return true;
             }
+
+            $this->addMessage(
+                new Messages\InfoMessage(),
+                'Użytkownik nie był w grupie ' . $group->getName(),
+                AdUserConstants::GRUPY_AD
+            );
+
+            return true;
         }
 
-        $message = (new Messages\WarningMessage('[Usuń] Nie odnaleziono w AD grupy - ' . $groupCopy))
-            ->setTarget(AdUserConstants::GRUPY_AD)
+        $this->addMessage(
+            new Messages\InfoMessage(),
+            '[Usuń] Nie odnaleziono w AD grupy - ' . $groupCopy,
+            AdUserConstants::GRUPY_AD
+        );
+
+        return false;
+    }
+
+    /**
+     * Dodaje wiadomoość na podstawie typu.
+     * Oszczędza parę linijek kodu.
+     *
+     * @param Message $message
+     * @param string $text
+     * @param string $target
+     *
+     * @return void
+     */
+    private function addMessage(Message $message, string $text, string $target): void
+    {
+        $message
+            ->setTarget($target)
+            ->setMessage($text)
         ;
+
         $this
             ->responseMessages
             ->add($message)
         ;
-
-        return false;
     }
 
     /**
@@ -302,15 +335,16 @@ class LdapUpdate
                 if (!$simulateProcess) {
                     $writableUserObject->setAttribute($value->getTarget(), $newValue);
                 }
-            }
 
-            $messageText = 'Zmiana z: ' . (null !== $value->getOld()? $value->getOld() : 'BRAK') .
-                ', na: ' . $value->getNew();
-            $message = new Messages\InfoMessage($messageText, $value->getTarget());
-            $this
-                ->responseMessages
-                ->add($message)
-            ;
+                $messageText = 'Zmiana z: ' . (null !== $value->getOld()? $value->getOld() : 'BRAK') .
+                    ', na: ' . $newValue;
+
+                $this->addMessage(
+                    new Messages\InfoMessage(),
+                    $messageText,
+                    $value->getTarget()
+                );
+            }
         }
 
         if (!$simulateProcess) {

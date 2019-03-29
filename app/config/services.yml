@@ -6,11 +6,11 @@ services:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
         class: ParpV1\SoapBundle\Services\LdapService
-        arguments: ["@service_container", '@ldap.cache']
+        arguments: ["@service_container", '@ldap.cache', '@ldap.connection', '@ldap.fetch']
         tags: ~
     ldap_admin_service:
             class: ParpV1\SoapBundle\Services\LdapAdminService
-            arguments: ["@security.token_storage","@service_container","@doctrine.orm.entity_manager"]
+            arguments: ["@security.token_storage","@service_container","@doctrine.orm.entity_manager", '@ldap.connection', '@ldap.fetch']
             tags: ~
     gedmo.listener.loggable:
         class: Gedmo\Loggable\LoggableListener

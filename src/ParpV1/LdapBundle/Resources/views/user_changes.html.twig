@@ -1,0 +1,14 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+Zmiany{% if not is_simulation %} <b>SYMULACJA</b> {% endif %}: <hr/>
+
+<ul>
+    {% for change in change_log %}
+        <li class="alert alert-{{ change.getType() }}">
+            {{ change.message }} - <b>{{ change.target }}</b> {# do targetu dorobić PIPE tłumaczącą #}
+        </li>
+    {% endfor %}
+
+</ul>
+
+{% endblock %}

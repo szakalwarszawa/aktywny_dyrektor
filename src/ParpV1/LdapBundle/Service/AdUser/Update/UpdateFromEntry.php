@@ -6,6 +6,7 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use Doctrine\ORM\EntityManager;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
