@@ -29,9 +29,9 @@
             {% if grid.tweaks|length > 0 %}
                 {{ grid_tweaks(grid) }}
             {% endif %}
-            {# {% if grid.exports|length > 0 %}
+            {% if grid.exports|length > 0 %}
                 {{ grid_exports(grid) }}
-            {% endif %} #}
+            {% endif %}
             </div>
             {% if withjs %}
                 {{ grid_scripts(grid) }}
@@ -105,11 +105,11 @@
             {{ grid_pager_results_perpage(grid) }}
         </div>
     {% endif %}
-        <div class="pagination col-xs-2">
+        {# <div class="pagination col-xs-2">
         {% if grid.exports|length > 0 %}
                 {{ grid_exports(grid) }}
         {% endif %}
-        </div>
+        </div> #}
     </div>
 {% endblock grid_pager %}
 
