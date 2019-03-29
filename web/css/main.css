@@ -467,3 +467,9 @@ select.form-control+.sr-only+select.form-control:not(#parp_mainbundle_edycjauzyt
 		left: 15px;
 	}
 }
+
+/* ----------------- paginacja --------------- */
+
+.wynikow-na-strone {
+	margin: 20px 0;
+}
