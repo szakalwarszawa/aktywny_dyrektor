@@ -79,7 +79,7 @@ class ChangeCompareService
         $options = $optionsResolver->resolve($changesArray);
         $changeCollector = new ArrayCollection();
         foreach ($options as $key => $value) {
-            if ($value !== $deficientAdUser[$key] && null !== $value ) {
+            if ($value !== $deficientAdUser[$key] && null !== $value) {
                 $change = new AdUserChange($deficientAdUser[$key], $value, $key);
                 $changeCollector->add($change);
             }

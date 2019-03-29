@@ -98,7 +98,7 @@ class LdapService
                 //'sso' => false,
         );
        // $this->adldap = new \Adldap\Adldap($configuration);
-       $this->adldap = $ldapConnection->getAdLdap();
+        $this->adldap = $ldapConnection->getAdLdap();
     }
 
     public function getAllManagersFromAD()

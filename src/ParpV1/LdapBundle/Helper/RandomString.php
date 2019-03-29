@@ -21,4 +21,3 @@ class RandomString
         return substr($random, 0, $length);
     }
 }
-
