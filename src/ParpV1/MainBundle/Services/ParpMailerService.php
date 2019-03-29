@@ -7,6 +7,7 @@ use ParpV1\MainBundle\Entity\Email;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Swift_Mailer;
+use Swift_SmtpTransport;
 
 /**
  * Klasa ParpMailerService.
@@ -70,7 +71,7 @@ class ParpMailerService
     private $entityManager;
 
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     private $mailer;
 
@@ -93,18 +94,21 @@ class ParpMailerService
      * @param EntityManager $entityManager
      * @param Swift_Mailer $mailer
      * @param TokenStorage $tokenStorage
+     * @param string $mailerHost
+     * @param string $mailerPort
      */
     public function __construct(
         EntityManager $entityManager,
-        \Swift_Mailer $mailer,
         TokenStorage $tokenStorage,
         $templating,
         $ldap,
-        $idSrodowiska
+        $idSrodowiska,
+        string $mailerHost,
+        string $mailerPort
     ) {
-
         $this->entityManager = $entityManager;
-        $this->mailer = $mailer;
+        $transport = new Swift_SmtpTransport($mailerHost, $mailerPort);
+        $this->mailer = new Swift_Mailer($transport);
         $this->tokenStorage = $tokenStorage;
         $this->templating = $templating;
         $this->ldap = $ldap;
