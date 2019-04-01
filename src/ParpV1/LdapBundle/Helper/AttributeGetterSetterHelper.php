@@ -6,7 +6,7 @@ use ParpV1\LdapBundle\Constants\Attributes;
 use ReflectionClass;
 
 /**
- * Zawiera metody do generowania getterów/setterów na podstawie atrybutów.
+ * Zawiera metody do generowania getterów/setterów na podstawie atrybutów AD.
  */
 class AttributeGetterSetterHelper
 {

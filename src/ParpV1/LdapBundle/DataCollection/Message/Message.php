@@ -32,10 +32,11 @@ class Message implements CollectorInterface
     /**
      * @param string $message
      */
-    public function __construct(string $message = '', string $target = null)
+    public function __construct(string $message = '', string $target = null, $vars = null)
     {
         $this->message = $message;
         $this->target = $target;
+        $this->vars = $vars;
     }
 
     /**
@@ -94,5 +95,29 @@ class Message implements CollectorInterface
     public function getType(): string
     {
         return $this->type;
+    }
+
+    /**
+     * Get vars
+     *
+     * @return mixed
+     */
+    public function getVars()
+    {
+        return $this->vars;
+    }
+
+    /**
+     * Set vars
+     *
+     * @param string $vars
+     *
+     * @return self
+     */
+    public function setVars($vars): self
+    {
+        $this->vars = $vars;
+
+        return $this;
     }
 }

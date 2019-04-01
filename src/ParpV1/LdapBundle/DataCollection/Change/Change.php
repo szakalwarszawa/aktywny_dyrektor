@@ -52,14 +52,23 @@ class Change implements CollectorInterface
     private $target;
 
     /**
+     * Opcjonalne informacje o obiekcie.
+     *
+     * @var mixed
+     */
+    private $vars;
+
+    /**
      * @param mixed $old
      * @param mixed $new
      * @param string $target
+     * @param mixed $vars
      */
-    public function __construct($old, $new, string $target = null)
+    public function __construct($old, $new, string $target = null, $vars = null)
     {
         $this->old = $old;
         $this->new = $new;
+        $this->vars = $vars;
         $this->target = $target;
     }
     /**
@@ -119,6 +128,32 @@ class Change implements CollectorInterface
     }
 
     /**
+     * Get vars
+     *
+     * @return mixed
+     */
+    public function getVars()
+    {
+        return $this->subject;
+    }
+
+    /**
+     * Set vars
+     *
+     * @param string $vars
+     *
+     * @return self
+     */
+    public function setVars($vars): self
+    {
+        $this->vars = $vars;
+
+        return $this;
+    }
+
+    /**
+     * Get target
+     *
      * @return string|null
      */
     public function getTarget()
@@ -133,7 +168,7 @@ class Change implements CollectorInterface
      *
      * @return self
      */
-    public function setTarget(string $target)
+    public function setTarget(string $target): self
     {
         $this->target = $target;
 

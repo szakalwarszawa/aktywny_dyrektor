@@ -45,6 +45,7 @@ final class UpdateFromEntry extends LdapUpdate
         ;
 
         $this->pushChangesToAd($changes, $adUser);
+        $entry->setIsImplemented(true);
 
         return $this;
     }

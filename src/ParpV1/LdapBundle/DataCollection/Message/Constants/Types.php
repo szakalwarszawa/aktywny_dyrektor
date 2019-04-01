@@ -30,6 +30,13 @@ class Types
     const INFO = 'info';
 
     /**
+     * Typ sukces - kontynuowanie akcji.
+     *
+     * @var string
+     */
+    const SUCCESS = 'success';
+
+    /**
      * ZWraca typy wiadomości
      *
      * @return array
@@ -40,6 +47,7 @@ class Types
             self::ERROR,
             self::WARNING,
             self::INFO,
+            self::SUCCESS,
         ];
     }
 }

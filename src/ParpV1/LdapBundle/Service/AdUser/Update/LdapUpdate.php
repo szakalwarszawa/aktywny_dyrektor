@@ -18,6 +18,8 @@ use Symfony\Component\VarDumper\VarDumper;
 use DateTime;
 use ParpV1\LdapBundle\Helper\LdapTimeHelper;
 use ParpV1\LdapBundle\DataCollection\Message\Message;
+use ParpV1\LdapBundle\Constants\GroupBy;
+use ParpV1\MainBundle\Tool\AdStringTool;
 
 /**
  * LdapUpdate
@@ -73,14 +75,15 @@ class LdapUpdate
     /**
      * Dodaje użytkownika do grupy
      *
-     * @param User $adUser
+     * @param AdUser $adUser
      * @param Group|string $group - obiekt Group lub nazwa grupy
      *
      * @return bool - akcja powiodła się
      */
-    private function groupAdd(User $adUser, $group): bool
+    private function groupAdd(AdUser $adUser, $group): bool
     {
         $simulateProcess = $this->simulateProcess;
+        $writableAdUser = $adUser->getUser(AdUser::FULL_USER_OBJECT);
         $groupCopy = $group;
         if (!$group instanceof Group) {
             if (self::ADD_GROUP_SIGN === substr($group, 0, 1)) {
@@ -94,14 +97,15 @@ class LdapUpdate
         }
 
         if (null !== $group) {
-            if (!$adUser->inGroup($group)) {
+            if (!$writableAdUser->inGroup($group)) {
                 if (!$simulateProcess) {
-                    $group->addMember($adUser);
+                    $group->addMember($writableAdUser);
                 }
                 $this->addMessage(
-                    new Messages\InfoMessage(),
+                    new Messages\SuccessMessage(),
                     'Dodano do grupy - ' . $group->getName(),
-                    AdUserConstants::GRUPY_AD
+                    AdUserConstants::GRUPY_AD,
+                    $adUser->getUser()
                 );
 
                 return true;
@@ -110,7 +114,8 @@ class LdapUpdate
             $this->addMessage(
                 new Messages\InfoMessage(),
                 'Użytkownik jest już w grupie - ' . $group->getName(),
-                AdUserConstants::GRUPY_AD
+                AdUserConstants::GRUPY_AD,
+                $adUser->getUser()
             );
 
             return true;
@@ -119,7 +124,8 @@ class LdapUpdate
         $this->addMessage(
             new Messages\WarningMessage(),
             '[Dodaj] Nie odnaleziono w AD grupy - ' . $groupCopy,
-            AdUserConstants::GRUPY_AD
+            AdUserConstants::GRUPY_AD,
+            $adUser->getUser()
         );
 
         return false;
@@ -128,14 +134,15 @@ class LdapUpdate
     /**
      * Usuwa użytkownika z grupy
      *
-     * @param User $adUser
+     * @param AdUser $adUser
      * @param Group|string $group - obiekt Group lub nazwa grupy
      *
      * @return bool - akcja powiodła się
      */
-    private function groupRemove(User $adUser, $group): bool
+    private function groupRemove(AdUser $adUser, $group): bool
     {
         $simulateProcess = $this->simulateProcess;
+        $writableAdUser = $adUser->getUser(AdUser::FULL_USER_OBJECT);
         $groupCopy = $group;
         if (!$group instanceof Group) {
             if (self::REMOVE_GROUP_SIGN === substr($group, 0, 1)) {
@@ -149,15 +156,16 @@ class LdapUpdate
         }
 
         if (false !== $group) {
-            if ($adUser->inGroup($group)) {
+            if ($writableAdUser->inGroup($group)) {
                 if (!$simulateProcess) {
-                    $group->removeMember($adUser);
+                    $group->removeMember($writableAdUser);
                 }
 
                 $this->addMessage(
-                    new Messages\InfoMessage(),
+                    new Messages\SuccessMessage(),
                     'Usunięto z grupy - ' . $group->getName(),
-                    AdUserConstants::GRUPY_AD
+                    AdUserConstants::GRUPY_AD,
+                    $adUser->getUser()
                 );
 
                 return true;
@@ -166,7 +174,8 @@ class LdapUpdate
             $this->addMessage(
                 new Messages\InfoMessage(),
                 'Użytkownik nie był w grupie ' . $group->getName(),
-                AdUserConstants::GRUPY_AD
+                AdUserConstants::GRUPY_AD,
+                $adUser->getUser()
             );
 
             return true;
@@ -175,7 +184,8 @@ class LdapUpdate
         $this->addMessage(
             new Messages\InfoMessage(),
             '[Usuń] Nie odnaleziono w AD grupy - ' . $groupCopy,
-            AdUserConstants::GRUPY_AD
+            AdUserConstants::GRUPY_AD,
+            $adUser->getUser()
         );
 
         return false;
@@ -188,14 +198,16 @@ class LdapUpdate
      * @param Message $message
      * @param string $text
      * @param string $target
+     * @param mixed $vars
      *
      * @return void
      */
-    private function addMessage(Message $message, string $text, string $target): void
+    private function addMessage(Message $message, string $text, string $target, $vars = null): void
     {
         $message
             ->setTarget($target)
             ->setMessage($text)
+            ->setVars($vars)
         ;
 
         $this
@@ -210,11 +222,11 @@ class LdapUpdate
      * należy to rozbić i odpowiednio obsłużyć. Metoda dodaje lub/i usuwa grupy użytkownika.
      *
      * @param array|string $groupsAd
-     * @param User $adUser
+     * @param AdUser $adUser
      *
      * @return void
      */
-    public function setGroupsAttribute($groupsAd, User $adUser): void
+    public function setGroupsAttribute($groupsAd, AdUser $adUser): void
     {
         if (is_array($groupsAd)) {
             (new OptionsResolver())
@@ -307,7 +319,7 @@ class LdapUpdate
                 }
 
                 if (AdUserConstants::GRUPY_AD === $value->getTarget()) {
-                    $this->setGroupsAttribute($newValue, $writableUserObject);
+                    $this->setGroupsAttribute($newValue, $adUser);
 
                     continue;
                 }
@@ -315,16 +327,21 @@ class LdapUpdate
                 if (AdUserConstants::PRZELOZONY === $value->getTarget()) {
                     $ldapFetchedUser = $this
                         ->ldapFetch
-                        ->fetchAdUser($newValue, SearchBy::CN_AD_STRING, false)
+                        ->fetchAdUser(
+                            AdStringTool::getValue($newValue, AdStringTool::CN),
+                            SearchBy::CN_AD_STRING,
+                            false
+                        )
                     ;
 
                     if (null === $ldapFetchedUser) {
-                        $messageText = 'Nie udało się odszukać przełożonego o nazwisku ' . $newValue;
-                        $message = new Messages\ErrorMessage($messageText, $value->getTarget());
-                        $this
-                            ->responseMessages
-                            ->add($message)
-                        ;
+                        $message = new Messages\ErrorMessage();
+                        $this->addMessage(
+                            $message,
+                            'Nie udało się odszukać przełożonego o nazwisku ' . $newValue,
+                            $value->getTarget(),
+                            $adUser->getUser()
+                        );
 
                         return $this;
                     }
@@ -336,13 +353,25 @@ class LdapUpdate
                     $writableUserObject->setAttribute($value->getTarget(), $newValue);
                 }
 
-                $messageText = 'Zmiana z: ' . (null !== $value->getOld()? $value->getOld() : 'BRAK') .
+                $oldValue = function ($value) {
+                    if (null === $value) {
+                        return 'BRAK';
+                    }
+
+                    if (is_bool($value)) {
+                        return $value? 'PRAWDA' : 'FAŁSZ';
+                    }
+
+                    return $value;
+                };
+                $messageText = 'Zmiana z: ' . $oldValue($value->getOld()) .
                     ', na: ' . $newValue;
 
                 $this->addMessage(
-                    new Messages\InfoMessage(),
+                    new Messages\SuccessMessage(),
                     $messageText,
-                    $value->getTarget()
+                    $value->getTarget(),
+                    $adUser->getUser()
                 );
             }
         }
@@ -357,10 +386,25 @@ class LdapUpdate
     /**
      * Zwraca kolekcję wiadomości dla użytkownika.
      *
-     * @return ArrayCollection
+     * @param string|null $groupBy - wiadomości będą pogrupowane według klucza
+     *
+     * @return ArrayCollection|array
      */
-    public function getResponseMessages(): ArrayCollection
+    public function getResponseMessages(string $groupBy = null)
     {
+        if (null !== $groupBy) {
+            $groupedArray = [];
+
+            foreach ($this->responseMessages as $message) {
+                if (null !== $message->getVars()) {
+                    $groupedArray[$message->getVars()[$groupBy]][] = $message;
+                }
+            }
+
+            if (!empty($groupedArray)) {
+                return $groupedArray;
+            }
+        }
         return $this->responseMessages;
     }
 
