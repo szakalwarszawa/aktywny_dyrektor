@@ -301,6 +301,11 @@ class LdapUpdate
 
     /**
      * Na podstawie kolekcji obiektów klasy AdUserChange wypycha zmiany do AD.
+     * Kilka niestandardowych operacji:
+     *  - Grupy AD - są wypychany w inny sposób niż zmiana atrybutu
+     *  - Typ DateTime - trzeba go konwertować na czas z LDAPa
+     *  - Przełożony - dana przychodzi w postaci `Nazwisko Imię`, konwertowana jest do pełnego stringa AD
+     *  - Wygasa - dane są konwertowane do jednego formatu - czasu LDAPowego (int) i porównywane
      *
      * @param ArrayCollection $changes
      * @param AdUser $adUser
@@ -311,8 +316,9 @@ class LdapUpdate
     {
         $simulateProcess = $this->simulateProcess;
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+
         foreach ($changes as $value) {
-            if ($value instanceof AdUserChange) {
+            if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
                 if ($newValue instanceof DateTime) {
                     $newValue = LdapTimeHelper::unixToLdap($newValue->getTimestamp());
@@ -322,6 +328,12 @@ class LdapUpdate
                     $this->setGroupsAttribute($newValue, $adUser);
 
                     continue;
+                }
+
+                if (AdUserConstants::WYGASA === $value->getTarget()) {
+                    if ((int) $newValue === (int) $value->getOld()) {
+                        continue;
+                    }
                 }
 
                 if (AdUserConstants::PRZELOZONY === $value->getTarget()) {

@@ -19,7 +19,7 @@ class ADUserType extends AbstractType
             ->add('deletedAt')
             ->add('samaccountname')
             ->add('isDisabled')
-            ->add('accountExpires')
+            ->add('accountexpires')
             ->add('name')
             ->add('email')
             ->add('initials')

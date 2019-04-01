@@ -41,6 +41,8 @@ class ChangeCompareService
      * @param Entry $entry - oczekujące zmiany
      * @param array $deficientAdUser - okrojona tablica użytkownika bezpośrednio z AD
      *
+     * @todo jakaś tablica zawierająca klucze których wartość może być nullem
+     *
      * @return ArrayCollection - zmienione atrybuty oraz ich wartości
      */
     public function compareByEntry(Entry $entry, array $deficientAdUser): ArrayCollection

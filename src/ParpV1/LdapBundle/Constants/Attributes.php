@@ -62,7 +62,7 @@ class Attributes
     /**
      * @var string
      */
-    const WYGASA = 'accountExpires';
+    const WYGASA = 'accountexpires';
 
     /**
      * @var string
