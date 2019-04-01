@@ -5,6 +5,7 @@
     "sass-loader": "7.0.1"
   },
   "dependencies": {
+    "bootstrap-sass": "^3.4.1",
     "yarn": "^1.15.2"
   }
 }
