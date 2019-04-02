@@ -21,7 +21,7 @@ var Encore = require('@symfony/webpack-encore');
 Encore
 	.setOutputPath('web/build/')
 	//.setPublicPath('/build')
-	.setPublicPath('/') //aktywny_dyrektor\web\build
+	.setPublicPath('/build') //aktywny_dyrektor\web\build
 	//.cleanupOutputBeforeBuild() //new
 	//.setManifestKeyPrefix('/build') //new
 	.addEntry('app', './web/assets/js/app.js')
