@@ -11,6 +11,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Section;
 use DateTime;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Constants\TakNieInterface;
 
 /**
  *
@@ -132,14 +134,21 @@ class AdUserHelper
     /**
      * Zwraca datę wygaśnięcia konta
      *
-     * @return DateTime|null
+     * @param bool $returnTimestamp
+     *
+     * @return DateTime|int|null
      */
-    public static function getKiedyWygasa()
+    public static function getKiedyWygasa(bool $returnTimestamp = false)
     {
         $value = self::$adUser[AdUserConstants::WYGASA];
 
         if (empty($value)) {
             return null;
+        }
+
+        if ($returnTimestamp) {
+            return (new DateTime($value))
+                ->getTimestamp();
         }
 
         return new DateTime($value);
@@ -148,13 +157,18 @@ class AdUserHelper
     /**
      * Zwraca czy konto jest wyłączone w AD.
      *
+     * @todo przerobienie na ldap2
+     *
      * @return bool
      */
     public static function getCzyWylaczone(): bool
     {
-        $value = self::$adUser[AdUserConstants::WYLACZONE];
+        $value = explode(',', self::$adUser[AdUserConstants::USER_ACCOUNT_CONTROL]);
+        if (in_array('ACCOUNTDISABLE', $value)) {
+            return TakNieInterface::TAK;
+        }
 
-        return 1 === $value? true : false;
+        return TakNieInterface::NIE;
     }
 
     /**

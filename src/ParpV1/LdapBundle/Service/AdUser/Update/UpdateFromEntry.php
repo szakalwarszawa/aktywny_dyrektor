@@ -44,7 +44,17 @@ final class UpdateFromEntry extends LdapUpdate
             ->compareByEntry($entry, $adUser->getUser())
         ;
 
+        /**
+         * @todo
+         * Na podstawie tego czy jest dodatkowy wpis o resecie uprawnień będą zerowane wszystkie uprawnienia w AD.
+         * @todo powinna to być zwykła flaga
+         */
+        if ($entry->getOdebranieZasobowEntry()) {
+            $this->doEraseUserGroups();
+        }
+
         $this->pushChangesToAd($changes, $adUser);
+
         $entry->setIsImplemented(true);
 
         return $this;

@@ -22,6 +22,7 @@ use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\Departament;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
+use ParpV1\LdapBundle\Helper\LdapTimeHelper;
 
 class EdycjaUzytkownikaService
 {
@@ -485,7 +486,10 @@ class EdycjaUzytkownikaService
         }
 
         if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {
-            $changes [] = AdUserConstants::WYGASA;
+            $ldapTime = LdapTimeHelper::unixToLdap($formData[AdUserConstants::WYGASA]->getTimestamp());
+            if ($ldapTime !== LdapTimeHelper::unixToLdap($adUserHelper::getKiedyWygasa(true))) {
+                $changes [] = AdUserConstants::WYGASA;
+            }
         }
 
         if ($formData[AdUserConstants::DEPARTAMENT_NAZWA] !== $adUserHelper::getDepartamentNazwa(false, true)) {

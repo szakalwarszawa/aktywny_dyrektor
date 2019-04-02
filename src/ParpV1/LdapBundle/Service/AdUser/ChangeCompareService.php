@@ -13,6 +13,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
 use Doctrine\Common\Collections\ArrayCollection;
+use ParpV1\LdapBundle\Constants\NullableAttributes;
 
 /**
  * Klasa porównująca zmiany z obiektu Entry względem AD.
@@ -36,25 +37,24 @@ class ChangeCompareService
     /**
      * Zwraca jakie atrybuty zostały zmienione.
      * Porównanie Entry <=> AD
-     * Puste pola w entry nie są zaliczane jako zmiana.
+     * Puste pola w entry nie są zaliczane jako zmiana chyba, że pole może być nullem (NullableAttributes).
      *
      * @param Entry $entry - oczekujące zmiany
      * @param array $deficientAdUser - okrojona tablica użytkownika bezpośrednio z AD
-     *
-     * @todo jakaś tablica zawierająca klucze których wartość może być nullem
      *
      * @return ArrayCollection - zmienione atrybuty oraz ich wartości
      */
     public function compareByEntry(Entry $entry, array $deficientAdUser): ArrayCollection
     {
         $possibleChangeKeys = $this->findEntryAdAttributes();
-
         $changeCollector = new ArrayCollection();
         foreach ($possibleChangeKeys as $changeKey) {
             $valueGetter = AttributeGetterSetterHelper::get($changeKey);
-            if ($entry->$valueGetter() !== $deficientAdUser[$changeKey] && null !== $entry->$valueGetter()) {
-                $change = new AdUserChange($deficientAdUser[$changeKey], $entry->$valueGetter(), $changeKey);
-                $changeCollector->add($change);
+            if ($entry->$valueGetter() !== $deficientAdUser[$changeKey]){
+                if(null !== $entry->$valueGetter() || in_array($changeKey, NullableAttributes::getAll())) {
+                    $change = new AdUserChange($deficientAdUser[$changeKey], $entry->$valueGetter(), $changeKey);
+                    $changeCollector->add($change);
+                }
             }
         }
 
@@ -81,9 +81,11 @@ class ChangeCompareService
         $options = $optionsResolver->resolve($changesArray);
         $changeCollector = new ArrayCollection();
         foreach ($options as $key => $value) {
-            if ($value !== $deficientAdUser[$key] && null !== $value) {
-                $change = new AdUserChange($deficientAdUser[$key], $value, $key);
-                $changeCollector->add($change);
+            if ($value !== $deficientAdUser[$key]) {
+                if (null !== $value || in_array($key, NullableAttributes::getAll())) {
+                    $change = new AdUserChange($deficientAdUser[$key], $value, $key);
+                    $changeCollector->add($change);
+                }
             }
         }
 
@@ -106,10 +108,5 @@ class ChangeCompareService
         $adAttributes = AllowedToFetchAttributes::getAll();
 
         return array_intersect($entryClassColumns, $adAttributes);
-    }
-
-    public function setCollector(Collector $collector)
-    {
-        $this->collector = $collector;
     }
 }

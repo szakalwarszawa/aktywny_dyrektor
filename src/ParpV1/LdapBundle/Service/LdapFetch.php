@@ -8,6 +8,8 @@ use Adldap\Models\Group;
 use ParpV1\LdapBundle\Cache\AdUserCache;
 use ParpV1\LdapBundle\Cache\AdGroupCache;
 use ParpV1\LdapBundle\Connection\LdapConnection;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Constants\AdUserConstants;
 
 /**
  * Klasa odpowiedzialna za pobieranie danych z AD.
@@ -85,14 +87,33 @@ class LdapFetch
                 return null;
             }
 
-            $this
-                ->adUserCache
-                ->saveItem($username, $adUser)
-            ;
+            if (SearchBy::LOGIN === $byAttribute) {
+                $this
+                    ->adUserCache
+                    ->saveItem($username, $adUser)
+                ;
+            }
         }
 
-
         return new AdUser($adUser);
+    }
+
+    /**
+     * Odświeża obiekt AdUser względem AD.
+     *
+     * @param AdUser $adUser
+     *
+     * @return AdUser
+     */
+    public function refreshAdUser(AdUser $adUser): AdUser
+    {
+        return $this
+            ->fetchAdUser(
+                $adUser->getUser()[AdUserConstants::LOGIN],
+                SearchBy::LOGIN,
+                false
+            )
+        ;
     }
 
     /**

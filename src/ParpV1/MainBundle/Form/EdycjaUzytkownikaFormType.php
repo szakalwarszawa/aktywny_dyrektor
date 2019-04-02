@@ -27,6 +27,7 @@ use ParpV1\MainBundle\Entity\AclUserRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
@@ -151,20 +152,21 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'required' => true,
                 'label' => 'Sekcja',
                 'class' => Section::class,
-                'query_builder' => function (EntityRepository $entityRepository) use ($adUserHelper) {
-                    if (!$adUserHelper) {
-                        return $entityRepository
-                            ->createQueryBuilder('s')
-                        ;
-                    }
+                // Ma być realizowane po stronie frontu
+                // 'query_builder' => function (EntityRepository $entityRepository) use ($adUserHelper) {
+                //     if (!$adUserHelper) {
+                //         return $entityRepository
+                //             ->createQueryBuilder('s')
+                //         ;
+                //     }
 
-                    return $entityRepository
-                        ->createQueryBuilder('s')
-                        ->join('s.departament', 'd')
-                        ->where('d.shortname = :short')
-                        ->setParameter('short', $adUserHelper? $adUserHelper::getDepartamentNazwa(true) : null)
-                    ;
-                },
+                //     return $entityRepository
+                //         ->createQueryBuilder('s')
+                //         ->join('s.departament', 'd')
+                //         ->where('d.shortname = :short')
+                //         ->setParameter('short', $adUserHelper? $adUserHelper::getDepartamentNazwa(true) : null)
+                //     ;
+                // },
                 'group_by' => function ($choiceObject) {
                     $departament = $choiceObject->getDepartament()?
                         $choiceObject

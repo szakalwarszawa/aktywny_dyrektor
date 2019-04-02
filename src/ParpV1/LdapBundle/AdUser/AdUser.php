@@ -6,6 +6,7 @@ use Adldap\Models\User;
 use ParpV1\LdapBundle\Constants\AllowedToFetchAttributes;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use ParpV1\LdapBundle\Service\LdapFetch;
 
 /**
  * Klasa AdUser - operacje na RAW obiekcie pobranym z AD.
@@ -43,6 +44,7 @@ class AdUser
      * Zwraca użytkownika z konstruktora.
      * Użytkownik może być zwrócony jako pełny obiekt z AD - FULL_USER_OBJECT
      * lub okrojona tablica zawierająca określone dane (AllowedToFetchAttributes) - DEFICIENT_USER_OBJECT
+     * Synchronizowane sa również atrybuty grup, statusu konta i daty wygaśnięcia.
      *
      * @param string $returnType
      *
@@ -68,6 +70,7 @@ class AdUser
 
         $returnArray[AdUserConstants::GRUPY_AD] = $this->getUserAdGroups($adUser);
         $returnArray[AdUserConstants::WYLACZONE] = $adUser->isDisabled();
+        $returnArray[AdUserConstants::WYGASA] = $adUser->getAccountExpiry();
 
         return $returnArray;
     }

@@ -20,6 +20,7 @@ use ParpV1\LdapBundle\Helper\LdapTimeHelper;
 use ParpV1\LdapBundle\DataCollection\Message\Message;
 use ParpV1\LdapBundle\Constants\GroupBy;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use Symfony\Component\Debug\Exception\ContextErrorException;
 
 /**
  * LdapUpdate
@@ -57,6 +58,11 @@ class LdapUpdate
      * @param bool
      */
     protected $simulateProcess = false;
+
+    /**
+     * Czy przed zmianami grupy użytkownika mają zostać wyzerowane.
+     */
+    protected $eraseUserGroups = false;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -306,6 +312,8 @@ class LdapUpdate
      *  - Typ DateTime - trzeba go konwertować na czas z LDAPa
      *  - Przełożony - dana przychodzi w postaci `Nazwisko Imię`, konwertowana jest do pełnego stringa AD
      *  - Wygasa - dane są konwertowane do jednego formatu - czasu LDAPowego (int) i porównywane
+     *  - Wylaczone & Powod wylaczenia - są obsługiwane jako jedno i tak muszą trafić do metody
+     *      włączajacej lub wyłączającej konto.
      *
      * @param ArrayCollection $changes
      * @param AdUser $adUser
@@ -314,14 +322,35 @@ class LdapUpdate
      */
     public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser): self
     {
-        $simulateProcess = $this->simulateProcess;
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+        $simulateProcess = $this->simulateProcess;
+        if ($this->eraseUserGroups) {
+            $this->removeAllUserGroups($adUser);
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
+         }
+
+        $disableEnableAccount = [];
 
         foreach ($changes as $value) {
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
                 if ($newValue instanceof DateTime) {
                     $newValue = LdapTimeHelper::unixToLdap($newValue->getTimestamp());
+                }
+
+                if (AdUserConstants::WYLACZONE === $value->getTarget()) {
+                    $disableEnableAccount[AdUserConstants::WYLACZONE] = $value->getTarget();
+
+                    continue;
+                }
+
+                if (AdUserConstants::POWOD_WYLACZENIA === $value->getTarget()) {
+                    $disableEnableAccount[AdUserConstants::POWOD_WYLACZENIA] = $newValue;
+
+                    continue;
                 }
 
                 if (AdUserConstants::GRUPY_AD === $value->getTarget()) {
@@ -334,6 +363,8 @@ class LdapUpdate
                     if ((int) $newValue === (int) $value->getOld()) {
                         continue;
                     }
+
+                    $writableUserObject->setAccountExpiry($newValue);
                 }
 
                 if (AdUserConstants::PRZELOZONY === $value->getTarget()) {
@@ -388,11 +419,105 @@ class LdapUpdate
             }
         }
 
+        if (isset($disableEnableAccount[AdUserConstants::WYLACZONE])) {
+            $this->disableEnableAccount($disableEnableAccount, $adUser);
+
+            return $this;
+        }
+
         if (!$simulateProcess) {
             $writableUserObject->save();
         }
 
         return $this;
+    }
+
+    /**
+     * Wyrzuca użytkownika ze wszystkich jego grup.
+     *
+     * @param AdUser $adUser
+     *
+     * @return AdUser
+     */
+    public function removeAllUserGroups(AdUser $adUser): AdUser
+    {
+        $simulateProcess = $this->simulateProcess;
+        $writableUserObject = $adUser
+            ->getUser(AdUser::FULL_USER_OBJECT)
+        ;
+        $userGroups = $writableUserObject
+            ->getGroups()
+        ;
+
+        if (!$simulateProcess) {
+            foreach ($userGroups as $group) {
+                try {
+                    $group->removeMember($writableUserObject);
+                } catch (ContextErrorException $exception) {
+                    continue;
+                }
+            }
+
+            $writableUserObject->save();
+        }
+
+        $this->addMessage(
+            new Messages\SuccessMessage(),
+            'WYZEROWANO WSZYSTKIE GRUPY',
+            AdUserConstants::GRUPY_AD,
+            $adUser->getUser()
+        );
+
+        return new AdUser($writableUserObject);
+    }
+
+    /**
+     * Włącza lub wyłącza konto użytkownika.
+     *
+     * @param array $values
+     * @param AdUser $adUser
+     *
+     * @return void
+     *
+     * @todo operacje przy wyłączaniu/włączaniu użytkownika
+     * @todo
+     */
+    private function disableEnableAccount(array $values, AdUser $adUser): void
+    {
+        $simulateProcess = $this->simulateProcess;
+        $optionsResolver = (new OptionsResolver())
+            ->setDefault(AdUserConstants::POWOD_WYLACZENIA, null)
+            ->setRequired(AdUserConstants::WYLACZONE)
+            ->setAllowedTypes(AdUserConstants::WYLACZONE, ['string', 'null'])
+            ->setAllowedTypes(AdUserConstants::POWOD_WYLACZENIA, ['string', 'null'])
+        ;
+
+        $values = $optionsResolver->resolve($values);
+
+        $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+        $disableAccount = null !== $values[AdUserConstants::POWOD_WYLACZENIA];
+        $disableAccountReason = $disableAccount ? ' - ' .$values[AdUserConstants::POWOD_WYLACZENIA] : '';
+        $messageText = $disableAccount ? 'Konto wyłączone' : 'Konto włączone';
+
+        $this->addMessage(
+            new Messages\SuccessMessage(),
+            $messageText . $disableAccountReason,
+            $values[AdUserConstants::WYLACZONE],
+            $adUser->getUser()
+        );
+
+        if ($disableAccount) {
+            $writableUserObject->setAttribute('userAccountControl', 514);
+            $writableUserObject->setAttribute('description', $values[AdUserConstants::POWOD_WYLACZENIA]);
+        }
+
+        if (!$disableAccount) {
+            $writableUserObject->setAttribute('userAccountControl', 512);
+        }
+
+        if (!$simulateProcess) {
+            $writableUserObject->save();
+        }
     }
 
     /**
@@ -447,6 +572,20 @@ class LdapUpdate
     public function doSimulateProcess(): self
     {
         $this->simulateProcess = true;
+
+        return $this;
+    }
+
+    /**
+     * Przed wszystkimi zmianami zostaną wyzerowane grupy w których jest użytkownik.
+     * (Uzytkownik zostanie z nich wyrzucony).
+     * MUSI zostać wywołany przed `pushChangesToAd`.
+     *
+     * @return self
+     */
+    public function doEraseUserGroups(): self
+    {
+        $this->eraseUserGroups = true;
 
         return $this;
     }

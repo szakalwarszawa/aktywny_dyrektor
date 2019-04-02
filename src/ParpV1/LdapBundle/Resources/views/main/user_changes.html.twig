@@ -28,7 +28,7 @@
                     {% for change in user_changes %}
                         {# change.vars zawiera tablicę z danymi użytkownika z AD #}
                         <li class="alert-{{ change.getType() }}">
-                            {{ change.message }} - <b>{{ change.target }}</b> {# do targetu dorobić PIPE tłumaczącą #}
+                            {{ change.message }} - <b>{{ change.target|trans({}, 'changed_attribute') }}</b> {# do targetu dorobić PIPE tłumaczącą #}
                         </li>
                     {% endfor %}
                 </ol>

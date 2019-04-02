@@ -62,7 +62,7 @@ class Attributes
     /**
      * @var string
      */
-    const WYGASA = 'accountexpires';
+    const WYGASA = 'accountExpires';
 
     /**
      * @var string
@@ -83,4 +83,9 @@ class Attributes
      * @var string
      */
     const CN_AD_STRING = 'cn';
+
+    /**
+     * @var string
+     */
+    const USER_ACCOUNT_CONTROL = 'useraccountcontrol';
 }
