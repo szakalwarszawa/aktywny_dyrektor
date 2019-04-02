@@ -330,7 +330,7 @@ class LdapUpdate
                 ->ldapFetch
                 ->refreshAdUser($adUser)
             ;
-         }
+        }
 
         $disableEnableAccount = [];
 

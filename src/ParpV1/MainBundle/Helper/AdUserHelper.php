@@ -156,19 +156,24 @@ class AdUserHelper
 
     /**
      * Zwraca czy konto jest wyłączone w AD.
-     *
-     * @todo przerobienie na ldap2
+     * Pierwszy warunek wynika z kompatybilności z adldap2.
      *
      * @return bool
      */
     public static function getCzyWylaczone(): bool
     {
-        $value = explode(',', self::$adUser[AdUserConstants::USER_ACCOUNT_CONTROL]);
-        if (in_array('ACCOUNTDISABLE', $value)) {
-            return TakNieInterface::TAK;
+        if (isset(self::$adUser[AdUserConstants::USER_ACCOUNT_CONTROL])) {
+            $value = explode(',', self::$adUser[AdUserConstants::USER_ACCOUNT_CONTROL]);
+            if (in_array('ACCOUNTDISABLE', $value)) {
+                return TakNieInterface::TAK;
+            }
+
+            return TakNieInterface::NIE;
         }
 
-        return TakNieInterface::NIE;
+        $value = self::$adUser[AdUserConstants::WYLACZONE];
+
+        return 1 === $value? true : false;
     }
 
     /**

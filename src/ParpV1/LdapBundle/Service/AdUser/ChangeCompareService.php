@@ -50,8 +50,8 @@ class ChangeCompareService
         $changeCollector = new ArrayCollection();
         foreach ($possibleChangeKeys as $changeKey) {
             $valueGetter = AttributeGetterSetterHelper::get($changeKey);
-            if ($entry->$valueGetter() !== $deficientAdUser[$changeKey]){
-                if(null !== $entry->$valueGetter() || in_array($changeKey, NullableAttributes::getAll())) {
+            if ($entry->$valueGetter() !== $deficientAdUser[$changeKey]) {
+                if (null !== $entry->$valueGetter() || in_array($changeKey, NullableAttributes::getAll())) {
                     $change = new AdUserChange($deficientAdUser[$changeKey], $entry->$valueGetter(), $changeKey);
                     $changeCollector->add($change);
                 }
