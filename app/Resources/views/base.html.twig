@@ -3,6 +3,7 @@
     <head>
         <meta charset="UTF-8" />
         {% block stylesheets %}
+            {{ encore_entry_link_tags('app') }}
             <link rel="stylesheet" href="{{ asset('css/bootstrap1.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
@@ -17,6 +18,7 @@
         {% endblock %}
 
         {% block javascripts %}
+            {{ encore_entry_script_tags('app') }}
             <script src="{{ asset('js/jquery-1.11.0.min.js') }}"></script>
             <script src="{{ asset('js/app.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>

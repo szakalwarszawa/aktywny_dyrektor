@@ -142,3 +142,5 @@ stof_doctrine_extensions:
     orm:
         default:
             timestampable: true
+webpack_encore:
+    output_path: '%kernel.project_dir%/web/build'
