@@ -9,5 +9,6 @@ work/logs/*
 /var/logs/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
-node_modules/
+node_modules/*
+!node_modules/bootstrap-sass
 web/build/*
