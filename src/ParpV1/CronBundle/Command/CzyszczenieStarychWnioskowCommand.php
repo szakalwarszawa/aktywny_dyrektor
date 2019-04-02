@@ -75,7 +75,7 @@ class CzyszczenieStarychWnioskowCommand extends Command
      *
      * @param UprawnieniaService $uprawnieniaService
      * @param EntityManager $entityManager
-     * @param stirng $exportPath
+     * @param string $exportPath
      */
     public function __construct(
         UprawnieniaService $uprawnieniaService,

@@ -109,9 +109,14 @@ class ZasobyService
             ));
 
         foreach ($userZasoby as $zasob) {
+            if (null === $zasob->getWniosek()) {
+                continue;
+            }
             $infoZasob = array (
                 'user_zasoby_id' => $zasob->getId(),
                 'zasob_id'       => $zasob->getZasobId(),
+                'wniosek'        => $zasob->getWniosek()->getId(),
+                'grupy_ad'       => $this->czyZasobMaGrupyAd($zasob)
             );
             $statusyWniosku = $zasob->getWniosek()->getWniosek()->getStatusy();
             if (empty($statusyWniosku)) {

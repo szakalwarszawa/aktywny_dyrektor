@@ -66,6 +66,11 @@ class UprawnieniaService
     private $doFlush = true;
 
     /**
+     * @var bool
+     */
+    private $wypchnijEntryPrzyAnulowaniu = true;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
@@ -739,6 +744,7 @@ class UprawnieniaService
                 $odebraneUserZasoby[$userZasob->getId()] = [];
                 $odebraneUserZasoby[$userZasob->getId()]['zasob'] = $userZasob->getZasobId();
                 $odebraneUserZasoby[$userZasob->getId()]['stworzono_entry'] = false;
+                $odebraneUserZasoby[$userZasob->getId()]['user_zasob'] = $userZasob->getId();
                 $odebraneUserZasoby[$userZasob->getId()]['wniosek_nadanie_odebranie'] = $userZasob
                     ->getWniosek()
                     ->getId()
@@ -747,17 +753,20 @@ class UprawnieniaService
                 $wnioskiZasobyDoOdebrania['wniosek_nadanie_odebranie'] =  $userZasob->getWniosek();
                 $wnioskiZasobyDoOdebrania['user_zasob'] =  $userZasob;
 
-                $odebranyZasobId = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania, $komentarzOdebrania);
+                $statusOdebrania = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania, $komentarzOdebrania);
                 if ($this->czyTworzycEntry($userZasob)
                     && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']) {
                     $zasobyDoUtworzeniaEntry[] = $userZasob;
                     $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['stworzono_entry'] = true;
                     $odebraneUserZasoby[$userZasob->getId()]['stworzono_entry'] = true;
                 }
+
+                $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['status'] = $statusOdebrania;
+                $odebraneUserZasoby[$userZasob->getId()]['status'] = $statusOdebrania;
             }
         }
 
-        if (!empty($zasobyDoUtworzeniaEntry)) {
+        if (!empty($zasobyDoUtworzeniaEntry) && $this->wypchnijEntryPrzyAnulowaniu) {
             $this->stworzEntry($zasobyDoUtworzeniaEntry, $nazwaUzytkownika);
         }
         if ($doFlush) {
@@ -848,7 +857,7 @@ class UprawnieniaService
      *
      * @return array
      */
-    private function pobierzZasobyIdZGrupamiAd(): array
+    public function pobierzZasobyIdZGrupamiAd(): array
     {
         $entityManager = $this->getDoctrine();
 
@@ -873,9 +882,9 @@ class UprawnieniaService
      * @param array $zasobDoOdebrania
      * @param string $komentarzOdebrania
      *
-     * @return void
+     * @return string
      */
-    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null): void
+    public function odbierzAnulujZasobyAdministracyjnie(array $zasobDoOdebrania, $komentarzOdebrania = null): string
     {
         $resolver = new OptionsResolver();
         $resolver
@@ -929,6 +938,11 @@ class UprawnieniaService
             $entityManager = $this->getDoctrine();
             $entityManager->persist($userZasob);
         }
+
+        return $zasobDoOdebrania['wniosek_do_odebrania_administracyjnego'] ?
+            WniosekStatus::ODEBRANO_ADMINISTRACYJNIE :
+            WniosekStatus::ANULOWANO_ADMINISTRACYJNIE
+        ;
     }
 
     /**
@@ -1127,5 +1141,17 @@ class UprawnieniaService
     public function switchFlush(bool $doFlush = true): void
     {
         $this->doFlush = $doFlush;
+    }
+
+    /**
+     * Czy ma tworzyć entry przy anulowaniu.
+     *
+     * @param bool $wypchnijEntry
+     *
+     * @return void
+     */
+    public function setWypchnijEntryPrzyAnulowaniu(bool $wypchnijEntry): void
+    {
+        $this->wypchnijEntryPrzyAnulowaniu = $wypchnijEntry;
     }
 }

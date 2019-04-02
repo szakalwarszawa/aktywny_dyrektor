@@ -30,6 +30,7 @@ class AppKernel extends Kernel
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 	        new JMS\SerializerBundle\JMSSerializerBundle(),
 	        new FOS\RestBundle\FOSRestBundle(),
+            new Symfony\WebpackEncoreBundle\WebpackEncoreBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {
