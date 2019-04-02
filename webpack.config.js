@@ -20,11 +20,13 @@ var Encore = require('@symfony/webpack-encore');
 
 Encore
 	.setOutputPath('web/build/')
-	.setPublicPath('/build')
-	.cleanupOutputBeforeBuild() //new
+	//.setPublicPath('/build')
+	.setPublicPath('/') //aktywny_dyrektor\web\build
+	//.cleanupOutputBeforeBuild() //new
+	//.setManifestKeyPrefix('/build') //new
 	.addEntry('app', './web/assets/js/app.js')
 	.enableSingleRuntimeChunk()
-	.cleanupOutputBeforeBuild()
+	//.cleanupOutputBeforeBuild()
 	.enableSourceMaps(!Encore.isProduction())
 	.enableVersioning(Encore.isProduction())
 	.splitEntryChunks()
@@ -33,14 +35,14 @@ Encore
 
 var config = Encore.getWebpackConfig();
 
-config.devServer.watchOptions = {
-	poll: true,
-	ignored: /node_modules/,
-	inline: true,
-	contentBase: './',
-	port: 8000,
-	historyApiFallback: true
-};
+// config.devServer = {
+// 	poll: true,
+// 	ignored: /node_modules/,
+// 	inline: true,
+// 	contentBase: './',
+// 	port: 8000,
+// 	historyApiFallback: true
+// };
 
 
 module.exports = config;
