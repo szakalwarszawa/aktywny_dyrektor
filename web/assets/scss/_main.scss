@@ -83,7 +83,7 @@ body ul.tagit li {
 
 body .JColResizer>tbody>tr>td,
 body .JColResizer>tbody>tr>th {
-	padding: 5px !important;
+	padding: 5px;
 }
 
 .btn.btn-parp {
@@ -385,14 +385,18 @@ td .btn {
 /* ---------------przyciski dzialania--------------------- */
 td.grid-column-akcje.last-column {
 	padding: 0;
-}
 
-td.grid-column-akcje.last-column>div.btn-group-vertical {
-	display: block;
-}
+	.grid-row-actions {
+		padding: 0;
+	}
 
-td.grid-column-akcje.last-column>div.btn-group-vertical>a.btn.btn-xs {
-	float: left;
+	div.btn-group-vertical {
+		display: block;
+
+		a.btn.btn-xs {
+			float: left;
+		}
+	}
 }
 
 .fa:before {
