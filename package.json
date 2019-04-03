@@ -1,11 +1,11 @@
 {
-  "devDependencies": {
-    "@symfony/webpack-encore": "^0.26.0",
-    "node-sass": "^4.11.0",
-    "sass-loader": "7.0.1"
-  },
-  "dependencies": {
-    "bootstrap-sass": "^3.4.1",
-    "yarn": "^1.15.2"
-  }
+	"devDependencies": {
+		"@symfony/webpack-encore": "^0.25.0",
+		"node-sass": "^4.11.0",
+		"sass-loader": "7.0.1"
+	},
+	"dependencies": {
+		"bootstrap-sass": "^3.4.1",
+		"yarn": "^1.15.2"
+	}
 }
