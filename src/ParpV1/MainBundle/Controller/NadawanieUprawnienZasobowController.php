@@ -543,7 +543,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
 
                             if (count($zmianaupr) > 0) {
-                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), array(), $zmianaupr);
+                                $this->get('uprawnienia_service')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), array(), $zmianaupr);
                             }
                         }
                     }
@@ -590,7 +590,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
 
                             if (count($zmianaupr) > 0) {
-                                $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array());
+                                $this->get('uprawnienia_service')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array());
                             }
                         }
                     }
@@ -910,7 +910,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $zmianaupr[] = $zasob->getOpis();
 
                         if (count($zmianaupr) > 0 && $wniosekId == 0) {
-                            $this->get('uprawnieniaservice')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
+                            $this->get('uprawnienia_service')->wyslij(array('cn' => '', 'samaccountname' => $currentsam, 'fromWhen' => new \Datetime()), $zmianaupr, array(), 'Zasoby', $oz->getZasobId(), $zasob->getAdministratorZasobu());
                         }
                     }
                 }
