@@ -1009,7 +1009,7 @@ class LdapService
     public function getGrupa($grupa)
     {
         try {
-            return $this->adldap->group()->find($grupa);
+            return $this->adldap->group()->findByName($grupa);
         } catch (DebugContextErrorException $exception) {
             return false;
         }
@@ -1206,8 +1206,7 @@ class LdapService
         $grupy = [
             'Pracownicy',
             'DLP-gg-USB_CD_DVD-DENY',
-            'SGG-(skrót D/B)-Wewn-Wsp-RW',
-            'INT-(skrót D/B)'
+            'SGG-(skrót D/B)-Wewn-Wsp-RW'
         ];
 
         // dostęp do własnego katalogu sekcyjnego
