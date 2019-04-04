@@ -12,7 +12,7 @@ W związku ze zmianą komórki organizacyjnej/sekcji/stanowiska użytkownika o l
         {% for item in poziom_modul %}
         <tr>
             <td style="word-break: break-all; {% if loop.index is divisible by(2) %}background: #dedede {% endif %}">{{ item.modul }}</td>
-            <td style="word-break: break-all; {% if loop.index is divisible by(2) %}background: #dedede {% endif %}">{{item.poziom}}</td>
+            <td style="word-break: break-all; {% if loop.index is divisible by(2) %}background: #dedede {% endif %}">{{ item.poziom }}</td>
             </tr>
         {% endfor %}
     </tbody>
