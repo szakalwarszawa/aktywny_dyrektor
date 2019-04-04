@@ -10,12 +10,32 @@ class LdapTimeHelper
     /**
      * Zamienia czas unixowy na ldapowy.
      *
-     * @param int $unixTimestamp
+     * @param int|null $unixTimestamp
      *
-     * @return string
+     * @return null|string
      */
-    public static function unixToLdap(int $unixTimestamp): string
+    public static function unixToLdap($unixTimestamp)
     {
+        if (null === $unixTimestamp) {
+            return null;
+        }
+
         return sprintf('%.0f', ($unixTimestamp + 11644473600) * 10000000);
+    }
+
+    /**
+     * Zamienia czas ldapowy na unixowy timestamp.
+     *
+     * @param int|null $ldapTimestamp
+     *
+     * @return null|int
+     */
+    public static function LdapToUnix($ldapTimestamp)
+    {
+        if (null === $ldapTimestamp) {
+            return null;
+        }
+
+        return (int) ($ldapTimestamp / 10000000) - 11644473600;
     }
 }

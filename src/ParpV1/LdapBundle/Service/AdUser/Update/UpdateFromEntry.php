@@ -7,9 +7,12 @@ use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\VarDumper\VarDumper;
+use Adldap\AdldapException;
+use ParpV1\LdapBundle\AdUser\AdUser;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
+ * Wprowadzenie zmian lub utworzenie nowego użytkownika.
  */
 final class UpdateFromEntry extends LdapUpdate
 {
@@ -26,7 +29,18 @@ final class UpdateFromEntry extends LdapUpdate
         $this->entityManager = $entityManager;
     }
 
-    public function update(Entry $entry): self
+    /**
+     * Aktualizuje użytkownika w AD na podstawie obiektu klasy Entry.
+     *
+     * @param Entry $entry
+     * @param bool $createIfNotExists - tworzy użytkownika jeżeli nie istnieje
+     *
+     * setDistinguishedName - jest null ponieważ jest generowany dalej
+     *      automatycznie na podstawie zmiany departamentu, nie dotyczy nowych użytkowników
+     *
+     * @return self
+     */
+    public function update(Entry $entry, bool $createIfNotExists = false): self
     {
         $userLoginGetter = AttributeGetterSetterHelper::get(AdUserConstants::LOGIN);
         $userLogin = $entry->$userLoginGetter();
@@ -36,8 +50,16 @@ final class UpdateFromEntry extends LdapUpdate
         ;
 
         if (null === $adUser) {
-            throw new \Exception('Nie ma takiego użytkownika w AD');
+            if ($createIfNotExists) {
+                $this->createNewByEntry($entry);
+
+                return $this;
+            }
+
+            throw new AdldapException('Użytkownik nie istnieje w AD.');
         }
+
+        $entry->setDistinguishedName(null);
 
         $changes = $this
             ->changeCompareService
@@ -56,6 +78,27 @@ final class UpdateFromEntry extends LdapUpdate
         $this->pushChangesToAd($changes, $adUser);
 
         $entry->setIsImplemented(true);
+
+        return $this;
+    }
+
+    /**
+     * Tworzy nowego użytkownika na podstawie wpisu klasy Entry.
+     *
+     * @param Entry $entry
+     */
+    public function createNewByEntry(Entry $entry): self
+    {
+        $newUserModel = $this
+            ->ldapCreate
+            ->createAdUserModel();
+
+        $adUser = new AdUser($newUserModel);
+        $params = $this
+            ->changeCompareService
+            ->compareByEntry($entry, $adUser->getUser());
+
+        $this->pushNewUserToAd($adUser, $params);
 
         return $this;
     }

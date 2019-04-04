@@ -33,6 +33,7 @@ class AllowedToFetchAttributes extends Attributes
             self::WYLACZONE,
             self::POWOD_WYLACZENIA,
             self::AD_STRING,
+            self::CN_AD_STRING,
         ];
     }
 }

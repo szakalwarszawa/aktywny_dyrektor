@@ -468,6 +468,9 @@ class EdycjaUzytkownikaService
      * @param array $formData
      * @param AdUserHelper $adUserHelper
      *
+     * @todo powinno być użyte ChangeCompareService -> compareByArray
+     *      tylko, że
+     *
      * @return array
      */
     public function compareData(array $formData, AdUserHelper $adUserHelper): array
@@ -486,9 +489,16 @@ class EdycjaUzytkownikaService
         }
 
         if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {
-            $ldapTime = LdapTimeHelper::unixToLdap($formData[AdUserConstants::WYGASA]->getTimestamp());
-            if ($ldapTime !== LdapTimeHelper::unixToLdap($adUserHelper::getKiedyWygasa(true))) {
-                $changes [] = AdUserConstants::WYGASA;
+            if (null === $formData[AdUserConstants::WYGASA]) {
+                if (0 !== $adUserHelper::getKiedyWygasa()) {
+                    $changes [] = AdUserConstants::WYGASA;
+                }
+            }
+            if (null !== $formData[AdUserConstants::WYGASA]) {
+                $ldapTime = LdapTimeHelper::unixToLdap($formData[AdUserConstants::WYGASA]->getTimestamp());
+                if ($ldapTime !== LdapTimeHelper::unixToLdap($adUserHelper::getKiedyWygasa(true))) {
+                    $changes [] = AdUserConstants::WYGASA;
+                }
             }
         }
 

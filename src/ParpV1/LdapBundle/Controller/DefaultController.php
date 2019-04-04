@@ -64,7 +64,7 @@ class DefaultController extends Controller
         }
 
         foreach ($entries as $entry) {
-            $updateByEntry->update($entry);
+            $updateByEntry->update($entry, true);
         }
 
         if ($writeChanges && !$updateByEntry->hasError()) {

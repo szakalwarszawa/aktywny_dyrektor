@@ -30,22 +30,41 @@ class LdapConnection
     private $errors;
 
     /**
+     * @var array
+     */
+    private $baseParameters = [];
+
+    /**
      * Publiczny konstruktor
      *
      * @param string $adHost
      * @param string $adUser
      * @param string $adPassword
+     * @param string $adDomain
+     * @param string $baseOu
      *
      * @todo rozdzielnie tego zeby przy autentykacji nie logować na dane admina
      */
-    public function __construct(string $adHost, string $adUser, string $adPassword, string $baseDn)
-    {
+    public function __construct(
+        string $adHost,
+        string $adUser,
+        string $adPassword,
+        string $baseDn,
+        string $adDomain,
+        string $baseOu
+    ) {
         $this->configureDomain([
             'ad_host' => $adHost,
             'ad_user' => $adUser,
             'ad_password' => $adPassword,
             'base_dn' => $baseDn,
         ]);
+
+        $this->baseParameters = [
+            'ad_domain' => $adDomain,
+            'base_dn' => $baseDn,
+            'base_ou' => $baseOu,
+        ];
 
         $this->errors = new ArrayCollection();
         $this->ldapConnect();
@@ -205,5 +224,15 @@ class LdapConnection
             ->getDefaultProvider()
             ->search()
         ;
+    }
+
+    /**
+     * Zwraca podstawowe parametry potrzebne przy np. tworzeniu nowego użytkownika (generowanie stringa AD).
+     *
+     * @return array
+     */
+    public function getBaseParameters(): array
+    {
+        return $this->baseParameters;
     }
 }

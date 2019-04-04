@@ -24,7 +24,13 @@
         {% for key, user_changes in change_log %}
             <li>
                 <ol>
-                <b>{{ key }}</b>
+                <b>
+                {% if key %}
+                        {{ key }}
+                    {% else %}
+                        Utworzono nowego użytkownika
+                {% endif %}
+                </b>
                     {% for change in user_changes %}
                         {# change.vars zawiera tablicę z danymi użytkownika z AD #}
                         <li class="alert-{{ change.getType() }}">
