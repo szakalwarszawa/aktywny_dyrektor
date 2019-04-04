@@ -2,8 +2,6 @@
 
 namespace ParpV1\LdapBundle\DataCollection;
 
-use ParpV1\LdapBundle\DataCollector\Collector;
-
 /**
  * Interfejs CollectorInterface
  */

@@ -617,9 +617,6 @@ class LdapUpdate
      * @param AdUser $adUser
      *
      * @return void
-     *
-     * @todo operacje przy wyłączaniu/włączaniu użytkownika
-     * @todo
      */
     private function disableEnableAccount(array $values, AdUser $adUser): void
     {

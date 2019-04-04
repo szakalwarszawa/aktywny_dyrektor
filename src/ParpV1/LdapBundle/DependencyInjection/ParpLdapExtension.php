@@ -8,7 +8,7 @@ use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
 
 /**
- *
+ * @see https://symfony.com/doc/current/components/dependency_injection.html
  */
 class ParpLdapExtension extends Extension
 {

@@ -7,11 +7,14 @@ use Adldap\Schemas\ActiveDirectory;
 use Adldap\Adldap;
 use Adldap\Exceptions\AdldapException;
 use Adldap\Auth\BindException;
-use Symfony\Component\VarDumper\VarDumper;
 use LogicException;
 use Adldap\Query\Factory;
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * Klasa LdapConnection
+ * Realizuje połączenie z AD.
+ */
 class LdapConnection
 {
     /**

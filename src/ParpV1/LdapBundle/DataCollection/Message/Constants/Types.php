@@ -4,7 +4,7 @@ namespace ParpV1\LdapBundle\DataCollection\Message\Constants;
 
 /**
  * Typy kolekcjonowanych wiadomości.
- * Posługują również za wyróżnik klasy CSS.
+ * Nazwy typów pokrywają się z bootstrapowymi klasami alertów.
  */
 class Types
 {

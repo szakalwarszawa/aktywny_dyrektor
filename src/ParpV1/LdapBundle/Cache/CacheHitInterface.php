@@ -2,6 +2,9 @@
 
 namespace ParpV1\LdapBundle\Cache;
 
+/**
+ * Interfejs CacheHitInterface definiujący metody dla klasy obsługującej cache.
+ */
 interface CacheHitInterface
 {
     /**
