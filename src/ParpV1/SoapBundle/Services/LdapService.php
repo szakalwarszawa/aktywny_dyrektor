@@ -63,7 +63,7 @@ class LdapService
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
         $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
-
+        $this->ldapFetch = $ldapFetch;
         $tab = explode('.', $this->container->getParameter('ad_domain'));
 
         $env = $this->container->get('kernel')->getEnvironment();
@@ -1016,11 +1016,10 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        try {
-            return $this->adldap->group()->findByName($grupa);
-        } catch (DebugContextErrorException $exception) {
-            return false;
-        }
+        return $this
+            ->ldapFetch
+            ->fetchGroup($grupa)
+        ;
     }
 
     public function getUsersWithRole($role)
