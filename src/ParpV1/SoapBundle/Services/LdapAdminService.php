@@ -571,8 +571,7 @@ class LdapAdminService
     public function getGrupa($grupa)
     {
         try {
-            $grupaReturn = $this->ldapFetch->fetchGroup($grupa);
-
+            $grupaReturn = $this->adldap->group()->findByName($grupa);
             return $grupaReturn;
         } catch (Exception $exception) {
             return false;

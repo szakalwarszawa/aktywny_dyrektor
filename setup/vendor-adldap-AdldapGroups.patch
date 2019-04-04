@@ -1,0 +1,32 @@
+diff --git a/src/Classes/AdldapGroups.php b/src/Classes/AdldapGroups.php
+index 8c64cbe..e37605e 100644
+--- a/src/Classes/AdldapGroups.php
++++ b/src/Classes/AdldapGroups.php
+@@ -370,4 +370,27 @@ class AdldapGroups extends AbstractAdldapQueryable
+ 
+         return false;
+     }
++
++    /**
++     * Finds a single entry using the objects current class
++     * and the specified common name.
++     *
++     * @param string $name
++     *
++     * @return array|bool
++     */
++    public function findByName($name)
++    {
++        $results = $this->adldap->search()
++            ->select($fields)
++            ->where('objectClass', '=', $this->objectClass)
++            ->where('name', '=', $name)
++            ->first();
++
++        if (count($results) > 0) {
++            return $results;
++        }
++
++        return false;
++    }
+ }

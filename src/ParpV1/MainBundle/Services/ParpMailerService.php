@@ -7,6 +7,7 @@ use ParpV1\MainBundle\Entity\Email;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Swift_Mailer;
+use Swift_SmtpTransport;
 
 /**
  * Klasa ParpMailerService.
@@ -62,6 +63,7 @@ class ParpMailerService
     const TEMPLATE_WNIOSEKZASOBZWROCENIE = 'wniosekZasobZwrocenie.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIEBI = 'pracownikWylaczenieKontaAd.html.twig';
     const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
+    const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -69,7 +71,7 @@ class ParpMailerService
     private $entityManager;
 
     /**
-     * @var \Swift_Mailer
+     * @var Swift_Mailer
      */
     private $mailer;
 
@@ -84,24 +86,29 @@ class ParpMailerService
 
     private $idSrodowiska;
 
+    private $doFlush = true;
+
     /**
      * EmailerService constructor.
      *
      * @param EntityManager $entityManager
      * @param Swift_Mailer $mailer
      * @param TokenStorage $tokenStorage
+     * @param string $mailerHost
+     * @param string $mailerPort
      */
     public function __construct(
         EntityManager $entityManager,
-        \Swift_Mailer $mailer,
         TokenStorage $tokenStorage,
         $templating,
         $ldap,
-        $idSrodowiska
+        $idSrodowiska,
+        string $mailerHost,
+        string $mailerPort
     ) {
-
         $this->entityManager = $entityManager;
-        $this->mailer = $mailer;
+        $transport = new Swift_SmtpTransport($mailerHost, $mailerPort);
+        $this->mailer = new Swift_Mailer($transport);
         $this->tokenStorage = $tokenStorage;
         $this->templating = $templating;
         $this->ldap = $ldap;
@@ -172,7 +179,10 @@ class ParpMailerService
             $email->setUzytkownik($uzytkownik);
         }
         $this->entityManager->persist($email);
-        $this->entityManager->flush();
+        if ($this->doFlush) {
+            $this->entityManager->flush();
+        }
+
 
         return $sent;
     }
@@ -643,6 +653,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE       => '[BI] Nowe konto Exchange: ',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => 'Wyłączenie konta w Exchange: ',
             ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
+            self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
@@ -681,5 +692,17 @@ class ParpMailerService
 
             return $recipient;
         }
+    }
+
+    /**
+     * Wyłączenie flusha
+     *
+     * @return self
+     */
+    public function disableFlush(): self
+    {
+        $this->doFlush = false;
+
+        return $this;
     }
 }
