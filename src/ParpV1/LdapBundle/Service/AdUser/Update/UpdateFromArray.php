@@ -26,6 +26,13 @@ final class UpdateFromArray extends LdapUpdate
         $this->entityManager = $entityManager;
     }
 
+    /**
+     * Aktualizuje obiekt w AD na podstawie tablicy.
+     *
+     * @param array $updateArray
+     *
+     * @return self
+     */
     public function update(array $updateArray): self
     {
         $userLogin = $updateArray[AdUserConstants::LOGIN];
