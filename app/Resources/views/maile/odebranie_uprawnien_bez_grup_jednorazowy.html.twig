@@ -1,19 +1,24 @@
-W związku ze zmianą komórki organizacyjnej/sekcji/stanowiska użytkownika o loginie sieciowym {{ dotyczy }}, należy zweryfikować czy w systemie AkD są wnioski o nadanie uprawnień do:<b>
+W związku ze zmianą komórki organizacyjnej/sekcji/stanowiska użytkownika o loginie sieciowym <b>{{ dotyczy }}</b>, należy zweryfikować czy w systemie AkD są wnioski o nadanie uprawnień do:<b>
 {{ object.getNazwa() }}</b>,<br/><br/>
-Moduł: <br/>
-<ul>
-    {% for item in modul %}
-        <li>{{ item }}</li>
-    {% endfor %}
-
-</ul><br/>
-Poziom dostępu: <br/>
-<ul>
-    {% for item in poziom %}
-        <li>{{ item }}</li>
-    {% endfor %}
-
-</ul><br/>
+<br/>
+<table border="1">
+    <thead>
+        <tr>
+            <td><b>Moduł</b></td>
+            <td><b>Poziom dostępu</b></td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in poziom_modul %}
+        <tr>
+            <td style="word-break: break-all; {% if loop.index is divisible by(2) %}background: #dedede {% endif %}">{{ item.modul }}</td>
+            <td style="word-break: break-all; {% if loop.index is divisible by(2) %}background: #dedede {% endif %}">{{item.poziom}}</td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+<br/>
+<br/>
 przeprocesowane po dacie zmiany, tzn.: {{ data_zmiany|date('Y-m-d') }} <br/>
 Jeśli nie ma wniosków należy odebrać uprawnienia do wskazanych powyżej zasobów.<br/><br/>
 <b>Odebranie uprawnień zostało już odnotowane w systemie Aktywny Dyrektor.</b>
