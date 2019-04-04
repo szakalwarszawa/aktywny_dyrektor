@@ -30,7 +30,7 @@ class LdapTimeHelper
      *
      * @return null|int
      */
-    public static function LdapToUnix($ldapTimestamp)
+    public static function ldapToUnix($ldapTimestamp)
     {
         if (null === $ldapTimestamp) {
             return null;

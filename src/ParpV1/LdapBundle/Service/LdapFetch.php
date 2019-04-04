@@ -141,9 +141,18 @@ class LdapFetch
             ;
 
             $group = $searchFactory
-                ->groups()
-                ->find($groupName)
+                ->whereEquals('cn', $groupName)
+                ->get()
             ;
+
+
+            if (!$group->count()) {
+                return null;
+            }
+
+            if (1 === $group->count()) {
+                $group = $group->first();
+            }
 
             if (!$group) {
                 return null;
@@ -170,5 +179,16 @@ class LdapFetch
         $this->refreshCache(true);
 
         return $this;
+    }
+
+    /**
+     * @see LdapConnection
+     */
+    public function getBaseParameters(): array
+    {
+        return $this
+            ->ldapConnection
+            ->getBaseParameters()
+        ;
     }
 }

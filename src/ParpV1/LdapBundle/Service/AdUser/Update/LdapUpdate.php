@@ -290,6 +290,8 @@ class LdapUpdate
      *  $moveToAnotherOu (bool|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
      *      musi się to dziać na samym końcu!
      *
+     * @todo zmiana imienia i nazwiska
+     *
      * @param ArrayCollection $changes
      * @param AdUser $adUser
      *
@@ -386,7 +388,7 @@ class LdapUpdate
 
                         if (null !== $value) {
                             $date =  (new DateTime())
-                                ->setTimestamp(LdapTimeHelper::LdapToUnix($value))
+                                ->setTimestamp(LdapTimeHelper::ldapToUnix($value))
                             ;
 
                             return $date->format('Y-m-d');
@@ -412,7 +414,7 @@ class LdapUpdate
 
                         if (null !== $value) {
                             $date =  (new DateTime())
-                                ->setTimestamp(LdapTimeHelper::LdapToUnix($value))
+                                ->setTimestamp(LdapTimeHelper::ldapToUnix($value))
                             ;
 
                             return $date->format('Y-m-d');
