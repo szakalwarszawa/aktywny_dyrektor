@@ -399,6 +399,10 @@ td.grid-column-akcje.last-column>div.btn-group-vertical>a.btn.btn-xs {
 	float: left;
 }
 
+ul.grid-row-actions {
+	padding: 0;
+}
+
 .fa:before {
 	margin-right: 0.5rem;
 }
