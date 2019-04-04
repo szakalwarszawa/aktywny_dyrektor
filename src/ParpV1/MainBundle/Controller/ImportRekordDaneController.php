@@ -907,7 +907,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
-        $poprzednieDane = explode(' ', $userFromAD[0]['name']);
+        $poprzednieDane = explode(' ', current($userFromAD)['name']);
 
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];

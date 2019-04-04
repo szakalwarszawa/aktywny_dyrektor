@@ -9,10 +9,14 @@ use ParpV1\MainBundleException\SecurityTestException;
 use Exception;
 use ParpV1\MainBundle\Helper\AdUserHelper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\LdapBundle\Connection\LdapConnection;
+use ParpV1\LdapBundle\Service\LdapFetch;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class LdapAdminService
  *
+ * @todo to jest do wyjrzucenia
  * @package ParpV1\SoapBundle\Services
  */
 class LdapAdminService
@@ -38,14 +42,20 @@ class LdapAdminService
     public $output;
 
     /**
+     * @var LdapFech
+     */
+    private $ldapFetch;
+
+    /**
      * LdapAdminService constructor.
      * @param TokenStorage $tokenStorage
      * @param Container $container
      * @param EntityManager $OrmEntity
      * @throws SecurityTestException
      */
-    public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity)
+    public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
     {
+        $this->ldapFetch = $ldapFetch;
         if (!in_array('PARP_ADMIN', $tokenStorage->getToken()->getUser()->getRoles())) {
             //throw new Exception("Tylko administrator AkD może aktualizować zmiany w AD");
             //echo ""; var_dump(debug_backtrace());
@@ -79,23 +89,9 @@ class LdapAdminService
             $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         }
 
-        $configuration = array(
-            //'user_id_key' => 'samaccountname',
-            'account_suffix' => $this->ad_domain,
-            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
-            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
-            'domain_controllers' => array($this->container->getParameter('ad_host'),$this->container->getParameter('ad_host2'),$this->container->getParameter('ad_host3')),
-            'admin_username' => $this->AdminUser,
-            'admin_password' => $this->AdminPass,
-            //'real_primarygroup' => true,
-            //'use_ssl' => false,
-            //'use_tls' => false,
-            //'recursive_groups' => true,
-            'ad_port' => '389',
-            //'sso' => false,
-        );
 
-        $this->adldap = new \Adldap\Adldap($configuration);
+
+        $this->adldap = $ldapConnection->ldapConnect();
     }
 
     /**
@@ -1072,6 +1068,9 @@ class LdapAdminService
      */
     public function ldapModAdd($link_identifier, $dn, $entry)
     {
+        if (is_array($dn)) {
+            $dn = current($dn);
+        }
         $poszlo = false;
         if ($this->pushChanges) {
             try {

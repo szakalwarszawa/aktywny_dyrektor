@@ -1,0 +1,39 @@
+services:
+  ldap.connection:
+    class: ParpV1\LdapBundle\Connection\LdapConnection
+    arguments: ['%ad_host%', '%ad_user%', '%ad_password%', '%base_dn%', '%ad_domain%', '%base_ou%']
+  ldap.fetch:
+    class: ParpV1\LdapBundle\Service\LdapFetch
+    arguments: ['@ldap.connection', '@ldap.ad_user_cache', '@ldap.ad_group_cache']
+  ldap.create:
+    class: ParpV1\LdapBundle\Service\LdapCreate
+    arguments: ['@ldap.connection']
+  ldap.update:
+    class: ParpV1\LdapBundle\Service\AdUser\Update\LdapUpdate
+    arguments: ['@ldap.fetch', '@ldap.change_compare_service', '@doctrine.orm.entity_manager']
+  ldap.update_from_entry:
+    class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromEntry
+    arguments: ['@doctrine.orm.entity_manager']
+    calls:
+      - [setLdapFetch, ['@ldap.fetch']]
+      - [setLdapCreate, ['@ldap.create']]
+      - [setChangeCompareService, ['@ldap.change_compare_service']]
+      - [setNewResponseMessagesCollection]
+      - [setEntityManager, ['@doctrine.orm.entity_manager']]
+  ldap.update_from_array:
+    class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
+    arguments: ['@doctrine.orm.entity_manager']
+    calls:
+      - [setLdapFetch, ['@ldap.fetch']]
+      - [setChangeCompareService, ['@ldap.change_compare_service']]
+      - [setNewResponseMessagesCollection]
+      - [setEntityManager, ['@doctrine.orm.entity_manager']]
+  ldap.change_compare_service:
+    class: ParpV1\LdapBundle\Service\AdUser\ChangeCompareService
+    arguments: ['@doctrine.orm.entity_manager']
+  ldap.ad_user_cache:
+    class: ParpV1\LdapBundle\Cache\AdUserCache
+    arguments: ['@ldap.ad_user.cache']
+  ldap.ad_group_cache:
+    class: ParpV1\LdapBundle\Cache\AdGroupCache
+    arguments: ['@ldap.ad_group.cache']

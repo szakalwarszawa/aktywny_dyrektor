@@ -8,7 +8,7 @@
     {% set login_uzytkownika = attribute(form, constant(ad_user_constants ~ '::LOGIN')) %}
     <div class='form-group {% if not login_uzytkownika.vars.valid %}has-error{% endif %}'>
         {{ form_label(login_uzytkownika, 'Login użytkownika', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(login_uzytkownika, common_attr) }}</div>
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(login_uzytkownika, {attr: {'readonly': 'readonly', 'disabled': 'disabled'}}) }}</div>
         {{ form_errors(login_uzytkownika) }}
     </div>
 
@@ -16,7 +16,7 @@
     {% set imie_nazwisko = attribute(form, constant(ad_user_constants ~ '::IMIE_NAZWISKO')) %}
     <div class='form-group {% if not imie_nazwisko.vars.valid %}has-error{% endif %}'>
         {{ form_label(imie_nazwisko, 'Imię i nazwisko', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(imie_nazwisko, common_attr) }}</div>
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(imie_nazwisko, {attr: {'readonly': 'readonly', 'disabled': 'disabled'}}) }}</div>
         {{ form_errors(imie_nazwisko, {attr: {'class': 'alert-danger'}}) }}
     </div>
 

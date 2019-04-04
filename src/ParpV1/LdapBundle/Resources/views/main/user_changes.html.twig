@@ -1,0 +1,49 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+{% if change_log|length > 0 %}
+    {% if has_error %}
+        <div class="alert alert-danger">
+            Nie można opublikować zmian. Blokujący wpis został podświetlony na czerwono.<br />
+            Przed ponowną próbą rozwiąż problem.
+        </div>
+    {% else %}
+        {% if is_simulation %}
+            <div class="alert alert-warning">
+                <b>UWAGA!</b> Poniższe zmiany podświetlone na zielono zostaną wprowadzone.
+                {{ form_start(form) }}
+                    {{ form_widget(form.submit, {label: 'Opublikuj do AD', attr: {'class': 'btn btn-danger'}}) }}
+                {{ form_end(form) }}
+            </div>
+            {% else %}
+            <div class="alert alert-success">
+                Poniższe zmiany podświetlone na zielono <b>ZOSTAŁY WPROWDZONE DO AD!</b>
+            </div>
+        {% endif %}
+    {% endif %}
+    <ul>
+        {% for key, user_changes in change_log %}
+            <li>
+                <ol>
+                <b>
+                {% if key %}
+                        {{ key }}
+                    {% else %}
+                        Utworzono nowego użytkownika
+                {% endif %}
+                </b>
+                    {% for change in user_changes %}
+                        {# change.vars zawiera tablicę z danymi użytkownika z AD #}
+                        <li class="alert-{{ change.getType() }}">
+                            {{ change.message }} - <b>{{ change.target|trans({}, 'changed_attribute') }}</b> {# do targetu dorobić PIPE tłumaczącą #}
+                        </li>
+                    {% endfor %}
+                </ol>
+            </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <b>Nie ma żadnych zmian do opublikowania.</b>
+{% endif %}
+
+
+{% endblock %}

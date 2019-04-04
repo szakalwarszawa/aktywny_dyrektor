@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use DateTime;
 
 /**
  * EntryRepository
@@ -201,6 +202,30 @@ class EntryRepository extends EntityRepository
 
             return $groupedResult;
         }
+
+        return $result;
+    }
+
+    /**
+     * Znajduje oczekujące na implementację zmiany.
+     *
+     * @return array
+     */
+    public function findChangesToImplement()
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder
+            ->select('e')
+            ->where('e.isImplemented = 0')
+            ->andWhere('e.fromWhen <= :now')
+            ->setParameter('now', new DateTime())
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
 
         return $result;
     }
