@@ -115,7 +115,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         if (!empty($userZasoby)) {
             foreach ($userZasoby as $userZasob) {
                 // pomijam wnioski dla osób zewnętrznych
-                if ($userZasob->getWniosek()->getPracownikSpozaParp()) {
+                if (null !== $userZasob->getWniosek() && $userZasob->getWniosek()->getPracownikSpozaParp()) {
                     $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $userZasob->getSamaccountname().'</info>');
                     continue;
                 }
