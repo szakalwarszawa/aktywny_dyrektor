@@ -81,7 +81,7 @@ $(document).ready(function () {
 		if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
 			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
 			var dodajUprawnieniaBtn = $('#general').find('.record_properties').next('a');
-			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').firstChild('br').next('a');
+			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br').next('a');
 			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn, dodajUprawnieniaBtn.length);
 			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn, dodajUsunUzytkownikowDoWnioskuBtn.length);
 		}
