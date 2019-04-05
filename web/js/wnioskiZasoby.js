@@ -69,12 +69,10 @@ $(document).ready(function () {
 		ajaxFormCall(form);
 	});
 
-	var status = $('.statusyWniosku').find('list-group-item');
+	// ---------------------------------------------------
+	var status = $('.statusyWniosku').find('.list-group-item');
 	console.log('Status: ', status);
 	console.log($(status).text());
-
-
-	// ---------------------------------------------------
 
 });
 
