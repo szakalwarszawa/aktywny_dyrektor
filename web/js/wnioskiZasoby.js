@@ -75,9 +75,9 @@ $(document).ready(function () {
 	console.log($(status).text());
 
 	$(status).each(function () {
-			if ($(this).text() == "Tworzony ") {
-				console.log("Po statusie wnioskuję, że tu się przyda widoczny przycisk Dodaj/usuń użytkowników, Dodaj uprawnienia");
-			} else if $(this).text() == "W edycji u wnioskodawcy ") {
+		if ($(this).text() == "Tworzony ") {
+			console.log("Po statusie wnioskuję, że tu się przyda widoczny przycisk Dodaj/usuń użytkowników, Dodaj uprawnienia");
+		} else if ($(this).text() == "W edycji u wnioskodawcy ") {
 			console.log("W edycji u wnioskodawcy, więc też przycisk potrzebny");
 		} else {
 			console.log("Chyba nie potrzebujemy przycisków");
