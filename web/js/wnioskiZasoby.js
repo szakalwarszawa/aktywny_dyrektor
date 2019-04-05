@@ -75,15 +75,17 @@ $(document).ready(function () {
 	console.log($(status).text());
 
 	$(status).each(function (index) {
-		var status1 = "Tworzony";
-		var status2 = "W edycji u wnioskodawcy";
+		var status1 = 'Tworzony';
+		var status2 = 'W edycji u wnioskodawcy';
 
 		if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
 			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
-			var dodajUprawnieniaBtn = $('#general').find('.record_properties');
-			dodajUprawnieniaBtn = $(dodajUprawnieniaBtn).next('a');
-			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br');
-			dodajUsunUzytkownikowDoWnioskuBtn = $(dodajUsunUzytkownikowDoWnioskuBtn).next('a');
+			// var dodajUprawnieniaBtn = $('#general').find('.record_properties');
+			// dodajUprawnieniaBtn = $(dodajUprawnieniaBtn).next('a');
+			var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
+			// var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br');
+			// dodajUsunUzytkownikowDoWnioskuBtn = $(dodajUsunUzytkownikowDoWnioskuBtn).next('a');
+			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
 			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn, dodajUprawnieniaBtn.length);
 			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn, dodajUsunUzytkownikowDoWnioskuBtn.length);
 		}
