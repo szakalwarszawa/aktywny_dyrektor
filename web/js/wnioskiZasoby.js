@@ -75,9 +75,9 @@ $(document).ready(function () {
 	console.log($(status).text());
 
 	$(status).each(function () {
-		if ($(this).text() == "Tworzony ") {
+		if ($(this).text().indexOf("Tworzony")) {
 			console.log("Po statusie wnioskuję, że tu się przyda widoczny przycisk Dodaj/usuń użytkowników, Dodaj uprawnienia");
-		} else if ($(this).text() == "W edycji u wnioskodawcy ") {
+		} else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
 			console.log("W edycji u wnioskodawcy, więc też przycisk potrzebny");
 		} else {
 			console.log("Chyba nie potrzebujemy przycisków");
