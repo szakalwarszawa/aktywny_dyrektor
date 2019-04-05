@@ -88,7 +88,9 @@ $(document).ready(function () {
 			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
 			if (dodajUprawnieniaBtn !== null) {
 				dodajUprawnieniaBtn.style.display = 'block';
-			} else if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
+			}
+
+			if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
 				dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
 			}
 			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn);
