@@ -68,6 +68,14 @@ $(document).ready(function () {
 		var form = extractParentForm(this);
 		ajaxFormCall(form);
 	});
+
+	var status = $('.statusyWniosku').find('list-group-item');
+	console.log('Status: ', status);
+	console.log($(status).text());
+
+
+	// ---------------------------------------------------
+
 });
 
 function ZaakceptujWniosek(event, wlasciciel) {
