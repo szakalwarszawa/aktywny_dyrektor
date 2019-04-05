@@ -80,8 +80,10 @@ $(document).ready(function () {
 
 		if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
 			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
-			var dodajUprawnieniaBtn = $('#general').find('.record_properties').next('a');
-			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br').next('a');
+			var dodajUprawnieniaBtn = $('#general').find('.record_properties');
+			dodajUprawnieniaBtn = $(dodajUprawnieniaBtn).next('a');
+			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br');
+			dodajUsunUzytkownikowDoWnioskuBtn = $(dodajUsunUzytkownikowDoWnioskuBtn).next('a');
 			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn, dodajUprawnieniaBtn.length);
 			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn, dodajUsunUzytkownikowDoWnioskuBtn.length);
 		}
