@@ -422,16 +422,12 @@ footer.helpdesk {
 /* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
 /* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
 #general > div > .record_properties + a {
-	/* display: none; */
-	display: block;
-	opacity: 0.5;
+	display: none;
 }
 
 /* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
 #zasoby > br + a {
-	/* display: none; */
-	display: block;
-	opacity: 0.5;
+	display: none;
 }
 
 /* --------------- user edit -------------- */
