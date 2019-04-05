@@ -74,13 +74,15 @@ $(document).ready(function () {
 	console.log('Status: ', status);
 	console.log($(status).text());
 
-	$(status).each(function () {
+	$(status).each(function (index) {
 		if ($(this).text().indexOf("Tworzony") > -1) {
-			console.log("Po statusie wnioskuję, że tu się przyda widoczny przycisk Dodaj/usuń użytkowników, Dodaj uprawnienia");
+			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
 		} else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
-			console.log("W edycji u wnioskodawcy, więc też przycisk potrzebny");
+			console.log(index, "W edycji u wnioskodawcy, więc też przycisk potrzebny");
+			//#general>div>.record_properties+a
+			//#zasoby>br+a
 		} else {
-			console.log("Chyba nie potrzebujemy przycisków");
+			console.log(index, "Chyba nie potrzebujemy przycisków");
 		}
 	})
 
