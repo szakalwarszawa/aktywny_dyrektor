@@ -75,13 +75,22 @@ $(document).ready(function () {
 	console.log($(status).text());
 
 	$(status).each(function (index) {
-		if ($(this).text().indexOf("Tworzony") > -1) {
+		var status1 = "Tworzony";
+		var status2 = "W edycji u wnioskodawcy";
+
+		if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
 			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
-		} else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
-			console.log(index, "W edycji u wnioskodawcy, więc też przycisk potrzebny");
-			//#general>div>.record_properties+a
-			//#zasoby>br+a
-		} else {
+			var dodajUprawnieniaBtn = $('#general').find('.record_properties').next('a');
+			var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').firstChild('br').next('a');
+			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn, dodajUprawnieniaBtn.length);
+			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn, dodajUsunUzytkownikowDoWnioskuBtn.length);
+		}
+		// else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
+		// 	console.log(index, "W edycji u wnioskodawcy, więc też przycisk potrzebny");
+		// 	//#general>div>.record_properties+a
+		// 	//#zasoby>br+a
+		// } 
+		else {
 			console.log(index, "Chyba nie potrzebujemy przycisków");
 		}
 	})
