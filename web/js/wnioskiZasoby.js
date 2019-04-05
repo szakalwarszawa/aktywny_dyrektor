@@ -86,8 +86,13 @@ $(document).ready(function () {
 			// var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br');
 			// dodajUsunUzytkownikowDoWnioskuBtn = $(dodajUsunUzytkownikowDoWnioskuBtn).next('a');
 			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
-			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn, dodajUprawnieniaBtn.length);
-			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn, dodajUsunUzytkownikowDoWnioskuBtn.length);
+			if (dodajUprawnieniaBtn !== null) {
+				dodajUprawnieniaBtn.style.display = 'block';
+			} else if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
+				dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
+			}
+			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn);
+			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn);
 		}
 		// else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
 		// 	console.log(index, "W edycji u wnioskodawcy, więc też przycisk potrzebny");
