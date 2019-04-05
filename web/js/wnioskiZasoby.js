@@ -73,6 +73,11 @@ $(document).ready(function () {
 	var status = $('.statusyWniosku').find('.list-group-item');
 	console.log('Status: ', status);
 	console.log($(status).text());
+	if ($(status).text() == "Tworzony") {
+		console.log("Po statusie wnioskuję, że tu się przyda widoczny przycisk Dodaj/usuń użytkowników, Dodaj uprawnienia");
+	} else {
+		console.log("Chyba nie potrzebujemy przycisków");
+	}
 
 });
 
