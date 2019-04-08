@@ -21,11 +21,11 @@ for (let i = 0, sorted; i < 9; i++) {
 					this.szerokosc = szerokosc;
 				}
 			}
-			const p = new Prostokat(5, 7);
+			const p = new Prostokat(5, 77);
 			let width = p.szerokosc;
 			return width;
 		})();
 	}
 
-	console.info(`${i} sorting list ${sorted} o szerokości ${p.szerokosc}`);
+	console.info(`${i} sorting list ${sorted} o szerokości ${width}`);
 }
