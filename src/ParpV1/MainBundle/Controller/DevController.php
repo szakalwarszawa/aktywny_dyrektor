@@ -3269,4 +3269,31 @@ class DevController extends Controller
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Korekta accountExpires w AD']);
     }
+
+    /**
+     * Data zmiany D/B przez pracowników.
+     * Zestawienie do weryfikacji zgłoszenia Redmine #75482
+     *
+     * @Route("/kiedyZmianaDepartamentu", name="kiedyZmianaDepartamentu")
+     */
+    public function kiedyZmianaDepartamentuAction()
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $ldap = $this->get('ldap_service');
+        $users = $ldap->getAllFromAD();
+
+        foreach ($users as $user) {
+            $dataZmianyDb = $entityManager->getRepository('ParpMainBundle:Entry')->findZmianaDepartamentuUzytkownika($user['samaccountname']);
+            if ($dataZmianyDb) {
+                $dane[] = [
+                    'obecny D/B' => $user['description'],
+                    'samaccountname' => $user['samaccountname'],
+                    'data Zmiany D/B' => $dataZmianyDb[0]['data_zmiany']->format('Y-m-d H:i:s'),
+                ];
+            }
+            $dataZmianyDb = [];
+        }
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Zmiana Departamentu/Biura pracownika']);
+    }
 }

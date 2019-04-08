@@ -94,6 +94,7 @@ class BlokowaneKontaController extends Controller
         ]);
 
         $ctrl = new DefaultController();
+        $ctrl->setContainer($this->container);
         $form = $ctrl->createUserEditForm($this, $ADUser[0]);
         $departamentRekord = "";
         if ($daneRekord) {
@@ -103,9 +104,9 @@ class BlokowaneKontaController extends Controller
         }
         $form->handleRequest($request);
         if ($request->getMethod() === "POST") {
-            $data = $request->request->get('form');
+            $data = $form->getData();
             $ctrl = new DefaultController();
-
+            $ctrl->setContainer($this->container);
             $entry = new Entry();
             $entry->setSamaccountname($samaccountname)
                 ->setActivateDeactivated(true)

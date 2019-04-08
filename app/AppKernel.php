@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new ParpV1\AuthBundle\ParpAuthBundle(),
             new ParpV1\SoapBundle\ParpSoapBundle(),
             new ParpV1\MainBundle\ParpMainBundle(),
+            new ParpV1\LdapBundle\ParpLdapBundle(),
             new APY\DataGridBundle\APYDataGridBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
             new ParpV1\CronBundle\ParpCronBundle(),
@@ -30,6 +31,7 @@ class AppKernel extends Kernel
             new Nelmio\ApiDocBundle\NelmioApiDocBundle(),
 	        new JMS\SerializerBundle\JMSSerializerBundle(),
 	        new FOS\RestBundle\FOSRestBundle(),
+            new Symfony\WebpackEncoreBundle\WebpackEncoreBundle(),
         );
 
         if (in_array($this->getEnvironment(), array('dev', 'test'))) {

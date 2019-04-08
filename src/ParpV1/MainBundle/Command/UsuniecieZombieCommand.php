@@ -205,7 +205,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
      * @param string $uzytkownik
      * @param array $edytorzyZasobu
      * @param Zasoby $zasob
-     * @param string $
+     * @param string $rola
      *
      * @return array
      */

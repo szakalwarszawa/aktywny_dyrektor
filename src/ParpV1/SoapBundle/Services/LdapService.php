@@ -10,6 +10,8 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Section;
+use ParpV1\LdapBundle\Connection\LdapConnection;
+use ParpV1\LdapBundle\Service\LdapFetch;
 
 class LdapService
 {
@@ -17,6 +19,11 @@ class LdapService
      * @var CacheItemPoolInterface
      */
     private $cache;
+
+    /**
+     * @var LdapFech
+     */
+    private $ldapFetch;
 
     protected $dodatkoweOpcje = 'ekranEdycji';
     protected $ad_host;
@@ -51,12 +58,12 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
     {
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
         $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
-
+        $this->ldapFetch = $ldapFetch;
         $tab = explode('.', $this->container->getParameter('ad_domain'));
 
         $env = $this->container->get('kernel')->getEnvironment();
@@ -69,6 +76,7 @@ class LdapService
             $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
         //die($this->patch);
+        $this->cache = $cacheItemPool;
 
         $configuration = array(
             //'user_id_key' => 'samaccountname',
@@ -89,8 +97,8 @@ class LdapService
             'ad_port' => '389',
                 //'sso' => false,
         );
-        $this->adldap = new \Adldap\Adldap($configuration);
-        $this->cache = $cacheItemPool;
+       // $this->adldap = new \Adldap\Adldap($configuration);
+        $this->adldap = $ldapConnection->getAdLdap();
     }
 
     public function getAllManagersFromAD()
@@ -1008,11 +1016,10 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        try {
-            return $this->adldap->group()->find($grupa);
-        } catch (DebugContextErrorException $exception) {
-            return false;
-        }
+        return $this
+            ->ldapFetch
+            ->fetchGroup($grupa)
+        ;
     }
 
     public function getUsersWithRole($role)
@@ -1209,8 +1216,7 @@ class LdapService
         $grupy = [
             'Pracownicy',
             'DLP-gg-USB_CD_DVD-DENY',
-            'SGG-(skrót D/B)-Wewn-Wsp-RW',
-            'INT-(skrót D/B)'
+            'SGG-(skrót D/B)-Wewn-Wsp-RW'
         ];
 
         // dostęp do własnego katalogu sekcyjnego
