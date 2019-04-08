@@ -8,8 +8,11 @@ const tab = [1, 2, 7, 4, 5];
 
 for (let i = 0; i < 9; i++) {
 	if (tab.includes(7)) {
-		let sorted = tab.map(item => item * 2);
-		console.log("Babel test: ", sorted);
+		(() => {
+			let sorted = tab.map(item => item * 2 + i);
+			console.log(i, "Babel test: ", sorted);
+			return sorted;
+		})();
 	} else {
 		(() => {
 			class Prostokat {
@@ -22,11 +25,6 @@ for (let i = 0; i < 9; i++) {
 			return p.szerokosc
 		})();
 	}
-
-
-
-
-
 
 	console.info(`${i} sorting list ${sorted}`);
 }
