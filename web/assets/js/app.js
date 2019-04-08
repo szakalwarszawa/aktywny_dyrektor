@@ -7,6 +7,7 @@ console.log("Hello from Encore");
 const tab = [1, 2, 6, 4, 5];
 
 for (let i = 0, sorted; i < 9; i++) {
+	let width = 0;
 	if (tab.includes(7)) {
 		(() => {
 			sorted = tab.map(item => item * 2 + i);
