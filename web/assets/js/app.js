@@ -11,14 +11,16 @@ for (let i = 0; i < 9; i++) {
 		let sorted = tab.map(item => item * 2);
 		console.log("Babel test");
 	} else {
-		class Prostokat {
-			constructor(wysokosc, szerokosc) {
-				this.wysokosc = wysokosc;
-				this.szerokosc = szerokosc;
+		(() => {
+			class Prostokat {
+				constructor(wysokosc, szerokosc) {
+					this.wysokosc = wysokosc;
+					this.szerokosc = szerokosc;
+				}
 			}
-		}
-		const p = new Prostokat(5, 7);
-		return p.szerokosc;
+			const p = new Prostokat(5, 7);
+			return p.szerokosc
+		})();
 	}
 
 
