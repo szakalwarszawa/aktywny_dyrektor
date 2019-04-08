@@ -74,38 +74,43 @@ $(document).ready(function () {
 	console.log('Status: ', status);
 	console.log($(status).text());
 
-	$(status).each(function (index) {
-		var status1 = 'Tworzony';
-		var status2 = 'W edycji u wnioskodawcy';
+	// $(status).each(function (index) {
+	// 	var status1 = 'Tworzony';
+	// 	var status2 = 'W edycji u wnioskodawcy';
 
-		if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
-			console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
-			// var dodajUprawnieniaBtn = $('#general').find('.record_properties');
-			// dodajUprawnieniaBtn = $(dodajUprawnieniaBtn).next('a');
-			var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
-			// var dodajUsunUzytkownikowDoWnioskuBtn = $('#zasoby').children('br');
-			// dodajUsunUzytkownikowDoWnioskuBtn = $(dodajUsunUzytkownikowDoWnioskuBtn).next('a');
-			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
-			if (dodajUprawnieniaBtn !== null) {
-				dodajUprawnieniaBtn.style.display = 'block';
-			}
+	// 	if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
+	// 		console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
+	// 		var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
+	// 		var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
+	// 		if (dodajUprawnieniaBtn !== null) {
+	// 			dodajUprawnieniaBtn.style.display = 'block';
+	// 		}
 
-			if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
-				dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
-			}
-			console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn);
-			console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn);
+	// 		if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
+	// 			dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
+	// 		}
+	// 		console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn);
+	// 		console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn);
+	// 	}
+	// 	else {
+	// 		console.log(index, "Chyba nie potrzebujemy przycisków");
+	// 	}
+	// })
+
+	if ($(status[status.length - 1]).text().indexOf(status1) > -1 || $(status[status.length - 1]).text().indexOf(status2) > -1) {
+		console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
+		var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
+		var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
+		if (dodajUprawnieniaBtn !== null) {
+			dodajUprawnieniaBtn.style.display = 'block';
 		}
-		// else if ($(this).text().indexOf("W edycji u wnioskodawcy") > -1) {
-		// 	console.log(index, "W edycji u wnioskodawcy, więc też przycisk potrzebny");
-		// 	//#general>div>.record_properties+a
-		// 	//#zasoby>br+a
-		// } 
-		else {
-			console.log(index, "Chyba nie potrzebujemy przycisków");
-		}
-	})
 
+		if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
+			dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
+		}
+	} else {
+		console.log(index, "Chyba nie potrzebujemy przycisków");
+	}
 
 });
 
