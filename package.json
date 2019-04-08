@@ -1,16 +1,16 @@
 {
 	"devDependencies": {
-		"@babel/core": "^7.4.3",
 		"@babel/cli": "^7.4.3",
-		"@babel/preset-env": "^7.4.3",
+		"@babel/core": "^7.4.3",
 		"@babel/polyfill": "^7.4.3",
+		"@babel/preset-env": "^7.4.3",
 		"@symfony/webpack-encore": "^0.25.0",
 		"node-sass": "^4.11.0",
 		"sass-loader": "7.0.1"
 	},
 	"dependencies": {
 		"bootstrap-sass": "^3.4.1",
-		"core-js": "3",
+		"core-js": "2",
 		"yarn": "^1.15.2"
 	},
 	"browserslist": {

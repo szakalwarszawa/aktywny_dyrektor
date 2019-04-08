@@ -11,7 +11,14 @@ Encore
 	.enableVersioning(Encore.isProduction())
 	.splitEntryChunks()
 	.autoProvidejQuery()
-	.enableSassLoader();
+	.enableSassLoader()
+	.configureBabel(function (babelConfig) {
+		const preset = babelConfig.presets.find(([name]) => name === "@babel/preset-env");
+		if (preset !== undefined) {
+			preset[1].useBuiltIns = "usage";
+			preset[1].debug = true;
+		}
+	});
 
 module.exports = Encore.getWebpackConfig();
 
