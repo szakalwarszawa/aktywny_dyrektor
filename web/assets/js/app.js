@@ -4,7 +4,7 @@ require('../scss/app.scss');
 
 console.log("Hello from Encore");
 
-const tab = [1, 2, 7, 4, 5];
+const tab = [1, 2, 6, 4, 5];
 
 for (let i = 0, sorted; i < 9; i++) {
 	if (tab.includes(7)) {
@@ -22,9 +22,10 @@ for (let i = 0, sorted; i < 9; i++) {
 				}
 			}
 			const p = new Prostokat(5, 7);
-			return p.szerokosc
+			let width = p.szerokosc;
+			return width;
 		})();
 	}
 
-	console.info(`${i} sorting list ${sorted}`);
+	console.info(`${i} sorting list ${sorted} o szerokości ${p.szerokosc}`);
 }
