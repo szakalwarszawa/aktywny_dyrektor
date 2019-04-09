@@ -21,7 +21,7 @@
         <div class="btn-group">
             <a class="btn btn-primary btn-xs" href="{{ path('main', {'ktorzy': 'usersFromAdFull'}) }}">Wyszukiwanie aktywne</a>
         </div>
-        {% if app.user.hasRole('PARP_ADMIN') %}
+        {% if 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
         <div class="btn-group">
             <a class="btn btn-success btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
         </div>

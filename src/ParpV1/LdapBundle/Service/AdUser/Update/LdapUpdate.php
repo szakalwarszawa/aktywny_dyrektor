@@ -22,6 +22,7 @@ use Symfony\Component\Debug\Exception\ContextErrorException;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\LdapBundle\Service\LdapCreate;
+use Adldap\Models\Attributes\AccountControl;
 
 /**
  * LdapUpdate
@@ -309,6 +310,7 @@ class LdapUpdate
             ;
         }
         $moveToAnotherOu = false;
+
         foreach ($changes as $value) {
             $parseViewData = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
@@ -643,15 +645,27 @@ class LdapUpdate
         );
 
         $userAccountControl = $writableUserObject->getUserAccountControlObject();
+        $flagForRemove = null;
+
         if ($disableAccount) {
+            $flagForRemove = AccountControl::NORMAL_ACCOUNT;
             $userAccountControl->accountIsDisabled();
             $writableUserObject->setAttribute('description', $values[AdUserConstants::POWOD_WYLACZENIA]);
         }
 
         if (!$disableAccount) {
+            $flagForRemove = AccountControl::ACCOUNTDISABLE;
             $userAccountControl->accountIsNormal();
         }
 
+        $newFlags = [];
+        foreach ($userAccountControl->getValues() as $value) {
+            if ($value !== $flagForRemove && !in_array($value, $newFlags)) {
+                $newFlags[] = $value;
+            }
+        }
+
+        $userAccountControl->setValues($newFlags);
         $writableUserObject->setUserAccountControl($userAccountControl);
 
         if (!$simulateProcess) {
