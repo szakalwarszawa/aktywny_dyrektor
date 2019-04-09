@@ -375,6 +375,10 @@ class LdapUpdate
                         return $this;
                     }
 
+                    if ($value->getOld() === $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING]) {
+                        continue;
+                    }
+
                     $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
                 }
 
