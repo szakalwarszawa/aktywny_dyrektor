@@ -80,6 +80,7 @@ class DefaultController extends Controller
                 in_array('PARP_BZK_1', $this->getUser()->getRoles(), true) ||
                 in_array('PARP_BZK_2', $this->getUser()->getRoles(), true) ||
                 in_array('PARP_ADMIN', $this->getUser()->getRoles(), true) ||
+                in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles(), true) ||
                 in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles(), true);
             if ($ktorzy === 'usersFromAdFull' && in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles(), true)) {
                 $ADUsersTemp = $ldap->getAllFromAD('wszyscy');

@@ -21,6 +21,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Klaster controller.
@@ -407,7 +409,7 @@ class ImportRekordDaneController extends Controller
      * @throws \LogicException
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
-    protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane)
+    protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych)
     {
         $ldap = $this->get('ldap_service');
 
@@ -500,6 +502,18 @@ class ImportRekordDaneController extends Controller
                         if($dr->getNazwisko() == "Turlej")
                             die(".".$dr->getImie().".");
             */
+        }
+
+
+        if ($resetDoPodstawowych) {
+            $resetEntry = new OdebranieZasobowEntry();
+            $resetEntry
+                ->setPowodOdebrania('Zmiana departamentu/sekcji (rekord import)')
+                ->setUzytkownik($entry->getSamaccountname())
+            ;
+
+            $this->getDoctrine()->getManager()->persist($resetEntry);
+            $entry->setOdebranieZasobowEntry($resetEntry);
         }
 
 
@@ -949,7 +963,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $zmieniamySekcje = true;
             }
 
-            $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane);
+            $resetDoPodstawowych = false;
+            if (isset($changeSet['departament']) || isset($changeSet['stanowisko']) || $zmieniamySekcje) {
+                $resetDoPodstawowych = true;
+            }
+
+            $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych);
 
             if (!$nowy && $daneRekord->getNewUnproccessed() === 2) {
                 // Jeśli nie jest nowy i istnieje w Rekordzie
