@@ -409,6 +409,10 @@ class LdapUpdate
                         return $value? 'PRAWDA' : 'FAŁSZ';
                     }
 
+                    if (false !== strpos($value, AdStringTool::CN)) {
+                        return AdStringTool::getValue($value, AdStringTool::CN);
+                    }
+
                     return $value;
                 };
 
@@ -425,6 +429,10 @@ class LdapUpdate
 
                             return $date->format('Y-m-d');
                         }
+                    }
+
+                    if (false !== strpos($value, AdStringTool::CN)) {
+                        return AdStringTool::getValue($value, AdStringTool::CN);
                     }
 
                     return $value;
