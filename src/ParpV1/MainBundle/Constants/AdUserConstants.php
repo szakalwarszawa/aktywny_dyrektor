@@ -65,4 +65,18 @@ class AdUserConstants extends Attributes
             self::WYLACZONE
         ];
     }
+
+    /**
+     * Zwraca elementy formularza które nie mogą być edytowane w żadnym wypadku.
+     *
+     * @return array
+     */
+    public static function getElementsLockedForAll(): array
+    {
+        return [
+            self::LOGIN,
+            self::CN_AD_STRING,
+            self::IMIE_NAZWISKO,
+        ];
+    }
 }

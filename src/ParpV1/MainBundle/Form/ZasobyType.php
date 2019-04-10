@@ -238,7 +238,6 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text',
-                    'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
@@ -253,7 +252,6 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text',
-                    'format' => 'yyyy-MM-dd'
                 ))
             ->add('dataUsunieciaZasobu', DateType::class, array(
                     'attr' => array(
@@ -268,7 +266,6 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text',
-                    'format' => 'yyyy-MM-dd'
                 ))
             ;
     }

@@ -394,8 +394,8 @@
                             }
                         }
                     } else {
-                        if ($(sel).hasClass('select2') && v.length >= 0 && v !== null) {
-                            $(sel).val(v.split(";"));// było ,
+                        if ($(sel).hasClass('select2') && v !== null && v.length >= 0) {
+                            $(sel).val(v.split(","));
                             $(sel).select2().trigger('change');
                             //$(sel).select2("data", v, true);
                             //$(sel).select2("updateResults");

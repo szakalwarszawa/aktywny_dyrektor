@@ -229,7 +229,8 @@ class EdycjaUzytkownikaService
      *
      * @return bool
      *
-     * @throws UnexpectedValueException gdy zmieniono pole niepodlegające zmianie
+     * @throws UnexpectedValueException gdy zmieniono pole niepodlegające zmianie (blokada względem roli)
+     * @throws UnexpectedValueException gdy zmieniono pole niepodlegające zmianie (edycja zablokowanego na stałe pola)
      */
     public function saveEditEntry(): bool
     {
@@ -240,20 +241,26 @@ class EdycjaUzytkownikaService
         }
 
         $formData = $form->getData();
-        $adUserHelper = $this->getAdUserHelper($formData[AdUserConstants::LOGIN]);
+        $adUserHelper = $this->getAdUserHelper($formData[AdUserConstants::LOGIN], false);
         $changedElements = $this->compareDataCreateEntry($adUserHelper);
 
         if (empty($changedElements)) {
             return false;
         }
 
-        if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
-            foreach ($changedElements as $key => $element) {
+        foreach ($changedElements as $key => $element) {
+            if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
                 if (!in_array($element, AdUserConstants::getElementsAllowedToChange()) && is_int($key)) {
                     throw new UnexpectedValueException(
                         'Zmieniono pole niepodlegające zmianie w AkD! Twoje role na to nie pozwalają.'
                     );
                 }
+            }
+
+            if (in_array($element, AdUserConstants::getElementsLockedForAll()) && is_int($key)) {
+                throw new UnexpectedValueException(
+                    'Zmieniono pole niepodlegające zmianie w AkD!'
+                );
             }
         }
 
@@ -393,18 +400,19 @@ class EdycjaUzytkownikaService
     /**
      * Zwraca obiekt AdUserHelper na podstawie loginu użytkownika.
      *
-     * @param string
+     * @param string $login
+     * @param bool $throwNotFoundException
      *
      * @return AdUserHelper
      */
-    public function getAdUserHelper(string $login): AdUserHelper
+    public function getAdUserHelper(string $login, bool $throwNotFoundException = true): AdUserHelper
     {
         $adUserData = $this
             ->ldapService
             ->getUserFromAD($login)
         ;
 
-        return new AdUserHelper($adUserData, $this->entityManager);
+        return new AdUserHelper($adUserData, $this->entityManager, $throwNotFoundException);
     }
 
     /**

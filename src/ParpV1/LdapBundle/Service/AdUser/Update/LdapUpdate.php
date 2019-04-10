@@ -22,6 +22,7 @@ use Symfony\Component\Debug\Exception\ContextErrorException;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\LdapBundle\Service\LdapCreate;
+use Adldap\Models\Attributes\AccountControl;
 
 /**
  * LdapUpdate
@@ -309,6 +310,7 @@ class LdapUpdate
             ;
         }
         $moveToAnotherOu = false;
+
         foreach ($changes as $value) {
             $parseViewData = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
@@ -373,6 +375,10 @@ class LdapUpdate
                         return $this;
                     }
 
+                    if ($value->getOld() === $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING]) {
+                        continue;
+                    }
+
                     $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
                 }
 
@@ -403,6 +409,10 @@ class LdapUpdate
                         return $value? 'PRAWDA' : 'FAŁSZ';
                     }
 
+                    if (false !== strpos($value, AdStringTool::CN)) {
+                        return AdStringTool::getValue($value, AdStringTool::CN);
+                    }
+
                     return $value;
                 };
 
@@ -419,6 +429,10 @@ class LdapUpdate
 
                             return $date->format('Y-m-d');
                         }
+                    }
+
+                    if (false !== strpos($value, AdStringTool::CN)) {
+                        return AdStringTool::getValue($value, AdStringTool::CN);
                     }
 
                     return $value;
@@ -643,15 +657,27 @@ class LdapUpdate
         );
 
         $userAccountControl = $writableUserObject->getUserAccountControlObject();
+        $flagForRemove = null;
+
         if ($disableAccount) {
+            $flagForRemove = AccountControl::NORMAL_ACCOUNT;
             $userAccountControl->accountIsDisabled();
             $writableUserObject->setAttribute('description', $values[AdUserConstants::POWOD_WYLACZENIA]);
         }
 
         if (!$disableAccount) {
+            $flagForRemove = AccountControl::ACCOUNTDISABLE;
             $userAccountControl->accountIsNormal();
         }
 
+        $newFlags = [];
+        foreach ($userAccountControl->getValues() as $value) {
+            if ($value !== $flagForRemove && !in_array($value, $newFlags)) {
+                $newFlags[] = $value;
+            }
+        }
+
+        $userAccountControl->setValues($newFlags);
         $writableUserObject->setUserAccountControl($userAccountControl);
 
         if (!$simulateProcess) {
