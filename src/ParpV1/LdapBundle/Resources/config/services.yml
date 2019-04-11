@@ -1,7 +1,16 @@
 services:
   ldap.connection:
     class: ParpV1\LdapBundle\Connection\LdapConnection
-    arguments: ['%ad_host%', '%ad_user%', '%ad_password%', '%base_dn%', '%ad_domain%', '%base_ou%']
+    arguments: [
+      '%ad_host%',
+      '%ad_user%',
+      '%ad_password%',
+      '%base_dc_dn%',
+      '%ad_domain%',
+      '%base_ou_dn%',
+      '%ou_zablokowani%',
+      '%ou_nieobecni%'
+      ]
   ldap.fetch:
     class: ParpV1\LdapBundle\Service\LdapFetch
     arguments: ['@ldap.connection', '@ldap.ad_user_cache', '@ldap.ad_group_cache']

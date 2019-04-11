@@ -275,6 +275,14 @@ class Entry
     protected $odebranieZasobowEntry = null;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="odblokowanieKonta", type="boolean", nullable=false)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    protected $odblokowanieKonta = false;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="opis", type="string", length=2000, nullable=true)
@@ -962,6 +970,18 @@ class Entry
     public function setOdebranieZasobowEntry(OdebranieZasobowEntry $odebranieZasobowEntry)
     {
         $this->odebranieZasobowEntry = $odebranieZasobowEntry;
+
+        return $this;
+    }
+
+    public function getOdblokowanieKonta(): bool
+    {
+        return $this->odblokowanieKonta;
+    }
+
+    public function setOdblokowanieKonta(bool $odblokowanieKonta = false): self
+    {
+        $this->odblokowanieKonta = $odblokowanieKonta;
 
         return $this;
     }

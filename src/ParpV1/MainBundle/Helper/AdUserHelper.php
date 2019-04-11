@@ -188,11 +188,13 @@ class AdUserHelper
     {
         if ($returnObject) {
             $value = self::$adUser[AdUserConstants::SEKCJA_NAZWA];
+            $departament = self::getDepartamentNazwa(false, true);
             if ($returnObject && self::$entityManager) {
                 $section = self::$entityManager
                     ->getRepository(Section::class)
                     ->findOneBy([
-                        'name' => $value
+                        'name' => $value,
+                        'departament' => $departament,
                     ]);
 
                 if (null === $section) {

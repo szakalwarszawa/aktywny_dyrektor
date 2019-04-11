@@ -10,6 +10,8 @@ use Adldap\Auth\BindException;
 use LogicException;
 use Adldap\Query\Factory;
 use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\VarDumper\VarDumper;
+use Adldap\Models\Attributes\DistinguishedName;
 
 /**
  * Klasa LdapConnection
@@ -33,6 +35,9 @@ class LdapConnection
     private $errors;
 
     /**
+     * Tablica podstawowych parametrów.
+     * NIE MOŻE zawierać prywatnych danych dotyczących np. danych logowania.
+     *
      * @var array
      */
     private $baseParameters = [];
@@ -45,6 +50,8 @@ class LdapConnection
      * @param string $adPassword
      * @param string $adDomain
      * @param string $baseOu
+     * @param string $ouZablokowani - OU do którego są przenoszeni użytkownicy po rozwiązaniu umowy
+     * @param string $ouNieobecni - OU do którego są przenoszeni użytkownicy nieobecni (np. długi urlop)
      *
      * @todo rozdzielnie tego zeby przy autentykacji nie logować na dane admina
      */
@@ -54,8 +61,22 @@ class LdapConnection
         string $adPassword,
         string $baseDn,
         string $adDomain,
-        string $baseOu
+        string $baseOu,
+        string $ouZablokowani,
+        string $ouNieobecni
     ) {
+        $baseDnFixed = new DistinguishedName();
+        foreach (explode(',', $baseDn) as $value) {
+            $baseDnFixed->addDc($value);
+        }
+        $baseDn = $baseDnFixed->get();
+
+        $baseOuFixed = new DistinguishedName();
+        foreach (explode(',', $baseOu) as $value) {
+            $baseOuFixed->addOu($value);
+        }
+        $baseOu = $baseOuFixed->get();
+
         $this->configureDomain([
             'ad_host' => $adHost,
             'ad_user' => $adUser,
@@ -67,6 +88,8 @@ class LdapConnection
             'ad_domain' => $adDomain,
             'base_dn' => $baseDn,
             'base_ou' => $baseOu,
+            'ou_zablokowani' => $ouZablokowani,
+            'ou_nieobecni' => $ouNieobecni
         ];
 
         $this->errors = new ArrayCollection();

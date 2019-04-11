@@ -88,4 +88,11 @@ class Attributes
      * @var string
      */
     const USER_ACCOUNT_CONTROL = 'useraccountcontrol';
+
+    /**
+     * Atrybut używany do składowania jakiejś opcjonalnej wartości.
+     *
+     * @var string
+     */
+    const OPTIONAL_ATTRIBUTE = 'extensionAttribute14';
 }

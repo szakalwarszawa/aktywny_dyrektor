@@ -89,9 +89,10 @@ class EdycjaUzytkownikaFormType extends AbstractType
         $adUserHelper = null;
         if (self::TYP_EDYCJA === $formType) {
             $adUser = $this
-            ->ldapService
-            ->getUserFromAD($options['username'])
+                ->ldapService
+                ->getUserFromAD($options['username'], null, null ,'wszyscyWszyscy')
             ;
+
             $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);
         }
 
@@ -225,7 +226,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
         $builder
             ->add('zmianaOd', DateType::class, [
                 'label' => 'Zmiana obowiązuje od',
-                'required' => false,
+                'required' => true,
                 'data' => new DateTime(),
                 'widget' => 'single_text',
                 'html5' => false,

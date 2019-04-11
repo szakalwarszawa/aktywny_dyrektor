@@ -59,7 +59,12 @@ final class UpdateFromEntry extends LdapUpdate
             throw new AdldapException('Użytkownik nie istnieje w AD.');
         }
 
-        $entry->setDistinguishedName(null);
+        if ($entry->getOdblokowanieKonta()) {
+            $this->unblockAccount();
+        } else {
+            $entry->setDistinguishedName(null);
+            $this->keepAccountBlockedUnblocked();
+        }
 
         $changes = $this
             ->changeCompareService
@@ -73,9 +78,11 @@ final class UpdateFromEntry extends LdapUpdate
          */
         if ($entry->getOdebranieZasobowEntry()) {
             $this->doEraseUserGroups();
+        } else {
+            $this->keepUserGroups();
         }
 
-        $this->pushChangesToAd($changes, $adUser);
+        $this->pushChangesToAd($changes, $adUser, $entry);
 
         $entry->setIsImplemented(true);
 
