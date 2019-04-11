@@ -26,6 +26,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 ->setDescription('Odnotowuje w AkD i odbiera uprawnienia po terminie z AD.')
                 ->addArgument('id_zasobow', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'ID zasobów oddzielone spacją.')
                 ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Tylko wyświetla dane, bez zapisywania zmian do AkD i AD.')
+                ->addOption('nie-pytaj', null, InputOption::VALUE_NONE, 'Wykonuje od razu skrypt, bez wyświetlania pytań.')
                 ->setHelp('Komenda służy do odnotowania odebrania uprawnień dla zasobów opartych o grupy AD. ' .
                     'Jednocześnie dla uprawnień przeterminowanych odbierane są grupy w AD. ' .
                     'Po komendzie należy podać ID zasobów oddzielone spacją.');
@@ -43,6 +44,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
     {
         $zasob = $input->getArgument('id_zasobow');
         $tylkoTest = $input->getOption('dry-run');
+        $niePytaj = $input->getOption('nie-pytaj');
 
         if (true === $tylkoTest) {
             $output->writeln('<comment>Wykonanie testowe. Żadne uprawnienia nie zostaną odebrane.</comment>');
@@ -53,7 +55,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             $czyKontynuowac = $this->getHelper('question');
             $pytanie = new ConfirmationQuestion('Odebranie zostaną uprawnienia do zasobów: '.$zasoby.'. Czynności nie da się cofnąć. Kontynuować?', false, '/^(y|t)/i');
 
-            if ($czyKontynuowac->ask($input, $output, $pytanie)) {
+            if (true === $niePytaj || $czyKontynuowac->ask($input, $output, $pytanie)) {
                 $output->writeln('<comment>Rozpoczynam odbieranie...</comment>');
                 foreach ($zasob as $zasobyDoOdebrania) {
                     $this->odbierzUprawnieniaPrzeterminowane($output, (int) $zasobyDoOdebrania, $tylkoTest);
