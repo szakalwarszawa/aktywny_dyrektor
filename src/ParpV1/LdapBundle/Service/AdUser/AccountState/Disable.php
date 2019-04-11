@@ -64,7 +64,6 @@ final class Disable extends AccountStateManager
         }
 
         if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $disableReason) {
-
             $newParentDn = new DistinguishedName(
                 implode(',', [
                     $baseParameters['ou_zablokowani'],

@@ -6,6 +6,10 @@ use ParpV1\LdapBundle\Service\AdUser\Update\Simulation;
 use ParpV1\LdapBundle\AdUser\AdUser;
 use Doctrine\Common\Collections\ArrayCollection;
 
+/**
+ * Klasa AccountStateManager
+ * Operacje przy włączaniu/wyłączaniu konta.
+ */
 class AccountStateManager extends Simulation
 {
     /**

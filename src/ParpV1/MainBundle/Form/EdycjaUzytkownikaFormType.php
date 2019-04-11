@@ -90,7 +90,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
         if (self::TYP_EDYCJA === $formType) {
             $adUser = $this
                 ->ldapService
-                ->getUserFromAD($options['username'], null, null ,'wszyscyWszyscy')
+                ->getUserFromAD($options['username'])
             ;
 
             $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);

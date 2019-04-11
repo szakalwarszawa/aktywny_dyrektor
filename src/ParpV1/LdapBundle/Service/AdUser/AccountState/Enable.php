@@ -79,7 +79,6 @@ final class Enable extends AccountStateManager
             ;
 
             $writableUserObject->save();
-
         }
 
         $message = new Messages\SuccessMessage(
