@@ -11,6 +11,10 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use Adldap\Models\Attributes\DistinguishedName;
 
+/**
+ * Klasa Enable
+ * Włączenie konta w AD.
+ */
 final class Enable extends AccountStateManager
 {
     /**
@@ -25,8 +29,10 @@ final class Enable extends AccountStateManager
      * Uruchamia użytkownika na podstawie distinguishedName zawierającego nowe OU.
      *
      * @param string $distinguishedName
+     *
+     * @return void
      */
-    public function saveByDistinguishedName(string $distinguishedName)
+    public function saveByDistinguishedName(string $distinguishedName): void
     {
         if (!$this->isSimulation()) {
             $writableUserObject = $this

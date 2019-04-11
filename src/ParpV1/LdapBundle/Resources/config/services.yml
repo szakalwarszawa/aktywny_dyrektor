@@ -19,7 +19,7 @@ services:
     arguments: ['@ldap.connection']
   ldap.update:
     class: ParpV1\LdapBundle\Service\AdUser\Update\LdapUpdate
-    arguments: ['@ldap.fetch', '@ldap.change_compare_service', '@doctrine.orm.entity_manager']
+    arguments: ['@ldap.fetch', '@ldap.change_compare_service', '@doctrine.orm.entity_manager', '@parp.mailer']
   ldap.update_from_entry:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromEntry
     arguments: ['@doctrine.orm.entity_manager']
@@ -29,6 +29,7 @@ services:
       - [setChangeCompareService, ['@ldap.change_compare_service']]
       - [setNewResponseMessagesCollection]
       - [setEntityManager, ['@doctrine.orm.entity_manager']]
+      - [setParpMailerService, ['@parp.mailer']]
   ldap.update_from_array:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
     arguments: ['@doctrine.orm.entity_manager']
@@ -37,6 +38,7 @@ services:
       - [setChangeCompareService, ['@ldap.change_compare_service']]
       - [setNewResponseMessagesCollection]
       - [setEntityManager, ['@doctrine.orm.entity_manager']]
+      - [setParpMailerService, ['@parp.mailer']]
   ldap.change_compare_service:
     class: ParpV1\LdapBundle\Service\AdUser\ChangeCompareService
     arguments: ['@doctrine.orm.entity_manager']

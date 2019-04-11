@@ -24,6 +24,7 @@ use ParpV1\LdapBundle\Service\AdUser\Update\Simulation;
 use ParpV1\LdapBundle\Service\AdUser\AccountState;
 use ParpV1\MainBundle\Entity\Entry;
 use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Services\ParpMailerService;
 
 /**
  * LdapUpdate
@@ -80,6 +81,11 @@ class LdapUpdate extends Simulation
     private $entityManager;
 
     /**
+     * @var ParpMailerService
+     */
+    private $parpMailerService;
+
+    /**
      * Klucz po której szuka użytkownika w AD.
      *
      * @var string
@@ -89,12 +95,14 @@ class LdapUpdate extends Simulation
     public function __construct(
         LdapFetch $ldapFetch,
         ChangeCompareService $changeCompareService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        ParpMailerService $parpMailerService
     ) {
         $this->ldapFetch = $ldapFetch;
         $this->changeCompareService = $changeCompareService;
         $this->responseMessages = new ArrayCollection();
         $this->entityManager = $entityManager;
+        $this->parpMailerService = $parpMailerService;
     }
 
     /**
@@ -351,6 +359,7 @@ class LdapUpdate extends Simulation
             ;
         }
         $moveToAnotherOu = false;
+        $userGroups = $writableUserObject->getGroupNames();
         foreach ($changes as $value) {
             $parseViewData = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
@@ -517,7 +526,8 @@ class LdapUpdate extends Simulation
                 $this->isSimulation()
             );
 
-            $changeAccountState->saveByReason($disableEnableAccount[AdUserConstants::POWOD_WYLACZENIA]);
+            $disableReason = $disableEnableAccount[AdUserConstants::POWOD_WYLACZENIA];
+            $changeAccountState->saveByReason($disableReason);
 
             foreach ($changeAccountState->getResponseMessages() as $value) {
                 $this
@@ -527,6 +537,9 @@ class LdapUpdate extends Simulation
             }
 
             $this->removeAllUserGroups($adUser);
+            if (!$simulateProcess && $disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
+                $this->sendMailToIntExtAdmins($adUser, $userGroups);
+            }
         }
 
         if ($moveToAnotherOu) {
@@ -540,6 +553,30 @@ class LdapUpdate extends Simulation
         }
 
         return $this;
+    }
+
+    /**
+     * Wysyła mail do GLPI o usuniętych grupach INT/EXT użytkownika.
+     *
+     * @param array $userGroups
+     *
+     * @return void
+     */
+    private function sendMailToIntExtAdmins(AdUser $adUser, array $userGroups)
+    {
+        $adUser = $adUser->getUser();
+        $mailData = [
+            'imie_nazwisko' => $adUser[AdUserConstants::IMIE_NAZWISKO],
+            'login' => $adUser[AdUserConstants::LOGIN],
+            'tytul' => $adUser[AdUserConstants::LOGIN],
+            'odbiorcy' => [ParpMailerService::EMAIL_DO_GLPI],
+            'usuniete_int' => preg_grep('/^INT/i', $userGroups),
+            'usuniete_ext'  => preg_grep('/^EXT/i', $userGroups),
+        ];
+
+        $this
+            ->parpMailerService
+            ->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI, $mailData);
     }
 
     /**
@@ -820,6 +857,18 @@ class LdapUpdate extends Simulation
     public function setEntityManager(EntityManager $entityManager): void
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Set parpMailerService
+     *
+     * @param ParpMailerService $parpMailerService
+     *
+     * @return void
+     */
+    public function setParpMailerService(ParpMailerService $parpMailerService): void
+    {
+        $this->parpMailerService = $parpMailerService;
     }
 
     /**

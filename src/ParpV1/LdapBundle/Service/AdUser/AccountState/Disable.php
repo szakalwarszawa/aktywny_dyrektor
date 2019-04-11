@@ -9,10 +9,23 @@ use UnexpectedValueException;
 use Adldap\Models\Attributes\AccountControl;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
-use Symfony\Component\VarDumper\VarDumper;
 
+/**
+ * Klasa Disable
+ * Wyłączenie konta w AD.
+ */
 final class Disable extends AccountStateManager
 {
+    /**
+     * @var string
+     */
+    const USER_ABSENT = 'absent';
+
+    /**
+     * @var string
+     */
+    const USER_REMOVED = 'removed';
+
     /**
      * @see AccountStateManager
      */
@@ -26,11 +39,18 @@ final class Disable extends AccountStateManager
      * W zależności od niego użytkownik zostaje przeniesiony do określonego OU.
      *
      * @param string $disableReason
+     *
+     * @return void
      */
-    public function saveByReason(string $disableReason)
+    public function saveByReason(string $disableReason): void
     {
         $baseParameters = $this->baseParameters;
         $newParentDn = null;
+        $writableUserObject = $this
+            ->adUser
+            ->getUser(AdUser::FULL_USER_OBJECT)
+        ;
+
         if (AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC === $disableReason) {
             $newParentDn = new DistinguishedName(
                 implode(',', [
@@ -39,6 +59,7 @@ final class Disable extends AccountStateManager
                 ])
             );
 
+            $state = self::USER_ABSENT;
             $moveMessageText = 'Użytkownik został przeniesiony do nieobecnych.';
         }
 
@@ -51,6 +72,7 @@ final class Disable extends AccountStateManager
                 ])
             );
 
+            $state = self::USER_REMOVED;
             $moveMessageText = 'Użytkownik został przeniesiony do zablokowanych.';
         }
 
@@ -60,10 +82,6 @@ final class Disable extends AccountStateManager
 
         $this->removeAccountFlag(AccountControl::NORMAL_ACCOUNT);
         if (!$this->isSimulation()) {
-            $writableUserObject = $this
-                ->adUser
-                ->getUser(AdUser::FULL_USER_OBJECT)
-            ;
             $beforeMoveDn = $writableUserObject->getDistinguishedName();
             $writableUserObject->move($newParentDn);
 
@@ -74,6 +92,10 @@ final class Disable extends AccountStateManager
                 ->setAttribute(AdUserConstants::OPTIONAL_ATTRIBUTE, $beforeMoveDn)
                 ->setUserAccountControl($userAccountControlObject)
             ;
+
+            if (self::USER_REMOVED === $state) {
+                $writableUserObject->setManager(null);
+            }
 
             $writableUserObject->save();
         }

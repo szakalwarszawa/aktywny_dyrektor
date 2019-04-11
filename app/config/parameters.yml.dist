@@ -36,10 +36,11 @@ parameters:
     ad_host3: 10.0.0
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
-    ad_password :
+    ad_password : ''
     base_dn: 'DC=test,DC=local'
+    base_dc_dn: 'test,local'
     ad_ou : 'OU=Zespoly_2016,OU=PARP Pracownicy'
-    base_ou: 'Zespoly_2016,PARP Pracownicy'
+    base_ou_dn: 'Zespoly_2016,PARP Pracownicy'
     grupy_ou : "PARP Grupy"
     ou_zablokowani: Zablokowane
     ou_nieobecni: Nieobecni
