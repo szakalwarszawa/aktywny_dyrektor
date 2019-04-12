@@ -69,49 +69,21 @@ $(document).ready(function () {
 		ajaxFormCall(form);
 	});
 
-	// ---------------------------------------------------
+	// ----------------- wyświetlanie przyciskow zgodnie ze statusem ----------------
 	var status = $('.statusyWniosku').find('.list-group-item');
-	console.log('Status: ', status);
-	console.log($(status).text());
-
-	// $(status).each(function (index) {
-	// 	var status1 = 'Tworzony';
-	// 	var status2 = 'W edycji u wnioskodawcy';
-
-	// 	if ($(this).text().indexOf(status1) > -1 || $(this).text().indexOf(status2) > -1) {
-	// 		console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
-	// 		var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
-	// 		var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
-	// 		if (dodajUprawnieniaBtn !== null) {
-	// 			dodajUprawnieniaBtn.style.display = 'block';
-	// 		}
-
-	// 		if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
-	// 			dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
-	// 		}
-	// 		console.log('dodajUprawnieniaBtn ', dodajUprawnieniaBtn);
-	// 		console.log('dodajUsunUzytkownikowDoWnioskuBtn ', dodajUsunUzytkownikowDoWnioskuBtn);
-	// 	}
-	// 	else {
-	// 		console.log(index, "Chyba nie potrzebujemy przycisków");
-	// 	}
-	// })
 
 	if ($(status[status.length - 1]).text().indexOf(status1) > -1 || $(status[status.length - 1]).text().indexOf(status2) > -1) {
-		console.log(index, "Po statusie Tworzony wnioskuję, że przycisk potrzebny");
 		var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
 		var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
+
 		if (dodajUprawnieniaBtn !== null) {
 			dodajUprawnieniaBtn.style.display = 'block';
 		}
-
 		if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
 			dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
 		}
-	} else {
-		console.log(index, "Chyba nie potrzebujemy przycisków");
 	}
-
+	// ---------------------------------------------------
 });
 
 function ZaakceptujWniosek(event, wlasciciel) {
