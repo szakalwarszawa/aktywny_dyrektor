@@ -68,6 +68,22 @@ $(document).ready(function () {
 		var form = extractParentForm(this);
 		ajaxFormCall(form);
 	});
+
+	// ----------------- wyświetlanie przyciskow zgodnie ze statusem ----------------
+	var status = $('.statusyWniosku').find('.list-group-item');
+
+	if ($(status[status.length - 1]).text().indexOf(status1) > -1 || $(status[status.length - 1]).text().indexOf(status2) > -1) {
+		var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
+		var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
+
+		if (dodajUprawnieniaBtn !== null) {
+			dodajUprawnieniaBtn.style.display = 'block';
+		}
+		if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
+			dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
+		}
+	}
+	// ---------------------------------------------------
 });
 
 function ZaakceptujWniosek(event, wlasciciel) {
