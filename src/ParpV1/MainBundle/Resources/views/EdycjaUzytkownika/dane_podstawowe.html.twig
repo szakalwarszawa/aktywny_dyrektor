@@ -16,7 +16,7 @@
     {# IMIĘ I NAZWISKO #}
     {% set imie_nazwisko = attribute(form, constant(ad_user_constants ~ '::IMIE_NAZWISKO')) %}
     <div class='form-group {% if not imie_nazwisko.vars.valid %}has-error{% endif %}'>
-        {{ form_label(imie_nazwisko, 'Imię i nazwisko', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
+        {{ form_label(imie_nazwisko, 'Nazwisko oraz imię', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
         <div class='col-sm-8 col-lg-6'>{{ form_widget(imie_nazwisko, form_type_new_attr) }}</div>
         {{ form_errors(imie_nazwisko, {attr: {'class': 'alert-danger'}}) }}
     </div>
