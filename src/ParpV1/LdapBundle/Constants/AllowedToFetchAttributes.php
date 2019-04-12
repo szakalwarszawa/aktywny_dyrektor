@@ -34,6 +34,7 @@ class AllowedToFetchAttributes extends Attributes
             self::POWOD_WYLACZENIA,
             self::AD_STRING,
             self::CN_AD_STRING,
+            self::OPTIONAL_ATTRIBUTE,
         ];
     }
 }

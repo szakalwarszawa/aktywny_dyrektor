@@ -11,6 +11,7 @@
                     <th>Sekcja</th>
                     <th>Uprawnienia początkowe</th>
                     <th>Od kiedy</th>
+                    <th>Konto wyłączone</th>
                 </tr>
             </thead>
             <tbody>
@@ -30,6 +31,13 @@
                             {% endif %}
                         </td>
                         <td>{{ row.fromWhen|date('Y-m-d H:i:s') }}</td>
+                        <td>
+                            {% if row.isDisabled %}
+                                    Tak
+                                {% else %}
+                                    Nie
+                            {% endif %}
+                        </td>
                     </tr>
                 {% endfor %}
             </tbody>
