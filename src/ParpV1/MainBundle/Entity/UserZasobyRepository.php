@@ -262,11 +262,21 @@ class UserZasobyRepository extends EntityRepository
                 ], [
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
                 ]);
-            if (true === $singleRow['userZasob']->getCzyAktywne()) {
+            $notDivided = $singleRow['userZasob']
+                ->getWniosek()
+                ->getWniosek()
+                ->getStatus()
+                ->getNazwaSystemowa() !== '10_PODZIELONY'
+            ;
+            if (true === $singleRow['userZasob']->getCzyAktywne() && $notDivided) {
                 $groupedResources['aktywne'][] = $mergedArray;
+
                 continue;
             }
-            $groupedResources['nieaktywne'][] = $mergedArray;
+
+            if ($notDivided) {
+                $groupedResources['nieaktywne'][] = $mergedArray;
+            }
         }
 
         return $groupedResources;
