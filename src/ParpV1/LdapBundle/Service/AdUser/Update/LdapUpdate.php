@@ -636,7 +636,7 @@ class LdapUpdate extends Simulation
                 ;
             }
 
-            if(!$writableUserObject->move($newDn)) {
+            if (!$writableUserObject->move($newDn)) {
                 $this
                     ->addMessage(
                         new Messages\ErrorMessage(),
