@@ -15,7 +15,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\TakNieInterface;
 
 /**
- *
+ * Metody zamieniające ciągi tekstowe pobrane z AD na obiekty z bazy danych.
 */
 class AdUserHelper
 {
@@ -189,16 +189,20 @@ class AdUserHelper
         if ($returnObject) {
             $value = self::$adUser[AdUserConstants::SEKCJA_NAZWA];
             $departament = self::getDepartamentNazwa(false, true);
+
+            if (null === $departament) {
+                return null;
+            }
+
             if ($returnObject && self::$entityManager) {
                 $section = self::$entityManager
                     ->getRepository(Section::class)
-                    ->findOneBy([
-                        'name' => $value,
-                        'departament' => $departament,
-                    ]);
+                    ->findByNameAndDepartmentShort($value, $departament->getShortname())
+                ;
 
                 if (null === $section) {
-                    $message = 'Obecna sekcja według AD: ' . $value . ' - nie istnieje w bazie danych!';
+                    $message = 'Obecna sekcja według AD: ' . $value . ' - nie istnieje w bazie danych ' .
+                    'lub nie jest przypisana do tego departamentu (' . $departament->getShortname() . ').';
                     self::addError(AdUserConstants::SEKCJA_NAZWA, $message);
                 }
 

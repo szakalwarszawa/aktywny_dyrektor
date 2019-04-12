@@ -69,19 +69,12 @@ class LdapConnection
         foreach (explode(',', $baseDn) as $value) {
             $baseDnFixed->addDc($value);
         }
-        $baseDn = $baseDnFixed->get();
-
-        $baseOuFixed = new DistinguishedName();
-        foreach (explode(',', $baseOu) as $value) {
-            $baseOuFixed->addOu($value);
-        }
-        $baseOu = $baseOuFixed->get();
 
         $this->configureDomain([
             'ad_host' => $adHost,
             'ad_user' => $adUser,
             'ad_password' => $adPassword,
-            'base_dn' => $baseDn,
+            'base_dn' => $baseDnFixed->get(),
         ]);
 
         $this->baseParameters = [

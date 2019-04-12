@@ -25,6 +25,7 @@ use ParpV1\LdapBundle\Service\AdUser\AccountState;
 use ParpV1\MainBundle\Entity\Entry;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Services\ParpMailerService;
+use Adldap\Models\Attributes\DistinguishedName;
 
 /**
  * LdapUpdate
@@ -301,8 +302,7 @@ class LdapUpdate extends Simulation
      *  $disableEnableAccount (array) - jeżeli tablica zostanie uzupełniona to znaczy, że konto musi zostać wyłączone|włączone
      *  $moveToAnotherOu (bool|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
      *      musi się to dziać na samym końcu!
-     *
-     * @todo zmiana imienia i nazwiska
+     *  $keepAttributeValue - mimo zmiany wartośc atrybutu zostanie zachowana
      *
      * @param ArrayCollection $changes
      * @param AdUser $adUser
@@ -337,7 +337,7 @@ class LdapUpdate extends Simulation
                 $this->addMessage(
                     new Messages\ErrorMessage(),
                     'Brak obiektu Entry',
-                    'error',
+                    AdUserConstants::WYLACZONE,
                     $adUser->getUser()
                 );
 
@@ -362,6 +362,7 @@ class LdapUpdate extends Simulation
         $userGroups = $writableUserObject->getGroupNames();
         foreach ($changes as $value) {
             $parseViewData = false;
+            $keepAttributeValue = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
 
@@ -390,9 +391,7 @@ class LdapUpdate extends Simulation
                 }
 
                 if (AdUserConstants::GRUPY_AD === $value->getTarget()) {
-                    if (!$this->eraseUserGroups) {
-                        $this->setGroupsAttribute($newValue, $adUser);
-                    }
+                    $this->setGroupsAttribute($newValue, $adUser);
 
                     continue;
                 }
@@ -437,7 +436,7 @@ class LdapUpdate extends Simulation
                     $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
                 }
 
-                if (!$simulateProcess) {
+                if (!$simulateProcess && !$keepAttributeValue) {
                     $writableUserObject->setAttribute($value->getTarget(), $newValue);
                 }
 
@@ -545,7 +544,10 @@ class LdapUpdate extends Simulation
         if ($moveToAnotherOu) {
             $this->changeUserDepartment($moveToAnotherOu, $adUser);
 
-            return $this;
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
         }
 
         if (!$simulateProcess) {
@@ -588,7 +590,7 @@ class LdapUpdate extends Simulation
      *
      * @return AdUser
      */
-    public function changeUserDepartment(AdUserChange $adUserChange, AdUser $adUser): AdUser
+    public function changeUserDepartment(AdUserChange $adUserChange, AdUser $adUser)
     {
         $newDepartment = $this
             ->entityManager
@@ -610,21 +612,44 @@ class LdapUpdate extends Simulation
             ;
         }
 
-        $newAdString = AdStringTool::replaceValue(
-            $adUser->getUser()[AdUserConstants::AD_STRING],
-            AdStringTool::OU,
-            $newDepartment->getShortname()
-        );
-
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-        $simulateProcess = $this->isSimulation();
-        if (!$simulateProcess) {
-            $writableUserObject->setDistinguishedName($newAdString);
+        if (!$this->isSimulation()) {
+            $baseParameters = $this
+                ->ldapFetch
+                ->getBaseParameters()
+            ;
+
+            $newDn = new DistinguishedName();
+            $newDn
+                ->addOu($newDepartment->getShortname())
+            ;
+
+            foreach (explode(',', $baseParameters['base_ou']) as $value) {
+                $newDn
+                    ->addOu($value)
+                ;
+            }
+
+            foreach (explode(',', $baseParameters['base_dn']) as $value) {
+                $newDn
+                    ->addDc($value)
+                ;
+            }
+
+            if(!$writableUserObject->move($newDn)) {
+                $this
+                    ->addMessage(
+                        new Messages\ErrorMessage(),
+                        'Wystąpił problem z przeniesieniem użytkownika do innego departamentu. ' .
+                        'Spróbuj jeszcze raz opublikować zmiany.',
+                        AdUserConstants::DEPARTAMENT_NAZWA,
+                        $adUser->getUser()
+                    )
+                ;
+            }
 
             $writableUserObject->save();
         }
-
-        return new AdUser($writableUserObject);
     }
 
     /**
@@ -692,10 +717,8 @@ class LdapUpdate extends Simulation
      * Wyrzuca użytkownika ze wszystkich jego grup.
      *
      * @param AdUser $adUser
-     *
-     * @return AdUser
      */
-    public function removeAllUserGroups(AdUser $adUser): AdUser
+    public function removeAllUserGroups(AdUser $adUser)
     {
         $simulateProcess = $this->isSimulation();
         $writableUserObject = $adUser
@@ -713,8 +736,6 @@ class LdapUpdate extends Simulation
                     continue;
                 }
             }
-
-            $writableUserObject->save();
         }
 
         $this->addMessage(
@@ -723,8 +744,6 @@ class LdapUpdate extends Simulation
             AdUserConstants::GRUPY_AD,
             $adUser->getUser()
         );
-
-        return new AdUser($writableUserObject);
     }
 
     /**

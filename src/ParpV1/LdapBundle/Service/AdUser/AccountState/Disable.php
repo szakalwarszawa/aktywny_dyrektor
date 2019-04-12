@@ -9,6 +9,8 @@ use UnexpectedValueException;
 use Adldap\Models\Attributes\AccountControl;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Tool\AdStringTool;
 
 /**
  * Klasa Disable
@@ -52,24 +54,36 @@ final class Disable extends AccountStateManager
         ;
 
         if (AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC === $disableReason) {
-            $newParentDn = new DistinguishedName(
-                implode(',', [
-                    $baseParameters['ou_nieobecni'],
-                    $baseParameters['base_dn']
-                ])
-            );
+            $newParentDn = new DistinguishedName();
+
+            foreach (explode(',', $baseParameters['ou_nieobecni']) as $value) {
+                $newParentDn
+                    ->addOu($value)
+                ;
+            }
+            foreach (explode(',', $baseParameters['base_dn']) as $value) {
+                $newParentDn
+                    ->addOu($value)
+                ;
+            }
 
             $state = self::USER_ABSENT;
             $moveMessageText = 'Użytkownik został przeniesiony do nieobecnych.';
         }
 
         if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $disableReason) {
-            $newParentDn = new DistinguishedName(
-                implode(',', [
-                    $baseParameters['ou_zablokowani'],
-                    $baseParameters['base_dn']
-                ])
-            );
+            $newParentDn = new DistinguishedName();
+
+            foreach (explode(',', $baseParameters['ou_zablokowani']) as $value) {
+                $newParentDn
+                    ->addOu($value)
+                ;
+            }
+            foreach (explode(',', $baseParameters['base_dn']) as $value) {
+                $newParentDn
+                    ->addDc($value)
+                ;
+            }
 
             $state = self::USER_REMOVED;
             $moveMessageText = 'Użytkownik został przeniesiony do zablokowanych.';
@@ -78,6 +92,7 @@ final class Disable extends AccountStateManager
         if (null === $newParentDn) {
             throw new UnexpectedValueException('Nieobsługiwany powód wyłączenia konta.');
         }
+
 
         $this->removeAccountFlag(AccountControl::NORMAL_ACCOUNT);
         if (!$this->isSimulation()) {

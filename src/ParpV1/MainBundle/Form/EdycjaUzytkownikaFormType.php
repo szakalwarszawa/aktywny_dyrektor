@@ -90,7 +90,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
         if (self::TYP_EDYCJA === $formType) {
             $adUser = $this
                 ->ldapService
-                ->getUserFromAD($options['username'])
+                ->getUserFromAD($options['username'], null, null, 'wszyscyWszyscy')
             ;
 
             $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);
@@ -169,13 +169,15 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 //     ;
                 // },
                 'group_by' => function ($choiceObject) {
-                    $departament = $choiceObject->getDepartament()?
-                        $choiceObject
-                            ->getDepartament()
-                            ->getShortname() : 'bez departamentu'
-                    ;
+                    $departament = $choiceObject->getDepartament();
 
-                    return $departament;
+                    if ($departament) {
+                        $separatorText =  $departament->getShortname() . '  (' . $departament->getName() . ')';
+
+                        return $separatorText;
+                    }
+
+                    return 'bez departamentu';
                 },
                 'placeholder' => 'Proszę wybrać',
                 'constraints' => [

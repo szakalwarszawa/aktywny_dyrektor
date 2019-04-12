@@ -7,7 +7,6 @@ use ParpV1\LdapBundle\AdUser\AdUser;
 use Adldap\Models\Attributes\AccountControl;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use Adldap\Models\Attributes\DistinguishedName;
 
@@ -42,12 +41,22 @@ final class Enable extends AccountStateManager
 
             $departmentOu = current(AdStringTool::getValue($distinguishedName, AdStringTool::OU));
 
-            $newDn = new DistinguishedName(implode(',', [
-                AdStringTool::OU . $departmentOu,
-                $this->baseParameters['base_ou'],
-                $this->baseParameters['base_dn']
-            ]));
+            $newDn = new DistinguishedName();
+            $newDn
+                ->addOu($departmentOu)
+            ;
 
+            foreach (explode(',', $this->baseParameters['base_ou']) as $value) {
+                $newDn
+                    ->addOu($value)
+                ;
+            }
+
+            foreach (explode(',', $this->baseParameters['base_dn']) as $value) {
+                $newDn
+                    ->addDc($value)
+                ;
+            }
 
             if (!$writableUserObject->move($newDn)) {
                 $message = new Messages\ErrorMessage(

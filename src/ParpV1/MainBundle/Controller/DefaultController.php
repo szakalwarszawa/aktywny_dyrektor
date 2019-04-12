@@ -431,6 +431,7 @@ class DefaultController extends Controller
      */
     public function editAction(Request $request, string $samaccountname): Response
     {
+        $samaccountname = strtolower($samaccountname);
         $entityManager = $this->getDoctrine()->getManager();
 
         $shortForm = true;
