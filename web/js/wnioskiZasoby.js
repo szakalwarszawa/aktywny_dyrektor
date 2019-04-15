@@ -70,8 +70,10 @@ $(document).ready(function () {
 	});
 
 	// ----------------- wyświetlanie przyciskow zgodnie ze statusem ----------------
-	(function wyswietlaniePrzyciskowwedleStatusuWniosku() {
+	(function wyswietlaniePrzyciskowWgStatusuWniosku() {
 		var status = $('.statusyWniosku').find('.list-group-item');
+		console.log($(status[status.length - 1]).text());
+		console.log($(status[status.length - 1]).text().indexOf(status2));
 
 		// --- deklaracja statusów do sprawdzenia ---
 		var status1 = 'Tworzony';
