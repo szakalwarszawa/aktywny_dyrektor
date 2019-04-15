@@ -85,6 +85,7 @@ $(document).ready(function () {
 		console.log($(status[status.length - 1])[0].innerText.indexOf(status2));
 
 		if ($(status[status.length - 1]).text().indexOf(status1) !== -1 || $(status[status.length - 1]).text().indexOf(status2) !== -1) {
+			console.log("warunek spełniony");
 			var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
 			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
 
