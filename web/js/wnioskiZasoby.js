@@ -77,23 +77,19 @@ $(document).ready(function () {
 		var status1 = 'Tworzony';
 		var status2 = 'W edycji u wnioskodawcy';
 
-		console.log($(status[status.length - 1]));
-		console.log($(status[status.length - 1]).text());
-		console.log($(status[status.length - 1])[0].textContent);
-		console.log($(status[status.length - 1])[0].innerText);
-		console.log($(status[status.length - 1]).text().indexOf(status2));
-		console.log($(status[status.length - 1])[0].innerText.indexOf(status2));
-
 		if ($(status[status.length - 1]).text().indexOf(status1) !== -1 || $(status[status.length - 1]).text().indexOf(status2) !== -1) {
-			console.log("warunek spełniony");
 			var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
 			var dodajUsunUzytkownikowDoWnioskuBtn = document.querySelector('#zasoby>br+a');
 
 			if (dodajUprawnieniaBtn !== null) {
 				dodajUprawnieniaBtn.style.display = 'block';
+			} else {
+				console.warn("Brak przycisku Dodaj uprawnienia");
 			}
 			if (dodajUsunUzytkownikowDoWnioskuBtn !== null) {
 				dodajUsunUzytkownikowDoWnioskuBtn.style.display = 'block';
+			} else {
+				console.warn("Brak przycisku: Dodaj usun uzytkownikow do wniosku");
 			}
 		}
 	})();
