@@ -77,6 +77,7 @@ $(document).ready(function () {
 		console.log($(status[status.length - 1])[0].textContent);
 		console.log($(status[status.length - 1])[0].innerText);
 		console.log($(status[status.length - 1]).text().indexOf(status2));
+		console.log($(status[status.length - 1])[0].innerText.indexOf(status2));
 
 		// --- deklaracja statusów do sprawdzenia ---
 		var status1 = 'Tworzony';
