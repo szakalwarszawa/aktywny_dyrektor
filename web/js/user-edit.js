@@ -2,6 +2,11 @@ $(document).ready(function () {
 	var kontoSelect = $('#parp_mainbundle_edycjauzytkownika_isDisabled');
 	$(kontoSelect).children().first().remove();
 	var hiddenReason = $('#powod_wylaczenia_w_ad');
+
+	if ($(kontoSelect).val() === '1') {
+		$(hiddenReason).removeClass('hidden');
+	}
+
 	$(kontoSelect).on('change', function () {
 		console.log($(kontoSelect).val());
 		if ($(kontoSelect).val() === '1') {
