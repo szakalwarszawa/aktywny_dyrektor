@@ -1,5 +1,6 @@
 $(document).ready(function () {
 	var kontoSelect = $('#parp_mainbundle_edycjauzytkownika_isDisabled');
+	$(kontoSelect).firstChild.remove();
 	var hiddenReason = $('#powod_wylaczenia_w_ad');
 	$(kontoSelect).on('change', function () {
 		console.log($(kontoSelect).val());
