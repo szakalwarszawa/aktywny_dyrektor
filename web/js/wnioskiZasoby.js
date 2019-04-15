@@ -72,16 +72,17 @@ $(document).ready(function () {
 	// ----------------- wyświetlanie przyciskow zgodnie ze statusem ----------------
 	(function wyswietlaniePrzyciskowWgStatusuWniosku() {
 		var status = $('.statusyWniosku').find('.list-group-item');
+
+		// --- deklaracja statusów do sprawdzenia ---
+		var status1 = 'Tworzony';
+		var status2 = 'W edycji u wnioskodawcy';
+
 		console.log($(status[status.length - 1]));
 		console.log($(status[status.length - 1]).text());
 		console.log($(status[status.length - 1])[0].textContent);
 		console.log($(status[status.length - 1])[0].innerText);
 		console.log($(status[status.length - 1]).text().indexOf(status2));
 		console.log($(status[status.length - 1])[0].innerText.indexOf(status2));
-
-		// --- deklaracja statusów do sprawdzenia ---
-		var status1 = 'Tworzony';
-		var status2 = 'W edycji u wnioskodawcy';
 
 		if ($(status[status.length - 1]).text().indexOf(status1) !== -1 || $(status[status.length - 1]).text().indexOf(status2) !== -1) {
 			var dodajUprawnieniaBtn = document.querySelector('#general>div>.record_properties+a');
