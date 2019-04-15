@@ -3,8 +3,8 @@ $(document).ready(function () {
 	$(kontoSelect).children().first().remove();
 	var hiddenReason = $('#powod_wylaczenia_w_ad');
 
-	var sekcja = $('parp_mainbundle_edycjauzytkownika_info');
-	var menager = $('parp_mainbundle_edycjauzytkownika_manager');
+	var sekcja = $('#parp_mainbundle_edycjauzytkownika_info');
+	var menager = $('#parp_mainbundle_edycjauzytkownika_manager');
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	$(sekcja).select2();
 	$(menager).select2();
