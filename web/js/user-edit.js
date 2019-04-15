@@ -4,7 +4,7 @@ $(document).ready(function () {
 	$(kontoSelect).on('change', function () {
 		if ($(kontoSelect).val() === '1') {
 			$(hiddenReason).removeClass('hidden');
-		} else if ($(kontoSelect).val() === '0' && $(hiddenReason).hasClass('hidden') === false) {
+		} else if ($(kontoSelect).val() === '0' && $(hiddenReason).hasClass('has-error') === false && $(hiddenReason).hasClass('hidden') === false) {
 			$(hiddenReason).addClass('hidden');
 		} else {
 			return;
