@@ -74,7 +74,8 @@ $(document).ready(function () {
 		var status = $('.statusyWniosku').find('.list-group-item');
 		console.log($(status[status.length - 1]));
 		console.log($(status[status.length - 1]).text());
-		console.log($(status[status.length - 1]).textContent);
+		console.log($(status[status.length - 1])[0].textContent);
+		console.log($(status[status.length - 1])[0].innerText);
 		console.log($(status[status.length - 1]).text().indexOf(status2));
 
 		// --- deklaracja statusów do sprawdzenia ---
