@@ -107,7 +107,7 @@
                             </td>
                             <td>
                                 {% if user_zasob.wniosekOdebranie is not empty and user_zasob.wniosekOdebranie is not null %}
-                                    <a href="{{ url('wnioseknadanieodebraniezasobow_show', {id: user_zasob.wniosekOdebranie.id}) }}">{{ user_zasob.wniosekOdebranie.wniosek.numer }}</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: user_zasob.wniosekOdebranie.id}) }}">{{ user_zasob.wniosekOdebranie.wniosek.numer }}</a>
                                     {% else %}
                                     -
                                 {% endif %}
