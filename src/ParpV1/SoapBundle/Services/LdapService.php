@@ -775,7 +775,6 @@ class LdapService
                 )
             );
             $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
-
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
         }
