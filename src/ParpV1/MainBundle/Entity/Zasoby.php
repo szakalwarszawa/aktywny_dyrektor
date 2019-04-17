@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use APY\DataGridBundle\Grid\Mapping as GRID;
 use Doctrine\ORM\Mapping as ORM;
+use DateTime;
 
 /**
  * Zasoby
@@ -676,7 +677,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataZakonczeniaWdrozenia($dataZakonczeniaWdrozenia)
+    public function setDataZakonczeniaWdrozenia(DateTime $dataZakonczeniaWdrozenia = null)
     {
         $this->dataZakonczeniaWdrozenia = $dataZakonczeniaWdrozenia;
 
@@ -772,7 +773,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataWygasnieciaAsystyTechnicznej($dataWygasnieciaAsystyTechnicznej)
+    public function setDataWygasnieciaAsystyTechnicznej(DateTime $dataWygasnieciaAsystyTechnicznej = null)
     {
         $this->dataWygasnieciaAsystyTechnicznej = $dataWygasnieciaAsystyTechnicznej;
 
@@ -916,7 +917,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataZleceniaOstatniegoPrzegladuUprawnien($dataZleceniaOstatniegoPrzegladuUprawnien)
+    public function setDataZleceniaOstatniegoPrzegladuUprawnien(DateTime $dataZleceniaOstatniegoPrzegladuUprawnien = null)
     {
         $this->dataZleceniaOstatniegoPrzegladuUprawnien = $dataZleceniaOstatniegoPrzegladuUprawnien;
 
@@ -964,7 +965,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataZleceniaOstatniegoPrzegladuAktywnosci($dataZleceniaOstatniegoPrzegladuAktywnosci)
+    public function setDataZleceniaOstatniegoPrzegladuAktywnosci(DateTime $dataZleceniaOstatniegoPrzegladuAktywnosci = null)
     {
         $this->dataZleceniaOstatniegoPrzegladuAktywnosci = $dataZleceniaOstatniegoPrzegladuAktywnosci;
 
@@ -1013,7 +1014,7 @@ class Zasoby
      * @return Zasoby
      */
     public function setDataOstatniejZmianyHaselKontAdministracyjnychISerwisowych(
-        $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych
+        DateTime $dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych = null
     ) {
 
         $this->dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych =
@@ -1071,7 +1072,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDeletedAt($deletedAt)
+    public function setDeletedAt(DateTime $deletedAt = null)
     {
         $this->deletedAt = $deletedAt;
 
@@ -1183,7 +1184,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataUtworzeniaZasobu($dataUtworzeniaZasobu)
+    public function setDataUtworzeniaZasobu(DateTime $dataUtworzeniaZasobu = null)
     {
         $this->dataUtworzeniaZasobu = $dataUtworzeniaZasobu;
 
@@ -1207,7 +1208,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataZmianyZasobu($dataZmianyZasobu)
+    public function setDataZmianyZasobu(DateTime $dataZmianyZasobu = null)
     {
         $this->dataZmianyZasobu = $dataZmianyZasobu;
 
@@ -1231,7 +1232,7 @@ class Zasoby
      *
      * @return Zasoby
      */
-    public function setDataUsunieciaZasobu($dataUsunieciaZasobu)
+    public function setDataUsunieciaZasobu(DateTime $dataUsunieciaZasobu = null)
     {
         $this->dataUsunieciaZasobu = $dataUsunieciaZasobu;
 

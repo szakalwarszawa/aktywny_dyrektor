@@ -33,6 +33,7 @@ use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 use DateTime;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -445,7 +446,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $delta = [];
         if ($entity->getTyp() === 'zmiana') {
-            $delta = $this->obliczZmienionePola($entity);
+            $delta = $this->obliczZmienionePola($entity, true);
             $entity->setZmienionePola(implode(',', array_keys($delta)));
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
@@ -469,7 +470,7 @@ class WniosekUtworzenieZasobuController extends Controller
             'comments' => $comments
         );
     }
-    protected function obliczZmienionePola($entity)
+    protected function obliczZmienionePola($entity, $zwrotDatyJakoDateTime = false)
     {
         $em = $this->getDoctrine()->getManager();
         $metadata = $em->getClassMetadata("ParpV1\\MainBundle\\Entity\\Zasoby");
@@ -491,6 +492,16 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $delta = array_diff($z1, $z2);
 
+
+        if ($zwrotDatyJakoDateTime) {
+            foreach ($delta as $key => $value) {
+                if ('datetime' === $metadata->getTypeOfField($key)) {
+                    if ($value !== null) {
+                        $delta[$key] = new DateTime($value);
+                    }
+                }
+            }
+        }
 
         unset($delta['id']);
         return $delta;
@@ -1080,7 +1091,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     case 'zmiana':
                         //powinien wprowadzic zmiany!!!
 
-                        $delta = $this->obliczZmienionePola($wniosek);
+                        $delta = $this->obliczZmienionePola($wniosek, true);
                         //var_dump($delta);
                         foreach ($delta as $k => $v) {
                             $getter = 'set'.ucfirst($k);
