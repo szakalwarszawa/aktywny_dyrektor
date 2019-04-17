@@ -492,6 +492,23 @@ class WniosekUtworzenieZasobuController extends Controller
 
         $delta = array_diff($z1, $z2);
 
+        //$z1 - to co ma być
+        $daty = [
+            'dataZakonczeniaWdrozenia',
+            'dataWygasnieciaAsystyTechnicznej',
+            'dataZleceniaOstatniegoPrzegladuUprawnien',
+            'dataZleceniaOstatniegoPrzegladuAktywnosci',
+            'dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych',
+            'dataUsunieciaZasobu',
+            'dataZmianyZasobu',
+            'dataUtworzeniaZasobu'
+        ];
+
+        foreach ($daty as $value) {
+            if ($z1[$value] !== $z2[$value]) {
+                $delta[$value] = $z1[$value];
+            }
+        }
 
         if ($zwrotDatyJakoDateTime) {
             foreach ($delta as $key => $value) {
