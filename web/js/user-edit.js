@@ -25,11 +25,12 @@ $(document).ready(function () {
 	$(sekcja).select2();
 	$(menager).select2();
 	// --- zmienne zależne od wykonania select2 ---
-	var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
+	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
+	var sekcjaResults = document.getElementById('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 	console.log(sekcjaResults);
 	var sekcjaResultsItem = $(sekcjaResults).children('li');
 	console.log('item', sekcjaResultsItem);
-	console.log('item2', sekcjaResults.find('li'));
+	console.log('item2', $(sekcjaResults).find('li'));
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
