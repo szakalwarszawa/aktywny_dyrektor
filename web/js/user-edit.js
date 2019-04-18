@@ -26,11 +26,20 @@ $(document).ready(function () {
 	$(menager).select2();
 	// --- zmienne zależne od wykonania select2 ---
 	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
-	var sekcjaResults = document.getElementById('select2-parp_mainbundle_edycjauzytkownika_info-results');
-	console.log(sekcjaResults);
-	var sekcjaResultsItem = $(sekcjaResults).children('li');
-	console.log('item', sekcjaResultsItem);
-	console.log('item2', $(sekcjaResults).find('li'));
+
+	var timeout = window.setTimeout(modifySelect2Results(), 1000);
+
+	function modifySelect2Results() {
+		var sekcjaResults = document.getElementById('select2-parp_mainbundle_edycjauzytkownika_info-results');
+		console.log(sekcjaResults);
+		var sekcjaResultsItem = $(sekcjaResults).children('li');
+		console.log('item', sekcjaResultsItem);
+		console.log('item2', $(sekcjaResults).find('li'));
+		clearTimeout(timeout);
+	}
+
+	timeout();
+
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
