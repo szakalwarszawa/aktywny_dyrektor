@@ -10,6 +10,7 @@ use Symfony\Component\Console\Input\InputOption;
 use ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromEntry;
 use ParpV1\LdapBundle\Constants\GroupBy;
 use Symfony\Component\Console\Style\SymfonyStyle;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Komenda wypychająca oczekujące zmiany do AD.
@@ -64,8 +65,10 @@ class PublishPendingChangesCommand extends Command
 
         $responseMessages = $updateResult->getResponseMessages(GroupBy::LOGIN);
 
-        if (empty($responseMessages->toArray())) {
-            $symfonyStyle->note('Brak wprowadzonych zmian.');
+        if ($responseMessages instanceof ArrayCollection) {
+            if (empty($responseMessages->toArray())) {
+                $symfonyStyle->note('Brak wprowadzonych zmian.');
+            }
         }
 
         foreach ($responseMessages as $key => $messages) {
@@ -80,6 +83,5 @@ class PublishPendingChangesCommand extends Command
                 ->table([$key], $messagesText)
             ;
         }
-
     }
 }
