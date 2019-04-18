@@ -25,9 +25,9 @@ $(document).ready(function () {
 	$(sekcja).select2();
 	$(menager).select2();
 	// --- zmienne zależne od wykonania select2 ---
-	var sekcjaResults = ('#select2-parp_mainbundle_edycjauzytkownika_info-results');
+	var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 	console.log(sekcjaResults);
-	var sekcjaResultsitem = $(sekcjaResults).children();
+	var sekcjaResultsItem = $(sekcjaResults).children();
 	console.log('item', sekcjaResultsItem);
 
 	if ($(kontoSelect).val() === '1') {
