@@ -10,16 +10,25 @@ $(document).ready(function () {
 
 	console.log('toggle class', departament);
 	console.log(selectedDepartament);
+	console.info(selectedDepartament.text);
 
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function () {
 		console.log('toggle class', departament);
 		console.log(selectedDepartament);
+		console.info(selectedDepartament.text);
 	});
+
+
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	$(sekcja).select2();
 	$(menager).select2();
+	// --- zmienne zależne od wykonania select2 ---
+	var sekcjaResults = ('#select2-parp_mainbundle_edycjauzytkownika_info-results');
+	console.log(sekcjaResults);
+	var sekcjaResultsitem = $(sekcjaResults).children();
+	console.log('item', sekcjaResultsItem);
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
