@@ -19,32 +19,29 @@ $(document).ready(function () {
 		console.info(selectedDepartament.text);
 	});
 
-
+	console.log(sekcja);
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
-	$(sekcja).select2();
+	// $(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
 	$(menager).select2();
 	// --- zmienne zależne od wykonania select2 ---
 	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 
-	var timeout = function (time) {
-		window.setTimeout(modifySelect2Results(), time)
-	};
+	// --- zaciąganie elementów po podanym czasie ---
+	// var timeout = function (time) {
+	// 	window.setTimeout(modifySelect2Results(), time)
+	// };
 
-	function modifySelect2Results() {
-		var sekcjaResults = document.getElementById('select2-parp_mainbundle_edycjauzytkownika_info-results');
-		console.log(sekcjaResults);
-		var sekcjaResultsItem = $(sekcjaResults).children('li');
-		console.log('item', sekcjaResultsItem);
-		console.log('item2', $(sekcjaResults).find('li'));
-		clearTimeout(timeout);
-	}
+	// function modifySelect2Results() {
+	// 	var sekcjaResults = document.getElementById('select2-parp_mainbundle_edycjauzytkownika_info-results');
+	// 	console.log(sekcjaResults);
+	// 	var sekcjaResultsItem = $(sekcjaResults).children('li');
+	// 	console.log('item', sekcjaResultsItem);
+	// 	console.log('item2', $(sekcjaResults).find('li'));
+	// 	clearTimeout(timeout);
+	// }
 
-	timeout(20000);
-
-	var nestedList = $('.select2-results__options');
-	console.warn(nestedList);
-
+	// timeout(20000);
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
