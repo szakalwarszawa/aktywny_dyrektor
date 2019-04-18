@@ -7,12 +7,14 @@ $(document).ready(function () {
 	var menager = $('#parp_mainbundle_edycjauzytkownika_manager');
 	var departament = $('#parp_mainbundle_edycjauzytkownika_department');
 
+	console.log('toggle class', departament.selected);
+	console.info('departament');
+
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function () {
 		console.log('toggle class', departament.selected);
 		console.info('departament');
 	});
-
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	$(sekcja).select2();
