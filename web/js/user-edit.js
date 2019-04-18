@@ -1,3 +1,7 @@
+import {
+	ENETUNREACH
+} from "constants";
+
 $(document).ready(function () {
 	var kontoSelect = $('#parp_mainbundle_edycjauzytkownika_isDisabled');
 	$(kontoSelect).children().first().remove();
@@ -22,7 +26,7 @@ $(document).ready(function () {
 	console.log(sekcja);
 
 	var optgroups = $(sekcja).find('optgroup');
-	var optgroupsTxt = $(sekcja).find('optgroup').label;
+	var optgroupsTxt = $(sekcja).find('optgroup').each().label;
 
 	console.log(optgroups, optgroupsTxt);
 
