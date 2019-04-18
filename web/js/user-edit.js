@@ -5,16 +5,16 @@ $(document).ready(function () {
 
 	var sekcja = $('#parp_mainbundle_edycjauzytkownika_info');
 	var menager = $('#parp_mainbundle_edycjauzytkownika_manager');
-	var departament = $('#parp_mainbundle_edycjauzytkownika_department');
+	var departament = document.getElementById('parp_mainbundle_edycjauzytkownika_department');
+	var selectedDepartament = departament.options[departament.selectedIndex];
 
-	console.log('toggle class', departament[0].value);
-	console.info(departament);
+	console.log('toggle class', departament);
+	console.log(selectedDepartament);
 
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function () {
-		console.log('toggle class', departament.selectedOption);
-		console.info(departament);
-		console.warn(departament.options.selectedIndex);
+		console.log('toggle class', departament);
+		console.log(selectedDepartament);
 	});
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
