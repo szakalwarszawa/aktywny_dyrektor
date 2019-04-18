@@ -42,6 +42,9 @@ $(document).ready(function () {
 
 	timeout(20000);
 
+	var nestedList = $('.select2-results__options');
+	console.warn(nestedList);
+
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
