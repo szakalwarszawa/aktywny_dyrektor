@@ -116,9 +116,11 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
         if (!empty($userZasoby)) {
             foreach ($userZasoby as $userZasob) {
+                $login = $userZasob->getSamaccountname();
+
                 // pomijam wnioski dla osób zewnętrznych
                 if (null !== $userZasob->getWniosek() && $userZasob->getWniosek()->getPracownikSpozaParp()) {
-                    $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $userZasob->getSamaccountname().'</info>');
+                    $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
                     continue;
                 }
 
@@ -131,20 +133,26 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 $userZasob->setDataOdebrania(new \Datetime());
                 $entityManager->persist($userZasob);
 
-                $output->writeln('Odnotowuję odebranie uprawnień: <fg=cyan>('. $userZasob->getId().')</><info> ' . $userZasob->getSamaccountname().'</info>');
+                $output->writeln('Odnotowuję odebranie uprawnień: <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
 
                 $grupyDoAd = '';
-                if (!in_array($userZasob->getSamaccountname(), $pomijajKonta, true)) {
+                if (!in_array($login, $pomijajKonta, true)) {
                     if ($idZasobu === 4705) {
                         $grupyDoAd = '+DLP-gg-USB_CD_DVD-DENY,';
                     }
-                    $grupyDoAd .= '-'.$this->znajdzGrupeAD($userZasob, $zasob);
+
+                    $grupaDoOdebrania = $this->znajdzGrupeAD($userZasob, $zasob);
+                    $czyGrupaWUpp = $this->sprawdzCzyGrupaNalezyDoUpp($login, $grupaDoOdebrania, $output);
+
+                    if (!$czyGrupaWUpp) {
+                        $grupyDoAd .= '-'.$grupaDoOdebrania;
+                    }
                 }
 
                 if (!empty($grupyDoAd)) {
                     $entry = new Entry();
                     $entry->setFromWhen(new \Datetime());
-                    $entry->setSamaccountname($userZasob->getSamaccountname());
+                    $entry->setSamaccountname($login);
                     $entry->setCreatedBy('SYSTEM');
                     $entry->setMemberOf($grupyDoAd);
                     $entry->setOpis('Odebrane administracyjnie: Upłynął termin ważności uprawnień');
@@ -221,5 +229,34 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         }
 
         return $i;
+    }
+
+    /**
+     * Sprawdza czy grupa AD należy do oprawnień podstawowych
+     *
+     * @param string $login
+     * @param string $grupa
+     * @param OutputInterface $output
+     *
+     * @return bool
+     */
+    protected function sprawdzCzyGrupaNalezyDoUpp($login, $grupa, OutputInterface $output): bool
+    {
+        $ldapService = $this->getContainer()->get('ldap_service');
+        $ADUser = $ldapService->getUserFromAD($login, null, null, 'wszyscyWszyscy');
+
+        if (false === strpos($ADUser[0]['distinguishedname'], 'Zespoly_2016')) {
+            $output->writeln("\t".'<comment>Konto zablokowane w AD.</comment>');
+            return false;
+        }
+
+        $grupyNaPodstawieSekcjiOrazStanowiska = $ldapService->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
+
+        if (in_array($grupa, $grupyNaPodstawieSekcjiOrazStanowiska)) {
+            $output->writeln("\t".'<comment>Pomijam odebranie uprawnienia w AD: UPP pracownika</comment>');
+            return true;
+        }
+
+        return false;
     }
 }
