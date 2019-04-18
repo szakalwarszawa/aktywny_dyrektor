@@ -137,7 +137,7 @@ class LdapUpdate extends Simulation
                 }
                 $this->addMessage(
                     new Messages\SuccessMessage(),
-                    'Dodano do grupy - ' . $group->getName(),
+                    '[Dodaj] Dodano do grupy - ' . $group->getName(),
                     AdUserConstants::GRUPY_AD,
                     $adUser->getUser()
                 );
@@ -147,7 +147,7 @@ class LdapUpdate extends Simulation
 
             $this->addMessage(
                 new Messages\InfoMessage(),
-                'Użytkownik jest już w grupie - ' . $group->getName(),
+                '[Dodaj] Użytkownik jest już w grupie - ' . $group->getName(),
                 AdUserConstants::GRUPY_AD,
                 $adUser->getUser()
             );
@@ -197,7 +197,7 @@ class LdapUpdate extends Simulation
 
                 $this->addMessage(
                     new Messages\SuccessMessage(),
-                    'Usunięto z grupy - ' . $group->getName(),
+                    '[Usuń] Usunięto z grupy - ' . $group->getName(),
                     AdUserConstants::GRUPY_AD,
                     $adUser->getUser()
                 );
@@ -207,7 +207,7 @@ class LdapUpdate extends Simulation
 
             $this->addMessage(
                 new Messages\InfoMessage(),
-                'Użytkownik nie był w grupie ' . $group->getName(),
+                '[Usuń] Użytkownik nie był w grupie ' . $group->getName(),
                 AdUserConstants::GRUPY_AD,
                 $adUser->getUser()
             );
