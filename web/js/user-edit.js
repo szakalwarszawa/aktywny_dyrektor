@@ -27,8 +27,9 @@ $(document).ready(function () {
 	// --- zmienne zależne od wykonania select2 ---
 	var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 	console.log(sekcjaResults);
-	var sekcjaResultsItem = $(sekcjaResults).children();
+	var sekcjaResultsItem = $(sekcjaResults).children('li');
 	console.log('item', sekcjaResultsItem);
+	console.log('item2', sekcjaResults.find('li'));
 
 	if ($(kontoSelect).val() === '1') {
 		$(hiddenReason).removeClass('hidden');
