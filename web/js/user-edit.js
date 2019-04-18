@@ -21,6 +21,11 @@ $(document).ready(function () {
 
 	console.log(sekcja);
 
+	var optgroups = $(sekcja).find(optgroup);
+	var optgroupsTxt = $(sekcja).find(optgroup).text();
+
+	console.log(optgroups, optgroupsTxt);
+
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	// $(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
 	$(menager).select2();
