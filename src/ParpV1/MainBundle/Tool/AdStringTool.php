@@ -133,6 +133,7 @@ class AdStringTool
      * Pobiera tylko określoną ze stringa Active Directory.
      *
      * @param string $adString
+     * @param string $valueKey
      *
      * @return array|string
      */

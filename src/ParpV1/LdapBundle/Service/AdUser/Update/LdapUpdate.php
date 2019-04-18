@@ -2,7 +2,6 @@
 
 namespace ParpV1\LdapBundle\Service\AdUser\Update;
 
-use Adldap\Models\User;
 use ParpV1\LdapBundle\Service\LdapFetch;
 use ParpV1\LdapBundle\Service\AdUser\ChangeCompareService;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -13,7 +12,6 @@ use Doctrine\Common\Collections\ArrayCollection;
 use ParpV1\LdapBundle\AdUser\AdUser;
 use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
-use Symfony\Component\VarDumper\VarDumper;
 use DateTime;
 use ParpV1\LdapBundle\Helper\LdapTimeHelper;
 use ParpV1\LdapBundle\DataCollection\Message\Message;
@@ -22,12 +20,17 @@ use Symfony\Component\Debug\Exception\ContextErrorException;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\LdapBundle\Service\LdapCreate;
-use Adldap\Models\Attributes\AccountControl;
+use ParpV1\LdapBundle\Service\AdUser\Update\Simulation;
+use ParpV1\LdapBundle\Service\AdUser\AccountState;
+use ParpV1\MainBundle\Entity\Entry;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Services\ParpMailerService;
+use Adldap\Models\Attributes\DistinguishedName;
 
 /**
  * LdapUpdate
  */
-class LdapUpdate
+class LdapUpdate extends Simulation
 {
     /**
      * @var string
@@ -60,21 +63,28 @@ class LdapUpdate
     protected $responseMessages;
 
     /**
-     * Czy to będzie tylko symulacja wprowdzenia zmian.
-     *
-     * @param bool
-     */
-    protected $simulateProcess = false;
-
-    /**
      * Czy przed zmianami grupy użytkownika mają zostać wyzerowane.
+     *
+     * @var bool
      */
     protected $eraseUserGroups = false;
+
+    /**
+     * Czy ma nastąpić odblokowanie konta użytkownika.
+     *
+     * @var bool
+     */
+    protected $unblockAccount = false;
 
     /**
      * @var EntityManager
      */
     private $entityManager;
+
+    /**
+     * @var ParpMailerService
+     */
+    private $parpMailerService;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -86,12 +96,14 @@ class LdapUpdate
     public function __construct(
         LdapFetch $ldapFetch,
         ChangeCompareService $changeCompareService,
-        EntityManager $entityManager
+        EntityManager $entityManager,
+        ParpMailerService $parpMailerService
     ) {
         $this->ldapFetch = $ldapFetch;
         $this->changeCompareService = $changeCompareService;
         $this->responseMessages = new ArrayCollection();
         $this->entityManager = $entityManager;
+        $this->parpMailerService = $parpMailerService;
     }
 
     /**
@@ -104,7 +116,7 @@ class LdapUpdate
      */
     private function groupAdd(AdUser $adUser, $group): bool
     {
-        $simulateProcess = $this->simulateProcess;
+        $simulateProcess = $this->isSimulation();
         $writableAdUser = $adUser->getUser(AdUser::FULL_USER_OBJECT);
         $groupCopy = $group;
         if (!$group instanceof Group) {
@@ -163,7 +175,7 @@ class LdapUpdate
      */
     private function groupRemove(AdUser $adUser, $group): bool
     {
-        $simulateProcess = $this->simulateProcess;
+        $simulateProcess = $this->isSimulation();
         $writableAdUser = $adUser->getUser(AdUser::FULL_USER_OBJECT);
         $groupCopy = $group;
         if (!$group instanceof Group) {
@@ -265,14 +277,22 @@ class LdapUpdate
             }
         }
 
+        $groupsRemoved = [];
+        $groupsAdded = [];
         foreach (explode(',', $groupsAd) as $groupName) {
             if (self::REMOVE_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::REMOVE_GROUP_SIGN);
-                $this->groupRemove($adUser, $groupName);
+                if (!in_array($groupName, $groupsRemoved)) {
+                    $this->groupRemove($adUser, $groupName);
+                    $groupsRemoved[] = $groupName;
+                }
             }
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
-                $this->groupAdd($adUser, $groupName);
+                if (!in_array($groupName, $groupsAdded)) {
+                    $this->groupAdd($adUser, $groupName);
+                    $groupsAdded[] = $groupName;
+                }
             }
         }
     }
@@ -290,18 +310,22 @@ class LdapUpdate
      *  $disableEnableAccount (array) - jeżeli tablica zostanie uzupełniona to znaczy, że konto musi zostać wyłączone|włączone
      *  $moveToAnotherOu (bool|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
      *      musi się to dziać na samym końcu!
-     *
-     * @todo zmiana imienia i nazwiska
+     *  $keepAttributeValue - mimo zmiany wartośc atrybutu zostanie zachowana
      *
      * @param ArrayCollection $changes
      * @param AdUser $adUser
+     * @param Entry|null $entry
      *
      * @return self
      */
-    public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser): self
+    public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser, Entry $entry = null): self
     {
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-        $simulateProcess = $this->simulateProcess;
+        $baseParameters = $this
+            ->ldapFetch
+            ->getBaseParameters()
+        ;
+        $simulateProcess = $this->isSimulation();
         if ($this->eraseUserGroups) {
             $this->removeAllUserGroups($adUser);
             $adUser = $this
@@ -309,15 +333,53 @@ class LdapUpdate
                 ->refreshAdUser($adUser)
             ;
         }
-        $moveToAnotherOu = false;
 
+        if (true === $this->unblockAccount) {
+            $changeAccountState = new AccountState\Enable(
+                $adUser,
+                $baseParameters,
+                $this->isSimulation()
+            );
+
+            if (null === $entry) {
+                $this->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Brak obiektu Entry',
+                    AdUserConstants::WYLACZONE,
+                    $adUser->getUser()
+                );
+
+                return $this;
+            }
+
+            $changeAccountState->saveByDistinguishedName($entry->getDistinguishedName());
+
+            foreach ($changeAccountState->getResponseMessages() as $value) {
+                $this
+                    ->responseMessages
+                    ->add($value)
+                ;
+            }
+
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
+        }
+        $moveToAnotherOu = false;
+        $userGroups = $writableUserObject->getGroupNames();
         foreach ($changes as $value) {
             $parseViewData = false;
+            $keepAttributeValue = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
 
                 if (AdUserConstants::DEPARTAMENT_NAZWA === $value->getTarget()) {
                     $moveToAnotherOu = $value;
+                }
+
+                if (AdUserConstants::AD_STRING === $value->getTarget()) {
+                    continue;
                 }
 
                 if ($newValue instanceof DateTime) {
@@ -382,7 +444,7 @@ class LdapUpdate
                     $newValue = $ldapFetchedUser->getUser()[AdUserConstants::AD_STRING];
                 }
 
-                if (!$simulateProcess) {
+                if (!$simulateProcess && !$keepAttributeValue) {
                     $writableUserObject->setAttribute($value->getTarget(), $newValue);
                 }
 
@@ -410,7 +472,12 @@ class LdapUpdate
                     }
 
                     if (false !== strpos($value, AdStringTool::CN)) {
-                        return AdStringTool::getValue($value, AdStringTool::CN);
+                        return implode('', [
+                            AdStringTool::getValue($value, AdStringTool::CN, true),
+                            ' (',
+                            current(AdStringTool::getValue($value, AdStringTool::OU)),
+                            ')'
+                        ]);
                     }
 
                     return $value;
@@ -432,7 +499,12 @@ class LdapUpdate
                     }
 
                     if (false !== strpos($value, AdStringTool::CN)) {
-                        return AdStringTool::getValue($value, AdStringTool::CN);
+                        return implode('', [
+                            AdStringTool::getValue($value, AdStringTool::CN, true),
+                            ' (',
+                            current(AdStringTool::getValue($value, AdStringTool::OU)),
+                            ')'
+                        ]);
                     }
 
                     return $value;
@@ -455,15 +527,35 @@ class LdapUpdate
         }
 
         if (isset($disableEnableAccount[AdUserConstants::WYLACZONE])) {
-            $this->disableEnableAccount($disableEnableAccount, $adUser);
+            $changeAccountState = new AccountState\Disable(
+                $adUser,
+                $baseParameters,
+                $this->isSimulation()
+            );
 
-            return $this;
+            $disableReason = $disableEnableAccount[AdUserConstants::POWOD_WYLACZENIA];
+            $changeAccountState->saveByReason($disableReason);
+
+            foreach ($changeAccountState->getResponseMessages() as $value) {
+                $this
+                    ->responseMessages
+                    ->add($value)
+                ;
+            }
+
+            $this->removeAllUserGroups($adUser);
+            if (!$simulateProcess && $disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
+                $this->sendMailToIntExtAdmins($adUser, $userGroups);
+            }
         }
 
         if ($moveToAnotherOu) {
             $this->changeUserDepartment($moveToAnotherOu, $adUser);
 
-            return $this;
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
         }
 
         if (!$simulateProcess) {
@@ -471,6 +563,30 @@ class LdapUpdate
         }
 
         return $this;
+    }
+
+    /**
+     * Wysyła mail do GLPI o usuniętych grupach INT/EXT użytkownika.
+     *
+     * @param array $userGroups
+     *
+     * @return void
+     */
+    private function sendMailToIntExtAdmins(AdUser $adUser, array $userGroups)
+    {
+        $adUser = $adUser->getUser();
+        $mailData = [
+            'imie_nazwisko' => $adUser[AdUserConstants::IMIE_NAZWISKO],
+            'login' => $adUser[AdUserConstants::LOGIN],
+            'tytul' => $adUser[AdUserConstants::LOGIN],
+            'odbiorcy' => [ParpMailerService::EMAIL_DO_GLPI],
+            'usuniete_int' => preg_grep('/^INT/i', $userGroups),
+            'usuniete_ext'  => preg_grep('/^EXT/i', $userGroups),
+        ];
+
+        $this
+            ->parpMailerService
+            ->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI, $mailData);
     }
 
     /**
@@ -482,7 +598,7 @@ class LdapUpdate
      *
      * @return AdUser
      */
-    public function changeUserDepartment(AdUserChange $adUserChange, AdUser $adUser): AdUser
+    public function changeUserDepartment(AdUserChange $adUserChange, AdUser $adUser)
     {
         $newDepartment = $this
             ->entityManager
@@ -504,21 +620,44 @@ class LdapUpdate
             ;
         }
 
-        $newAdString = AdStringTool::replaceValue(
-            $adUser->getUser()[AdUserConstants::AD_STRING],
-            AdStringTool::OU,
-            $newDepartment->getShortname()
-        );
-
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-        $simulateProcess = $this->simulateProcess;
-        if (!$simulateProcess) {
-            $writableUserObject->setDistinguishedName($newAdString);
+        if (!$this->isSimulation()) {
+            $baseParameters = $this
+                ->ldapFetch
+                ->getBaseParameters()
+            ;
+
+            $newDn = new DistinguishedName();
+            $newDn
+                ->addOu($newDepartment->getShortname())
+            ;
+
+            foreach (explode(',', $baseParameters['base_ou']) as $value) {
+                $newDn
+                    ->addOu($value)
+                ;
+            }
+
+            foreach (explode(',', $baseParameters['base_dn']) as $value) {
+                $newDn
+                    ->addDc($value)
+                ;
+            }
+
+            if (!$writableUserObject->move($newDn)) {
+                $this
+                    ->addMessage(
+                        new Messages\ErrorMessage(),
+                        'Wystąpił problem z przeniesieniem użytkownika do innego departamentu. ' .
+                        'Spróbuj jeszcze raz opublikować zmiany.',
+                        AdUserConstants::DEPARTAMENT_NAZWA,
+                        $adUser->getUser()
+                    )
+                ;
+            }
 
             $writableUserObject->save();
         }
-
-        return new AdUser($writableUserObject);
     }
 
     /**
@@ -559,10 +698,7 @@ class LdapUpdate
             ->addCn($changes[AdUserConstants::CN_AD_STRING])
         ;
 
-        $adOu = explode(',', $baseParameters['base_ou']);
-        foreach ($adOu as $value) {
-            $dnBuilder->addOu($value);
-        }
+        $dnBuilder->addOu($baseParameters['base_ou']);
 
         $writableUserObject
             ->setDn($dnBuilder)
@@ -589,12 +725,10 @@ class LdapUpdate
      * Wyrzuca użytkownika ze wszystkich jego grup.
      *
      * @param AdUser $adUser
-     *
-     * @return AdUser
      */
-    public function removeAllUserGroups(AdUser $adUser): AdUser
+    public function removeAllUserGroups(AdUser $adUser)
     {
-        $simulateProcess = $this->simulateProcess;
+        $simulateProcess = $this->isSimulation();
         $writableUserObject = $adUser
             ->getUser(AdUser::FULL_USER_OBJECT)
         ;
@@ -610,8 +744,6 @@ class LdapUpdate
                     continue;
                 }
             }
-
-            $writableUserObject->save();
         }
 
         $this->addMessage(
@@ -620,69 +752,6 @@ class LdapUpdate
             AdUserConstants::GRUPY_AD,
             $adUser->getUser()
         );
-
-        return new AdUser($writableUserObject);
-    }
-
-    /**
-     * Włącza lub wyłącza konto użytkownika.
-     *
-     * @param array $values
-     * @param AdUser $adUser
-     *
-     * @return void
-     */
-    private function disableEnableAccount(array $values, AdUser $adUser): void
-    {
-        $simulateProcess = $this->simulateProcess;
-        $optionsResolver = (new OptionsResolver())
-            ->setDefault(AdUserConstants::POWOD_WYLACZENIA, null)
-            ->setRequired(AdUserConstants::WYLACZONE)
-            ->setAllowedTypes(AdUserConstants::WYLACZONE, ['string', 'null'])
-            ->setAllowedTypes(AdUserConstants::POWOD_WYLACZENIA, ['string', 'null'])
-        ;
-
-        $values = $optionsResolver->resolve($values);
-
-        $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-        $disableAccount = null !== $values[AdUserConstants::POWOD_WYLACZENIA];
-        $disableAccountReason = $disableAccount ? ' - ' .$values[AdUserConstants::POWOD_WYLACZENIA] : '';
-        $messageText = $disableAccount ? 'Konto wyłączone' : 'Konto włączone';
-
-        $this->addMessage(
-            new Messages\SuccessMessage(),
-            $messageText . $disableAccountReason,
-            $values[AdUserConstants::WYLACZONE],
-            $adUser->getUser()
-        );
-
-        $userAccountControl = $writableUserObject->getUserAccountControlObject();
-        $flagForRemove = null;
-
-        if ($disableAccount) {
-            $flagForRemove = AccountControl::NORMAL_ACCOUNT;
-            $userAccountControl->accountIsDisabled();
-            $writableUserObject->setAttribute('description', $values[AdUserConstants::POWOD_WYLACZENIA]);
-        }
-
-        if (!$disableAccount) {
-            $flagForRemove = AccountControl::ACCOUNTDISABLE;
-            $userAccountControl->accountIsNormal();
-        }
-
-        $newFlags = [];
-        foreach ($userAccountControl->getValues() as $value) {
-            if ($value !== $flagForRemove && !in_array($value, $newFlags)) {
-                $newFlags[] = $value;
-            }
-        }
-
-        $userAccountControl->setValues($newFlags);
-        $writableUserObject->setUserAccountControl($userAccountControl);
-
-        if (!$simulateProcess) {
-            $writableUserObject->save();
-        }
     }
 
     /**
@@ -696,7 +765,6 @@ class LdapUpdate
     {
         if (null !== $groupBy) {
             $groupedArray = [];
-
             foreach ($this->responseMessages as $message) {
                 if (null !== $message->getVars()) {
                     $groupedArray[$message->getVars()[$groupBy]][] = $message;
@@ -727,21 +795,6 @@ class LdapUpdate
     }
 
     /**
-     * Przełączenie flagi odpowiadającej za wykonanie tylko symulacji wypchnięcia.
-     * Zmiany nie będą wprowadzone do AD.
-     * Musi być wywołane przed akcją `update` bo zmiany grup są od razu wypychane
-     * bez konieczności użycia `->save()` na użytkowniku!!
-     *
-     * @return self
-     */
-    public function doSimulateProcess(): self
-    {
-        $this->simulateProcess = true;
-
-        return $this;
-    }
-
-    /**
      * Przed wszystkimi zmianami zostaną wyzerowane grupy w których jest użytkownik.
      * (Uzytkownik zostanie z nich wyrzucony).
      * MUSI zostać wywołany przed `pushChangesToAd`.
@@ -751,6 +804,18 @@ class LdapUpdate
     public function doEraseUserGroups(): self
     {
         $this->eraseUserGroups = true;
+
+        return $this;
+    }
+
+    /**
+     * Odwraca metodę doEraseUserGroups
+     *
+     * @return self
+     */
+    public function keepUserGroups(): self
+    {
+        $this->eraseUserGroups = false;
 
         return $this;
     }
@@ -819,5 +884,37 @@ class LdapUpdate
     public function setEntityManager(EntityManager $entityManager): void
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Set parpMailerService
+     *
+     * @param ParpMailerService $parpMailerService
+     *
+     * @return void
+     */
+    public function setParpMailerService(ParpMailerService $parpMailerService): void
+    {
+        $this->parpMailerService = $parpMailerService;
+    }
+
+    /**
+     * Nastąpi odblokowanie konta. Przeniesienie z OU Zablokowane lub Nieobecni.
+     *
+     * @return void
+     */
+    protected function unblockAccount(): void
+    {
+        $this->unblockAccount = true;
+    }
+
+    /**
+     * Status konta nie będzie zmieniony.
+     *
+     * @return void
+     */
+    protected function keepAccountBlockedUnblocked(): void
+    {
+        $this->unblockAccount = false;
     }
 }

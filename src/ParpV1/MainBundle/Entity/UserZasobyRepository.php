@@ -11,6 +11,7 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Intl\Exception\MethodNotImplementedException;
 use Doctrine\ORM\Query\Expr\Join;
+use Doctrine\ORM\EntityNotFoundException;
 
 /**
  * Class UserZasobyRepository
@@ -262,11 +263,31 @@ class UserZasobyRepository extends EntityRepository
                 ], [
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
                 ]);
-            if (true === $singleRow['userZasob']->getCzyAktywne()) {
+            $notDivided = $singleRow['userZasob']
+                ->getWniosek()
+                ->getWniosek()
+                ->getStatus()
+                ->getNazwaSystemowa() !== '10_PODZIELONY'
+            ;
+
+            try {
+                if (null !== $singleRow['userZasob']->getWniosekOdebranie()) {
+                    $singleRow['userZasob']->getWniosekOdebranie()->getDeletedAt();
+                }
+            } catch (EntityNotFoundException $exception) {
+                $singleRow['userZasob']->setWniosekOdebranie(null);
+            }
+
+
+            if (true === $singleRow['userZasob']->getCzyAktywne() && $notDivided) {
                 $groupedResources['aktywne'][] = $mergedArray;
+
                 continue;
             }
-            $groupedResources['nieaktywne'][] = $mergedArray;
+
+            if ($notDivided) {
+                $groupedResources['nieaktywne'][] = $mergedArray;
+            }
         }
 
         return $groupedResources;
