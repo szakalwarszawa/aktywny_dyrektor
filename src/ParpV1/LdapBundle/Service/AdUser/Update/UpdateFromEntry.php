@@ -30,6 +30,40 @@ final class UpdateFromEntry extends LdapUpdate
     }
 
     /**
+     * Wypycha lub symuluje wszystkie oczekujące zmiany.
+     *
+     * @param bool $isSimulation
+     * @param bool $flushChanges
+     *
+     * @return UpdateFromEntry
+     */
+    public function publishAllPendingChanges(bool $isSimulation = false, bool $flushChanges = false): UpdateFromEntry
+    {
+        if ($isSimulation) {
+            $this->doSimulateProcess();
+        }
+        $entityManager = $this->entityManager;
+
+        $pendingEntries = $entityManager
+            ->getRepository(Entry::class)
+            ->findChangesToImplement()
+        ;
+
+        foreach ($pendingEntries as $entry) {
+            $this->update($entry, true);
+        }
+
+        if (!$this->hasError() && $flushChanges && !$isSimulation) {
+            $this
+                ->entityManager
+                ->flush()
+            ;
+        }
+
+        return $this;
+    }
+
+    /**
      * Aktualizuje użytkownika w AD na podstawie obiektu klasy Entry.
      *
      * @param Entry $entry
@@ -38,9 +72,9 @@ final class UpdateFromEntry extends LdapUpdate
      * setDistinguishedName - jest null ponieważ jest generowany dalej
      *      automatycznie na podstawie zmiany departamentu, nie dotyczy nowych użytkowników
      *
-     * @return self
+     * @return UpdateFromEntry
      */
-    public function update(Entry $entry, bool $createIfNotExists = false): self
+    public function update(Entry $entry, bool $createIfNotExists = false): UpdateFromEntry
     {
         $userLoginGetter = AttributeGetterSetterHelper::get(AdUserConstants::LOGIN);
         $userLogin = $entry->$userLoginGetter();
@@ -93,8 +127,10 @@ final class UpdateFromEntry extends LdapUpdate
      * Tworzy nowego użytkownika na podstawie wpisu klasy Entry.
      *
      * @param Entry $entry
+     *
+     * @return UpdateFromEntry
      */
-    public function createNewByEntry(Entry $entry): self
+    public function createNewByEntry(Entry $entry): UpdateFromEntry
     {
         $newUserModel = $this
             ->ldapCreate
