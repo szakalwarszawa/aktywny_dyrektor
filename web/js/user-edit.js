@@ -27,8 +27,8 @@ $(document).ready(function () {
 	// --- zmienne zależne od wykonania select2 ---
 	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 
-	var timeout = function () {
-		window.setTimeout(modifySelect2Results(), 1000)
+	var timeout = function (time) {
+		window.setTimeout(modifySelect2Results(), time)
 	};
 
 	function modifySelect2Results() {
@@ -40,7 +40,7 @@ $(document).ready(function () {
 		clearTimeout(timeout);
 	}
 
-	timeout();
+	timeout(20000);
 
 
 	if ($(kontoSelect).val() === '1') {
