@@ -286,7 +286,9 @@ class UserZasobyRepository extends EntityRepository
             }
 
             if ($notDivided) {
-                $groupedResources['nieaktywne'][] = $mergedArray;
+                if ($mergedArray['user_zasob']->getCzyOdebrane()) {
+                    $groupedResources['nieaktywne'][] = $mergedArray;
+                }
             }
         }
 
