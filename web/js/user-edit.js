@@ -21,8 +21,8 @@ $(document).ready(function () {
 
 	console.log(sekcja);
 
-	var optgroups = $(sekcja).find(optgroup);
-	var optgroupsTxt = $(sekcja).find(optgroup).text();
+	var optgroups = $(sekcja).find('optgroup');
+	var optgroupsTxt = $(sekcja).find('optgroup').text();
 
 	console.log(optgroups, optgroupsTxt);
 
