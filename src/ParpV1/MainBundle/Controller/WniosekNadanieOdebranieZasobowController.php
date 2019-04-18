@@ -787,11 +787,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 case '01_EDYCJA_WNIOSKODAWCA':
                     switch ($isAccepted) {
                         case 'accept':
-                            //przenosi do status 2
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_PRZELOZONY', false);
+                            $this->get('parp.mailer')->sendEmailWniosekOczekujacy($wniosek, ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK);
                             break;
                         case 'return':
-                            //przenosi do status 1
                             die('blad 45 nie powinno miec miejsca');
                             break;
                     }
