@@ -1,15 +1,16 @@
-import {
-	ENETUNREACH
-} from "constants";
-
-$(document).ready(function () {
+$(document).ready(function() {
 	var kontoSelect = $('#parp_mainbundle_edycjauzytkownika_isDisabled');
-	$(kontoSelect).children().first().remove();
+	$(kontoSelect)
+		.children()
+		.first()
+		.remove();
 	var hiddenReason = $('#powod_wylaczenia_w_ad');
 
 	var sekcja = $('#parp_mainbundle_edycjauzytkownika_info');
 	var menager = $('#parp_mainbundle_edycjauzytkownika_manager');
-	var departament = document.getElementById('parp_mainbundle_edycjauzytkownika_department');
+	var departament = document.getElementById(
+		'parp_mainbundle_edycjauzytkownika_department',
+	);
 	var selectedDepartament = departament.options[departament.selectedIndex];
 
 	console.log('toggle class', departament);
@@ -17,7 +18,7 @@ $(document).ready(function () {
 	console.info(selectedDepartament.text);
 
 	//--- nasluch na zmiane departamentu ---
-	$(departament).on('change', function () {
+	$(departament).on('change', function() {
 		console.log('toggle class', departament);
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
@@ -26,7 +27,9 @@ $(document).ready(function () {
 	console.log(sekcja);
 
 	var optgroups = $(sekcja).find('optgroup');
-	var optgroupsTxt = $(sekcja).find('optgroup').each().label;
+	var optgroupsTxt = $(sekcja)
+		.find('optgroup')
+		.each().label;
 
 	console.log(optgroups, optgroupsTxt);
 
@@ -56,10 +59,14 @@ $(document).ready(function () {
 		$(hiddenReason).removeClass('hidden');
 	}
 
-	$(kontoSelect).on('change', function () {
+	$(kontoSelect).on('change', function() {
 		if ($(kontoSelect).val() === '1') {
 			$(hiddenReason).removeClass('hidden');
-		} else if ($(kontoSelect).val() === '0' && $(hiddenReason).hasClass('has-error') === false && $(hiddenReason).hasClass('hidden') === false) {
+		} else if (
+			$(kontoSelect).val() === '0' &&
+			$(hiddenReason).hasClass('has-error') === false &&
+			$(hiddenReason).hasClass('hidden') === false
+		) {
 			$(hiddenReason).addClass('hidden');
 		} else {
 			return;
