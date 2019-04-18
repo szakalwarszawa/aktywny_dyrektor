@@ -27,7 +27,9 @@ $(document).ready(function () {
 	// --- zmienne zależne od wykonania select2 ---
 	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
 
-	var timeout = window.setTimeout(modifySelect2Results(), 1000);
+	var timeout = function () {
+		window.setTimeout(modifySelect2Results(), 1000)
+	};
 
 	function modifySelect2Results() {
 		var sekcjaResults = document.getElementById('select2-parp_mainbundle_edycjauzytkownika_info-results');
