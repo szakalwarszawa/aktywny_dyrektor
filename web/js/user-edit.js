@@ -26,13 +26,14 @@ $(document).ready(function () {
 
 	console.log(sekcja);
 
-	var optgroups = $(sekcja).find('optgroup');
+	var optgroups = $('optgroup');
 	var optgroupsTxt = $(optgroups).each(function (item, index) {
 		console.log($(item[index]).label);
 		return ($(item[index]).label);
 	});
 
-	console.log(optgroups, optgroupsTxt);
+	console.log('group ', optgroups);
+	console.log('group name ', optgroupsTxt);
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	// $(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
