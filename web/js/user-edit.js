@@ -24,7 +24,7 @@ $(document).ready(function () {
 		selectedDepartamentValue = parseInt(departament.options[departament.selectedIndex].value);
 		// departament.options.selectedIndex = 0;
 		for (var i = 0; departament.options.length; i++) {
-			if (parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
+			if (parseInt(departament.options[i].value) === parseInt(departament.options[departament.options.selectedIndex].value)) {
 				departament.options.selectedIndex = selectedDepartamentValue;
 				console.info('departament.options.selectedIndex ', departament.options.selectedIndex);
 				break;
