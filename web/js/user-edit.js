@@ -23,7 +23,13 @@ $(document).ready(function () {
 		selectedDepartament = departament.options[departament.selectedIndex];
 		selectedDepartamentValue = departament.options[departament.selectedIndex].value;
 		// departament.options.selectedIndex = 0;
-		departament.options.selectedIndex = selectedDepartamentValue;
+		for (var i = 0; departaments.options.length; i++) {
+			if (departament.options[i].value === departament.options[departament.selectedIndex].value) {
+				departament.options.selectedIndex = selectedDepartamentValue;
+				return;
+			}
+		}
+
 		console.log('toggle class', departament);
 		console.log('T ', this);
 		console.log(selectedDepartament);
