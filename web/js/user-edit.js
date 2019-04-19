@@ -29,10 +29,9 @@ $(document).ready(function () {
 	var optgroups = document.getElementsByTagName('optgroup');
 	console.log('group ', optgroups);
 
-	var optgroupsTxt = $(optgroups).each(function (item, index) {
-		console.log(item.label);
-		return (item.label);
-	});
+	for (var i = 0; i < optgroups.length; i++) {
+		console.log(optgroups[i].label);
+	}
 
 	console.log('group name ', optgroupsTxt);
 
