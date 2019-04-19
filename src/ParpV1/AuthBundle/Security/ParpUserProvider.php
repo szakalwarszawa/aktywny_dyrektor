@@ -58,7 +58,7 @@ class ParpUserProvider implements UserProviderInterface
                 $wybraneRole = isset($_POST['_roles']) ? $_POST['_roles'] : array();
                 $password = $kernel->getContainer()->getParameter('haslo_srodowiska_testowego');
                 $salt = null;
-                $roles = empty($wybraneRole) ? $this->defaultRoles() : $this->checkDevRolesFromPost($wybraneRole);
+                $roles = empty($wybraneRole) ? $this->defaultRoles($username) : $this->checkDevRolesFromPost($wybraneRole);
                 return new ParpUser($username, $password, $salt, $roles);
             }
 
@@ -75,20 +75,7 @@ class ParpUserProvider implements UserProviderInterface
 
                 if ($ldapbind) {
                     $salt = null;
-                    $rolesEntities =
-                        $kernel->getContainer()
-                            ->get('doctrine')
-                            ->getRepository('ParpMainBundle:AclUserRole')
-                            ->findBy([
-                                'samaccountname' => $username
-                            ])
-                        ;
-
-                    $roles = [];
-                    /** @var array $rolesEntities */
-                    foreach ($rolesEntities as $r) {
-                        $roles[] = $r->getRole()->getName();
-                    }
+                    $roles = $this->defaultRoles($username);
                     ldap_unbind($ldapconn);
 
                     return new ParpUser($username, $password, $salt, $roles);
@@ -129,23 +116,31 @@ class ParpUserProvider implements UserProviderInterface
     }
 
     /**
-     * Zwraca domyślne role do zalogowania jako dev.
+     * Zwraca role przypisane do użytkownika.
+     *
+     * @param string $username
      *
      * @return array
      */
-    private function defaultRoles()
+    private function defaultRoles($username)
     {
-        return array(
-            'ROLE_USER',
-            'PARP_MANAGER',
-            'PARP_BZK_1',
-            'PARP_BZK_2',
-            'PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW',
-            'PARP_ADMIN',
-            'PARP_ADMIN_ZASOBOW',
-            'PARP_ADMIN_TECHNICZNY_ZASOBOW',
-            'PARP_ADMIN_REJESTRU_ZASOBOW'
-        );
+        global $kernel;
+
+        $rolesEntities =
+        $kernel->getContainer()
+            ->get('doctrine')
+            ->getRepository('ParpMainBundle:AclUserRole')
+            ->findBy([
+                'samaccountname' => $username
+            ])
+        ;
+
+        $roles = [];
+        /** @var array $rolesEntities */
+        foreach ($rolesEntities as $r) {
+            $roles[] = $r->getRole()->getName();
+        }
+        return $roles;
     }
 
     public function refreshUser(UserInterface $user)
