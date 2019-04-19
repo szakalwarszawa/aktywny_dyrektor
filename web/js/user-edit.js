@@ -20,7 +20,7 @@ $(document).ready(function () {
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function (event) {
 		event.preventDefault();
-		departament.selectedIndex = 0;
+		departament.options.selectedIndex = 0;
 		console.log('toggle class', departament);
 		console.log('T ', this);
 		selectedDepartament = departament.options[departament.selectedIndex];
