@@ -24,6 +24,7 @@ $(document).ready(function () {
 		selectedDepartament = departament.options[departament.selectedIndex];
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
+		console.warn('V ', selectedDepartament.value);
 		constrainVisibleOptGroups();
 	});
 
