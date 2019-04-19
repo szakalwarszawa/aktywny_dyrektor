@@ -31,6 +31,9 @@ $(document).ready(function () {
 
 	for (var i = 0; i < optgroups.length; i++) {
 		console.log(optgroups[i].label);
+		if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
+			optgroups[i].classList.add('hidden');
+		}
 	}
 
 	// console.log('group name ', optgroupsTxt);
