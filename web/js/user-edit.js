@@ -20,10 +20,11 @@ $(document).ready(function () {
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function (event) {
 		event.preventDefault();
-		departament.options.selectedIndex = 0;
+		selectedDepartament = departament.options[departament.selectedIndex];
+		// departament.options.selectedIndex = 0;
+		departament.options.selectedIndex = selectedDepartament;
 		console.log('toggle class', departament);
 		console.log('T ', this);
-		selectedDepartament = departament.options[departament.selectedIndex];
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
 		console.warn('V ', selectedDepartament.value);
