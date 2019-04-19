@@ -26,6 +26,7 @@ $(document).ready(function () {
 		for (var i = 0; departament.options.length; i++) {
 			if (departament.options[i].value === departament.options[departament.selectedIndex].value) {
 				departament.options.selectedIndex = selectedDepartamentValue;
+				console.info('departament.options.selectedIndex ', departament.options.selectedIndex);
 				return;
 			}
 		}
