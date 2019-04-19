@@ -18,8 +18,8 @@ $(document).ready(function () {
 	console.info(selectedDepartament.text);
 
 	//--- nasluch na zmiane departamentu ---
-	$(departament).on('change', function () {
-		preventDefault();
+	$(departament).on('change', function (event) {
+		event.preventDefault();
 		departament.selectedIndex = 0;
 		console.log('toggle class', departament);
 		console.log('T ', this);
