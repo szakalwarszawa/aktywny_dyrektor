@@ -22,6 +22,7 @@ $(document).ready(function () {
 		console.log('toggle class', departament);
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
+		constrainVisibleOptGroups();
 	});
 
 	console.log(sekcja);
@@ -29,12 +30,16 @@ $(document).ready(function () {
 	var optgroups = document.getElementsByTagName('optgroup');
 	console.log('group ', optgroups);
 
-	for (var i = 0; i < optgroups.length; i++) {
-		console.log(optgroups[i].label);
-		if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
-			optgroups[i].classList.add('hidden');
+	function constrainVisibleOptGroups() {
+		for (var i = 0; i < optgroups.length; i++) {
+			console.log(optgroups[i].label);
+			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
+				optgroups[i].classList.add('hidden');
+			}
 		}
 	}
+
+	constrainVisibleOptGroups();
 
 	// console.log('group name ', optgroupsTxt);
 
