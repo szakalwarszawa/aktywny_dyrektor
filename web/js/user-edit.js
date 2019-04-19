@@ -19,6 +19,8 @@ $(document).ready(function () {
 
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function () {
+		preventDefault();
+		departament.selectedIndex = 0;
 		console.log('toggle class', departament);
 		console.log('T ', this);
 		selectedDepartament = departament.options[departament.selectedIndex];
