@@ -1,4 +1,4 @@
-$(document).ready(function() {
+$(document).ready(function () {
 	var kontoSelect = $('#parp_mainbundle_edycjauzytkownika_isDisabled');
 	$(kontoSelect)
 		.children()
@@ -18,7 +18,7 @@ $(document).ready(function() {
 	console.info(selectedDepartament.text);
 
 	//--- nasluch na zmiane departamentu ---
-	$(departament).on('change', function() {
+	$(departament).on('change', function () {
 		console.log('toggle class', departament);
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
@@ -27,8 +27,9 @@ $(document).ready(function() {
 	console.log(sekcja);
 
 	var optgroups = $(sekcja).find('optgroup');
-	var optgroupsTxt = $(optgroups).each(function(item) {
-		return $(item).label;
+	var optgroupsTxt = $(optgroups).each(function (item, index) {
+		console.log($(item[index]).label);
+		return ($(item[index]).label);
 	});
 
 	console.log(optgroups, optgroupsTxt);
@@ -59,7 +60,7 @@ $(document).ready(function() {
 		$(hiddenReason).removeClass('hidden');
 	}
 
-	$(kontoSelect).on('change', function() {
+	$(kontoSelect).on('change', function () {
 		if ($(kontoSelect).val() === '1') {
 			$(hiddenReason).removeClass('hidden');
 		} else if (
