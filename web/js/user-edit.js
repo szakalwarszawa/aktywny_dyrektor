@@ -28,7 +28,7 @@ $(document).ready(function() {
 
 	var optgroups = $(sekcja).find('optgroup');
 	var optgroupsTxt = $(optgroups).each(function(item) {
-		console.log(itam.label);
+		console.log(item.label);
 	});
 
 	console.log(optgroups, optgroupsTxt);
