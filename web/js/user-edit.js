@@ -23,7 +23,7 @@ $(document).ready(function () {
 		selectedDepartament = departament.options[departament.selectedIndex];
 		selectedDepartamentValue = departament.options[departament.selectedIndex].value;
 		// departament.options.selectedIndex = 0;
-		for (var i = 0; departaments.options.length; i++) {
+		for (var i = 0; departament.options.length; i++) {
 			if (departament.options[i].value === departament.options[departament.selectedIndex].value) {
 				departament.options.selectedIndex = selectedDepartamentValue;
 				return;
