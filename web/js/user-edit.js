@@ -33,7 +33,7 @@ $(document).ready(function () {
 		console.log(optgroups[i].label);
 	}
 
-	console.log('group name ', optgroupsTxt);
+	// console.log('group name ', optgroupsTxt);
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	// $(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
