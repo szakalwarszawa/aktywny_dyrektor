@@ -21,8 +21,9 @@ $(document).ready(function () {
 	$(departament).on('change', function (event) {
 		event.preventDefault();
 		selectedDepartament = departament.options[departament.selectedIndex];
+		selectedDepartamentValue = departament.options[departament.selectedIndex].value;
 		// departament.options.selectedIndex = 0;
-		departament.options.selectedIndex = selectedDepartament;
+		departament.options.selectedIndex = selectedDepartamentValue;
 		console.log('toggle class', departament);
 		console.log('T ', this);
 		console.log(selectedDepartament);
