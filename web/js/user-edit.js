@@ -28,8 +28,8 @@ $(document).ready(function () {
 
 	var optgroups = $('optgroup');
 	var optgroupsTxt = $(optgroups).each(function (item, index) {
-		console.log($(item[index]).label);
-		return ($(item[index]).label);
+		console.log(item[index].label);
+		return (item[index].label);
 	});
 
 	console.log('group ', optgroups);
