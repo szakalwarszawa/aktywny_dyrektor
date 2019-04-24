@@ -63,7 +63,7 @@ final class Disable extends AccountStateManager
             }
             foreach (explode(',', $baseParameters['base_dn']) as $value) {
                 $newParentDn
-                    ->addOu($value)
+                    ->addDc($value)
                 ;
             }
 
