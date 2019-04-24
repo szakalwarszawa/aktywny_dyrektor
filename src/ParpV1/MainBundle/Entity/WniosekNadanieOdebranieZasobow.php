@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use APY\DataGridBundle\Grid\Mapping as GRID;
+use Symfony\Component\VarDumper\VarDumper;
 
 /*,userZasoby.zasobOpis:group_concat:distinct*/
 /**
@@ -557,12 +558,10 @@ class WniosekNadanieOdebranieZasobow
         $em = $kernel->getContainer()->get('doctrine.orm.entity_manager');
         $ret = [];
         foreach ($this->getUserZasoby() as $uz) {
-            echo "!";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();
         }
         foreach ($this->getUserZasobyOdbierane() as $uz) {
-            echo "$";
             $z = $em->getRepository("ParpMainBundle:Zasoby")->find($uz->getZasobId());
             $ret[$z->getNazwa()] = $z->getNazwa();
         }

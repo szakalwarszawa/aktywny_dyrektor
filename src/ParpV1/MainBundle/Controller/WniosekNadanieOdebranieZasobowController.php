@@ -834,6 +834,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $em->persist($uz);
                                             $users[$uz->getSamaccountname()] = $uz->getSamaccountname();
                                             $userZasobPersist = $uz;
+                                            $wn->addUserZasobyOdbierane($uz);
                                         } else {
                                             $nuz = clone $uz;
                                             $nuz->setWniosek($wn);
@@ -842,6 +843,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $wn->setZasobId($nuz->getId());
                                             $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
                                             $userZasobPersist = $nuz;
+                                            $wn->addUserZasoby($uz);
                                         }
 
                                         $wn
