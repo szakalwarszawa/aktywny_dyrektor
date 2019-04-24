@@ -4,7 +4,6 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use APY\DataGridBundle\Grid\Mapping as GRID;
-use Symfony\Component\VarDumper\VarDumper;
 
 /*,userZasoby.zasobOpis:group_concat:distinct*/
 /**
