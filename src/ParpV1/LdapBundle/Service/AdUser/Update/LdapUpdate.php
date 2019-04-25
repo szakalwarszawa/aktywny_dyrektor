@@ -698,7 +698,9 @@ class LdapUpdate extends Simulation
             ->addCn($changes[AdUserConstants::CN_AD_STRING])
         ;
 
-        $dnBuilder->addOu($baseParameters['base_ou']);
+        foreach (explode(',', $baseParameters['base_ou']) as $dnPart) {
+            $dnBuilder->addOu($dnPart);
+        }
 
         $writableUserObject
             ->setDn($dnBuilder)
