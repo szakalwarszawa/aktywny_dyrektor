@@ -6,7 +6,8 @@ $(document).ready(function () {
 		.remove();
 	var hiddenReason = $('#powod_wylaczenia_w_ad');
 
-	var sekcja = $('#parp_mainbundle_edycjauzytkownika_info');
+	// var sekcja = $('#parp_mainbundle_edycjauzytkownika_info');
+	var sekcja = document.getElementById('parp_mainbundle_edycjauzytkownika_info');
 	var menager = $('#parp_mainbundle_edycjauzytkownika_manager');
 	var departament = document.getElementById(
 		'parp_mainbundle_edycjauzytkownika_department',
@@ -60,6 +61,7 @@ $(document).ready(function () {
 			}
 		}
 		sekcja.selectedIndex = 0;
+		console.log('sekcja.selectedIndex', sekcja.selectedIndex);
 	}
 
 	constrainVisibleOptGroups();
