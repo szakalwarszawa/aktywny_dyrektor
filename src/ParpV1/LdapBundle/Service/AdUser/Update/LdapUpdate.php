@@ -277,14 +277,22 @@ class LdapUpdate extends Simulation
             }
         }
 
+        $groupsRemoved = [];
+        $groupsAdded = [];
         foreach (explode(',', $groupsAd) as $groupName) {
             if (self::REMOVE_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::REMOVE_GROUP_SIGN);
-                $this->groupRemove($adUser, $groupName);
+                if (!in_array($groupName, $groupsRemoved)) {
+                    $this->groupRemove($adUser, $groupName);
+                    $groupsRemoved[] = $groupName;
+                }
             }
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
-                $this->groupAdd($adUser, $groupName);
+                if (!in_array($groupName, $groupsAdded)) {
+                    $this->groupAdd($adUser, $groupName);
+                    $groupsAdded[] = $groupName;
+                }
             }
         }
     }
