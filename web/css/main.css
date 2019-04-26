@@ -477,3 +477,17 @@ select.form-control+.sr-only+select.form-control:not(#parp_mainbundle_edycjauzyt
 .wynikow-na-strone {
 	margin: 20px 0;
 }
+
+/* --------------- custom select2 --------------- */
+#parp_mainbundle_edycjauzytkownika_manager .select2-container .select2-selection--single {
+	height: 38px;
+}
+
+#select2-parp_mainbundle_edycjauzytkownika_manager-container {
+	line-height: 38px;
+	padding-left: 15px;
+}
+
+#parp_mainbundle_edycjauzytkownika_manager .select2-container--default .select2-selection--single .select2-selection__arrow {
+	height: 36px;
+}
