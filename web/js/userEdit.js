@@ -24,6 +24,7 @@ $(document).ready(function () {
 	$(departament).on('change', function (event) {
 		event.preventDefault();
 		selectedDepartament = departament.options[departament.selectedIndex];
+		console.info('selectedDepartament', selectedDepartament, selectedDepartament.text);
 		selectedDepartamentValue = parseInt(departament.options[departament.selectedIndex].value);
 		// departament.options.selectedIndex = 0;
 		for (var i = 0; i < departament.options.length; i++) {
