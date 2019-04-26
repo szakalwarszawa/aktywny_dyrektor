@@ -3,6 +3,7 @@
 namespace ParpV1\LdapBundle\DataCollection\Message;
 
 use ParpV1\LdapBundle\DataCollection\CollectorInterface;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Obiekt wiadomości do użytkownika.
@@ -30,13 +31,21 @@ class Message implements CollectorInterface
     private $target;
 
     /**
+     * @var ArrayCollection
+     */
+    public $children;
+
+    /**
      * @param string $message
+     * @param string $target
+     * @param mixed $null
      */
     public function __construct(string $message = '', string $target = null, $vars = null)
     {
         $this->message = $message;
         $this->target = $target;
         $this->vars = $vars;
+        $this->children = new ArrayCollection();
     }
 
     /**

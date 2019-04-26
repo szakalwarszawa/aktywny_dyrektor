@@ -236,13 +236,25 @@ class LdapUpdate extends Simulation
      *
      * @return void
      */
-    private function addMessage(Message $message, string $text, string $target, $vars = null): void
+    private function addMessage(Message $message, string $text = '', string $target = '', $vars = null): void
     {
-        $message
-            ->setTarget($target)
-            ->setMessage($text)
-            ->setVars($vars)
-        ;
+        if (!empty($text)) {
+            $message
+                ->setMessage($text)
+            ;
+        }
+
+        if (!empty($target)) {
+            $message
+                ->setTarget($target)
+            ;
+        }
+
+        if (null !== $vars) {
+            $message
+                ->setVars($vars)
+            ;
+        }
 
         $this
             ->responseMessages
@@ -727,8 +739,10 @@ class LdapUpdate extends Simulation
      * Wyrzuca użytkownika ze wszystkich jego grup.
      *
      * @param AdUser $adUser
+     *
+     * @return void
      */
-    public function removeAllUserGroups(AdUser $adUser)
+    public function removeAllUserGroups(AdUser $adUser): void
     {
         $simulateProcess = $this->isSimulation();
         $writableUserObject = $adUser
@@ -738,22 +752,31 @@ class LdapUpdate extends Simulation
             ->getGroups()
         ;
 
-        if (!$simulateProcess) {
-            foreach ($userGroups as $group) {
-                try {
-                    $group->removeMember($writableUserObject);
-                } catch (ContextErrorException $exception) {
-                    continue;
-                }
-            }
-        }
-
-        $this->addMessage(
-            new Messages\SuccessMessage(),
-            'WYZEROWANO WSZYSTKIE GRUPY',
+        $responseMessage = new Messages\SuccessMessage(
+            'Wyzerowano wszystkie grupy',
             AdUserConstants::GRUPY_AD,
             $adUser->getUser()
         );
+
+        foreach ($userGroups as $group) {
+            try {
+                if (!$simulateProcess) {
+                    $group->removeMember($writableUserObject);
+                }
+
+                $responeMessageChild = new Messages\SuccessMessage(
+                    'Usunięto z grupy ' . $group->getName()
+                );
+                $responseMessage
+                    ->children
+                    ->add($responeMessageChild)
+                ;
+            } catch (ContextErrorException $exception) {
+                continue;
+            }
+        }
+
+        $this->addMessage($responseMessage);
     }
 
     /**
