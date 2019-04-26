@@ -54,14 +54,30 @@ $(document).ready(function () {
 	var optgroups = document.getElementsByTagName('optgroup');
 	console.log('groups ', optgroups);
 
+	// function constrainVisibleOptGroups() {
+	// 	for (var i = 0; i < optgroups.length; i++) {
+	// 		// console.log(optgroups[i].label);
+	// 		optgroups[i].classList.remove('hidden');
+	// 		if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
+	// 			optgroups[i].classList.add('hidden');
+	// 		}
+	// 	}
+	// }
 	function constrainVisibleOptGroups() {
-		for (var i = 0; i < optgroups.length; i++) {
-			// console.log(optgroups[i].label);
-			optgroups[i].classList.remove('hidden');
-			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
-				optgroups[i].classList.add('hidden');
-			}
-		}
+		$(sekcja).select2({
+			matcher: function (params, data) {
+				if ($.trim(params.term) === '') {
+					return data;
+				}
+
+				if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
+					var modifiedData = $.extend({}, data, true);
+					return modifiedData;
+				}
+
+				return null;
+			} // koniec: funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
+		});
 	}
 
 	constrainVisibleOptGroups();
@@ -104,6 +120,18 @@ $(document).ready(function () {
 
 			if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
 				var modifiedData = $.extend({}, data, true);
+				return modifiedData;
+			}
+			//---//
+			var modifiedData = $.extend(modifiedData, data, true);
+			var currChildrenArray = [];
+			$.each(data.children, function (index, elem) {
+				if (elem.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
+					currChildrenArray.push(elem);
+				}
+			});
+			if (currChildrenArray.length > 0) {
+				modifiedData.children = currChildrenArray;
 				return modifiedData;
 			}
 
