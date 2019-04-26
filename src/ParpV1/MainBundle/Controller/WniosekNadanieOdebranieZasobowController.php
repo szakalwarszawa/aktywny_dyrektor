@@ -697,7 +697,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $przelozeni = array();
                             $zasobyWeWniosku = [];
                             foreach ($wniosek->getUserZasoby() as $uz) {
-                                if (!in_array($userZasob->getZasobOpis(), $zasobyWeWniosku)) {
+                                if (!in_array($uz->getZasobOpis(), $zasobyWeWniosku)) {
                                     $zasobyWeWniosku[] = $uz->getZasobOpis();
                                 }
                                 if ($wniosek->getPracownikSpozaParp()) {
