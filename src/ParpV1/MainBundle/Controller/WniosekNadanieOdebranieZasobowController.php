@@ -2,9 +2,6 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\UserZasoby;
@@ -13,10 +10,8 @@ use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
-use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
-use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
 use ParpV1\MainBundle\Services\ParpMailerService;
@@ -37,7 +32,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use DateTime;
-use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -701,7 +695,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->get('wniosekNumer')->nadajNumer($wniosek, 'wniosekONadanieUprawnien');
                             //klonuje wniosek na male i ustawia im statusy:
                             $przelozeni = array();
+                            $zasobyWeWniosku = [];
                             foreach ($wniosek->getUserZasoby() as $uz) {
+                                if (!in_array($userZasob->getZasobOpis(), $zasobyWeWniosku)) {
+                                    $zasobyWeWniosku[] = $uz->getZasobOpis();
+                                }
                                 if ($wniosek->getPracownikSpozaParp()) {
                                     //biore managera z pola managerSpoząParp
                                     $ADManager = $this->getUserFromAD($wniosek->getManagerSpozaParp());
@@ -721,6 +719,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }
                             }
+                            $wniosek->setZasoby(implode(',', $zasobyWeWniosku));
                             if ($this->debug) {
                                 echo '<pre>';
                                 \Doctrine\Common\Util\Debug::dump($przelozeni);
