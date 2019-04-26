@@ -1461,7 +1461,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 ->getRepository(UserZasoby::class)
                 ->findBy([
                     'wniosekOdebranie' => $id
-            ]);
+                ]);
 
             foreach ($userZasobyWniosku as $userZasob) {
                 $userZasob
