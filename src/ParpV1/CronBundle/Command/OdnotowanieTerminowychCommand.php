@@ -150,7 +150,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                             ->getManager();
 
         $zasob = $entityManager->getRepository('ParpMainBundle:Zasoby')->find($idZasobu);
-        $output->section('Odnotowuje dla zasobu: '. $idZasobu . ' ' . $zasob->getNazwa());
+        $output->section('Odnotowuję dla zasobu: '. $idZasobu . ' ' . $zasob->getNazwa());
 
         $userZasobyAktywne = $entityManager
             ->getRepository('ParpMainBundle:UserZasoby')
