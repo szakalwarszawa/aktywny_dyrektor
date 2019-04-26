@@ -44,7 +44,7 @@ $(document).ready(function () {
 		console.log(selectedDepartament);
 		console.info(selectedDepartament.text);
 		console.warn('V ', selectedDepartament.value);
-		constrainVisibleOptGroups();
+		constrainVisibleOptGroups(selectedDepartament.text);
 		sekcja.selectedIndex = 0;
 		console.log('sekcja.selectedIndex', sekcja.selectedIndex);
 	});
@@ -63,7 +63,7 @@ $(document).ready(function () {
 	// 		}
 	// 	}
 	// }
-	function constrainVisibleOptGroups() {
+	function constrainVisibleOptGroups(params) {
 		$(sekcja).select2({
 			matcher: function (params, data) {
 				if ($.trim(params.term) === '') {
