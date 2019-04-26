@@ -69,35 +69,57 @@ $(document).ready(function () {
 	// console.log('group name ', optgroupsTxt);
 
 	// --- własny matcher do select2 ---
-	function matchCustom(params, data) {
-		// If there are no search terms, return all of the data
-		if ($.trim(params.term) === '') {
-			return data;
-		}
+	// function matchCustom(params, data) {
+	// 	// If there are no search terms, return all of the data
+	// 	if ($.trim(params.term) === '') {
+	// 		return data;
+	// 	}
 
-		// Do not display the item if there is no 'text' property
-		if (typeof data.text === 'undefined') {
-			return null;
-		}
+	// 	// Do not display the item if there is no 'text' property
+	// 	if (typeof data.text === 'undefined') {
+	// 		return null;
+	// 	}
 
-		// `params.term` should be the term that is used for searching
-		// `data.text` is the text that is displayed for the data object
-		if (data.text.indexOf(params.term) > -1) {
-			var modifiedData = $.extend({}, data, true);
-			modifiedData.text += ' (matched)';
+	// 	// `params.term` should be the term that is used for searching
+	// 	// `data.text` is the text that is displayed for the data object
+	// 	if (data.text.indexOf(params.term) > -1) {
+	// 		var modifiedData = $.extend({}, data, true);
+	// 		modifiedData.text += ' (matched)';
 
-			// You can return modified objects from here
-			// This includes matching the `children` how you want in nested data sets
-			return modifiedData;
-		}
+	// 		// You can return modified objects from here
+	// 		// This includes matching the `children` how you want in nested data sets
+	// 		return modifiedData;
+	// 	}
 
-		// Return `null` if the term should not be displayed
-		return null;
-	}
+	// 	// Return `null` if the term should not be displayed
+	// 	return null;
+	// }
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	$(sekcja).select2({
-		matcher: matchCustom // funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
+		matcher: function (params, data) { // funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
+			if (typeof params.term === 'undefined') {
+				return data;
+			}
+			if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1 ||
+				$(data.element).attr("alt").toUpperCase().indexOf(params.term.toUpperCase()) > -1
+			) {
+				var modifiedData = $.extend({}, data, true);
+				return modifiedData;
+			}
+			var modifiedData = $.extend(modifiedData, data, true);
+			var currChildrenArray = [];
+			$.each(data.children, function (index, elem) {
+				if (elem.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
+					currChildrenArray.push(elem);
+				}
+			});
+			if (currChildrenArray.length > 0) {
+				modifiedData.children = currChildrenArray;
+				return modifiedData;
+			}
+			return null;
+		} // koniec: funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
 	});
 	$(menager).select2();
 
