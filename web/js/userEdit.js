@@ -26,13 +26,13 @@ $(document).ready(function () {
 		event.preventDefault();
 		selectedDepartament = departament.options[departament.selectedIndex];
 		console.info('selectedDepartament', selectedDepartament, selectedDepartament.text);
-		selectedDepartamentValue = parseInt(departament.options[departament.selectedIndex].value);
+		// ---selectedDepartamentValue = parseInt(departament.options[departament.selectedIndex].value);
 		// departament.options.selectedIndex = 0;
 		for (var i = 0; i < departament.options.length; i++) {
 			console.log(i, departament.options[i].selected, 'Selected index', departament.selectedIndex);
 			if (departament.options[i].value !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
 				// departament.options.selectedIndex = selectedDepartamentValue;
-				departament.selectedIndex = selectedDepartamentValue;
+				// --- departament.selectedIndex = selectedDepartamentValue;
 				console.info(i, 'departament.selectedIndex ', departament.selectedIndex);
 				console.log(i, 'selected options ', departament.selectedOptions);
 				break;
