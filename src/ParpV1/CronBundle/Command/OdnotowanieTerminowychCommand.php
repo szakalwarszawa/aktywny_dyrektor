@@ -26,27 +26,27 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
     /**
      * @var int
      */
-    private $_ileZasobow = 0;
+    private $ileZasobow = 0;
 
     /**
      * @var int
      */
-    private $_ileOdnotowanych = 0;
+    private $ileOdnotowanych = 0;
 
     /**
      * @var int
      */
-    private $_ileOdebranych = 0;
+    private $ileOdebranych = 0;
 
     /**
      * @var int
      */
-    private $_ilePominietych = 0;
+    private $ilePominietych = 0;
 
     /**
      * @var array
      */
-    private $_podumowanieTabela = [];
+    private $podumowanieTabela = [];
 
     protected function configure()
     {
@@ -88,7 +88,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             if (true === $niePytaj || $czyKontynuowac->ask($input, $output, $pytanie)) {
                 $output->writeln('<comment>Rozpoczynam odbieranie...</comment>');
                 foreach ($zasob as $zasobyDoOdebrania) {
-                    $this->_ileZasobow ++;
+                    $this->ileZasobow ++;
                     $this->odbierzUprawnieniaPrzeterminowane($output, (int) $zasobyDoOdebrania, $tylkoTest);
                 }
 
@@ -105,13 +105,13 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 $table->setColumnWidths([15, 4]);
                 $table
                     ->setRows([
-                        ['Zasobow', $this->_ileZasobow],
+                        ['Zasobow', $this->ileZasobow],
                         new TableSeparator(),
                         [new TableCell('Uprawnień: ', ['colspan' => 2])],
                         new TableSeparator(),
-                        ['Pominietych', $this->_ilePominietych],
-                        ['Odnotowanych', $this->_ileOdnotowanych],
-                        ['Odebranych', $this->_ileOdebranych],
+                        ['Pominietych', $this->ilePominietych],
+                        ['Odnotowanych', $this->ileOdnotowanych],
+                        ['Odebranych', $this->ileOdebranych],
                     ]);
                 $table->render();
 
@@ -120,7 +120,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 $tableSzczegoly = new Table($output);
                 $tableSzczegoly
                     ->setHeaders(array('zasób', 'odnotowanych', 'odebranych', 'pominietych'))
-                    ->setRows($this->_podumowanieTabela)
+                    ->setRows($this->podumowanieTabela)
                 ;
                 $tableSzczegoly->render();
             }
@@ -185,12 +185,12 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 // pomijam wnioski dla osób zewnętrznych
                 if (null !== $userZasob->getWniosek() && $userZasob->getWniosek()->getPracownikSpozaParp()) {
                     $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
-                    $this->_ilePominietych++;
+                    $this->ilePominietych++;
                     $ilePominietychZasob++;
                     continue;
                 }
 
-                $this->_ileOdnotowanych++;
+                $this->ileOdnotowanych++;
                 $ileOdnotowanychZasob++;
 
                 $userZasob->setModul($userZasob->getmodul());
@@ -229,7 +229,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                     $output->writeln("\t".'<comment>Odbieram uprawnienia w AD: ' . $grupyDoAd.'</comment>');
 
-                    $this->_ileOdebranych++;
+                    $this->ileOdebranych++;
                     $ileOdebranychZasob++;
                 }
             }
@@ -237,7 +237,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             $output->writeln("\t".'Brak uprawnień do odebrania.');
         }
 
-        $this->_podumowanieTabela[] = [$idZasobu . ' ' . $zasob->getNazwa(), $ileOdnotowanychZasob, $ileOdebranychZasob, $ilePominietychZasob];
+        $this->podumowanieTabela[] = [$idZasobu . ' ' . $zasob->getNazwa(), $ileOdnotowanychZasob, $ileOdebranychZasob, $ilePominietychZasob];
 
         if (false === $tylkoTest) {
             $entityManager->flush();
