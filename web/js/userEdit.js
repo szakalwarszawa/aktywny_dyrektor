@@ -97,27 +97,20 @@ $(document).ready(function () {
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
 	$(sekcja).select2({
-		matcher: function (params, data) { // funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
-			if (typeof params.term === 'undefined') {
+		matcher: function (params, data) {
+			if ($.trim(params.term) === '') {
 				return data;
 			}
-			if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1 ||
+
+			if (
+				data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1 ||
 				$(data.element).attr("alt").toUpperCase().indexOf(params.term.toUpperCase()) > -1
 			) {
 				var modifiedData = $.extend({}, data, true);
+
 				return modifiedData;
 			}
-			var modifiedData = $.extend(modifiedData, data, true);
-			var currChildrenArray = [];
-			$.each(data.children, function (index, elem) {
-				if (elem.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
-					currChildrenArray.push(elem);
-				}
-			});
-			if (currChildrenArray.length > 0) {
-				modifiedData.children = currChildrenArray;
-				return modifiedData;
-			}
+
 			return null;
 		} // koniec: funkcja definiująca dopasownia przy wyszukiwaniu za pomocą select2
 	});
