@@ -69,7 +69,7 @@ $(document).ready(function () {
 	// console.log('group name ', optgroupsTxt);
 
 	// --- uruchomienie biblioteki select2 na wybranych selectach ---
-	// $(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
+	$(sekcja).select2(); // deaktywacja select2 sekcji na czas obróbki danych
 	$(menager).select2();
 	// --- zmienne zależne od wykonania select2 ---
 	// var sekcjaResults = $('#select2-parp_mainbundle_edycjauzytkownika_info-results');
