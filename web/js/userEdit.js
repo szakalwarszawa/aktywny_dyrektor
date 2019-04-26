@@ -25,11 +25,11 @@ $(document).ready(function () {
 		selectedDepartament = departament.options[departament.selectedIndex];
 		selectedDepartamentValue = parseInt(departament.options[departament.selectedIndex].value);
 		// departament.options.selectedIndex = 0;
-		for (var i = 0; departament.options.length; i++) {
+		for (var i = 0; i < departament.options.length; i++) {
 			if (parseInt(departament.options[i].value) === parseInt(departament.options[departament.options.selectedIndex].value)) {
 				departament.options.selectedIndex = selectedDepartamentValue;
 				console.info(i, 'departament.options.selectedIndex ', departament.options.selectedIndex);
-				console.log(i, 'sected options ', departament.selectedOptions);
+				console.log(i, 'selected options ', departament.selectedOptions);
 				//break;
 			}
 		}
