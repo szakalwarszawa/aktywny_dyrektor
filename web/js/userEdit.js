@@ -17,6 +17,7 @@ $(document).ready(function () {
 	console.log('sected options ', departament.selectedOptions);
 	console.log(selectedDepartament);
 	console.info(selectedDepartament.text);
+	console.log(departament.options.length);
 
 	//--- nasluch na zmiane departamentu ---
 	$(departament).on('change', function (event) {
@@ -29,7 +30,7 @@ $(document).ready(function () {
 				departament.options.selectedIndex = selectedDepartamentValue;
 				console.info(i, 'departament.options.selectedIndex ', departament.options.selectedIndex);
 				console.log(i, 'sected options ', departament.selectedOptions);
-				break;
+				//break;
 			}
 		}
 
