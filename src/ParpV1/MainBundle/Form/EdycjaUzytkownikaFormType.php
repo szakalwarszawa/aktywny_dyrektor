@@ -199,13 +199,13 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     'required' => false,
                     'label' => 'Konto wyłączone w AD',
                     'choices' => [
-                        'Tak' => TakNieInterface::TAK,
                         'Nie' => TakNieInterface::NIE,
+                        'Tak' => TakNieInterface::TAK,
                     ],
                     'constraints' => [
                         new Assert\NotNull()
                     ],
-                    'placeholder' => 'Proszę wybrać',
+                    // 'placeholder' => 'Proszę wybrać',
                     'data' => $adUserHelper? $adUserHelper->getCzyWylaczone() : null,
                 ])
                 ->add(AdUserConstants::POWOD_WYLACZENIA, ChoiceType::class, [
