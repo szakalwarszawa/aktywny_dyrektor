@@ -1250,6 +1250,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete")
      * @Method("GET")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function deleteAction($id)
@@ -1274,6 +1275,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Displays a form to edit an existing WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
      * @Method("GET")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function deleteUzAction($id)
@@ -1428,6 +1430,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Deletes a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete_form")
      * @Method("DELETE")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
     public function deleteFormAction(Request $request, $id)
     {
@@ -1442,6 +1445,32 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $wniosekZablokowany = $accessCheckerService
                 ->checkWniosekIsBlocked($entity, null, true);
 
+            if ($entity->getWniosek()->getCreatedBy() !== $this->getUser()->getUsername()) {
+                $this->addFlash('danger', 'Możesz usunąć tylko swój wniosek.');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
+            }
+
+            if ('00_TWORZONY' !== $entity->getWniosek()->getStatus()->getNazwaSystemowa()) {
+                $this->addFlash('danger', 'Można usunąć tylko wnioski ze statusem Tworzony');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
+            }
+
+            $userZasobyWniosku = $em
+                ->getRepository(UserZasoby::class)
+                ->findBy([
+                    'wniosekOdebranie' => $id
+            ]);
+
+            foreach ($userZasobyWniosku as $userZasob) {
+                $userZasob
+                    ->setPowodOdebrania(null)
+                    ->setWniosekOdebranie(null)
+                ;
+
+                $em->persist($userZasob);
+            }
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');
