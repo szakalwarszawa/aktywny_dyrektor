@@ -14,6 +14,7 @@ $(document).ready(function () {
 	var selectedDepartament = departament.options[departament.selectedIndex];
 
 	console.log('toggle class', departament);
+	console.log('sected options ', departament.selectedOptions);
 	console.log(selectedDepartament);
 	console.info(selectedDepartament.text);
 
@@ -26,7 +27,8 @@ $(document).ready(function () {
 		for (var i = 0; departament.options.length; i++) {
 			if (parseInt(departament.options[i].value) === parseInt(departament.options[departament.options.selectedIndex].value)) {
 				departament.options.selectedIndex = selectedDepartamentValue;
-				console.info('departament.options.selectedIndex ', departament.options.selectedIndex);
+				console.info(i, 'departament.options.selectedIndex ', departament.options.selectedIndex);
+				console.log(i, 'sected options ', departament.selectedOptions);
 				break;
 			}
 		}
@@ -46,7 +48,7 @@ $(document).ready(function () {
 
 	function constrainVisibleOptGroups() {
 		for (var i = 0; i < optgroups.length; i++) {
-			console.log(optgroups[i].label);
+			// console.log(optgroups[i].label);
 			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
 				optgroups[i].classList.add('hidden');
 			}
