@@ -27,7 +27,7 @@ $(document).ready(function () {
 		// departament.options.selectedIndex = 0;
 		for (var i = 0; i < departament.options.length; i++) {
 			console.log(i, 'Selected index', departament.selectedIndex);
-			if (parseInt(departament.options[i].value) !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
+			if (departament.options[i].value !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
 				departament.options.selectedIndex = selectedDepartamentValue;
 				console.info(i, 'departament.options.selectedIndex ', departament.options.selectedIndex);
 				console.log(i, 'selected options ', departament.selectedOptions);
