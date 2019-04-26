@@ -8,6 +8,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Question\ConfirmationQuestion;
+use Symfony\Component\Console\Style\SymfonyStyle;
+use Symfony\Component\Console\Helper\Table;
+use Symfony\Component\Console\Helper\TableSeparator;
+use Symfony\Component\Console\Helper\TableCell;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\UserZasoby;
@@ -19,17 +23,42 @@ use DateTime;
  */
 class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 {
+    /**
+     * @var int
+     */
+    private $_ileZasobow = 0;
+
+    /**
+     * @var int
+     */
+    private $_ileOdnotowanych = 0;
+
+    /**
+     * @var int
+     */
+    private $_ileOdebranych = 0;
+
+    /**
+     * @var int
+     */
+    private $_ilePominietych = 0;
+
+    /**
+     * @var array
+     */
+    private $_podumowanieTabela = [];
+
     protected function configure()
     {
         $this
-                ->setName('parp:odbierz-terminowe-z-ad')
-                ->setDescription('Odnotowuje w AkD i odbiera uprawnienia po terminie z AD.')
-                ->addArgument('id_zasobow', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'ID zasobów oddzielone spacją.')
-                ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Tylko wyświetla dane, bez zapisywania zmian do AkD i AD.')
-                ->addOption('nie-pytaj', null, InputOption::VALUE_NONE, 'Wykonuje od razu skrypt, bez wyświetlania pytań.')
-                ->setHelp('Komenda służy do odnotowania odebrania uprawnień dla zasobów opartych o grupy AD. ' .
-                    'Jednocześnie dla uprawnień przeterminowanych odbierane są grupy w AD. ' .
-                    'Po komendzie należy podać ID zasobów oddzielone spacją.');
+            ->setName('parp:odbierz-terminowe-z-ad')
+            ->setDescription('Odnotowuje w AkD i odbiera uprawnienia po terminie z AD.')
+            ->addArgument('id_zasobow', InputArgument::IS_ARRAY | InputArgument::REQUIRED, 'ID zasobów oddzielone spacją.')
+            ->addOption('dry-run', null, InputOption::VALUE_NONE, 'Tylko wyświetla dane, bez zapisywania zmian do AkD i AD.')
+            ->addOption('nie-pytaj', null, InputOption::VALUE_NONE, 'Wykonuje od razu skrypt, bez wyświetlania pytań.')
+            ->setHelp('Komenda służy do odnotowania odebrania uprawnień dla zasobów opartych o grupy AD. ' .
+                'Jednocześnie dla uprawnień przeterminowanych odbierane są grupy w AD. ' .
+                'Po komendzie należy podać ID zasobów oddzielone spacją.');
     }
 
     /**
@@ -42,12 +71,13 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $output = new SymfonyStyle($input, $output);
         $zasob = $input->getArgument('id_zasobow');
         $tylkoTest = $input->getOption('dry-run');
         $niePytaj = $input->getOption('nie-pytaj');
 
         if (true === $tylkoTest) {
-            $output->writeln('<comment>Wykonanie testowe. Żadne uprawnienia nie zostaną odebrane.</comment>');
+            $output->note('Wykonanie testowe. Żadne uprawnienia nie zostaną odebrane.');
         }
 
         if (count($zasob) > 0) {
@@ -58,8 +88,41 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             if (true === $niePytaj || $czyKontynuowac->ask($input, $output, $pytanie)) {
                 $output->writeln('<comment>Rozpoczynam odbieranie...</comment>');
                 foreach ($zasob as $zasobyDoOdebrania) {
+                    $this->_ileZasobow ++;
                     $this->odbierzUprawnieniaPrzeterminowane($output, (int) $zasobyDoOdebrania, $tylkoTest);
                 }
+
+                $output->writeln([
+                    '',
+                    '===========================',
+                    '<fg=cyan;options=bold>       PODSUMOWANIE</>',
+                    '===========================',
+                    '',
+                    '<fg=cyan>Ogólnie: </>',
+                ]);
+
+                $table = new Table($output);
+                $table->setColumnWidths([15, 4]);
+                $table
+                    ->setRows([
+                        ['Zasobow', $this->_ileZasobow],
+                        new TableSeparator(),
+                        [new TableCell('Uprawnień: ', ['colspan' => 2])],
+                        new TableSeparator(),
+                        ['Pominietych', $this->_ilePominietych],
+                        ['Odnotowanych', $this->_ileOdnotowanych],
+                        ['Odebranych', $this->_ileOdebranych],
+                    ]);
+                $table->render();
+
+                $output->writeln('');
+                $output->writeln('<fg=cyan>Szczegóły: </>');
+                $tableSzczegoly = new Table($output);
+                $tableSzczegoly
+                    ->setHeaders(array('zasób', 'odnotowanych', 'odebranych', 'pominietych'))
+                    ->setRows($this->_podumowanieTabela)
+                ;
+                $tableSzczegoly->render();
             }
         }
     }
@@ -76,6 +139,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
     protected function odbierzUprawnieniaPrzeterminowane(OutputInterface $output, int $idZasobu, bool $tylkoTest)
     {
         $pomijajKonta = [];
+        $ileOdnotowanychZasob = $ilePominietychZasob = $ileOdebranychZasob = 0;
 
         // pomijaj Zarząd:
         $pomijajKonta = $this->pracownicyDepartmentu('ZA');
@@ -86,7 +150,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                             ->getManager();
 
         $zasob = $entityManager->getRepository('ParpMainBundle:Zasoby')->find($idZasobu);
-        $output->writeln('<question>ZASÓB: ' . $idZasobu . ' ' . $zasob->getNazwa() . '</question>');
+        $output->section('Odnotowuje dla zasobu: '. $idZasobu . ' ' . $zasob->getNazwa());
 
         $userZasobyAktywne = $entityManager
             ->getRepository('ParpMainBundle:UserZasoby')
@@ -121,8 +185,13 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 // pomijam wnioski dla osób zewnętrznych
                 if (null !== $userZasob->getWniosek() && $userZasob->getWniosek()->getPracownikSpozaParp()) {
                     $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
+                    $this->_ilePominietych++;
+                    $ilePominietychZasob++;
                     continue;
                 }
+
+                $this->_ileOdnotowanych++;
+                $ileOdnotowanychZasob++;
 
                 $userZasob->setModul($userZasob->getmodul());
                 $userZasob->setPoziomdostepu($userZasob->getpoziomDostepu());
@@ -157,12 +226,18 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                     $entry->setMemberOf($grupyDoAd);
                     $entry->setOpis('Odebrane administracyjnie: Upłynął termin ważności uprawnień');
                     $entityManager->persist($entry);
+
                     $output->writeln("\t".'<comment>Odbieram uprawnienia w AD: ' . $grupyDoAd.'</comment>');
+
+                    $this->_ileOdebranych++;
+                    $ileOdebranychZasob++;
                 }
             }
         } else {
             $output->writeln("\t".'Brak uprawnień do odebrania.');
         }
+
+        $this->_podumowanieTabela[] = [$idZasobu . ' ' . $zasob->getNazwa(), $ileOdnotowanychZasob, $ileOdebranychZasob, $ilePominietychZasob];
 
         if (false === $tylkoTest) {
             $entityManager->flush();
@@ -250,11 +325,15 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
             return false;
         }
 
-        $grupyNaPodstawieSekcjiOrazStanowiska = $ldapService->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
+        try {
+            $grupyNaPodstawieSekcjiOrazStanowiska = $ldapService->getGrupyUsera($ADUser[0], $ADUser[0]['description'], $ADUser[0]['division']);
 
-        if (in_array($grupa, $grupyNaPodstawieSekcjiOrazStanowiska)) {
-            $output->writeln("\t".'<comment>Pomijam odebranie uprawnienia w AD: UPP pracownika</comment>');
-            return true;
+            if (in_array($grupa, $grupyNaPodstawieSekcjiOrazStanowiska)) {
+                $output->writeln("\t" . '<comment>Pomijam odebranie uprawnienia w AD: UPP pracownika</comment>');
+                return true;
+            }
+        } catch (\Exception $e) {
+            $output->error('Problem z weryfikacją UPP pracownika: ' . $login . "\nError: " . $e->getMessage());
         }
 
         return false;
