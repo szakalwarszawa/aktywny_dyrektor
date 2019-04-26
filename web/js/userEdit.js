@@ -102,12 +102,8 @@ $(document).ready(function () {
 				return data;
 			}
 
-			if (
-				data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1 ||
-				$(data.element).attr("alt").toUpperCase().indexOf(params.term.toUpperCase()) > -1
-			) {
+			if (data.text.toUpperCase().indexOf(params.term.toUpperCase()) > -1) {
 				var modifiedData = $.extend({}, data, true);
-
 				return modifiedData;
 			}
 
