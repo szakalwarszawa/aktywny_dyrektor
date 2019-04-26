@@ -31,9 +31,9 @@ $(document).ready(function () {
 			if (departament.options[i].value !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
 				// departament.options.selectedIndex = selectedDepartamentValue;
 				departament.selectedIndex = selectedDepartamentValue;
-				console.info(i, 'departament.options.selectedIndex ', departament.options.selectedIndex);
+				console.info(i, 'departament.selectedIndex ', departament.selectedIndex);
 				console.log(i, 'selected options ', departament.selectedOptions);
-				//break;
+				break;
 			}
 		}
 
