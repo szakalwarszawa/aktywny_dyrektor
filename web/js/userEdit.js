@@ -13,10 +13,11 @@ $(document).ready(function () {
 	);
 	var selectedDepartament = departament.options[departament.selectedIndex];
 
+	console.log('Selected index', departament.selectedIndex);
 	console.log('toggle class', departament);
 	console.log('sected options ', departament.selectedOptions);
-	console.log(selectedDepartament);
-	console.info(selectedDepartament.text);
+	console.log('selectedDepartament', selectedDepartament);
+	console.info('selectedDepartament.text', selectedDepartament.text);
 	console.log(departament.options.length);
 
 	//--- nasluch na zmiane departamentu ---
