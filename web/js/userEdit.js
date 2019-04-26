@@ -45,6 +45,8 @@ $(document).ready(function () {
 		console.info(selectedDepartament.text);
 		console.warn('V ', selectedDepartament.value);
 		constrainVisibleOptGroups();
+		sekcja.selectedIndex = 0;
+		console.log('sekcja.selectedIndex', sekcja.selectedIndex);
 	});
 
 	console.log('Sekcja', sekcja);
@@ -60,8 +62,6 @@ $(document).ready(function () {
 				optgroups[i].classList.add('hidden');
 			}
 		}
-		sekcja.selectedIndex = 0;
-		console.log('sekcja.selectedIndex', sekcja.selectedIndex);
 	}
 
 	constrainVisibleOptGroups();
