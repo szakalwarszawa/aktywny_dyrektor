@@ -39,6 +39,7 @@ use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use DateTime;
 use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * WniosekNadanieOdebranieZasobow controller.
@@ -701,7 +702,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->get('wniosekNumer')->nadajNumer($wniosek, 'wniosekONadanieUprawnien');
                             //klonuje wniosek na male i ustawia im statusy:
                             $przelozeni = array();
+                            $zasobyWeWniosku = [];
                             foreach ($wniosek->getUserZasoby() as $uz) {
+                                if (!in_array($userZasob->getZasobOpis(), $zasobyWeWniosku)) {
+                                    $zasobyWeWniosku[] = $uz->getZasobOpis();
+                                }
                                 if ($wniosek->getPracownikSpozaParp()) {
                                     //biore managera z pola managerSpoząParp
                                     $ADManager = $this->getUserFromAD($wniosek->getManagerSpozaParp());
@@ -721,6 +726,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }
                             }
+                            $wniosek->setZasoby(implode(',', $zasobyWeWniosku));
                             if ($this->debug) {
                                 echo '<pre>';
                                 \Doctrine\Common\Util\Debug::dump($przelozeni);
