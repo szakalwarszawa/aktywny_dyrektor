@@ -46,10 +46,10 @@ $(document).ready(function () {
 		constrainVisibleOptGroups();
 	});
 
-	console.log(sekcja);
+	console.log('Sekcja', sekcja);
 
 	var optgroups = document.getElementsByTagName('optgroup');
-	console.log('group ', optgroups);
+	console.log('groups ', optgroups);
 
 	function constrainVisibleOptGroups() {
 		for (var i = 0; i < optgroups.length; i++) {
@@ -59,6 +59,7 @@ $(document).ready(function () {
 				optgroups[i].classList.add('hidden');
 			}
 		}
+		sekcja.selectedIndex = 0;
 	}
 
 	constrainVisibleOptGroups();
