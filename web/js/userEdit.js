@@ -15,25 +15,11 @@ $(document).ready(function () {
 		sekcja.selectedIndex = 0;
 	});
 
-	// function constrainVisibleOptGroups() {
-	// 	var exceptions = ['Zarząd'];
-	// 	for (var i = 1; i < optgroups.length; i++) {
-	// 		optgroups[i].classList.remove('hidden');
-	// 		if (selectedDepartament.text !== 'Zarząd') {
-	// 			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
-	// 				optgroups[i].classList.add('hidden');
-	// 			}
-	// 		} else {
-	// 			optgroups[i].classList.add('hidden');
-	// 		}
-	// 	}
-	// }
-
 	function constrainVisibleOptGroups() {
-		var exceptions = ['Zarząd'];
+		var exceptions = ['Zarząd']; // B/D, które nie mają podziału na sekcje
 		for (var i = 1; i < optgroups.length; i++) {
 			optgroups[i].classList.remove('hidden');
-			for (var j = 0; j < exceptions.length; j++) {
+			for (var j = 0; j < exceptions.length; j++) { // pętla po tablicy wyjątków
 				if (selectedDepartament.text !== exceptions[j]) {
 					if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
 						if (optgroups[i].classList.contains('hidden') === false) {
