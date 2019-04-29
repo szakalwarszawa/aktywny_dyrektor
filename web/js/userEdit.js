@@ -23,6 +23,8 @@ $(document).ready(function () {
 	function constrainVisibleOptGroups() {
 		for (var i = 1; i < optgroups.length; i++) {
 			optgroups[i].classList.remove('hidden');
+			console.info('optgroups[i].label.indexOf(selectedDepartament.text)', optgroups[i].label.indexOf(selectedDepartament.text));
+			console.info('optgroups[i].label', optgroups[i].label);
 			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
 				optgroups[i].classList.add('hidden');
 			}
