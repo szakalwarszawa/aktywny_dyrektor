@@ -3,34 +3,17 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Doctrine\ORM\EntityNotFoundException;
-use ParpV1\MainBundle\Entity\Engagement;
 use ParpV1\MainBundle\Entity\Entry;
-use ParpV1\MainBundle\Entity\UserEngagement;
 use ParpV1\MainBundle\Entity\UserUprawnienia;
 use ParpV1\MainBundle\Entity\Uprawnienia;
 use ParpV1\MainBundle\Entity\GrupyUprawnien;
-use ParpV1\MainBundle\Form\EngagementType;
-use ParpV1\MainBundle\Form\UserEngagementType;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
-use APY\DataGridBundle\APYDataGridBundle;
-use APY\DataGridBundle\Grid\Source\Vector;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
-use APY\DataGridBundle\Grid\Action\MassAction;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Validator\Constraints\NotBlank;
-use Symfony\Component\Validator\Constraints\File;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Form\UserZasobyType;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
-use Symfony\Component\Form\FormEvent;
-use Symfony\Component\Form\FormEvents;
-use APY\DataGridBundle\Grid\Column\TextColumn;
 use ParpV1\MainBundle\Exception\SecurityTestException;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -490,11 +473,19 @@ class NadawanieUprawnienZasobowController extends Controller
                     if (!$wniosekId) {
                         //jesli bez wniosku sprawdzamy czy jest PARP_ADMIN albo PARP_ADMIN_ZASOBU dla swoich zasobow
                         $ids = [];
+                        $zasobyName = [];
                         foreach ($ndata['access'] as $a) {
                             $ps = explode(';', $a);
                             $userZasob = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($ps[0]);
                             $ids[] = $userZasob->getZasobId();
+                            if (!in_array($userZasob->getZasobOpis(), $zasobyName)) {
+                                $zasobyName = $userZasob->getZasobOpis();
+                            }
                         }
+
+                        $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow)->find($ndata['wniosekId']);
+                        $wniosek->setZasoby(implode(',', $zasobyName));
+                        $this->getDoctrine()->getManager()->persist($wniosek);
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
                     }
 
