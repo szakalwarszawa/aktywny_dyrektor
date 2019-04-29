@@ -3,7 +3,7 @@
     <input type="checkbox" class="action" value="1" name="{{ grid.hash }}[{{ column.id }}][{{ row.primaryFieldValue }}]"/>
 {% endblock grid_column_massaction_cell %}
 {% block grid %}
-    <div class="grid" style="margin-top: 15px; margin-left: auto; margin-right: auto;">
+    <div class="grid">
     {% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is same as(false) %}
         <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
             <div class="grid_header">
@@ -11,7 +11,7 @@
                 {{ grid_actions(grid) }}
             {% endif %}
             </div>
-            <div class="grid_body row">
+            <div class="grid_body">
                 <table class="table table-hover table-striped table-bordered">
                 {% if grid.isTitleSectionVisible %}
                     {{ grid_titles(grid) }}
