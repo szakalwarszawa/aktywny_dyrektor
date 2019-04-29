@@ -49,6 +49,7 @@ use ParpV1\MainBundle\Services\EdycjaUzytkownikaService;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Constants\AdUserConstants;
 
 /**
  * Class DefaultController
@@ -446,6 +447,17 @@ class DefaultController extends Controller
             'form_type' => EdycjaUzytkownikaFormType::TYP_EDYCJA,
             'short_form' => $shortForm
         ]);
+
+        $isDisabled = $form
+            ->get(AdUserConstants::WYLACZONE)
+            ->getData()
+        ;
+
+        if ($isDisabled) {
+            $this->addFlash('info', 'Konto pracownika jest nieaktywne lub zablokowane.');
+
+            return $this->redirectToRoute('main');
+        }
 
 
         $form->handleRequest($request);
