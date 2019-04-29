@@ -81,11 +81,17 @@ body ul.tagit li {
 	width: 100%;
 }
 
+/* ----- JColResizer ----- */
 body .JColResizer>tbody>tr>td,
 body .JColResizer>tbody>tr>th {
-	padding: 5px;
+	padding: $basic-padding;
 }
 
+body .JColResizer>tbody>tr>td.last-column {
+	padding: 1rem 0;
+}
+
+/* -----  ----- */
 .btn.btn-parp {
 	background: rgba(26, 188, 156, 0.3);
 	color: #000;
@@ -453,7 +459,7 @@ td.grid-column-akcje.last-column {
 	margin-right: 0.5rem;
 }
 
-/* ----------------------------------------- */
+/* ------------footer & helpdesk --------------------- */
 footer.helpdesk {
 	margin: 3rem 2rem 0;
 	padding: 1rem;
@@ -465,13 +471,20 @@ footer.helpdesk {
 	margin: 0 2rem;
 }
 
-/* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
-/* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
+/* ------ przyciski-/wnioseknadanieodebraniezasobow------------------------- */
+/* ------ Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------- */
 #general>div>.record_properties+a {
 	display: none;
 }
 
-/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
+/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia -------*/
 #zasoby>br+a {
 	display: none;
+}
+
+/* -------- Ogólne -------- */
+.grid {
+	margin-top: 1rem;
+	margin-left: auto;
+	margin-right: auto;
 }
