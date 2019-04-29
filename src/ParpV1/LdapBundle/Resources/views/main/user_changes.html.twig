@@ -34,7 +34,17 @@
                     {% for change in user_changes %}
                         {# change.vars zawiera tablicę z danymi użytkownika z AD #}
                         <li class="alert-{{ change.getType() }}">
-                            {{ change.message }} - <b>{{ change.target|trans({}, 'changed_attribute') }}</b> {# do targetu dorobić PIPE tłumaczącą #}
+                            {{ change.message }} - <b>{{ change.target|trans({}, 'changed_attribute') }}</b>
+                            {# Wyświetlenie wiadomości powiązanych - Class: Message#children #}
+                            {% if change.children is not empty %}
+                                <ul>
+                                    {% for child_change in change.children %}
+                                        <li>
+                                            {{ child_change.message }}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% endif %}
                         </li>
                     {% endfor %}
                 </ol>
