@@ -11,21 +11,13 @@ $(document).ready(function () {
 	$(departament).on('change', function (event) {
 		event.preventDefault();
 		selectedDepartament = departament.options[departament.selectedIndex];
-		// for (var i = 0; i < departament.options.length; i++) {
-		// 	if (departament.options[i].value !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
-		// 		break;
-		// 	}
-		// }
 		constrainVisibleOptGroups(); // zaweżenie pola Sekcja do konkretnej optgroup
 		sekcja.selectedIndex = 0;
 	});
 
 	function constrainVisibleOptGroups() {
-		console.log("Zaznaczone ", selectedDepartament.text);
 		for (var i = 1; i < optgroups.length; i++) {
 			optgroups[i].classList.remove('hidden');
-			console.info('optgroups[i].label.indexOf(selectedDepartament.text)', optgroups[i].label.indexOf(selectedDepartament.text));
-			console.info(optgroups[i].label);
 			if (selectedDepartament.text != 'Zarząd') {
 				if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
 					optgroups[i].classList.add('hidden');
@@ -33,7 +25,6 @@ $(document).ready(function () {
 			} else {
 				optgroups[i].classList.add('hidden');
 			}
-
 		}
 	}
 
