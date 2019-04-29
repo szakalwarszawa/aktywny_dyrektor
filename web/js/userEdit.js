@@ -21,7 +21,7 @@ $(document).ready(function () {
 	});
 
 	function constrainVisibleOptGroups() {
-		for (var i = 0; i < optgroups.length; i++) {
+		for (var i = 1; i < optgroups.length; i++) {
 			optgroups[i].classList.remove('hidden');
 			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
 				optgroups[i].classList.add('hidden');
