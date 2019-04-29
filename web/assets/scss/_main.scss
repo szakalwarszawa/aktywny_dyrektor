@@ -91,6 +91,10 @@ body .JColResizer>tbody>tr>td.last-column {
 	padding: 1rem 0;
 }
 
+.JColResizer .last-column .btn-group-vertical>.btn {
+	float: left;
+}
+
 /* -----  ----- */
 .btn.btn-parp {
 	background: rgba(26, 188, 156, 0.3);
