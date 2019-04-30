@@ -120,6 +120,13 @@ final class UpdateFromEntry extends LdapUpdate
 
         $entry->setIsImplemented(true);
 
+        if ($entry->getOdebranieZasobowEntry() && !$this->isSimulation()) {
+            $this
+                ->uprawnieniaService
+                ->odbierzZasobyUzytkownikaZEntry($entry->getOdebranieZasobowEntry())
+            ;
+        }
+
         return $this;
     }
 

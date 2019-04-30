@@ -26,6 +26,7 @@ use ParpV1\MainBundle\Entity\Entry;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Adldap\Models\Attributes\DistinguishedName;
+use ParpV1\MainBundle\Services\UprawnieniaService;
 
 /**
  * LdapUpdate
@@ -85,6 +86,11 @@ class LdapUpdate extends Simulation
      * @var ParpMailerService
      */
     private $parpMailerService;
+
+    /**
+     * @var UprawnieniaService
+     */
+    protected $uprawnieniaService;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -909,6 +915,18 @@ class LdapUpdate extends Simulation
     public function setEntityManager(EntityManager $entityManager): void
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Set uprawnieniaService
+     *
+     * @param UprawnieniaService $uprawnieniaService
+     *
+     * @return void
+     */
+    public function setUprawnieniaService(UprawnieniaService $uprawnieniaService): void
+    {
+        $this->uprawnieniaService = $uprawnieniaService;
     }
 
     /**
