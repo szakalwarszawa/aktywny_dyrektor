@@ -27,6 +27,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\MainBundle\Services\UprawnieniaService;
+use ParpV1\MainBundle\Services\StatusWnioskuService;
 
 /**
  * LdapUpdate
@@ -91,6 +92,11 @@ class LdapUpdate extends Simulation
      * @var UprawnieniaService
      */
     protected $uprawnieniaService;
+
+    /**
+     * @var StatusWnioskuService
+     */
+    protected $statusWnioskuService;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -927,6 +933,18 @@ class LdapUpdate extends Simulation
     public function setUprawnieniaService(UprawnieniaService $uprawnieniaService): void
     {
         $this->uprawnieniaService = $uprawnieniaService;
+    }
+
+    /**
+     * Set statusWnioskuService
+     *
+     * @param UprawnieniaService $statusWnioskuService
+     *
+     * @return void
+     */
+    public function setStatusWnioskuService(StatusWnioskuService $statusWnioskuService): void
+    {
+        $this->statusWnioskuService = $statusWnioskuService;
     }
 
     /**
