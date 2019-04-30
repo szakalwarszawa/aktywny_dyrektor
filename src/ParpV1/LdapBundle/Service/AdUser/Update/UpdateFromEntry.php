@@ -131,7 +131,7 @@ final class UpdateFromEntry extends LdapUpdate
             ;
         }
 
-       if (null !== $entry->getWniosek() && !$this->isSimulation()) {
+        if (null !== $entry->getWniosek() && !$this->isSimulation()) {
             $wniosek = $entry->getWniosek()->getWniosekNadanieOdebranieZasobow();
             foreach ($wniosek->getUserZasoby() as $userZasob) {
                 $userZasob->setCzyAktywne(!$wniosek->getOdebranie());
