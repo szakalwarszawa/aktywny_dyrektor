@@ -402,6 +402,18 @@ td .btn {
 		}
 
 		.grid-row-cells {
+			td[class^="grid-column-"] {
+				font-size: 1rem;
+				padding: .3rem;
+				line-height: 130%;
+			}
+
+			.grid-column-pracownicy,
+			.grid-column-edytorzy,
+			.grid-column-zasoby {
+				font-size: 1.4rem;
+			}
+
 			td.grid-column-akcje.last-column {
 				padding: 0;
 
