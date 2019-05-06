@@ -402,7 +402,7 @@ td .btn {
 		}
 
 		.grid-row-cells {
-			td[class^="grid-column-"] {
+			[class^="grid-column-"] {
 				font-size: 1rem;
 				padding: .3rem;
 				line-height: 130%;
@@ -414,7 +414,7 @@ td .btn {
 				font-size: 1.4rem;
 			}
 
-			td.grid-column-akcje.last-column {
+			.grid-column-akcje.last-column {
 				padding: 0;
 
 				div.btn-group-vertical {
