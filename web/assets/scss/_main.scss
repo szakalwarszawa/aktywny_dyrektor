@@ -372,31 +372,39 @@ td .btn {
 
 .grid {
 	.grid_body {
-		.grid-row-titles {}
+		.grid-row-titles {
+			th {
+				padding: $small-padding;
+			}
+		}
 
 		.grid-row-filters {
-			.grid-filter-input {
-				.grid-filter-operator {
-					display: block;
-					margin-bottom: 0.3rem;
+			th {
+				padding: $small-padding;
 
-					select {
-						width: 100%;
-						border-width: 1px;
-						padding: 3px 1px;
-					}
-				}
+				.grid-filter-input {
+					.grid-filter-operator {
+						display: block;
+						margin-bottom: 0.3rem;
 
-				.grid-filter-input-query {
-					input {
-						width: 100%;
+						select {
+							width: 100%;
+							border-width: 1px;
+							padding: 3px 1px;
+						}
 					}
 
-					.grid-filter-input-query-from {
-						padding-left: 0.5rem;
-					}
+					.grid-filter-input-query {
+						input {
+							width: 100%;
+						}
 
-					.grid-filter-input-query-to {}
+						.grid-filter-input-query-from {
+							padding-left: 0.5rem;
+						}
+
+						.grid-filter-input-query-to {}
+					}
 				}
 			}
 		}
@@ -404,7 +412,7 @@ td .btn {
 		.grid-row-cells {
 			[class^="grid-column-"] {
 				font-size: 1rem;
-				padding: .3rem;
+				padding: $small-padding;
 				line-height: 130%;
 			}
 
