@@ -12,6 +12,7 @@ Encore
 	.splitEntryChunks()
 	.autoProvidejQuery()
 	.enableSassLoader()
+	.enablePostCssLoader()
 	.configureBabel(function (babelConfig) {
 		const preset = babelConfig.presets.find(([name]) => name === "@babel/preset-env");
 		if (preset !== undefined) {
