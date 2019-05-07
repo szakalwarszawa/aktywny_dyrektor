@@ -382,6 +382,10 @@ td .btn {
 			th {
 				padding: $small-padding;
 
+				span {
+					width: 100%;
+				}
+
 				.grid-filter-input {
 					.grid-filter-operator {
 						display: block;
