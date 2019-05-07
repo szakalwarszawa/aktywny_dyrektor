@@ -231,8 +231,8 @@ td .btn {
 			&.btn-primary {
 				background-color: #a6c4d6;
 				background-image: linear-gradient(#a6c4d6,
-					#7aa8c0 60%,
-					#4d8da9);
+						#7aa8c0 60%,
+						#4d8da9);
 			}
 		}
 	}
@@ -411,7 +411,7 @@ td .btn {
 
 		.grid-row-cells {
 			[class^="grid-column-"] {
-				font-size: 1.6rem;
+				font-size: 1.3rem;
 				padding: $small-padding;
 				line-height: 130%;
 			}
@@ -424,6 +424,10 @@ td .btn {
 
 			.grid-column-akcje.last-column {
 				padding: 0;
+
+				.grid-row-actions {
+					margin-bottom: 0;
+				}
 
 				div.btn-group-vertical {
 					display: block;
