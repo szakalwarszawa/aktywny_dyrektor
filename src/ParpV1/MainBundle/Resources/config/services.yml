@@ -1,0 +1,9 @@
+services:
+  edycja_uzytkownika_form_type:
+    class: ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType
+    arguments: ['@ldap_service', '@user_service']
+    tags: [form.type]
+
+  edycja_uzytkownika_service:
+        class: ParpV1\MainBundle\Services\EdycjaUzytkownikaService
+        arguments: ['@ldap_service', '@doctrine.orm.entity_manager', '@user_service', '%ad_domain%', '%ad_ou%', '%ad_push_delay%']

@@ -2,21 +2,21 @@
 
 namespace ParpV1\SoapBundle\Services;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Symfony\Component\Config\DefinitionExceptionException;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Serializer\Encoder\JsonEncode;
-use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\DependencyInjection\Container;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundleException\SecurityTestException;
-use Memcached;
 use Exception;
+use ParpV1\MainBundle\Helper\AdUserHelper;
+use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\LdapBundle\Connection\LdapConnection;
+use ParpV1\LdapBundle\Service\LdapFetch;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Class LdapAdminService
  *
+ * @todo to jest do wyjrzucenia
  * @package ParpV1\SoapBundle\Services
  */
 class LdapAdminService
@@ -42,14 +42,20 @@ class LdapAdminService
     public $output;
 
     /**
+     * @var LdapFech
+     */
+    private $ldapFetch;
+
+    /**
      * LdapAdminService constructor.
      * @param TokenStorage $tokenStorage
      * @param Container $container
      * @param EntityManager $OrmEntity
      * @throws SecurityTestException
      */
-    public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity)
+    public function __construct(TokenStorage $tokenStorage, Container $container, EntityManager $OrmEntity, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
     {
+        $this->ldapFetch = $ldapFetch;
         if (!in_array('PARP_ADMIN', $tokenStorage->getToken()->getUser()->getRoles())) {
             //throw new Exception("Tylko administrator AkD może aktualizować zmiany w AD");
             //echo ""; var_dump(debug_backtrace());
@@ -83,23 +89,9 @@ class LdapAdminService
             $this->patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
         }
 
-        $configuration = array(
-            //'user_id_key' => 'samaccountname',
-            'account_suffix' => $this->ad_domain,
-            //'person_filter' => array('category' => 'objectCategory', 'person' => 'person'),
-            'base_dn' => 'DC=' . $tab[0] . ',DC=' . $tab[1],
-            'domain_controllers' => array($this->container->getParameter('ad_host'),$this->container->getParameter('ad_host2'),$this->container->getParameter('ad_host3')),
-            'admin_username' => $this->AdminUser,
-            'admin_password' => $this->AdminPass,
-            //'real_primarygroup' => true,
-            //'use_ssl' => false,
-            //'use_tls' => false,
-            //'recursive_groups' => true,
-            'ad_port' => '389',
-            //'sso' => false,
-        );
 
-        $this->adldap = new \Adldap\Adldap($configuration);
+
+        $this->adldap = $ldapConnection->ldapConnect();
     }
 
     /**
@@ -284,12 +276,21 @@ class LdapAdminService
 
     /**
      * @param $ldapUser
-     * @param $person
+     * @param $person - dane z entry
      *
      * @return string
      */
     public function saveEntity($ldapUser, $person)
     {
+        if (null === $ldapUser || !is_array($ldapUser)) {
+            $ldapUser = $this->getUserFromAD($person->getSamaccountname());
+        }
+
+        $adUserHelper = null;
+        if (!empty($ldapUser)) {
+            $adUserHelper = new AdUserHelper($ldapUser);
+        }
+
         $this->lastEntryId = $person->getId();
         $this->lastEntry = $person;
         $this->lastConnectionErrors = [];
@@ -328,8 +329,9 @@ class LdapAdminService
             }
         }
 
-        if ($person->getManager()) {
+        if (null === $adUserHelper || ($person->getManager() !== $adUserHelper::getPrzelozony(false))) {
             $manager = $person->getManager();
+
             if ($manager === 'BRAK') {
                 $entry['manager'] = [];
             } elseif (strstr($manager, 'CN=') === false) {
@@ -363,10 +365,15 @@ class LdapAdminService
                 $entry['manager'] = $person->getManager();
             }
         }
-        if ($person->getTitle()) {
+
+
+
+        if (null === $adUserHelper || ($person->getTitle() !== $adUserHelper::getStanowisko())) {
             $entry['title'] = $this->mapowanieStanowisk($person->getTitle());
         }
+
         $entry['initials'] = array();
+        /*
         if ($person->getInitials()) {
             //hack by dalo sie puste inicjaly wprowadzic,
             //TODO: trzeba zmienic bo jednak beda generowane !!!!
@@ -378,12 +385,13 @@ class LdapAdminService
             } else {
                 $entry['initials'] = $person->getInitials();
             }
-        }
+        }*/
 
         //$department = $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneByName($person->getDepartment());
         $department =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($person->getDepartment()), 'nowaStruktura' => true]);
 
-        if ($person->getDepartment()) {
+
+        if (null === $adUserHelper || ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa())) {
             $entry['department'] = $person->getDepartment();
             if (!empty($department)) {
                 $entry['description'] = $department->getShortname();
@@ -427,7 +435,11 @@ class LdapAdminService
                 $this->addRemoveMemberOf($person, $userAD, $dn, $userdn, $ldapconn);
             }
         }
-        if ($person->getDivision() != null) {
+
+
+
+
+       /* if ($person->getDivision() != null) {
             if ($person->getDivision() === 'BRAK' || $person->getDivision() === '') {
                 $entry['division'] = []; //"n/d";
                 //$entry['division'] = []; //"n/d";
@@ -437,8 +449,9 @@ class LdapAdminService
                 //$entry['info'] = "SEKCJA DO UZUPEŁNIENIA PRZEZ KADRY";
                 $entry['division'] = $person->getDivision(); //"";
             }
-        }
-        if ($person->getInfo() != null) {
+        }*/
+
+        if (null === $adUserHelper || ($person->getInfo() !== $adUserHelper::getSekcja())) {
             if ($person->getInfo() === 'BRAK' || $person->getInfo() === '') {
                 $entry['info'] = []; //"n/d";
                 //$entry['division'] = []; //"n/d";
@@ -455,7 +468,9 @@ class LdapAdminService
             }
         }
 
-        if ($person->getIsDisabled() !== null || $person->getActivateDeactivated()) {
+
+
+        if (null !== $person->getIsDisabled()) {
             $entry['useraccountcontrol'][0] = $person->getIsDisabled() ? 514 : 512; //546 : 544;
             $sn = 'Konto aktywowane';
             if (!empty($department)) {
@@ -464,7 +479,7 @@ class LdapAdminService
 
             if ($person->getIsDisabled()) {
                 $entry['description'] = $person->getDisableDescription();
-                if ($person->getDisableDescription() === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
+                if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
                     $grupyWszystkie = $userAD[0]['memberOf'];
                     $person->addGrupyAD($grupyWszystkie, '-');
                 }
@@ -472,7 +487,7 @@ class LdapAdminService
                 $entry['description'] = $sn;
             }
         }
-        //unset($entry['initials']);
+
 
         //print_r($entry); die();
         if (count($entry) > 0) {
@@ -500,7 +515,7 @@ class LdapAdminService
         // zmiana departamentu musi byc ostnia operacją ponieważ zmienimi rownież
         // kontener pracownika. Jezeli zmodyfikujemy go wczecniej to pozowatłe operacje mogą
         // nie znaleśc obiektu w ad (zmieniamy przeciez distinguishedName!).
-        if ($person->getDepartment()) {
+        if (null === $adUserHelper || ($person->getDepartment() !== $adUserHelper::getDepartamentNazwa())) {
             // zmien ds pracownika
             //$userAD = $this->getUserFromAD($person->getSamaccountname());
             $parent = 'OU=' . $entry['description'] . ',' . $userdn;
@@ -513,7 +528,7 @@ class LdapAdminService
             $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $cn, $parent, true);
 
             $ldapstatus = $this->ldapError($ldapconn);
-        } elseif ($person->getCn()) {
+        } elseif (null === $adUserHelper || ($person->getCn() !== $adUserHelper::getImieNazwisko())) {
             //zmieniamy tylko cn
             $cn = $person->getCn();
 
@@ -523,14 +538,14 @@ class LdapAdminService
             $ldapstatus = $this->ldapError($ldapconn);
         }
         // przenosimy konto do OU=Zablokowane
-        if ($person->getDisableDescription() === 'Konto wyłączono z powodu rozwiązania stosunku pracy') {
+        if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
             $this->ldapModDel($ldapconn, $person->getDistinguishedName(), array("manager" => array()));
             $newparent = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
             $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
             $ldapstatus = $this->ldapError($ldapconn);
         }
         // przenosimy konto do OU=Nieobecni
-        if ($person->getDisableDescription() === 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni') {
+        if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC) {
             $newparent = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
             $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
             $ldapstatus = $this->ldapError($ldapconn);
@@ -555,13 +570,10 @@ class LdapAdminService
      */
     public function getGrupa($grupa)
     {
-        try {
-            $grupaReturn = $this->adldap->group()->find($grupa);
-
-            return $grupaReturn;
-        } catch (Exception $exception) {
-            return false;
-        }
+        return $this
+            ->ldapFetch
+            ->fetchGroup($grupa)
+        ;
     }
 
     /**
@@ -1054,6 +1066,9 @@ class LdapAdminService
      */
     public function ldapModAdd($link_identifier, $dn, $entry)
     {
+        if (is_array($dn)) {
+            $dn = current($dn);
+        }
         $poszlo = false;
         if ($this->pushChanges) {
             try {

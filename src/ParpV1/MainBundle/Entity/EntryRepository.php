@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\EntityRepository;
+use DateTime;
 
 /**
  * EntryRepository
@@ -164,5 +165,68 @@ class EntryRepository extends EntityRepository
         $dataZmiany = $query->getResult();
 
         return $dataZmiany;
+    }
+
+    /**
+     * Wyszukuje dokonane i oczekujące zmiany użytkownika.
+     *
+     * @param string $username
+     * @param bool $groupByImplemented
+     *
+     * @return array
+     */
+    public function findUserChanges(string $username, bool $groupByImplemented = true): array
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder
+            ->select('e')
+            ->where('e.samaccountname = :username')
+            ->setParameter('username', $username)
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+
+        $groupedResult = [];
+        if ($groupByImplemented) {
+            foreach ($result as $row) {
+                if ($row->getIsImplemented()) {
+                    $groupedResult['aktywne'][] = $row;
+                    continue;
+                }
+                $groupedResult['nieaktywne'][] = $row;
+            }
+
+            return $groupedResult;
+        }
+
+        return $result;
+    }
+
+    /**
+     * Znajduje oczekujące na implementację zmiany.
+     *
+     * @return array
+     */
+    public function findChangesToImplement()
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder
+            ->select('e')
+            ->where('e.isImplemented = 0')
+            ->andWhere('e.fromWhen <= :now')
+            ->setParameter('now', new DateTime())
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $result;
     }
 }

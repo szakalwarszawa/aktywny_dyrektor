@@ -6,6 +6,8 @@ namespace ParpV1\MainBundle\Constants;
  * Klasa WyzwalaczeConstants
  *
  * Redmine #58977
+ *
+ * @todo do usunięcia
  */
 class WyzwalaczeConstants
 {

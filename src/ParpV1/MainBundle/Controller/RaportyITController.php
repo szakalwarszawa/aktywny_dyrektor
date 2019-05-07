@@ -954,6 +954,7 @@ class RaportyITController extends Controller
 
         $przeprocesowane = $uprawnieniaService->odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, $dataGraniczna, 'Odebrano z powodu zmiany departamentu/sekcji/stanowiska.', false, true);
 
+
         $zasobyService = $this->get('zasoby_service');
 
         $przeprocesowaneBezGrup = [];
@@ -965,6 +966,8 @@ class RaportyITController extends Controller
                 $przeprocesowaneBezGrup[] = $jedenZasob;
             }
         }
+
+        VarDumper::dump(['Odebrane administracyjnie z grupami AD' => $przeprocesowaneZGrupami]);
 
         $this->wyslijInfoDoAdministratorow($nazwaUzytkownika, $przeprocesowaneBezGrup, $dataGraniczna);
 
@@ -1075,6 +1078,7 @@ class RaportyITController extends Controller
                 $odebraneZasoby[$zasob->getId()]['object'] = $zasob;
                 $odebraneZasoby[$zasob->getId()]['modul'][] = $userZasob->getModul();
                 $odebraneZasoby[$zasob->getId()]['poziom'][] = $userZasob->getPoziomDostepu();
+                $odebraneZasoby[$zasob->getId()]['poziom_modul'][] = ['modul' => $userZasob->getModul(), 'poziom' => $userZasob->getPoziomDostepu()];
             }
         }
 
