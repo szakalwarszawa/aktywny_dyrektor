@@ -8,7 +8,7 @@ body {
 	margin-right: 0;
 }
 
-// --- old buttons styles ---
+// --- old look buttons ---
 .btn-default {
 	background-image: -webkit-linear-gradient(#fff, #fff 60%, #f5f5f5);
 	background-image: -o-linear-gradient(#fff, #fff 60%, #f5f5f5);
@@ -80,3 +80,108 @@ body {
 	filter: none;
 	border-bottom: 1px solid #9a161a
 }
+
+// --- end of old look buttons ---
+
+// --- old look navbar ---
+
+// .navbar-default {
+// 	background-color: #2fa4e7;
+// 	border-color: #1995dc
+// }
+
+// .navbar-default .navbar-brand {
+// 	color: #ffffff
+// }
+
+// .navbar-default .navbar-brand:hover,
+// .navbar-default .navbar-brand:focus {
+// 	color: #ffffff;
+// 	background-color: none
+// }
+
+// .navbar-default .navbar-text {
+// 	color: #dddddd
+// }
+
+// .navbar-default .navbar-nav>li>a {
+// 	color: #ffffff
+// }
+
+// .navbar-default .navbar-nav>li>a:hover,
+// .navbar-default .navbar-nav>li>a:focus {
+// 	color: #ffffff;
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-nav>.active>a,
+// .navbar-default .navbar-nav>.active>a:hover,
+// .navbar-default .navbar-nav>.active>a:focus {
+// 	color: #ffffff;
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-nav>.disabled>a,
+// .navbar-default .navbar-nav>.disabled>a:hover,
+// .navbar-default .navbar-nav>.disabled>a:focus {
+// 	color: #dddddd;
+// 	background-color: transparent
+// }
+
+// .navbar-default .navbar-toggle {
+// 	border-color: #178acc
+// }
+
+// .navbar-default .navbar-toggle:hover,
+// .navbar-default .navbar-toggle:focus {
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-toggle .icon-bar {
+// 	background-color: #ffffff
+// }
+
+// .navbar-default .navbar-collapse,
+// .navbar-default .navbar-form {
+// 	border-color: #1995dc
+// }
+
+// .navbar-default .navbar-nav>.open>a,
+// .navbar-default .navbar-nav>.open>a:hover,
+// .navbar-default .navbar-nav>.open>a:focus {
+// 	background-color: #178acc;
+// 	color: #ffffff
+// }
+
+// --- end of old look navbar ---
+
+// Basics of a navbar
+// $navbar-height: 50px !default;
+// $navbar-margin-bottom: $line-height-computed !default;
+// $navbar-border-radius: $border-radius-base !default;
+// $navbar-padding-horizontal: floor(($grid-gutter-width / 2)) !default;
+// $navbar-padding-vertical: (($navbar-height - $line-height-computed) / 2) !default;
+// $navbar-collapse-max-height: 340px !default;
+
+$navbar-default-color: #ffffff !default;
+$navbar-default-bg: #178acc !default;
+$navbar-default-border: darken($navbar-default-bg, 6.5%) !default;
+
+// Navbar links
+$navbar-default-link-color: #dddddd !default;
+$navbar-default-link-hover-color: #dddddd !default;
+$navbar-default-link-hover-bg: transparent !default;
+$navbar-default-link-active-color: #eeeeee !default;
+$navbar-default-link-active-bg: darken($navbar-default-bg, 6.5%) !default;
+$navbar-default-link-disabled-color: #ccc !default;
+$navbar-default-link-disabled-bg: transparent !default;
+
+// Navbar brand label
+$navbar-default-brand-color: $navbar-default-link-color !default;
+$navbar-default-brand-hover-color: darken($navbar-default-brand-color, 10%) !default;
+$navbar-default-brand-hover-bg: transparent !default;
+
+// Navbar toggle
+$navbar-default-toggle-hover-bg: #ddd !default;
+$navbar-default-toggle-icon-bar-bg: #888 !default;
+$navbar-default-toggle-border-color: #ddd !default;
