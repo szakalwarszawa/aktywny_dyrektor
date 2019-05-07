@@ -11,21 +11,28 @@ $(document).ready(function () {
 	$(departament).on('change', function (event) {
 		event.preventDefault();
 		selectedDepartament = departament.options[departament.selectedIndex];
-		for (var i = 0; i < departament.options.length; i++) {
-			if (departament.options[i].value !== undefined && parseInt(departament.options[i].value) === parseInt(departament.options[departament.selectedIndex].value)) {
-				break;
-			}
-		}
 		constrainVisibleOptGroups(); // zaweżenie pola Sekcja do konkretnej optgroup
 		sekcja.selectedIndex = 0;
 	});
 
 	function constrainVisibleOptGroups() {
-		for (var i = 0; i < optgroups.length; i++) {
+		var exceptions = ['Zarząd']; // B/D, które nie mają podziału na sekcje
+		for (var i = 1; i < optgroups.length; i++) {
 			optgroups[i].classList.remove('hidden');
-			if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
-				optgroups[i].classList.add('hidden');
+			for (var j = 0; j < exceptions.length; j++) { // pętla po tablicy wyjątków
+				if (selectedDepartament.text !== exceptions[j]) {
+					if (optgroups[i].label.indexOf(selectedDepartament.text) === -1) {
+						if (optgroups[i].classList.contains('hidden') === false) {
+							optgroups[i].classList.add('hidden');
+						}
+					}
+				} else {
+					if (optgroups[i].classList.contains('hidden') === false) {
+						optgroups[i].classList.add('hidden');
+					}
+				}
 			}
+
 		}
 	}
 
