@@ -483,7 +483,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
 
-                        $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow)->find($ndata['wniosekId']);
+                        $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($ndata['wniosekId']);
                         $wniosek->setZasoby(implode(',', $zasobyName));
                         $this->getDoctrine()->getManager()->persist($wniosek);
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
