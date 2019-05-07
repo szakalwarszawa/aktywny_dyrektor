@@ -22,28 +22,28 @@ class RedmineConnectService
 {
 
     /**
-     * Protokół (http|https) wg którego system ma się łączyć z serwerem Redmine.
+     * URL serwera Redmine.
      *
      * @var string
      */
     private $redmine_serwer;
 
     /**
-     * URL serwera Redmine.
+     * Użytkownik Redmine z uprawnieniami do modyfikacji zgłoszeń.
      *
      * @var string
      */
     private $redmine_uzytkownik;
 
     /**
-     * Użytkownik Redmine z uprawnieniami do modyfikacji zgłoszeń.
+     * Hasło użytkownika Redmine.
      *
      * @var string
      */
     private $redmine_haslo;
 
     /**
-     * Hasło użytkownika Redmine.
+     * Protokół (http|https) wg którego system ma się łączyć z serwerem Redmine.
      *
      * @var string
      */
@@ -301,14 +301,12 @@ class RedmineConnectService
 
         $path = $request->get('_route');
         $request = $request->headers->all();
-        $browser = $request->headers->get('User-Agent');
 
         unset($request['cookie']);
 
         $tresc = '<b>IP</b> : ' . $clientIp . "<br/>";
         $tresc .= '<b>path</b> : ' . $path . "<br/>";
         $tresc .= '<b>request</b> : ' . print_r($request, true) . "<br/>";
-        $tresc .= '<b>browser</b> : ' . $browser . "<br/>";
 
         return $tresc;
     }
