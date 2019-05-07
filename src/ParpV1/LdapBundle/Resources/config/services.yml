@@ -30,6 +30,7 @@ services:
       - [setNewResponseMessagesCollection]
       - [setEntityManager, ['@doctrine.orm.entity_manager']]
       - [setParpMailerService, ['@parp.mailer']]
+      - [setUprawnieniaService, ['@uprawnienia_service']]
   ldap.update_from_array:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
     arguments: ['@doctrine.orm.entity_manager']
