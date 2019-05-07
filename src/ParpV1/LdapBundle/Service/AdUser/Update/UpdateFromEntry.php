@@ -6,7 +6,7 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\VarDumper\VarDumper;
+use DateTime;
 use Adldap\AdldapException;
 use ParpV1\LdapBundle\AdUser\AdUser;
 
@@ -72,6 +72,10 @@ final class UpdateFromEntry extends LdapUpdate
      * setDistinguishedName - jest null ponieważ jest generowany dalej
      *      automatycznie na podstawie zmiany departamentu, nie dotyczy nowych użytkowników
      *
+     * Jeżeli następuje reset uprawnień - odbiera zasoby użytkownika.
+     *
+     * Jeżeli jest coś nadawane/odbierane z wniosku - przeprowadza akcję i zmienia status wniosku.
+     *
      * @return UpdateFromEntry
      */
     public function update(Entry $entry, bool $createIfNotExists = false): UpdateFromEntry
@@ -125,6 +129,25 @@ final class UpdateFromEntry extends LdapUpdate
                 ->uprawnieniaService
                 ->odbierzZasobyUzytkownikaZEntry($entry->getOdebranieZasobowEntry())
             ;
+        }
+
+        if (null !== $entry->getWniosek() && !$this->isSimulation()) {
+            $wniosek = $entry->getWniosek()->getWniosekNadanieOdebranieZasobow();
+            foreach ($wniosek->getUserZasoby() as $userZasob) {
+                $userZasob->setCzyAktywne(!$wniosek->getOdebranie());
+                if ($wniosek->getOdebranie()) {
+                    $userZasob->setDataOdebrania(new DateTime());
+                }
+
+                $userZasob->setCzyNadane(true);
+
+                $this
+                    ->entityManager
+                    ->persist($userZasob);
+            }
+            $this
+                ->statusWnioskuService
+                ->setWniosekStatus($wniosek, '11_OPUBLIKOWANY', false);
         }
 
         return $this;
