@@ -13,4 +13,4 @@ web/build/*
 /web/build
 node_modules/
 node_modules/bootstrap-sass
-yarn.error.log
+yarn-error.log
