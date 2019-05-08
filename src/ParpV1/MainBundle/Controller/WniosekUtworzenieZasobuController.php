@@ -491,6 +491,10 @@ class WniosekUtworzenieZasobuController extends Controller
         }
 
         $delta = array_diff($z1, $z2);
+        $deltaFiltered = array_diff_assoc($z1, $z2);
+        if (isset($deltaFiltered['daneOsobowe'])) {
+            $delta['daneOsobowe'] = $deltaFiltered['daneOsobowe'];
+        }
 
         //$z1 - to co ma być
         $daty = [
@@ -1067,10 +1071,31 @@ class WniosekUtworzenieZasobuController extends Controller
                             $this->setWniosekStatus($wniosek, '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', false);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
+
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'return':
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_WLASCICIEL_O_ZASOB', true);
@@ -1080,20 +1105,56 @@ class WniosekUtworzenieZasobuController extends Controller
                 case '04_EDYCJA_ADMINISTRATOR_O_ZASOB':
                     switch ($isAccepted) {
                         case 'moveToAdminRejestru':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                     }
                     break;
                 case '05_EDYCJA_TECHNICZNY_O_ZASOB':
                     switch ($isAccepted) {
                         case 'moveToAdminRejestru':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                     }
                     break;

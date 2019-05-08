@@ -73,10 +73,12 @@
 
                     {% endif %}
 
-                    {% if canReturn %}
-                        <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'return'}) }}');"
+                    {% if canReturn and entity.wniosek.status.nazwaSystemowa not in ['05_EDYCJA_TECHNICZNY_O_ZASOB', '04_EDYCJA_ADMINISTRATOR_O_ZASOB'] %}
+                        {% if not entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB" or
+                        entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" %}}
+                            <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'return'}) }}');"
                         class="btn btn-info">Zwrot do poprawy o jeden krok <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
-
+                        {% endif %}
                     {% endif %}
 
                     {% if entity.wniosek.status.nazwaSystemowa != '00_TWORZONY_O_ZASOB' %}
