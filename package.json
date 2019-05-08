@@ -11,6 +11,8 @@
 	"dependencies": {
 		"bootstrap-sass": "^3.4.1",
 		"core-js": "2",
+		"patch-package": "^6.1.2",
+		"postinstall-postinstall": "^2.0.0",
 		"yarn": "^1.15.2"
 	},
 	"browserslist": {
