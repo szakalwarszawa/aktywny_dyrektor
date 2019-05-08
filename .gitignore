@@ -11,3 +11,4 @@ work/logs/*
 !var/logs/.gitkeep
 web/build/*
 node_modules
+yarn-error.log
