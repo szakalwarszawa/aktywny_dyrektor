@@ -1,6 +1,6 @@
-//@import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
+@import "../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap";
 @import 'custom_variables';
-@import '../bootstrap-sass/assets/stylesheets/bootstrap';
+// @import '../bootstrap-sass/assets/stylesheets/bootstrap'; //style bootstrapa ciągnięte z assetów (ie z node modules)
 // @import 'bootstrap_min'; // stare style (przed wprowadzeniem SCSS)
 @import 'bootstrap_custom';
 @import 'main';
