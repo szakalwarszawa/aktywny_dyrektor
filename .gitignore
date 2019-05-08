@@ -10,4 +10,7 @@ work/logs/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 web/build/*
-node_modules
+/web/build
+node_modules/
+node_modules/bootstrap-sass
+yarn.error.log
