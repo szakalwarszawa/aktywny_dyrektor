@@ -479,13 +479,16 @@ class NadawanieUprawnienZasobowController extends Controller
                             $userZasob = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($ps[0]);
                             $ids[] = $userZasob->getZasobId();
                             if (!in_array($userZasob->getZasobOpis(), $zasobyName)) {
-                                $zasobyName = $userZasob->getZasobOpis();
+                                $zasobyName[] = $userZasob->getZasobOpis();
                             }
                         }
 
                         $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($ndata['wniosekId']);
-                        $wniosek->setZasoby(implode(',', $zasobyName));
-                        $this->getDoctrine()->getManager()->persist($wniosek);
+                        if (null !== $wniosek) {
+                            $wniosek->setZasoby(implode(',', $zasobyName));
+                            $this->getDoctrine()->getManager()->persist($wniosek);
+                        }
+
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
                     }
 
