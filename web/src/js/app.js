@@ -7,4 +7,4 @@ function showInfo(info) {
     );
 }
 
-showInfo();
+showInfo('Aktywny Dyrektor v2.0 beta');
