@@ -10,5 +10,5 @@ work/logs/*
 !var/cache/.gitkeep
 !var/logs/.gitkeep
 web/build/*
-node_modules
+node_modules/
 yarn-error.log

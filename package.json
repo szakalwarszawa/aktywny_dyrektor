@@ -12,13 +12,13 @@
         "eslint": "^5.16.0",
         "eslint-config-idiomatic": "^4.0.0",
         "node-sass": "^4.11.0",
-        "patch-package": "^6.1.2",
         "postcss-loader": "^3.0.0",
         "sass-loader": "7.0.1"
     },
     "dependencies": {
         "bootstrap-sass": "^3.4.1",
         "core-js": "2",
+        "patch-package": "^6.1.2",
         "yarn": "^1.15.2"
     },
     "browserslist": {
