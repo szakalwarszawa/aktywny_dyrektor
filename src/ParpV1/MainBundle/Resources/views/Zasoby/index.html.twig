@@ -7,13 +7,13 @@
   <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby', {'aktywne': 0}) }}">Zasoby nieaktywne</a></li>
 </ul>
 
-<center>
+<div class="center-block">
     <div class="btn-group">
         <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
         <a class="btn btn-primary btn-xs" href="{{ path('zasoby_new') }}">Dodaj Zasoby</a>
         <a class="btn btn-warning btn-xs" href="{{ path('zasobyExcelExport', {aktywne: aktywne}) }}">Exportuj Zasoby do excela</a>
     </div>
-</center>
+</div>
 
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
 

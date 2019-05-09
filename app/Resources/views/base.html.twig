@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8" />
         {% block stylesheets %}
-            {{ encore_entry_link_tags('app') }}
             {# <link rel="stylesheet" href="{{ asset('css/bootstrap1.min.css') }}"> #}
             {# <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> #}
             <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
@@ -15,10 +14,10 @@
             <link rel="stylesheet" href="{{ asset('css/jquery.treegrid.css') }}">
             <link rel="stylesheet" href="{{ asset('css/table.sorter.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap-toggle.min.css') }}">
+			{{ encore_entry_link_tags('app') }}
         {% endblock %}
 
         {% block javascripts %}
-            {{ encore_entry_script_tags('app') }}
             <script src="{{ asset('js/jquery-1.11.0.min.js') }}"></script>
             <script src="{{ asset('js/app.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
@@ -34,9 +33,11 @@
             <script type="text/javascript" src="{{ asset('js/jquery.are-you-sure.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.bootstrap3.js') }}"></script>
-            <script type="text/javascript" src="{{ asset('resizable/inna/colResizable-1.6.js') }}"></script>
+            {# <script type="text/javascript" src="{{ asset('resizable/inna/colResizable-1.6.js') }}"></script> #}
+            <script type="text/javascript" src="{{ asset('js/colResizable-1.6.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script>
+			{{ encore_entry_script_tags('app') }}
             <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
             <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 

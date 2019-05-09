@@ -81,11 +81,21 @@ body ul.tagit li {
 	width: 100%;
 }
 
+/* ----- JColResizer ----- */
 body .JColResizer>tbody>tr>td,
 body .JColResizer>tbody>tr>th {
-	padding: 5px;
+	padding: $basic-padding;
 }
 
+body .JColResizer>tbody>tr>td.last-column {
+	padding: 1rem 0;
+}
+
+.JColResizer .last-column .btn-group-vertical>.btn {
+	float: left;
+}
+
+/* -----  ----- */
 .btn.btn-parp {
 	background: rgba(26, 188, 156, 0.3);
 	color: #000;
@@ -221,8 +231,8 @@ td .btn {
 			&.btn-primary {
 				background-color: #a6c4d6;
 				background-image: linear-gradient(#a6c4d6,
-					#7aa8c0 60%,
-					#4d8da9);
+						#7aa8c0 60%,
+						#4d8da9);
 			}
 		}
 	}
@@ -362,38 +372,64 @@ td .btn {
 
 .grid {
 	.grid_body {
-		.grid-row-titles {}
+		.grid-row-titles {
+			th {
+				padding: $small-padding;
+			}
+		}
 
 		.grid-row-filters {
-			.grid-filter-input {
-				.grid-filter-operator {
-					display: block;
-					margin-bottom: 0.3rem;
+			th {
+				padding: $small-padding;
 
-					select {
-						width: 100%;
-						border-width: 1px;
-						padding: 3px 1px;
-					}
+				span {
+					width: 100%;
 				}
 
-				.grid-filter-input-query {
-					input {
-						width: 100%;
+				.grid-filter-input {
+					.grid-filter-operator {
+						display: block;
+						margin-bottom: 0.3rem;
+
+						select {
+							width: 100%;
+							border-width: 1px;
+							padding: 3px 1px;
+						}
 					}
 
-					.grid-filter-input-query-from {
-						padding-left: 0.5rem;
-					}
+					.grid-filter-input-query {
+						input {
+							width: 100%;
+						}
 
-					.grid-filter-input-query-to {}
+						.grid-filter-input-query-from {
+							padding-left: 0.5rem;
+						}
+
+						.grid-filter-input-query-to {}
+					}
 				}
 			}
 		}
 
 		.grid-row-cells {
-			td.grid-column-akcje.last-column {
+			[class^="grid-column-"] {
+				font-size: 1.3rem;
+				padding: $small-padding;
+				line-height: 130%;
+			}
+
+			.grid-column-thumbnailphoto {
 				padding: 0;
+			}
+
+			.grid-column-akcje.last-column {
+				padding: 0;
+
+				.grid-row-actions {
+					margin-bottom: 0;
+				}
 
 				div.btn-group-vertical {
 					display: block;
@@ -453,7 +489,7 @@ td.grid-column-akcje.last-column {
 	margin-right: 0.5rem;
 }
 
-/* ----------------------------------------- */
+/* ------------footer & helpdesk --------------------- */
 footer.helpdesk {
 	margin: 3rem 2rem 0;
 	padding: 1rem;
@@ -465,13 +501,20 @@ footer.helpdesk {
 	margin: 0 2rem;
 }
 
-/* -------przyciski-/wnioseknadanieodebraniezasobow------------------------- */
-/* ------- Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------ */
+/* ------ przyciski-/wnioseknadanieodebraniezasobow------------------------- */
+/* ------ Zakładka Dane podstawowe --- przycisk --- Dodaj / usuń użytkowników do wniosku ------- */
 #general>div>.record_properties+a {
 	display: none;
 }
 
-/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia ---------*/
+/* -------- Zakładka Zasoby --- przycisk --- Dodaj uprawnienia -------*/
 #zasoby>br+a {
 	display: none;
+}
+
+/* -------- Ogólne -------- */
+.grid {
+	margin-top: 1rem;
+	margin-left: auto;
+	margin-right: auto;
 }
