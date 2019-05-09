@@ -1,6 +1,10 @@
 {
     "scripts": {
-        "postinstall": "patch-package"
+        "postinstall": "patch-package",
+        "dev-server": "encore dev-server",
+        "dev": "encore dev",
+        "watch": "encore dev --watch",
+        "build": "encore production --progress"
     },
     "devDependencies": {
         "@babel/cli": "^7.4.3",

@@ -10,8 +10,8 @@ Encore.setOutputPath('web/build/')
     .enableVersioning(Encore.isProduction())
     .splitEntryChunks()
     .autoProvidejQuery()
-    .enablePostCssLoader()
     .enableSassLoader()
+    .enablePostCssLoader()
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(
             ([name]) => name === '@babel/preset-env',
