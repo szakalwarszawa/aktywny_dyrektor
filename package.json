@@ -1,29 +1,40 @@
 {
-	"devDependencies": {
-		"@babel/cli": "^7.4.3",
-		"@babel/core": "^7.4.3",
-		"@babel/polyfill": "^7.4.3",
-		"@babel/preset-env": "^7.4.3",
-		"@symfony/webpack-encore": "^0.25.0",
-		"node-sass": "^4.11.0",
-		"sass-loader": "7.0.1"
-	},
-	"dependencies": {
-		"bootstrap-sass": "^3.4.1",
-		"core-js": "2",
-		"patch-package": "^6.1.2",
-		"postinstall-postinstall": "^2.0.0",
-		"yarn": "^1.15.2"
-	},
-	"browserslist": {
-		"production": [
-			"cover 99.5%",
-			"last 3 versions",
-			"ie 9-11"
-		],
-		"development": [
-			"last 3 chrome version",
-			"last 3 firefox version"
-		]
-	}
+    "scripts": {
+        "postinstall": "patch-package"
+    },
+    "devDependencies": {
+        "@babel/cli": "^7.4.3",
+        "@babel/core": "^7.4.3",
+        "@babel/polyfill": "^7.4.3",
+        "@babel/preset-env": "^7.4.3",
+        "@symfony/webpack-encore": "^0.25.0",
+        "autoprefixer": "^9.5.1",
+        "node-sass": "^4.11.0",
+        "postcss-loader": "^3.0.0",
+        "sass-loader": "7.0.1"
+    },
+    "dependencies": {
+        "bootstrap-sass": "^3.4.1",
+        "core-js": "2",
+        "yarn": "^1.15.2"
+    },
+    "browserslist": {
+        "production": [
+            "cover 99.5%",
+            "last 3 versions",
+            "ie 9-11",
+            "Android 2.3",
+            "Android >= 4",
+            "Chrome >= 20",
+            "Firefox >= 24",
+            "Explorer >= 8",
+            "iOS >= 6",
+            "Opera >= 12",
+            "Safari >= 6"
+        ],
+        "development": [
+            "last 3 chrome version",
+            "last 3 firefox version"
+        ]
+    }
 }
