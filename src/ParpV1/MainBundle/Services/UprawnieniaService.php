@@ -71,6 +71,11 @@ class UprawnieniaService
     private $wypchnijEntryPrzyAnulowaniu = true;
 
     /**
+     * @var bool
+    */
+    private $zablokujTworzenieNowegoEntry = false;
+
+    /**
      * UprawnieniaService constructor.
      * @param EntityManager $OrmEntity
      * @param Container $container
@@ -686,7 +691,70 @@ class UprawnieniaService
         $accountName = $odebranieZasobowEntry->getUzytkownik();
         $powodOdebrania = $odebranieZasobowEntry->getPowodOdebrania();
 
-        return $this->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true);
+        $przeprocesowaneWnioski = $this->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true);
+
+        $zasobyZGrupamiAd = $this->pobierzZasobyIdZGrupamiAd();
+
+        $przeprocesowaneBezGrup = [];
+        $przeprocesowaneZGrupami = [];
+        foreach ($przeprocesowaneWnioski as $jedenZasob) {
+            if (in_array($jedenZasob['zasob'], $zasobyZGrupamiAd)) {
+                $przeprocesowaneZGrupami[] = $jedenZasob;
+            } else {
+                $przeprocesowaneBezGrup[] = $jedenZasob;
+            }
+        }
+
+        $this->wyslijInfoDoAdministratorow($accountName, $przeprocesowaneBezGrup, new DateTime());
+
+
+        return $przeprocesowaneWnioski;
+    }
+
+    /**
+     * Wysyła mail do adminów zasobów żeby przejrzeli użytkowników.
+     *
+     * @param string $nazwaUzytkownika
+     * @param array $procesowaneZasoby
+     * @param DateTime $dataZmiany
+     *
+     * @return void
+     */
+    private function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany)
+    {
+        $entityManager = $this->getDoctrine();
+        $odebraneZasoby = [];
+        foreach ($przeprocesowneZasoby as $zasob) {
+            if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE  === $zasob['status']) {
+                $userZasob = $entityManager
+                    ->getRepository(UserZasoby::class)
+                    ->findOneById($zasob['user_zasob'])
+                ;
+
+                $zasob = $entityManager
+                    ->getRepository(Zasoby::class)
+                    ->findOneById($zasob['zasob'])
+                ;
+
+                $odebraneZasoby[$zasob->getId()]['object'] = $zasob;
+                $odebraneZasoby[$zasob->getId()]['modul'][] = $userZasob->getModul();
+                $odebraneZasoby[$zasob->getId()]['poziom'][] = $userZasob->getPoziomDostepu();
+                $odebraneZasoby[$zasob->getId()]['poziom_modul'][] = ['modul' => $userZasob->getModul(), 'poziom' => $userZasob->getPoziomDostepu()];
+            }
+        }
+
+        $mailer = $this->container->get('parp.mailer');
+        $mailer->disableFlush();
+        foreach ($odebraneZasoby as $odebrany) {
+            $odebrany['odbiorcy'] = [$mailer->getUserMail($odebrany['object']->getAdministratorZasobu())];
+            $odebrany['imie_nazwisko'] = $odebrany['object']->getAdministratorZasobu();
+            $odebrany['login'] = $odebrany['object']->getAdministratorZasobu();
+            $odebrany['dotyczy'] = $nazwaUzytkownika;
+            $odebrany['data_zmiany'] = $dataZmiany;
+            $mailer->sendEmailByType(ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN, $odebrany);
+        }
+
+        $this->logWpis[$nazwaUzytkownika]['wyslano_mail_do_admina'] = $odebraneZasoby;
     }
 
     /**
@@ -781,15 +849,32 @@ class UprawnieniaService
     }
 
     /**
+     * Blokuje entry żeby się drugie nie robiło, jeżeli jest realizowane gdzie indziej.
+     * Szpachla oczywiście.
+     *
+     * @return self
+     */
+    public function zablokujDublowanieEntry(): self
+    {
+        $this->zablokujTworzenieNowegoEntry = true;
+
+        return $this;
+    }
+
+    /**
      * Utworzenie obiektu entry.
      *
      * @param array $zasobyDoUtworzeniaEntry
      * @param string $nazwaUzytkownika
      *
-     * @return void
+     * @return bool
      */
-    private function stworzEntry(array $zasobyDoUtowrzeniaEntry, $nazwaUzytkownika)
+    private function stworzEntry(array $zasobyDoUtowrzeniaEntry, $nazwaUzytkownika): bool
     {
+        if ($this->zablokujTworzenieNowegoEntry) {
+            return false;
+        }
+
         $grupyDoOdebrania = [];
 
         foreach ($zasobyDoUtowrzeniaEntry as $zasob) {
@@ -804,7 +889,10 @@ class UprawnieniaService
         $entry->setOpis('Odebrano administracyjnie.');
         $this
             ->getDoctrine()
-            ->persist($entry);
+            ->persist($entry)
+        ;
+
+        return true;
     }
 
     /**

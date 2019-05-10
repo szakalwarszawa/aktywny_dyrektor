@@ -39,6 +39,7 @@ class RemoveUserResources implements ChainOperationInterface
 
         if ($entry->getOdebranieZasobowEntry()) {
             $uprawnieniaService
+                ->zablokujDublowanieEntry()
                 ->odbierzZasobyUzytkownikaZEntry($entry->getOdebranieZasobowEntry())
             ;
         }
