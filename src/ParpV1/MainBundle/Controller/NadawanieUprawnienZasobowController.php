@@ -417,7 +417,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'required' => false,
                     'label' => $title,
                     'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left uprawnienieRow',
+                        'class' => 'control-label text-left uprawnienieRow',
                     ),
                     'attr' => array(
                         'class' => '',
