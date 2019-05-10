@@ -43,7 +43,7 @@
 
 {% block checkbox_radio_row -%}
 {% spaceless %}
-    <div class="{% if not valid %} has-error{% endif %} {{ label|getMultipleCheckboxLabelClasses }} uprawnienieRow">
+    <div class="col-sm-12 {% if not valid %} has-error{% endif %} {{ label|getMultipleCheckboxLabelClasses }} uprawnienieRow">
 
         {{ form_widget(form) }}
         {{ form_errors(form) }}
