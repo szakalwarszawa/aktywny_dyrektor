@@ -26,9 +26,6 @@ Encore.setOutputPath('web/build/')
 if (Encore.isProduction()) {
     // Enable post css loader
     Encore.enablePostCssLoader();
-} else {
-    //for test only
-    Encore.enablePostCssLoader();
 }
 
 module.exports = Encore.getWebpackConfig();
