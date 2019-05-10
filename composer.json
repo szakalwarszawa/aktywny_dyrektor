@@ -54,7 +54,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "yarn install --frozen-lockfile --force --non-interactive",
             "yarn patch-package",
-            "yarn run encore production"
+            "yarn run encore dev"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -65,7 +65,7 @@
             "yarn install --frozen-lockfile --force --non-interactive",
             "yarn upgrade",
             "yarn patch-package",
-            "yarn run encore production"
+            "yarn run encore dev"
         ]
     },
     "config": {
