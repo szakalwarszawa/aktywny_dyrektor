@@ -18,6 +18,7 @@ Encore.setOutputPath('web/build/')
         );
         if (preset !== undefined) {
             preset[1].useBuiltIns = 'usage';
+            preset[1].corejs = '2.0.0';
             preset[1].debug = true;
         }
     });
