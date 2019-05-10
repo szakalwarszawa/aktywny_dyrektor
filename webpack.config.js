@@ -11,7 +11,7 @@ Encore.setOutputPath('web/build/')
     .splitEntryChunks()
     .autoProvidejQuery()
     .enableSassLoader()
-    .enablePostCssLoader()
+    // .enablePostCssLoader()
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(
             ([name]) => name === '@babel/preset-env',
@@ -22,5 +22,10 @@ Encore.setOutputPath('web/build/')
             preset[1].debug = true;
         }
     });
+
+if (Encore.isProduction()) {
+    // Enable post css loader
+    Encore.enablePostCssLoader();
+}
 
 module.exports = Encore.getWebpackConfig();
