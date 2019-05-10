@@ -693,12 +693,6 @@ class UprawnieniaService
 
         $przeprocesowaneWnioski = $this->odbierzZasobyUzytkownikaOdDaty($accountName, new DateTime(), $powodOdebrania, false, true);
 
-        foreach ($przeprocesowaneWnioski as $wniosek) {
-            if (!$wniosek['stworzono_entry']) {
-
-            }
-        }
-
         $zasobyZGrupamiAd = $this->pobierzZasobyIdZGrupamiAd();
 
         $przeprocesowaneBezGrup = [];
