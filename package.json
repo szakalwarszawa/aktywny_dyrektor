@@ -27,6 +27,7 @@
     },
     "browserslist": {
         "production": [
+            "> .05%",
             "cover 99.5%",
             "last 3 versions",
             "ie 9-11",
