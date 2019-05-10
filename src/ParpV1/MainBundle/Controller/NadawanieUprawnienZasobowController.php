@@ -358,7 +358,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Data zmiany',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label ',
+                        'class' => 'data-zmiany',
                     ),
                     'required' => false,
                     'data' => $now->format('Y-m-d')
@@ -369,7 +369,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Cel nadania/odebrania',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'cel-nadania-odebrania',
                     ),
                     'required' => true
                 ))
