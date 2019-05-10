@@ -66,7 +66,7 @@ class ZastepstwoType extends AbstractType
                     ),
                     'label' => 'Data od',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'zastepstwo-data-od',
                     ),
                     'required' => true,
                     'widget' => 'single_text',
@@ -79,7 +79,7 @@ class ZastepstwoType extends AbstractType
                     ),
                     'label' => 'Data do',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'zastepstwo-data-do',
                     ),
                     'required' => true,
                     'widget' => 'single_text',
