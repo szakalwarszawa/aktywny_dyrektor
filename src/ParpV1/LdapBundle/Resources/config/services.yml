@@ -32,6 +32,7 @@ services:
       - [setParpMailerService, ['@parp.mailer']]
       - [setUprawnieniaService, ['@uprawnienia_service']]
       - [setStatusWnioskuService, ['@status_wniosku_service']]
+      - [setEntryChain, ['@entry_chain']]
   ldap.update_from_array:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
     arguments: ['@doctrine.orm.entity_manager']
@@ -55,3 +56,6 @@ services:
         arguments: ['@ldap.update_from_entry']
         tags:
             - { name: 'console.command' }
+  entry_chain:
+    class: ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain
+    arguments: ['@uprawnienia_service', '@status_wniosku_service', '@doctrine.orm.entity_manager']

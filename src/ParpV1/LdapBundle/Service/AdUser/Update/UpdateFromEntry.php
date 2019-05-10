@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityManager;
 use DateTime;
 use Adldap\AdldapException;
 use ParpV1\LdapBundle\AdUser\AdUser;
+use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
@@ -124,31 +125,12 @@ final class UpdateFromEntry extends LdapUpdate
 
         $entry->setIsImplemented(true);
 
-        if ($entry->getOdebranieZasobowEntry() && !$this->isSimulation()) {
-            $this
-                ->uprawnieniaService
-                ->odbierzZasobyUzytkownikaZEntry($entry->getOdebranieZasobowEntry())
-            ;
-        }
-
-        if (null !== $entry->getWniosek() && !$this->isSimulation()) {
-            $wniosek = $entry->getWniosek()->getWniosekNadanieOdebranieZasobow();
-            foreach ($wniosek->getUserZasoby() as $userZasob) {
-                $userZasob->setCzyAktywne(!$wniosek->getOdebranie());
-                if ($wniosek->getOdebranie()) {
-                    $userZasob->setDataOdebrania(new DateTime());
-                }
-
-                $userZasob->setCzyNadane(true);
-
-                $this
-                    ->entityManager
-                    ->persist($userZasob);
-            }
-            $this
-                ->statusWnioskuService
-                ->setWniosekStatus($wniosek, '11_OPUBLIKOWANY', false);
-        }
+        $chain = $this->entryChain;
+        $chain
+            ->build($entry)
+            ->setSimulateProcess($this->isSimulation())
+            ->initializeChain()
+        ;
 
         return $this;
     }

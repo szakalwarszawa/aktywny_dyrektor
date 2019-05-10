@@ -28,6 +28,7 @@ use ParpV1\MainBundle\Services\ParpMailerService;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\MainBundle\Services\UprawnieniaService;
 use ParpV1\MainBundle\Services\StatusWnioskuService;
+use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 
 /**
  * LdapUpdate
@@ -97,6 +98,11 @@ class LdapUpdate extends Simulation
      * @var StatusWnioskuService
      */
     protected $statusWnioskuService;
+
+    /**
+     * @var EntryChain
+     */
+    protected $entryChain;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -945,6 +951,18 @@ class LdapUpdate extends Simulation
     public function setStatusWnioskuService(StatusWnioskuService $statusWnioskuService): void
     {
         $this->statusWnioskuService = $statusWnioskuService;
+    }
+
+    /**
+     * Set entryChain
+     *
+     * @param EntryChain $entryChain
+     *
+     * @return void
+     */
+    public function setEntryChain(EntryChain $entryChain): void
+    {
+        $this->entryChain = $entryChain;
     }
 
     /**
