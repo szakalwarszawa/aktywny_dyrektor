@@ -488,7 +488,6 @@ class NadawanieUprawnienZasobowController extends Controller
                             $wniosek->setZasoby(implode(',', $zasobyName));
                             $this->getDoctrine()->getManager()->persist($wniosek);
                         }
-
                         $this->sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($ids);
                     }
 
