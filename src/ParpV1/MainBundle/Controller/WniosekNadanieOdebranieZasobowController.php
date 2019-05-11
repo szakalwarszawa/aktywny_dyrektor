@@ -2,9 +2,6 @@
 
 namespace ParpV1\MainBundle\Controller;
 
-use APY\DataGridBundle\Grid\Action\RowAction;
-use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
 use APY\DataGridBundle\Grid\Source\Entity;
 use Doctrine\ORM\EntityNotFoundException;
 use ParpV1\MainBundle\Entity\UserZasoby;
@@ -13,10 +10,8 @@ use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\AclRole;
 use ParpV1\MainBundle\Entity\AclUserRole;
-use ParpV1\MainBundle\Entity\WniosekEditor;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
-use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Form\WniosekNadanieOdebranieZasobowType;
 use ParpV1\MainBundle\Services\ParpMailerService;
@@ -37,7 +32,6 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use DateTime;
-use Exception;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -701,7 +695,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $this->get('wniosekNumer')->nadajNumer($wniosek, 'wniosekONadanieUprawnien');
                             //klonuje wniosek na male i ustawia im statusy:
                             $przelozeni = array();
+                            $zasobyWeWniosku = [];
                             foreach ($wniosek->getUserZasoby() as $uz) {
+                                if (!in_array($uz->getZasobOpis(), $zasobyWeWniosku)) {
+                                    $zasobyWeWniosku[] = $uz->getZasobOpis();
+                                }
                                 if ($wniosek->getPracownikSpozaParp()) {
                                     //biore managera z pola managerSpoząParp
                                     $ADManager = $this->getUserFromAD($wniosek->getManagerSpozaParp());
@@ -721,6 +719,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
                                 }
                             }
+                            $wniosek->setZasoby(implode(',', $zasobyWeWniosku));
                             if ($this->debug) {
                                 echo '<pre>';
                                 \Doctrine\Common\Util\Debug::dump($przelozeni);
@@ -834,6 +833,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $em->persist($uz);
                                             $users[$uz->getSamaccountname()] = $uz->getSamaccountname();
                                             $userZasobPersist = $uz;
+                                            $wn->addUserZasobyOdbierane($uz);
                                         } else {
                                             $nuz = clone $uz;
                                             $nuz->setWniosek($wn);
@@ -842,6 +842,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $wn->setZasobId($nuz->getId());
                                             $users[$nuz->getSamaccountname()] = $nuz->getSamaccountname();
                                             $userZasobPersist = $nuz;
+                                            $wn->addUserZasoby($uz);
                                         }
 
                                         $wn
@@ -1248,6 +1249,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete")
      * @Method("GET")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function deleteAction($id)
@@ -1272,6 +1274,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Displays a form to edit an existing WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
      * @Method("GET")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function deleteUzAction($id)
@@ -1426,6 +1429,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Deletes a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete_form")
      * @Method("DELETE")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
     public function deleteFormAction(Request $request, $id)
     {
@@ -1440,6 +1444,32 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $wniosekZablokowany = $accessCheckerService
                 ->checkWniosekIsBlocked($entity, null, true);
 
+            if ($entity->getWniosek()->getCreatedBy() !== $this->getUser()->getUsername()) {
+                $this->addFlash('danger', 'Możesz usunąć tylko swój wniosek.');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
+            }
+
+            if ('00_TWORZONY' !== $entity->getWniosek()->getStatus()->getNazwaSystemowa()) {
+                $this->addFlash('danger', 'Można usunąć tylko wnioski ze statusem Tworzony');
+
+                return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow'));
+            }
+
+            $userZasobyWniosku = $em
+                ->getRepository(UserZasoby::class)
+                ->findBy([
+                    'wniosekOdebranie' => $id
+                ]);
+
+            foreach ($userZasobyWniosku as $userZasob) {
+                $userZasob
+                    ->setPowodOdebrania(null)
+                    ->setWniosekOdebranie(null)
+                ;
+
+                $em->persist($userZasob);
+            }
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekNadanieOdebranieZasobow entity.');

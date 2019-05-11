@@ -24,6 +24,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
             ->select(
                 'wno.id, w.numer as numerWniosku,
                 s.nazwa as statusWniosku,
+                wno.odebranie as odebranie,
                 w.createdBy as utworzonyPrzez,
                 w.createdAt as utworzonyDnia,
                 w.lockedBy as zablokowanyPrzez,
