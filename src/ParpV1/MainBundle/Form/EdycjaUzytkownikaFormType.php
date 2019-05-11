@@ -33,9 +33,6 @@ use Symfony\Component\VarDumper\VarDumper;
  * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
  * Opiera się na kluczach tablicy zwracanej z AD które są zdefiniowane
  * w klasie AdUserConstants. W miejsca stałych lepiej nie wsadzać nic innego.
- *
- * Prawa dostępu do edycji lub wyświetlenia są pobierane
- * z pliku konfiguracyjnego userEditFormPrivileges.yml
  */
 class EdycjaUzytkownikaFormType extends AbstractType
 {

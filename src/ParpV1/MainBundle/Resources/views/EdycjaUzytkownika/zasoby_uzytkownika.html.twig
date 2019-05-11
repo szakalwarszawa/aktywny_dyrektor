@@ -12,6 +12,7 @@
             <thead>
                 <th>Lp.</th>
                 <th>Nazwa zasobu</th>
+                <th>Moduł</th>
                 <th>Poziom dostepu</th>
                 <th>Kanał dostępu</th>
                 <th>Aktywne od</th>
@@ -29,6 +30,9 @@
                             </td>
                             <td>
                                 {{ zasob.nazwa_zasobu }}
+                            </td>
+                            <td style="word-break: break-all">
+                                {{ user_zasob.modul }}
                             </td>
                             <td style="word-break: break-all">
                                 {{ user_zasob.poziomDostepu }}
@@ -68,10 +72,12 @@
             <thead>
                 <th>Lp.</th>
                 <th>Nazwa zasobu</th>
+                <th>Moduł</th>
                 <th>Poziom dostepu</th>
                 <th>Kanał dostępu</th>
                 <th>Aktywne od</th>
                 <th>Aktywne do</th>
+                <th>Data odebrania</th>
                 <th>Powód odebrania</th>
                 <th>Wniosek odebrania</th>
             </thead>
@@ -87,6 +93,9 @@
                                 {{ zasob.nazwa_zasobu }}
                             </td>
                             <td style="word-break: break-all">
+                                {{ user_zasob.modul }}
+                            </td>
+                            <td style="word-break: break-all">
                                 {{ user_zasob.poziomDostepu }}
                             </td>
                             <td style="word-break: break-all">
@@ -98,6 +107,13 @@
                             <td>
                                 {% if user_zasob.aktywneDo is not null %}
                                     {{ user_zasob.aktywneDo|date('Y-m-d') }}
+                                    {% else %}
+                                    -
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if user_zasob.dataOdebrania is not null %}
+                                    {{ user_zasob.dataOdebrania|date('Y-m-d') }}
                                     {% else %}
                                     -
                                 {% endif %}

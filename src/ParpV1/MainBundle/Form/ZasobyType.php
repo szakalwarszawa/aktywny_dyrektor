@@ -125,6 +125,7 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => '',
                     ),
+                    'format' => 'yyyy-MM-dd',
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text'
@@ -146,6 +147,7 @@ class ZasobyType extends AbstractType
                     'label_attr' => array(
                         'class' => '',
                     ),
+                    'format' => 'yyyy-MM-dd',
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text'
@@ -176,11 +178,12 @@ class ZasobyType extends AbstractType
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu uprawnień',
-//                'format' => 'dd-MM-yyyy',
+//                'format' => 'yyyy-MM-dd',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => '',
                     ),
+                    'format' => 'yyyy-MM-dd',
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text'
@@ -195,13 +198,14 @@ class ZasobyType extends AbstractType
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniego przeglądu aktywności',
-//                'format' => 'dd-MM-yyyy',
+//                'format' => 'yyyy-MM-dd',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => '',
                     ),
                     'required' => false,
                     'html5' => false,
+                    'format' => 'yyyy-MM-dd',
                     'widget' => 'single_text'
 
                 ))
@@ -214,11 +218,12 @@ class ZasobyType extends AbstractType
                     ),
 //                'widget' => 'single_text',
                     'label' => 'Data zlecenia ostatniej zmiany haseł',
-//                'format' => 'dd-MM-yyyy',
+//                'format' => 'yyyy-MM-dd',
 //                'input' => 'datetime',
                     'label_attr' => array(
                         'class' => '',
                     ),
+                    'format' => 'yyyy-MM-dd',
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text'
@@ -238,6 +243,7 @@ class ZasobyType extends AbstractType
                     'required' => false,
                     'html5' => false,
                     'widget' => 'single_text',
+                    'format' => 'yyyy-MM-dd',
                 ))
             ->add('dataZmianyZasobu', DateType::class, array(
                     'attr' => array(
@@ -251,6 +257,7 @@ class ZasobyType extends AbstractType
                     ),
                     'required' => false,
                     'html5' => false,
+                    'format' => 'yyyy-MM-dd',
                     'widget' => 'single_text',
                 ))
             ->add('dataUsunieciaZasobu', DateType::class, array(
@@ -264,6 +271,7 @@ class ZasobyType extends AbstractType
                         'class' => '',
                     ),
                     'required' => false,
+                    'format' => 'yyyy-MM-dd',
                     'html5' => false,
                     'widget' => 'single_text',
                 ))

@@ -26,6 +26,9 @@ use ParpV1\MainBundle\Entity\Entry;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Adldap\Models\Attributes\DistinguishedName;
+use ParpV1\MainBundle\Services\UprawnieniaService;
+use ParpV1\MainBundle\Services\StatusWnioskuService;
+use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 
 /**
  * LdapUpdate
@@ -87,6 +90,21 @@ class LdapUpdate extends Simulation
     private $parpMailerService;
 
     /**
+     * @var UprawnieniaService
+     */
+    protected $uprawnieniaService;
+
+    /**
+     * @var StatusWnioskuService
+     */
+    protected $statusWnioskuService;
+
+    /**
+     * @var EntryChain
+     */
+    protected $entryChain;
+
+    /**
      * Klucz po której szuka użytkownika w AD.
      *
      * @var string
@@ -137,7 +155,7 @@ class LdapUpdate extends Simulation
                 }
                 $this->addMessage(
                     new Messages\SuccessMessage(),
-                    'Dodano do grupy - ' . $group->getName(),
+                    '[Dodaj] Dodano do grupy - ' . $group->getName(),
                     AdUserConstants::GRUPY_AD,
                     $adUser->getUser()
                 );
@@ -147,7 +165,7 @@ class LdapUpdate extends Simulation
 
             $this->addMessage(
                 new Messages\InfoMessage(),
-                'Użytkownik jest już w grupie - ' . $group->getName(),
+                '[Dodaj] Użytkownik jest już w grupie - ' . $group->getName(),
                 AdUserConstants::GRUPY_AD,
                 $adUser->getUser()
             );
@@ -197,7 +215,7 @@ class LdapUpdate extends Simulation
 
                 $this->addMessage(
                     new Messages\SuccessMessage(),
-                    'Usunięto z grupy - ' . $group->getName(),
+                    '[Usuń] Usunięto z grupy - ' . $group->getName(),
                     AdUserConstants::GRUPY_AD,
                     $adUser->getUser()
                 );
@@ -207,7 +225,7 @@ class LdapUpdate extends Simulation
 
             $this->addMessage(
                 new Messages\InfoMessage(),
-                'Użytkownik nie był w grupie ' . $group->getName(),
+                '[Usuń] Użytkownik nie był w grupie ' . $group->getName(),
                 AdUserConstants::GRUPY_AD,
                 $adUser->getUser()
             );
@@ -236,13 +254,25 @@ class LdapUpdate extends Simulation
      *
      * @return void
      */
-    private function addMessage(Message $message, string $text, string $target, $vars = null): void
+    private function addMessage(Message $message, string $text = '', string $target = '', $vars = null): void
     {
-        $message
-            ->setTarget($target)
-            ->setMessage($text)
-            ->setVars($vars)
-        ;
+        if (!empty($text)) {
+            $message
+                ->setMessage($text)
+            ;
+        }
+
+        if (!empty($target)) {
+            $message
+                ->setTarget($target)
+            ;
+        }
+
+        if (null !== $vars) {
+            $message
+                ->setVars($vars)
+            ;
+        }
 
         $this
             ->responseMessages
@@ -277,14 +307,22 @@ class LdapUpdate extends Simulation
             }
         }
 
+        $groupsRemoved = [];
+        $groupsAdded = [];
         foreach (explode(',', $groupsAd) as $groupName) {
             if (self::REMOVE_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::REMOVE_GROUP_SIGN);
-                $this->groupRemove($adUser, $groupName);
+                if (!in_array($groupName, $groupsRemoved)) {
+                    $this->groupRemove($adUser, $groupName);
+                    $groupsRemoved[] = $groupName;
+                }
             }
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
-                $this->groupAdd($adUser, $groupName);
+                if (!in_array($groupName, $groupsAdded)) {
+                    $this->groupAdd($adUser, $groupName);
+                    $groupsAdded[] = $groupName;
+                }
             }
         }
     }
@@ -690,7 +728,9 @@ class LdapUpdate extends Simulation
             ->addCn($changes[AdUserConstants::CN_AD_STRING])
         ;
 
-        $dnBuilder->addOu($baseParameters['base_ou']);
+        foreach (explode(',', $baseParameters['base_ou']) as $dnPart) {
+            $dnBuilder->addOu($dnPart);
+        }
 
         $writableUserObject
             ->setDn($dnBuilder)
@@ -717,8 +757,10 @@ class LdapUpdate extends Simulation
      * Wyrzuca użytkownika ze wszystkich jego grup.
      *
      * @param AdUser $adUser
+     *
+     * @return void
      */
-    public function removeAllUserGroups(AdUser $adUser)
+    public function removeAllUserGroups(AdUser $adUser): void
     {
         $simulateProcess = $this->isSimulation();
         $writableUserObject = $adUser
@@ -728,22 +770,31 @@ class LdapUpdate extends Simulation
             ->getGroups()
         ;
 
-        if (!$simulateProcess) {
-            foreach ($userGroups as $group) {
-                try {
-                    $group->removeMember($writableUserObject);
-                } catch (ContextErrorException $exception) {
-                    continue;
-                }
-            }
-        }
-
-        $this->addMessage(
-            new Messages\SuccessMessage(),
-            'WYZEROWANO WSZYSTKIE GRUPY',
+        $responseMessage = new Messages\SuccessMessage(
+            'Wyzerowano wszystkie grupy',
             AdUserConstants::GRUPY_AD,
             $adUser->getUser()
         );
+
+        foreach ($userGroups as $group) {
+            try {
+                if (!$simulateProcess) {
+                    $group->removeMember($writableUserObject);
+                }
+
+                $responeMessageChild = new Messages\SuccessMessage(
+                    'Usunięto z grupy ' . $group->getName()
+                );
+                $responseMessage
+                    ->children
+                    ->add($responeMessageChild)
+                ;
+            } catch (ContextErrorException $exception) {
+                continue;
+            }
+        }
+
+        $this->addMessage($responseMessage);
     }
 
     /**
@@ -876,6 +927,42 @@ class LdapUpdate extends Simulation
     public function setEntityManager(EntityManager $entityManager): void
     {
         $this->entityManager = $entityManager;
+    }
+
+    /**
+     * Set uprawnieniaService
+     *
+     * @param UprawnieniaService $uprawnieniaService
+     *
+     * @return void
+     */
+    public function setUprawnieniaService(UprawnieniaService $uprawnieniaService): void
+    {
+        $this->uprawnieniaService = $uprawnieniaService;
+    }
+
+    /**
+     * Set statusWnioskuService
+     *
+     * @param UprawnieniaService $statusWnioskuService
+     *
+     * @return void
+     */
+    public function setStatusWnioskuService(StatusWnioskuService $statusWnioskuService): void
+    {
+        $this->statusWnioskuService = $statusWnioskuService;
+    }
+
+    /**
+     * Set entryChain
+     *
+     * @param EntryChain $entryChain
+     *
+     * @return void
+     */
+    public function setEntryChain(EntryChain $entryChain): void
+    {
+        $this->entryChain = $entryChain;
     }
 
     /**

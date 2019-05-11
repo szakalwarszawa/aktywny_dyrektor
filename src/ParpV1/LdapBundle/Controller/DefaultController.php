@@ -36,13 +36,6 @@ class DefaultController extends Controller
      */
     public function publishLdapChangesAction(Request $request): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
-
-        $entries = $entityManager
-            ->getRepository(Entry::class)
-            ->findChangesToImplement()
-        ;
-
         $updateByEntry = $this->get('ldap.update_from_entry');
 
         $isSimulation = false;
@@ -56,16 +49,13 @@ class DefaultController extends Controller
 
         if (!$request->isMethod('POST')) {
             $isSimulation = true;
-            $updateByEntry->doSimulateProcess();
         }
 
         if ($form->isSubmitted() && $form->isValid() && !$updateByEntry->hasError()) {
             $writeChanges = true;
         }
 
-        foreach ($entries as $entry) {
-            $updateByEntry->update($entry, true);
-        }
+        $updateByEntry->publishAllPendingChanges($isSimulation);
 
         if ($writeChanges && !$updateByEntry->hasError()) {
             $this

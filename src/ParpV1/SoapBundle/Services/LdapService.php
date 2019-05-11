@@ -12,6 +12,7 @@ use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\LdapBundle\Connection\LdapConnection;
 use ParpV1\LdapBundle\Service\LdapFetch;
+use Symfony\Component\VarDumper\VarDumper;
 
 class LdapService
 {
@@ -773,6 +774,7 @@ class LdapService
                     $userdn
                 )
             );
+            $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
         }
@@ -833,6 +835,7 @@ class LdapService
               }
              */
         }
+
         return $result;
     }
 

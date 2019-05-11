@@ -33,6 +33,7 @@ use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 use DateTime;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -445,7 +446,7 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $delta = [];
         if ($entity->getTyp() === 'zmiana') {
-            $delta = $this->obliczZmienionePola($entity);
+            $delta = $this->obliczZmienionePola($entity, true);
             $entity->setZmienionePola(implode(',', array_keys($delta)));
         }
         $editForm = $this->createEditForm($entity, true, $readonly);
@@ -469,7 +470,7 @@ class WniosekUtworzenieZasobuController extends Controller
             'comments' => $comments
         );
     }
-    protected function obliczZmienionePola($entity)
+    protected function obliczZmienionePola($entity, $zwrotDatyJakoDateTime = false)
     {
         $em = $this->getDoctrine()->getManager();
         $metadata = $em->getClassMetadata("ParpV1\\MainBundle\\Entity\\Zasoby");
@@ -490,7 +491,38 @@ class WniosekUtworzenieZasobuController extends Controller
         }
 
         $delta = array_diff($z1, $z2);
+        $deltaFiltered = array_diff_assoc($z1, $z2);
+        if (isset($deltaFiltered['daneOsobowe'])) {
+            $delta['daneOsobowe'] = $deltaFiltered['daneOsobowe'];
+        }
 
+        //$z1 - to co ma być
+        $daty = [
+            'dataZakonczeniaWdrozenia',
+            'dataWygasnieciaAsystyTechnicznej',
+            'dataZleceniaOstatniegoPrzegladuUprawnien',
+            'dataZleceniaOstatniegoPrzegladuAktywnosci',
+            'dataOstatniejZmianyHaselKontAdministracyjnychISerwisowych',
+            'dataUsunieciaZasobu',
+            'dataZmianyZasobu',
+            'dataUtworzeniaZasobu'
+        ];
+
+        foreach ($daty as $value) {
+            if ($z1[$value] !== $z2[$value]) {
+                $delta[$value] = $z1[$value];
+            }
+        }
+
+        if ($zwrotDatyJakoDateTime) {
+            foreach ($delta as $key => $value) {
+                if ('datetime' === $metadata->getTypeOfField($key)) {
+                    if ($value !== null) {
+                        $delta[$key] = new DateTime($value);
+                    }
+                }
+            }
+        }
 
         unset($delta['id']);
         return $delta;
@@ -1039,10 +1071,31 @@ class WniosekUtworzenieZasobuController extends Controller
                             $this->setWniosekStatus($wniosek, '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', false);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
+
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'return':
                             $this->setWniosekStatus($wniosek, '02_EDYCJA_WLASCICIEL_O_ZASOB', true);
@@ -1052,20 +1105,56 @@ class WniosekUtworzenieZasobuController extends Controller
                 case '04_EDYCJA_ADMINISTRATOR_O_ZASOB':
                     switch ($isAccepted) {
                         case 'moveToAdminRejestru':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdminTechniczny':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '05_EDYCJA_TECHNICZNY_O_ZASOB', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                     }
                     break;
                 case '05_EDYCJA_TECHNICZNY_O_ZASOB':
                     switch ($isAccepted) {
                         case 'moveToAdminRejestru':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                         case 'moveToAdmin':
+                            $powodZwrotu = $request->get('powodZwrotu');
+                            $wniosek->setPowodZwrotu($powodZwrotu);
                             $this->setWniosekStatus($wniosek, '04_EDYCJA_ADMINISTRATOR_O_ZASOB', false);
+                            $kom = new Komentarz();
+                            $kom->setObiekt('WniosekUtworzenieZasobu');
+                            $kom->setObiektId($id);
+                            $kom->setTytul('Wniosek odbity');
+                            $kom->setOpis($powodZwrotu);
+                            $kom->setSamaccountname($this->getUser()->getUsername());
+                            $em->persist($kom);
                             break;
                     }
                     break;
@@ -1080,7 +1169,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     case 'zmiana':
                         //powinien wprowadzic zmiany!!!
 
-                        $delta = $this->obliczZmienionePola($wniosek);
+                        $delta = $this->obliczZmienionePola($wniosek, true);
                         //var_dump($delta);
                         foreach ($delta as $k => $v) {
                             $getter = 'set'.ucfirst($k);

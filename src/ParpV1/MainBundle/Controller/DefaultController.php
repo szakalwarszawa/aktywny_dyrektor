@@ -48,6 +48,8 @@ use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaService;
 use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Constants\AdUserConstants;
 
 /**
  * Class DefaultController
@@ -85,7 +87,7 @@ class DefaultController extends Controller
             if ($ktorzy === 'usersFromAdFull' && in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles(), true)) {
                 $ADUsersTemp = $ldap->getAllFromAD('wszyscy');
             } else {
-                $ADUsersTemp = $ldap->getAllFromAD();
+                $ADUsersTemp = $ldap->getAllFromAD(false, false, null, true);
             }
             $ADUsers = array();
             foreach ($ADUsersTemp as $u) {
@@ -445,6 +447,17 @@ class DefaultController extends Controller
             'form_type' => EdycjaUzytkownikaFormType::TYP_EDYCJA,
             'short_form' => $shortForm
         ]);
+
+        $isDisabled = $form
+            ->get(AdUserConstants::WYLACZONE)
+            ->getData()
+        ;
+
+        if ($isDisabled) {
+            $this->addFlash('info', 'Konto pracownika jest nieaktywne lub zablokowane.');
+
+            return $this->redirectToRoute('main');
+        }
 
 
         $form->handleRequest($request);

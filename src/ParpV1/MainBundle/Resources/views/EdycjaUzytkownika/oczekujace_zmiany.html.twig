@@ -32,6 +32,13 @@
                         </td>
                         <td>{{ row.fromWhen|date('Y-m-d H:i:s') }}</td>
                         <td>
+                            {% if row.isDisabled %}
+                                    Tak
+                                {% else %}
+                                    Nie
+                            {% endif %}
+                        </td>
+                        <td>
                             <a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a>
                         </td>
                     </tr>

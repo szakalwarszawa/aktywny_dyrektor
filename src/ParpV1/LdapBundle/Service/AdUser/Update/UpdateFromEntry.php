@@ -6,9 +6,10 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\VarDumper\VarDumper;
+use DateTime;
 use Adldap\AdldapException;
 use ParpV1\LdapBundle\AdUser\AdUser;
+use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
@@ -30,6 +31,40 @@ final class UpdateFromEntry extends LdapUpdate
     }
 
     /**
+     * Wypycha lub symuluje wszystkie oczekujące zmiany.
+     *
+     * @param bool $isSimulation
+     * @param bool $flushChanges
+     *
+     * @return UpdateFromEntry
+     */
+    public function publishAllPendingChanges(bool $isSimulation = false, bool $flushChanges = false): UpdateFromEntry
+    {
+        if ($isSimulation) {
+            $this->doSimulateProcess();
+        }
+        $entityManager = $this->entityManager;
+
+        $pendingEntries = $entityManager
+            ->getRepository(Entry::class)
+            ->findChangesToImplement()
+        ;
+
+        foreach ($pendingEntries as $entry) {
+            $this->update($entry, true);
+        }
+
+        if (!$this->hasError() && $flushChanges && !$isSimulation) {
+            $this
+                ->entityManager
+                ->flush()
+            ;
+        }
+
+        return $this;
+    }
+
+    /**
      * Aktualizuje użytkownika w AD na podstawie obiektu klasy Entry.
      *
      * @param Entry $entry
@@ -38,9 +73,13 @@ final class UpdateFromEntry extends LdapUpdate
      * setDistinguishedName - jest null ponieważ jest generowany dalej
      *      automatycznie na podstawie zmiany departamentu, nie dotyczy nowych użytkowników
      *
-     * @return self
+     * Jeżeli następuje reset uprawnień - odbiera zasoby użytkownika.
+     *
+     * Jeżeli jest coś nadawane/odbierane z wniosku - przeprowadza akcję i zmienia status wniosku.
+     *
+     * @return UpdateFromEntry
      */
-    public function update(Entry $entry, bool $createIfNotExists = false): self
+    public function update(Entry $entry, bool $createIfNotExists = false): UpdateFromEntry
     {
         $userLoginGetter = AttributeGetterSetterHelper::get(AdUserConstants::LOGIN);
         $userLogin = $entry->$userLoginGetter();
@@ -86,6 +125,13 @@ final class UpdateFromEntry extends LdapUpdate
 
         $entry->setIsImplemented(true);
 
+        $chain = $this->entryChain;
+        $chain
+            ->build($entry)
+            ->setSimulateProcess($this->isSimulation())
+            ->initializeChain()
+        ;
+
         return $this;
     }
 
@@ -93,8 +139,10 @@ final class UpdateFromEntry extends LdapUpdate
      * Tworzy nowego użytkownika na podstawie wpisu klasy Entry.
      *
      * @param Entry $entry
+     *
+     * @return UpdateFromEntry
      */
-    public function createNewByEntry(Entry $entry): self
+    public function createNewByEntry(Entry $entry): UpdateFromEntry
     {
         $newUserModel = $this
             ->ldapCreate

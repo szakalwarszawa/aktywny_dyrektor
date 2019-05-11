@@ -30,6 +30,9 @@ services:
       - [setNewResponseMessagesCollection]
       - [setEntityManager, ['@doctrine.orm.entity_manager']]
       - [setParpMailerService, ['@parp.mailer']]
+      - [setUprawnieniaService, ['@uprawnienia_service']]
+      - [setStatusWnioskuService, ['@status_wniosku_service']]
+      - [setEntryChain, ['@entry_chain']]
   ldap.update_from_array:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
     arguments: ['@doctrine.orm.entity_manager']
@@ -48,3 +51,11 @@ services:
   ldap.ad_group_cache:
     class: ParpV1\LdapBundle\Cache\AdGroupCache
     arguments: ['@ldap.ad_group.cache']
+  ldap.publish_pending_changes_command:
+        class: ParpV1\LdapBundle\Command\PublishPendingChangesCommand
+        arguments: ['@ldap.update_from_entry']
+        tags:
+            - { name: 'console.command' }
+  entry_chain:
+    class: ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain
+    arguments: ['@uprawnienia_service', '@status_wniosku_service', '@doctrine.orm.entity_manager']
