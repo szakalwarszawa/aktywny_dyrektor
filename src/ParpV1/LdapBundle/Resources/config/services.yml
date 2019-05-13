@@ -59,3 +59,9 @@ services:
   entry_chain:
     class: ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain
     arguments: ['@uprawnienia_service', '@status_wniosku_service', '@doctrine.orm.entity_manager']
+  publish_voter:
+    class: ParpV1\LdapBundle\Voter\AdPublishVoter
+    arguments: ['@doctrine.orm.entity_manager']
+    tags:
+      - { name: security.voter }
+    public: false

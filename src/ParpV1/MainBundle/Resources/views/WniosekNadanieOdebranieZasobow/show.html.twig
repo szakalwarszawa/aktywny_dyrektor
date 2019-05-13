@@ -89,7 +89,7 @@
                         <h4>Akcje:</h4>
                         {% if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
                             {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
-                            <a href="{{ path('opublikuj_zmiany_ldap') }}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('opublikuj_zmiany_ldap_wniosek', {application: entity.wniosek.id}) }}" class="btn btn-danger">Opublikuj do AD<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
                         {% else %}
                             <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'reject'}) }}');"
                             class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i> </a>

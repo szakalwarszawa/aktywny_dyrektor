@@ -10,6 +10,9 @@
         {% if is_simulation %}
             <div class="alert alert-warning">
                 <b>UWAGA!</b> Poniższe zmiany podświetlone na zielono zostaną wprowadzone.
+                {% if application_id is not null %}
+                    <br />Nadane zostaną uprawnienia wyłącznie z wniosku.
+                {% endif %}
                 {{ form_start(form) }}
                     {{ form_widget(form.submit, {label: 'Opublikuj do AD', attr: {'class': 'btn btn-danger'}}) }}
                 {{ form_end(form) }}

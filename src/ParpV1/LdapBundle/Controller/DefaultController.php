@@ -15,6 +15,8 @@ use ParpV1\LdapBundle\Form\PushChangesFormType;
 use Symfony\Component\HttpFoundation\Request;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ParpV1\MainBundle\Entity\Wniosek;
+use ParpV1\LdapBundle\Voter\AdPublishVoter;
 
 /**
  * Podstawowa klasa kontrolera.
@@ -26,16 +28,21 @@ class DefaultController extends Controller
     /**
      * Wyświetla zmiany oczekujące (wpisy klasy Entry) i publikuje po akcji.
      *
-     * @Route("/zmiany/opublikuj", name="opublikuj_zmiany_ldap")
+     * Druga ścieżka udostepnia administratorom zasobów publikację uprawnień z wniosku.
      *
-     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     * @Route("/zmiany/opublikuj", name="opublikuj_zmiany_ldap")
+     * @Route("/zmiany/opublikuj/{application}", name="opublikuj_zmiany_ldap_wniosek")
+     *
      *
      * @param Request $request
+     * @param Wniosek $application
      *
      * @return Response
      */
-    public function publishLdapChangesAction(Request $request): Response
+    public function publishLdapChangesAction(Request $request, Wniosek $application = null): Response
     {
+        $this->denyAccessUnlessGranted(AdPublishVoter::PUBLISH_CHANGES, $application);
+
         $updateByEntry = $this->get('ldap.update_from_entry');
 
         $isSimulation = false;
@@ -55,7 +62,7 @@ class DefaultController extends Controller
             $writeChanges = true;
         }
 
-        $updateByEntry->publishAllPendingChanges($isSimulation);
+        $updateByEntry->publishAllPendingChanges($isSimulation, false, $application);
 
         if ($writeChanges && !$updateByEntry->hasError()) {
             $this
@@ -70,6 +77,7 @@ class DefaultController extends Controller
             'is_simulation' => $isSimulation,
             'form' => $form->createView(),
             'has_error' => $updateByEntry->hasError(),
+            'application_id' => $application
         ]);
     }
 }

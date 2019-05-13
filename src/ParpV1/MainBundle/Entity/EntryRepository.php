@@ -229,4 +229,32 @@ class EntryRepository extends EntityRepository
 
         return $result;
     }
+
+    /**
+     * Odszukuje wpisy zmiany na podstawie wniosku z którego pochodzą.
+     *
+     * @param Wniosek $application
+     *
+     * @return array
+     */
+    public function findChangesToImplementByApplication(Wniosek $application)
+    {
+        $queryBuilder = $this->createQueryBuilder('e');
+
+        $queryBuilder
+            ->select('e')
+            ->where('e.isImplemented = 0')
+            ->andWhere('e.fromWhen <= :now')
+            ->andWhere('e.wniosek = :applicationId')
+            ->setParameter('now', new DateTime())
+            ->setParameter('applicationId', $application->getId())
+        ;
+
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+
+        return $result;
+    }
 }
