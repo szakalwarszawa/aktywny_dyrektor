@@ -737,11 +737,13 @@ class LdapUpdate extends Simulation
             ->setAccountName($changes[AdUserConstants::LOGIN])
         ;
 
-        $accountControl = $writableUserObject->getUserAccountControlObject();
-        $accountControl->passwordIsNotRequired();
-        $writableUserObject->setUserAccountControl($accountControl);
+        if (!$this->isSimulation()) {
+            $accountControl = $writableUserObject->getUserAccountControlObject();
+            $accountControl->passwordIsNotRequired();
+            $writableUserObject->setUserAccountControl($accountControl);
 
-        $writableUserObject->save();
+            $writableUserObject->save();
+        }
 
         $this->addMessage(
             new Messages\SuccessMessage(),
