@@ -356,6 +356,7 @@ class LdapUpdate extends Simulation
             ->getBaseParameters()
         ;
         $simulateProcess = $this->isSimulation();
+
         if ($this->eraseUserGroups) {
             $this->removeAllUserGroups($adUser);
             $adUser = $this
@@ -573,9 +574,13 @@ class LdapUpdate extends Simulation
                 ;
             }
 
-            $this->removeAllUserGroups($adUser);
-            if (!$simulateProcess && $disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
-                $this->sendMailToIntExtAdmins($adUser, $userGroups);
+
+            if ($disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
+                $this->removeAllUserGroups($adUser);
+
+                if (!$simulateProcess) {
+                    $this->sendMailToIntExtAdmins($adUser, $userGroups);
+                }
             }
         }
 
