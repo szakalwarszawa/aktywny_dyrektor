@@ -10,6 +10,7 @@ use DateTime;
 use Adldap\AdldapException;
 use ParpV1\LdapBundle\AdUser\AdUser;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
+use ParpV1\MainBundle\Entity\Wniosek;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
@@ -32,23 +33,37 @@ final class UpdateFromEntry extends LdapUpdate
 
     /**
      * Wypycha lub symuluje wszystkie oczekujące zmiany.
+     * Jezeli jest okreslony wniosek - wypchnięte będą tylko zmiany na podstawie tego wniosku.
+     * Voter sprawdza czy użytkownik jest AZ.
      *
      * @param bool $isSimulation
      * @param bool $flushChanges
+     * @param Wniosek|null $application
      *
      * @return UpdateFromEntry
      */
-    public function publishAllPendingChanges(bool $isSimulation = false, bool $flushChanges = false): UpdateFromEntry
-    {
+    public function publishAllPendingChanges(
+        bool $isSimulation = false,
+        bool $flushChanges = false,
+        Wniosek $application = null
+    ): UpdateFromEntry {
         if ($isSimulation) {
             $this->doSimulateProcess();
         }
         $entityManager = $this->entityManager;
-
-        $pendingEntries = $entityManager
+        $entryRepository = $entityManager
             ->getRepository(Entry::class)
+        ;
+
+        $pendingEntries = $entryRepository
             ->findChangesToImplement()
         ;
+
+        if (null !== $application) {
+            $pendingEntries = $entryRepository
+                ->findChangesToImplementByApplication($application)
+            ;
+        }
 
         foreach ($pendingEntries as $entry) {
             $this->update($entry, true);
