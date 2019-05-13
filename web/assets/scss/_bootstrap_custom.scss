@@ -1,0 +1,184 @@
+body {
+	// font-size: $base-font-size;
+	font-size: $font-size-base;
+}
+
+.row {
+	margin-left: 0;
+	margin-right: 0;
+}
+
+// --- old look buttons ---
+.btn-default {
+	background-image: -webkit-linear-gradient(#fff, #fff 60%, #f5f5f5);
+	background-image: -o-linear-gradient(#fff, #fff 60%, #f5f5f5);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#fff), color-stop(60%, #fff), to(#f5f5f5));
+	background-image: linear-gradient(#fff, #fff 60%, #f5f5f5);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffffffff', endColorstr='#fff5f5f5', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #e6e6e6
+}
+
+.btn-primary {
+	background-image: -webkit-linear-gradient(#54b4eb, #2fa4e7 60%, #1d9ce5);
+	background-image: -o-linear-gradient(#54b4eb, #2fa4e7 60%, #1d9ce5);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#54b4eb), color-stop(60%, #2fa4e7), to(#1d9ce5));
+	background-image: linear-gradient(#54b4eb, #2fa4e7 60%, #1d9ce5);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff54b4eb', endColorstr='#ff1d9ce5', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #178acc
+}
+
+.btn-success {
+	background-image: -webkit-linear-gradient(#88c149, #73a839 60%, #699934);
+	background-image: -o-linear-gradient(#88c149, #73a839 60%, #699934);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#88c149), color-stop(60%, #73a839), to(#699934));
+	background-image: linear-gradient(#88c149, #73a839 60%, #699934);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff88c149', endColorstr='#ff699934', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #59822c
+}
+
+.btn-info {
+	background-image: -webkit-linear-gradient(#04519b, #033c73 60%, #02325f);
+	background-image: -o-linear-gradient(#04519b, #033c73 60%, #02325f);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#04519b), color-stop(60%, #033c73), to(#02325f));
+	background-image: linear-gradient(#04519b, #033c73 60%, #02325f);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff04519b', endColorstr='#ff02325f', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #022241
+}
+
+.btn-warning {
+	background-image: -webkit-linear-gradient(#ff6707, #dd5600 60%, #c94e00);
+	background-image: -o-linear-gradient(#ff6707, #dd5600 60%, #c94e00);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#ff6707), color-stop(60%, #dd5600), to(#c94e00));
+	background-image: linear-gradient(#ff6707, #dd5600 60%, #c94e00);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffff6707', endColorstr='#ffc94e00', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #aa4200
+}
+
+.btn-danger {
+	background-image: -webkit-linear-gradient(#e12b31, #c71c22 60%, #b5191f);
+	background-image: -o-linear-gradient(#e12b31, #c71c22 60%, #b5191f);
+	background-image: -webkit-gradient(linear, left top, left bottom, from(#e12b31), color-stop(60%, #c71c22), to(#b5191f));
+	background-image: linear-gradient(#e12b31, #c71c22 60%, #b5191f);
+	background-repeat: no-repeat;
+	filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ffe12b31', endColorstr='#ffb5191f', GradientType=0);
+	-webkit-filter: none;
+	filter: none;
+	border-bottom: 1px solid #9a161a
+}
+
+// --- end of old look buttons ---
+
+// --- old look navbar ---
+
+// .navbar-default {
+// 	background-color: #2fa4e7;
+// 	border-color: #1995dc
+// }
+
+// .navbar-default .navbar-brand {
+// 	color: #ffffff
+// }
+
+// .navbar-default .navbar-brand:hover,
+// .navbar-default .navbar-brand:focus {
+// 	color: #ffffff;
+// 	background-color: none
+// }
+
+// .navbar-default .navbar-text {
+// 	color: #dddddd
+// }
+
+// .navbar-default .navbar-nav>li>a {
+// 	color: #ffffff
+// }
+
+// .navbar-default .navbar-nav>li>a:hover,
+// .navbar-default .navbar-nav>li>a:focus {
+// 	color: #ffffff;
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-nav>.active>a,
+// .navbar-default .navbar-nav>.active>a:hover,
+// .navbar-default .navbar-nav>.active>a:focus {
+// 	color: #ffffff;
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-nav>.disabled>a,
+// .navbar-default .navbar-nav>.disabled>a:hover,
+// .navbar-default .navbar-nav>.disabled>a:focus {
+// 	color: #dddddd;
+// 	background-color: transparent
+// }
+
+// .navbar-default .navbar-toggle {
+// 	border-color: #178acc
+// }
+
+// .navbar-default .navbar-toggle:hover,
+// .navbar-default .navbar-toggle:focus {
+// 	background-color: #178acc
+// }
+
+// .navbar-default .navbar-toggle .icon-bar {
+// 	background-color: #ffffff
+// }
+
+// .navbar-default .navbar-collapse,
+// .navbar-default .navbar-form {
+// 	border-color: #1995dc
+// }
+
+// .navbar-default .navbar-nav>.open>a,
+// .navbar-default .navbar-nav>.open>a:hover,
+// .navbar-default .navbar-nav>.open>a:focus {
+// 	background-color: #178acc;
+// 	color: #ffffff
+// }
+
+// --- end of old look navbar ---
+
+// $navbar-default-color: #ffffff !default;
+// $navbar-default-bg: #178acc !default;
+// $navbar-default-border: darken($navbar-default-bg, 6.5%) !default;
+
+// // Navbar links
+// $navbar-default-link-color: #dddddd !default;
+// $navbar-default-link-hover-color: #dddddd !default;
+// $navbar-default-link-hover-bg: transparent !default;
+// $navbar-default-link-active-color: #eeeeee !default;
+// $navbar-default-link-active-bg: darken($navbar-default-bg, 6.5%) !default;
+// $navbar-default-link-disabled-color: #ccc !default;
+// $navbar-default-link-disabled-bg: transparent !default;
+
+// // Navbar brand label
+// $navbar-default-brand-color: $navbar-default-link-color !default;
+// $navbar-default-brand-hover-color: darken($navbar-default-brand-color, 10%) !default;
+// $navbar-default-brand-hover-bg: transparent !default;
+
+// // Navbar toggle
+// $navbar-default-toggle-hover-bg: #ddd !default;
+// $navbar-default-toggle-icon-bar-bg: #888 !default;
+// $navbar-default-toggle-border-color: #ddd !default;
+
+.navbar-default {
+	border-top-left-radius: 0;
+	border-top-right-radius: 0;
+}

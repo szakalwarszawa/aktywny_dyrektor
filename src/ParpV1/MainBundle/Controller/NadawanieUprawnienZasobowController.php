@@ -358,7 +358,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Data zmiany',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label ',
+                        'class' => 'data-zmiany',
                     ),
                     'required' => false,
                     'data' => $now->format('Y-m-d')
@@ -369,7 +369,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Cel nadania/odebrania',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'cel-nadania-odebrania',
                     ),
                     'required' => true
                 ))
@@ -405,7 +405,7 @@ class NadawanieUprawnienZasobowController extends Controller
 
                 ->add('nazwafiltr', TextareaType::class, array(
                     'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left ',
+                        'class' => 'text-left ',
                     ),
                     'label' => 'Filtruj po nazwie',
                     'attr' => array(
@@ -417,7 +417,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'required' => false,
                     'label' => $title,
                     'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left uprawnienieRow',
+                        'class' => 'text-left uprawnienieRow',
                     ),
                     'attr' => array(
                         'class' => '',

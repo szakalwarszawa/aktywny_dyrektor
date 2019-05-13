@@ -4,7 +4,9 @@
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-4": { "": "src/" },
+        "psr-4": {
+            "": "src/"
+        },
         "classmap": [
             "app/AppKernel.php",
             "app/AppCache.php"
@@ -29,6 +31,7 @@
         "parsecsv/php-parsecsv": "0.4.5",
         "beberlei/DoctrineExtensions": "^1.0",
         "sensiolabs/ansi-to-html": "^1.1",
+        "adldap/adldap": "5.0.*@dev",
         "liuggio/excelbundle": "*",
         "friendsofsymfony/jsrouting-bundle": " 2.*",
         "egulias/email-validator": "^1.2",
@@ -39,8 +42,7 @@
         "symfony/finder": "^3.4",
         "phpoffice/phpspreadsheet": "^1.3",
         "symfony/polyfill-apcu": "^1.0",
-        "symfony/webpack-encore-bundle": "^1.3",
-        "adldap2/adldap2": "^10.0"
+        "symfony/webpack-encore-bundle": "^1.3"
     },
     "minimum-stability": "stable",
     "scripts": {
@@ -51,8 +53,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "yarn install --frozen-lockfile --force --non-interactive",
-            "yarn run encore production"
-
+            "yarn patch-package",
+            "yarn run encore dev"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -62,12 +64,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "yarn install --frozen-lockfile --force --non-interactive",
             "yarn upgrade",
-            "yarn run encore production"
+            "yarn patch-package",
+            "yarn run encore dev"
         ]
     },
     "config": {
         "bin-dir": "bin",
-        "no-dev" : "true"
+        "no-dev": "true"
     },
     "extra": {
         "symfony-app-dir": "app",
