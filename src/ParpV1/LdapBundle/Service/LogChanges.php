@@ -5,10 +5,7 @@ namespace ParpV1\LdapBundle\Service;
 use DateTime;
 use Symfony\Bundle\TwigBundle\TwigEngine;
 use Symfony\Component\Filesystem\Filesystem;
-use Symfony\Component\VarDumper\VarDumper;
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\ORM\EntityManager;
-
 
 /**
  * Logowanie zmian na użytkownikach (zapis zmian w AD).
@@ -69,11 +66,9 @@ class LogChanges
 
         $fileSystem = new Filesystem();
 
-        $view = $twigTemplating->render(
-            '@ParpLdap/main/changes_iterator.html.twig', [
+        $view = $twigTemplating->render('@ParpLdap/main/changes_iterator.html.twig', [
                 'change_log' => $changes
-            ]
-        );
+        ]);
 
         $fileSystem->dumpFile($logFilePathName, $view);
     }
