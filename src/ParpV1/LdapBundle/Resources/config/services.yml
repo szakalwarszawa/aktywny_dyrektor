@@ -33,6 +33,8 @@ services:
       - [setUprawnieniaService, ['@uprawnienia_service']]
       - [setStatusWnioskuService, ['@status_wniosku_service']]
       - [setEntryChain, ['@entry_chain']]
+      - [setLogPushChanges, ['@log_push_changes']]
+      - [setCurrentUser, ['@security.token_storage']]
   ldap.update_from_array:
     class: ParpV1\LdapBundle\Service\AdUser\Update\UpdateFromArray
     arguments: ['@doctrine.orm.entity_manager']
@@ -65,3 +67,6 @@ services:
     tags:
       - { name: security.voter }
     public: false
+  log_push_changes:
+    class: ParpV1\LdapBundle\Service\LogChanges
+    arguments: ['%ad_push_log_directory%', '@templating']

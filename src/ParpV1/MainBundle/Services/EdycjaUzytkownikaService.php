@@ -17,12 +17,12 @@ use ParpV1\MainBundle\Constants\PowodAnulowaniaWnioskuConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 use ParpV1\MainBundle\Tool\AdStringTool;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\Departament;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
 use ParpV1\LdapBundle\Helper\LdapTimeHelper;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 class EdycjaUzytkownikaService
 {
@@ -42,9 +42,9 @@ class EdycjaUzytkownikaService
     private $entityManager;
 
     /**
-     * @var UserService
+     * @var ParpUser
      */
-    private $userService;
+    private $currentUser;
 
     /**
      * @var ArrayCollection
@@ -71,14 +71,14 @@ class EdycjaUzytkownikaService
     public function __construct(
         LdapService $ldapService,
         EntityManager $entityManager,
-        UserService $userService,
+        TokenStorage $tokenStorage,
         string $baseAdDomain,
         string $baseAdOu,
         string $adPushDelay
     ) {
         $this->ldapService = $ldapService;
         $this->entityManager = $entityManager;
-        $this->userService = $userService;
+        $this->currentUser = $tokenStorage->getToken()->getUser();
         $this->errors = new ArrayCollection();
         $this->adParameters = [
             'ad_domain' => $baseAdDomain,
@@ -140,10 +140,7 @@ class EdycjaUzytkownikaService
         }
 
         $entry = new Entry(
-            $this
-                ->userService
-                ->getCurrentUser()
-                ->getUsername()
+            $this->currentUser->getUsername()
         );
         $adStringTool = new AdStringTool($this->adParameters['ad_domain'], $this->adParameters['ad_ou']);
         $entry
@@ -164,6 +161,7 @@ class EdycjaUzytkownikaService
                     $formData[AdUserConstants::DEPARTAMENT_NAZWA]->getShortname()
                 )
             )
+            ->setCreatedAt(new DateTime())
             ->setActivateDeactivated(true)
         ;
 
@@ -174,40 +172,6 @@ class EdycjaUzytkownikaService
 
         return $this;
     }
-
-    /**
-     * Tworzy nowe entry na podstawie danych z formularza (lub danych z kluczami formularza).
-     *
-     * @param array $formData
-     * @param AdUserHelper $adUserHelper
-     * @param string $description
-     *
-     * @return bool
-     */
-    private function createEntry(array $formData)
-    {
-        $entry = new Entry(
-            $this
-                ->userService
-                ->getCurrentUser()
-                ->getUsername()
-        );
-        $entry
-            ->setCn($formData[AdUserConstants::IMIE_NAZWISKO])
-            ->setAccountExpires($formData[AdUserConstants::WYGASA])
-            ->setDepartment($formData[AdUserConstants::DEPARTAMENT_NAZWA])
-            ->setInfo($formData[AdUserConstants::SEKCJA_NAZWA])
-            ->setTitle($formData[AdUserConstants::STANOWISKO])
-            ->setSamaccountname($formData[AdUserConstants::LOGIN])
-            ->setOpis('Nowe konto')
-            ->setAccountExpires($formData[AdUserConstants::WYGASA])
-            ->setManager($formData[AdUserConstants::PRZELOZONY])
-            ->setFromWhen($formData['zmianaOd'])
-        ;
-
-        return $entry;
-    }
-
     /**
      * Sprawdza czy wybrana sekcja i departament są poprawne.
      * Czy nie została wybrana sekcja spoza departamentu.
@@ -249,7 +213,7 @@ class EdycjaUzytkownikaService
         }
 
         foreach ($changedElements as $key => $element) {
-            if (!$this->userService->getCurrentUser()->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
+            if (!$this->currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
                 if (!in_array($element, AdUserConstants::getElementsAllowedToChange()) && is_int($key)) {
                     throw new UnexpectedValueException(
                         'Zmieniono pole niepodlegające zmianie w AkD! Twoje role na to nie pozwalają.'
@@ -284,7 +248,7 @@ class EdycjaUzytkownikaService
             return $date;
         };
 
-        $entry = new Entry();
+        $entry = new Entry($this->currentUser->getUsername());
         $entry
             ->setCn($formData[AdUserConstants::IMIE_NAZWISKO])
             ->setAccountExpires($formData[AdUserConstants::WYGASA])
@@ -302,6 +266,7 @@ class EdycjaUzytkownikaService
                     $formData[AdUserConstants::PRZELOZONY]
                 )
             )
+            ->setCreatedAt(new DateTime())
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($changeDate($formData['zmianaOd']))
         ;

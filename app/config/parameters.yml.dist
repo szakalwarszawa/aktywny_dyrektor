@@ -69,3 +69,6 @@ parameters:
 
     # Czas opóźnienia 'zmiana obowiązuje od' przy edycji użytkownika #
     ad_push_delay: '30 minutes'
+
+    # Katalog logów wypychania do AD #
+    ad_push_log_directory: 'work/logs/'
