@@ -2,6 +2,8 @@
 
 namespace ParpV1\LdapBundle\Helper;
 
+use DateTime;
+
 /**
  * Zawiera metody pomocnicze przy operacjach na czasie.
  */
@@ -37,5 +39,29 @@ class LdapTimeHelper
         }
 
         return (int) ($ldapTimestamp / 10000000) - 11644473600;
+    }
+
+    /**
+     * Zamienia czas ldapowy na obiekt DateTime lub przeparsowaną
+     * wartość względem podanego formatu np. y-m-d
+     *
+     * @param int $ldapTimestamp
+     * @param string|null $format
+     *
+     * @return DateTime|string
+     */
+    public static function ldapToDate(int $ldapTimestamp, ?string $format = null)
+    {
+        $unixTime = self::ldapToUnix($ldapTimestamp);
+
+        $dateTime = (new DateTime())
+            ->setTimestamp($unixTime)
+        ;
+
+        if (null === $format) {
+            return $dateTime;
+        }
+
+        return $dateTime->format($format);
     }
 }

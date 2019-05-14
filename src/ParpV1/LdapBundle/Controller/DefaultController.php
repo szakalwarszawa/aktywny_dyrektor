@@ -4,24 +4,16 @@ namespace ParpV1\LdapBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
-use ParpV1\MainBundle\Entity\Entry;
-use DateTime;
-use Symfony\Component\VarDumper\VarDumper;
-use ParpV1\LdapBundle\MessageCollector\Constants\Types;
-use ParpV1\LdapBundle\MessageCollector\Collector;
 use Symfony\Component\HttpFoundation\Response;
 use ParpV1\LdapBundle\Constants\GroupBy;
 use ParpV1\LdapBundle\Form\PushChangesFormType;
 use Symfony\Component\HttpFoundation\Request;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\Wniosek;
 use ParpV1\LdapBundle\Voter\AdPublishVoter;
 
 /**
  * Podstawowa klasa kontrolera.
- *
- * @todo zmiana nazwy
  */
 class DefaultController extends Controller
 {

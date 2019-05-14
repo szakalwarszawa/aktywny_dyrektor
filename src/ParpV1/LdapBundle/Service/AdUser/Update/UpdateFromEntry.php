@@ -9,8 +9,9 @@ use Doctrine\ORM\EntityManager;
 use DateTime;
 use Adldap\AdldapException;
 use ParpV1\LdapBundle\AdUser\AdUser;
-use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 use ParpV1\MainBundle\Entity\Wniosek;
+use ParpV1\LdapBundle\Constants\GroupBy;
+use ParpV1\AuthBundle\Security\ParpUser;
 
 /**
  * Klasa wprowadzająca zmiany w AD na podstawie obiektu Entry.
@@ -37,7 +38,7 @@ final class UpdateFromEntry extends LdapUpdate
      * Voter sprawdza czy użytkownik jest AZ.
      *
      * @param bool $isSimulation
-     * @param bool $flushChanges
+     * @param bool $flushChanges - CLI
      * @param Wniosek|null $application
      *
      * @return UpdateFromEntry
@@ -67,6 +68,31 @@ final class UpdateFromEntry extends LdapUpdate
 
         foreach ($pendingEntries as $entry) {
             $this->update($entry, true);
+            if (null === $this->currentUser) {
+                $publishedBy = 'CLI';
+            }
+
+            if ($this->currentUser instanceof ParpUser) {
+                $publishedBy = $this->currentUser->getUsername();
+            }
+
+            $entry
+                ->setLogfile($this->logPushChanges->getFilename())
+                ->setPublishedAt(new DateTime())
+                ->setPublishedBy($publishedBy)
+            ;
+
+            $this
+                ->entryChain
+                ->build($entry)
+            ;
+        }
+
+        if (!$this->hasError() && !$isSimulation) {
+            $this
+                ->logPushChanges
+                ->logToFile($this->getResponseMessages(GroupBy::LOGIN))
+            ;
         }
 
         if (!$this->hasError() && $flushChanges && !$isSimulation) {
@@ -139,13 +165,6 @@ final class UpdateFromEntry extends LdapUpdate
         $this->pushChangesToAd($changes, $adUser, $entry);
 
         $entry->setIsImplemented(true);
-
-        $chain = $this->entryChain;
-        $chain
-            ->build($entry)
-            ->setSimulateProcess($this->isSimulation())
-            ->initializeChain()
-        ;
 
         return $this;
     }

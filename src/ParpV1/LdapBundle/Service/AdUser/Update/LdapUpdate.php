@@ -23,12 +23,13 @@ use ParpV1\LdapBundle\Service\LdapCreate;
 use ParpV1\LdapBundle\Service\AdUser\Update\Simulation;
 use ParpV1\LdapBundle\Service\AdUser\AccountState;
 use ParpV1\MainBundle\Entity\Entry;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\MainBundle\Services\UprawnieniaService;
 use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
+use ParpV1\LdapBundle\Service\LogChanges;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * LdapUpdate
@@ -103,6 +104,16 @@ class LdapUpdate extends Simulation
      * @var EntryChain
      */
     protected $entryChain;
+
+    /**
+     * @param LogChanges
+     */
+    protected $logPushChanges;
+
+    /**
+     * @var ParpUser|null
+     */
+    protected $currentUser = null;
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -949,6 +960,22 @@ class LdapUpdate extends Simulation
     }
 
     /**
+     * Set currentUser
+     *
+     * @param TokenStorage $tokenStorage
+     */
+    public function setCurrentUser(TokenStorage $tokenStorage): void
+    {
+        if (null !== $tokenStorage->getToken()) {
+            $this->currentUser = $tokenStorage->getToken()->getUser();
+        }
+
+        if (null === $tokenStorage->getToken()) {
+            $this->currentUser = null;
+        }
+    }
+
+    /**
      * Set statusWnioskuService
      *
      * @param UprawnieniaService $statusWnioskuService
@@ -970,6 +997,18 @@ class LdapUpdate extends Simulation
     public function setEntryChain(EntryChain $entryChain): void
     {
         $this->entryChain = $entryChain;
+    }
+
+    /**
+     * Set logPushChanges
+     *
+     * @param LogChanges $logPushChanges
+     *
+     * @return void
+     */
+    public function setLogPushChanges(LogChanges $logPushChanges): void
+    {
+        $this->logPushChanges = $logPushChanges;
     }
 
     /**

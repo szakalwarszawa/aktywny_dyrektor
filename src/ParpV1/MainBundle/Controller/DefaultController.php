@@ -2034,6 +2034,12 @@ class DefaultController extends Controller
             throw new EntityNotFoundException('Nie ma takiego wpisu w bazie.');
         }
 
+        if ($entry->getIsImplemented()) {
+            $this->addFlash('danger', 'Nie można usunąć zaimplementowanej zmiany.');
+
+            return $this->redirectToRoute('userEdit', ['samaccountname' => $entry->getSamaccountname()]);
+        }
+
         $entityManager->remove($entry);
         $entityManager->flush();
 
