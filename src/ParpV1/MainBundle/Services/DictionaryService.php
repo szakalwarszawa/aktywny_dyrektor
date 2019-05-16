@@ -30,6 +30,7 @@ class DictionaryService
 
     /**
      * Publiczny konstruktor.
+     * Nie edytować parametrów konstuktora!
      *
      * @param string|null $directory
      */

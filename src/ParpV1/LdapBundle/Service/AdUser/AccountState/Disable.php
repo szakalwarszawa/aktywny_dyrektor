@@ -11,6 +11,7 @@ use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use ParpV1\MainBundle\Services\DictionaryService;
 
 /**
  * Klasa Disable
@@ -93,12 +94,13 @@ final class Disable extends AccountStateManager
             throw new UnexpectedValueException('Nieobsługiwany powód wyłączenia konta.');
         }
 
-
         $this->removeAccountFlag(AccountControl::NORMAL_ACCOUNT);
         if (!$this->isSimulation()) {
             $beforeMoveDn = $writableUserObject->getDistinguishedName();
             $writableUserObject->move($newParentDn);
 
+            $dictionary = new DictionaryService(__DIR__ . '//Dictionary//');
+            $disableReason = $dictionary->get($disableReason);
             $userAccountControlObject = $writableUserObject->getUserAccountControlObject();
             $userAccountControlObject->accountIsDisabled();
             $writableUserObject
