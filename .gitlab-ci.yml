@@ -46,7 +46,7 @@ neleof:
     stage: quality
     allow_failure: true
     script:
-        - /usr/bin/neleof.sh -e "./vendor, ./web/bower_components, ./.gitignore" .
+        - /usr/bin/neleof.sh -e "./vendor, ./web/bower_components, ./.gitignore, ./node_modules" .
 
 phpmd:
     stage: quality
