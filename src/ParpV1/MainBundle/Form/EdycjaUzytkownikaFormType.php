@@ -29,14 +29,14 @@ class EdycjaUzytkownikaFormType extends AbstractType
      *
      * @var string
      */
-    const WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY = 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni';
+    const WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY = 'Konto wyłączono z powodu rozwiązania stosunku pracy';
 
     /**
      * @todo jak wyżej
      *
      * @var string
      */
-    const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu rozwiązania stosunku pracy';
+    const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni';
 
     /**
      * @param FormBuilderInterface $builder
@@ -252,8 +252,8 @@ class EdycjaUzytkownikaFormType extends AbstractType
             ))
             ->add('disableDescription', ChoiceType::class, array(
                 'label'    => 'Podaj powód wyłączenia konta',
+                'placeholder' => 'Proszę wybrać',
                 'choices'  => array(
-                    ''                                                          => ' !!! >>>  wybierz  <<< ',
                     'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => self::WYLACZENIE_KONTA_NIEOBECNOSC,
                     'Konto wyłączono z powodu rozwiązania stosunku pracy'       => self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
                 ),
