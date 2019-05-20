@@ -24,6 +24,10 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use Symfony\Component\VarDumper\VarDumper;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use DateTime;
 
 /**
  * Zasoby controller.
@@ -157,6 +161,77 @@ class ZasobyController extends Controller
         );
     }
 
+    /**
+     * @Route("/removeUserFromResource", name="remove_user_from_resource")
+     *
+     * @Method("POST")
+     */
+    public function removeUserFromResource(Request $request): JsonResponse
+    {
+        $requestParams = $request->request->all();
+        $optionsResolver = new OptionsResolver();
+        $optionsResolver
+            ->setRequired(['id', 'message'])
+            ->resolve($requestParams)
+        ;
+
+        if (empty($requestParams['message'])) {
+            $response['status'] = 'error';
+            $response['message'] = 'Powód odebrania nie może być pusty.';
+
+            return new JsonResponse($response);
+        }
+
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $userZasob = $entityManager
+            ->getRepository(UserZasoby::class)
+            ->findOneById($requestParams['id'])
+        ;
+
+        if (null !== $userZasob) {
+            $zasob = $entityManager
+                ->getRepository(Zasoby::class)
+                ->findOneById($userZasob->getZasobId())
+            ;
+
+            $currentUser = $this->getUser();
+            $administratorZasobu = explode(', ', $zasob->getAdministratorZasobu());
+            $administratorTechniczny = explode(', ', $zasob->getAdministratorTechnicznyZasobu());
+
+            if (in_array($currentUser->getUsername(), $administratorZasobu) ||
+                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
+                in_array($currentUser->getUsername(), $administratorTechniczny))) {
+                if (null !== $zasob) {
+                    $userZasob
+                        ->setAktywneDo(new DateTime())
+                        ->setPowodOdebrania($requestParams['message'])
+                        ->setCzyAktywne(false)
+                        ->setCzyOdebrane(true)
+                        ->setDataOdebrania(new DateTime())
+                        ->setKtoOdebral($currentUser)
+                    ;
+
+                    $entityManager->persist($userZasob);
+                    $entityManager->flush();
+
+                    $response = [
+                        'message' => 'ok',
+                        'status' => 'success',
+                    ];
+
+                    return new JsonResponse($response);
+                }
+            }
+        }
+
+        $response = [
+            'message' => 'Nie można odnotować odebrania tego uprawnienia.',
+            'status' => 'error',
+        ];
+
+        return new JsonResponse($response);
+    }
 
     /**
      * Displays a form to edit an existing Zasoby entity.
@@ -212,6 +287,16 @@ class ZasobyController extends Controller
         $em = $this->getDoctrine()->getManager();
         $uzs = $em->getRepository(UserZasoby::class)->findUsersByZasobId($id);
 
+        $currentUser = $this->getUser();
+        $administratorZasobu = explode(', ', $entity->getAdministratorZasobu());
+        $administratorTechniczny = explode(', ', $entity->getAdministratorTechnicznyZasobu());
+        $mozeUproszczonymOdebrac = false;
+        if (in_array($currentUser->getUsername(), $administratorZasobu) ||
+                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
+                in_array($currentUser->getUsername(), $administratorTechniczny))) {
+                    $mozeUproszczonymOdebrac = true;
+        }
+
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
@@ -220,6 +305,7 @@ class ZasobyController extends Controller
             'grupy' => $grupy,
             'grupyAd' => $grupyAd,
             'read_only' => $readOnly,
+            'uproszczone_odbieranie' => $mozeUproszczonymOdebrac,
         );
     }
 
