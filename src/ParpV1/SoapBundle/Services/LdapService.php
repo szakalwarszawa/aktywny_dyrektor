@@ -1222,6 +1222,10 @@ class LdapService
             'SGG-(skrót D/B)-Wewn-Wsp-RW'
         ];
 
+        if ($sekcja instanceof Section) {
+            $sekcja = $sekcja->getName();
+        }
+
         // dostęp do własnego katalogu sekcyjnego
         if (!empty($sekcja) && !in_array($sekcja, $pomijajSekcje, true)) {
             // poniższy warunek do usuniecia, jeśli zostaną wszędzie przerobione odwołania do getGrupyUsera z nazw sekcji na skróty.
