@@ -51,13 +51,14 @@
                                 <th>Aktywne do</th>
                                 <th>Powód nadania/odebrania</th>
                                 <th>Wniosek</th>
+                                <th>Działania</th>
                             </tr>
                         </thead>
                         {% set n = 1 %}
                         <tbody>
                             {% for row in users %}
                             {% if row.czyAktywne %}
-                                <tr {{ row.wniosekOdebranie is null ? '' : 'class="alert-warning"' }}>
+                                <tr id="row-{{ row.id }}" {{ row.wniosekOdebranie is null ? '' : 'class="alert-warning"' }}>
                                     <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="{{ row.id }}">{{ n }}</a></td>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}"
 
@@ -76,8 +77,11 @@
                                         <div class="alert alert-danger">Bez wniosku</div>
                                     {% endif %}
                                     </td>
-
-
+                                    {% if uproszczone_odbieranie %}
+                                        <td>
+                                            <button type="button" class="btn btn-danger keep-unblocked" data-removeuser data-userzasobid="{{ row.id }}">Odnotuj odebranie uprawnienia (uproszczony tryb)</button>
+                                        </td>
+                                    {% endif %}
                                 </tr>
                                 {% set n = n + 1 %}
                             {% endif %}
@@ -172,10 +176,13 @@
         </div>
     </div>
 
+{{ include('@ParpMain/Zasoby/uproszczone_odnotowanie_modal.html.twig') }}
+
 <script>
     {% if read_only %}
         $(document).ready(function () {
             $('input, textarea, button, select').attr('disabled', true);
+            $('.keep-unblocked').attr('disabled', false);
         });
     {% endif %}
     $('form').submit(function () {
