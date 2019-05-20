@@ -93,6 +93,12 @@ final class UpdateFromEntry extends LdapUpdate
                 ->logPushChanges
                 ->logToFile($this->getResponseMessages(GroupBy::LOGIN))
             ;
+
+            $this
+                ->entryChain
+                ->setSimulateProcess($this->isSimulation())
+                ->initializeChain()
+            ;
         }
 
         if (!$this->hasError() && $flushChanges && !$isSimulation) {
