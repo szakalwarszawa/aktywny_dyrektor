@@ -194,6 +194,24 @@ class AdUserHelper
                 return null;
             }
 
+            $blankSections = [
+                'ND',
+                'BRAK',
+                'N/D',
+                'n/d'
+            ];
+
+            if (in_array($value, $blankSections) && self::$entityManager && $returnObject) {
+                $section = self::$entityManager
+                    ->getRepository(Section::class)
+                    ->findOneBy([
+                        'name' => $value
+                    ])
+                ;
+
+                return $section;
+            }
+
             if ($returnObject && self::$entityManager) {
                 $section = self::$entityManager
                     ->getRepository(Section::class)
