@@ -196,8 +196,8 @@ class ZasobyController extends Controller
             ;
 
             $currentUser = $this->getUser();
-            $administratorZasobu = explode(', ', $zasob->getAdministratorZasobu());
-            $administratorTechniczny = explode(', ', $zasob->getAdministratorTechnicznyZasobu());
+            $administratorZasobu = explode(',', $zasob->getAdministratorZasobu());
+            $administratorTechniczny = explode(',', $zasob->getAdministratorTechnicznyZasobu());
 
             if (in_array($currentUser->getUsername(), $administratorZasobu) ||
                 $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
@@ -288,12 +288,12 @@ class ZasobyController extends Controller
         $uzs = $em->getRepository(UserZasoby::class)->findUsersByZasobId($id);
 
         $currentUser = $this->getUser();
-        $administratorZasobu = explode(', ', $entity->getAdministratorZasobu());
-        $administratorTechniczny = explode(', ', $entity->getAdministratorTechnicznyZasobu());
+        $administratorZasobu = explode(',', $entity->getAdministratorZasobu());
+        $administratorTechniczny = explode(',', $entity->getAdministratorTechnicznyZasobu());
         $mozeUproszczonymOdebrac = false;
         if (in_array($currentUser->getUsername(), $administratorZasobu) ||
-                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
-                in_array($currentUser->getUsername(), $administratorTechniczny))) {
+                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW') ||
+                in_array($currentUser->getUsername(), $administratorTechniczny)) {
                     $mozeUproszczonymOdebrac = true;
         }
 
