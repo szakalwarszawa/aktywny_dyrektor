@@ -14,7 +14,7 @@ build:
         - /usr/bin/composer.phar global show -i > .gitlab-ci/gitlab-ci-composer.dump
         - php -d memory_limit=5G /usr/bin/composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
     artifacts:
-        expire_in: 1 day
+        expire_in: 4 days
         untracked: true
         paths:
             - vendor/
