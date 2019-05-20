@@ -292,8 +292,8 @@ class ZasobyController extends Controller
         $administratorTechniczny = explode(',', $entity->getAdministratorTechnicznyZasobu());
         $mozeUproszczonymOdebrac = false;
         if (in_array($currentUser->getUsername(), $administratorZasobu) ||
-                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
-                in_array($currentUser->getUsername(), $administratorTechniczny))) {
+                $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW') ||
+                in_array($currentUser->getUsername(), $administratorTechniczny)) {
                     $mozeUproszczonymOdebrac = true;
         }
 
