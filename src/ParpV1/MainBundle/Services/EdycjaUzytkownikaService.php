@@ -256,6 +256,7 @@ class EdycjaUzytkownikaService
             ->setInfo($formData[AdUserConstants::SEKCJA_NAZWA])
             ->setTitle($formData[AdUserConstants::STANOWISKO])
             ->setSamaccountname($formData[AdUserConstants::LOGIN])
+            ->setDivision($formData[AdUserConstants::SEKCJA_NAZWA]->getShortname())
             ->setIsDisabled($formData[AdUserConstants::WYLACZONE])
             ->setOpis(isset($reason)? $reason : null)
             ->setAccountExpires($formData[AdUserConstants::WYGASA])

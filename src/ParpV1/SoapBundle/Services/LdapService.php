@@ -1213,6 +1213,8 @@ class LdapService
                 'nowaStruktura' => 1,
             ]);
             $depshortname = $departament;
+        } else {
+            $departament = $depshortname;
         }
 
         $pomijajSekcje = ['ND', 'BRAK', 'N/D', 'n/d', ''];
@@ -1221,6 +1223,10 @@ class LdapService
             'DLP-gg-USB_CD_DVD-DENY',
             'SGG-(skrót D/B)-Wewn-Wsp-RW'
         ];
+
+        if ($sekcja instanceof Section) {
+            $sekcja = $sekcja->getName();
+        }
 
         // dostęp do własnego katalogu sekcyjnego
         if (!empty($sekcja) && !in_array($sekcja, $pomijajSekcje, true)) {
