@@ -659,16 +659,14 @@ class LdapUpdate extends Simulation
         ;
 
         if (null === $section) {
-            if (null === $section) {
-                $this
-                    ->addMessage(
-                        new Messages\ErrorMessage(),
-                        'Nie odnaleziono sekcji w słowniku - ' . $adUserChange->getNew(),
-                        AdUserConstants::SEKCJA_NAZWA,
-                        $adUser->getUser()
-                    )
-                ;
-            }
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono sekcji w słowniku - ' . $adUserChange->getNew(),
+                    AdUserConstants::SEKCJA_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
         }
 
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
