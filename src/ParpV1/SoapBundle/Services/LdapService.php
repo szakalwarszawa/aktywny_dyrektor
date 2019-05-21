@@ -1213,6 +1213,8 @@ class LdapService
                 'nowaStruktura' => 1,
             ]);
             $depshortname = $departament;
+        } else {
+            $departament = $depshortname;
         }
 
         $pomijajSekcje = ['ND', 'BRAK', 'N/D', 'n/d', ''];

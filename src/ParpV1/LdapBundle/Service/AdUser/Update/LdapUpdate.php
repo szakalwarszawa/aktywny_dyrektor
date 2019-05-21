@@ -30,6 +30,7 @@ use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\MainBundle\Entity\Section;
 
 /**
  * LdapUpdate
@@ -369,7 +370,7 @@ class LdapUpdate extends Simulation
         $simulateProcess = $this->isSimulation();
 
         if ($this->eraseUserGroups) {
-            $this->removeAllUserGroups($adUser);
+            $this->removeAllUserGroups($adUser, $entry);
             $adUser = $this
                 ->ldapFetch
                 ->refreshAdUser($adUser)
@@ -422,6 +423,10 @@ class LdapUpdate extends Simulation
 
                 if (AdUserConstants::AD_STRING === $value->getTarget()) {
                     continue;
+                }
+
+                if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
+                    $this->setUserDepartmentShort($value, $adUser);
                 }
 
                 if ($newValue instanceof DateTime) {
@@ -587,7 +592,7 @@ class LdapUpdate extends Simulation
 
 
             if ($disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
-                $this->removeAllUserGroups($adUser);
+                $this->removeAllUserGroups($adUser, $entry);
 
                 if (!$simulateProcess) {
                     $this->sendMailToIntExtAdmins($adUser, $userGroups);
@@ -633,6 +638,43 @@ class LdapUpdate extends Simulation
         $this
             ->parpMailerService
             ->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI, $mailData);
+    }
+
+    /**
+     * Ustawia skrót departamentu.
+     *
+     * @param AdUserChange $adUserChange
+     * @param AdUser $adUser
+     *
+     * @return void
+     */
+    private function setUserDepartmentShort(AdUserChange $adUserChange, AdUser $adUser): void
+    {
+        $section = $this
+            ->entityManager
+            ->getRepository(Section::class)
+            ->findOneBy([
+                'name' => $adUserChange->getNew(),
+            ])
+        ;
+
+        if (null === $section) {
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono sekcji w słowniku - ' . $adUserChange->getNew(),
+                    AdUserConstants::SEKCJA_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
+        }
+
+        $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+        $departmentShort = $section->getDepartament()->getShortname();
+        if (!$this->isSimulation()) {
+            $writableUserObject->setDescription($departmentShort);
+            $writableUserObject->save();
+        }
     }
 
     /**
@@ -775,12 +817,13 @@ class LdapUpdate extends Simulation
      * Wyrzuca użytkownika ze wszystkich jego grup.
      *
      * @param AdUser $adUser
+     * @param Entry|null $entry - jeżeli jest obiekt, modyfikowany jest parametr memberOf
+     *      Wrzucane są usunięte grupy z prefiksem `-`.
      *
      * @return void
      */
-    public function removeAllUserGroups(AdUser $adUser): void
+    public function removeAllUserGroups(AdUser $adUser, ?Entry $entry = null): void
     {
-        $simulateProcess = $this->isSimulation();
         $writableUserObject = $adUser
             ->getUser(AdUser::FULL_USER_OBJECT)
         ;
@@ -794,10 +837,12 @@ class LdapUpdate extends Simulation
             $adUser->getUser()
         );
 
+        $removedGroups = [];
         foreach ($userGroups as $group) {
             try {
-                if (!$simulateProcess) {
+                if (!$this->isSimulation()) {
                     $group->removeMember($writableUserObject);
+                    $removedGroups[] = '-' . $group->getName();
                 }
 
                 $responeMessageChild = new Messages\SuccessMessage(
@@ -810,6 +855,11 @@ class LdapUpdate extends Simulation
             } catch (ContextErrorException $exception) {
                 continue;
             }
+        }
+
+        if (!$this->isSimulation() && $entry && !empty($removedGroups)) {
+            $entry->setMemberOf($entry->getMemberOf() . ',' . implode(',', $removedGroups));
+            $this->entityManager->persist($entry);
         }
 
         $this->addMessage($responseMessage);
