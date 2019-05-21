@@ -667,13 +667,13 @@ class LdapUpdate extends Simulation
                     $adUser->getUser()
                 )
             ;
-        }
-
-        $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-        $departmentShort = $section->getDepartament()->getShortname();
-        if (!$this->isSimulation()) {
-            $writableUserObject->setDescription($departmentShort);
-            $writableUserObject->save();
+        } else if (null !== $section->getDepartament()) {
+            $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
+            $departmentShort = $section->getDepartament()->getShortname();
+            if (!$this->isSimulation()) {
+                $writableUserObject->setDescription($departmentShort);
+                $writableUserObject->save();
+            }
         }
     }
 
