@@ -697,18 +697,22 @@ class UprawnieniaService
 
         $przeprocesowaneBezGrup = [];
         $przeprocesowaneZGrupami = [];
-        foreach ($przeprocesowaneWnioski as $jedenZasob) {
-            if (in_array($jedenZasob['zasob'], $zasobyZGrupamiAd)) {
-                $przeprocesowaneZGrupami[] = $jedenZasob;
-            } else {
-                $przeprocesowaneBezGrup[] = $jedenZasob;
+        if (is_array($przeprocesowaneWnioski) && !empty($przeprocesowaneWnioski)) {
+            foreach ($przeprocesowaneWnioski as $jedenZasob) {
+                if (in_array($jedenZasob['zasob'], $zasobyZGrupamiAd)) {
+                    $przeprocesowaneZGrupami[] = $jedenZasob;
+                } else {
+                    $przeprocesowaneBezGrup[] = $jedenZasob;
+                }
             }
+
+            $this->wyslijInfoDoAdministratorow($accountName, $przeprocesowaneBezGrup, new DateTime());
+
+
+            return $przeprocesowaneWnioski;
         }
 
-        $this->wyslijInfoDoAdministratorow($accountName, $przeprocesowaneBezGrup, new DateTime());
-
-
-        return $przeprocesowaneWnioski;
+        return [];
     }
 
     /**

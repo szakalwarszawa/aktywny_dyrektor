@@ -360,7 +360,7 @@ class ImportRekordDaneController extends Controller
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
                         $dr->setNewUnproccessed(2);
                     } elseif (count($changeSet) > 0 && !$nowy) {
-                        $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
+                        $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;
                     }
 
