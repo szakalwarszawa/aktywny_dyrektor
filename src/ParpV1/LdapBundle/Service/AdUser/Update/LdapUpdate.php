@@ -30,7 +30,6 @@ use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
-use ParpV1\MainBundle\Entity\Section;
 
 /**
  * LdapUpdate
@@ -425,8 +424,14 @@ class LdapUpdate extends Simulation
                     continue;
                 }
 
-                if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
-                    $this->setUserDepartmentShort($value, $adUser);
+                if (AdUserConstants::CN_AD_STRING === $value->getTarget()) {
+                    $this->renameUser($adUser, $newValue);
+                    $adUser = $this
+                        ->ldapFetch
+                        ->refreshAdUser($adUser)
+                    ;
+
+                    continue;
                 }
 
                 if ($newValue instanceof DateTime) {
@@ -641,38 +646,41 @@ class LdapUpdate extends Simulation
     }
 
     /**
-     * Ustawia skrót departamentu.
+     * Zmienia nazwę (imię i nazwisko) użytkownika.
      *
-     * @param AdUserChange $adUserChange
      * @param AdUser $adUser
+     * @param string $newValue
      *
-     * @return void
+     * @return bool - prawda jeżeli zmiana się powiodła
      */
-    private function setUserDepartmentShort(AdUserChange $adUserChange, AdUser $adUser): void
+    public function renameUser(AdUser $adUser, string $newValue): void
     {
-        $section = $this
-            ->entityManager
-            ->getRepository(Section::class)
-            ->findOneBy([
-                'name' => $adUserChange->getNew(),
-            ])
+        $oldName = $adUser->getUser()[AdUserConstants::CN_AD_STRING];
+
+        $this
+            ->addMessage(
+                new Messages\SuccessMessage(),
+                'Zmiana danych osobowych z: ' . $oldName . ' na: ' . $newValue,
+                AdUserConstants::CN_AD_STRING,
+                $adUser->getUser()
+            )
         ;
 
-        if (null === $section) {
-            $this
-                ->addMessage(
-                    new Messages\ErrorMessage(),
-                    'Nie odnaleziono sekcji w słowniku - ' . $adUserChange->getNew(),
-                    AdUserConstants::SEKCJA_NAZWA,
-                    $adUser->getUser()
-                )
-            ;
-        } elseif (null !== $section->getDepartament()) {
+        if (!$this->isSimulation()) {
             $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-            $departmentShort = $section->getDepartament()->getShortname();
-            if (!$this->isSimulation()) {
-                $writableUserObject->setDescription($departmentShort);
-                $writableUserObject->save();
+            $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, null);
+            $writableUserObject->syncOriginal();
+            $writableUserObject->save();
+
+            if (!$renameStatus) {
+                $this
+                    ->addMessage(
+                        new Messages\ErrorMessage(),
+                        'Nie powiodła się zmiana danych osobowych!',
+                        AdUserConstants::CN_AD_STRING,
+                        $adUser->getUser()
+                    )
+                ;
             }
         }
     }
