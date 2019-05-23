@@ -752,6 +752,7 @@ class LdapUpdate extends Simulation
                 ;
             }
 
+            $writableUserObject->setDescription($newDepartment->getShortname());
             $writableUserObject->save();
         }
     }
