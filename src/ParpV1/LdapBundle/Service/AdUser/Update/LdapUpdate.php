@@ -651,7 +651,7 @@ class LdapUpdate extends Simulation
      * @param AdUser $adUser
      * @param string $newValue
      *
-     * @return bool - prawda jeżeli zmiana się powiodła
+     * @return void
      */
     public function renameUser(AdUser $adUser, string $newValue): void
     {
