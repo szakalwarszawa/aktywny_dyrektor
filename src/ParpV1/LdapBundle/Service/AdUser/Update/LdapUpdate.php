@@ -425,10 +425,6 @@ class LdapUpdate extends Simulation
                     continue;
                 }
 
-                if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
-                    $this->setUserDepartmentShort($value, $adUser);
-                }
-
                 if ($newValue instanceof DateTime) {
                     $newValue = LdapTimeHelper::unixToLdap($newValue->getTimestamp());
                 }
@@ -641,43 +637,6 @@ class LdapUpdate extends Simulation
     }
 
     /**
-     * Ustawia skrót departamentu.
-     *
-     * @param AdUserChange $adUserChange
-     * @param AdUser $adUser
-     *
-     * @return void
-     */
-    private function setUserDepartmentShort(AdUserChange $adUserChange, AdUser $adUser): void
-    {
-        $section = $this
-            ->entityManager
-            ->getRepository(Section::class)
-            ->findOneBy([
-                'name' => $adUserChange->getNew(),
-            ])
-        ;
-
-        if (null === $section) {
-            $this
-                ->addMessage(
-                    new Messages\ErrorMessage(),
-                    'Nie odnaleziono sekcji w słowniku - ' . $adUserChange->getNew(),
-                    AdUserConstants::SEKCJA_NAZWA,
-                    $adUser->getUser()
-                )
-            ;
-        } elseif (null !== $section->getDepartament()) {
-            $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-            $departmentShort = $section->getDepartament()->getShortname();
-            if (!$this->isSimulation()) {
-                $writableUserObject->setDescription($departmentShort);
-                $writableUserObject->save();
-            }
-        }
-    }
-
-    /**
      * Zmienia departament użytkownika, mianowicie zmienia atrybut distinguishedname
      * odpowiadający za przeniesienie użytkownika do konkretnego OU.
      *
@@ -744,6 +703,7 @@ class LdapUpdate extends Simulation
                 ;
             }
 
+            $writableUserObject->setDescription($newDepartment->getShortname());
             $writableUserObject->save();
         }
     }
