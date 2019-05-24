@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
@@ -951,8 +950,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         ->findOneBy([
                             'nameInRekord' => $daneRekord->getDepartament()
                         ]);
-
-                        VarDumper::dump($depName);
 
                     if (null !== $depName) {
                         $depName = $depName->getName();
