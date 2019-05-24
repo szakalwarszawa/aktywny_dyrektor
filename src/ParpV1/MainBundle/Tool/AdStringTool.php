@@ -181,7 +181,7 @@ class AdStringTool
         $adStringParts = ldap_explode_dn($adString, 0);
 
         foreach ($adStringParts as $key => $value) {
-            $adStringParts[ $key ] = preg_replace_callback(
+            $adStringParts[$key] = preg_replace_callback(
                 "/\\\([0-9A-Fa-f]{2})/",
                 function ($matches) {
                     return chr(hexdec($matches[1]));
@@ -191,5 +191,20 @@ class AdStringTool
         }
 
         return $adStringParts;
+    }
+
+    /**
+     * Z pełnego stringa AD obcina część CN= aby została tylko gałąź w AD.
+     *
+     * @param string $adString
+     *
+     * @return string
+     */
+    public static function getParentRootFromDn(string $adString): string
+    {
+        $stringSplit = explode(',', $adString);
+        array_shift($stringSplit);
+
+        return implode(',', $stringSplit);
     }
 }

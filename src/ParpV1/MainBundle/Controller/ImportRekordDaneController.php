@@ -21,7 +21,6 @@ use Symfony\Component\HttpFoundation\Response;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
@@ -412,7 +411,6 @@ class ImportRekordDaneController extends Controller
     protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych)
     {
         $ldap = $this->get('ldap_service');
-
         $entry = (null !== $this->getUser()) ? new Entry($this->getUser()->getUsername()) : new Entry();
         $em->persist($entry);
 
@@ -946,13 +944,23 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         $changeSet['imie'] = 1;
                         $changeSet['nazwisko'] = 1;
                     }
-                    if ($userFromAD[0]['department'] !== $daneRekord->getDepartament()) {
+
+                    $depName = $objectManager
+                        ->getRepository(Departament::class)
+                        ->findOneBy([
+                            'nameInRekord' => $daneRekord->getDepartament()
+                        ]);
+
+                    if (null !== $depName) {
+                        $depName = $depName->getName();
+                    }
+                    if ($userFromAD[0]['department'] !== $depName) {
                         $changeSet['department'] = 1;
                     }
                     if ($userFromAD[0]['title'] !== $daneRekord->getStanowisko()) {
                         $changeSet['stanowisko'] = 1;
                     }
-                    if ($dane['form']['info'] !== '' && $userFromAD[0]['info'] !== $dane['form']['info']) {
+                    if ($dane['form']['info'] !== '' && $userFromAD[0]['division'] !== $dane['form']['info']) {
                         $zmieniamySekcje = true;
                     }
                 }
@@ -964,7 +972,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }
 
             $resetDoPodstawowych = false;
-            if (isset($changeSet['departament']) || isset($changeSet['stanowisko']) || $zmieniamySekcje) {
+            if (isset($changeSet['departament']) || $zmieniamySekcje) {
                 $resetDoPodstawowych = true;
             }
 
