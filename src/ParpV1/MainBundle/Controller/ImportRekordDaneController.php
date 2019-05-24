@@ -972,7 +972,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }
 
             $resetDoPodstawowych = false;
-            if (isset($changeSet['departament']) || isset($changeSet['stanowisko']) || $zmieniamySekcje) {
+            if (isset($changeSet['departament']) || $zmieniamySekcje) {
                 $resetDoPodstawowych = true;
             }
 
