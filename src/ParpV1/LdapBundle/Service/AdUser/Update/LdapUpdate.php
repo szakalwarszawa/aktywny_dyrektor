@@ -668,7 +668,10 @@ class LdapUpdate extends Simulation
 
         if (!$this->isSimulation()) {
             $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
-            $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, null);
+            $currentDn = $writableUserObject->getDistinguishedName();
+            $parentDn = AdStringTool::getParentRootFromDn($currentDn);
+
+            $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, $parentDn);
             $writableUserObject->syncOriginal();
             $writableUserObject->save();
 
