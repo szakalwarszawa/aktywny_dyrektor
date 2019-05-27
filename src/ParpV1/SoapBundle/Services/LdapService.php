@@ -1357,7 +1357,6 @@ class LdapService
                         $grupaDoDodania = 'SGG-' . $depshortname->getShortname() . '-Wewn-' . $sekcja . '-RW';
                         if (!in_array($grupaDoDodania, $grupy, true)) {
                             $grupy[] = $grupaDoDodania;
-                            echo $grupaDoDodania."<br />\n";
                         }
                     }
                 }
