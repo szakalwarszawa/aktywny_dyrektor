@@ -1,0 +1,3 @@
+description: 'Wypchnięcie wszystkich oczekujących zmian do AD.'
+help: 'Komenda służąca do wypchnięcia wszystich oczekujących zmian do AD.'
+simulate: 'Zmiany zostaną tylko wyświetlone. <error>Entry nie zostanie zaimplementowane.</error>'

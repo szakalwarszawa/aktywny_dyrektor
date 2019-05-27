@@ -17,19 +17,19 @@
         </div>
     {% endfor %}
 
-    <center>
+    <div class="center-block">
         <div class="btn-group">
             <a class="btn btn-primary btn-xs" href="{{ path('main', {'ktorzy': 'usersFromAdFull'}) }}">Wyszukiwanie aktywne</a>
         </div>
-        {% if app.user.hasRole('PARP_ADMIN') %}
+        {% if 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
         <div class="btn-group">
             <a class="btn btn-success btn-xs" href="{{ path('userAdd') }}">Dodaj pracownka</a>
         </div>
         <div>
-            <a class="btn btn-danger" href="{{ path('publish') }}">Opublikuj zmiany do AD</a>
+            <a class="btn btn-danger" href="{{ path('opublikuj_zmiany_ldap') }}">Opublikuj zmiany do AD</a>
         </div>
         {% endif %}
-    </center>
+    </div>
     {% if ktorzy == 'usersFromAdFull' %}
         <div class="well">
             <label>Wyszukiwanie aktywne</label>
@@ -46,7 +46,7 @@
             e.preventDefault();
             $('.popoverElement').not(this).popover('hide');
             var skadZdjecie = $(this).attr('href');
-            $(this).attr('data-content', '<center><img style="height: 120px;" src="' + skadZdjecie + '" /></center>');
+            $(this).attr('data-content', '<div class="center-block"><img style="height: 120px;" src="' + skadZdjecie + '" /></div>');
         });
         $('.popoverElement').popover();
         $('#submitexport').on('click', function (e) {

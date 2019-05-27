@@ -38,7 +38,7 @@ class ZadanieType extends AbstractType
                     ),
                     'label' => 'Data dodania',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'zadanie-data-dodania',
                     ),
                     'required' => false,
                 ))
@@ -52,7 +52,7 @@ class ZadanieType extends AbstractType
                     ),
                     'label' => 'Data ukończenia',
                     'label_attr' => array(
-                        'class' => 'col-sm-4 control-label',
+                        'class' => 'zadanie-data-ukonczenia',
                     ),
                     'required' => false,
                 ))

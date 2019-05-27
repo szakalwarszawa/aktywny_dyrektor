@@ -1,0 +1,53 @@
+<div id="removeUserModal" class="modal fade">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close keep-unblocked" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Odnotuj odebranie uprawnienia</h4>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="form-group">
+                        <label for="powododebrania">Wpisz cel odebrania</label>
+                        <input type="text" class="form-control keep-unblocked" id="powododebrania" maxlength="150" placeholder="Cel odebrania">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <div id="ajaxResponse" class="alert"></div>
+                <button type="button" class="btn btn-default keep-unblocked" data-dismiss="modal">Zamknij</button>
+                <button type="button" class="btn btn-primary keep-unblocked" id="removeUserResource">Odnotuj odebranie uprawnienia</button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    let userZasobId = 0;
+    $(document).ready(function () {
+        $('[data-removeuser]').click(function () {
+            userZasobId = parseInt(this.dataset.userzasobid);
+            $('#ajaxResponse').removeClass('alert-danger alert-success').text('');
+            $('#powododebrania').val(''),
+            $('#removeUserResource').attr('disabled', false);
+            $('#removeUserModal').modal();
+        });
+
+        $('#removeUserResource').click(function () {
+            if (userZasobId !== 0) {
+                $(this).attr('disabled', true);
+                $.post("/zasoby/removeUserFromResource", {message: $('#powododebrania').val(), id: userZasobId}, function (data) {
+                    if ('success' !== data.status) {
+                        $("#ajaxResponse").text(data.message);
+                        $('#ajaxResponse').removeClass('alert-success').addClass('alert-danger');
+                    } else {
+                        $('#removeUserModal').modal('hide');
+                        rowId = 'row-' + userZasobId;
+                        $('#' + rowId).addClass('alert alert-danger').hide('slow', function () {
+                            $(this).remove();
+                        })
+                    }
+                });
+            }
+        });
+    });
+</script>

@@ -31,14 +31,19 @@ parameters:
     blokada_na_zapis_tylko_userow_o_tym_nawisku: 'testowy'
     maximum_ldap_reconnects: 10
 
-    ad_host: 10.0.2.21
-    ad_host2: 10.0.2.21
-    ad_host3: 10.0.2.21
+    ad_host: 10.0.0
+    ad_host2: 10.0.0
+    ad_host3: 10.0.0
     ad_domain: AD.TEST
     ad_user:   aktywny_dyrektor
-    ad_password :
-    ad_ou : "OU=Zespoly, OU=PARP Pracownicy"
+    ad_password : ''
+    base_dn: 'DC=test,DC=local'
+    base_dc_dn: 'test,local'
+    ad_ou : 'OU=Zespoly_2016,OU=PARP Pracownicy'
+    base_ou_dn: 'Zespoly_2016,PARP Pracownicy'
     grupy_ou : "PARP Grupy"
+    ou_zablokowani: Zablokowane,PARP Pracownicy
+    ou_nieobecni: Nieobecni,PARP Pracownicy
     session_max_idle_time: 3600
     pusz_to_ad: true
     rekord_db: "firebird:dbname=/var/www/parp/PARP_KP.FDB;host=localhost"
@@ -61,3 +66,9 @@ parameters:
 
     # Katalog używany przez komendy CLI do zapisu plików #
     katalog_eksportow_cli: setup/export_cli/
+
+    # Czas opóźnienia 'zmiana obowiązuje od' przy edycji użytkownika #
+    ad_push_delay: '30 minutes'
+
+    # Katalog logów wypychania do AD #
+    ad_push_log_directory: 'work/logs/'
