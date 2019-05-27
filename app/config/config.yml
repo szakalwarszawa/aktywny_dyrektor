@@ -14,6 +14,14 @@ framework:
                 adapter: cache.adapter.filesystem
                 public: true
                 default_lifetime: 86400
+            ldap.ad_user.cache:
+                adapter: cache.adapter.filesystem
+                public: true
+                default_lifetime: 86400
+            ldap.ad_group.cache:
+                adapter: cache.adapter.filesystem
+                public: true
+                default_lifetime: 86400
     #esi:             ~
     translator:
         enabled: true

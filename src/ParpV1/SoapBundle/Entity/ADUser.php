@@ -69,7 +69,7 @@ class ADUser
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
      */
-    private $accountExpires;
+    private $accountexpires;
 
     /**
      * @var string
@@ -355,28 +355,28 @@ class ADUser
     }
 
     /**
-     * Set accountExpires
+     * Set accountexpires
      *
-     * @param string $accountExpires
+     * @param string $accountexpires
      *
      * @return ADUser
      */
-    public function setAccountExpires($accountExpires)
+    public function setAccountExpires($accountexpires)
     {
         // Redmine #51829: wydłużenie okresu ważności kont w AD do końca podanego dnia
-        $this->accountExpires = $accountExpires->setTime(23, 59);
+        $this->accountexpires = $accountexpires->setTime(23, 59);
 
         return $this;
     }
 
     /**
-     * Get accountExpires
+     * Get accountexpires
      *
      * @return string
      */
     public function getAccountExpires()
     {
-        return $this->accountExpires;
+        return $this->accountexpires;
     }
 
     /**

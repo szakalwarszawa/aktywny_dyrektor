@@ -27,6 +27,8 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\Grid\Column\TextColumn;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\DaneRekord;
+use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * BlokowaneKontaController .
@@ -95,7 +97,13 @@ class BlokowaneKontaController extends Controller
 
         $ctrl = new DefaultController();
         $ctrl->setContainer($this->container);
-        $form = $ctrl->createUserEditForm($this, $ADUser[0]);
+        $form = $this->createForm(EdycjaUzytkownikaFormType::class, null, [
+            'entity_manager' => $em,
+            'username' => $samaccountname,
+            'form_type' => EdycjaUzytkownikaFormType::TYP_EDYCJA,
+            'short_form' => false
+        ]);
+
         $departamentRekord = "";
         if ($daneRekord) {
             $departamentRekord = $em->getRepository(Departament::class)->findOneBy([
@@ -105,6 +113,21 @@ class BlokowaneKontaController extends Controller
         $form->handleRequest($request);
         if ($request->getMethod() === "POST") {
             $data = $form->getData();
+            $ouGoscia = $ADUser[0]['distinguishedname'];
+            $zablokowanyByl = false !== strpos($ouGoscia, 'Zablokowane');
+
+            if ($zablokowanyByl) {
+                //trzeba nadać podstawowe
+                $ADUser[] = ['title' => $data['title']->getName()];
+                $ADUser = array_merge($ADUser[0], $ADUser[1]);
+                $noweGrupy = $ldap->getGrupyUsera($ADUser, $data['department'], $data['info']);
+            }
+
+
+            $nowyDn = str_replace('Zablokowane', $data['department']->getShortname(), $ouGoscia);
+            $nowyDn = str_replace('Nieobecni', $data['department']->getShortname(), $nowyDn);
+
+
             $ctrl = new DefaultController();
             $ctrl->setContainer($this->container);
             $entry = new Entry();
@@ -112,8 +135,14 @@ class BlokowaneKontaController extends Controller
                 ->setActivateDeactivated(true)
                 ->setIsDisabled(0)
                 ->setFromWhen(new \Datetime())
-                ->setDistinguishedName($ADUser[0]['distinguishedname'])
-                ->setCreatedBy($this->getUser()->getUsername());
+                ->setDistinguishedName($nowyDn)
+                ->setCreatedBy($this->getUser()->getUsername())
+                ->setOdblokowanieKonta(true)
+            ;
+
+            if ($zablokowanyByl) {
+                $entry->addGrupyAD($noweGrupy, '+');
+            }
 
             $ctrl->parseUserFormData($data, $entry);
 

@@ -2,41 +2,88 @@
 
 namespace ParpV1\MainBundle\Form;
 
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use DateTime;
+use Doctrine\ORM\EntityManager;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\SoapBundle\Services\LdapService;
+use ParpV1\MainBundle\Helper\AdUserHelper;
+use ParpV1\MainBundle\Entity\Position;
+use Symfony\Component\Form\FormEvents;
+use Symfony\Component\Form\FormError;
+use Symfony\Component\Form\FormEvent;
+use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\MainBundle\Entity\Section;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
+use ParpV1\MainBundle\Constants\TakNieInterface;
+use ParpV1\MainBundle\Entity\AclUserRole;
+use Doctrine\Common\Collections\ArrayCollection;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 
 /**
- * Formularz przeniesiony do osobnej klasy z Main/DefaultController
- * Potrzebne są metadane z tego formularza do sprawdzania zmian.
- *
- * @todo trzeba przenieść z formularza html`owe atrybuty do twiga
- * @todo ogarnąć te readonly -> przekazać do szablonu przy renderowaniu
- * @todo poprawić szablon twigowy
- * @todo ogarnąć opcje formularza - jest ich za dużo i to jakieś głupoty są...
- * @todo refaktoryzacja
+ * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
+ * Opiera się na kluczach tablicy zwracanej z AD które są zdefiniowane
+ * w klasie AdUserConstants. W miejsca stałych lepiej nie wsadzać nic innego.
  */
 class EdycjaUzytkownikaFormType extends AbstractType
 {
     /**
-     * @todo na tych stringach operuje X innych rzeczy..
-     *
+     * @var LdapService
+     */
+    private $ldapService;
+
+    /**
+     * @var EntityManager
+     */
+    private $entityManager;
+
+    /**
      * @var string
      */
     const WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY = 'Konto wyłączono z powodu rozwiązania stosunku pracy';
 
     /**
-     * @todo jak wyżej
-     *
      * @var string
      */
     const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni';
+
+    /**
+     * Typ formularza do edycji.
+     * Umożliwia on edycję tylko wybranych pól.
+     * Używany przy edycji użykownika przez PARP_BZK_1.
+     * Skrócony formularz.
+     *
+     * @var int
+     */
+    const TYP_EDYCJA = 1;
+
+    /**
+     * Typ formularza nowego użytkownika.
+     * Umożliwia edycję wszystkich pól.
+     * Używany przy edycji użytkownika przez rolę PARP_ADMIN_REJESTRU_ZASOBOW.
+     * Pełny formularz.
+     *
+     * @var int
+     */
+
+    const TYP_NOWY = 2;
+
+    /**
+     * Publiczny konstruktor
+     *
+     * @param LdapService $ldapService
+     */
+    public function __construct(LdapService $ldapService)
+    {
+        $this->ldapService = $ldapService;
+    }
 
     /**
      * @param FormBuilderInterface $builder
@@ -44,247 +91,255 @@ class EdycjaUzytkownikaFormType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $admin = $options['opcje']['admin'];
-        $kadry1 = $options['opcje']['kadry1'];
-        $kadry2 = $options['opcje']['kadry2'];
-        $pracownikTymczasowy = $options['opcje']['pracownik_tymczasowy'];
-        $titles = $options['opcje']['titles'];
-        $sections = $options['opcje']['sections'];
-        $info = $options['opcje']['info'];
-        $departments = $options['opcje']['departments'];
-        $przelozeni = $options['opcje']['przelozeni'];
-        $now = new DateTime();
-        $rights = $options['opcje']['rights'];
-        $nowy = $options['opcje']['nowy'];
-        $initialRights = $options['opcje']['initial_rights'];
-        $roles = $options['opcje']['roles'];
+        $formType = $options['form_type'];
+        $adUserHelper = null;
+        if (self::TYP_EDYCJA === $formType) {
+            $adUser = $this
+                ->ldapService
+                ->getUserFromAD($options['username'], null, null, 'wszyscyWszyscy')
+            ;
+
+            $adUserHelper = new AdUserHelper($adUser, $options['entity_manager']);
+        }
+
+        $this->entityManager = $options['entity_manager'];
 
         $builder
-            ->add('samaccountname', TextType::class, array(
-                'required'   => false,
-                'label'      => 'Nazwa konta',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => true
-                ),
-            ))
-            ->add('cn', TextType::class, array(
-                'required'   => false,
-                'label'      => 'Nazwisko i Imię', //'Imię i Nazwisko',//'Nazwisko i Imię',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
-                ),
-            ))
-            ->add('initials', TextType::class, array(
-                'required'   => false,
-                'label'      => 'Inicjały',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
-                ),
-            ))
-            ->add('title', ChoiceType::class, array(
-                //                'class' => 'ParpMainBundle:Position',
-                'required'   => false,
-                'label'      => 'Stanowisko',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
-                    'onchange' => 'zaznaczUstawieniePoczatkowych()',
-                    'data-toggle' => 'select2',
-                ),
-                //'data' => @$defaultData["title"],
-                'choices'    => $titles,
-                //                'mapped'=>false,
-            ))
-            ->add('infoNew', HiddenType::class, array(
-                'mapped'     => false,
-                'label'      => false,
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => (!$admin),
-                ),
-
-            ))
-            ->add('info', ChoiceType::class, array(
-                'required'   => false,
-                'label'      => 'Sekcja',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'disabled' => (!$admin && !$kadry1 && !$kadry2 && !$pracownikTymczasowy),
-                    'onchange' => 'zaznaczUstawieniePoczatkowych()',
-                    'data-toggle' => 'select2',
-                ),
-                'choices'    => $sections,
-                'data' => $info,
-            ))
-            ->add('department', ChoiceType::class, array(
-                'required'   => false,
-                'label'      => 'Biuro / Departament',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'disabled' => (!$admin && !$kadry2 && !$pracownikTymczasowy),
-                    'onchange' => 'zaznaczUstawieniePoczatkowych()',
-                    'data-toggle' => 'select2',
-                ),
-                'choices'    => $departments,
-                //'data' => @$defaultData["department"],
-            ))
-            ->add('manager', ChoiceType::class, array(
-                'required'   => false,
-                'label'      => 'Przełożony',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => (!$admin && !$kadry1 && !$kadry2),
-                    'data-toggle' => 'select2',
-
-                    //'disabled' => (!$admin && !$kadry1 && !$kadry2)
-
-                ),
-                'choices'    => $przelozeni
-                //'data' => @$defaultData['manager']
-            ))
-            ->add('accountExpires', TextType::class, array(
-                'attr'       => array(
-                    'class' => 'form-control',
-                ),
-                //'widget' => 'single_text',
-                'label'      => 'Data wygaśnięcia konta',
-                //'format' => 'dd-MM-yyyy',
-                //                'input' => 'datetime',
-                'label_attr' => array(
-                    'class'    => 'col-sm-4 control-label',
-                    'readonly' => (!$admin && !$kadry1 && !$kadry2),
-                ),
-                'required'   => false,
-                //'data' => @$expires
-            ))
-            ->add('fromWhen', TextType::class, array(
-                'attr'       => array(
-                    'class' => 'form-control',
-                ),
-                //                'widget' => 'single_text',
-                'label'      => 'Zmiana obowiązuje od',
-                //                'format' => 'dd-MM-yyyy',
-                //                'input' => 'datetime',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'required'   => false,
-                'data'       => $now->format('Y-m-d'),
-            ))
-            ->add('initialrights', ChoiceType::class, array(
-                'required'   => false,
-                'label'      => 'Uprawnienia początkowe',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'disabled' => (!$admin),
-                    'data-toggle' => 'select2',
-                ),
-                'choices'    => $rights,
-                'data'       => ($nowy ? ['UPP'] : $initialRights),
-
-                //'data' => (@$defaultData["initialrights"]),
-                'multiple'   => true,
-                'expanded'   => false,
-            ))
-            ->add('roles', ChoiceType::class, array(
-                'required'   => false,
-                'label'      => 'Role w AkD',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'readonly' => (!$admin),
-                    'disabled' => (!$admin),
-                    'data-toggle' => 'select2',
-                ),
-                'choices'    => $roles,
-                //'data' => (@$defaultData["initialrights"]),
-                'multiple'   => true,
-                'expanded'   => false,
-            ))
-            ->add('isDisabled', ChoiceType::class, array(
-                'required'   => true,
-                'label'      => 'Konto wyłączone w AD',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'attr'       => array(
-                    'class'    => 'form-control',
-                    'disabled' => (!$admin && !$kadry1 && !$kadry2),
-                    'data-toggle' => 'select2',
-                ),
-                'choices'    => array(
-                    'NIE' => 0,
-                    'TAK' => 1,
-                ),
-                //'data' => @$defaultData["department"],
-            ))
-            ->add('disableDescription', ChoiceType::class, array(
-                'label'    => 'Podaj powód wyłączenia konta',
+            ->add(AdUserConstants::LOGIN, TextType::class, [
+                'required' => true,
+                'label' => 'Nazwa konta',
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
+                'data' => $options['username'],
+            ])
+            ->add(AdUserConstants::IMIE_NAZWISKO, TextType::class, [
+                'required' => true,
+                'label' => 'Imię i nazwisko',
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
+                'data' => $adUserHelper? $adUserHelper->getImieNazwisko() : null,
+            ])
+            ->add(AdUserConstants::STANOWISKO, EntityType::class, [
+                'required' => true,
+                'label' => 'Stanowisko',
+                'class' => Position::class,
+                'choice_label' => 'name',
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
                 'placeholder' => 'Proszę wybrać',
-                'choices'  => array(
-                    'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => self::WYLACZENIE_KONTA_NIEOBECNOSC,
-                    'Konto wyłączono z powodu rozwiązania stosunku pracy'       => self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
-                ),
+                'data' => $adUserHelper? $adUserHelper->getStanowisko(true) : null,
+            ])
+            ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
+                'required' => true,
+                'label' => 'Biuro / Departament',
+                'class' => Departament::class,
+                'choice_label' => 'name',
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
+                'placeholder' => 'Proszę wybrać',
+                'data' => $adUserHelper? $adUserHelper->getDepartamentNazwa(false, true) : null,
+            ])
+            ->add(AdUserConstants::PRZELOZONY, ChoiceType::class, [
+                'required' => true,
+                'label' => 'Przełożony',
+                'choices' => $this
+                    ->ldapService
+                    ->getPrzelozeniJakoName(),
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
+                'placeholder' => 'Proszę wybrać',
+                'data' => $adUserHelper? $adUserHelper->getPrzelozony() : null,
+            ])
+            ->add(AdUserConstants::SEKCJA_NAZWA, EntityType::class, [
+                'required' => true,
+                'label' => 'Sekcja',
+                'class' => Section::class,
+                // Ma być realizowane po stronie frontu
+                // 'query_builder' => function (EntityRepository $entityRepository) use ($adUserHelper) {
+                //     if (!$adUserHelper) {
+                //         return $entityRepository
+                //             ->createQueryBuilder('s')
+                //         ;
+                //     }
+
+                //     return $entityRepository
+                //         ->createQueryBuilder('s')
+                //         ->join('s.departament', 'd')
+                //         ->where('d.shortname = :short')
+                //         ->setParameter('short', $adUserHelper? $adUserHelper::getDepartamentNazwa(true) : null)
+                //     ;
+                // },
+                'group_by' => function ($choiceObject) {
+                    $departament = $choiceObject->getDepartament();
+
+                    if ($departament) {
+                        $separatorText =  $departament->getShortname() . '  (' . $departament->getName() . ')';
+
+                        return $separatorText;
+                    }
+
+                    return 'bez departamentu';
+                },
+                'placeholder' => 'Proszę wybrać',
+                'constraints' => [
+                    new Assert\NotBlank()
+                ],
+                'data' => $adUserHelper? $adUserHelper->getSekcja(false, true) : null,
+            ])
+            ->add(AdUserConstants::WYGASA, DateType::class, [
                 'required' => false,
-                'attr'     => array(
-                    'disabled' => (!$admin && !$kadry1 && !$kadry2),
-                ),
-            ))
-            ->add('ustawUprawnieniaPoczatkowe', CheckboxType::class, array(
-                'label'      => 'Resetuj do uprawnień początkowych',
-                'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
-                ),
-                'required'   => false,
-                'attr'       => array(
-                    'class'    => 'form-control2',
+                'label' => 'Data wygaśnięcia konta',
+                'data' => $adUserHelper? $adUserHelper->getKiedyWygasa() : null,
+                'widget' => 'single_text',
+                'html5' => false,
+                'constraints' => [
+                    new Assert\NotNull()
+                ],
+            ])
+        ;
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->add(AdUserConstants::WYLACZONE, ChoiceType::class, [
                     'required' => false,
-                ),
-                'data'       => false,
-            ))
-            ->setMethod('POST')
+                    'label' => 'Konto wyłączone w AD',
+                    'choices' => [
+                        'Nie' => TakNieInterface::NIE,
+                        'Tak' => TakNieInterface::TAK,
+                    ],
+                    'constraints' => [
+                        new Assert\NotNull()
+                    ],
+                    // 'placeholder' => 'Proszę wybrać',
+                    'data' => $adUserHelper? $adUserHelper->getCzyWylaczone() : null,
+                ])
+                ->add(AdUserConstants::POWOD_WYLACZENIA, ChoiceType::class, [
+                    'required' => false,
+                    'label' => 'Powód wyłączenia',
+                    'choices' => [
+                        'Konto wyłączono z powodu rozwiązania stosunku pracy' => AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
+                        'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
+                    ],
+                    'placeholder' => 'Proszę wybrać',
+                ])
+            ;
+        }
+            /*
+            @feature
+            ->add('ustawUprawnieniaPoczatkowe', CheckboxType::class, [
+                'required' => false,
+                'label' => 'Resetuj do uprawnień początkowych'
+            ])*/
+        $builder
+            ->add('zmianaOd', DateType::class, [
+                'label' => 'Zmiana obowiązuje od',
+                'required' => true,
+                'data' => new DateTime(),
+                'widget' => 'single_text',
+                'html5' => false,
+            ])
+        ;
+        /*
+        @feature
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->add('roles', EntityType::class, [
+                    'label' => 'Role w AkD',
+                    'class' => AclRole::class,
+                    'choice_label' => 'name',
+                    'multiple' => true,
+                    'expanded' => false,
+                    'data' => $adUserHelper? $this->getUserRoles($options['username']) : null
+                ])
+            ;
+        }
+        */
+
+        $builder
+            ->add('shortForm', HiddenType::class, [
+                'data' => $options['short_form'],
+            ])
+            ->add('formType', HiddenType::class, [
+                'data' => $formType,
+            ])
+            ->add('zapisz', SubmitType::class)
         ;
 
-        if (!(!$admin && !$kadry1 && !$kadry2)) {
-            $builder->add('zapisz', SubmitType::class, array(
-                'attr' => array(
-                    'class'    => 'btn btn-success col-sm-12',
-                    'disabled' => (!$admin && !$kadry1 && !$kadry2),
-                ),
-            ));
+        $builder->setMethod('POST');
+
+        if ($adUserHelper) {
+            $eventListener = function (FormEvent $formEvent) use ($adUserHelper) {
+                $getDataErrors = $adUserHelper::getErrors();
+                $form = $formEvent->getForm();
+                foreach ($getDataErrors as $error) {
+                    $formError = new FormError($error['message']);
+                    $form
+                        ->get($error['element'])
+                        ->addError($formError)
+                    ;
+
+                    $formEvent
+                        ->getForm()
+                        ->addError($formError)
+                    ;
+                }
+            };
+
+            $builder
+                ->addEventListener(FormEvents::PRE_SET_DATA, $eventListener)
+            ;
         }
+
+        if (self::TYP_NOWY !== $formType) {
+            $builder
+                ->get(AdUserConstants::POWOD_WYLACZENIA)
+                ->addEventListener(FormEvents::PRE_SUBMIT, function (FormEvent $formEvent) {
+                    $disableReason = $formEvent->getData();
+                    $form = $formEvent->getForm();
+                    $isDisabled = $form
+                        ->getParent()
+                        ->get(AdUserConstants::WYLACZONE)
+                        ->getData()
+                    ;
+
+                    if (TakNieInterface::TAK === $isDisabled && empty($disableReason)) {
+                        $formError = new FormError('Musisz podać powód wyłączenia konta.');
+                        $form
+                            ->addError($formError)
+                        ;
+                    }
+                })
+            ;
+        }
+    }
+
+    /**
+     * Zwraca kolekcję obiektów AclRole posiadane przez podanego użytkownika.
+     *
+     * @param string $username
+     *
+     * @return ArrayCollection
+     */
+    private function getUserRoles(string $username): ArrayCollection
+    {
+        $entityManager = $this->entityManager;
+        $userRoles = $entityManager
+            ->getRepository(AclUserRole::class)
+            ->findBy([
+                'samaccountname' => $username,
+            ]);
+
+
+        $aclRoleObjects = new ArrayCollection();
+        foreach ($userRoles as $userRole) {
+            $aclRoleObjects->add($userRole->getRole());
+        }
+
+        return $aclRoleObjects;
     }
 
     /**
@@ -294,10 +349,22 @@ class EdycjaUzytkownikaFormType extends AbstractType
     {
         $resolver->setDefaults(array(
             'data_class' => null,
-            'opcje' => []
+            'short_form' => true,
+            'username' => ''
         ));
 
-        $resolver->setAllowedTypes('opcje', 'array');
+        $resolver->setRequired([
+            'entity_manager',
+            'username',
+            'form_type'
+        ]);
+
+        $resolver
+            ->setAllowedTypes('short_form', 'bool')
+            ->setAllowedTypes('username', 'string')
+            ->setAllowedTypes('form_type', 'int')
+            ->setAllowedTypes('entity_manager', EntityManager::class)
+        ;
     }
 
     /**

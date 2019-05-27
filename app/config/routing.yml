@@ -18,6 +18,11 @@ parp_auth:
       type:     annotation
       prefix:   /
 
+parp_ldap:
+    resource: "@ParpLdapBundle/Controller/"
+    type:     annotation
+    prefix:   /ldap
+
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
 

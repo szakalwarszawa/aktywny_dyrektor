@@ -21,6 +21,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Pagerfanta\Adapter\ArrayAdapter;
 use Pagerfanta\Pagerfanta;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * Klaster controller.
@@ -358,7 +359,7 @@ class ImportRekordDaneController extends Controller
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
                         $dr->setNewUnproccessed(2);
                     } elseif (count($changeSet) > 0 && !$nowy) {
-                        $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane);
+                        $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;
                     }
 
@@ -407,10 +408,9 @@ class ImportRekordDaneController extends Controller
      * @throws \LogicException
      * @throws \Symfony\Component\DependencyInjection\Exception\InvalidArgumentException
      */
-    protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane)
+    protected function utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych)
     {
         $ldap = $this->get('ldap_service');
-
         $entry = (null !== $this->getUser()) ? new Entry($this->getUser()->getUsername()) : new Entry();
         $em->persist($entry);
 
@@ -500,6 +500,18 @@ class ImportRekordDaneController extends Controller
                         if($dr->getNazwisko() == "Turlej")
                             die(".".$dr->getImie().".");
             */
+        }
+
+
+        if ($resetDoPodstawowych) {
+            $resetEntry = new OdebranieZasobowEntry();
+            $resetEntry
+                ->setPowodOdebrania('Zmiana departamentu/sekcji (rekord import)')
+                ->setUzytkownik($entry->getSamaccountname())
+            ;
+
+            $this->getDoctrine()->getManager()->persist($resetEntry);
+            $entry->setOdebranieZasobowEntry($resetEntry);
         }
 
 
@@ -810,7 +822,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     'newUnproccessed',
                 ]);
             $d['users'] = $users;
+            $d['konto_wylaczone'] = false;
             $d['departament'] = (null != $departament)? $departament : new Departament();
+
+            if (false !== strpos(current($users)['useraccountcontrol'], 'ACCOUNTDISABLE')) {
+                $d['konto_wylaczone'] = true;
+            }
+
             $data[] = $d;
         }
 
@@ -904,10 +922,14 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         $ldapService = $this->get('ldap_service');
         $userFromAD = $ldapService->getUserFromAD($samaccountname);
+
+        if (false !== strpos(current($userFromAD)['useraccountcontrol'], 'ACCOUNTDISABLE')) {
+            return new Response();
+        }
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
-        $poprzednieDane = explode(' ', $userFromAD[0]['name']);
+        $poprzednieDane = explode(' ', current($userFromAD)['name']);
 
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];
@@ -932,13 +954,23 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         $changeSet['imie'] = 1;
                         $changeSet['nazwisko'] = 1;
                     }
-                    if ($userFromAD[0]['department'] !== $daneRekord->getDepartament()) {
+
+                    $depName = $objectManager
+                        ->getRepository(Departament::class)
+                        ->findOneBy([
+                            'nameInRekord' => $daneRekord->getDepartament()
+                        ]);
+
+                    if (null !== $depName) {
+                        $depName = $depName->getName();
+                    }
+                    if ($userFromAD[0]['department'] !== $depName) {
                         $changeSet['department'] = 1;
                     }
                     if ($userFromAD[0]['title'] !== $daneRekord->getStanowisko()) {
                         $changeSet['stanowisko'] = 1;
                     }
-                    if ($dane['form']['info'] !== '' && $userFromAD[0]['info'] !== $dane['form']['info']) {
+                    if ($dane['form']['info'] !== '' && $userFromAD[0]['division'] !== $dane['form']['info']) {
                         $zmieniamySekcje = true;
                     }
                 }
@@ -949,7 +981,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $zmieniamySekcje = true;
             }
 
-            $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane);
+            $resetDoPodstawowych = false;
+            if (isset($changeSet['departament']) || $zmieniamySekcje) {
+                $resetDoPodstawowych = true;
+            }
+
+            $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych);
 
             if (!$nowy && $daneRekord->getNewUnproccessed() === 2) {
                 // Jeśli nie jest nowy i istnieje w Rekordzie

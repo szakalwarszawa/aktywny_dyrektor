@@ -11,7 +11,7 @@ use APY\DataGridBundle\Grid\Mapping as GRID;
  * Section
  *
  * @ORM\Table(name="section")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\Repository\SectionRepository")
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, shortname, departament.name, departament.shortname, kierownikName")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
@@ -26,7 +26,7 @@ class Section
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -61,9 +61,9 @@ class Section
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $shortname;
-    
-    
-    
+
+
+
     /**
      *
      * @ORM\ManyToOne(targetEntity="Departament", inversedBy="section")
@@ -73,8 +73,8 @@ class Section
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $departament;
-    
-    
+
+
     /**
      * @var string
      *
@@ -241,5 +241,15 @@ class Section
     public function getDepartament()
     {
         return $this->departament;
+    }
+
+    /**
+     * Obiekt jako string.
+     *
+     * @return string
+     */
+    public function __toString()
+    {
+        return $this->name;
     }
 }

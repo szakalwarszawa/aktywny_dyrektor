@@ -10,6 +10,9 @@ use Psr\Cache\CacheItemPoolInterface;
 use Symfony\Component\Debug\Exception\ContextErrorException as DebugContextErrorException;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\Section;
+use ParpV1\LdapBundle\Connection\LdapConnection;
+use ParpV1\LdapBundle\Service\LdapFetch;
+use Symfony\Component\VarDumper\VarDumper;
 
 class LdapService
 {
@@ -17,6 +20,11 @@ class LdapService
      * @var CacheItemPoolInterface
      */
     private $cache;
+
+    /**
+     * @var LdapFech
+     */
+    private $ldapFetch;
 
     protected $dodatkoweOpcje = 'ekranEdycji';
     protected $ad_host;
@@ -51,12 +59,12 @@ class LdapService
             //"extensionAttribute14"
     );
 
-    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool)
+    public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
     {
         $this->container = $container;
         $this->ad_host = $this->container->getParameter('ad_host');
         $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
-
+        $this->ldapFetch = $ldapFetch;
         $tab = explode('.', $this->container->getParameter('ad_domain'));
 
         $env = $this->container->get('kernel')->getEnvironment();
@@ -69,6 +77,7 @@ class LdapService
             $this->patch = ' ,DC=' . $tab[0] . ',DC=' . $tab[1];
         }
         //die($this->patch);
+        $this->cache = $cacheItemPool;
 
         $configuration = array(
             //'user_id_key' => 'samaccountname',
@@ -89,8 +98,8 @@ class LdapService
             'ad_port' => '389',
                 //'sso' => false,
         );
-        $this->adldap = new \Adldap\Adldap($configuration);
-        $this->cache = $cacheItemPool;
+       // $this->adldap = new \Adldap\Adldap($configuration);
+        $this->adldap = $ldapConnection->getAdLdap();
     }
 
     public function getAllManagersFromAD()
@@ -765,6 +774,7 @@ class LdapService
                     $userdn
                 )
             );
+            $userdn = str_replace('OU=Zespoly_2016,', '', $userdn);
         } elseif ($ktorych === 'nieobecni') {
             $userdn = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
         }
@@ -825,6 +835,7 @@ class LdapService
               }
              */
         }
+
         return $result;
     }
 
@@ -1008,11 +1019,10 @@ class LdapService
 
     public function getGrupa($grupa)
     {
-        try {
-            return $this->adldap->group()->findByName($grupa);
-        } catch (DebugContextErrorException $exception) {
-            return false;
-        }
+        return $this
+            ->ldapFetch
+            ->fetchGroup($grupa)
+        ;
     }
 
     public function getUsersWithRole($role)
@@ -1197,10 +1207,15 @@ class LdapService
         $stanowisko = mb_strtolower(trim($user['title']));
         $entityManager = $this->container->get('doctrine')->getManager();
 
-        $departament = $entityManager->getRepository(Departament::class)->findOneBy([
-            'shortname' => $depshortname,
-            'nowaStruktura' => 1,
-        ]);
+        if (!$depshortname instanceof Departament) {
+            $departament = $entityManager->getRepository(Departament::class)->findOneBy([
+                'shortname' => $depshortname,
+                'nowaStruktura' => 1,
+            ]);
+            $depshortname = $departament;
+        } else {
+            $departament = $depshortname;
+        }
 
         $pomijajSekcje = ['ND', 'BRAK', 'N/D', 'n/d', ''];
         $grupy = [
@@ -1209,14 +1224,22 @@ class LdapService
             'SGG-(skrót D/B)-Wewn-Wsp-RW'
         ];
 
+        if ($sekcja instanceof Section) {
+            $sekcja = $sekcja->getName();
+        }
+
         // dostęp do własnego katalogu sekcyjnego
         if (!empty($sekcja) && !in_array($sekcja, $pomijajSekcje, true)) {
             // poniższy warunek do usuniecia, jeśli zostaną wszędzie przerobione odwołania do getGrupyUsera z nazw sekcji na skróty.
             if (strstr($sekcja, '.') === false) {
-                $section = $entityManager->getRepository(Section::class)->findOneBy([
-                    'departament' => $departament->getId(),
-                    'name' => $sekcja
-                ]);
+                if (!$sekcja instanceof Section) {
+                    $section = $entityManager->getRepository(Section::class)->findOneBy([
+                        'departament' => $departament->getId(),
+                        'name' => $sekcja
+                    ]);
+                } else {
+                    $section = $sekcja;
+                }
                 if (null === $section) {
                     throw new Exception('Nie znaleziono sekcji: '.$sekcja.' w departamencie: '.$depshortname.' (pracownik: '.$user['name'].')'
                         .' #class:'.debug_backtrace()[1]['class'].' #function:'.debug_backtrace()[1]['function']);
@@ -1224,8 +1247,9 @@ class LdapService
                 $sekcja = $section->getShortname();
             }
             $skrotSekcjiRozbity = explode('.', $sekcja);
-            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname)) {
-                throw new Exception('Niewłaściwy D/B ('.$depshortname.') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
+
+            if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname->getShortname())) {
+                throw new Exception('Niewłaściwy D/B ('.$depshortname->getShortname().') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
                     .' #class:'.debug_backtrace()[1]['class'].'#function:'.debug_backtrace()[1]['function']);
             }
             if ($skrotSekcjiRozbity[1][0] === 'S') {
@@ -1312,11 +1336,11 @@ class LdapService
         // }
 
         for ($i = 0; $i < count($grupy); $i++) {
-            $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname, $grupy[$i]));
+            $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname->getShortname(), $grupy[$i]));
         }
 
-        if (null!==$departament && !empty($departament->getGrupyAD())) {
-            $grupyDepartamentowe = explode(';', $departament->getGrupyAD());
+        if (null!==$depshortname && !empty($depshortname->getGrupyAD())) {
+            $grupyDepartamentowe = explode(';', $depshortname->getGrupyAD());
             foreach ($grupyDepartamentowe as $grupaDep) {
                 if ($grupaDep != '') {
                     $grupy[] = $grupaDep;
@@ -1330,7 +1354,7 @@ class LdapService
             foreach ($sekcje as $sekcja) {
                 if ($sekcja != '' && !in_array($sekcja, $pomijajSekcje, true)) {
                     if (explode('.', $sekcja)[1][0] === 'S') {
-                        $grupaDoDodania = 'SGG-' . $depshortname . '-Wewn-' . $sekcja . '-RW';
+                        $grupaDoDodania = 'SGG-' . $depshortname->getShortname() . '-Wewn-' . $sekcja . '-RW';
                         if (!in_array($grupaDoDodania, $grupy, true)) {
                             $grupy[] = $grupaDoDodania;
                             echo $grupaDoDodania."<br />\n";
@@ -1432,7 +1456,7 @@ class LdapService
         return $ADManager;
     }
 
-    public function getPrzelozeniJakoName()
+    public function getPrzelozeniJakoName($tablicaZLoginem = false)
     {
         if ($this->_userCache === null) {
             $this->_userCache = $this->getAllFromAD();
@@ -1441,7 +1465,11 @@ class LdapService
         $ret = [];
         foreach ($this->_userCache as $u) {
             if (in_array(trim($u['title']), $this->stanowiska, true)) {
-                $ret[$u['name']] = $u['name'];
+                if ($tablicaZLoginem) {
+                    $ret[$u['name']] = $u['samaccountname'];
+                } else {
+                    $ret[$u['name']] = $u['name'];
+                }
             }
         }
 

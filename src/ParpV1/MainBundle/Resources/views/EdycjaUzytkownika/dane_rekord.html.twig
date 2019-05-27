@@ -1,0 +1,26 @@
+{% if dane_rekord is defined and dane_rekord != null %}
+    <table class="table table-responsive table-hover" id="daneRekordTable">
+        <tr>
+            <th>Departament</th>
+            <td>{{ dane_rekord.departament }}</td>
+        </tr>
+        <tr>
+            <th>Stanowisko</th>
+            <td>{{ dane_rekord.stanowisko }}</td>
+        </tr>
+        <tr>
+            <th>Umowa</th>
+            <td>{{ dane_rekord.umowa }}</td>
+        </tr>
+        <tr>
+            <th>Umowa od</th>
+            <td>{{ dane_rekord.umowaOd|date('Y-m-d') }}</td>
+        </tr>
+        <tr>
+            <th>Umowa do</th>
+            <td>{{ dane_rekord.umowaDo|date('Y-m-d') }}</td>
+        </tr>
+    </table>
+{% else %}
+    Nie ma jeszcze zaimportowanych danych z systemu rekord.
+{% endif %}
