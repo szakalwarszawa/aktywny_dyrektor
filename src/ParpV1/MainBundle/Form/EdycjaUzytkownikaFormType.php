@@ -22,12 +22,10 @@ use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Entity\Section;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use ParpV1\MainBundle\Constants\TakNieInterface;
-use Doctrine\ORM\EntityRepository;
 use ParpV1\MainBundle\Entity\AclUserRole;
 use Doctrine\Common\Collections\ArrayCollection;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Elementy formularza bazują głównie na danych pobieranych bezpośrednio z AD.
@@ -188,6 +186,9 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'data' => $adUserHelper? $adUserHelper->getKiedyWygasa() : null,
                 'widget' => 'single_text',
                 'html5' => false,
+                'constraints' => [
+                    new Assert\NotNull()
+                ],
             ])
         ;
         if (self::TYP_NOWY !== $formType) {
