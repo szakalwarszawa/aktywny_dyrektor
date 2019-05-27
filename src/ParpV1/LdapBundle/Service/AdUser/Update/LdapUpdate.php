@@ -462,7 +462,7 @@ class LdapUpdate extends Simulation
                     }
                     $parseViewData = true;
                     if (null === $newValue) {
-                        $newValue = 0;
+                        continue;
                     }
                     $writableUserObject->setAccountExpiry($newValue);
                 }
