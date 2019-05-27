@@ -4,6 +4,8 @@ namespace ParpV1\LdapBundle\Cache;
 
 use ParpV1\LdapBundle\Cache\CacheHitInterface;
 use UnexpectedValueException;
+use Symfony\Component\Cache\CacheItem;
+use Symfony\Component\Cache\Exception\InvalidArgumentException;
 
 /**
  * Klasa Cache
@@ -24,6 +26,12 @@ class Cache implements CacheHitInterface
      */
     public function getItem(string $key)
     {
+        try {
+            CacheItem::validateKey($key);
+        } catch (InvalidArgumentException $cacheException) {
+            return false;
+        }
+
         $this->checkCache();
 
         $cacheItem = $this
@@ -84,6 +92,12 @@ class Cache implements CacheHitInterface
     public function saveItem(string $key, $value): bool
     {
         $this->checkCache();
+
+        try {
+            CacheItem::validateKey($key);
+        } catch (InvalidArgumentException $cacheException) {
+            return false;
+        }
 
         $cacheItem = $this
             ->cache
