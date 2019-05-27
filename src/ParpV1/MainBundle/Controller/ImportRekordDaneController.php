@@ -822,7 +822,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     'newUnproccessed',
                 ]);
             $d['users'] = $users;
+            $d['konto_wylaczone'] = false;
             $d['departament'] = (null != $departament)? $departament : new Departament();
+
+            if (false !== strpos(current($users)['useraccountcontrol'], 'ACCOUNTDISABLE')) {
+                $d['konto_wylaczone'] = true;
+            }
+
             $data[] = $d;
         }
 
@@ -916,6 +922,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         $ldapService = $this->get('ldap_service');
         $userFromAD = $ldapService->getUserFromAD($samaccountname);
+
+        if (false !== strpos(current($userFromAD)['useraccountcontrol'], 'ACCOUNTDISABLE')) {
+            return new Response();
+        }
         $objectManager = $this->getDoctrine()->getManager();
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);

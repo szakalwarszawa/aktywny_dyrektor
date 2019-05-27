@@ -73,6 +73,11 @@
         <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{% endif %}
     </h3>
     <h4>Dane zaimportowane z systemu REKORD</h4>
+    {% if obj.konto_wylaczone %}
+        <div class="alert alert-warning">
+            Znaleziono konto użytkownika z tymi samymi danymi w NIEOBECNYCH/ZABLOKOWANYCH. Jeśli jest to ta sama osoba, to należy uprzednio odblokować istniejące konto. Jeśli jest to nowa osoba, to utwórz dla niej nowe konto.
+        </div>
+    {% endif %}
     <table class="record_properties table table-striped">
         <thead>
             <tr>
@@ -97,6 +102,7 @@
                 <td>{{ obj.umowaOd ? obj.umowaOd|date("Y-m-d") : "" }}</td>
                 <td>{{ obj.umowaDo ? obj.umowaDo|date("Y-m-d") : "" }}</td>
             </tr>
+            {% if not obj.konto_wylaczone %}
             <tr>
                 <td colspan="8">
                     {{ forms.formKadry(obj, sekcje, przelozeni) }}
@@ -149,10 +155,11 @@
                     <td colspan="7"></td>
                 {% endif %}
             </tr>
+            {% endif %}
         </tbody>
     </table>
     <div>
-    {% if (obj.newUnproccessed == 1) %}
+    {% if (obj.newUnproccessed == 1) and not obj.konto_wylaczone %}
         {% if (obj.users|length > 0) %}<h4>Jeśli nie chcesz przypisać do żadnego z powyższych użytkowników, wybierz akcję poniżej</h4>{% endif %}
         <button type="button" class="btn btn-success" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Utwórz nowego użytkownika</button>
 {#        <button type="button" class="btn btn-warning" data-toggle="modal" data-target="#confirmSelection{{ obj.id }}">Usuń uzytkownika z kolejki importu</button>#}
