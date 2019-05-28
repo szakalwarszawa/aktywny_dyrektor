@@ -45,6 +45,16 @@ class EdycjaUzytkownikaFormType extends AbstractType
     private $entityManager;
 
     /**
+     * @var string
+     */
+    const WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY = 'Konto wyłączono z powodu rozwiązania stosunku pracy';
+
+    /**
+     * @var string
+     */
+    const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni';
+
+    /**
      * Typ formularza do edycji.
      * Umożliwia on edycję tylko wybranych pól.
      * Używany przy edycji użykownika przez PARP_BZK_1.
@@ -62,6 +72,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
      *
      * @var int
      */
+
     const TYP_NOWY = 2;
 
     /**
@@ -304,6 +315,8 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 })
             ;
         }
+
+        return $aclRoleObjects;
     }
 
     /**
