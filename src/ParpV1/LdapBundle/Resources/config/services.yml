@@ -69,4 +69,4 @@ services:
     public: false
   log_push_changes:
     class: ParpV1\LdapBundle\Service\LogChanges
-    arguments: ['%ad_push_log_directory%', '@templating']
+    arguments: ['%ad_push_log_directory%', '@templating','%kernel.project_dir%']
