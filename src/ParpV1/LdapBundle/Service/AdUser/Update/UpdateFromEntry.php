@@ -88,7 +88,7 @@ final class UpdateFromEntry extends LdapUpdate
             ;
         }
 
-        if (!$this->hasError() && !$isSimulation) {
+        if (!$this->hasError() && !$isSimulation && !empty($pendingEntries)) {
             $this
                 ->logPushChanges
                 ->logToFile($this->getResponseMessages(GroupBy::LOGIN))
