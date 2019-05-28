@@ -28,6 +28,11 @@ class LogChanges
     private $twigTemplating;
 
     /**
+     * @var string
+     */
+    private $projectDirectory;
+
+    /**
      * @var string|null
      */
     private $logFilename = null;
@@ -40,10 +45,12 @@ class LogChanges
      */
     public function __construct(
         string $logsDirectory,
-        TwigEngine $twigTemplating
+        TwigEngine $twigTemplating,
+        string $projectDirectory
     ) {
         $this->twigTemplating = $twigTemplating;
         $this->logsDirectory = $logsDirectory;
+        $this->projectDirectory = $projectDirectory;
 
         $this->logFilename = sprintf(self::LOG_FILE_NAME_PATTERN, (new DateTime())->format('Y-m-d_H:i:s'));
     }
@@ -58,10 +65,10 @@ class LogChanges
     public function logToFile($changes): void
     {
         $twigTemplating = $this->twigTemplating;
-        $logFilePathName = '..' . DIRECTORY_SEPARATOR . $this->logsDirectory  . $this->logFilename;
+        $logFilePathName = '..' . DIRECTORY_SEPARATOR . $this->logsDirectory . $this->logFilename;
 
         if ('cli' === PHP_SAPI) {
-            $logFilePathName = $this->logsDirectory  . $this->logFilename;
+            $logFilePathName = $this->projectDirectory . DIRECTORY_SEPARATOR . $this->logsDirectory . $this->logFilename;
         }
 
         $fileSystem = new Filesystem();
