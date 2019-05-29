@@ -1177,5 +1177,4 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
         return $this->redirect($this->generateUrl('przejrzyjnowych'));
     }
-
 }
