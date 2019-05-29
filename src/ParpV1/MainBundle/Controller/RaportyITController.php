@@ -92,7 +92,7 @@ class RaportyITController extends Controller
                 'required'   => true,
                 'label'      => 'Wybierz rok do raportu',
                 'label_attr' => array(
-                    'class' => 'col-sm-4 control-label',
+                    'class' => 'wybierz-rok',
                 ),
                 'choices'    => $lata,
                 'attr'       => array(
@@ -103,7 +103,7 @@ class RaportyITController extends Controller
             'required'   => true,
             'label'      => 'Wybierz miesiąc do raportu',
             'label_attr' => array(
-                'class' => 'col-sm-4 control-label',
+                'class' => 'wybierz-miesiac',
             ),
             'choices'    => $this->miesiace,
             'attr'       => array(

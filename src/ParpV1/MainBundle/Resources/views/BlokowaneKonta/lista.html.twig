@@ -24,7 +24,7 @@
             e.preventDefault();
             $('.popoverElement').not(this).popover('hide');
             var skadZdjecie = $(this).attr('href');
-            $(this).attr('data-content', '<center><img style="height: 120px;" src="' + skadZdjecie + '" /></center>');
+            $(this).attr('data-content', '<div class="center-block"><img style="height: 120px;" src="' + skadZdjecie + '" /></div>');
         });
         $('.popoverElement').popover();
     </script>

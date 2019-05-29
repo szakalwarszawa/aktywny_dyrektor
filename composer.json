@@ -4,7 +4,9 @@
     "type": "project",
     "description": "The \"Symfony Standard Edition\" distribution",
     "autoload": {
-        "psr-4": { "": "src/" },
+        "psr-4": {
+            "": "src/"
+        },
         "classmap": [
             "app/AppKernel.php",
             "app/AppCache.php"
@@ -51,8 +53,8 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "yarn install --frozen-lockfile --force --non-interactive",
-            "yarn run encore production"
-
+            "yarn patch-package",
+            "yarn run encore dev"
         ],
         "post-update-cmd": [
             "Incenteev\\ParameterHandler\\ScriptHandler::buildParameters",
@@ -62,12 +64,13 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
             "yarn install --frozen-lockfile --force --non-interactive",
             "yarn upgrade",
-            "yarn run encore production"
+            "yarn patch-package",
+            "yarn run encore dev"
         ]
     },
     "config": {
         "bin-dir": "bin",
-        "no-dev" : "true"
+        "no-dev": "true"
     },
     "extra": {
         "symfony-app-dir": "app",

@@ -136,4 +136,3 @@ ALTER TABLE `acl_role_action`
 --
 ALTER TABLE `acl_user_role`
   ADD CONSTRAINT `FK_5AEDF096D60322AC` FOREIGN KEY (`role_id`) REFERENCES `acl_role` (`id`);
-

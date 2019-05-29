@@ -3,405 +3,64 @@
 {% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
-            <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
-            <li><a data-toggle="tab" href="#daneRekord">Dane z systemu rekord</a></li>
-            <li><a data-toggle="tab" href="#zasoby">Zasoby użytkownika</a></li>
-            <li><a data-toggle="tab" href="#uprawnienia">Uprawnienia użytkownika</a></li>
-            <li><a data-toggle="tab" href="#historia">Historia zmian</a></li>
-            <li><a data-toggle="tab" href="#oczekujace">Oczekujące zmiany</a></li>
-            {% if(userGroups|length > 0) %}
-            <li><a data-toggle="tab" href="#grupyAD">Grupy w AD</a></li>
+            <li class="active">
+                <a data-toggle="tab" href="#general">Dane podstawowe</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#daneRekord">Dane z systemu rekord</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#zasoby">Zasoby użytkownika</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#historia">Historia zmian</a>
+            </li>
+            <li>
+                <a data-toggle="tab" href="#oczekujace">
+                    Oczekujące zmiany
+                    {% if user_changes.nieaktywne is defined %}
+                        <span class="label label-danger">{{ user_changes.nieaktywne|length }}</span>
+                    {% endif %}
+                </a>
+            </li>
+            {% if username is defined %}
+                <li>
+                    <a data-toggle="tab" href="#komentarze">Komentarze</a>
+                </li>
             {% endif %}
         </ul>
 
         <div class="tab-content">
+            <h3>
+                {% block header %}
+                    {{ username }}
+                {% endblock %}
+            </h3>
+            <hr />
+
             <div id="general" class="tab-pane fade in active">
-                <h3>{{ user.name }}</h3>
-                {% if "PARP_ADMIN" in app.user.roles %}
-                    <a href="{{ path('raportBss', {'login': user.samaccountname}) }}" class="btn btn-warning">Linia czasowa uprawnień</a>
-                {% endif %}
-
-                {% include 'ParpMainBundle:Default:userForm.html.twig' %}
+                {% include 'ParpMainBundle:EdycjaUzytkownika:dane_podstawowe.html.twig' %}
             </div>
+
             <div id="daneRekord" class="tab-pane fade">
-                {% if dane_rekord != null %}
-                <table class="table striped" id="daneRekordTable">
-                    <tr>
-                        <th>Departament</th>
-                        <td>{{ dane_rekord.departament }}</td>
-                    </tr>
-                    <tr>
-                        <th>Stanowisko</th>
-                        <td>{{ dane_rekord.stanowisko }}</td>
-                    </tr>
-                    <tr>
-                        <th>Umowa</th>
-                        <td>{{ dane_rekord.umowa }}</td>
-                    </tr>
-                    <tr>
-                        <th>Umowa od</th>
-                        <td>{{ dane_rekord.umowaOd|date('Y-m-d') }}</td>
-                    </tr>
-                    <tr>
-                        <th>Umowa do</th>
-                        <td>{{ dane_rekord.umowaDo|date('Y-m-d') }}</td>
-                    </tr>
-                </table>
-                {% else %}
-                    Nie ma jeszcze zaimportowanych danych z systemu rekord
-                {% endif %}
+                {% include 'ParpMainBundle:EdycjaUzytkownika:dane_rekord.html.twig' %}
             </div>
+
             <div id="zasoby" class="tab-pane fade">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#zasobyActive">Zasoby użytkownika - aktywne</a></li>
-                    <li><a data-toggle="tab" href="#zasobyNotActive">Zasoby użytkownika - nieaktywne</a></li>
-                </ul>
-
-                <div class="tab-content">
-                    <div id="zasobyActive" class="tab-pane fade in active">
-                        <div class="tabContent">
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'addResources' }) }}" class="btn btn-success">Dodaj zasoby</a>
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'removeResources' }) }}" class="btn btn-danger">Odbierz zasoby</a>
-
-                            {% if zasoby|length > 0 %}
-                            <table class="table table-hover" id="userZasobyTable">
-                                <thead>
-                                    <tr>
-                                        <th>Lp.</th>
-                                        <th>Nazwa zasobu</th>
-                                        <th>Login do zasobu</th>
-                                        <th>Moduł</th>
-                                        <th>Poziom dostępu</th>
-                                        <th>Kanał dostępu</th>
-                                        <th>Aktywne od</th>
-                                        <th>Aktywne do</th>
-                                        <th>Powód nadania/odebrania</th>
-                                        <th>Wniosek</th>
-                                    </tr>
-                                </thead>
-                                {% set n = 1 %}
-                                <tbody>
-                                    {% for row in zasoby %}
-                                    {% if row.czyAktywne %}
-                                        <tr>
-                                            <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
-                                            <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"
-                                            data-toggle="popover" title="Uprawnienia" data-content="{{ row.opisHtml|raw }}"
-                                            >{{ row.nazwa }}<br>{{ row.opis|raw }}</a></td>
-                                            <td>{{ row.loginDoZasobu }}</td>
-                                            <td>{{ row.modul }}</td>
-                                            <td>{{ row.poziomDostepu }}</td>
-                                            <td>{{ row.kanalDostepu }}</td>
-                                            <td>{{ row.aktywneOd }}</td>
-                                            <td>{{ row.aktywneDo }}</td>
-                                            <td>{{ row.powodNadania }}</td>
-                                            <td>
-                                            {% if row.wniosekId != 0 %}
-                                                <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: row.wniosekId}) }}">Wniosek nr {{ row.wniosekNumer }}</a>
-                                            {% else %}
-                                                <div class="alert alert-danger">Bez wniosku</div>
-                                            {% endif %}
-                                            </td>
-
-
-                                        </tr>
-                                        {% set n = n + 1 %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </tbody>
-
-                            </table>
-                            {% else %}
-
-                            <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
-
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div id="zasobyNotActive" class="tab-pane fade">
-                        <div class="tabContent">
-                            {% if zasoby|length > 0 %}
-                            <table class="table table-hover" id="zasobyTable2">
-                                <thead>
-                                    <tr>
-                                        <th>Lp.</th>
-                                        <th>Nazwa zasobu</th>
-                                        <th>Login do zasobu</th>
-                                        <th>Moduł</th>
-                                        <th>Poziom dostępu</th>
-                                        <th>Kanał dostępu</th>
-                                        <th>Aktywne od</th>
-                                        <th>Aktywne do</th>
-                                        <th>Data odebrania</th>
-                                        <th>Powód nadania/odebrania</th>
-                                    </tr>
-                                </thead>
-                                {% set n = 1 %}
-                                <tbody>
-                                    {% for row in zasoby %}
-                                    {% if not row.czyAktywne %}
-                                        <tr>
-                                            <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"  data-toggle="tooltip"  data-placement="top" title="costam">{{ n }}</a></td>
-                                            <td><a href="{{ path('userzasoby_edit', {id: row.id}) }}"
-                                            data-toggle="popover" title="Uprawnienia" data-content="{{ row.opisHtml|raw }}"
-                                            >{{ row.nazwa }}<br>{{ row.opis|raw }}</a></td>
-                                            <td>{{ row.loginDoZasobu }}</td>
-                                            <td>{{ row.modul }}</td>
-                                            <td>{{ row.kanalDostepu }}</td>
-                                            <td>{{ row.poziomDostepu }}</td>
-                                            <td>{{ row.aktywneOd }}</td>
-                                            <td>{{ row.aktywneDo }}</td>
-                                            <td>
-                                                {% if row.data_odebrania is null %}
-                                                    -
-                                                {% else %}
-                                                    {{ row.data_odebrania|date('Y-m-d H:i:s') }}
-                                                {% endif %}
-                                            </td>
-                                            <td>{{ row.powodNadania }}
-
-                                            {% if(row.czyOdebrane) %}
-                                            <div class="alert alert-danger">
-                                                <b>Odebrane</b>
-                                                {{ row.powodOdebrania }}
-                                            </div>
-                                            {% endif %}
-                                            </td>
-
-                                        </tr>
-                                        {% set n = n + 1 %}
-                                    {% endif %}
-                                    {% endfor %}
-                                </tbody>
-
-                            </table>
-                            {% else %}
-
-                            <p>Użytkownik nie posiada uprawnień do żadnych zasobów.</p>
-
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
+                {% include 'ParpMainBundle:EdycjaUzytkownika:zasoby_uzytkownika.html.twig' %}
             </div>
-            <div id="uprawnienia" class="tab-pane fade">
-                <ul class="nav nav-tabs">
-                    <li class="active"><a data-toggle="tab" href="#uprawnieniaActive">Uprawnienia użytkownika - aktywne</a></li>
-                    <li><a data-toggle="tab" href="#uprawnieniaNotActive">Uprawnienia użytkownika - nieaktywne</a></li>
-                </ul>
 
-                <div class="tab-content">
-                    <div id="uprawnieniaActive" class="tab-pane fade in active">
-                        <div class="tabContent">
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'addPrivileges' }) }}" class="btn btn-success">Dodaj uprawnienia</a>
-                            <a href="{{ path('addRemoveAccessToUsersAction', {'samaccountnames': { (user.samaccountname) : 1}|json_encode(), 'action' : 'removePrivileges' }) }}" class="btn btn-danger">Odbierz uprawnienia</a>
-
-                            {% if uprawnienia|length > 0 %}
-                                <table class="table table-hover" id="uprawnieniaTable">
-                                    <thead>
-                                        <tr>
-                                            <th>Lp.</th>
-                                            <th>Opis zasobu</th>
-                                            <th>Data nadania</th>
-                                            <th>Data odebrania</th>
-                                            <th>Aktywne</th>
-                                            <th>Jest w AD</th>
-                                        <th>Powód nadania/odebrania</th>
-                                        </tr>
-                                    </thead>
-                                    {% set n = 1 %}
-                                    <tbody>
-                                        {% for row in uprawnienia %}
-                                        {% if row.czyAktywne %}
-                                            <tr>
-                                                <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId}) }}">{{ n }}</a></td>
-                                                <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId}) }}">{{ row.opis }}</a></td>
-                                                <td>{{ row.dataNadania|date }}</td>
-                                                <td>{{ row.dataOdebrania|date }}</td>
-                                                <td>{{ row.czyAktywne }}</td>
-                                                <td>
-                                                    {% if up2grupaAd[row.getUprawnienieId] is defined %}
-                                                        {% if up2grupaAd[row.getUprawnienieId] not in grupyAd %}
-                                                            NIE
-                                                        {% else %}
-                                                            TAK
-                                                        {% endif %}
-                                                    {% else %}
-                                                        n/d
-                                                    {% endif %}
-                                                </td>
-                                            <td>{{ row.powodNadania }}</td>
-                                            </tr>
-                                            {% set n = n + 1 %}
-                                        {% endif %}
-                                        {% endfor %}
-                                    </tbody>
-
-                                </table>
-                            {% else %}
-
-                                <p>Użytkownik nie posiada żadnych uprawnień.</p>
-
-                            {% endif %}
-                        </div>
-                    </div>
-                    <div id="uprawnieniaNotActive" class="tab-pane fade">
-                        <div class="tabContent">
-                            {% if uprawnienia|length > 0 %}
-                                <table class="table table-hover" id="uprawnienia2Table">
-                                    <thead>
-                                        <tr>
-                                            <th>Lp.</th>
-                                            <th>Opis zasobu</th>
-                                            <th>Data nadania</th>
-                                            <th>Data odebrania</th>
-                                            <th>Aktywne</th>
-                                            <th>Jest w AD</th>
-                                        <th>Powód nadania/odebrania</th>
-                                        </tr>
-                                    </thead>
-                                    {% set n = 1 %}
-                                    <tbody>
-                                        {% for row in uprawnienia %}
-                                        {% if not row.czyAktywne %}
-                                            <tr>
-                                                <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId}) }}">{{ n }}</a></td>
-                                                <td><a href="{{ path('uprawnienia_edit', {id: row.uprawnienieId}) }}">{{ row.opis }}</a></td>
-                                                <td>{{ row.dataNadania|date }}</td>
-                                                <td>{{ row.dataOdebrania|date }}</td>
-                                                <td>{{ row.czyAktywne }}</td>
-                                                <td>
-                                                    {% if up2grupaAd[row.getUprawnienieId] is defined %}
-                                                        {% if up2grupaAd[row.getUprawnienieId] not in grupyAd %}
-                                                            NIE
-                                                        {% else %}
-                                                            TAK
-                                                        {% endif %}
-                                                    {% else %}
-                                                        n/d
-                                                    {% endif %}
-                                                </td>
-                                            <td>{{ row.powodNadania }}</td>
-                                            </tr>
-                                            {% set n = n + 1 %}
-                                        {% endif %}
-                                        {% endfor %}
-                                    </tbody>
-
-                                </table>
-                            {% else %}
-
-                                <p>Użytkownik nie posiada żadnych uprawnień.</p>
-
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
             <div id="historia" class="tab-pane fade">
-                <div  class="tabContent">
-                    {% if historyEntries|length > 0 %}
-                        <table class="table table-hover" id="historiaTable">
-                            <thead>
-                                <tr>
-                                    <th>Lp. (id)</th>
-                                    <th>Imię i nazwisko</th>
-                                    <th>Inicjały</th>
-                                    <th>Departament</th>
-                                    <th>Sekcja</th>
-                                    <th>Manager</th>
-                                    <th>Stanowisko</th>
-                                    <th>Info</th>
-                                    <th>Uprawnienia początkowe</th>
-                                    <th>Ad zmiana</th>
-                                    <th>Od kiedy</th>
-                                </tr>
-                            </thead>
-                            {% set n = 1 %}
-                            <tbody>
-                                {% for row in historyEntries %}
-                                    <tr>
-                                        <td>{{ n }} ({{ row.id }})</td>
-                                        <td>{{ row.cn }}</td>
-                                        <td>{{ row.initials }}</td>
-                                        <td>{{ row.department }}</td>
-                                        <td>{{ row.division }}</td>
-                                        <td>{{ row.manager }}</td>
-                                        <td>{{ row.title }}</td>
-                                        <td>{{ row.info }}</td>
-                                        <td>{{ row.initialrights }}</td>
-                                        <td>{{ row.distinguishedName }}</td>
-                                        <td>{{ row.fromWhen|date }}</td>
-                                    </tr>
-                                    {% set n = n + 1 %}
-                                {% endfor %}
-                            </tbody>
-
-                        </table>
-                    {% else %}
-
-                        <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
-
-                    {% endif %}
-                </div>
+               {% include 'ParpMainBundle:EdycjaUzytkownika:historia_zmian.html.twig' %}
             </div>
+
             <div id="oczekujace" class="tab-pane fade">
-                <div  class="tabContent">
-                    {% if pendingEntries|length > 0 %}
-                        <table class="table table-hover" id="oczekujaceTable">
-                            <thead>
-                                <tr>
-                                    <th>Lp.</th>
-                                    <th>Imię i nazwisko</th>
-                                    <th>Inicjały</th>
-                                    <th>Departament</th>
-                                    <th>Sekcja</th>
-                                    <th>Manager</th>
-                                    <th>Stanowisko</th>
-                                    <th>Info</th>
-                                    <th>Uprawnienia początkowe</th>
-                                    <th>Ad zmiana</th>
-                                    <th>Od kiedy</th>
-                                </tr>
-                            </thead>
-                            {% set n = 1 %}
-                            <tbody>
-                                {% for row in pendingEntries %}
-                                    <tr>
-                                        <td>{{ n }}</td>
-                                        <td>{{ row.cn }}</td>
-                                        <td>{{ row.initials }}</td>
-                                        <td>{{ row.department }}</td>
-                                        <td>{{ row.division }}</td>
-                                        <td>{{ row.manager }}</td>
-                                        <td>{{ row.title }}</td>
-                                        <td>{{ row.info }}</td>
-                                        <td>{{ row.initialrights }}</td>
-                                        <td>{{ row.distinguishedName }}</td>
-                                        <td>{{ row.fromWhen|date }}</td>
-                                        <td><a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a></td>
-                                    </tr>
-                                    {% set n = n + 1 %}
-                                {% endfor %}
-                            </tbody>
-
-                        </table>
-                    {% else %}
-
-                        <p>Użytkownik nie posiada żadnych oczejących zmian.</p>
-
-                    {% endif %}
-
+                {% include 'ParpMainBundle:EdycjaUzytkownika:oczekujace_zmiany.html.twig' %}
+            </div>
+            {% if username is defined %}
+                <div id="komentarze" class="tab-pane fade">
+                    {{ render(controller('ParpMainBundle:Komentarz:index', {obiekt: 'User', obiektId: username})) }}
                 </div>
-            </div>
-            {% if(userGroups|length > 0) %}
-            <div id="grupyAD" class="tab-pane fade">
-                <ul class="list-group">
-                    {% for group in userGroups %}
-                        <li class="list-group-item">{{ group }}</li>
-                    {% endfor %}
-                </ul>
-            </div>
             {% endif %}
         </div>
 
@@ -410,14 +69,10 @@
     {% include 'ParpMainBundle:Default:managerWindow.html.twig' %}
 
     <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
+    <script type="text/javascript"src="{{ asset('js/userEdit.js') }}"></script>
     <script>
         function zaznaczUstawieniePoczatkowych(){
             $('#form_ustawUprawnieniaPoczatkowe').attr('checked', true);
         }
-
-        {# Z nieznanych mi przyczyn, pod FF nie wybiera właściwie wartości pola z sekcją. #}
-        $(document).ready(function() {
-            $('#form_info').val("{{ user.info }}");
-        });
     </script>
 {% endblock %}

@@ -1249,7 +1249,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete")
      * @Method("GET")
-     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function deleteAction($id)
@@ -1429,7 +1428,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      * Deletes a WniosekNadanieOdebranieZasobow entity.
      * @Route("/skasuj/{id}", name="wnioseknadanieodebraniezasobow_delete_form")
      * @Method("DELETE")
-     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
     public function deleteFormAction(Request $request, $id)
     {

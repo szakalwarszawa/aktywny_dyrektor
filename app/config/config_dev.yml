@@ -40,5 +40,3 @@ assetic:
     node: /usr/local/bin/node
 swiftmailer:
     disable_delivery:  true
-
-

@@ -9,5 +9,3 @@ INSERT INTO `wniosek_status` (`deletedAt`, `nazwa`, `nazwaSystemowa`, `opis`, `v
 ( NULL, 'Rozpatrzony pozytywnie', '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', NULL, 'wnioskodawca,wlasciciel,administratorZasobow', '', 1, 'wniosekOUtworzenieZasobu'),
 ( NULL, 'Rozpatrzony negatywnie', '08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', NULL, 'wnioskodawca,wlasciciel,administratorZasobow', '', 1, 'wniosekOUtworzenieZasobu'),
 ( NULL, 'Zaakceptowany i wdrożony', '11_OPUBLIKOWANY_O_ZASOB', NULL, 'wnioskodawca,wlasciciel,administratorZasobow', '', 1, 'wniosekOUtworzenieZasobu');
-
-

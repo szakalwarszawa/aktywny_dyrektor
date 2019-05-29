@@ -24,4 +24,3 @@ UPDATE `departament` SET `name_in_rekord`= 'BIURO INFORMATYKI', `shortname` = 'B
 UPDATE `departament` SET `name_in_rekord`= 'BIURO ZARZĄDZANIA JAKOŚCIĄ', `shortname` = 'BZJ' WHERE `name` like 'Biuro Zarządzania Jakością';
 UPDATE `departament` SET `name_in_rekord`= 'BIURO AUDYTU WEWNĘTRZNEGO', `shortname` = 'BAW' WHERE `name` like 'Biuro Audytu Wewnętrznego';
 UPDATE `departament` SET `name_in_rekord`= 'DEP. KONTROLI', `shortname` = 'DK' WHERE `name` like 'Departament Kontroli';
-

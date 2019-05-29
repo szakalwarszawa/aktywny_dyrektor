@@ -1,7 +1,7 @@
 {% extends 'APYDataGridBundle::blocks_js.jquery.html.twig' %}
 
 {% block grid %}
-    <div class="grid" style="margin-top: 15px; margin-left: auto; margin-right: auto;">
+    <div class="grid">
     {% if grid.totalCount > 0 or grid.isFiltered or grid.noDataMessage is same as(false) %}
         <form id="{{ grid.hash }}" action="{{ grid.routeUrl }}" method="post">
             <a class="btn btn-primary btn" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
