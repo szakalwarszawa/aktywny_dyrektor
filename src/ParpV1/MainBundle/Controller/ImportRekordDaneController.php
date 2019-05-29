@@ -1089,10 +1089,15 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $this->get('parp.mailer')
                     ->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN, $dane);
 
-                $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
                 $dane['tytul'] = $daneRekord->getImie() . ' ' . $daneRekord->getNazwisko();
                 $dane['stanowisko'] = $daneRekord->getStanowisko();
                 $dane['umowa_od'] = $daneRekord->getUmowaOd();
+
+                // e-mail do dyrektora z linkiem do formularza GLPI-BA:
+                $dane['odbiorcy'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEFORM, $dane);
+
+                $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
                 // wysłanie zgłoszenia do [BI]:
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEBI, $dane);
                 // dodaktowe zgłoszenie do [BI] dla administratorów serwera Exchange:
@@ -1171,42 +1176,5 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $this->addFlash('warning', 'Pracownik został dodany do listy.');
 
         return $this->redirect($this->generateUrl('przejrzyjnowych'));
-    }
-
-    public function sendMailAboutNewUser($name, $samaccountname)
-    {
-        $mails = ['marcin_lipinski@parp.gov.pl','dorota_tymanowska@parp.gov.pl'];
-
-        $ldap = $this->get('ldap_service');
-        $user = $ldap->getUserFromAD($samaccountname);
-
-        $view =
-            'Dnia '.
-            date('Y-m-d').
-            " został utworzony nowy użytkownik '".
-            $name.
-            "' o loginie '".
-            $samaccountname.
-            "', utwórz mu pocztę pliz :)";
-        $view .=
-            "<br><br>Pozostałe dane: <ul><li>stanowisko: ".
-            $user[0]['title'] . '</li><li>department: '.
-            $user[0]['department'].
-            ' [' . $user[0]['description'].
-            ']</li><li>sekcja: '.
-            $user[0]['info'].
-            ' [' . $user[0]['division'].
-            ']</li><li>e-mail wewnętrzny: '.
-            $samaccountname.
-            '@parp.gov.pl</li></ul>';
-
-        $message = \Swift_Message::newInstance()
-            ->setSubject('Nowy użytkownik w AkD')
-            ->setFrom('intranet@parp.gov.pl')
-            ->setTo($mails)
-            ->setBody($view)
-            ->setContentType('text/html');
-
-        $this->container->get('mailer')->send($message);
     }
 }
