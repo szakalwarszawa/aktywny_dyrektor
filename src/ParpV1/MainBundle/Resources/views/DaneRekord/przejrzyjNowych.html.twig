@@ -342,7 +342,7 @@
         } else {
             $.post(url, data, function (result) {}).success(function () {
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
-                $('button', $("#acceptUser" + id)).remove();
+                $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             });
         }

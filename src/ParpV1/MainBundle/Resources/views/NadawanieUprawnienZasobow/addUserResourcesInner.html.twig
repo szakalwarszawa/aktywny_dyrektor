@@ -142,7 +142,7 @@
         }
     }
     function zaznaczSelect2(dys) {
-        var sel = $(dys).attr('data-selected') == "true";
+        var sel = $(dys).attr('data-selected') == 'true';
         $('option', $(dys)).prop('selected', !sel ? 'selected' : false);
         $(dys).trigger('change');
         $(dys).attr('data-selected', !sel);

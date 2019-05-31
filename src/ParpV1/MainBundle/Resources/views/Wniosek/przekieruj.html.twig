@@ -88,10 +88,10 @@
         $('#form_type_change').change(function () {
             if ($(this).prop('checked')) {
                 $('[data-change-status]').removeAttr('disabled');
-                $('[data-change-person]').prop('disabled','disabled');
+                $('[data-change-person]').prop('disabled', 'disabled');
             } else {
                 $('[data-change-person]').removeAttr('disabled');
-                $('[data-change-status]').prop('disabled','disabled');
+                $('[data-change-status]').prop('disabled', 'disabled');
             }
         })
     });

@@ -35,9 +35,9 @@
         $('#removeUserResource').click(function () {
             if (userZasobId !== 0) {
                 $(this).attr('disabled', true);
-                $.post("/zasoby/removeUserFromResource", {message: $('#powododebrania').val(), id: userZasobId}, function (data) {
+                $.post('/zasoby/removeUserFromResource', { message: $('#powododebrania').val(), id: userZasobId }, function (data) {
                     if ('success' !== data.status) {
-                        $("#ajaxResponse").text(data.message);
+                        $('#ajaxResponse').text(data.message);
                         $('#ajaxResponse').removeClass('alert-success').addClass('alert-danger');
                     } else {
                         $('#removeUserModal').modal('hide');

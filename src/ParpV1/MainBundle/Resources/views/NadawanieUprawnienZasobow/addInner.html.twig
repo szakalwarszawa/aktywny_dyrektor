@@ -118,7 +118,7 @@
         zmianaZaznaczenia();
     });
     function beforeSubmit(e) {
-        if ($("input[name='form[access][]']").serialize() == "") {
+        if ($("input[name='form[access][]']").serialize() == '') {
             event.preventDefault();
             alert('Musisz wybrać co najmniej jeden zasób');
             return false;
