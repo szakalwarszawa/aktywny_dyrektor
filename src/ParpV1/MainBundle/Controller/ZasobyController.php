@@ -204,7 +204,6 @@ class ZasobyController extends Controller
                 in_array($currentUser->getUsername(), $administratorTechniczny))) {
                 if (null !== $zasob) {
                     $userZasob
-                        ->setAktywneDo(new DateTime())
                         ->setPowodOdebrania($requestParams['message'])
                         ->setCzyAktywne(false)
                         ->setCzyOdebrane(true)
