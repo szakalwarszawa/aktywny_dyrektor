@@ -34,6 +34,7 @@
 
         $('#removeUserResource').click(function () {
             if (userZasobId !== 0) {
+                var rowId;
                 $(this).attr('disabled', true);
                 $.post('/zasoby/removeUserFromResource', { message: $('#powododebrania').val(), id: userZasobId }, function (data) {
                     if ('success' !== data.status) {
