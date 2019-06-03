@@ -20,7 +20,7 @@
                             {{ ss.createdBy|showFullname }} w zastepstwie za {{ ss.zastepstwo.kogoZastepuje|showFullname }}
                         </div>
                     {% else %}
-
+                        {{ ss.createdBy|showFullname }}
                     {% endif %}
                 </td>
                 <td>{{ ss.statusName }}
