@@ -371,6 +371,7 @@ class ParpMailerService
             'odbiorcy'                           => $odbiorcy,
             'login'                              => $loginy,
             'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
+            'id_wniosku'                         => $wniosek->getWniosek()->getWniosekNadanieOdebranieZasobow()->getId(),
         ];
 
         $this->sendEmailByType($template, $data);
