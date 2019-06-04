@@ -36,7 +36,7 @@
             if (userZasobId !== 0) {
                 var rowId;
                 $(this).attr('disabled', true);
-                $.post({{ path('remove_user_from_resource') }}, { message: $('#powododebrania').val(), id: userZasobId }, function (data) {
+                $.post('{{ path('remove_user_from_resource') }}', { message: $('#powododebrania').val(), id: userZasobId }, function (data) {
                     if ('success' !== data.status) {
                         $('#ajaxResponse').text(data.message);
                         $('#ajaxResponse').removeClass('alert-success').addClass('alert-danger');
