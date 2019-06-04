@@ -5,4 +5,4 @@ Wniosek o numerze <b>{{ numer_wniosku }}</b> dotyczący użytkowników:<br />
 {% endfor %}
 </ul>
 czeka na akceptację przełożonego.<br /><br />
-<a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: id_wniosku}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>
+<a href="{{ url('wnioseknadanieodebraniezasobow_show', {id: id_wniosku}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>
