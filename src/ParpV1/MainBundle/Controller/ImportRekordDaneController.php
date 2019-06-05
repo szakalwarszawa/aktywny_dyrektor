@@ -1094,7 +1094,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $dane['umowa_od'] = $daneRekord->getUmowaOd();
 
                 // e-mail do dyrektora z linkiem do formularza GLPI-BA:
-                $dane['odbiorcy'] = [$departament->getDyrektor() . '@parp.gov.pl' => $departament->getDyrektor()];
+                $dane['odbiorcy'] = [$departament->getDyrektor() . '@parp.gov.pl'];
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEFORM, $dane);
 
                 $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_GLPI];
