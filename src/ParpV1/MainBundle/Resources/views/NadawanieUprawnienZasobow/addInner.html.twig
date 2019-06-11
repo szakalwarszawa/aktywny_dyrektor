@@ -73,17 +73,17 @@
 </div>
 <script>
     function filtrujZasobUprawnienia() {
-        var v = $('#form_grupy').val();
-        var s = $('#form_nazwafiltr').val().toUpperCase().trim();
+        var v = $('#form_grupy').val(),
+            s = $('#form_nazwafiltr').val().toUpperCase().trim();
 
         if (v || s) {
             $('#form_access > div').addClass('hidden');
             //console.log('.uprawnienieRow.grupaUprawnien'+v+' '+s);
             if (s) {
                 $('#form_access > div').each(function () {
-                    var txt = $(this).text().toUpperCase();
-                    var classes = $(this).attr('class');
-                    var show = false;
+                    var txt = $(this).text().toUpperCase(),
+                        classes = $(this).attr('class'),
+                        show = false;
                     if (v) {
                         show = txt.indexOf(s) >= 0 && classes.indexOf('grupaUprawnien' + v) >= 0;
                     } else {
@@ -118,7 +118,7 @@
         zmianaZaznaczenia();
     });
     function beforeSubmit(e) {
-        if ($("input[name='form[access][]']").serialize() == "") {
+        if ($("input[name='form[access][]']").serialize() == '') {
             event.preventDefault();
             alert('Musisz wybrać co najmniej jeden zasób');
             return false;
