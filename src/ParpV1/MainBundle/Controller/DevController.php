@@ -3296,4 +3296,43 @@ class DevController extends Controller
 
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Zmiana Departamentu/Biura pracownika']);
     }
+
+    /**
+     * Ustawia brakujące atrybuty w AD
+     *
+     * @Route("/addMissingAttribute/{samaccountname}", name="addMissingAttribute")
+     *
+     * @param string $samaccountname
+     */
+    public function addMissingAttributeAction($samaccountname)
+    {
+
+        $ldap = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapconn = $ldapAdmin->prepareConnection();
+        $this->ad_domain = '@' . $this->container->getParameter('ad_domain');
+
+        $user = $ldap->getUserFromAD($samaccountname);
+        $tab = explode(' ', $user[0]['cn']);
+
+        $dane[] = [
+            'sn' => $tab[0],
+            'givenName' => $tab[1],
+            // 'name' => $user[0]['cn'], //  Modify: Operation not allowed on RDN
+            'displayName' => $user[0]['cn'],
+            'userPrincipalName' => $user[0]['samaccountname'] . $this->ad_domain,
+            'company' => 'Polska Agencja Rozwoju Przedsiębiorczości',
+            'streetAddress' => 'ul. Pańska 81/83',
+            'wWWHomePage' => 'www.parp.gov.pl',
+            'co' => 'Poland',
+            'c' => 'PL',
+            'l' => 'Warszawa',
+            'postalCode' => '00-834',
+            // 'extensionAttribute11' => 'exchange.parp.gov.pl',
+        ];
+
+        $ldapAdmin->ldapModify($ldapconn, $user[0]['distinguishedname'], $dane[0]);
+
+        return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $dane, 'title' => 'Uzupełnienie wpisów AD']);
+    }
 }

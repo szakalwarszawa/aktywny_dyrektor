@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Services;
 
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityNotFoundException;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\HttpFoundation\Session\Session;

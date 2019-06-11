@@ -315,8 +315,6 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 })
             ;
         }
-
-        return $aclRoleObjects;
     }
 
     /**

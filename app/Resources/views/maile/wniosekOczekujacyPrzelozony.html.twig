@@ -1,7 +1,8 @@
 Wniosek o numerze <b>{{ numer_wniosku }}</b> dotyczący użytkowników:<br />
-<blockquote>
+<ul>
 {% for user in login %}
-    <b>{{ user }}</b><br/>
+    <li>{{ user }}</li>
 {% endfor %}
-</blockquote>
-czeka na akceptację przełożonego.
+</ul>
+czeka na akceptację przełożonego.<br /><br />
+<a href="{{ url('wnioseknadanieodebraniezasobow_show', {id: id_wniosku}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>

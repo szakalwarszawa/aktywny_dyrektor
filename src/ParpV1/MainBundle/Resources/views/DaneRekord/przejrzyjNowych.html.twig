@@ -222,13 +222,13 @@
         </div>
     </div>
     <script>
-        function zapisz{{ user.samaccountname }}{{ obj.id }}(){
+        function zapisz{{ user.samaccountname }}{{ obj.id }}() {
             var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: user.samaccountname}) }}";
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
             save(url, form, manager, {{ obj.id }});
         }
-        function usun{{ obj.id }}(){
+        function usun{{ obj.id }}() {
             var url = "{{ path('usunUzytkownikaZKolejki', {id: obj.id}) }}";
             $.ajax({
                 url: url,
@@ -342,7 +342,7 @@
         } else {
             $.post(url, data, function (result) {}).success(function () {
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
-                $('button', $("#acceptUser" + id)).remove();
+                $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             });
         }
