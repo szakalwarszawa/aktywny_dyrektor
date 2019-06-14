@@ -240,20 +240,22 @@ td .btn {
 }
 
 @media (min-height: 720px) {
-    .apostle .panel {
-        margin-top: 100px;
-        -webkit-transition: margin 0.3s;
-        transition: margin 0.3s;
-    }
+    .apostle {
+        .panel {
+            margin-top: 100px;
+            -webkit-transition: margin 0.3s;
+            transition: margin 0.3s;
 
-    img {
-        margin: 5vh auto 8vh;
-        -webkit-transition: margin 0.5s;
-        transition: margin 0.5s;
-    }
+            img {
+                margin: 5vh auto 8vh;
+                -webkit-transition: margin 0.5s;
+                transition: margin 0.5s;
+            }
 
-    button {
-        margin: 3vh auto 1vh;
+            button {
+                margin: 3vh auto 1vh;
+            }
+        }
     }
 }
 
