@@ -3,7 +3,6 @@
 namespace ParpV1\MainBundle\Tool;
 
 use InvalidArgumentException;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Klasa narzędzia AdStringTool.
