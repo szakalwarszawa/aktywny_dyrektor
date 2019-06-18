@@ -48,7 +48,8 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
             '07_ROZPATRZONY_POZYTYWNIE',
             '11_OPUBLIKOWANY',
             '102_ODEBRANO_ADMINISTRACYJNIE',
-            '101_ANULOWANO_ADMINISTRACYJNIE'
+            '101_ANULOWANO_ADMINISTRACYJNIE',
+            '10_PODZIELONY'
         ];
 
         switch ($typWniosku) {
