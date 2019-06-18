@@ -30,6 +30,8 @@ use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\LdapBundle\AdUser\ParpAttributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 
 /**
  * LdapUpdate
@@ -806,6 +808,16 @@ class LdapUpdate extends Simulation
             ->setDn($dnBuilder)
             ->setAccountName($changes[AdUserConstants::LOGIN])
         ;
+
+        $userNameData = AdStringTool::getUserFirstLastName($writableUserObject->getDistinguishedName());
+        $writableUserObject
+            ->setAttribute(Attributes::IMIE, $userNameData['first_name'])
+            ->setAttribute(Attributes::NAZWISKO, $userNameData['last_name'])
+            ->setDisplayName($userNameData['full_name'])
+            ->setUserPrincipalName($changes[AdUserConstants::LOGIN] . '@' . $baseParameters['ad_domain'])
+        ;
+
+        $writableUserObject = ParpAttributes::addParpAttributes($writableUserObject);
 
         if (!$this->isSimulation()) {
             $accountControl = $writableUserObject->getUserAccountControlObject();

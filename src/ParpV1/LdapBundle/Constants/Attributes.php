@@ -17,6 +17,26 @@ class Attributes
     /**
      * @var string
      */
+    const IMIE = 'givenName';
+
+    /**
+     * @var string
+     */
+    const NAZWISKO = 'sn';
+
+    /**
+     * @var string
+     */
+    const LOGIN_DOMENOWY = 'userPrincipalName';
+
+    /**
+     * @var string
+     */
+    const NAZWA_WYSWIETLANA = 'displayName';
+
+    /**
+     * @var string
+     */
     const EMAIL = 'email';
 
     /**
