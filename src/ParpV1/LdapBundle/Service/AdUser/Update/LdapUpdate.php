@@ -305,6 +305,8 @@ class LdapUpdate extends Simulation
      */
     public function setGroupsAttribute($groupsAd, AdUser $adUser): void
     {
+        $adUser->sync();
+
         if (is_array($groupsAd)) {
             (new OptionsResolver())
                 ->setRequired(['add', 'remove'])
@@ -314,6 +316,8 @@ class LdapUpdate extends Simulation
             foreach ($groupsAd['add'] as $groupAdd) {
                 $this->groupAdd($adUser, $groupAdd);
             }
+
+            $adUser->sync();
 
             foreach ($groupsAd['remove'] as $groupRemove) {
                 $this->groupRemove($adUser, $groupRemove);
@@ -330,6 +334,9 @@ class LdapUpdate extends Simulation
                     $groupsRemoved[] = $groupName;
                 }
             }
+
+            $adUser->sync();
+
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
                 if (!in_array($groupName, $groupsAdded)) {
