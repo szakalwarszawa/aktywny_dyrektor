@@ -260,13 +260,7 @@ class EdycjaUzytkownikaService
             ->setIsDisabled($formData[AdUserConstants::WYLACZONE])
             ->setOpis(isset($reason)? $reason : null)
             ->setAccountExpires($formData[AdUserConstants::WYGASA])
-            ->setManager(
-                AdStringTool::replaceValue(
-                    $adUserHelper::getPrzelozony(false),
-                    AdStringTool::CN,
-                    $formData[AdUserConstants::PRZELOZONY]
-                )
-            )
+            ->setManager(AdStringTool::createCommonName($formData[AdUserConstants::PRZELOZONY]))
             ->setCreatedAt(new DateTime())
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($changeDate($formData['zmianaOd']))
