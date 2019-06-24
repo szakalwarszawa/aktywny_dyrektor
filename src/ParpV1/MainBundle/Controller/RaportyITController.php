@@ -1085,9 +1085,9 @@ class RaportyITController extends Controller
         $mailer = $this->get('parp.mailer');
         $mailer->disableFlush();
         foreach ($odebraneZasoby as $odebrany) {
-            $odebrany['odbiorcy'] = [$mailer->getUserMail($odebrany['object']->getWlascicielZasobu())];
-            $odebrany['imie_nazwisko'] = $odebrany['object']->getWlascicielZasobu();
-            $odebrany['login'] = $odebrany['object']->getWlascicielZasobu();
+            $odebrany['odbiorcy'] = [$mailer->getUserMail($odebrany['object']->getAdministratorZasobu())];
+            $odebrany['imie_nazwisko'] = $odebrany['object']->getAdministratorZasobu();
+            $odebrany['login'] = $odebrany['object']->getAdministratorZasobu();
             $odebrany['dotyczy'] = $nazwaUzytkownika;
             $odebrany['data_zmiany'] = $dataZmiany;
             $mailer->sendEmailByType(ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY, $odebrany);
