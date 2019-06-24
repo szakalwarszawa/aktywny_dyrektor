@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Form;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
+use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -28,6 +29,9 @@ class KomentarzType extends AbstractType
             ->add('opis', TextareaType::class, ['label' => 'Treść komentarza', 'attr' => ['maxlength' => 5000]])
             ->add('obiekt', HiddenType::class)
             ->add('obiektId', HiddenType::class)
+            ->add('submit', SubmitType::class, [
+                'label' => 'Utwórz Komentarz'
+            ]);
         ;
     }
 

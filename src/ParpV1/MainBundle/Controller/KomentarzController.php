@@ -17,6 +17,7 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Komentarz;
 use ParpV1\MainBundle\Form\KomentarzType;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 
 /**
  * Komentarz controller.
@@ -88,73 +89,54 @@ class KomentarzController extends Controller
         $grid->isReadyForRedirect();
         return $grid->getGridResponse(array('obiekt' => $obiekt, 'obiektId' => $obiektId, 'wniosek_zablokowany' => $wniosekZablokowany));
     }
-    /**
-     * Creates a new Komentarz entity.
-     *
-     * @Route("/", name="komentarz_create")
-     * @Method("POST")
-     * @Template("ParpMainBundle:Komentarz:new.html.twig")
-     */
-    public function createAction(Request $request)
-    {
-        $entity = new Komentarz();
-        $form = $this->createCreateForm($entity);
-        $form->handleRequest($request);
-
-        if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $em->persist($entity);
-            $em->flush();
-
-            $this->addFlash('warning', 'Komentarz został utworzony.');
-                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_show", array('id' => $entity->getObiektId())));
-        }
-
-        return array(
-            'entity' => $entity,
-            'form'   => $form->createView(),
-        );
-    }
-
-    /**
-     * Creates a form to create a Komentarz entity.
-     *
-     * @param Komentarz $entity The entity
-     *
-     * @return \Symfony\Component\Form\Form The form
-     */
-    private function createCreateForm(Komentarz $entity)
-    {
-        $form = $this->createForm(KomentarzType::class, $entity, array(
-            'action' => $this->generateUrl('komentarz_create'),
-            'method' => 'POST',
-        ));
-
-        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Komentarz', 'attr' => array('class' => 'btn btn-success' )));
-
-        return $form;
-    }
 
     /**
      * Displays a form to create a new Komentarz entity.
      *
      * @Route("/new/{obiekt}/{obiektId}", name="komentarz_new")
-     * @Method("GET")
      * @Template()
      */
     public function newAction(Request $request, $obiekt, $obiektId)
     {
-        $entity = new Komentarz();
-        $entity->setObiekt($obiekt);
-        $entity->setObiektId($obiektId);
-        $entity->setSamaccountname($this->getUser()->getUsername());
-        $form   = $this->createCreateForm($entity);
+        $komentarz = (new Komentarz())
+            ->setObiekt($obiekt)
+            ->setObiektId($obiektId)
+            ->setSamaccountname($this->getUser()->getUsername());
+        ;
 
-        return array(
-            'entity' => $entity,
+        try {
+            $returnUrl = $this
+                ->generateUrl(strtolower($obiekt) . '_show', [
+                    'id' => $obiektId
+                ])
+            ;
+        } catch (RouteNotFoundException $exception) {
+            $this->addFlash('info', 'Nie można dodać komentarza do podanego obiektu.');
+
+            return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
+        }
+
+        $form = $this->createForm(KomentarzType::class, $komentarz);
+        $form->handleRequest($request);
+
+        if ($form->isValid()) {
+            $entityManager = $this
+                ->getDoctrine()
+                ->getManager()
+            ;
+            $entityManager->persist($komentarz);
+            $entityManager->flush();
+
+            $this->addFlash('warning', 'Komentarz został utworzony.');
+
+            return $this->redirect($returnUrl);
+        }
+
+        return [
+            'entity' => $komentarz,
             'form'   => $form->createView(),
-            'returnUrl' => $request->headers->get('referer')
-        );
+            'returnUrl' => $returnUrl,
+        ];
     }
 
     /**
@@ -186,7 +168,6 @@ class KomentarzController extends Controller
      * Displays a form to edit an existing Komentarz entity.
      *
      * @Route("/{id}/edit", name="komentarz_edit")
-     * @Method("GET")
      * @Template()
      */
     public function editAction(Request $request, $id)
@@ -268,10 +249,16 @@ class KomentarzController extends Controller
             return $this->redirect($this->generateUrl('komentarz_edit', array('id' => $id)));
         }
 
+        $returnUrl = $this
+            ->generateUrl(strtolower($entity->getObiekt()) . '_show', [
+                'id' => $entity->getObiektId()
+            ]);
+
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),
             'delete_form' => $deleteForm->createView(),
+            'returnUrl' => $returnUrl,
         );
     }
     /**
