@@ -53,6 +53,18 @@ class AdStringTool
     }
 
     /**
+     * Tworzy CN w postaci ciagu tekstowego.
+     *
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function createCommonName(string $name): string
+    {
+        return self::CN . $name;
+    }
+
+    /**
      * Buduje string AD dla podanej nazwy użytkownika z ze skrótem departamentu.
      * Zwraca postać typu "CN=Janusz Tracz,OU=BI,OU=Zespoly_2016,OU=PARP Pracownicy,DC=test,DC=local"
      *
