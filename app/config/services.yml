@@ -1,7 +1,7 @@
 services:
     my.handler.session_idle:
         class: ParpV1\AuthBundle\Handler\SessionIdleHandler
-        arguments: ["@session", "@security.token_storage", "@router", %session_max_idle_time%]
+        arguments: ["@session", "@security.token_storage", "@router", '%session_max_idle_time%']
         tags:
             - { name: kernel.event_listener, event: kernel.request, method: onKernelRequest }
     ldap_service:
@@ -80,7 +80,7 @@ services:
         tags: ~
     app.twig_extension:
         class: ParpV1\MainBundle\Twig\StringExtension
-        arguments: ["@rename_service", "@ldap_service"]
+        arguments: ["@rename_service", "@ldap_service", '@doctrine.orm.entity_manager']
         public: false
         tags:
             - { name: twig.extension }

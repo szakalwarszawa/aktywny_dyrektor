@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Twig;
 use Twig_SimpleFilter;
 use ReflectionClass;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Class StringExtension
@@ -14,17 +15,20 @@ class StringExtension extends \Twig_Extension
 {
     protected $renameService;
     protected $ldapService;
+    protected $entityManager;
     protected $sam2name = null;
 
     /**
      * StringExtension constructor.
      * @param \ParpV1\MainBundle\Services\RenameService $renameService
      * @param \ParpV1\SoapBundle\Services\LdapService $ldapService
+     * @param EntityManager $entityManager
      */
-    public function __construct(\ParpV1\MainBundle\Services\RenameService $renameService, \ParpV1\SoapBundle\Services\LdapService $ldapService)
+    public function __construct(\ParpV1\MainBundle\Services\RenameService $renameService, \ParpV1\SoapBundle\Services\LdapService $ldapService, EntityManager $entityManager)
     {
         $this->renameService = $renameService;
         $this->ldapService = $ldapService;
+        $this->entityManager = $entityManager;
     }
 
     /**
@@ -46,6 +50,7 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('getMultipleCheckboxLabelClasses', array($this, 'getMultipleCheckboxLabelClasses')),
             new \Twig_SimpleFilter('showMultiFieldAsNewLines', array($this, 'showMultiFieldAsNewLines')),
             new \Twig_SimpleFilter('showFullname', array($this, 'showFullname')),
+            new \Twig_SimpleFilter('podajKoniecUmowy', array($this, 'podajKoniecUmowy')),
             new \Twig_SimpleFilter('base64Decode', array($this, 'base64DecodeFilter')),
             new \Twig_SimpleFilter('base64Encode', array($this, 'base64EncodeFilter')),
             new Twig_SimpleFilter('parseAdString', [$this, 'parseAdString']),
@@ -95,6 +100,26 @@ class StringExtension extends \Twig_Extension
             }
         }
         return (isset($this->sam2name[$samaccountname]) ? $this->sam2name[$samaccountname] : $samaccountname);
+    }
+
+    /**
+     * Zwraca datę końca umowy dla użytkownika
+     *
+     * @param $samaccountname
+     *
+     * @return DateTime|null
+     */
+    public function podajKoniecUmowy(string $samaccountname)
+    {
+        $dataUmowy = $this->entityManager->getRepository('ParpMainBundle:DaneRekord')
+            ->podajKoniecUmowy($samaccountname);
+        if (!empty($dataUmowy)) {
+            $umowado = $dataUmowy[0]['umowaDo'];
+        } else {
+            $umowado = null;
+        }
+
+        return $umowado;
     }
 
     /**
