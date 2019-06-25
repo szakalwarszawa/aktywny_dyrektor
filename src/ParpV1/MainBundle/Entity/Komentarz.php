@@ -75,7 +75,7 @@ class Komentarz
      * @Assert\NotBlank
      * @Assert\Length(
      *      min = 5,
-     *      max = 100,
+     *      max = 5000,
      *      minMessage = "Treść musi mieć co najmniej {{ limit }} znaków.",
      *      maxMessage = "Treść musi mieć maksymalnie {{ limit }} znaków."
      * )
