@@ -16,8 +16,6 @@
                 {{ form_label(form.tytul) }}
                 <div class="col-lg-5">
                     {{ form_widget(form.tytul, {attr: {'maxlength': 100, 'placeholder': 'Wprowadź tytuł komentarza (maksymalnie 100 znaków)'}}) }}
-                </div>
-                <div class="form-error">
                     {{ form_errors(form.tytul) }}
                 </div>
             </div>
@@ -26,6 +24,7 @@
                 {{ form_label(form.opis) }}
                 <div class="col-lg-10">
                     {{ form_widget(form.opis, {attr: {'maxlength': 5000, 'placeholder': 'Wprowadź treść komentarza (maksymalnie 5000 znaków)'}}) }}
+                    {{ form_errors(form.opis) }}
                 </div>
             </div>
 
