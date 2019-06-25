@@ -422,10 +422,6 @@ class EdycjaUzytkownikaService
             $applicationCancellationReason = $specifyReason($changedElements['DISABLE']);
         }
 
-        if (1 < count($changedElements) && null === $applicationCancellationReason) {
-            $applicationCancellationReason = PowodAnulowaniaWnioskuConstants::DEFAULT_TITLE;
-        }
-
         if (null === $applicationCancellationReason) {
             $applicationCancellationReason = $specifyReason(current($changedElements));
         }
