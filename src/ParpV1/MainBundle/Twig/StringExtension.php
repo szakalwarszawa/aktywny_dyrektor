@@ -6,6 +6,7 @@ use Twig_SimpleFilter;
 use ReflectionClass;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use Doctrine\ORM\EntityManager;
+use DateTime;
 
 /**
  * Class StringExtension
@@ -109,7 +110,7 @@ class StringExtension extends \Twig_Extension
      *
      * @return DateTime|null
      */
-    public function podajKoniecUmowy(string $samaccountname)
+    public function podajKoniecUmowy(string $samaccountname): ?DateTime
     {
         $dataUmowy = $this->entityManager->getRepository('ParpMainBundle:DaneRekord')
             ->podajKoniecUmowy($samaccountname);

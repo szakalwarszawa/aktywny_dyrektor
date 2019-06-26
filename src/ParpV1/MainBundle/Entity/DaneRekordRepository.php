@@ -131,9 +131,9 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
      *
      * @param String $samaccountname
      *
-     * @return DateTime|null
+     * @return Array
      */
-    public function podajKoniecUmowy(string $samaccountname)
+    public function podajKoniecUmowy(string $samaccountname): array
     {
         $queryBuilder = $this->createQueryBuilder('dr');
         $queryBuilder
