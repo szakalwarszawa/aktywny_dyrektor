@@ -74,7 +74,7 @@
                     {% endfor %}
                 </ul>
             </div>
-            {% if(entity.wniosek.lockedBy != "" and entity.wniosek.lockedBy != app.user.username) %}
+            {% if (entity.wniosek.lockedBy != "" and entity.wniosek.lockedBy != app.user.username) %}
                 <div class="alert alert-warning">
                     Wniosek Edytowany (zablokowany) przez: {{ entity.wniosek.lockedBy|showFullname }}<br>
                     Edytowany (zablokowany) dnia: {{ entity.wniosek.lockedAt|date('Y-m-d H:i:s') }}
@@ -342,6 +342,9 @@
                                         {{ z.samaccountname|showFullname }}
                                     {% else %}
                                         <a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
+                                        {% if z.samaccountname|podajKoniecUmowy %}
+                                            <br /><small>Umowa do: <br /><strong style="color:red">{{ z.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                        {% endif %}
                                     {% endif %}
                                 </td>
                                 <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
@@ -484,7 +487,11 @@
                             {% for z in userzasobyRozbite %}
                                 <tr>
                                     <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
-                                    <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a></td>
+                                    <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
+                                    {% if z.samaccountname|podajKoniecUmowy %}
+                                            <br /><small>Umowa do: <br /><strong style="color:red">{{ z.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                    {% endif %}
+                                    </td>
                                     <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>

@@ -25,7 +25,11 @@
                             {% for row in users %}
                                 <tr>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}" class="rowNumber">{{ n }}</a></td>
-                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a></td>
+                                    <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a>
+                                    {% if row.samaccountname|podajKoniecUmowy %}
+                                        <br /><small>Umowa do: <strong style="color:red">{{ row.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                    {% endif %}
+                                    </td>
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
                                     <td>
 
