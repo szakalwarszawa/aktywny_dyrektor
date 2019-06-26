@@ -5,6 +5,8 @@ namespace ParpV1\MainBundle\Twig;
 use Twig_SimpleFilter;
 use ReflectionClass;
 use ParpV1\MainBundle\Tool\AdStringTool;
+use ParpV1\SoapBundle\Services\LdapService;
+use ParpV1\MainBundle\Services\RenameService;
 use Doctrine\ORM\EntityManager;
 use DateTime;
 
@@ -21,11 +23,12 @@ class StringExtension extends \Twig_Extension
 
     /**
      * StringExtension constructor.
-     * @param \ParpV1\MainBundle\Services\RenameService $renameService
-     * @param \ParpV1\SoapBundle\Services\LdapService $ldapService
+     *
+     * @param RenameService $renameService
+     * @param LdapService $ldapService
      * @param EntityManager $entityManager
      */
-    public function __construct(\ParpV1\MainBundle\Services\RenameService $renameService, \ParpV1\SoapBundle\Services\LdapService $ldapService, EntityManager $entityManager)
+    public function __construct(RenameService $renameService, LdapService $ldapService, EntityManager $entityManager)
     {
         $this->renameService = $renameService;
         $this->ldapService = $ldapService;
@@ -106,7 +109,7 @@ class StringExtension extends \Twig_Extension
     /**
      * Zwraca datę końca umowy dla użytkownika
      *
-     * @param $samaccountname
+     * @param string $samaccountname
      *
      * @return DateTime|null
      */
@@ -114,13 +117,8 @@ class StringExtension extends \Twig_Extension
     {
         $dataUmowy = $this->entityManager->getRepository('ParpMainBundle:DaneRekord')
             ->podajKoniecUmowy($samaccountname);
-        if (!empty($dataUmowy)) {
-            $umowado = $dataUmowy[0]['umowaDo'];
-        } else {
-            $umowado = null;
-        }
 
-        return $umowado;
+        return (!empty($dataUmowy) ? $dataUmowy[0]['umowaDo'] : null);
     }
 
     /**
