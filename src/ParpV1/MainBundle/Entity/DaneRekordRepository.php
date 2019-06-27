@@ -125,4 +125,28 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
         //var_dump($result);
         return $result;
     }
+
+    /**
+     * Zwraca datę końca umowy pracownika.
+     *
+     * @param String $samaccountname
+     *
+     * @return Array
+     */
+    public function podajKoniecUmowy(string $samaccountname): array
+    {
+        $queryBuilder = $this->createQueryBuilder('dr');
+        $queryBuilder
+            ->select('dr.umowaDo')
+            ->where('dr.login = :samaccountname')
+            ->andWhere('dr.umowaDo is not null')
+            ->setParameters(array('samaccountname' => $samaccountname))
+            ->orderBy('dr.umowaDo', 'DESC')
+            ->setMaxResults(1);
+
+        $query = $queryBuilder->getQuery();
+        $umowaDo = $query->getResult();
+
+        return $umowaDo;
+    }
 }
