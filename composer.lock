@@ -8,23 +8,23 @@
     "packages": [
         {
             "name": "adldap2/adldap2",
-            "version": "v10.0.7",
+            "version": "v10.0.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/Adldap2/Adldap2.git",
-                "reference": "26f3bc42b477e006535d603f534f1379caad1d12"
+                "reference": "beb3c9cc28de752d6c3b0221605035659eccc42e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/26f3bc42b477e006535d603f534f1379caad1d12",
-                "reference": "26f3bc42b477e006535d603f534f1379caad1d12",
+                "url": "https://api.github.com/repos/Adldap2/Adldap2/zipball/beb3c9cc28de752d6c3b0221605035659eccc42e",
+                "reference": "beb3c9cc28de752d6c3b0221605035659eccc42e",
                 "shasum": ""
             },
             "require": {
                 "ext-ldap": "*",
                 "illuminate/contracts": "~5.0",
                 "php": ">=7.0",
-                "psr/log": "~1.1",
+                "psr/log": "~1.0",
                 "tightenco/collect": "~5.0"
             },
             "require-dev": {
@@ -61,7 +61,7 @@
                 "ldap",
                 "windows"
             ],
-            "time": "2019-04-01T20:38:21+00:00"
+            "time": "2019-05-24T14:15:58+00:00"
         },
         {
             "name": "apy/datagrid-bundle",
