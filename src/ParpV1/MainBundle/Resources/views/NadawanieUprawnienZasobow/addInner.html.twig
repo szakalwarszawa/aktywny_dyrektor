@@ -27,7 +27,9 @@
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}" class="rowNumber">{{ n }}</a></td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a>
                                 {% if row.samaccountname|podajKoniecUmowy %}
-                                        <br /><small>Umowa do: <strong style="color:red">{{ row.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                    <div class="alert alert-danger" role="alert">
+                                        <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do: {{ row.samaccountname|podajKoniecUmowy|date("Y-m-d") }}
+                                    </div>
                                 {% endif %}
                                 </td>
                                 <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
