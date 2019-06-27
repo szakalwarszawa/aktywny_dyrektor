@@ -347,7 +347,7 @@
                                         <a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
                                         {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
                                             <div class="alert alert-danger" role="alert">
-                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do-y: <br />{{ koniec_umowy|date("Y-m-d") }}
+                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do: <br />{{ koniec_umowy|date("Y-m-d") }}
                                             </div>
                                         {% endif %}
                                     {% endif %}
@@ -503,7 +503,7 @@
                                     <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
                                     {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
                                             <div class="alert alert-danger" role="alert">
-                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do-x: <br />{{ koniec_umowy|date("Y-m-d") }}
+                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do: <br />{{ koniec_umowy|date("Y-m-d") }}
                                             </div>
                                     {% endif %}
                                     </td>
