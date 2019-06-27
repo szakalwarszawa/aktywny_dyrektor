@@ -1145,7 +1145,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $czyJest = false;
             foreach ($userGroups[$e->getSamaccountname()] as $ug) {
                 if (is_array($ug)) {
-                    if ($ug['dn'] == $szukanaGrupa) {
+                    if ($ug['dn'] == $szukanaGrupa[0]) {
                         $czyJest = true;
                     }
                 }

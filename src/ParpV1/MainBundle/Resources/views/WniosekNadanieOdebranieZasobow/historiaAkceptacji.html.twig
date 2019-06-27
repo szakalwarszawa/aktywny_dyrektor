@@ -20,7 +20,12 @@
                             {{ ss.createdBy|showFullname }} w zastepstwie za {{ ss.zastepstwo.kogoZastepuje|showFullname }}
                         </div>
                     {% else %}
-                        {{ ss.createdBy|showFullname }}
+                        {# Sprawdzamy, bo czasami wchodzi tutaj obiekt, a czasami string: #}
+                        {% if ss.createdBy.username is defined %}
+                            {{ ss.createdBy.username|showFullname }}
+                        {% else %}
+                            {{ ss.createdBy|showFullname }}
+                        {% endif %}
                     {% endif %}
                 </td>
                 <td>{{ ss.statusName }}
