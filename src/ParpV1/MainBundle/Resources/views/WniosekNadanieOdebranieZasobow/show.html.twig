@@ -336,14 +336,19 @@
                     </thead>
                         <tbody>
                         {% for z in userzasoby %}
+                            {% set koniec_umowy = z.samaccountname|podajKoniecUmowy %}
+                            {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
+                            {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                             <tr>
                                 <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
                                 <td>{% if (entity.pracownikSpozaParp) %}
                                         {{ z.samaccountname|showFullname }}
                                     {% else %}
                                         <a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
-                                        {% if z.samaccountname|podajKoniecUmowy %}
-                                            <br /><small>Umowa do: <br /><strong style="color:red">{{ z.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                        {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
+                                            <div class="alert alert-danger" role="alert">
+                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do-y: <br />{{ koniec_umowy|date("Y-m-d") }}
+                                            </div>
                                         {% endif %}
                                     {% endif %}
                                 </td>
@@ -351,8 +356,14 @@
                                 <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                 <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                 <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
-                                <td>{{ z.bezterminowo ? "TAK" : "NIE" }}</td>
-                                <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}</td>
+                                <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ' : '' }}
+                                    {{ z.bezterminowo ? "TAK" : "NIE" }}
+                                    {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
+                                </td>
+                                <td>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ' : '' }}
+                                    {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
+                                    {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
+                                </td>
                                 <td>{{ z.kanalDostepu }}</td>
                                 <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
                                 <td>
@@ -385,7 +396,6 @@
                                         <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Zobacz wniosek o odebranie uprawnień</a>
                                     {% endif %}
                                 {% endif %}
-
                                 </td>
                             </tr>
                         {% endfor %}
@@ -485,19 +495,30 @@
                         </thead>
                             <tbody>
                             {% for z in userzasobyRozbite %}
+                                {% set koniec_umowy = z.samaccountname|podajKoniecUmowy %}
+                                {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
+                                {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                                 <tr>
                                     <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
                                     <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
-                                    {% if z.samaccountname|podajKoniecUmowy %}
-                                            <br /><small>Umowa do: <br /><strong style="color:red">{{ z.samaccountname|podajKoniecUmowy|date("Y-m-d") }}</strong></small>
+                                    {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
+                                            <div class="alert alert-danger" role="alert">
+                                                <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do-x: <br />{{ koniec_umowy|date("Y-m-d") }}
+                                            </div>
                                     {% endif %}
                                     </td>
                                     <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                     <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
-                                    <td>{{ z.bezterminowo ? "TAK" : "NIE" }}</td>
-                                    <td>{{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}</td>
+                                    <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ' : '' }}
+                                        {{ z.bezterminowo ? "TAK" : "NIE" }}
+                                        {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
+                                    </td>
+                                    <td>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> ' : '' }}
+                                        {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
+                                        {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
+                                    </td>
                                     <td>{{ z.kanalDostepu }}</td>
                                     <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
                                     <td>{{ z.powodNadania }} </td>
