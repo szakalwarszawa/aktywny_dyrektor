@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * UserZasoby
@@ -54,16 +55,30 @@ class Komentarz
     /**
      * @var string
      *
-     * @ORM\Column(name="tytul", type="string", length=255, nullable=true)
+     * @ORM\Column(name="tytul", type="string", length=100, nullable=false)
      * @Gedmo\Versioned
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 100,
+     *      minMessage = "Tytuł musi mieć co najmniej {{ limit }} znaków.",
+     *      maxMessage = "Tytuł musi mieć maksymalnie {{ limit }} znaków."
+     * )
      */
     private $tytul;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="opis", type="string", length=5000, nullable=true)
+     * @ORM\Column(name="opis", type="string", length=5000, nullable=false)
      * @Gedmo\Versioned
+     * @Assert\NotBlank
+     * @Assert\Length(
+     *      min = 5,
+     *      max = 5000,
+     *      minMessage = "Treść musi mieć co najmniej {{ limit }} znaków.",
+     *      maxMessage = "Treść musi mieć maksymalnie {{ limit }} znaków."
+     * )
      */
     private $opis;
 

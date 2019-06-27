@@ -60,7 +60,7 @@
                         >
                             {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
 
-                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek_do_linku.id}) }}" class="whiteLink">
+                            <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek_do_linku.wniosekNadanieOdebranieZasobow.id}) }}" class="whiteLink">
                             {# {% set byl_juz_pierwszy_parent = true %} #}
                             {% endif %}
                             <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right" }}">&nbsp;</i>
