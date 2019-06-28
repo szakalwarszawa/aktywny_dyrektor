@@ -43,8 +43,8 @@ class AdUserConstants extends Attributes
     {
         return [
             self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
-            self::SEKCJA_NAZWA,
             self::DEPARTAMENT_NAZWA,
+            self::SEKCJA_NAZWA,
             //self::STANOWISKO,
             self::SEKCJA_NAZWA
         ];

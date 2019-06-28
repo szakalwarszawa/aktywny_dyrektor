@@ -13,7 +13,6 @@ use ParpV1\SoapBundle\Services\LdapService;
 use ParpV1\MainBundle\Helper\AdUserHelper;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Constants\TakNieInterface;
-use ParpV1\MainBundle\Constants\PowodAnulowaniaWnioskuConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 use ParpV1\MainBundle\Tool\AdStringTool;
@@ -394,23 +393,24 @@ class EdycjaUzytkownikaService
      */
     private function specifyCancellationReason(array $changedElements, array $formData): string
     {
-        $powodyAnulowaniaWnioskuConstants = new ReflectionClass(PowodAnulowaniaWnioskuConstants::class);
-        $triggerConstKeys = (new ReflectionClass(AdUserConstants::class))
-            ->getConstants();
+        $dictionary = new DictionaryService(__DIR__ . '//Dictionary//EdycjaUzytkownika//');
+        $specifyReason = function ($changedElements) use ($dictionary) {
+            $trigger = null;
+            $triggerConstKeys = AdUserConstants::getResetTriggers();
 
-        $specifyReason = function ($trigger) use ($powodyAnulowaniaWnioskuConstants, $triggerConstKeys) {
-            $triggerConst = null;
             foreach ($triggerConstKeys as $key => $value) {
-                if ($value === $trigger) {
-                    $triggerConst = $key;
+                if (in_array($value, $changedElements)) {
+                    $trigger = $value;
+
+                    break;
                 }
             }
 
-            if (null === $triggerConst) {
-                throw new LogicException('Nie odnaleziono powodu anulacji dla tego zdarzenia.');
+            if (null === $trigger) {
+                $trigger = 'DEFAULT';
             }
 
-            return $powodyAnulowaniaWnioskuConstants->getConstant($triggerConst . PowodAnulowaniaWnioskuConstants::SUFFIX);
+            return $dictionary->get($trigger);
         };
 
         $applicationCancellationReason = null;
@@ -419,11 +419,11 @@ class EdycjaUzytkownikaService
             if (!isset($changedElements['DISABLE'])) {
                 throw new LogicException('Nie określono powodu wyłączenia.');
             }
-            $applicationCancellationReason = $specifyReason($changedElements['DISABLE']);
+            $applicationCancellationReason = $dictionary->get('disable');
         }
 
         if (null === $applicationCancellationReason) {
-            $applicationCancellationReason = $specifyReason(current($changedElements));
+            $applicationCancellationReason = $specifyReason($changedElements);
         }
 
         return $applicationCancellationReason;
