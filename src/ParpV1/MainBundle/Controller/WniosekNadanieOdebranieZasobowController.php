@@ -1009,7 +1009,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
                         //foreach($grupy as $grupa){
-                        $grupa = trim($grupy[$indexGrupy]);
+
+                        if ($uz->getPoziomDostepu() === '[BD] Bez dostępu do sieci PARP') {
+                            $grupa = '';
+                        } else {
+                            $grupa = trim($grupy[$indexGrupy]);
+                        }
+
                         if ($grupa != '') {
                             //jesli sa grupy ad to tworzy entry powiazane i daje przycisk opublikuj
                             $aduser = $this->getUserFromAD($uz->getSamaccountname());
