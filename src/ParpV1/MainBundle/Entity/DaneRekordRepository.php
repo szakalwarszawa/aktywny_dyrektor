@@ -135,13 +135,14 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
      */
     public function podajKoniecUmowy(string $samaccountname): array
     {
+        $now = new \Datetime();
         $queryBuilder = $this->createQueryBuilder('dr');
         $queryBuilder
             ->select('dr.umowaDo')
             ->where('dr.login = :samaccountname')
-            ->andWhere('dr.umowaDo is not null')
-            ->setParameters(array('samaccountname' => $samaccountname))
-            ->orderBy('dr.umowaDo', 'DESC')
+            ->andWhere('dr.umowaOd <= :now')
+            ->setParameters(array('samaccountname' => $samaccountname, 'now' => $now))
+            ->orderBy('dr.id', 'DESC')
             ->setMaxResults(1);
 
         $query = $queryBuilder->getQuery();
