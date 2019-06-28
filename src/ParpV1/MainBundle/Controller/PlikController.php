@@ -129,11 +129,11 @@ class PlikController extends Controller
         $grid->getColumn('akcje')->setFilterable(false)->setSafe(true);
 
         if (!$wniosekZablokowany) {
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'plik_edit');
+            $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'plik_edit');
             $rowAction2->setColumn('akcje');
             $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
-            $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'plik_delete');
+            $rowAction3 = new RowAction('<i class="fas fa-delete"></i> Skasuj', 'plik_delete');
             $rowAction3->setColumn('akcje');
             $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
@@ -143,7 +143,7 @@ class PlikController extends Controller
             $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
         }
 
-        $rowAction4 = new RowAction('<i class="fa fa-file"></i> Pobierz', 'plik_download');
+        $rowAction4 = new RowAction('<i class="fas fa-file"></i> Pobierz', 'plik_download');
         $rowAction4->setColumn('akcje');
         $rowAction4->addAttribute('class', 'btn btn-primary btn-xs');
         $grid->addRowAction($rowAction4);

@@ -201,7 +201,7 @@ class WnioskiNadanieOdebranieGrid
         );
         $rowAction
             ->setColumn('akcje')
-            ->addAttribute('class', 'btn btn-danger btn-xs fa fa-delete')
+            ->addAttribute('class', 'btn btn-danger btn-xs fas fa-delete')
             ->addManipulateRender(
                 function ($action, $row) {
                     if ($row->getField('numerWniosku') === 'wniosek w trakcie tworzenia') {

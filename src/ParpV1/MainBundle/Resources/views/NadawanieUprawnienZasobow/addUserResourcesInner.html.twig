@@ -28,7 +28,7 @@
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.name }}</a>
                                     {% if row.samaccountname|podajKoniecUmowy %}
                                         <div class="alert alert-danger" role="alert">
-                                            <span class="glyphicon glyphicon-exclamation-sign" aria-hidden="true"></span> Umowa do: {{ row.samaccountname|podajKoniecUmowy|date("Y-m-d") }}
+                                            <span class="fas fa-exclamation-circle" aria-hidden="true"></span> Umowa do: {{ row.samaccountname|podajKoniecUmowy|date("Y-m-d") }}
                                         </div>
                                     {% endif %}
                                     </td>
@@ -83,7 +83,7 @@
                         <thead>
                             <tr>
                                 <th>Nazwa</th>
-                                <th>Moduł  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('modul'); " class=" "><i class="fa fa-check-square">&nbsp;</i></a>/ Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('poziomDostepu')" class=" "><i class="fa fa-check-square">&nbsp;</i></a></th>
+                                <th>Moduł  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('modul'); " class=" "><i class="fas fa-check-square">&nbsp;</i></a>/ Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2('poziomDostepu')" class=" "><i class="fas fa-check-square">&nbsp;</i></a></th>
                                 <th>Aktywne od / Aktywne do / bezterminowo
                                 <th>Kanał dostępu / Sumowanie uprawnień / Uprawnienia administracyjne</th>
                             </tr>
@@ -99,13 +99,13 @@
                                     </td>
                                     <td>
                                         <div>
-                                        <label>Moduł <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
+                                        <label>Moduł <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fas fa-check-square">&nbsp;</i></a></label>
                                         {{ form_widget(userzasoby.samaccountname) }}
                                         {{ form_widget(userzasoby.zasobId) }}
                                         {{ form_widget(userzasoby.modul) }}
                                         </div>
                                         <div>
-                                        <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fa fa-check-square">&nbsp;</i></a></label>
+                                        <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fas fa-check-square">&nbsp;</i></a></label>
                                         {{ form_widget(userzasoby.poziomDostepu) }}
                                         </div>
                                     </td>

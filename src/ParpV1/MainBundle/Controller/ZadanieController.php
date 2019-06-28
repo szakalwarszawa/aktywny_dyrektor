@@ -80,12 +80,12 @@ class ZadanieController extends Controller
                 ->setSafe(true);
 
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'zadanie_edit');
+        $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'zadanie_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'zadanie_delete');
+        $rowAction3 = new RowAction('<i class="fas fa-delete"></i> Skasuj', 'zadanie_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 

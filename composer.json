@@ -62,7 +62,7 @@
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::clearCache",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installAssets",
             "Sensio\\Bundle\\DistributionBundle\\Composer\\ScriptHandler::installRequirementsFile",
-            "yarn install --frozen-lockfile --force --non-interactive",
+            "yarn install --frozen-lockfile --force",
             "yarn upgrade",
             "yarn patch-package",
             "yarn run encore dev"

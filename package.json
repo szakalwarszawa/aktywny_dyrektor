@@ -20,6 +20,7 @@
         "sass-loader": "7.0.1"
     },
     "dependencies": {
+        "@fortawesome/fontawesome-pro": "^5.9.0",
         "bootstrap-sass": "^3.4.1",
         "core-js": "2",
         "patch-package": "^6.1.2",

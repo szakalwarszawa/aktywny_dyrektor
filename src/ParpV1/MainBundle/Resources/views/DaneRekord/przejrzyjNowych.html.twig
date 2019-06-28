@@ -30,10 +30,10 @@
             {% if obj.umowaDo %}
                 <input type="text" id="form_accountExpires" name="form[accountExpires]" class="form-control form-control" value="{{ obj.umowaDo ? obj.umowaDo|date("Y-m-d") : "" }}">
                 <span class="input-group-addon">
-                    <span class="fa fa-calendar glyphicon glyphicon-calendar"></span>
+                    <span class="fas fa-calendar"></span>
                 </span>
             {% else %}
-                <span><i class="fa fa-exclamation-circle">&nbsp;</i> konto nigdy nie wygasa</span>
+                <span><i class="fas fa-exclamation-circle">&nbsp;</i> konto nigdy nie wygasa</span>
                 <input type="hidden" id="form_accountExpires" name="form[accountExpires]" class="form-control form-control" value="3000-01-01">
             {% endif %}
         </div>
@@ -67,10 +67,10 @@
 
 <div class="alert alert-danger acceptUser" id="acceptUser{{ obj.id }}">
     <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
-    <h3 class="text-danger"><i class="fa fa-exclamation-circle">&nbsp;</i>
+    <h3 class="text-danger"><i class="fas fa-exclamation-circle">&nbsp;</i>
         {% if (obj.newUnproccessed == 1) %}
-        <i class="fa fa-plus">&nbsp;</i> Nowy użytkownik{% else %}
-        <i class="fa fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{% endif %}
+        <i class="fas fa-plus">&nbsp;</i> Nowy użytkownik{% else %}
+        <i class="fas fa-briefcase">&nbsp;</i> Zmiana departamentu/stanowiska{% endif %}
     </h3>
     <h4>Dane zaimportowane z systemu REKORD</h4>
     {% if obj.konto_wylaczone %}
@@ -216,7 +216,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="zapisz{{ user.samaccountname }}{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="zapisz{{ user.samaccountname }}{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="fas fa-check-circle">&nbsp;</i> </a>
                 </div>
             </div>
         </div>
@@ -286,7 +286,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="zapisz{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="zapisz{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Przypisz <i class="fas fa-check-circle">&nbsp;</i> </a>
                 </div>
             </div>
         </div>
@@ -318,7 +318,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
-                    <a href="#" onclick="usun{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Usuń <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                    <a href="#" onclick="usun{{ obj.id }}()" class="btn btn-success" data-dismiss="modal">Usuń <i class="fas fa-check-circle">&nbsp;</i> </a>
                 </div>
             </div>
         </div>

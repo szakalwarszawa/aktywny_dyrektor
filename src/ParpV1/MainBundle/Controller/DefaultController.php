@@ -217,7 +217,7 @@ class DefaultController extends Controller
 
         if ($ktorzy === 'usersFromAd' || $ktorzy === 'usersFromAdFull') {
             // Edycja konta
-            $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
+            $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'userEdit');
             $rowAction2->setColumn('akcje');
             $rowAction2->setRouteParameters(
                 array('samaccountname')
@@ -225,7 +225,7 @@ class DefaultController extends Controller
             $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
             // Edycja konta
-            $rowAction4 = new RowAction('<i class="fa fa-database"></i> Zasoby', 'resources');
+            $rowAction4 = new RowAction('<i class="fas fa-database"></i> Zasoby', 'resources');
             $rowAction4->setColumn('akcje');
             $rowAction4->setRouteParameters(
                 array('samaccountname')
@@ -236,7 +236,7 @@ class DefaultController extends Controller
             $grid->addRowAction($rowAction2);
             $grid->addRowAction($rowAction4);
         } elseif ($ktorzy === 'zablokowane2') {
-            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+            $rowAction = new RowAction('<i class="fas fa-pencil"></i> Odblokuj', 'unblock_user');
             $rowAction->setColumn('akcje');
             $rowAction->setRouteParameters(
                 array('samaccountname', 'ktorzy' => $ktorzy)
@@ -247,7 +247,7 @@ class DefaultController extends Controller
         } elseif ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni') {
             // Edycja konta
             $rowAction2 =
-                new RowAction('<i class="glyphicon glyphicon-pencil"></i> Zobacz użytkownika', 'show_uncommited');
+                new RowAction('<i class="fas fa-pencil"></i> Zobacz użytkownika', 'show_uncommited');
             $rowAction2->setColumn('akcje');
             $rowAction2->setRouteParameters(
                 array('id')
@@ -255,7 +255,7 @@ class DefaultController extends Controller
             $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
             // Edycja konta
-            $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Zaangażowania', 'engageUser');
+            $rowAction3 = new RowAction('<i class="fas fa-sitemap"></i> Zaangażowania', 'engageUser');
             $rowAction3->setColumn('akcje');
             $rowAction3->setRouteParameters(
                 array('samaccountname')
@@ -1268,7 +1268,7 @@ class DefaultController extends Controller
                 'class'             => 'filestyle',
                 'data-buttonBefore' => 'false',
                 'data-buttonText'   => 'Wybierz plik',
-                'data-iconName'     => 'fa fa-file-excel-o',
+                'data-iconName'     => 'fas fa-file-excel-o',
             ),
             'constraints' => array(
                 new NotBlank(array('message' => 'Nie wybrano pliku')),
