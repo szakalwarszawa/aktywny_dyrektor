@@ -407,7 +407,7 @@ class EdycjaUzytkownikaService
             }
 
             if (null === $trigger) {
-                $trigger = 'DEFAULT';
+                $trigger = 'default';
             }
 
             return $dictionary->get($trigger);
