@@ -20,6 +20,7 @@ class AppKernel extends Kernel
             new ParpV1\AuthBundle\ParpAuthBundle(),
             new ParpV1\SoapBundle\ParpSoapBundle(),
             new ParpV1\MainBundle\ParpMainBundle(),
+            new ParpV1\JasperReportsBundle\ParpJasperReportsBundle(),
             new ParpV1\LdapBundle\ParpLdapBundle(),
             new APY\DataGridBundle\APYDataGridBundle(),
             new WhiteOctober\PagerfantaBundle\WhiteOctoberPagerfantaBundle(),
@@ -39,6 +40,7 @@ class AppKernel extends Kernel
             $bundles[] = new Sensio\Bundle\DistributionBundle\SensioDistributionBundle();
             $bundles[] = new Sensio\Bundle\GeneratorBundle\SensioGeneratorBundle();
             $bundles[] = new Symfony\Bundle\WebServerBundle\WebServerBundle();
+            $bundles[] = new Symfony\Bundle\MakerBundle\MakerBundle();
         }
 
         return $bundles;

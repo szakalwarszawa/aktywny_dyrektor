@@ -1,0 +1,10 @@
+{% extends '::base.html.twig' %}
+{% block body %}
+    <h1>
+        Lista dostępnych raportów
+    </h1>
+    <hr />
+Witam
+
+{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+{% endblock %}
