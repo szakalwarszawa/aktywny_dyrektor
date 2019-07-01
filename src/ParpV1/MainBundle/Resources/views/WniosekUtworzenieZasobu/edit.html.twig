@@ -27,7 +27,7 @@
                         <li class="red-tooltip list-group-item btn-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE_O_ZASOB" or ss.status.nazwaSystemowa == "11_OPUBLIKOWANY_O_ZASOB" ? "success" : "danger") : "default" }}"
                         data-toggle="popover" title="Data: {{ ss.createdAt|date("Y-m-d H:i:s") }}" data-content="{{ ss.createdAt|date("Y-m-d H:i:s") }}  : {{ ss.createdBy }} {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}Podzielony wniosek nr {{ wniosekDoLinku.numer }} {% endif %}"
                         >
-                            <i class="glyphicon glyphicon-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="glyphicon glyphicon-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "11_OPUBLIKOWANY_O_ZASOB" ? "ok-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY_O_ZASOB" ? "glyphicon glyphicon-random" : "remove-circle")) : "arrow-right" }}">&nbsp;</i>
+                            <i class="fas fa-asterisk" >&nbsp;</i>{{ ss.statusName }} <i class="fas fa-{{ ss.status.finished ? (ss.status.nazwaSystemowa == "11_OPUBLIKOWANY_O_ZASOB" ? "check-circle" : (ss.status.nazwaSystemowa == "10_PODZIELONY_O_ZASOB" ? "fas fa-random" : "times-circle")) : "arrow-right" }}">&nbsp;</i>
 
                         </li>
                     {% endfor %}
@@ -40,35 +40,35 @@
                 {% endif %}
 
                     {% if canUnblock %}
-                    <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="glyphicon glyphicon-check">&nbsp;</i> </a>
+                    <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="fas fa-check">&nbsp;</i> </a>
                     {% endif %}
                 {% if editor and readonly %}
                     {% if
                         entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" or
                         entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB" %}
-                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdmin'}) }}');" class="btn btn-info">Odbij do administratora zasobu<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdmin'}) }}');" class="btn btn-info">Odbij do administratora zasobu<i class="fas fa-arrow-right">&nbsp;</i> </a>
                     {% endif %}
                     {% if
                         entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" or
                         entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" %}
-                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdminTechniczny'}) }}');"  class="btn btn-info">Odbij do administratora technicznego zasobu<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdminTechniczny'}) }}');"  class="btn btn-info">Odbij do administratora technicznego zasobu<i class="fas fa-arrow-right">&nbsp;</i> </a>
                     {% endif %}
                     {% if
                         entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB" or
                         entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" %}
-                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdminRejestru'}) }}');"  class="btn btn-success">Odbij do administratora rejestru zasobów<i class="glyphicon glyphicon-arrow-right">&nbsp;</i> </a>
+                        <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'moveToAdminRejestru'}) }}');"  class="btn btn-success">Odbij do administratora rejestru zasobów<i class="fas fa-arrow-right">&nbsp;</i> </a>
                     {% endif %}
                     {% if entity.wniosek.status.nazwaSystemowa == "03_EDYCJA_PARP_ADMIN_REJESTRU_ZASOBOW" %}
                         {% if entity.typ == 'kasowanie' %}
-                            <a data-toggle="collapse" data-target="#selectDate" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a data-toggle="collapse" data-target="#selectDate" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="fas fa-check-circle">&nbsp;</i> </a>
                             {% else %}
-                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                            <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Opublikuj do Rejestru zasobów<i class="fas fa-check-circle">&nbsp;</i> </a>
                         {% endif %}
                     {% else %}
                         {% if not (
                             entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" or
                             entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB") %}
-                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa in ['00_TWORZONY_O_ZASOB', '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'] ? "Złóż" : "Zaakceptuj" }} wniosek <i class="glyphicon glyphicon-ok-sign">&nbsp;</i> </a>
+                        <a href="{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa in ['00_TWORZONY_O_ZASOB', '01_EDYCJA_WNIOSKODAWCA_O_ZASOB'] ? "Złóż" : "Zaakceptuj" }} wniosek <i class="fas fa-check-circle">&nbsp;</i> </a>
                         {% endif %}
 
                     {% endif %}
@@ -77,18 +77,18 @@
                         {% if not entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_TECHNICZNY_O_ZASOB" or
                         entity.wniosek.status.nazwaSystemowa == "04_EDYCJA_ADMINISTRATOR_O_ZASOB" %}}
                             <a  data-toggle="collapse" data-target="#rejectDiv"  onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'return'}) }}');"
-                        class="btn btn-info">Zwrot do poprawy o jeden krok <i class="glyphicon glyphicon-arrow-left">&nbsp;</i> </a>
+                        class="btn btn-info">Zwrot do poprawy o jeden krok <i class="fas fa-arrow-left">&nbsp;</i> </a>
                         {% endif %}
                     {% endif %}
 
                     {% if entity.wniosek.status.nazwaSystemowa != '00_TWORZONY_O_ZASOB' %}
                         <a data-toggle="collapse" data-target="#rejectDiv" onclick="$('#subFormOdrzucenie').attr('action', '{{ path('wniosekutworzeniezasobu_accept_reject', {id: entity.id, isAccepted: 'reject'}) }}');"
-                            class="btn btn-danger">Odrzuć wniosek <i class="glyphicon glyphicon-remove-sign">&nbsp;</i></a>
+                            class="btn btn-danger">Odrzuć wniosek <i class="fas fa-times-circle">&nbsp;</i></a>
                     {% endif %}
                 {% endif %}
 
                 {% if 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles and entity.wniosek.id > 0 %}
-                    <a href="{{ path('wniosek_przekieruj', {'id': entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek <i class="glyphicon glyphicon-arrow-right">&nbsp;</i></a>
+                    <a href="{{ path('wniosek_przekieruj', {'id': entity.wniosek.id}) }}" class="btn btn-warning">Przekaż ręcznie wniosek <i class="fas fa-arrow-right">&nbsp;</i></a>
                 {% endif %}
             </div>
             <div class="collapse" id="rejectDiv">
@@ -174,7 +174,7 @@
                         <tr>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoRejestru ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoRejestru ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         do Rejestru
                                     </div>
@@ -182,7 +182,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaInformacji ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaInformacji ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         informacji o zarejestrowanym zasobie
                                     </div>
@@ -190,7 +190,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanie ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanie ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         z Rejestru
                                     </div>
@@ -200,7 +200,7 @@
                         <tr>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoUruchomienia ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuDoUruchomienia ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         do utworzenia (uruchomienia) w infrastrukturze PARP
                                     </div>
@@ -208,7 +208,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaWistniejacym ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuZmianaWistniejacym ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         w istniejącym zasobie
                                     </div>
@@ -216,7 +216,7 @@
                             </td>
                             <td>
                                 <div class="form-group">
-                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanieZinfrastruktury ? "<i class='fa fa-check-square'>&nbsp;</i>" : "<i class='fa fa-square-o'>&nbsp;</i>" }} </div>
+                                    <div class="col-sm-2 col-lg-3">{{ form.vars.value.typWnioskuWycofanieZinfrastruktury ? "<i class='fas fa-check-square'>&nbsp;</i>" : "<i class='fas fa-square-o'>&nbsp;</i>" }} </div>
                                     <div class="col-sm-10 col-lg-9">
                                         z infrastruktury PARP
                                     </div>
@@ -343,7 +343,7 @@
 <div class="btn-group">
 
 <a class="btn btn-primary" href="{{ path('wniosekutworzeniezasobu') }}">
-    <i class="fa fa-list"></i> Lista Wniosków
+    <i class="fas fa-list"></i> Lista Wniosków
 </a>
 </div>
 

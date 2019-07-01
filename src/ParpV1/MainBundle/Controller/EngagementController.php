@@ -59,12 +59,12 @@ class EngagementController extends Controller
                 ->setSafe(true);
 
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'engagement_edit');
+        $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'engagement_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'engagement_delete');
+        $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'engagement_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
@@ -313,7 +313,7 @@ class EngagementController extends Controller
             'attr' => array('class' => 'filestyle',
                 'data-buttonBefore' => 'false',
                 'data-buttonText' => 'Wybierz plik',
-                'data-iconName' => 'fa fa-file-excel-o',
+                'data-iconName' => 'fas fa-file-excel-o',
             ),
             'constraints' => array(
                 new NotBlank(array('message' => 'Nie wybrano pliku')),
