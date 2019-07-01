@@ -53,7 +53,7 @@ class ZastepstwoController extends Controller
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Usunięcie zastępstwa
-        $rowAction3 = new RowAction('<i class="fas fa-delete"></i> Skasuj', 'zastepstwo_delete');
+        $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'zastepstwo_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 

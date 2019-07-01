@@ -77,7 +77,7 @@ class SpozaParpController extends Controller
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fas fa-delete"></i> Skasuj', 'danerekord_delete');
+        $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'danerekord_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
