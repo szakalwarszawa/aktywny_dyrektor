@@ -72,7 +72,7 @@ class PathRoleGrid
             ->setRouteParametersMapping([
             'id' => 'rolePrivilege'
             ])
-            ->setConfirmMessage('Na pewno usunąć ścieżkę?')
+            ->setConfirmMessage('Na pewno usunąć wpis uprawnienia?')
         ;
         $grid->addRowAction($rowAction);
 

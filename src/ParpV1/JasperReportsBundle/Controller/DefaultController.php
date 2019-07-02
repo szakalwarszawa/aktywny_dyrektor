@@ -14,6 +14,7 @@ use ParpV1\JasperReportsBundle\Grid\PathsGrid;
 use ParpV1\JasperReportsBundle\Grid\PathRoleGrid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ParpV1\JasperReportsBundle\Helper\FileHeadersHelper;
+use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 
 class DefaultController extends Controller
 {
@@ -110,13 +111,23 @@ class DefaultController extends Controller
             ->getDoctrine()
             ->getManager()
         ;
-
+        $pathId = $path->getId();
         $entityManager->remove($path);
-        $entityManager->flush();
+        try {
+            $entityManager->flush();
+        }   catch (ForeignKeyConstraintViolationException $exception) {
+            $this->addFlash(
+                'danger',
+                'Nie można usunąć ścieżki która jest powiązana z uprawnieniem.'
+            );
+
+            return $this->redirectToRoute('jasper_management');
+        }
+
 
         $this->addFlash(
             'danger',
-            'Usunięto wpis ścieżki. (ID: ' . $path->getId() . ')'
+            'Usunięto wpis ścieżki. (ID: ' . $pathId . ')'
         );
 
         return $this->redirectToRoute('jasper_management');
@@ -178,12 +189,13 @@ class DefaultController extends Controller
             ->getManager()
         ;
 
+        $rolePrivilegeId = $rolePrivilege->getId();
         $entityManager->remove($rolePrivilege);
         $entityManager->flush();
 
         $this->addFlash(
             'danger',
-            'Usunięto wpis uprawnienia do ścieżki. (ID: ' . $rolePrivilege->getId() . ')'
+            'Usunięto wpis uprawnienia do ścieżki. (ID: ' . $rolePrivilegeId . ')'
         );
 
         return $this->redirectToRoute('jasper_management');
@@ -303,7 +315,7 @@ class DefaultController extends Controller
                 'Dodano nowe ustawienie roli.'
             );
 
-            return $this->redirectToRoute('reports_list');
+            return $this->redirectToRoute('jasper_management');
         }
 
         return $this->render('@ParpJasperReports/add_edit_role_privilege.html.twig', [

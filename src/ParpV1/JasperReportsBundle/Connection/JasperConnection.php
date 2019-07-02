@@ -5,12 +5,10 @@ namespace ParpV1\JasperReportsBundle\Connection;
 use Jaspersoft\Client\Client;
 use Jaspersoft\Service\JobService;
 use Jaspersoft\Exception\RESTRequestException;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\RaportBundle\Exception\ConnectException;
 use Jaspersoft\Service\ReportService;
 use Jaspersoft\Service\OptionsService;
 use Jaspersoft\Service\RepositoryService;
-use Jaspersoft\Service\Result\SearchResourcesResult;
 
 /**
  * Klasa połączenia z Jasper.
@@ -86,7 +84,7 @@ class JasperConnection
     }
 
     /**
-     * Zwraca jobService do zapytań klienta Jasper.
+     * Zwraca JobService do zapytań klienta Jasper.
      *
      * @return JobService
      */
@@ -102,6 +100,11 @@ class JasperConnection
         ;
     }
 
+    /**
+     * Zwraca ReportService klienta Jasper.
+     *
+     * @return ReportService
+     */
     public function getReportService(): ReportService
     {
         if (null === $this->jasperClient) {
@@ -114,6 +117,11 @@ class JasperConnection
         ;
     }
 
+    /**
+     * Zwraca OptionsService klienta Jasper.
+     *
+     * @return OptionsService
+     */
     public function getOptionsService(): OptionsService
     {
         if (null === $this->jasperClient) {
@@ -126,6 +134,11 @@ class JasperConnection
         ;
     }
 
+    /**
+     * Zwraca RepositoryService klienta Jasper.
+     *
+     * @return RepositoryService
+     */
     public function getRepositoryService(): RepositoryService
     {
         if (null === $this->jasperClient) {
