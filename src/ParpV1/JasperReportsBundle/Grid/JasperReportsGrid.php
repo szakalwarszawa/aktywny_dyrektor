@@ -8,12 +8,12 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use Doctrine\ORM\EntityManager;
 use ParpV1\JasperReportsBundle\Entity\RolePrivilege;
 use APY\DataGridBundle\Grid\Column;
-use APY\DataGridBundle\Grid\Columns;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
-use Doctrine\Common\Collections\ArrayCollection;
 use APY\DataGridBundle\Grid\Action\RowAction;
 
+/**
+ * Siatka wyświetlająca dostępne raporty.
+ */
 class JasperReportsGrid
 {
     /**
@@ -61,25 +61,93 @@ class JasperReportsGrid
             ->setSource($source)
         ;
 
+        $grid = $this->setRowActions($grid);
+        $grid
+            ->setNoDataMessage('Nie posiadasz dostępu do żadnego raportu.')
+            ->setActionsColumnSize(90)
+            ->setActionsColumnTitle('Generuj')
+            ->isReadyForRedirect()
+        ;
+
+        return $grid;
+    }
+
+    /**
+     * Ustawia akcje siatki.
+     *
+     * @param Grid
+     *
+     * @return Grid
+     */
+    private function setRowActions(Grid $grid): Grid
+    {
         $rowAction = new RowAction(
-            'Generuj',
+            'PDF',
             'report_print',
             false,
             null,
-            ['class' => 'btn btn-primary']
+            ['class' => 'btn btn-xs btn-info']
         );
-        $rowAction->setRouteParameters(['url']);
+        $rowAction->setRouteParameters(['url', 'format' => 'pdf']);
         $rowAction->setRouteParametersMapping([
             'url' => 'reportUri'
         ]);
         $grid->addRowAction($rowAction);
 
-        $grid->setNoDataMessage('Nie posiadasz dostępu do żadnego raportu.');
-        $grid->isReadyForRedirect();
+        $rowAction = new RowAction(
+            'XLS',
+            'report_print',
+            false,
+            null,
+            ['class' => 'btn btn-xs btn-info']
+        );
+        $rowAction->setRouteParameters(['url', 'format' => 'xls']);
+        $rowAction->setRouteParametersMapping([
+            'url' => 'reportUri'
+        ]);
+        $grid->addRowAction($rowAction);
+
+        $rowAction = new RowAction(
+            'DOCX',
+            'report_print',
+            false,
+            null,
+            ['class' => 'btn btn-xs btn-info']
+        );
+        $rowAction->setRouteParameters(['url', 'format' => 'docx']);
+        $rowAction->setRouteParametersMapping([
+            'url' => 'reportUri'
+        ]);
+        $grid->addRowAction($rowAction);
+
+        $rowAction = new RowAction(
+            'PPTX',
+            'report_print',
+            false,
+            null,
+            ['class' => 'btn btn-xs btn-info']
+        );
+        $rowAction->setRouteParameters(['url', 'format' => 'pptx']);
+        $rowAction->setRouteParametersMapping([
+            'url' => 'reportUri'
+        ]);
+        $grid->addRowAction($rowAction);
+
+        $rowAction = new RowAction(
+            'CSV',
+            'report_print',
+            false,
+            null,
+            ['class' => 'btn btn-xs btn-info']
+        );
+        $rowAction->setRouteParameters(['url', 'format' => 'csv']);
+        $rowAction->setRouteParametersMapping([
+            'url' => 'reportUri'
+        ]);
+        $grid->addRowAction($rowAction);
 
         return $grid;
     }
-
     /**
      * Zwraca dane do siatki.
      *

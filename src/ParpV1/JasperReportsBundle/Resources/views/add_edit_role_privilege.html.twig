@@ -29,6 +29,7 @@
                 <div class="col-sm-2"></div>
                 <div class="col-sm-10">
                     {{ form_widget(form.submit, {attr: {class: 'btn btn-success btn-block'}}) }}
+                    <a href="{{ path('management') }}" class="btn btn-block btn-info">Anuluj</a>
                 </div>
             </div>
         {{ form_end(form) }}

@@ -73,6 +73,7 @@ parameters:
     # Katalog logów wypychania do AD #
     ad_push_log_directory: 'work/logs/'
 
+    # JasperServer #
     jasper_server_url: https://raporty.parp.gov.pl
     jasper_username: ''
     jasper_password: ''

@@ -1,12 +1,10 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Repository;
 
 use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\ArrayCollection;
 use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
-use ParpV1\AuthBundle\Security\ParpUser;
-use Symfony\Component\VarDumper\VarDumper;
 use Doctrine\ORM\EntityRepository;
 
 /**

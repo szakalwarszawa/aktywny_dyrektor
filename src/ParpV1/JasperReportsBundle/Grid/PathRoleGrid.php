@@ -5,6 +5,7 @@ namespace ParpV1\JasperReportsBundle\Grid;
 use APY\DataGridBundle\Grid\Grid;
 use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Column;
+use APY\DataGridBundle\Grid\Action\RowAction;
 
 /**
  * Siatka PathRoleGrid
@@ -44,22 +45,42 @@ class PathRoleGrid
         $grid = $this->grid;
         $grid->setSource($source);
 
-
-       /* $rowAction = new RowAction(
-            'Generuj',
-            'report_print',
+        $rowAction = new RowAction(
+            'Edytuj',
+            'edit_role_privilege',
             false,
             null,
-            ['class' => 'btn btn-primary']
+            ['class' => 'btn btn-warning btn-xs']
         );
-        $rowAction->setRouteParameters(['url']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);*/
+        $rowAction
+            ->setRouteParameters(['id'])
+            ->setRouteParametersMapping([
+            'id' => 'rolePrivilege'
+            ])
+        ;
+        $grid->addRowAction($rowAction);
 
-        $grid->setNoDataMessage('Brak wpisów.');
-        $grid->isReadyForRedirect();
+        $rowAction = new RowAction(
+            'Usuń',
+            'remove_role_privilege',
+            true,
+            null,
+            ['class' => 'btn btn-danger btn-xs']
+        );
+        $rowAction
+            ->setRouteParameters(['id'])
+            ->setRouteParametersMapping([
+            'id' => 'rolePrivilege'
+            ])
+            ->setConfirmMessage('Na pewno usunąć ścieżkę?')
+        ;
+        $grid->addRowAction($rowAction);
+
+        $grid
+            ->setActionsColumnSize(70)
+            ->setNoDataMessage('Brak wpisów.')
+            ->setActionsColumnTitle('Akcje')
+            ->isReadyForRedirect();
 
         return $grid;
     }
@@ -78,7 +99,7 @@ class PathRoleGrid
                 'source'  => true,
                 'primary' => true,
                 'title'   => 'ID',
-                'size' => 40,
+                'size' => 25,
                 'filterable' => false
             ]),
             new Column\TextColumn([

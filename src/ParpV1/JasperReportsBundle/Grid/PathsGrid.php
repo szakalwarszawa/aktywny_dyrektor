@@ -4,10 +4,9 @@ namespace ParpV1\JasperReportsBundle\Grid;
 
 use APY\DataGridBundle\Grid\Grid;
 use ParpV1\AuthBundle\Security\ParpUser;
-use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column;
-use ParpV1\JasperReportsBundle\Entity\Path;
 use APY\DataGridBundle\Grid\Source\Vector;
+use APY\DataGridBundle\Grid\Action\RowAction;
 
 /**
  * Siatka PathsGrid
@@ -49,21 +48,42 @@ class PathsGrid
         $grid = $this->grid;
         $grid->setSource($source);
 
-       /* $rowAction = new RowAction(
-            'Generuj',
-            'report_print',
+        $rowAction = new RowAction(
+            'Edytuj',
+            'edit_path',
             false,
             null,
-            ['class' => 'btn btn-primary']
+            ['class' => 'btn btn-warning btn-xs']
         );
-        $rowAction->setRouteParameters(['url']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);*/
+        $rowAction
+            ->setRouteParameters(['id'])
+            ->setRouteParametersMapping([
+            'id' => 'path'
+            ])
+        ;
+        $grid->addRowAction($rowAction);
 
-        $grid->setNoDataMessage('Brak wpisów.');
-        $grid->isReadyForRedirect();
+        $rowAction = new RowAction(
+            'Usuń',
+            'remove_path',
+            true,
+            null,
+            ['class' => 'btn btn-danger btn-xs']
+        );
+        $rowAction
+            ->setRouteParameters(['id'])
+            ->setRouteParametersMapping([
+            'id' => 'path'
+            ])
+            ->setConfirmMessage('Na pewno usunąć ścieżkę?')
+        ;
+        $grid->addRowAction($rowAction);
+
+        $grid
+            ->setActionsColumnSize(60)
+            ->setNoDataMessage('Brak wpisów.')
+            ->setActionsColumnTitle('Akcje')
+            ->isReadyForRedirect();
 
         return $grid;
     }
@@ -82,7 +102,7 @@ class PathsGrid
                 'source'  => true,
                 'primary' => true,
                 'title'   => 'ID',
-                'size' => 40,
+                'size' => 10,
                 'filterable' => false
             ]),
             new Column\TextColumn([
@@ -90,8 +110,8 @@ class PathsGrid
                 'field'   => 'url',
                 'source'  => true,
                 'title'   => 'Adres raportu',
-                'operatorsVisible' => false,
-                'size'    => 200,
+                'filterable' => false,
+                'size'    => 170,
             ]),
             new Column\TextColumn([
                 'id'      => 'title',
@@ -99,14 +119,17 @@ class PathsGrid
                 'source'  => true,
                 'title'   => 'Tytuł',
                 'operatorsVisible' => false,
-                'size'    => 200,
+                'filterable' => false,
+                'size'    => 150,
             ]),
             new Column\BooleanColumn([
                 'id'      => 'isRepository',
                 'field'   => 'isRepository',
                 'source'  => true,
                 'operatorsVisible' => false,
-                'title'   => 'Czy jest folderem'
+                'title'   => 'Czy jest folderem',
+                'filterable' => false,
+                'size'    => 60,
             ]),
         ];
 

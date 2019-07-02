@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Entity;
 
@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
  * RolePrivilege
  *
  * @ORM\Table(
- *  name="role_privilege",
+ *  name="jasper_role_privilege",
  *  uniqueConstraints={
  *      @ORM\UniqueConstraint(name="unique_role", columns={"role_id"}),
  *  })

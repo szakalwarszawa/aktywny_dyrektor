@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Controller;
 
@@ -12,6 +12,8 @@ use ParpV1\JasperReportsBundle\Entity\RolePrivilege;
 use Symfony\Component\HttpFoundation\Response;
 use ParpV1\JasperReportsBundle\Grid\PathsGrid;
 use ParpV1\JasperReportsBundle\Grid\PathRoleGrid;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use ParpV1\JasperReportsBundle\Helper\FileHeadersHelper;
 
 class DefaultController extends Controller
 {
@@ -35,18 +37,21 @@ class DefaultController extends Controller
     /**
      * Drukuje raport.
      *
-     * @Route("/reports/print/{reportUri}", name="report_print", requirements={"reportUri"=".+"})
+     * @Route("/reports/print/{reportUri}.{format}", name="report_print", requirements={"reportUri"=".+"})
      *
-     * @param Request $request
      * @param string $reportUri
+     * @param string $format
      *
      * @return Response
      */
-    public function printReport(string $reportUri): Response
+    public function printReport(string $reportUri, string $format): Response
     {
         $printer = $this->get('jasper.report_print');
-        $response = new Response($printer->printReport($reportUri));
-        $response->headers->set('Content-Type', 'application/pdf');
+        $response = new Response($printer->printReport($this->getUser(), $reportUri, $format));
+        $response
+            ->headers
+            ->add(FileHeadersHelper::resolve($format))
+        ;
 
         return $response;
     }
@@ -55,6 +60,8 @@ class DefaultController extends Controller
      * Panel zarządzania dodanymi raportami i konfiguracją ról.
      *
      * @Route("/management", name="management")
+     *
+     * @Security("has_role('PARP_ADMIN')")
      *
      * @return Response
      */
@@ -87,15 +94,157 @@ class DefaultController extends Controller
     }
 
     /**
+     * Usunięcie ściezki raportu.
+     *
+     * @Route("/path/remove/{path}", name="remove_path")
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Path $path
+     *
+     * @return Response
+     */
+    public function removePath(Path $path): Response
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $entityManager->remove($path);
+        $entityManager->flush();
+
+        $this->addFlash(
+            'danger',
+            'Usunięto wpis ścieżki. (ID: ' . $path->getId() . ')'
+        );
+
+        return $this->redirectToRoute('management');
+    }
+
+    /**
+     * Edycja ściezki raportu.
+     *
+     * @Route("/path/edit/{path}", name="edit_path")
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Request $request
+     * @param Path $path
+     *
+     * @return Response
+     */
+    public function editPath(Request $request, Path $path): Response
+    {
+        $form = $this->createForm(PathFormType::class, $path);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager = $this
+                ->getDoctrine()
+                ->getManager()
+            ;
+            $entityManager->persist($form->getData());
+            $entityManager->flush();
+
+            $this->addFlash(
+                'warning',
+                'Zmodyfikowano wpis ścieżki. (ID: ' . $path->getId() . ')'
+            );
+
+            return $this->redirectToRoute('management');
+        }
+
+        return $this->render('@ParpJasperReports/Path/add_edit_path.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+     /**
+     * Usunięcie wpisu uprawnienia do ściezki.
+     *
+     * @Route("/role_privilege/remove/{rolePrivilege}", name="remove_role_privilege")
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param RolePrivilege $path
+     *
+     * @return Response
+     */
+    public function removeRolePrivilege(RolePrivilege $rolePrivilege)
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $entityManager->remove($rolePrivilege);
+        $entityManager->flush();
+
+        $this->addFlash(
+            'danger',
+            'Usunięto wpis uprawnienia do ścieżki. (ID: ' . $rolePrivilege->getId() . ')'
+        );
+
+        return $this->redirectToRoute('management');
+    }
+
+    /**
+     * Zmienia nowe ustawienie rola <-> raport.
+     *
+     * @Route("/role_privilege/edit/{rolePrivilege}", name="edit_role_privilege")
+     *
+     * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Request $request
+     * @param RolePrivilege $rolePrivilege
+     *
+     * @return Response
+     */
+    public function editRolePrivilege(Request $request, RolePrivilege $rolePrivilege): Response
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $form = $this->createForm(
+            RolePrivilegeFormType::class,
+            $rolePrivilege,
+            [
+                'entity_manager' => $entityManager
+            ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted() && $form->isValid()) {
+            $entityManager->persist($form->getData());
+            $entityManager->flush();
+
+            $this->addFlash(
+                'warning',
+                'Zmodyfikowano wpis uprawnień do ścieżki. (ID: ' . $rolePrivilege->getId() . ')'
+            );
+
+            return $this->redirectToRoute('management');
+        }
+
+        return $this->render('@ParpJasperReports/add_edit_role_privilege.html.twig', [
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
      * Dodaje nową ścięzkę raportu.
      *
      * @Route("/path/add", name="add_path")
+     *
+     * @Security("has_role('PARP_ADMIN')")
      *
      * @param Request $request
      *
      * @return Response
      */
-    public function addNewPath(Request $request): Response
+    public function addPath(Request $request): Response
     {
         $form = $this->createForm(PathFormType::class, new Path());
 
@@ -113,7 +262,7 @@ class DefaultController extends Controller
                 'Dodano nową ścieżkę raportu.'
             );
 
-            return $this->redirectToRoute('reports_list');
+            return $this->redirectToRoute('management');
         }
 
         return $this->render('@ParpJasperReports/Path/add_edit_path.html.twig', [
@@ -126,11 +275,13 @@ class DefaultController extends Controller
      *
      * @Route("/role_privilege/add", name="add_role_privilege")
      *
+     * @Security("has_role('PARP_ADMIN')")
+     *
      * @param Request $request
      *
      * @return Response
      */
-    public function addNewRolePrivilege(Request $request): Response
+    public function addRolePrivilege(Request $request): Response
     {
         $entityManager = $this
             ->getDoctrine()
@@ -146,7 +297,6 @@ class DefaultController extends Controller
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
-
             $entityManager->persist($form->getData());
             $entityManager->flush();
 

@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Form;
 
@@ -12,17 +12,38 @@ use ParpV1\JasperReportsBundle\Entity\Path;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Doctrine\ORM\EntityManager;
 
+/**
+ * Formularz RolePrivilegeFormType
+ */
 class RolePrivilegeFormType extends AbstractType
 {
+    /**
+     * @see AbstractType
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $usedRoles = $options['entity_manager']
             ->getRepository(RolePrivilege::class)
             ->findUsedRoles()
         ;
+
+        $formData = $builder->getData();
+
+        if (null !== $formData->getRole()) {
+            $currentEditRoleId = $formData
+                ->getRole()
+                ->getId()
+            ;
+            $currentEditIndex = array_search($currentEditRoleId, $usedRoles);
+            if ($currentEditIndex) {
+                unset($usedRoles[$currentEditIndex]);
+            }
+        }
+
         $builder
             ->add('role', EntityType::class, [
                 'class' => AclRole::class,
+                'choice_label' => 'name',
                 'label' => 'Rola użytkownika',
                 'choice_attr' => function($choice, $key, $value) use ($usedRoles) {
                     if (in_array($value, $usedRoles)) {
@@ -49,6 +70,9 @@ class RolePrivilegeFormType extends AbstractType
         ;
     }
 
+    /**
+     * @see AbstractType
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver

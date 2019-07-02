@@ -1,17 +1,18 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use ParpV1\JasperReportsBundle\Validator\Constraints as JasperAssert;
 use Symfony\Component\Validator\Constraints as Assert;
-use APY\DataGridBundle\Grid\Mapping as GRID;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Path
  *
- * @ORM\Table(name="path")
+ * @ORM\Table(name="jasper_path")
  * @ORM\Entity(repositoryClass="ParpV1\JasperReportsBundle\Repository\PathRepository")
+ * @UniqueEntity("url")
  */
 class Path
 {
