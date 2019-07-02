@@ -115,7 +115,7 @@ class DefaultController extends Controller
         $entityManager->remove($path);
         try {
             $entityManager->flush();
-        }   catch (ForeignKeyConstraintViolationException $exception) {
+        } catch (ForeignKeyConstraintViolationException $exception) {
             $this->addFlash(
                 'danger',
                 'Nie można usunąć ścieżki która jest powiązana z uprawnieniem.'
