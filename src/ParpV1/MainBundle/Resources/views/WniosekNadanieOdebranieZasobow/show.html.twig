@@ -321,13 +321,13 @@
                             <th class="header"><i class="fas fa-user"></i> Osoba</th>
                             <th class="header">Moduł</th>
                             <th class="header">Poziom<br />dostępu</th>
-                            <th class="header">Sumowanie<br />uprawnień</th>
-                            <th class="header"><i class="fas fa-calendar-alt"></i> Od</th>
-                            <th class="header">Bezterm.</th>
-                            <th class="header"><i class="fas fa-calendar-alt"></i> Do</th>
+                            <th class="header" title="Sumowanie uprawnień">Sumowanie<br />upr.</th>
+                            <th class="header" title="Data od:"><i class="fas fa-calendar-alt"></i> Od</th>
+                            <th class="header" title="Bezterminowo">Bezterm.</th>
+                            <th class="header" title="Data do:"><i class="fas fa-calendar-alt"></i> Do</th>
                             <th class="header">Kanał<br />dostępu</th>
-                            <th class="header"><i class="fas fa-user-crown"></i> Uprawnienia<br />administracyjne</th>
-                            <th class="header">Cel<br />{% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
+                            <th class="header" title="Uprawnienia administracyjne"><i class="fas fa-user-crown"></i> Upr.<br />adm.</th>
+                            <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             {% if wniosek_odebranie %}
                                 <th class="header">Data<br />odebrania</th>
                             {% endif %}
@@ -485,12 +485,12 @@
                                 <th class="header"><i class="fas fa-user"></i> Osoba</th>
                                 <th class="header">Moduł</th>
                                 <th class="header">Poziom<br />dostępu</th>
-                                <th class="header">Sumowanie<br />uprawnień</th>
-                                <th class="header"><i class="fas fa-calendar-alt"></i> Od</th>
-                                <th class="header">Bezterm.</th>
-                                <th class="header"><i class="fas fa-calendar-alt"></i> Do</th>
+                                <th class="header" title="Sumowanie uprawnień">Sumowanie<br />upr.</th>
+                                <th class="header" title="Data od:"><i class="fas fa-calendar-alt"></i> Od</th>
+                                <th class="header" title="Bezterminowo">Bezterm.</th>
+                                <th class="header" title="Data do:"><i class="fas fa-calendar-alt"></i> Do</th>
                                 <th class="header">Kanał<br />dostępu</th>
-                                <th class="header"><i class="fas fa-user-crown"></i> Uprawnienia<br />administracyjne</th>
+                                <th class="header" title="Uprawnienia administracyjne"><i class="fas fa-user-crown"></i> Upr.<br />adm.</th>
                                 <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             </tr>
                         </thead>
