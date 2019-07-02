@@ -2,17 +2,13 @@
 
 namespace ParpV1\JasperReportsBundle\Fetch;
 
-use ParpV1\RaportBundle\Entity\JasperPath;
 use ParpV1\JasperReportsBundle\Connection\JasperConnection;
 use Jaspersoft\Service\JobService;
 use Jaspersoft\Service\ReportService;
-use ParpV1\JasperReportsBundle\Constants\ReportFormat;
 use Jaspersoft\Exception\RESTRequestException;
 use Jaspersoft\Dto\Resource\ReportUnit;
 use Jaspersoft\Dto\Resource\Folder;
-use Symfony\Component\VarDumper\VarDumper;
 use Jaspersoft\Service\Criteria\RepositorySearchCriteria;
-use ParpV1\JasperReportsBundle\Entity\Path;
 use Doctrine\Common\Collections\ArrayCollection;
 
 /**
@@ -119,25 +115,5 @@ class JasperReportFetch
         }
 
         return $folderChildrenResources;
-    }
-
-
-    /**
-     * Zwraca report w formie binarnej.
-     *
-     * @param JasperPath|string $jasper
-     *
-     * @return string
-     */
-    public function getReport($reportUri, string $format = ReportFormat::PDF): string
-    {
-        if ($reportUri instanceof JasperPath) {
-            $reportUri = $reportUri->getUrl();
-        }
-
-        $reportService = $this->reportService;
-        $report = $reportService->runReport($reportUri, $format);
-
-        return $report;
     }
 }

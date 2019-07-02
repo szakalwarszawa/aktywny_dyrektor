@@ -2,7 +2,8 @@
 
 namespace ParpV1\JasperReportsBundle\Printer;
 
-use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
+use ParpV1\JasperReportsBundle\Constants\ReportFormat;
+use ParpV1\JasperReportsBundle\Connection\JasperConnection;
 
 /**
  * Drukarka raportów jasper.
@@ -10,32 +11,40 @@ use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
 class ReportPrint
 {
     /**
-     * @var JasperReportFetch
+     * @var JasperConnection
      */
-    private $jasperReportFetch;
+    private $jasperConnection;
 
     /**
      * Konstruktor
      *
-     * @param JasperReportFetch
+     * @param JasperConnection $jasperConnection
      */
-    public function __construct(JasperReportFetch $jasperReportFetch)
+    public function __construct(JasperConnection $jasperConnection)
     {
-        $this->jasperReportFetch = $jasperReportFetch;
+        $this->jasperConnection = $jasperConnection;
     }
 
     /**
      * Zwraca raport w formie binarnej.
      *
-     * @param string $raportUri
+     * @param mixed $reportUri
      *
      * @return string
      */
-    public function printReport(string $raportUri): string
+    public function printReport($reportUri, string $format = ReportFormat::PDF): string
     {
-        return $this
-            ->jasperReportFetch
-            ->getReport($raportUri)
+        if ($reportUri instanceof JasperPath) {
+            $reportUri = $reportUri->getUrl();
+        }
+
+        $reportService = $this
+            ->jasperConnection
+            ->getReportService()
         ;
+
+        $report = $reportService->runReport($reportUri, $format);
+
+        return $report;
     }
 }

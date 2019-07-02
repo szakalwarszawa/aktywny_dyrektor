@@ -15,20 +15,33 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
  */
 class PathFormType extends AbstractType
 {
+    /**
+     * @see AbstractType
+     */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('url', TextType::class)
+            ->add('url', TextType::class, [
+                'label' => 'Adres raportu lub folderu',
+                'required' => true,
+            ])
             ->add('isRepository', CheckboxType::class, [
                 'required' => false,
+                'label' => 'Folder zawierający raporty',
             ])
             ->add('title', TextType::class, [
                 'required' => false,
+                'label' => 'Tytuł raportu'
             ])
-            ->add('submit', SubmitType::class)
+            ->add('submit', SubmitType::class, [
+                'label' => 'Wyślij'
+            ])
         ;
     }
 
+    /**
+     * @see AbstractType
+     */
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([

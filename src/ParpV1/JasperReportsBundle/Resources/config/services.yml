@@ -20,6 +20,9 @@ services:
   jasper.reports_grid:
     class: '%bundle_path%\Grid\JasperReportsGrid'
     arguments: ['@grid', '@doctrine.orm.entity_manager', '@jasper.fetch']
+  jasper.paths_grid:
+    class: '%bundle_path%\Grid\PathsGrid'
+    arguments: ['@grid']
   jasper.report_print:
     class: '%bundle_path%\Printer\ReportPrint'
-    arguments: ['@jasper.fetch']
+    arguments: ['@jasper.connection']

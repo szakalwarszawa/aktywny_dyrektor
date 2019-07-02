@@ -23,6 +23,7 @@ class RolePrivilegeFormType extends AbstractType
         $builder
             ->add('role', EntityType::class, [
                 'class' => AclRole::class,
+                'label' => 'Rola użytkownika',
                 'choice_attr' => function($choice, $key, $value) use ($usedRoles) {
                     if (in_array($value, $usedRoles)) {
                         return ['disabled' => 'disabled'];
@@ -32,16 +33,19 @@ class RolePrivilegeFormType extends AbstractType
                 },
             ])
             ->add('paths', EntityType::class, [
+                'label' => 'Wybierz raporty lub/i foldery',
                 'class' => Path::class,
                 'choice_label' => function ($path) {
                     $isRepository = $path->isRepository();
-                    $repositoryInfo = $isRepository? '[Repozytorium] ': '';
+                    $repositoryInfo = $isRepository? '[Folder] ': '';
 
                     return $repositoryInfo . $path->getUrl();
                 },
                 'multiple' => true,
             ])
-            ->add('submit', SubmitType::class)
+            ->add('submit', SubmitType::class, [
+                'label' => 'Wyślij',
+            ])
         ;
     }
 

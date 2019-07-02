@@ -63,7 +63,10 @@ class JasperReportsGrid
 
         $rowAction = new RowAction(
             'Generuj',
-            'report_print', null, null
+            'report_print',
+            false,
+            null,
+            ['class' => 'btn btn-primary']
         );
         $rowAction->setRouteParameters(['url']);
         $rowAction->setRouteParametersMapping([
@@ -71,6 +74,7 @@ class JasperReportsGrid
         ]);
         $grid->addRowAction($rowAction);
 
+        $grid->setNoDataMessage('Nie posiadasz dostępu do żadnego raportu.');
         $grid->isReadyForRedirect();
 
         return $grid;
