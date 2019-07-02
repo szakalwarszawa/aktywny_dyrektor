@@ -27,7 +27,7 @@ class RolePrivilege
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="IDENTITY")
      */
-    private $id;
+    protected $id;
 
     /**
      * @var AclRole
@@ -36,7 +36,7 @@ class RolePrivilege
      * @ORM\JoinColumn(name="role_id", referencedColumnName="id", unique=true)
      * @Assert\NotNull
      */
-    private $role;
+    protected $role;
 
     /**
      * @var ArrayCollection
@@ -47,7 +47,7 @@ class RolePrivilege
      *      inverseJoinColumns={@ORM\JoinColumn(name="path_id", referencedColumnName="id")}
      *      )
      */
-    private $paths;
+    protected $paths;
 
     /**
      * Konstruktor

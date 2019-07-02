@@ -92,8 +92,7 @@
                                         <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
                                         <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
                                         <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
-                                        <li><a href=""><i class=""></i> Raporty Jasper</a></li>
-
+                                        <li><a href="{{ path('jasper_management') }}"><i class="fas fa-folder-tree"></i> Zasoby Jasper</a></li>
                                     </ul>
                                 </li>
                             {% endif %}
@@ -106,6 +105,7 @@
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
+                                    <li><a href="{{ path('reports_list') }}"><i class="fas fa-file-alt"></i> Raporty Jasper</a></li>
                                 </ul>
                             </li>
 
@@ -134,7 +134,7 @@
                                         {% endif %}
 
                                         {% if "PARP_ADMIN" in app.user.roles %}
-                                            <li class=""><a href="{{ path('raportIT1') }}"><i class="fa fa-floppy-o"></i> Raport IT</a></li>
+                                            <li class=""><a href="{{ path('raportIT1') }}"><i class="fas fa-file-code"></i> Raport IT</a></li>
                                         {% endif %}
                                     </ul>
                                 </li>

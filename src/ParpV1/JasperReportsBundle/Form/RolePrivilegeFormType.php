@@ -45,7 +45,7 @@ class RolePrivilegeFormType extends AbstractType
                 'class' => AclRole::class,
                 'choice_label' => 'name',
                 'label' => 'Rola użytkownika',
-                'choice_attr' => function($choice, $key, $value) use ($usedRoles) {
+                'choice_attr' => function ($choice, $key, $value) use ($usedRoles) {
                     if (in_array($value, $usedRoles)) {
                         return ['disabled' => 'disabled'];
                     }

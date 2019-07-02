@@ -59,7 +59,7 @@ class DefaultController extends Controller
     /**
      * Panel zarządzania dodanymi raportami i konfiguracją ról.
      *
-     * @Route("/management", name="management")
+     * @Route("/management", name="jasper_management")
      *
      * @Security("has_role('PARP_ADMIN')")
      *
@@ -119,7 +119,7 @@ class DefaultController extends Controller
             'Usunięto wpis ścieżki. (ID: ' . $path->getId() . ')'
         );
 
-        return $this->redirectToRoute('management');
+        return $this->redirectToRoute('jasper_management');
     }
 
     /**
@@ -152,7 +152,7 @@ class DefaultController extends Controller
                 'Zmodyfikowano wpis ścieżki. (ID: ' . $path->getId() . ')'
             );
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute('jasper_management');
         }
 
         return $this->render('@ParpJasperReports/Path/add_edit_path.html.twig', [
@@ -186,7 +186,7 @@ class DefaultController extends Controller
             'Usunięto wpis uprawnienia do ścieżki. (ID: ' . $rolePrivilege->getId() . ')'
         );
 
-        return $this->redirectToRoute('management');
+        return $this->redirectToRoute('jasper_management');
     }
 
     /**
@@ -211,9 +211,8 @@ class DefaultController extends Controller
         $form = $this->createForm(
             RolePrivilegeFormType::class,
             $rolePrivilege,
-            [
-                'entity_manager' => $entityManager
-            ]);
+            ['entity_manager' => $entityManager]
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
@@ -225,7 +224,7 @@ class DefaultController extends Controller
                 'Zmodyfikowano wpis uprawnień do ścieżki. (ID: ' . $rolePrivilege->getId() . ')'
             );
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute('jasper_management');
         }
 
         return $this->render('@ParpJasperReports/add_edit_role_privilege.html.twig', [
@@ -262,7 +261,7 @@ class DefaultController extends Controller
                 'Dodano nową ścieżkę raportu.'
             );
 
-            return $this->redirectToRoute('management');
+            return $this->redirectToRoute('jasper_management');
         }
 
         return $this->render('@ParpJasperReports/Path/add_edit_path.html.twig', [
@@ -291,9 +290,8 @@ class DefaultController extends Controller
         $form = $this->createForm(
             RolePrivilegeFormType::class,
             new RolePrivilege(),
-            [
-                'entity_manager' => $entityManager
-            ]);
+            ['entity_manager' => $entityManager]
+        );
 
         $form->handleRequest($request);
         if ($form->isSubmitted() && $form->isValid()) {
