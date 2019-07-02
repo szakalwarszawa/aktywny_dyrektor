@@ -3,18 +3,15 @@
     <head>
         <meta charset="UTF-8" />
         {% block stylesheets %}
-            {# <link rel="stylesheet" href="{{ asset('css/bootstrap1.min.css') }}"> #}
-            {# <link rel="stylesheet" href="{{ asset('css/bootstrap.min.css') }}"> #}
-            <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}">
+            {# <link rel="stylesheet" href="{{ asset('css/font-awesome.css') }}"> #}
             <link rel="stylesheet" href="{{ asset('css/bootstrap-datetimepicker.min.css') }}">
             <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
-            {# <link rel="stylesheet" href="{{ asset('css/main.css') }}"> #}
             <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
             <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
             <link rel="stylesheet" href="{{ asset('css/jquery.treegrid.css') }}">
             <link rel="stylesheet" href="{{ asset('css/table.sorter.css') }}">
             <link rel="stylesheet" href="{{ asset('css/bootstrap-toggle.min.css') }}">
-			{{ encore_entry_link_tags('app') }}
+            {{ encore_entry_link_tags('app') }}
         {% endblock %}
 
         {% block javascripts %}
@@ -33,11 +30,10 @@
             <script type="text/javascript" src="{{ asset('js/jquery.are-you-sure.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.treegrid.bootstrap3.js') }}"></script>
-            {# <script type="text/javascript" src="{{ asset('resizable/inna/colResizable-1.6.js') }}"></script> #}
             <script type="text/javascript" src="{{ asset('js/colResizable-1.6.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script>
-			{{ encore_entry_script_tags('app') }}
+            {{ encore_entry_script_tags('app') }}
             <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
             <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
@@ -106,8 +102,8 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('zasoby') }}"><i class="fa fa-database"></i> Zasoby</a></li>
-                                    <li><a href="{{ path('zadanie') }}"><i class="fa fa-gear"></i> Zadania</a></li>
-                                    <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fa fa-file-text-o"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
+                                    <li><a href="{{ path('zadanie') }}"><i class="fas fa-cog"></i> Zadania</a></li>
+                                    <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
                                 </ul>
@@ -188,15 +184,15 @@
         {% if app.user %}
             {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
                 <footer class="helpdesk">
-					<span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
-					<a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
-				</footer>
+                    <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+                    <a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+                </footer>
             {% endif %}
         {% else %}
            <footer class="helpdesk">
-				<span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
-				<a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
-			</footer>
+                <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+                <a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+            </footer>
         {% endif %}
 
         {% include '::javascripts.html.twig' %}

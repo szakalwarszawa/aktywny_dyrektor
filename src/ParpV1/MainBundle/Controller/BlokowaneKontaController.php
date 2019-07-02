@@ -62,7 +62,7 @@ class BlokowaneKontaController extends Controller
         $ctrl = new DefaultController();
         $grid = $ctrl->getUserGrid($this->get('grid'), $ADUsers, $ktorzy, $this->getUser()->getRoles());
 
-        $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+        $rowAction = new RowAction('<i class="fas fa-pencil"></i> Odblokuj', 'unblock_user');
         $rowAction->setColumn('akcje');
         $rowAction->setRouteParameters(
             array('samaccountname', 'ktorzy' => $ktorzy)
@@ -216,7 +216,7 @@ class BlokowaneKontaController extends Controller
 
         /*
             // Edycja konta
-            $rowAction = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Odblokuj', 'unblock_user');
+            $rowAction = new RowAction('<i class="fas fa-pencil"></i> Odblokuj', 'unblock_user');
             $rowAction->setColumn('akcje');
             $rowAction->setRouteParameters(
                     array('samaccountname', 'ktorzy' => $ktorzy)

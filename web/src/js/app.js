@@ -1,5 +1,7 @@
 import '../scss/app.scss';
 
+require('@fortawesome/fontawesome-pro/css/all.min.css');
+
 function showInfo(info) {
     console.info(
         `%c ${info} `,

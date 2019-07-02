@@ -624,7 +624,7 @@ class ReorganizacjaParpController extends Controller
                     'attr' => array('class' => 'filestyle',
                         'data-buttonBefore' => 'false',
                         'data-buttonText' => 'Wybierz plik',
-                        'data-iconName' => 'fa fa-file-excel-o',
+                        'data-iconName' => 'fas fa-file-excel-o',
                     ),
                     'constraints' => array(
                         new NotBlank(array('message' => 'Nie wybrano pliku')),
