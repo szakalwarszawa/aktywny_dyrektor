@@ -318,18 +318,18 @@
                     <thead>
                         <tr>
                             <th class="header">Nazwa</th>
-                            <th class="header">Osoba</th>
+                            <th class="header"><i class="fas fa-user"></i> Osoba</th>
                             <th class="header">Moduł</th>
-                            <th class="header">Poziom dostępu</th>
-                            <th class="header">Sumowanie uprawnień</th>
-                            <th class="header">Aktywne od</th>
-                            <th class="header">Bezterminowo</th>
-                            <th class="header">Aktywne do</th>
-                            <th class="header">Kanał dostępu</th>
-                            <th class="header">Uprawnienia administracyjne</th>
-                            <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
+                            <th class="header">Poziom<br />dostępu</th>
+                            <th class="header">Sumowanie<br />uprawnień</th>
+                            <th class="header"><i class="fas fa-calendar-alt"></i> Od</th>
+                            <th class="header">Bezterm.</th>
+                            <th class="header"><i class="fas fa-calendar-alt"></i> Do</th>
+                            <th class="header">Kanał<br />dostępu</th>
+                            <th class="header"><i class="fas fa-user-crown"></i> Uprawnienia<br />administracyjne</th>
+                            <th class="header">Cel<br />{% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             {% if wniosek_odebranie %}
-                                <th class="header">Data odebrania</th>
+                                <th class="header">Data<br />odebrania</th>
                             {% endif %}
                             <th class="header">Akcje</th>
                         </tr>
@@ -355,12 +355,12 @@
                                 <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
                                 <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                 <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
-                                <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
+                                <td nowrap>{{ z.aktywneOd|date("Y-m-d") }}</td>
                                 <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                     {{ z.bezterminowo ? "TAK" : "NIE" }}
                                     {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
                                 </td>
-                                <td>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                <td nowrap>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                     {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
                                     {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
                                 </td>
@@ -482,15 +482,15 @@
                         <thead>
                             <tr>
                                 <th class="header">Nazwa</th>
-                                <th class="header">Osoba</th>
+                                <th class="header"><i class="fas fa-user"></i> Osoba</th>
                                 <th class="header">Moduł</th>
-                                <th class="header">Poziom dostępu</th>
-                                <th class="header">Sumowanie uprawnień</th>
-                                <th class="header">Aktywne od</th>
-                                <th class="header">Bezterminowo</th>
-                                <th class="header">Aktywne do</th>
-                                <th class="header">Kanał dostępu</th>
-                                <th class="header">Uprawnienia administracyjne</th>
+                                <th class="header">Poziom<br />dostępu</th>
+                                <th class="header">Sumowanie<br />uprawnień</th>
+                                <th class="header"><i class="fas fa-calendar-alt"></i> Od</th>
+                                <th class="header">Bezterm.</th>
+                                <th class="header"><i class="fas fa-calendar-alt"></i> Do</th>
+                                <th class="header">Kanał<br />dostępu</th>
+                                <th class="header"><i class="fas fa-user-crown"></i> Uprawnienia<br />administracyjne</th>
                                 <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             </tr>
                         </thead>
@@ -511,12 +511,12 @@
                                     <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
                                     <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
-                                    <td>{{ z.aktywneOd|date("Y-m-d") }}</td>
+                                    <td nowrap>{{ z.aktywneOd|date("Y-m-d") }}</td>
                                     <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                         {{ z.bezterminowo ? "TAK" : "NIE" }}
                                         {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
                                     </td>
-                                    <td>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                    <td nowrap>{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                         {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
                                         {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
                                     </td>
