@@ -50,7 +50,7 @@ class ReportPrint
     /**
      * Zwraca raport w formie binarnej.
      *
-     * @param mixed $reportUri
+     * @param JasperPath|string $reportUri
      *
      * @return string
      */
