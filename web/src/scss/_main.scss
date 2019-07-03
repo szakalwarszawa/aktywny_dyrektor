@@ -556,3 +556,8 @@ footer.helpdesk {
 .uprawnienieRow:not(.col-sm-2) {
     width: 100%;
 }
+
+/* ------- Akceptacja wniosku modal ------------ */
+.wnioseknadanieodebraniezasobow_show .modal-dialog.modal-lg {
+	width: 1300px;
+}
