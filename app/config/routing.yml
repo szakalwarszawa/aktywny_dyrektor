@@ -23,6 +23,11 @@ parp_ldap:
     type:     annotation
     prefix:   /ldap
 
+parp_jasper_reports:
+    resource: "@ParpJasperReportsBundle/Controller/"
+    type:     annotation
+    prefix:   /jasper
+
 fos_js_routing:
     resource: "@FOSJsRoutingBundle/Resources/config/routing/routing.xml"
 
