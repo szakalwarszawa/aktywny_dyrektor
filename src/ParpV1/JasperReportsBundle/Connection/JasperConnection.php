@@ -41,6 +41,11 @@ class JasperConnection
     private $jasperClient = null;
 
     /**
+     * @var bool
+     */
+    public $jasperActive;
+
+    /**
      * Konstruktor.
      *
      * @param string $serverUrl
@@ -48,14 +53,16 @@ class JasperConnection
      * @param string $password
      * @param int $requestTimeout
      */
-    public function __construct(string $serverUrl, string $username, string $password, int $requestTimeout = 30)
+    public function __construct(bool $jasperActive, string $serverUrl, string $username, string $password, int $requestTimeout = 30)
     {
         $this->serverUrl = $serverUrl;
         $this->username = $username;
         $this->password = $password;
         $this->requestTimeout = $requestTimeout;
-
-        $this->prepareClient();
+        $this->jasperActive = $jasperActive;
+        if ($jasperActive) {
+            $this->prepareClient();
+        }
     }
 
     /**

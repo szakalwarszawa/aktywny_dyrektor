@@ -4,6 +4,7 @@ services:
   jasper.connection:
     class: '%bundle_path%\Connection\JasperConnection'
     arguments: [
+      '%jasper_active%',
       '%jasper_server_url%',
       '%jasper_username%',
       '%jasper_password%',
