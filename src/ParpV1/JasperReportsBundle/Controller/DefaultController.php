@@ -32,6 +32,10 @@ class DefaultController extends Controller
      */
     public function reportsList(): Response
     {
+        if (!$this->container->getParameter('jasper_active')) {
+            return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
+        }
+
         $grid = $this
             ->get('jasper.reports_grid')
             ->generateForUser($this->getUser())
