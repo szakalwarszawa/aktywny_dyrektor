@@ -46,10 +46,12 @@ class JasperFetch
      */
     public function __construct(JasperConnection $jasperConnection)
     {
-        $this->jobService = $jasperConnection->getJobService();
-        $this->reportService = $jasperConnection->getReportService();
-        $this->optionsService = $jasperConnection->getOptionsService();
-        $this->repositoryService = $jasperConnection->getRepositoryService();
+        if ($jasperConnection->jasperActive) {
+            $this->jobService = $jasperConnection->getJobService();
+            $this->reportService = $jasperConnection->getReportService();
+            $this->optionsService = $jasperConnection->getOptionsService();
+            $this->repositoryService = $jasperConnection->getRepositoryService();
+        }
     }
 
     /**
