@@ -2,7 +2,7 @@
 
 namespace ParpV1\JasperReportsBundle\InputControl;
 
-use InvalidArgumentException;
+use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
 
 /**
  * Klasa Validator
@@ -86,7 +86,7 @@ class Validator
 
         if (self::$throwException && !$result) {
             $exceptionMessageFormat = 'Nieprawidłowa wartość (%s)';
-            throw new InvalidArgumentException(sprintf($exceptionMessageFormat, $value));
+            throw new InvalidOptionKeyOrValueException(sprintf($exceptionMessageFormat, $value));
         }
 
         return $result;

@@ -8,8 +8,17 @@
             <div class="well well-sm">
                 Wybierz format raportu i uzupełnij opcje wejściowe (jeżeli wymagane).
             </div>
-            {{ form(form) }}
-            <small>W zależności od formatu i wielkości raportu czas generowania może się wydłużyć.</small>
+            {% if form is not null %}
+                {{ form(form) }}
+                <small>W zależności od formatu i wielkości raportu czas generowania może się wydłużyć.</small>
+                {% else %}
+                <div class="alert alert-danger">
+                    Nie można wygenerować tego raportu.
+                    {% if error is not empty %}
+                        <p> {{ error }}</p>
+                    {% endif %}
+                </div>
+            {% endif %}
         </div>
         <div class="modal-footer">
             <button type="button" class="btn btn-info" data-dismiss="modal">Zamknij</button>

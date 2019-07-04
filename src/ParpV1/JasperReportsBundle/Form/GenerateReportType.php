@@ -12,6 +12,8 @@ use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use Jaspersoft\Dto\Report\InputControl;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use ParpV1\JasperReportsBundle\InputControl\Validator;
+use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
 
 /**
  * Formularz PathFormType
@@ -44,8 +46,12 @@ class GenerateReportType extends AbstractType
         ;
 
         if (null !== $inputOptions) {
+            $validator = new Validator();
             foreach ($inputOptions as $inputOption) {
                 if ($inputOption instanceof InputControl) {
+                    if (!$validator::key($inputOption->id)) {
+                        throw new InvalidOptionKeyOrValueException(sprintf('Niepoprawny klucz parametru ("%s")', $inputOption->id));
+                    }
                     $builder->add($inputOption->id, TextType::class);
                 }
             }

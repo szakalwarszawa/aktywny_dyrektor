@@ -19,6 +19,7 @@ use ParpV1\JasperReportsBundle\Voter\ReportVoter;
 use ParpV1\JasperReportsBundle\Form\GenerateReportType;
 use ParpV1\JasperReportsBundle\InputControl\InputControlResolver;
 use ParpV1\JasperReportsBundle\InputControl\Validator;
+use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
 
 class DefaultController extends Controller
 {
@@ -54,14 +55,23 @@ class DefaultController extends Controller
     {
         $this->denyAccessUnlessGranted(ReportVoter::REPORT_READ, $reportUri);
 
-        $form = $this->createForm(GenerateReportType::class, null, [
-            'report_uri' => $reportUri,
-            'action' => $this->generateUrl('report_print'),
-        ]);
+        $errorMessage = '';
+        try {
+            $form = $this->createForm(GenerateReportType::class, null, [
+                'report_uri' => $reportUri,
+                'action' => $this->generateUrl('report_print'),
+            ]);
+
+            $formView = $form->createView();
+        } catch (InvalidOptionKeyOrValueException $exception) {
+            $formView = null;
+            $errorMessage = $exception->getMessage();
+        }
 
         return $this->render('@ParpJasperReports/modal/report_generate.html.twig', [
             'report_uri' => $reportUri,
-            'form' => $form->createView()
+            'form' => $formView,
+            'error' => $errorMessage
         ]);
     }
 
