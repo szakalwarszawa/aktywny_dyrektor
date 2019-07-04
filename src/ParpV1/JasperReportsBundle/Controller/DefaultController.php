@@ -70,8 +70,7 @@ class DefaultController extends Controller
      *
      * @Route("/reports/print/", name="report_print")
      *
-     * @param string $reportUri
-     * @param string $format
+     * @param Request $request
      *
      * @return Response
      */
