@@ -4,7 +4,7 @@ namespace ParpV1\JasperReportsBundle\Repository;
 
 use Doctrine\ORM\Query;
 use Doctrine\Common\Collections\ArrayCollection;
-use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
+use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use Doctrine\ORM\EntityRepository;
 
 /**
@@ -67,7 +67,7 @@ class RolePrivilegeRepository extends EntityRepository
      *
      * @return array
      */
-    public function findPathsByRoles(array $roles, JasperReportFetch $jasperReportFetch): array
+    public function findPathsByRoles(array $roles, JasperFetch $jasperFetch): array
     {
         $queryBuilder = $this->createQueryBuilder('r');
         $queryBuilder
@@ -93,7 +93,7 @@ class RolePrivilegeRepository extends EntityRepository
         $folderChildren = new ArrayCollection();
         foreach ($availablePaths as $path) {
             if ($path['isRepository']) {
-                $folderChildren = $jasperReportFetch
+                $folderChildren = $jasperFetch
                     ->findAllFromFolderUrl($path['url'])
                 ;
 

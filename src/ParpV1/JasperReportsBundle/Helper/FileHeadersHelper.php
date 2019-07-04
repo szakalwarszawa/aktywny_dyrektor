@@ -85,7 +85,7 @@ class FileHeadersHelper
      *
      * @return mixed
      */
-    public static function resolve(string $format)
+    public static function create(string $format)
     {
         return self::$format();
     }
