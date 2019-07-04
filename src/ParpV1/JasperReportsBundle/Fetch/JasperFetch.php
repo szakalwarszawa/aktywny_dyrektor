@@ -10,13 +10,14 @@ use Jaspersoft\Dto\Resource\ReportUnit;
 use Jaspersoft\Dto\Resource\Folder;
 use Jaspersoft\Service\Criteria\RepositorySearchCriteria;
 use Doctrine\Common\Collections\ArrayCollection;
+use ParpV1\JasperReportsBundle\Exception\ResourceNotFoundException;
 
 /**
- * JasperReportFetch
+ * JasperFetch
  *
  * Pobieranie repozytoriów z jaspera.
  */
-class JasperReportFetch
+class JasperFetch
 {
     /**
      * @var JobService
@@ -83,6 +84,35 @@ class JasperReportFetch
         return $resource;
     }
 
+    /**
+     * Zwraca opcje wejściowe raportu.
+     * Wyłapuje RESTRequestException który jest rzucany przez \Jaspersoft
+     * kiedy raport nie posiada zdefiniowanych opcji wejściowych.
+     *
+     * @param string $reportUri
+     *
+     * @throws ResourceNotFoundException gdy zasób nie istnieje
+     *
+     * @return array|null
+     */
+    public function getReportOptions(string $reportUri): ?array
+    {
+        if (!$this->isResourceExist($reportUri)) {
+            throw new ResourceNotFoundException();
+        }
+
+        $reportService = $this->reportService;
+        $inputControls = null;
+        try {
+            $inputControls = $reportService
+                ->getReportInputControls($reportUri)
+            ;
+        } catch (RESTRequestException $exception) {
+            return $inputControls;
+        }
+
+        return $inputControls;
+    }
 
     /**
      * Zwraca raporty z folderu z podanego url.

@@ -2,8 +2,11 @@
 
 namespace ParpV1\JasperReportsBundle\Constants;
 
+use ReflectionClass;
+
 /**
  * Dostępne formaty raportu Jasper.
+ * Stałe klasy to wyłącznie formaty w postaci rozszerzenia pliku.
  */
 class ReportFormat
 {
@@ -37,14 +40,24 @@ class ReportFormat
      *
      * @return array
      */
-    public static function getFormats(): array
+    public static function getFormats(bool $associativeArray = false): array
     {
-        return [
-            self::PDF,
-            self::XLS,
-            self::DOCX,
-            self::PPTX,
-            self::CSV,
-        ];
+        if ($associativeArray) {
+            return self::getClassConstants();
+        }
+
+        return array_values(self::getClassConstants());
+    }
+
+    /**
+     * Zwraca stałe tej klasy.
+     *
+     * @return array
+     */
+    private static function getClassConstants(): array
+    {
+        $thisClass = new ReflectionClass(ReportFormat::class);
+
+        return $thisClass->getConstants();
     }
 }

@@ -1,0 +1,18 @@
+<div class="modal-dialog">
+    <div class="modal-content">
+        <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal">&times;</button>
+            <h4 class="modal-title">Generowanie raportu - {{ report_uri }}</h4>
+        </div>
+        <div class="modal-body">
+            <div class="well well-sm">
+                Wybierz format raportu i uzupełnij opcje wejściowe (jeżeli wymagane).
+            </div>
+            {{ form(form) }}
+            <small>W zależności od formatu i wielkości raportu czas generowania może się wydłużyć.</small>
+        </div>
+        <div class="modal-footer">
+            <button type="button" class="btn btn-info" data-dismiss="modal">Zamknij</button>
+        </div>
+    </div>
+</div>

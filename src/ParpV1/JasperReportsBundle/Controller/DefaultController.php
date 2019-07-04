@@ -15,6 +15,9 @@ use ParpV1\JasperReportsBundle\Grid\PathRoleGrid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use ParpV1\JasperReportsBundle\Helper\FileHeadersHelper;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
+use ParpV1\JasperReportsBundle\Voter\ReportVoter;
+use ParpV1\JasperReportsBundle\Form\GenerateReportType;
+use ParpV1\JasperReportsBundle\InputControl\InputControlResolver;
 
 class DefaultController extends Controller
 {
@@ -36,22 +39,68 @@ class DefaultController extends Controller
     }
 
     /**
+     * Akcja zwracająca okienko dialogowe umożliwiające wybranie
+     * formatu raportu oraz wprowadzenia parametrów wejściowych
+     * do raportu (o ile istnieją)
+     *
+     * @Route("/reports/preparesettings/{reportUri}", name="prepare_report_settings", requirements={"reportUri"=".+"})
+     *
+     * @param string $reportUri
+     *
+     * @return Response
+     */
+    public function prepareReportSettings(string $reportUri): Response
+    {
+        $this->denyAccessUnlessGranted(ReportVoter::REPORT_READ, $reportUri);
+
+        $form = $this->createForm(GenerateReportType::class, null, [
+            'report_uri' => $reportUri,
+            'action' => $this->generateUrl('report_print'),
+        ]);
+
+        return $this->render('@ParpJasperReports/modal/report_generate.html.twig', [
+            'report_uri' => $reportUri,
+            'form' => $form->createView()
+        ]);
+    }
+
+    /**
      * Drukuje raport.
      *
-     * @Route("/reports/print/{reportUri}.{format}", name="report_print", requirements={"reportUri"=".+"})
+     * @Route("/reports/print/", name="report_print")
      *
      * @param string $reportUri
      * @param string $format
      *
      * @return Response
      */
-    public function printReport(string $reportUri, string $format): Response
+    public function printReport(Request $request): Response
     {
+        $requestPostData = current($request->request->all());
+        $this->denyAccessUnlessGranted(ReportVoter::REPORT_READ, $requestPostData['report_uri']);
+
+        $inputControlResolver = new InputControlResolver($this->get('jasper.fetch'));
+        $inputControls = $inputControlResolver->resolveFormPostRequest($request);
+
         $printer = $this->get('jasper.report_print');
-        $response = new Response($printer->printReport($this->getUser(), $reportUri, $format));
+        $downloadedData = $printer->printReport(
+            $requestPostData['report_uri'],
+            $requestPostData['format'],
+            $inputControls
+        );
+
+        if (null === $downloadedData) {
+            $this
+                ->addFlash('danger', 'Wystąpił błąd przy generowaniu raportu.')
+            ;
+
+            return $this->redirectToRoute('reports_list');
+        }
+
+        $response = new Response($downloadedData);
         $response
             ->headers
-            ->add(FileHeadersHelper::resolve($format))
+            ->add(FileHeadersHelper::create($requestPostData['format']))
         ;
 
         return $response;

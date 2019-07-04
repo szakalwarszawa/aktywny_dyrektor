@@ -10,7 +10,7 @@ services:
       '%jasper_request_timeout%'
       ]
   jasper.fetch:
-    class: '%bundle_path%\Fetch\JasperReportFetch'
+    class: '%bundle_path%\Fetch\JasperFetch'
     arguments: ['@jasper.connection']
   jasper.path_validator:
     class: '%bundle_path%\Validator\Constraints\JasperPathValidator'
@@ -25,4 +25,13 @@ services:
     arguments: ['@grid']
   jasper.report_print:
     class: '%bundle_path%\Printer\ReportPrint'
-    arguments: ['@jasper.connection', '@doctrine.orm.entity_manager', '@jasper.fetch']
+    arguments: ['@jasper.connection']
+  jasper.report_voter:
+    class: '%bundle_path%\Voter\ReportVoter'
+    arguments: ['@doctrine.orm.entity_manager', '@jasper.fetch']
+    tags:
+      - { name: security.voter }
+  jasper.generate_report_type:
+    class: '%bundle_path%\Form\GenerateReportType'
+    arguments: ['@jasper.fetch']
+    tags: [form.type]

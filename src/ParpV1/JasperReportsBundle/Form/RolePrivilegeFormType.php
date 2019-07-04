@@ -35,7 +35,7 @@ class RolePrivilegeFormType extends AbstractType
                 ->getId()
             ;
             $currentEditIndex = array_search($currentEditRoleId, $usedRoles);
-            if ($currentEditIndex) {
+            if (false !== $currentEditIndex) {
                 unset($usedRoles[$currentEditIndex]);
             }
         }

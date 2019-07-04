@@ -6,7 +6,7 @@ use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
 use ParpV1\JasperReportsBundle\Validator\Constraints\JasperPath;
-use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
+use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 
 /**
  * JasperPathValidator
@@ -16,18 +16,18 @@ use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
 class JasperPathValidator extends ConstraintValidator
 {
     /**
-     * @var JasperReportFetch
+     * @var JasperFetch
      */
-    private $jasperReportFetch;
+    private $jasperFetch;
 
     /**
      * Konsturktor
      *
-     * @param JasperReportFetch $jasperReportFetch
+     * @param JasperFetch $jasperFetch
      */
-    public function __construct(JasperReportFetch $jasperReportFetch)
+    public function __construct(JasperFetch $jasperFetch)
     {
-        $this->jasperReportFetch = $jasperReportFetch;
+        $this->jasperFetch = $jasperFetch;
     }
 
     /**
@@ -47,7 +47,7 @@ class JasperPathValidator extends ConstraintValidator
             throw new UnexpectedTypeException($value, 'string');
         }
 
-        if (!$this->jasperReportFetch->isResourceExist($value)) {
+        if (!$this->jasperFetch->isResourceExist($value)) {
             $this
                 ->context
                 ->buildViolation($constraint->message)

@@ -8,7 +8,7 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use Doctrine\ORM\EntityManager;
 use ParpV1\JasperReportsBundle\Entity\RolePrivilege;
 use APY\DataGridBundle\Grid\Column;
-use ParpV1\JasperReportsBundle\Fetch\JasperReportFetch;
+use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use APY\DataGridBundle\Grid\Action\RowAction;
 
 /**
@@ -27,20 +27,20 @@ class JasperReportsGrid
     private $entityManager;
 
     /**
-     * @var JasperReportFetch
+     * @var JasperFetch
      */
-    private $jasperReportFetch;
+    private $jasperFetch;
 
     /**
      * Konsturktor
      *
      * @param Grid $grid
      */
-    public function __construct(Grid $grid, EntityManager $entityManager, JasperReportFetch $jasperReportFetch)
+    public function __construct(Grid $grid, EntityManager $entityManager, JasperFetch $jasperFetch)
     {
         $this->grid = $grid;
         $this->entityManager = $entityManager;
-        $this->jasperReportFetch = $jasperReportFetch;
+        $this->jasperFetch = $jasperFetch;
     }
 
     /**
@@ -82,65 +82,16 @@ class JasperReportsGrid
     private function setRowActions(Grid $grid): Grid
     {
         $rowAction = new RowAction(
-            'PDF',
-            'report_print',
+            'Generuj',
+            'prepare_report_settings',
             false,
-            null,
-            ['class' => 'btn btn-xs btn-info']
+            null, [
+                'class' => 'btn btn-xs btn-info',
+                'data-loadajaxmodal' => 'loadajaxmodal',
+                'data-target' => '#generateReport'
+            ]
         );
-        $rowAction->setRouteParameters(['url', 'format' => 'pdf']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);
-
-        $rowAction = new RowAction(
-            'XLS',
-            'report_print',
-            false,
-            null,
-            ['class' => 'btn btn-xs btn-info']
-        );
-        $rowAction->setRouteParameters(['url', 'format' => 'xls']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);
-
-        $rowAction = new RowAction(
-            'DOCX',
-            'report_print',
-            false,
-            null,
-            ['class' => 'btn btn-xs btn-info']
-        );
-        $rowAction->setRouteParameters(['url', 'format' => 'docx']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);
-
-        $rowAction = new RowAction(
-            'PPTX',
-            'report_print',
-            false,
-            null,
-            ['class' => 'btn btn-xs btn-info']
-        );
-        $rowAction->setRouteParameters(['url', 'format' => 'pptx']);
-        $rowAction->setRouteParametersMapping([
-            'url' => 'reportUri'
-        ]);
-        $grid->addRowAction($rowAction);
-
-        $rowAction = new RowAction(
-            'CSV',
-            'report_print',
-            false,
-            null,
-            ['class' => 'btn btn-xs btn-info']
-        );
-        $rowAction->setRouteParameters(['url', 'format' => 'csv']);
+        $rowAction->setRouteParameters(['url']);
         $rowAction->setRouteParametersMapping([
             'url' => 'reportUri'
         ]);
@@ -161,7 +112,7 @@ class JasperReportsGrid
         $entityManager = $this->entityManager;
         $data = $entityManager
             ->getRepository(RolePrivilege::class)
-            ->findPathsByRoles($parpUser->getRoles(), $this->jasperReportFetch)
+            ->findPathsByRoles($parpUser->getRoles(), $this->jasperFetch)
         ;
 
         return $data;
