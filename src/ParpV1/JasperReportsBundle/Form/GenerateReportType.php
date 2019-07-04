@@ -2,7 +2,6 @@
 
 namespace ParpV1\JasperReportsBundle\Form;
 
-use ParpV1\JasperReportsBundle\Entity\Path;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -10,7 +9,6 @@ use ParpV1\JasperReportsBundle\Constants\ReportFormat;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
-use Symfony\Component\VarDumper\VarDumper;
 use Jaspersoft\Dto\Report\InputControl;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -31,7 +29,7 @@ class GenerateReportType extends AbstractType
      *
      * @param JasperFetch $jasperFetch
      */
-    public function __construct(JasperFetch $jasperFetch )
+    public function __construct(JasperFetch $jasperFetch)
     {
         $this->jasperFetch = $jasperFetch;
     }

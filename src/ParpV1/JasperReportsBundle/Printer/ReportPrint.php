@@ -32,10 +32,11 @@ class ReportPrint
      *
      * @param JasperPath|string $reportUri
      * @param string $format
+     * @param array|null $inputControls
      *
      * @return string|null
      */
-    public function printReport($reportUri, string $format = ReportFormat::PDF, ?array $inputControls): ?string
+    public function printReport($reportUri, string $format = ReportFormat::PDF, ?array $inputControls = null): ?string
     {
         if (!in_array($format, ReportFormat::getFormats())) {
             throw new UnexpectedValueException('Niewspierany format raportu');

@@ -85,7 +85,8 @@ class JasperReportsGrid
             'Generuj',
             'prepare_report_settings',
             false,
-            null, [
+            null,
+            [
                 'class' => 'btn btn-xs btn-info',
                 'data-loadajaxmodal' => 'loadajaxmodal',
                 'data-target' => '#generateReport'

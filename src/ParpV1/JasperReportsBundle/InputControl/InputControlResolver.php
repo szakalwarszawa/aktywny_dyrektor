@@ -6,6 +6,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\UnexpectedResultException;
+use ParpV1\JasperReportsBundle\InputControl\Validator;
 use Symfony\Component\VarDumper\VarDumper;
 
 /**
@@ -27,9 +28,11 @@ class InputControlResolver extends OptionsResolver
      *
      * @param Request $request
      *
-     * @return array|null
+     * @return array
+     * @return null gdy raport nie posiada opcji wejściowych
+     * @return bool gdy wprowadzona wartość jest nieprawidłowa
      */
-    public function resolveFormPostRequest(Request $request): ?array
+    public function resolveFormPostRequest(Request $request)
     {
         $requestPostData = current($request->request->all());
 

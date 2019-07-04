@@ -5,11 +5,11 @@ namespace ParpV1\JasperReportsBundle\InputControl;
 use InvalidArgumentException;
 
 /**
- * Klasa Validate
+ * Klasa Validator
  * Klucz InputControl musi być pojedyńczym wyrazem
  * Wartość InputControl musi być pojedyńczym wyrazem
  */
-class Validate
+class Validator
 {
     /**
      * @var bool
@@ -17,11 +17,57 @@ class Validate
     private static $throwException;
 
     /**
+     * @var string|null
+     */
+    public static $invalidKey = null;
+
+    /**
+     * @var string|null
+     */
+    public static $invalidValue = null;
+
+    /**
      * Konstruktor
      */
     public function __construct(bool $throwException = false)
     {
         self::$throwException = $throwException;
+    }
+
+    /**
+     * Zwraca nieprawidłową wartość jako ciąg tekstowy.
+     *
+     * @return string
+     */
+    public function invalidAsString(): string
+    {
+        if (null !== self::$invalidKey) {
+            return self::$invalidKey . ' => ' . self::$invalidValue;
+        }
+
+        return '';
+    }
+
+    /**
+     * `Przelatuje` całą tablicę (klucze i wartości) i sprawdza wartości względem ::keyOrValue
+     * Zwraca prawdę jeżeli tablica prawidłowa.
+     *
+     * @param array $data
+     *
+     * @return bool
+     */
+    public static function validateArray(array $data): bool
+    {
+        foreach ($data as $key => $value) {
+            if (!self::key($key) || !self::value($value)) {
+                self::$invalidKey = $key;
+                self::$invalidValue = $value;
+
+                return false;
+            }
+        }
+
+        return true;
     }
 
     /**

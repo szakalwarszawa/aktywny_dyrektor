@@ -18,6 +18,7 @@ use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use ParpV1\JasperReportsBundle\Voter\ReportVoter;
 use ParpV1\JasperReportsBundle\Form\GenerateReportType;
 use ParpV1\JasperReportsBundle\InputControl\InputControlResolver;
+use ParpV1\JasperReportsBundle\InputControl\Validator;
 
 class DefaultController extends Controller
 {
@@ -81,6 +82,14 @@ class DefaultController extends Controller
 
         $inputControlResolver = new InputControlResolver($this->get('jasper.fetch'));
         $inputControls = $inputControlResolver->resolveFormPostRequest($request);
+        $validator = new Validator();
+        if (!$validator::validateArray($inputControls)) {
+            $this
+                ->addFlash('danger', sprintf('Nieprawidłowa wartość opcji wejściowej ("%s")', $validator::invalidAsString()))
+            ;
+
+            return $this->redirectToRoute('reports_list');
+        }
 
         $printer = $this->get('jasper.report_print');
         $downloadedData = $printer->printReport(
