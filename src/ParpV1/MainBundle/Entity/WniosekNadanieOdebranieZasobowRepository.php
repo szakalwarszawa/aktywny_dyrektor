@@ -61,6 +61,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
                     '\'))');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE:
+                $queryBuilder->andWhere('s.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')');
                 $queryBuilder->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_ZAKONCZONE:

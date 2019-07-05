@@ -356,7 +356,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => array(
                         'class' => 'form-control datepicker',
                     ),
-                    'label' => 'Data zmiany',
+                    'label' => $action === 'removeResources' ? 'Sugerowana data odebrania uprawnień' : 'Data zmiany',
                     'label_attr' => array(
                         'class' => 'data-zmiany',
                     ),

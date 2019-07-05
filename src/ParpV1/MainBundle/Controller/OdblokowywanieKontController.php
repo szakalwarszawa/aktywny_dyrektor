@@ -60,7 +60,7 @@ class OdblokowywanieKontController extends Controller
         ));
 
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'userEdit');
+        $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'userEdit');
         $rowAction2->setColumn('akcje');
         $rowAction2->setRouteParameters(
             array('samaccountname')
@@ -68,7 +68,7 @@ class OdblokowywanieKontController extends Controller
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-sitemap"></i> Struktura', 'structure');
+        $rowAction3 = new RowAction('<i class="fas fa-sitemap"></i> Struktura', 'structure');
         $rowAction3->setColumn('akcje');
         $rowAction3->setRouteParameters(
             array('samaccountname')
@@ -76,7 +76,7 @@ class OdblokowywanieKontController extends Controller
         $rowAction3->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction4 = new RowAction('<i class="fa fa-database"></i> Odblokuj', 'unblock');
+        $rowAction4 = new RowAction('<i class="fas fa-database"></i> Odblokuj', 'unblock');
         $rowAction4->setColumn('akcje');
         $rowAction4->setRouteParameters(
             array('samaccountname')

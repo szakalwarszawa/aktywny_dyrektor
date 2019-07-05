@@ -33,7 +33,7 @@
                 {% if dane_rekord is not null and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
                     <hr />
                     <a class='btn btn-primary' href='{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}'>
-                        <i class='fa fa-briefcase'></i>
+                        <i class='fas fa-briefcase'></i>
                         Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych
                     </a>
                 {% endif %}
@@ -44,7 +44,7 @@
     {# ZAANGAŻOWANIE #}
     <div class='form-group'>
         {% if username is defined %}
-            <a class='btn btn-primary col-sm-2 col-xs-12 col-sm-offset-8 col-md-2 col-md-offset-9 col-lg-offset-7' href='{{ path('engageUser', {samaccountname: username}) }}'><i class='fa fa-puzzle-piece'></i> Zaangażowanie</a>
+            <a class='btn btn-primary col-sm-2 col-xs-12 col-sm-offset-8 col-md-2 col-md-offset-9 col-lg-offset-7' href='{{ path('engageUser', {samaccountname: username}) }}'><i class='fas fa-puzzle-piece'></i> Zaangażowanie</a>
         {% endif %}
     </div>
 

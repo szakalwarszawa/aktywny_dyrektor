@@ -126,12 +126,12 @@ class WniosekController extends Controller
                 ->setSafe(true);
 
         // Edycja konta
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosek_edit');
+        $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'wniosek_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosek_delete');
+        $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'wniosek_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
 
