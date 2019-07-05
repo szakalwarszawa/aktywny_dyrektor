@@ -93,15 +93,23 @@ class RolePrivilegeRepository extends EntityRepository
         $folderChildren = new ArrayCollection();
         foreach ($availablePaths as $path) {
             if ($path['isRepository']) {
-                $folderChildren = $jasperFetch
+                $folderChildren->add($jasperFetch
                     ->findAllFromFolderUrl($path['url'])
-                ;
-
+                );
                 $availablePaths->removeElement($path);
             }
         }
 
-        $mergedCollection = new ArrayCollection(array_merge($availablePaths->toArray(), $folderChildren->toArray()));
+        $mergedChildren = new ArrayCollection();
+        foreach ($folderChildren as $child) {
+            if ($child->count()) {
+                foreach ($child as $element) {
+                    $mergedChildren->add($element);
+                }
+            }
+        }
+
+        $mergedCollection = new ArrayCollection(array_merge($availablePaths->toArray(), $mergedChildren->toArray()));
         $uniqueCollection = new ArrayCollection();
         foreach ($mergedCollection as $path) {
             $exists = $uniqueCollection->exists(function ($key, $element) use ($path) {
