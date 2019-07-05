@@ -317,6 +317,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'czy_odebranie' => $entity->getOdebranie(),
                 'ad_users' => $this->getUsersFromAD(),
                 'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
