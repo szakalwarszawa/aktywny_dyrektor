@@ -48,7 +48,7 @@
         <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/css/select2.min.css" rel="stylesheet" />
         <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
 
-        <title>Aktywny Dyrektor 2.0 {% block title %}{% endblock %}</title>
+        <title>Aktywny Dyrektor 2.1 {% block title %}{% endblock %}</title>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
     </head>
     <body class="{{ app.request.attributes.get('_route') }}">
@@ -57,7 +57,7 @@
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="{{ path('powitalna') }}">Aktywny Dyrektor <small>v2.0 beta</small></a>
+                        <a class="navbar-brand" href="{{ path('powitalna') }}">Aktywny Dyrektor <small>v2.1</small></a>
                     </div>
 
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -72,8 +72,8 @@
                                         <li><a href="{{ path('przejrzyjnowych') }}"><i class="fa fa-exclamation-circle"></i> użytkownicy problematyczni - nowi z rekorda</a></li>
                                         <li><a href="{{ path('main', {'onlyTemporary': 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi (czekający na utworzenia w AD)</a></li>
                                         <li><a href="{{ path('userAdd') }}"><i class="fa fa-plus-square"></i> Dodaj użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'nieobecni'}) }}"><i class="fa fa-share-square-o"></i> Odblokuj nieaktywnego użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'zablokowane'}) }}"><i class="fa fa-rotate-right"></i> Odblokuj zablokowanego użytkownika</a></li>
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'nieobecni'}) }}"><i class="far fa-user-injured"></i> Odblokuj nieaktywnego użytkownika</a></li>
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'zablokowane'}) }}"><i class="fas fa-user-lock"></i> Odblokuj zablokowanego użytkownika</a></li>
                                     {% endif %}
                                 </ul>
                             </li>
@@ -87,11 +87,11 @@
                                         <li><a href="{{ path('section') }}"><i class="fa fa-archive"></i> Sekcje</a></li>
                                         <li><a href="{{ path('position') }}"><i class="fa fa-user-md"></i> Stanowiska</a></li>
                                         <li><a href="{{ path('engagement') }}"><i class="fa fa-calendar"></i> Zaangażowania</a></li>
-                                        <li><a href="{{ path('uprawnienia') }}"><i class="fa fa-pencil-square-o"></i> Uprawnienia</a></li>
+                                        <li><a href="{{ path('uprawnienia') }}"><i class="fal fa-edit"></i> Uprawnienia</a></li>
                                         <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li>
                                         <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
                                         <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
-                                        <li><a href="{{ path('wniosekstatus') }}"><i class="fa fa-check-square-o"></i> Statusy wniosków</a></li>
+                                        <li><a href="{{ path('wniosekstatus') }}"><i class="fal fa-ballot-check"></i> Statusy wniosków</a></li>
                                         <li><a href="{{ path('jasper_management') }}"><i class="fas fa-folder-tree"></i> Zasoby Jasper</a></li>
                                     </ul>
                                 </li>
@@ -111,15 +111,15 @@
 
                             {% if "PARP_ADMIN" in app.user.roles %}
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> DEV <b class="caret"></b></a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-user-cog"></i> DEV <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
-                                        <li class=""><a href="{{ path('listLogs') }}"><i class="fa fa-floppy-o"></i> Logi z wypychania do AD</a></li>
-                                        <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fa fa-floppy-o"></i> Wczytaj dane ECM</a></li>
+                                        <li class=""><a href="{{ path('listLogs') }}"><i class="fal fa-file-alt"></i> Logi z wypychania do AD</a></li>
+                                        <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fal fa-file-alt"></i> Wczytaj dane ECM</a></li>
                                         <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
                                         <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
                                         <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
                                         <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
-                                        <li><a href="{{ path('adgroup') }}"><i class="fa fa-group"></i> Groups AD</a></li>
+                                        <li><a href="{{ path('adgroup') }}"><i class="fas fa-users"></i> Groups AD</a></li>
                                         <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
                                     </ul>
                                 </li>
@@ -127,10 +127,10 @@
 
                             {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
                                 <li class="dropdown">
-                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-floppy-o"></i> Raporty <b class="caret"></b></a>
+                                    <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-file-chart-line"></i> Raporty <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         {% if "PARP_BZK_RAPORTY" in app.user.roles %}
-                                            <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="fa fa-floppy-o"></i> Raport kadrowy</a></li>
+                                            <li class=""><a href="{{ path('raportyKadrowe') }}"><i class="far fa-user-cog"></i>Raport kadrowy</a></li>
                                         {% endif %}
 
                                         {% if "PARP_ADMIN" in app.user.roles %}
@@ -162,7 +162,7 @@
             {% if not app.user %}
                 <div class="row">
                     <div class="page-header">
-                        <h1>Aktywny Dyrektor <small>v2.0<small> beta</small></small></h1>
+                        <h1>Aktywny Dyrektor <small>v2.1</small></h1>
                     </div>
                 </div>
             {% endif %}
