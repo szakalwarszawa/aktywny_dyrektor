@@ -93,9 +93,10 @@ class RolePrivilegeRepository extends EntityRepository
         $folderChildren = new ArrayCollection();
         foreach ($availablePaths as $path) {
             if ($path['isRepository']) {
-                $folderChildren->add($jasperFetch
+                $allFromFolder = $jasperFetch
                     ->findAllFromFolderUrl($path['url'])
-                );
+                ;
+                $folderChildren->add($allFromFolder);
                 $availablePaths->removeElement($path);
             }
         }
