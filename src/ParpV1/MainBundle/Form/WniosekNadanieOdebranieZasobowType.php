@@ -32,7 +32,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                 'choices' => array_flip($options['ad_users']),
                 'multiple' => true,
                 'required' => false,
-                'label' => 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
+                'label' => $options['czy_odebranie'] ? 'Wybierz pracownika, którego dotyczy wniosek' : 'Wybierz pracowników których dotyczy wniosek (pole obowiązkowe)',
                 'attr' => array('class' => 'select2')
             ))->addModelTransformer($transformer))
             ->add('pracownicySpozaParp', null, array(
@@ -63,6 +63,7 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
         $resolver->setDefaults(array(
             'data_class' => WniosekNadanieOdebranieZasobow::class,
             'ad_users' => array(),
+            'czy_odebranie' => '',
             'managerzy_spoza_parp' => array(),
         ));
     }
