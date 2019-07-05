@@ -54,7 +54,6 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
 
         switch ($typWniosku) {
             case WniosekNadanieOdebranieZasobow::WNIOSKI_W_TOKU:
-            case 'oczekujace':
                 $warunek = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')';
                 $queryBuilder->andWhere($warunek);
                 $queryBuilder->andWhere('wno.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.
@@ -62,6 +61,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
                     '\'))');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE:
+                $queryBuilder->andWhere('s.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')');
                 $queryBuilder->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_ZAKONCZONE:
