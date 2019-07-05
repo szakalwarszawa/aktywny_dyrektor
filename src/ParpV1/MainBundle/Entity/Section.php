@@ -51,7 +51,7 @@ class Section
     /**
      * @var string
      *
-     * @ORM\Column(name="shortname", type="string", length=8)
+     * @ORM\Column(name="shortname", type="string", length=20)
      * @Assert\NotBlank(message = "Skrót sekcji nie jest wypełniony.")
      * @Assert\Length(
      *      min = 2,
