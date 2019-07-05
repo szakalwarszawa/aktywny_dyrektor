@@ -51,11 +51,11 @@ class Section
     /**
      * @var string
      *
-     * @ORM\Column(name="shortname", type="string", length=8)
+     * @ORM\Column(name="shortname", type="string", length=20)
      * @Assert\NotBlank(message = "Skrót sekcji nie jest wypełniony.")
      * @Assert\Length(
      *      min = 2,
-     *      max = 8,
+     *      max = 20,
      *      minMessage = "Skrót sekcji zawierać od {{ limit }} znaków.",
      *      maxMessage = "Skrót sekcji musi zawierać maxymalnie do {{ limit }} znaków.")*
      * @Gedmo\Mapping\Annotation\Versioned
