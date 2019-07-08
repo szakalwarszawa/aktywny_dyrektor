@@ -195,11 +195,17 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                 $userZasob->setModul($userZasob->getmodul());
                 $userZasob->setPoziomdostepu($userZasob->getpoziomDostepu());
-                $userZasob->setPowodOdebrania('Upłynął termin ważności uprawnień');
                 $userZasob->setCzyAktywne(false);
                 $userZasob->setCzyOdebrane(true);
                 $userZasob->setKtoOdebral('demon_akd');
                 $userZasob->setDataOdebrania(new \Datetime());
+
+                if ($idZasobu === 4644) {
+                    $userZasob->setPowodOdebrania('Uprawnienie wykorzystane');
+                } else {
+                    $userZasob->setPowodOdebrania('Upłynął termin ważności uprawnień');
+                }
+
                 $entityManager->persist($userZasob);
 
                 $output->writeln('Odnotowuję odebranie uprawnień: <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
@@ -211,7 +217,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                     }
 
                     $grupaDoOdebrania = $this->znajdzGrupeAD($userZasob, $zasob);
-                    $czyGrupaWUpp = $this->sprawdzCzyGrupaNalezyDoUpp($login, $grupaDoOdebrania, $output);
+                    $czyGrupaWUpp = $grupaDoOdebrania !== 'brak' ? $this->sprawdzCzyGrupaNalezyDoUpp($login, $grupaDoOdebrania, $output) : true;
 
                     if (!$czyGrupaWUpp) {
                         $grupyDoAd .= '-'.$grupaDoOdebrania;
@@ -224,7 +230,13 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                     $entry->setSamaccountname($login);
                     $entry->setCreatedBy('SYSTEM');
                     $entry->setMemberOf($grupyDoAd);
-                    $entry->setOpis('Odebrane administracyjnie: Upłynął termin ważności uprawnień');
+
+                    if ($idZasobu === 4644) {
+                        $entry->setOpis('Zmieniono administracyjnie: Uprawnienia zostały wykorzystane');
+                    } else {
+                        $entry->setOpis('Odebrane administracyjnie: Upłynął termin ważności uprawnień');
+                    }
+
                     $entityManager->persist($entry);
 
                     $output->writeln("\t".'<comment>Odbieram uprawnienia w AD: ' . $grupyDoAd.'</comment>');
@@ -283,7 +295,8 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         $poziomy = explode(';', $zasob->getPoziomDostepu());
         $ktoryPoziom = $this->znajdzPoziom($poziomy, $userZasoby->getPoziomDostepu());
 
-        return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$zasob->getNazwa().'" ('.$grupy[0].')');
+        // return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$zasob->getNazwa().'" ('.$grupy[0].')');
+        return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : 'brak');
     }
 
     /**
