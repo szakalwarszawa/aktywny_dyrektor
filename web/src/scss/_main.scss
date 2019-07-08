@@ -559,5 +559,57 @@ footer.helpdesk {
 
 /* ------- Akceptacja wniosku modal ------------ */
 .wnioseknadanieodebraniezasobow_show .modal-dialog.modal-lg {
-	width: 1300px;
+    width: 1300px;
+}
+
+/*-------- /wnioseknadanieodebraniezasobow --- tabela zasobow -------- */
+
+#zasoby .record_properties {
+    tbody {
+        tr {
+            td {
+                .alert {
+                    min-width: 100px;
+                    padding: 5px 15px;
+                }
+            }
+
+            td:nth-child(2) {
+                min-width: 116px;
+            }
+
+            td:nth-child(7) {
+                min-width: 116px;
+            }
+
+            td:nth-child(11) {
+                max-width: 300px;
+            }
+        }
+    }
+}
+
+#acceptConfirm .record_properties {
+    table-layout: auto;
+
+    tbody {
+        tr {
+            td:nth-child(5),
+            td:nth-child(7),
+            td:nth-child(9),
+            td:nth-child(10) {
+                max-width: 48px;
+            }
+
+            td:nth-child(6),
+            td:nth-child(8) {
+                max-width: 64px;
+            }
+
+            td:nth-child(11) {
+                min-width: 128px;
+                max-width: 240px;
+            }
+        }
+    }
 }
