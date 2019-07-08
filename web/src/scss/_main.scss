@@ -564,7 +564,7 @@ footer.helpdesk {
 
 /*-------- /wnioseknadanieodebraniezasobow --- tabela zasobow -------- */
 
-.record_properties {
+#zasoby .record_properties {
     tbody {
         tr {
             td {
@@ -590,6 +590,8 @@ footer.helpdesk {
 }
 
 #acceptConfirm .record_properties {
+    table-layout: auto;
+
     tbody {
         tr {
             td:nth-child(5),
