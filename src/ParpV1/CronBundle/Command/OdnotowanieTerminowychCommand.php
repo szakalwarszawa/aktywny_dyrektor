@@ -200,7 +200,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                 $userZasob->setKtoOdebral('demon_akd');
                 $userZasob->setDataOdebrania(new \Datetime());
 
-                if ($idZasobu === 4644) {
+                if ($idZasobu === Zasoby::ID_HOME_OFFICE) {
                     $userZasob->setPowodOdebrania('Uprawnienie wykorzystane');
                 } else {
                     $userZasob->setPowodOdebrania('Upłynął termin ważności uprawnień');
@@ -212,7 +212,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                 $grupyDoAd = '';
                 if (!in_array($login, $pomijajKonta, true)) {
-                    if ($idZasobu === 4705) {
+                    if ($idZasobu === Zasoby::ID_DLP_USB_DVD) {
                         $grupyDoAd = '+DLP-gg-USB_CD_DVD-DENY,';
                     }
 
@@ -231,7 +231,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                     $entry->setCreatedBy('SYSTEM');
                     $entry->setMemberOf($grupyDoAd);
 
-                    if ($idZasobu === 4644) {
+                    if ($idZasobu === Zasoby::ID_HOME_OFFICE) {
                         $entry->setOpis('Zmieniono administracyjnie: Uprawnienia zostały wykorzystane');
                     } else {
                         $entry->setOpis('Odebrane administracyjnie: Upłynął termin ważności uprawnień');
@@ -295,7 +295,6 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         $poziomy = explode(';', $zasob->getPoziomDostepu());
         $ktoryPoziom = $this->znajdzPoziom($poziomy, $userZasoby->getPoziomDostepu());
 
-        // return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$zasob->getNazwa().'" ('.$grupy[0].')');
         return ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : 'brak');
     }
 
