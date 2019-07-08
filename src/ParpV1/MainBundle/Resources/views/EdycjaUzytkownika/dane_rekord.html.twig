@@ -18,7 +18,13 @@
         </tr>
         <tr>
             <th>Umowa do</th>
-            <td>{{ dane_rekord.umowaDo|date('Y-m-d') }}</td>
+            <td>
+            {% if dane_rekord.umowaDo is not null %}
+                {{ dane_rekord.umowaDo|date('Y-m-d') }}
+                {% else %}
+                    Nieokreślony
+                {% endif %}
+            </td>
         </tr>
     </table>
 {% else %}
