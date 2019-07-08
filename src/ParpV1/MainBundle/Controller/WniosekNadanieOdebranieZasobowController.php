@@ -974,13 +974,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
                 }
-                if ($wniosek->getOdebranie()) {
-                    $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
-                    if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
-                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
-                    }
-                    $this->addFlash('danger', $flashMessage);
-                }
+
                 foreach ($wniosek->getUserZasoby() as $uz) {
                     $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
                     $uz->setCzyAktywne(!$wniosek->getOdebranie());
@@ -1003,9 +997,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $dostepnePoziomy = explode(';', $poziomy);
 
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            throw new \Exception('Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() . '\', wybrany poziom to \'' .
-                            $uz->getPoziomDostepu() . '\', dostepne poziomy: ' . $poziomyTekst . '. W trakcie tworzenia wniosku zasób uległ zmianie. ' .
-                            'Skontaktuj się z właścielem zasobu.');
+                            $message = 'Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() .
+                                '\', wybrany poziom to \'' . $uz->getPoziomDostepu() . '\', dostepne poziomy: ' .
+                                $poziomyTekst . '. W trakcie tworzenia wniosku zasób uległ zmianie. ' .
+                                'Skontaktuj się z właścielem zasobu.'
+                            ;
+                            $this
+                                ->addFlash('danger', $message)
+                            ;
+                            return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', ['id' => $wniosek->getId()]);
                         }
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
@@ -1067,6 +1067,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                         $uz->setCzyNadane(true);
                     }
+                }
+
+                if ($wniosek->getOdebranie()) {
+                    $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
+                    if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
+                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
+                    }
+                    $this->addFlash('danger', $flashMessage);
                 }
             }
         }
