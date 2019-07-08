@@ -559,5 +559,25 @@ footer.helpdesk {
 
 /* ------- Akceptacja wniosku modal ------------ */
 .wnioseknadanieodebraniezasobow_show .modal-dialog.modal-lg {
-	width: 1300px;
+    width: 1300px;
+}
+
+/*-------- /wnioseknadanieodebraniezasobow --- tabela zasobow -------- */
+
+.record_properties {
+    tbody {
+        tr {
+            td {
+                .alert {
+                    min-width: 100px;
+                }
+            }
+
+            td:nth-child(11) {
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                overflow: hidden;
+            }
+        }
+    }
 }
