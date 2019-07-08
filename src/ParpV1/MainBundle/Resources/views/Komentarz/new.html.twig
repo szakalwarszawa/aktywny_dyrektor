@@ -3,12 +3,44 @@
 {% block body -%}
     <h1>Tworzenie Komentarza</h1>
 
-    {{ form(form) }}
+    <div class="container">
+        {{ form_start(form) }}
+            <div class="form-group">
+                {{ form_label(form.samaccountname) }}
+                <div class="col-lg-5">
+                    {{ form_widget(form.samaccountname) }}
+                </div>
+            </div>
 
-        <div class="btn-group">
+            <div class="form-group">
+                {{ form_label(form.tytul) }}
+                <div class="col-lg-5">
+                    {{ form_widget(form.tytul, {attr: {'maxlength': 100, 'placeholder': 'Wprowadź tytuł komentarza (maksymalnie 100 znaków)'}}) }}
+                    {{ form_errors(form.tytul) }}
+                </div>
+            </div>
 
-<a class="btn btn-primary" href="{{ returnUrl }}">
-    <i class="fa fa-list"></i> Wstecz
-</a>
+            <div class="form-group">
+                {{ form_label(form.opis) }}
+                <div class="col-lg-10">
+                    {{ form_widget(form.opis, {attr: {'maxlength': 5000, 'placeholder': 'Wprowadź treść komentarza (maksymalnie 5000 znaków)'}}) }}
+                    {{ form_errors(form.opis) }}
+                </div>
+            </div>
+
+            <div class="form-group">
+                <div class="col-sm-2"></div>
+                <div class="col-lg-10">
+                    {{ form_widget(form.submit, {attr: {'class': 'btn btn-success'}}) }}
+                </div>
+            </div>
+        {{ form_rest(form) }}
+        {{ form_end(form) }}
+    </div>
+
+<div class="btn-group">
+    <a class="btn btn-primary" href="{{ returnUrl }}">
+        <i class="fas fa-list"></i> Wstecz
+    </a>
 </div>
 {% endblock %}

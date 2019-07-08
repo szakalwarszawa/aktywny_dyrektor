@@ -20,6 +20,8 @@ class AllowedToFetchAttributes extends Attributes
         return [
             self::LOGIN,
             self::IMIE_NAZWISKO,
+            self::NAZWISKO,
+            self::IMIE,
             self::EMAIL,
             self::STANOWISKO,
             self::DEPARTAMENT_NAZWA,

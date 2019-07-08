@@ -155,6 +155,7 @@ class AdStringTool
             return $adString;
         }
 
+        $adString = self::replaceLowerCase($adString);
         $adStringParts = self::ldapExplodeUtf($adString);
         $returnArray = in_array($valueKey, [self::OU, self::DC]);
         $stringContainer = [];
@@ -177,6 +178,41 @@ class AdStringTool
         }
 
         return $adString;
+    }
+
+    /**
+     * Zamienia atrybuty CN, OU, DC na wielkie litery (jeżeli jest wpisane małymi).
+     *
+     * @param string $adString
+     *
+     * @return string
+     */
+    private static function replaceLowerCase(string $adString): string
+    {
+        $adString = str_replace(strtolower(self::DC), self::DC, $adString);
+        $adString = str_replace(strtolower(self::OU), self::OU, $adString);
+        $adString = str_replace(strtolower(self::CN), self::CN, $adString);
+
+        return $adString;
+    }
+
+    /**
+     * Zwraca imię i nazwisko użytkownika ze stringa distinguishedname.
+     *
+     * @param string $adString
+     *
+     * @return array
+     */
+    public static function getUserFirstLastName(string $adString): array
+    {
+        $nameSplit = explode(' ', self::getValue($adString, self::CN));
+        $userData = [
+            'full_name' => implode(' ', $nameSplit),
+            'first_name' => array_pop($nameSplit),
+            'last_name' => implode(' ', $nameSplit)
+        ];
+
+        return $userData;
     }
 
     /**

@@ -62,7 +62,7 @@ class ListaZasobowGrid
         ));
 
         $zasobAkcja = new RowAction(
-            '<i class="fa fa-pencil"></i> Edycja',
+            '<i class="fas fa-pencil"></i> Edycja',
             'zasoby_edit',
             null,
             null,
@@ -79,7 +79,7 @@ class ListaZasobowGrid
         $siatka->addRowAction($zasobAkcja);
 
         $zasobAkcja = new RowAction(
-            '<i class="fa fa-search"></i> Podgląd',
+            '<i class="fas fa-search"></i> Podgląd',
             'zasoby_edit',
             null,
             null,
@@ -95,7 +95,7 @@ class ListaZasobowGrid
 
         if ($this->parameters['aktywne']) {
             $zasobAkcja = new RowAction(
-                '<i class="fa fa-ban"></i> ' .
+                '<i class="fas fa-ban"></i> ' .
                 'Dezaktywuj',
                 'zasoby_delete',
                 null,
@@ -113,7 +113,7 @@ class ListaZasobowGrid
             $siatka->addRowAction($zasobAkcja);
         } else {
             $zasobAkcja = new RowAction(
-                '<i class="fa fa-check"></i> ' .
+                '<i class="fas fa-check"></i> ' .
                 'Aktywuj',
                 'zasoby_aktywuj',
                 null,

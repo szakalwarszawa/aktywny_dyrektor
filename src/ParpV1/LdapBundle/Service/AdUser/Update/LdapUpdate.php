@@ -30,6 +30,8 @@ use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain;
 use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
+use ParpV1\LdapBundle\AdUser\ParpAttributes;
+use ParpV1\LdapBundle\Constants\Attributes;
 
 /**
  * LdapUpdate
@@ -303,6 +305,8 @@ class LdapUpdate extends Simulation
      */
     public function setGroupsAttribute($groupsAd, AdUser $adUser): void
     {
+        $adUser->sync();
+
         if (is_array($groupsAd)) {
             (new OptionsResolver())
                 ->setRequired(['add', 'remove'])
@@ -312,6 +316,8 @@ class LdapUpdate extends Simulation
             foreach ($groupsAd['add'] as $groupAdd) {
                 $this->groupAdd($adUser, $groupAdd);
             }
+
+            $adUser->sync();
 
             foreach ($groupsAd['remove'] as $groupRemove) {
                 $this->groupRemove($adUser, $groupRemove);
@@ -328,6 +334,9 @@ class LdapUpdate extends Simulation
                     $groupsRemoved[] = $groupName;
                 }
             }
+
+            $adUser->sync();
+
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
                 if (!in_array($groupName, $groupsAdded)) {
@@ -806,6 +815,16 @@ class LdapUpdate extends Simulation
             ->setDn($dnBuilder)
             ->setAccountName($changes[AdUserConstants::LOGIN])
         ;
+
+        $userNameData = AdStringTool::getUserFirstLastName($writableUserObject->getDistinguishedName());
+        $writableUserObject
+            ->setAttribute(Attributes::IMIE, $userNameData['first_name'])
+            ->setAttribute(Attributes::NAZWISKO, $userNameData['last_name'])
+            ->setDisplayName($userNameData['full_name'])
+            ->setUserPrincipalName($changes[AdUserConstants::LOGIN] . '@' . $baseParameters['ad_domain'])
+        ;
+
+        $writableUserObject = ParpAttributes::addParpAttributes($writableUserObject);
 
         if (!$this->isSimulation()) {
             $accountControl = $writableUserObject->getUserAccountControlObject();

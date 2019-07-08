@@ -48,7 +48,8 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
             '07_ROZPATRZONY_POZYTYWNIE',
             '11_OPUBLIKOWANY',
             '102_ODEBRANO_ADMINISTRACYJNIE',
-            '101_ANULOWANO_ADMINISTRACYJNIE'
+            '101_ANULOWANO_ADMINISTRACYJNIE',
+            '10_PODZIELONY'
         ];
 
         switch ($typWniosku) {
@@ -60,6 +61,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
                     '\'))');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE:
+                $queryBuilder->andWhere('s.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')');
                 $queryBuilder->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_ZAKONCZONE:

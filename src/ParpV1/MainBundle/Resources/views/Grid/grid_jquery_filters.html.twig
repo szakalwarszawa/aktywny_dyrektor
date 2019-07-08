@@ -131,7 +131,7 @@ function {{ grid.hash }}_submitForm(event, form)
 
 function drawGridSpinner()
 {
-    var loadingSpinnerHtml = '<i style="text-align: center; font-size:48px;" class="fa fa-spinner fa-spin"></i>';
+    var loadingSpinnerHtml = '<i style="text-align: center; font-size:48px;" class="fas fa-spinner fa-spin"></i>';
     if (!$('.load-spinner').length) {
         $('.grid-row-filters').after('<tr class="load-spinner"><td colspan="100%" style="text-align: center; width: 20px">' + loadingSpinnerHtml + '</td></tr>');
         $('.grid-row-cells').remove();

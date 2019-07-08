@@ -41,6 +41,29 @@ class AdUser
     }
 
     /**
+     * Alias do getUser z parameterem self::FULL_USER_OBJECT
+     *
+     * @return User
+     */
+    public function getWritableUser(): User
+    {
+        return $this->getUser(self::FULL_USER_OBJECT);
+    }
+
+    /**
+     * User::SyncRaw alias.
+     *
+     * @return bool
+     */
+    public function sync(): bool
+    {
+        return $this
+            ->adUser
+            ->syncRaw()
+        ;
+    }
+
+    /**
      * Zwraca użytkownika z konstruktora.
      * Użytkownik może być zwrócony jako pełny obiekt z AD - FULL_USER_OBJECT
      * lub okrojona tablica zawierająca określone dane (AllowedToFetchAttributes) - DEFICIENT_USER_OBJECT

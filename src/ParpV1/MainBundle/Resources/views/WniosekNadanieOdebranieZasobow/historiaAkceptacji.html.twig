@@ -33,7 +33,7 @@
                 {% if(ss.status.nazwaSystemowa == "10_PODZIELONY" and numer_iteracji != entity.wniosek.statusy|length - 1) %}
                 {% set wniosek_do_linku = ((byl_juz_pierwszy_parent ? entity.wniosek.parent : (entity.wniosek.parent.parent ? entity.wniosek.parent.parent : entity.wniosek.parent))) %}
                 <a
-                href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek_do_linku.id}) }}"
+                href="{{ path('wnioseknadanieodebraniezasobow_show', {id: wniosek_do_linku.wniosekNadanieOdebranieZasobow.id}) }}"
                 class="btn btn-primary">
                 {# {% set byl_juz_pierwszy_parent = true %} #}
                 Link do wniosku nr {{ wniosek_do_linku.numer }}

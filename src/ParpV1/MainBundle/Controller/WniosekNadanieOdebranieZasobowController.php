@@ -317,6 +317,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->createForm(WniosekNadanieOdebranieZasobowType::class, $entity, array(
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
+                'czy_odebranie' => $entity->getOdebranie(),
                 'ad_users' => $this->getUsersFromAD(),
                 'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
@@ -1009,7 +1010,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
                         //foreach($grupy as $grupa){
-                        $grupa = trim($grupy[$indexGrupy]);
+
+                        if ($uz->getPoziomDostepu() === '[BD] Bez dostępu do sieci PARP') {
+                            $grupa = '';
+                        } else {
+                            $grupa = trim($grupy[$indexGrupy]);
+                        }
+
                         if ($grupa != '') {
                             //jesli sa grupy ad to tworzy entry powiazane i daje przycisk opublikuj
                             $aduser = $this->getUserFromAD($uz->getSamaccountname());

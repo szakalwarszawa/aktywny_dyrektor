@@ -145,16 +145,16 @@ class WniosekUtworzenieZasobuController extends Controller
                 ->setSafe(true);
 
         // Edycja konta
-        $rowAction1 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Edycja', 'wniosekutworzeniezasobu_edit');
+        $rowAction1 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'wniosekutworzeniezasobu_edit');
         $rowAction1->setColumn('akcje');
         $rowAction1->addAttribute('class', 'btn btn-success btn-xs');
 
-        $rowAction2 = new RowAction('<i class="glyphicon glyphicon-pencil"></i> Pokaż', 'wniosekutworzeniezasobu_show');
+        $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Pokaż', 'wniosekutworzeniezasobu_show');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-info btn-xs');
 
         // Edycja konta
-        $rowAction3 = new RowAction('<i class="fa fa-delete"></i> Skasuj', 'wniosekutworzeniezasobu_delete');
+        $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'wniosekutworzeniezasobu_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
         $rowAction3->addManipulateRender(
