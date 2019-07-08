@@ -570,10 +570,12 @@ footer.helpdesk {
             td {
                 .alert {
                     min-width: 100px;
+                    padding: 5px 15px;
                 }
             }
 
             td:nth-child(11) {
+                max-width: 300px;
                 text-overflow: ellipsis;
                 white-space: nowrap;
                 overflow: hidden;
