@@ -31,6 +31,20 @@ class Zasoby
     const ZASOB_NIEAKTYWNY = 0;
 
     /**
+     * @var int
+     *
+     * ID zasobu "Home office"
+     */
+    const ID_HOME_OFFICE = 4644;
+
+    /**
+     * @var int
+     *
+     * ID zasobu "Nośniki zewnętrzne (CD/DVD + USB) - maksymalnie na 3 miesiące"
+     */
+    const ID_DLP_USB_DVD = 4705;
+
+    /**
      * @var integer
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
