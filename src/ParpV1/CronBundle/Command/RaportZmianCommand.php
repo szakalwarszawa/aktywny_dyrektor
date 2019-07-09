@@ -404,7 +404,8 @@ class RaportZmianCommand extends ContainerAwareCommand
             'accountExpires',
             'accountexpires',
             'info',
-            'division'
+            'division',
+            'mailnickname'
         );
 
         if (!empty($diff['info']) && !empty($diff['division'])) {
