@@ -20,12 +20,24 @@ import '../scss/app.scss';
 <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script> */
 
 // --- biblioteki zewnetrzne (node_modules) ---
-import 'bootstrap';
+import 'bootstrap-sass';
+import 'bootstrap-datepicker';
+import 'bootstrap-filestyle';
+import 'bootstrap-slider';
+import 'bootstrap-toggle';
+import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import 'eonasdan-bootstrap-datetimepicker';
-import 'select2';
+import 'jquery';
+import 'jquery-ui';
 import 'jquery.maskedinput';
+import 'jquery.are-you-sure';
+import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
 import 'moment';
+import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
+import 'select2';
+import 'tablesorter';
+import 'tag-it';
 
 function showInfo(info) {
     console.info(
