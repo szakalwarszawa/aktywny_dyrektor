@@ -24,7 +24,7 @@ import '../scss/app.scss';
 // import 'regenerator-runtime/runtime';
 // import 'bootstrap-sass';
 // import 'bootstrap-datepicker';
-require('bootstrap-datepicker');
+// require('bootstrap-datepicker');
 // import 'bootstrap-filestyle';
 // import 'bootstrap-slider';
 // import 'bootstrap-toggle';
@@ -39,6 +39,7 @@ require('bootstrap-datepicker');
 // import 'moment-range';
 // import '../../../node_modules/moment/locale/pl.js';
 // import 'select2';
+require('select2');
 // import 'tablesorter';
 // import 'tag-it';
 
