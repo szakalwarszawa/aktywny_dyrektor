@@ -24,7 +24,7 @@ Encore.setOutputPath('web/build/')
     // })
     .configureBabel(() => {}, {
         useBuiltIns: 'usage',
-        corejs: 3,
+        corejs: { version: '3.1' },
     });
 
 if (Encore.isProduction()) {
