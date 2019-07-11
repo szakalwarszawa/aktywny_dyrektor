@@ -569,7 +569,7 @@ footer.helpdesk {
         tr {
             td {
                 .alert {
-                    min-width: 100px;
+                    min-width: 48px;
                     padding: 5px;
                 }
             }
@@ -585,6 +585,13 @@ footer.helpdesk {
 
             td:nth-child(11) {
                 max-width: 300px;
+            }
+
+            td:nth-child(12) {
+                max-width: 64px;
+                a {
+                    padding: 5px;
+                }
             }
         }
     }
@@ -610,13 +617,6 @@ footer.helpdesk {
             td:nth-child(11) {
                 min-width: 128px;
                 max-width: 240px;
-            }
-
-            td:nth-child(12) {
-                max-width: 64px;
-                a {
-                    padding: 5px;
-                }
             }
         }
     }
