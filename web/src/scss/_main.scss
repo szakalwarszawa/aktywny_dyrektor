@@ -570,7 +570,7 @@ footer.helpdesk {
             td {
                 .alert {
                     min-width: 100px;
-                    padding: 5px 15px;
+                    padding: 5px;
                 }
             }
 
@@ -579,7 +579,8 @@ footer.helpdesk {
             }
 
             td:nth-child(7) {
-                min-width: 116px;
+                width: 56px;
+                max-width: 116px;
             }
 
             td:nth-child(11) {
@@ -595,13 +596,13 @@ footer.helpdesk {
     tbody {
         tr {
             td:nth-child(5),
-            td:nth-child(7),
             td:nth-child(9),
             td:nth-child(10) {
                 max-width: 48px;
             }
 
             td:nth-child(6),
+            td:nth-child(7),
             td:nth-child(8) {
                 max-width: 64px;
             }
@@ -610,6 +611,12 @@ footer.helpdesk {
                 min-width: 128px;
                 max-width: 240px;
             }
+
+            td:nth-child(12) {
+                max-width: 64px;
+                a {
+                    padding: 5px;
+                }
         }
     }
 }
