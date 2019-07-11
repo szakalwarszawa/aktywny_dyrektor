@@ -6413,9 +6413,10 @@ select-hose@^2.0.0:
   resolved "https://registry.yarnpkg.com/select-hose/-/select-hose-2.0.0.tgz#625d8658f865af43ec962bfc376a37359a4994ca"
   integrity sha1-Yl2GWPhlr0Psliv8N2o3NZpJlMo=
 
-select2@select2/select2:
+select2@^4.0.7:
   version "4.0.7"
-  resolved "https://codeload.github.com/select2/select2/tar.gz/bd7ac9df03b008f03bb15c66fcab4682589bfc2a"
+  resolved "https://registry.yarnpkg.com/select2/-/select2-4.0.7.tgz#7b80473ef7900f4dc2b988623275fe569204ae8d"
+  integrity sha512-t46Z2nkEEYnBYdRpLNw5dj9qqO+YTiTlWKnpJ/B5e1Q3hPND00JRgcLJxYRzqpeLZd+ZkszkHEMagLKIfbTjVA==
 
 selfsigned@^1.9.1:
   version "1.10.4"
@@ -6965,9 +6966,10 @@ svgo@^1.0.0:
     unquote "~1.1.1"
     util.promisify "~1.0.0"
 
-symfony-collection@ninsuo/symfony-collection:
+symfony-collection@^2.1.30:
   version "2.1.30"
-  resolved "https://codeload.github.com/ninsuo/symfony-collection/tar.gz/d5e6cbc7c7dc1f0509631c9bb6094fead0f6c8f0"
+  resolved "https://registry.yarnpkg.com/symfony-collection/-/symfony-collection-2.1.30.tgz#c9b50abec1a080a6694973d91975d1acf14efb31"
+  integrity sha512-IkTiqKbfDkR6kZD1Fg6JkZFErMSx8wyu/PQt87UPGkcjeDrVxMmuGviLZys0FSdCReYc6oa94uuIOZS10OBzDw==
   dependencies:
     jquery ">=1.7"
     jquery-ui ">=1.0"
