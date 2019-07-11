@@ -326,7 +326,7 @@
                             <th class="header" title="Bezterminowo">Bezterm.</th>
                             <th class="header" title="Data do:"><i class="fas fa-calendar-alt"></i> Do</th>
                             <th class="header">Kanał<br />dostępu</th>
-                            <th class="header" title="Uprawnienia administracyjne"><i class="fas fa-user-crown"></i> Upr.<br />adm.</th>
+                            <th class="header" title="Uprawnienia administracyjne">Upr.<br />adm.</th>
                             <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
                             {% if wniosek_odebranie %}
                                 <th class="header">Data<br />odebrania</th>
@@ -385,15 +385,15 @@
                                 {% endif %}
                                 <td>
                                 {% if not status_ostatecznie_zablokowany and entity.odebranie == false and editor and ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
-                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edycja</a>
-                                    <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id': z.id}) }}" class="btn btn-danger">Kasuj</a>
+                                    <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edytuj</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'id': z.id}) }}" class="btn btn-danger">Skasuj</a>
                                 {% endif %}
 
                                 {% if not status_ostatecznie_zablokowany and (entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
-                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning">Zobacz wniosek o nadanie uprawnień</a>
+                                    <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning" title="Zobacz wniosek o nadanie uprawnień"><i class="fas fa-file-search"></i> wn. o nadanie upr.</a>
                                 {% else %}
                                     {% if not status_ostatecznie_zablokowany and (z.wniosekOdebranie.id is defined and z.wniosekOdebranie.id > 0 and z.wniosekOdebranie.id != entity.id) %}
-                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning">Zobacz wniosek o odebranie uprawnień</a>
+                                        <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosekOdebranie.id}) }}" class="btn btn-warning" title="Zobacz wniosek o odebranie uprawnień"><i class="fas fa-file-search"></i> wn. o odebranie upr.</a>
                                     {% endif %}
                                 {% endif %}
                                 </td>
