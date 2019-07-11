@@ -181,6 +181,7 @@ function zablokujOdblokujPoziom()
     function zaznaczOdznaczWszsytkoSelect2(dys) {
         {% if rodzaj_uprawnien %}
             alert('Funkcja niedostępna');
+            var zaslepka = {{ rodzaj_uprawnien }}1;
             return false;
         {% endif %}
         if (typeof dys == 'string') {
@@ -198,6 +199,7 @@ function zablokujOdblokujPoziom()
 
         {% if rodzaj_uprawnien %}
             alert('Funkcja niedostępna');
+            var zaslepka = {{ rodzaj_uprawnien }}1;
             return false;
         {% endif %}
         var sel = $(dys).attr('data-selected') == 'true';
