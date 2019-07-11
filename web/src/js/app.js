@@ -20,8 +20,8 @@ import '../scss/app.scss';
 <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script> */
 
 // --- biblioteki zewnetrzne (node_modules) ---
-// import 'core-js/stable';
-// import 'regenerator-runtime/runtime';
+import 'core-js/stable';
+import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
 // import 'bootstrap-datepicker';
 require('bootstrap-datepicker');
