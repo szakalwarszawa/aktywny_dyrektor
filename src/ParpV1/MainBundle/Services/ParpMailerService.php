@@ -203,7 +203,8 @@ class ParpMailerService
             return implode(';', $emails);
         }
 
-        $email = $login.'@parp.gov.pl';
+        $user = $this->ldap->getUserFromAD($login);
+        $email = (!empty($user[0]['mailnickname']) ? $user[0]['mailnickname'] : $login).'@parp.gov.pl';
 
         return $email;
     }

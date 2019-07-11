@@ -55,6 +55,7 @@ class LdapService
         'useraccountcontrol',
         'distinguishedName',
         'cn',
+        'mailnickname',
         'memberOf'
             //"extensionAttribute14"
     );
@@ -902,6 +903,7 @@ class LdapService
 
                 $result[$i]['name'] = isset($tmpResult['name'][0]) ? $tmpResult['name'][0] : '';
                 $result[$i]['email'] = isset($tmpResult['mail'][0]) ? $tmpResult['mail'][0] : '';
+                $result[$i]['mailnickname'] = isset($tmpResult['mailnickname'][0]) ? $tmpResult['mailnickname'][0] : '';
                 $result[$i]['initials'] = isset($tmpResult['initials'][0]) ? $tmpResult['initials'][0] : '';
                 $result[$i]['title'] = isset($tmpResult['title'][0]) ? $tmpResult['title'][0] : '';
                 $result[$i]['info'] = isset($tmpResult['info'][0]) ? $tmpResult['info'][0] : '';
