@@ -108,6 +108,9 @@
                                         {% if userzasoby.rodzajUprawnien is defined %}
                                         {% set rodzaj_uprawnien = true %}
                                         <div>
+                                        {# twigcs się czepia zmiennej, ale ona jest wykorzystywana w JS #}
+                                        {% if rodzajUprawnien %}
+                                        {% endif %}
                                             <label>Rodzaj uprawnień</label>
                                             {{ form_widget(userzasoby.rodzajUprawnien, {attr: {class: 'poziom-dostepu-switch'}}) }}
                                             <small>Wybierz aby odblokować `Poziom dostępu`</small>
@@ -181,7 +184,6 @@ function zablokujOdblokujPoziom()
     function zaznaczOdznaczWszsytkoSelect2(dys) {
         {% if rodzaj_uprawnien %}
             alert('Funkcja niedostępna');
-            var zaslepka = {{ rodzaj_uprawnien }}1;
             return false;
         {% endif %}
         if (typeof dys == 'string') {
@@ -196,10 +198,8 @@ function zablokujOdblokujPoziom()
         }
     }
     function zaznaczSelect2(dys) {
-
         {% if rodzaj_uprawnien %}
             alert('Funkcja niedostępna');
-            var zaslepka = {{ rodzaj_uprawnien }}1;
             return false;
         {% endif %}
         var sel = $(dys).attr('data-selected') == 'true';
