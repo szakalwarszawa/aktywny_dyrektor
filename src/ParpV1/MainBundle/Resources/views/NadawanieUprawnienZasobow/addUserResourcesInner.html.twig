@@ -109,7 +109,7 @@
                                         {% set rodzaj_uprawnien = true %}
                                         <div>
                                         {# twigcs się czepia zmiennej, ale ona jest wykorzystywana w JS #}
-                                        {% if rodzajUprawnien %}
+                                        {% if rodzaj_uprawnien %}
                                         {% endif %}
                                             <label>Rodzaj uprawnień</label>
                                             {{ form_widget(userzasoby.rodzajUprawnien, {attr: {class: 'poziom-dostepu-switch'}}) }}
