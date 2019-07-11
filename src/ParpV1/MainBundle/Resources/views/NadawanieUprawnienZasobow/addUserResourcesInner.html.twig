@@ -70,6 +70,7 @@
                 </div>
                 {% endif %}
                 <div class="panel-body">
+                {% set rodzaj_uprawnien = false %}
                 {{ form_start(form) }}
                 {{ form_widget(form.wniosekId) }}
                 {{ form_widget(form.action) }}
@@ -104,6 +105,14 @@
                                         {{ form_widget(userzasoby.zasobId) }}
                                         {{ form_widget(userzasoby.modul) }}
                                         </div>
+                                        {% if userzasoby.rodzajUprawnien is defined %}
+                                        {% set rodzaj_uprawnien = true %}
+                                        <div>
+                                            <label>Rodzaj uprawnień</label>
+                                            {{ form_widget(userzasoby.rodzajUprawnien, {attr: {class: 'poziom-dostepu-switch'}}) }}
+                                            <small>Wybierz aby odblokować `Poziom dostępu`</small>
+                                        </div><br />
+                                        {% endif %}
                                         <div>
                                         <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fas fa-check-square">&nbsp;</i></a></label>
                                         {{ form_widget(userzasoby.poziomDostepu) }}
@@ -135,7 +144,45 @@
     </div>
 <script type="text/javascript" src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 <script>
+$(document).ready(function () {
+    zablokujOdblokujPoziom();
+    $('.poziom-dostepu-switch').change(function () {
+        $('.odblokujPoWyborze').val(null).trigger('change');
+        zablokujOdblokujPoziom();
+    })
+})
+
+function zablokujOdblokujPoziom()
+{
+    var rodzajUprawnienElement = $('.poziom-dostepu-switch');
+    if (rodzajUprawnienElement.length) {
+        if ($('.odblokujPoWyborze').hasClass('select2-hidden-accessible')) {
+            $('.odblokujPoWyborze').select2('destroy');
+        }
+        $('.odblokujPoWyborze').attr('disabled', true);
+        var elementValue = rodzajUprawnienElement.val();
+        if (elementValue === "0" || elementValue === "1") {
+            $('.odblokujPoWyborze').attr('disabled', false);
+            var wyswietlacGrupy = elementValue === "0"? true : false;
+            if (wyswietlacGrupy) {
+                $('.poziom-grupa').removeAttr('disabled');
+                $('.poziom-niegrupa').attr('disabled', true);
+            } else {
+                $('.poziom-grupa').attr('disabled', true);
+                $('.poziom-niegrupa').removeAttr('disabled');
+            }
+
+            $('.odblokujPoWyborze').select2({dropdownAutoWidth : true, width: '100%'});
+        }
+    }
+}
+
+
     function zaznaczOdznaczWszsytkoSelect2(dys) {
+        {% if rodzaj_uprawnien %}
+            alert('Funkcja niedostępna');
+            return false;
+        {% endif %}
         if (typeof dys == 'string') {
             $('select.' + dys).each(function () {
                 zaznaczSelect2(this);
@@ -148,6 +195,11 @@
         }
     }
     function zaznaczSelect2(dys) {
+
+        {% if rodzaj_uprawnien %}
+            alert('Funkcja niedostępna');
+            return false;
+        {% endif %}
         var sel = $(dys).attr('data-selected') == 'true';
         $('option', $(dys)).prop('selected', !sel ? 'selected' : false);
         $(dys).trigger('change');

@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use Symfony\Component\VarDumper\VarDumper;
 
 class UserZasobyType extends AbstractType
 {
@@ -103,6 +104,36 @@ class UserZasobyType extends AbstractType
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
         $options['data_uz'][$fieldName] = isset($options['data_uz'][$fieldName]) ? $options['data_uz'][$fieldName] : "";
+
+        $accessLevelGroups = $o->accessLevelGroups->toArray();
+        $zablokujPoziom = false;
+        if ($accessLevelGroups && $fieldName === 'poziomDostepu') {
+            $zablokujPoziom = true;
+        }
+
+
+        $dodatkowaKlasa = ' ';
+        if ($zablokujPoziom) {
+            $form
+                ->add('rodzajUprawnien', ChoiceType::class, [
+                    'mapped' => false,
+                    'placeholder' => 'Proszę wybrać',
+                    'required' => true,
+                    'choices' => [
+                        'Grupy uprawnień' => 0,
+                        'Pojedyńcze uprawnienia' => 1
+                    ]
+                ])
+            ;
+            $dodatkowaKlasa = ' odblokujPoWyborze ';
+            if (count($accessLevelGroups)) {
+                foreach ($accessLevelGroups as $accessLevelGroup) {
+                    $choices[$accessLevelGroup->getGroupName()] = $accessLevelGroup->getId();
+                }
+            }
+        }
+
+
         $form->add(
             $fieldName, /* NestedComboType::class */
             ChoiceType::class,
@@ -111,7 +142,17 @@ class UserZasobyType extends AbstractType
                     'multiple' => true,
                     'expanded' => false,
                     'required' => true,
-                    'attr' => ['class' => 'select2 multiwybor '.$fieldName, 'required' => false]
+                    'choice_attr' => function ($choice, $key, $value) use ($zablokujPoziom) {
+                        if ($zablokujPoziom) {
+                            if (is_numeric($value)) {
+                                return ['class' => 'poziom-dostepu-element poziom-grupa', 'disabled ' => 'disabled'];
+                            } else {
+                                return ['class' => 'poziom-dostepu-element poziom-niegrupa', 'disabled ' => 'disabled'];
+                            }
+                        }
+                        return [];
+                    },
+                    'attr' => ['class' => 'select2' . $dodatkowaKlasa . 'multiwybor '.$fieldName, 'required' => false, 'disabled' => $zablokujPoziom]
                 )
         );
     }
