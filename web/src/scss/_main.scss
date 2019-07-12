@@ -584,10 +584,11 @@ footer.helpdesk {
             }
 
             td:nth-child(11) {
-                max-width: 300px;
+                max-width: 400px;
             }
 
             .col-akcje {
+                min-width: 64px;
                 max-width: 190px;
             }
 
