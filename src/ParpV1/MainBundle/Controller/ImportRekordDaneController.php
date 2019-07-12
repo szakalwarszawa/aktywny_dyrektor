@@ -1063,10 +1063,6 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     }
                 }
 
-                if ($zmieniamySekcje && !isset($changeSet['departament'])) {
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaSekcji($userFromAD[0], $dane['form']['info'], $administratorzy);
-                }
                 if (isset($changeSet['stanowisko'])) {
                     // Do stanowiska pobieramy dane bezpośrednio z Rekorda - gdyż nie ma w formularzu możliwości
                     // wyboru stanowiska. W ogóle z ciekawostek - $administratorzy nie są w ogóle wykorzystyw
