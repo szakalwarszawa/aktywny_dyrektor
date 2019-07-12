@@ -590,12 +590,13 @@ footer.helpdesk {
             td:nth-child(12),
             td:nth-child(13) {
                 a {
+                    display: block;
                     padding: 5px;
                 }
                 a[title^='Zobacz wniosek'] {
                     width: 180px;
                 }
-                a[href^='/wnioseknadanieodebraniezasobow/'],
+                a[href^='/wnioseknadanieodebraniezasobow/']:not([title^='Zobacz wniosek']),
                 a[href^='/addRemoveAccessToUsersAction/'] {
                     width: 64px;
                 }
