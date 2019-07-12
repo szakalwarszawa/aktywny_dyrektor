@@ -621,3 +621,14 @@ footer.helpdesk {
         }
     }
 }
+
+/* Przyciski kolekcji */
+.collection-element {
+    padding: 2px;
+}
+/* Element kolekcji */
+.collection {
+    > div {
+        border-bottom: 1px solid #dedede;
+    }
+}

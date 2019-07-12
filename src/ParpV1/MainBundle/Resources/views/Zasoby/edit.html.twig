@@ -27,7 +27,7 @@
 </a>
 </div>
                     {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-
+                    <a class="btn btn-info" href="{{ path('access_level_group_manage', {'zasob': entity.id}) }}"><i class="fas fa-layer-group"></i> Konfiguruj grupy poziomów dostępu</a>
                     {{ form(edit_form) }}
                 </div>
             </div>
