@@ -587,10 +587,17 @@ footer.helpdesk {
                 max-width: 300px;
             }
 
-            td:nth-child(12) {
-                max-width: 64px;
+            td:nth-child(12),
+            td:nth-child(13) {
                 a {
                     padding: 5px;
+                }
+                a[title^='Zobacz wniosek'] {
+                    width: 180px;
+                }
+                a[href^='/wnioseknadanieodebraniezasobow/'],
+                a[href^='/addRemoveAccessToUsersAction/'] {
+                    width: 64px;
                 }
             }
         }
