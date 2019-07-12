@@ -340,7 +340,7 @@
                             {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
                             {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                             <tr>
-                                <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
+                                <td><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
                                 <td>{% if (entity.pracownikSpozaParp) %}
                                         {{ z.samaccountname|showFullname }}
                                     {% else %}
@@ -500,7 +500,7 @@
                                 {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
                                 {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                                 <tr>
-                                    <td><a href="{{ path('zasoby_edit', {'id': z.zasobId}) }}">{{ z.zasobNazwa }}</a></td>
+                                    <td><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
                                     <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
                                     {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
                                             <div class="alert alert-danger" role="alert">
