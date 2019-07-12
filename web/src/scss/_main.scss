@@ -590,10 +590,7 @@ footer.helpdesk {
             .col-akcje {
                 min-width: 64px;
                 max-width: 190px;
-            }
 
-            td:nth-child(12),
-            td:nth-child(13) {
                 a {
                     display: block;
                     margin: 0 auto;
@@ -623,9 +620,12 @@ footer.helpdesk {
             }
 
             td:nth-child(6),
-            td:nth-child(7),
-            td:nth-child(8) {
+            td:nth-child(7) {
                 max-width: 64px;
+            }
+
+            td:nth-child(8) {
+                max-width: 100px;
             }
 
             td:nth-child(11) {
@@ -634,4 +634,8 @@ footer.helpdesk {
             }
         }
     }
+}
+
+.nowrap {
+    white-space: nowrap;
 }
