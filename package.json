@@ -33,7 +33,7 @@
         "bootstrap-slider": "^10.6.1",
         "bootstrap-toggle": "^2.2.2",
         "colresizable": "^1.6.0",
-        "core-js": "2.0.0",
+        "core-js": "3.1.4",
         "eonasdan-bootstrap-datetimepicker": "^4.17.47",
         "font-awesome": "^4.7.0",
         "jquery": "^3.4.1",
