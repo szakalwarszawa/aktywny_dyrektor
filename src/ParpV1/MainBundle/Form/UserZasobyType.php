@@ -13,7 +13,6 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\UserZasoby;
-use Symfony\Component\VarDumper\VarDumper;
 
 class UserZasobyType extends AbstractType
 {
