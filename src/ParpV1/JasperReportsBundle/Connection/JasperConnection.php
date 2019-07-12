@@ -79,7 +79,6 @@ class JasperConnection
         );
 
         $jasperClient->setRequestTimeout($this->requestTimeout);
-        $jasperClient->serverInfo();
         try {
             $jasperClient->serverInfo();
         } catch (RESTRequestException $exception) {

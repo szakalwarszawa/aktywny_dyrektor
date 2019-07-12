@@ -23,7 +23,10 @@
         "@fortawesome/fontawesome-pro": "^5.9.0",
         "bootstrap-sass": "^3.4.1",
         "core-js": "2",
+        "jquery": "^3.4.1",
         "patch-package": "^6.1.2",
+        "select2": "^4.0.7",
+        "symfony-collection": "^2.1.30",
         "yarn": "^1.15.2"
     },
     "browserslist": {

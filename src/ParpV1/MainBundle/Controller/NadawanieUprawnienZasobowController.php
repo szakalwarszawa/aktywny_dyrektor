@@ -23,6 +23,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ParpV1\MainBundle\Entity\AccessLevelGroup;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -778,6 +779,7 @@ class NadawanieUprawnienZasobowController extends Controller
             }
 
             $uz->setZasobNazwa($z->getNazwa());
+            $uz->accessLevelGroups = $z->getAccessLevelGroups();
             //$uz->setSamaccountname($z->getId());
             $userzasoby[] = $uz;
         }
@@ -843,7 +845,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 foreach ($ndata['userzasoby'] as $oz) {
                     foreach ($sams as $currentsam) {
                         $zmianaupr = array();
-
                         //tu szukal podobnych dla tego zasobu ale teraz po polaczeniu z wnioskiami i nieaktywnymi to trzeba by warunek zwiekszyc
                         //$suz = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->findOneBy(array('samaccountname' => $currentsam, 'zasobId' => $oz->getZasobId()));
                         $zasob = $this->getDoctrine()->getManager()->getRepository(Zasoby::class)->find($oz->getZasobId());
@@ -859,6 +860,42 @@ class NadawanieUprawnienZasobowController extends Controller
                             //jesli nie parp_admin
                             //wtedy nie moze
                             throw new SecurityTestException('Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!');
+                        }
+
+                        $poziomyDostepu = $oz->getPoziomDostepu();
+                        $czesciPoziomow = explode(';', $poziomyDostepu);
+                        if ($czesciPoziomow) {
+                            $nowePoziomyDostepu = [];
+                            $istniejeGrupa = false;
+                            foreach ($czesciPoziomow as $idPoziomuGrupy) {
+                                if (is_numeric($idPoziomuGrupy)) {
+                                    $accessLevelGroup = $this
+                                        ->getDoctrine()
+                                        ->getManager()
+                                        ->getRepository(AccessLevelGroup::class)
+                                        ->findOneById($idPoziomuGrupy)
+                                    ;
+
+                                    if (null !== $accessLevelGroup) {
+                                        $istniejeGrupa = true;
+                                        $nowePoziomyDostepu[] = $accessLevelGroup->getAccessLevels();
+                                    }
+                                }
+                            }
+
+                            if ($istniejeGrupa) {
+                                $tempArray = [];
+                                foreach ($nowePoziomyDostepu as $grupaPoziomow) {
+                                    $poziomy = explode(';', $grupaPoziomow);
+                                    foreach ($poziomy as $poziom) {
+                                        if (!in_array($poziom, $tempArray)) {
+                                            $tempArray[] = $poziom;
+                                        }
+                                    }
+                                }
+
+                                $oz->setPoziomDostepu(implode(';', $tempArray));
+                            }
                         }
 
                         //if($suz == null){

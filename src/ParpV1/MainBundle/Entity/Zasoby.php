@@ -5,6 +5,9 @@ namespace ParpV1\MainBundle\Entity;
 use APY\DataGridBundle\Grid\Mapping as GRID;
 use Doctrine\ORM\Mapping as ORM;
 use DateTime;
+use Doctrine\Common\Collections\ArrayCollection;
+use ParpV1\MainBundle\Form\DataTransformer\StringToArrayTransformer;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * Zasoby
@@ -361,6 +364,14 @@ class Zasoby
      * @ORM\Column(name="zasob_w_trakcie_zmiany", type="boolean", nullable=true)
      */
     protected $zasobWTrakcieZmiany = false;
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\OneToMany(targetEntity="AccessLevelGroup", mappedBy="zasob", cascade={"all"}, orphanRemoval=true)
+     * @Assert\Valid()
+     */
+    protected $accessLevelGroups;
 
     /**
      * Get id
@@ -1295,7 +1306,8 @@ class Zasoby
         if ($this->getWniosekUtworzenieZasobu()) {
             $this->getWniosekUtworzenieZasobu()->setZasob($this);
         }
-        $this->wnioskiZmieniajaceZasob = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->wnioskiZmieniajaceZasob = new ArrayCollection();
+        $this->accessLevelGroups = new ArrayCollection();
     }
 
     /**
@@ -1588,6 +1600,82 @@ class Zasoby
     public function setZasobWTrakcieZmiany(bool $zasobWTrakcieZmiany)
     {
         $this->zasobWTrakcieZmiany = $zasobWTrakcieZmiany;
+
+        return $this;
+    }
+
+    /**
+     * Zwraca poziomy dostępu jako tablicę w formie poziom => poziom.
+     *
+     * @param bool $assocArray
+     *
+     * @return array
+     */
+    public function getPoziomyDostepuAsArray(bool $assocArray = false): array
+    {
+        $poziomyDostepu = $this->poziomDostepu;
+        if (null === $poziomyDostepu) {
+            return [];
+        }
+
+        $transformer = new StringToArrayTransformer(';');
+        $poziomyArray = $transformer->transform($this->poziomDostepu);
+
+        if ($assocArray) {
+            $tempArray = [];
+
+            foreach ($poziomyArray as $poziom) {
+                $tempArray[$poziom] = $poziom;
+            }
+
+            return $tempArray;
+        }
+
+        return $poziomyArray;
+    }
+
+    /**
+     * Get accessLevelGroups
+     *
+     * @return ArrayCollection
+     */
+    public function getAccessLevelGroups()
+    {
+        return $this->accessLevelGroups;
+    }
+
+    /**
+     * Remove accessLevelGroup
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return self
+     */
+    public function addAccessLevelGroup(AccessLevelGroup $accessLevelGroup): self
+    {
+        $this
+            ->accessLevelGroups
+            ->add($accessLevelGroup)
+        ;
+
+        return $this;
+    }
+
+    /**
+     * Add accessLevelGroup
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return self
+     */
+    public function removeAccessLevelGroup(AccessLevelGroup $accessLevelGroup): self
+    {
+        if ($this->accessLevelGroups->contains($accessLevelGroup)) {
+            $this
+                ->accessLevelGroups
+                ->remove($accessLevelGroup)
+            ;
+        }
 
         return $this;
     }
