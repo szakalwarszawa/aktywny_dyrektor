@@ -587,10 +587,15 @@ footer.helpdesk {
                 max-width: 300px;
             }
 
+            .col-akcje {
+                max-width: 190px;
+            }
+
             td:nth-child(12),
             td:nth-child(13) {
                 a {
                     display: block;
+                    margin: 0 auto;
                     padding: 5px;
                 }
                 a[title^='Zobacz wniosek'] {
