@@ -3,6 +3,9 @@ import '../scss/app.scss';
 require('@fortawesome/fontawesome-pro/css/all.min.css');
 require('symfony-collection');
 require('select2');
+require('jquery');
+
+var $ = require('jquery');
 
 function showInfo(info) {
     console.info(
