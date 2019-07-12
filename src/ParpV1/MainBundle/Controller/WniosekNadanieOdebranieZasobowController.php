@@ -997,10 +997,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $dostepnePoziomy = explode(';', $poziomy);
 
                         if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            $message = 'Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() .
-                                '\', wybrany poziom to \'' . $uz->getPoziomDostepu() . '\', dostepne poziomy: ' .
+                            $message = 'Niewłaściwy poziom dostępu dla zasobu \'' . $z->getNazwa() .
+                                '\'. Wybrany poziom to \'' . $uz->getPoziomDostepu() . '\'. Dostępne poziomy: ' .
                                 $poziomyTekst . '. Zasób uległ zmianie. ' .
-                                'Skontaktuj się z właścielem zasobu.'
+                                'Skontaktuj się z właścicielem zasobu.'
                             ;
                             $this
                                 ->addFlash('danger', $message)
