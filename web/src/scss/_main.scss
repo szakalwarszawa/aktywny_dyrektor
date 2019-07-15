@@ -584,13 +584,24 @@ footer.helpdesk {
             }
 
             td:nth-child(11) {
-                max-width: 300px;
+                max-width: 400px;
             }
 
-            td:nth-child(12) {
-                max-width: 64px;
+            .col-akcje {
+                min-width: 64px;
+                max-width: 190px;
+
                 a {
+                    display: block;
+                    margin: 0 auto;
                     padding: 5px;
+                }
+                a[title^='Zobacz wniosek'] {
+                    width: 180px;
+                }
+                a[href^='/wnioseknadanieodebraniezasobow/']:not([title^='Zobacz wniosek']),
+                a[href^='/addRemoveAccessToUsersAction/'] {
+                    width: 64px;
                 }
             }
         }
@@ -609,9 +620,12 @@ footer.helpdesk {
             }
 
             td:nth-child(6),
-            td:nth-child(7),
-            td:nth-child(8) {
+            td:nth-child(7) {
                 max-width: 64px;
+            }
+
+            td:nth-child(8) {
+                max-width: 100px;
             }
 
             td:nth-child(11) {
@@ -622,10 +636,15 @@ footer.helpdesk {
     }
 }
 
+.nowrap {
+    white-space: nowrap;
+}
+
 /* Przyciski kolekcji */
 .collection-element {
     padding: 2px;
 }
+
 /* Element kolekcji */
 .collection {
     > div {
