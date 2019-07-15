@@ -330,8 +330,9 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         $now = new \Datetime();
 
+        $formNadanie = 'addResources' === $action;
         $builder = $this->createFormBuilder();
-        $form = $builder
+        $builder
                 ->add('samaccountnames', HiddenType::class, array(
                     'data' => $samaccountnames
                 ))
@@ -353,14 +354,8 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'data' => json_encode($samaccountnames)
                 ))
-                ->add('fromWhen', TextareaType::class, array(
-                    'attr' => array(
-                        'class' => 'form-control datepicker',
-                    ),
+                ->add('fromWhen', HiddenType::class, array(
                     'label' => $action === 'removeResources' ? 'Sugerowana data odebrania uprawnień' : 'Data zmiany',
-                    'label_attr' => array(
-                        'class' => 'data-zmiany',
-                    ),
                     'required' => false,
                     'data' => $now->format('Y-m-d')
                 ))
@@ -387,7 +382,9 @@ class NadawanieUprawnienZasobowController extends Controller
                     'choices' => $grupy,
                     'multiple' => false,
                     'expanded' => false
-                ))
+                ));
+        if (!$formNadanie) {
+            $builder
                 ->add('buttonzaznacz', ButtonType::class, array(
                     //'label' =>  false,
                     'attr' => array(
@@ -402,47 +399,66 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'label' => 'Odznacz wszystkie'
                 ))
-                ->add('wybraneZasoby', TextareaType::class, array('mapped' => false, 'attr' => ['readonly' => true]))
-
+                ->add('wybraneZasoby', TextareaType::class, array(
+                    'mapped' => false,
+                    'label_attr' => [
+                        'class' => '',
+                    ],
+                    'attr' => [
+                        'readonly' => true,
+                        'class' => '',
+                        ]
+                ))
                 ->add('nazwafiltr', TextareaType::class, array(
                     'label_attr' => array(
-                        'class' => 'text-left ',
+                        'class' => 'text-left'. $formNadanie? ' hidden': '',
                     ),
                     'label' => 'Filtruj po nazwie',
                     'attr' => array(
-                        'class' => 'ays-ignore ',
+                        'class' => 'ays-ignore' . $formNadanie? ' hidden': '',
                     ),
                     'required' => false
                 ))
-                ->add('access', ChoiceType::class, array(
-                    'required' => false,
-                    'label' => $title,
-                    'label_attr' => array(
-                        'class' => 'text-left uprawnienieRow',
-                    ),
-                    'attr' => array(
-                        'class' => '',
-                    ),
-                    'choices' => array_flip($choices),
-                    'multiple' => true,
-                    'expanded' => true
-                ))
+            ;
+        }
+        $builder
+            ->add('access', ChoiceType::class, array(
+                'required' => false,
+                'label' => $title,
+                'label_attr' => array(
+                    'class' => 'text-left uprawnienieRow',
+                ),
+                'attr' => array(
+                    'class' => $formNadanie? 'select2' : '',
+                ),
+                'choices' => array_flip($choices),
+                'multiple' => true,
+                'expanded' => $formNadanie? false : true,
+            ))
+        ;
 
+        if (!$formNadanie) {
+            $builder
                 ->add('zapisz2', SubmitType::class, array(
                     'attr' => array(
                         'class' => 'btn btn-success col-sm-12',
                     ),
                     'label' => 'Dalej'
                 ))
-                ->add('zapisz', SubmitType::class, array(
-                    'attr' => array(
-                        'class' => 'btn btn-success col-sm-12',
-                    ),
-                    'label' => 'Dalej'
-                ))
-                ->setAction($this->generateUrl('addRemoveAccessToUsersAction', array('wniosekId' => $wniosekId, 'action' => $action)))
-                ->setMethod('POST')
-                ->getForm();
+            ;
+        }
+        $builder
+            ->add('zapisz', SubmitType::class, array(
+                'attr' => array(
+                    'class' => 'btn btn-success col-sm-12',
+                ),
+                'label' => 'Dalej'
+            ))
+            ->setAction($this->generateUrl('addRemoveAccessToUsersAction', array('wniosekId' => $wniosekId, 'action' => $action)))
+            ->setMethod('POST')
+        ;
+
+        $form = $builder->getForm();
 
         $form->handleRequest($request);
 
