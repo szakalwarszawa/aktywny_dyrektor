@@ -38,9 +38,18 @@ import 'moment';
 import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
 import 'select2';
-require('select2');
 import 'tablesorter';
 import 'tag-it';
+
+// require jQuery normally
+// const $ = require('jquery');
+import $ from 'jquery';
+
+// create global $ and jQuery variables
+global.$ = global.jQuery = $;
+
+const ko = require('knockout');
+global.ko = ko;
 
 function showInfo(info) {
     console.info(
