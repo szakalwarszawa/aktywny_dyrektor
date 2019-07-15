@@ -574,16 +574,20 @@ footer.helpdesk {
                 }
             }
 
-            .osoba {
+            .col-nazwa-zasobu {
+                max-width: 300px;
+            }
+
+            .col-osoba {
                 min-width: 116px;
             }
 
-            td:nth-child(7) {
+            .col-bezterminowo {
                 width: 56px;
                 max-width: 116px;
             }
 
-            td:nth-child(11) {
+            .col-cel {
                 max-width: 400px;
             }
 
@@ -613,22 +617,22 @@ footer.helpdesk {
 
     tbody {
         tr {
-            td:nth-child(5),
-            td:nth-child(9),
-            td:nth-child(10) {
+            .col-sum-upr,
+            .col-kanal-dostepu,
+            .col-upr-adm {
                 max-width: 48px;
             }
 
-            td:nth-child(6),
-            td:nth-child(7) {
+            .umowa-od,
+            .col-bezterminowo {
                 max-width: 64px;
             }
 
-            td:nth-child(8) {
+            .col-umowa-do {
                 max-width: 100px;
             }
 
-            td:nth-child(11) {
+            .col-cel {
                 min-width: 128px;
                 max-width: 240px;
             }
