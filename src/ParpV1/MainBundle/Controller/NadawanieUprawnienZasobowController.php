@@ -353,14 +353,8 @@ class NadawanieUprawnienZasobowController extends Controller
                     ),
                     'data' => json_encode($samaccountnames)
                 ))
-                ->add('fromWhen', TextareaType::class, array(
-                    'attr' => array(
-                        'class' => 'form-control datepicker',
-                    ),
+                ->add('fromWhen', HiddenType::class, array(
                     'label' => $action === 'removeResources' ? 'Sugerowana data odebrania uprawnień' : 'Data zmiany',
-                    'label_attr' => array(
-                        'class' => 'data-zmiany',
-                    ),
                     'required' => false,
                     'data' => $now->format('Y-m-d')
                 ))
