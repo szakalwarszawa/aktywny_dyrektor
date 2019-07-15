@@ -23,12 +23,12 @@ import '../scss/app.scss';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
-import 'bootstrap-datepicker';
+import * as datepicker from 'bootstrap-datepicker';
 import 'bootstrap-filestyle';
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
 import '../../../node_modules/colresizable/colResizable-1.6.min.js';
-import 'eonasdan-bootstrap-datetimepicker';
+import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'jquery';
 import 'jquery-ui';
 import 'jquery.maskedinput';
@@ -37,7 +37,7 @@ import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
 import 'moment';
 import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
-import 'select2';
+import * as select2 from 'select2';
 import 'tablesorter';
 import 'tag-it';
 
@@ -47,6 +47,12 @@ import $ from 'jquery';
 
 // create global $ and jQuery variables
 global.$ = global.jQuery = $;
+
+global.select2 = select2;
+global.datepicker = datepicker;
+global.datetimepicker = datetimepicker;
+
+console.log(`%c ${datetimepicker} `, 'font-size: 10px;');
 
 function showInfo(info) {
     console.info(
