@@ -48,9 +48,6 @@ import $ from 'jquery';
 // create global $ and jQuery variables
 global.$ = global.jQuery = $;
 
-const ko = require('knockout');
-global.ko = ko;
-
 function showInfo(info) {
     console.info(
         `%c ${info} `,
