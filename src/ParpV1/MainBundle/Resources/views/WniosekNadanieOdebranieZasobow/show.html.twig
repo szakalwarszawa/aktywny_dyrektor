@@ -318,13 +318,13 @@
                     <thead>
                         <tr>
                             <th class="header">Nazwa</th>
-                            <th class="header"><i class="fas fa-user"></i> Osoba</th>
+                            <th class="header">Osoba</th>
                             <th class="header">Moduł</th>
                             <th class="header">Poziom<br />dostępu</th>
                             <th class="header" title="Sumowanie uprawnień">Sum.<br />upr.</th>
-                            <th class="header" title="Data od:"><i class="fas fa-calendar-alt"></i> Od</th>
+                            <th class="header" title="Data od:">Aktywne od</th>
                             <th class="header" title="Bezterminowo">Bezterm.</th>
-                            <th class="header" title="Data do:"><i class="fas fa-calendar-alt"></i> Do</th>
+                            <th class="header" title="Data do:">Aktywne do</th>
                             <th class="header">Kanał<br />dostępu</th>
                             <th class="header" title="Uprawnienia administracyjne">Upr.<br />adm.</th>
                             <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
@@ -340,8 +340,8 @@
                             {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
                             {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                             <tr>
-                                <td><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
-                                <td>{% if (entity.pracownikSpozaParp) %}
+                                <td class="col-nazwa-zasobu"><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
+                                <td class="col-osoba">{% if (entity.pracownikSpozaParp) %}
                                         {{ z.samaccountname|showFullname }}
                                     {% else %}
                                         <a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
@@ -352,21 +352,21 @@
                                         {% endif %}
                                     {% endif %}
                                 </td>
-                                <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
-                                <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
-                                <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
-                                <td class="nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
-                                <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                <td class="col-modul">{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
+                                <td class="col-poziom-dostepu nowrap">{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
+                                <td class="col-sumowanie-upr">{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
+                                <td class="col-aktywne-od nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
+                                <td class="col-bezterminowo nowrap">{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                     {{ z.bezterminowo ? "TAK" : "NIE" }}
                                     {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
                                 </td>
-                                <td class="nowrap">{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                <td class="col-umowa-do nowrap">{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                     {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
                                     {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
                                 </td>
-                                <td>{{ z.kanalDostepu }}</td>
-                                <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
-                                <td>
+                                <td class="col-kanal-dostepu nowrap">{{ z.kanalDostepu }}</td>
+                                <td class="col-upr-adm nowrap">{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
+                                <td class="col-cel">
                                     {% if wniosek_odebranie %}{{ z.powodOdebrania }}{% else %}{{ z.powodNadania }}{% endif %}
 
                                     {% if(z.czyOdebrane and not wniosek_odebranie) %}
@@ -378,9 +378,9 @@
                                 </td>
                                 {% if wniosek_odebranie %}
                                     {% if z.dataOdebrania is not empty %}
-                                        <td>{{ z.dataOdebrania|date('Y-m-d H:i:s') }}</td>
+                                        <td class="data-odebrania">{{ z.dataOdebrania|date('Y-m-d H:i:s') }}</td>
                                         {% else %}
-                                        <td>-</td>
+                                        <td class="data-odebrania">-</td>
                                     {% endif %}
                                 {% endif %}
                                 <td class="col-akcje">
@@ -482,13 +482,13 @@
                         <thead>
                             <tr>
                                 <th class="header">Nazwa</th>
-                                <th class="header"><i class="fas fa-user"></i> Osoba</th>
+                                <th class="header">Osoba</th>
                                 <th class="header">Moduł</th>
                                 <th class="header">Poziom<br />dostępu</th>
                                 <th class="header" title="Sumowanie uprawnień">Sum.<br />upr.</th>
-                                <th class="header" title="Data od:"><i class="fas fa-calendar-alt"></i> Od</th>
+                                <th class="header" title="Data od:">Aktywne od</th>
                                 <th class="header" title="Bezterminowo">Bezterm.</th>
-                                <th class="header" title="Data do:"><i class="fas fa-calendar-alt"></i> Do</th>
+                                <th class="header" title="Data do:">Aktywne do</th>
                                 <th class="header">Kanał<br />dostępu</th>
                                 <th class="header" title="Uprawnienia administracyjne">Upr.<br />adm.</th>
                                 <th class="header">Cel {% if wniosek_odebranie %}odebrania{% else %}nadania{% endif %}</th>
@@ -500,29 +500,29 @@
                                 {% set koniec_umowy_bezterminowo = (koniec_umowy and z.bezterminowo) %}
                                 {% set koniec_umowy_przekracza_do = (koniec_umowy and z.aktywneDo > koniec_umowy) %}
                                 <tr>
-                                    <td><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
-                                    <td><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
+                                    <td class="col-nazwa-zasobu"><a href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobNazwa }}</a></td>
+                                    <td class="col-osoba"><a href="{{ path('userEdit', {'samaccountname': z.samaccountname}) }}">{{ z.samaccountname|showFullname }}</a>
                                     {% if koniec_umowy_bezterminowo or koniec_umowy_przekracza_do %}
                                             <div class="alert alert-danger" role="alert">
                                                 <span class="fas fa-exclamation-circle" aria-hidden="true"></span> Umowa do: <br />{{ koniec_umowy|date("Y-m-d") }}
                                             </div>
                                     {% endif %}
                                     </td>
-                                    <td>{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
-                                    <td>{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
-                                    <td>{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
-                                    <td class="nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
-                                    <td>{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                    <td class="col-modul">{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
+                                    <td class="col-poziom-dostepu">{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
+                                    <td  class="col-sum-upr">{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
+                                    <td class="col-umowa-od nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
+                                    <td class="col-bezterminowo nowrap">{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                         {{ z.bezterminowo ? "TAK" : "NIE" }}
                                         {{ koniec_umowy_bezterminowo ? '</div>' : '' }}
                                     </td>
-                                    <td class="nowrap">{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
+                                    <td class="col-umowa-do nowrap">{{ koniec_umowy_przekracza_do ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
                                         {{ z.aktywneDo ? z.aktywneDo|date("Y-m-d") : "" }}
                                         {{ koniec_umowy_przekracza_do ? '</div>' : '' }}
                                     </td>
-                                    <td>{{ z.kanalDostepu }}</td>
-                                    <td>{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
-                                    <td>{{ z.powodNadania }} </td>
+                                    <td class="col-kanal-dostepu nowrap">{{ z.kanalDostepu }}</td>
+                                    <td class="col-upr-adm nowrap">{{ z.uprawnieniaAdministracyjne ? "TAK" : "NIE" }}</td>
+                                    <td class="col-cel">{{ z.powodNadania }} </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
