@@ -5,10 +5,10 @@ namespace ParpV1\JasperReportsBundle\Connection;
 use Jaspersoft\Client\Client;
 use Jaspersoft\Service\JobService;
 use Jaspersoft\Exception\RESTRequestException;
-use ParpV1\RaportBundle\Exception\ConnectException;
 use Jaspersoft\Service\ReportService;
 use Jaspersoft\Service\OptionsService;
 use Jaspersoft\Service\RepositoryService;
+use ParpV1\JasperReportsBundle\Exception\ConnectException;
 
 /**
  * Klasa połączenia z Jasper.
