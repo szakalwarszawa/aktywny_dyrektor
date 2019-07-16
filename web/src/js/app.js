@@ -24,7 +24,7 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
 import * as select2 from 'select2';
-import Datepicker from 'bootstrap-datepicker';
+// import Datepicker from 'bootstrap-datepicker';
 import 'bootstrap-filestyle';
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
@@ -54,6 +54,7 @@ global.datepicker = Datepicker;
 global.datetimepicker = datetimepicker;
 
 console.log(`%c ${select2} `, 'font-size: 9px;');
+console.log(`%c ${datepicker} `, 'font-size: 9px;');
 
 function showInfo(info) {
     console.info(
