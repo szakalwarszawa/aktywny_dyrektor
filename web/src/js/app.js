@@ -53,7 +53,8 @@ global.$ = global.jQuery = $;
 // global.datepicker = Datepicker;
 global.datetimepicker = datetimepicker;
 
-if (typeof(datepicker) !== undefined) {
+if (window.hasOwnProperty('datepicker')) {
+    console.info(typeof(datepicker));
     console.log(`%c ${datepicker} `, 'font-size: 9px;');
 } else {
     console.warn('no datepicker');
