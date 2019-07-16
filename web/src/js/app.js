@@ -23,7 +23,7 @@ import '../scss/app.scss';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
-import * as select2 from 'select2';
+// import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
 import 'bootstrap-filestyle';
 import 'bootstrap-slider';
@@ -49,12 +49,17 @@ import $ from 'jquery';
 // create global $ and jQuery variables
 global.$ = global.jQuery = $;
 
-global.select2 = select2;
+// global.select2 = select2;
 global.datepicker = Datepicker;
 global.datetimepicker = datetimepicker;
 
+if (datepicker) {
+    console.log(`%c ${datepicker} `, 'font-size: 9px;');
+} else {
+    console.warn('no datepicker');
+}
+
 console.log(`%c ${select2} `, 'font-size: 9px;');
-console.log(`%c ${datepicker} `, 'font-size: 9px;');
 
 function showInfo(info) {
     console.info(
