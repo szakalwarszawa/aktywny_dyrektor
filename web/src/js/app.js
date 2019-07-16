@@ -50,7 +50,7 @@ import $ from 'jquery';
 global.$ = global.jQuery = $;
 
 // global.select2 = select2;
-global.datepicker = Datepicker;
+// global.datepicker = Datepicker;
 global.datetimepicker = datetimepicker;
 
 if (datepicker) {
