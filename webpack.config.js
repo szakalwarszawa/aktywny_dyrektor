@@ -1,4 +1,5 @@
 var Encore = require('@symfony/webpack-encore');
+var webpack = require('webpack');
 
 Encore.setOutputPath('web/build/')
     .setPublicPath('/build')
@@ -11,6 +12,14 @@ Encore.setOutputPath('web/build/')
     .splitEntryChunks()
     .autoProvidejQuery()
     .enableSassLoader()
+    .addPlugin(
+        new webpack.ProvidePlugin({
+            // identifier: ['module1', 'property1'],
+            'global.datepicker': bootstrap - datepicker,
+        }),
+        5,
+    )
+    .addPlugin(new webpack.ProvidePlugin({ 'global.select2': Select2 }), 10)
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(
             ([name]) => name === '@babel/preset-env',

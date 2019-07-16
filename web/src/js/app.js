@@ -52,7 +52,7 @@ global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 
-console.log(`%c ${datetimepicker} `, 'font-size: 10px;');
+console.log(`%c ${datepicker} `, 'font-size: 9px;');
 
 function showInfo(info) {
     console.info(
