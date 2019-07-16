@@ -53,18 +53,23 @@ global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 
-fetch("../../../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+
+fetch("./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
     .then(resp => {
         if (resp.ok) {
             return resp.json()
         } else {
-            throw new Error("Wystąpił błąd połączenia!")
+            return Promise.reject(resp)
         }
     })
     .then(resp => {
         console.log(resp)
     })
-    .catch(error => console.dir("Błąd: ", error));
+    .catch(error => {
+        if (error.status === 404) {
+            console.log("Błąd: żądany adres nie istnieje");
+        }
+    });
 
 if (window.hasOwnProperty('datepicker')) {
     console.info(typeof(datepicker));
@@ -73,7 +78,7 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
-console.log(`%c ${select2} `, 'font-size: 9px;');
+console.log(`%c ${select2} `, 'font-size: 6px;');
 
 function showInfo(info) {
     console.info(
