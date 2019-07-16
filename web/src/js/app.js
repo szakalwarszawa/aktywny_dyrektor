@@ -23,7 +23,7 @@ import '../scss/app.scss';
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
-import * as datepicker from 'bootstrap-datepicker';
+import datepicker from 'bootstrap-datepicker';
 import 'bootstrap-filestyle';
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
