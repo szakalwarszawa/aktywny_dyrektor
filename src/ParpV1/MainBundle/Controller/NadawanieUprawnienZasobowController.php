@@ -423,7 +423,7 @@ class NadawanieUprawnienZasobowController extends Controller
         }
         $builder
             ->add('access', ChoiceType::class, array(
-                'required' => false,
+                'required' => true,
                 'label' => $title,
                 'label_attr' => array(
                     'class' => 'text-left uprawnienieRow',
