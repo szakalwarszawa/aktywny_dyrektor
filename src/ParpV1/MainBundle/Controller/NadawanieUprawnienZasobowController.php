@@ -765,10 +765,6 @@ class NadawanieUprawnienZasobowController extends Controller
         foreach ($zids as $v) {
             //print_r($v);
             $z = $this->getDoctrine()->getRepository(Zasoby::class)->find($v);
-
-
-
-
             //echo ".".count($z->getUzytkownicy()).".";
             if ($uzid == 0) {
                 $uz = new UserZasoby();
@@ -783,6 +779,8 @@ class NadawanieUprawnienZasobowController extends Controller
             $uz->setZasobOpis($z->getNazwa());
             $uz->setPoziomDostepu($z->getPoziomDostepu());
             $uz->setModul($z->getModulFunkcja());
+            $uz->setPowodNadania($ndata['powod']);
+
             $c1 = explode(',', $z->getPoziomDostepu());
             foreach ($c1 as $c) {
                 $c = trim($c);
@@ -839,7 +837,6 @@ class NadawanieUprawnienZasobowController extends Controller
 
         if ($ndata == null) {
             $form->handleRequest($request);
-
             if ($form->isValid()) {
                 //die('temp blokuje by zbadac wnioski');
                 $ndata = $form->getData();
@@ -924,6 +921,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
                             $z->setBezterminowo($oz->getBezterminowo());
                             $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
+                            $z->setPowodNadania($oz->getPowodNadania());
                             if ($oz->getAktywneDo() == '' || $oz->getBezterminowo()) {
                                 $z->setAktywneDo(null);
                             } else {
@@ -946,7 +944,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setCzyNadane(false);
                             $z->setWniosek($wniosek);
 
-                            $z->setPowodNadania($powod);
+                            $z->setPowodNadania($oz->getPowodNadania());
                             $z->setSamaccountname($currentsam);
 
                             $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
