@@ -51,7 +51,8 @@ class WniosekNadanieOdebranieZasobowType extends AbstractType
                     )
             ))
             ->add('wniosek', WniosekType::class, array(
-                'label' => false
+                'label' => false,
+                'attr' => ['class' => 'hidden']
             ));
     }
 
