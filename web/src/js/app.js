@@ -49,13 +49,13 @@ import $ from 'jquery';
 // create global $ and jQuery variables
 global.$ = global.jQuery = $;
 
-// global.select2 = select2;
+global.select2 = select2;
 // global.datepicker = Datepicker;
 global.datetimepicker = datetimepicker;
 
 if (window.hasOwnProperty('datepicker')) {
     console.info(typeof(datepicker));
-    console.log(`%c ${datepicker} `, 'font-size: 9px;');
+    console.log(`%c ${datepicker} `, 'font-size: 9px; color: blue;');
 } else {
     console.warn('no datepicker');
 }
