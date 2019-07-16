@@ -13,6 +13,7 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 
 class UserZasobyType extends AbstractType
 {
@@ -42,6 +43,7 @@ class UserZasobyType extends AbstractType
                     'required' => false,
                     'data' => $d1,
                 ))
+            ->add('powodNadania', TextareaType::class)
             ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
             //->add('aktywneOdPomijac')

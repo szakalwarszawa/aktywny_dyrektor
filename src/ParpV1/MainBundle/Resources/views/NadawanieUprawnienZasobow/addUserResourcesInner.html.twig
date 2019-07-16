@@ -132,7 +132,12 @@
                                         {{ form_widget(userzasoby.kanalDostepu) }}
                                         {{ form_widget(userzasoby.sumowanieUprawnien) }}
                                         {{ form_widget(userzasoby.uprawnieniaAdministracyjne) }}
-                                    </td>
+
+                                        {% if userzasoby.powodNadania is defined %}
+                                            <br />
+                                            <h4>Cel nadania/odebrania</h4>
+                                            {{ form_widget(userzasoby.powodNadania) }}
+                                        {% endif %}
                                 </tr>
                             {% endfor %}
                         </tbody>
