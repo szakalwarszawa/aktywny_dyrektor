@@ -53,6 +53,19 @@ global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 
+fetch("../../../node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+    .then(resp => {
+        if (resp.ok) {
+            return resp.json()
+        } else {
+            throw new Error("Wystąpił błąd połączenia!")
+        }
+    })
+    .then(resp => {
+        console.log(resp)
+    })
+    .catch(error => console.dir("Błąd: ", error));
+
 if (window.hasOwnProperty('datepicker')) {
     console.info(typeof(datepicker));
     console.log(`%c ${datepicker} `, 'font-size: 9px; color: blue;');
