@@ -12,14 +12,14 @@ Encore.setOutputPath('web/build/')
     .splitEntryChunks()
     .autoProvidejQuery()
     .enableSassLoader()
-    .addPlugin(
-        new webpack.ProvidePlugin({
-            // identifier: ['module1', 'property1'],
-            'global.datepicker': 'datepicker',
-        }),
-        5,
-    )
-    .addPlugin(new webpack.ProvidePlugin({ 'global.select2': 'select2' }), 10)
+    // .addPlugin(
+    //     new webpack.ProvidePlugin({
+    //         // identifier: ['module1', 'property1'],
+    //         'global.datepicker': 'datepicker',
+    //     }),
+    //     5,
+    // )
+    // .addPlugin(new webpack.ProvidePlugin({ 'global.select2': 'select2' }), 10)
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(
             ([name]) => name === '@babel/preset-env',

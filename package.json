@@ -52,7 +52,6 @@
         "select2": "^4.0.0",
         "tablesorter": "^2.31.1",
         "tag-it": "^2.0.0",
-        "webpack": "^4.35.3",
         "yarn": "^1.15.2"
     },
     "browserslist": {
