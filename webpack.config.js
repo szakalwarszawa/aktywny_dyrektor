@@ -15,7 +15,7 @@ Encore.setOutputPath('web/build/')
     .addPlugin(
         new webpack.ProvidePlugin({
             // identifier: ['module1', 'property1'],
-            'global.datepicker': bootstrap - datepicker,
+            'global.datepicker': datepicker,
         }),
         5,
     )
