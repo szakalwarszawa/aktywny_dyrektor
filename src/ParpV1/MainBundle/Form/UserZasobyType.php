@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use ParpV1\MainBundle\Constants\AccessLevelTypes;
 
 class UserZasobyType extends AbstractType
 {
@@ -83,7 +84,10 @@ class UserZasobyType extends AbstractType
                     $o = $event->getData();
                     $choices = array();
                     if ($o) {
-                        $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder, $options);
+                        if ((!$options['zablokuj_edycje_poziomu'] || empty($o->accessLevelGroups->toArray()))) {
+                            $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder, $options);
+                        }
+
                         $this->addChoicesFromDictionary($o, $form, "getModul", "modul", $builder, $options);
                     }
                 }
@@ -120,10 +124,7 @@ class UserZasobyType extends AbstractType
                     'mapped' => false,
                     'placeholder' => 'Proszę wybrać',
                     'required' => true,
-                    'choices' => [
-                        'Grupy uprawnień' => 0,
-                        'Pojedyńcze uprawnienia' => 1
-                    ]
+                    'choices' => AccessLevelTypes::mapToForm()
                 ])
             ;
             $dodatkowaKlasa = ' odblokujPoWyborze ';
@@ -133,7 +134,6 @@ class UserZasobyType extends AbstractType
                 }
             }
         }
-
 
         $form->add(
             $fieldName, /* NestedComboType::class */
@@ -146,9 +146,9 @@ class UserZasobyType extends AbstractType
                     'choice_attr' => function ($choice, $key, $value) use ($zablokujPoziom) {
                         if ($zablokujPoziom) {
                             if (is_numeric($value)) {
-                                return ['class' => 'poziom-dostepu-element poziom-grupa', 'disabled ' => 'disabled'];
+                                return ['class' => 'poziom-dostepu-element poziom-grupa'];
                             } else {
-                                return ['class' => 'poziom-dostepu-element poziom-niegrupa', 'disabled ' => 'disabled'];
+                                return ['class' => 'poziom-dostepu-element poziom-niegrupa'];
                             }
                         }
                         return [];
@@ -167,6 +167,7 @@ class UserZasobyType extends AbstractType
             'data_class' => UserZasoby::class,
             'is_sub_form' => true,
             'data_uz' => null,
+            'zablokuj_edycje_poziomu' => false
         ));
     }
 

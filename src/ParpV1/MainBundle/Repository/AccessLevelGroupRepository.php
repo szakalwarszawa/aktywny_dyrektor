@@ -12,4 +12,36 @@ use Doctrine\ORM\EntityRepository;
  */
 class AccessLevelGroupRepository extends EntityRepository
 {
+    /**
+     * Znajduje grupy poziomów dostępu dla zasobu, opcjonalnie mapuje wynik
+     * do wyświetlenia w formularzu.
+     *
+     * @param int $zasob
+     * @param bool $formMapped
+     *
+     * @return array
+     */
+    public function findAccessLevelGroups(int $zasob, bool $formMapped = false): array
+    {
+        $queryBuilder = $this->createQueryBuilder('a');
+        $queryBuilder
+            ->select('a')
+            ->where('a.zasob = :zasob')
+            ->setParameter('zasob', $zasob)
+        ;
+        $result = $queryBuilder
+            ->getQuery()
+            ->getResult()
+        ;
+        if (!$formMapped) {
+            return $result;
+        }
+
+        $tempArray = [];
+        foreach ($result as $row) {
+            $tempArray[$row->getId()] = $row->getGroupName();
+        }
+
+        return $tempArray;
+    }
 }

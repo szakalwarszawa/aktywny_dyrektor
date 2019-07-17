@@ -24,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
+use ParpV1\MainBundle\Entity\Komentarz;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -814,6 +815,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 'entry_options' => array(
                     'is_sub_form' => true,
                     'data_uz' => $datauz,
+                    'zablokuj_edycje_poziomu' => 'editResources' === $action
                 ),
                 'allow_add'    => true,
                 'allow_delete'    => true,
@@ -880,6 +882,8 @@ class NadawanieUprawnienZasobowController extends Controller
                         if ($czesciPoziomow) {
                             $nowePoziomyDostepu = [];
                             $istniejeGrupa = false;
+                            $istniejaPojedyncze = false;
+                            $grupyWybrane = [];
                             foreach ($czesciPoziomow as $idPoziomuGrupy) {
                                 if (is_numeric($idPoziomuGrupy)) {
                                     $accessLevelGroup = $this
@@ -891,9 +895,18 @@ class NadawanieUprawnienZasobowController extends Controller
 
                                     if (null !== $accessLevelGroup) {
                                         $istniejeGrupa = true;
+                                        $grupyWybrane[] = $accessLevelGroup->getGroupName();
                                         $nowePoziomyDostepu[] = $accessLevelGroup->getAccessLevels();
                                     }
+                                } else {
+                                    $istniejaPojedyncze = true;
                                 }
+                            }
+
+                            if ($istniejaPojedyncze && $istniejeGrupa) {
+                                $this->addFlash('danger', 'Błąd formularza (poziom dostępu)');
+
+                                return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
                             }
 
                             if ($istniejeGrupa) {
@@ -907,6 +920,16 @@ class NadawanieUprawnienZasobowController extends Controller
                                     }
                                 }
 
+                                $komentarz = new Komentarz();
+                                $komentarz
+                                    ->setObiekt('WniosekNadanieOdebranieZasobow')
+                                    ->setObiektId($wniosek->getId())
+                                    ->setTytul('Wybrano grupy poziomów dostępu')
+                                    ->setOpis(implode(', ', $grupyWybrane))
+                                    ->setSamaccountname($this->getUser()->getUsername());
+                                ;
+                                $this->getDoctrine()->getManager()->persist($komentarz);
+
                                 $oz->setPoziomDostepu(implode(';', $tempArray));
                             }
                         }
@@ -917,7 +940,9 @@ class NadawanieUprawnienZasobowController extends Controller
                             //$this->getDoctrine()->getManager()->remove($z2);
                             $z = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($oz->getId());
                             $z->setModul($oz->getModul());
-                            $z->setPoziomDostepu($oz->getPoziomDostepu());
+                            if (!empty($oz->getPoziomDostepu())) {
+                                $z->setPoziomDostepu($oz->getPoziomDostepu());
+                            }
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
                             $z->setBezterminowo($oz->getBezterminowo());
                             $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
@@ -974,14 +999,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             } else {
                 $ndata = $form->getData();
-                print_r($ndata);
-                $ee = array();
-                foreach ($form->getErrors() as $e) {
-                    $ee[] = $e->getMessage();
-                }
-
-                print_r($ee);
-                die('mam blad forma '.count($form->getErrors()).' '.$form->getErrorsAsString());
             }
         }
 
