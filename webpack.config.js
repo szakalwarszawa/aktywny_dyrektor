@@ -13,13 +13,13 @@ Encore.setOutputPath('web/build/')
     .splitEntryChunks()
     .autoProvidejQuery()
     .enableSassLoader()
-    .addPlugin(
-        new webpack.ProvidePlugin({
-            // identifier: ['module1', 'property1'],
-            datepicker: 'bootstrap-datepicker',
-        }),
-        5,
-    )
+    // .addPlugin(
+    //     new webpack.ProvidePlugin({
+    //         // identifier: ['module1', 'property1'],
+    //         datepicker: 'bootstrap-datepicker',
+    //     }),
+    //     5,
+    // )
     .addPlugin(new webpack.ProvidePlugin({ select2: 'select2' }), 10)
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(

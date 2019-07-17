@@ -25,6 +25,7 @@ import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
+import 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
@@ -54,22 +55,22 @@ global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 
 
-fetch("./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
-    .then(resp => {
-        if (resp.ok) {
-            return resp.json()
-        } else {
-            return Promise.reject(resp)
-        }
-    })
-    .then(resp => {
-        console.log(resp)
-    })
-    .catch(error => {
-        if (error.status === 404) {
-            console.log("Błąd: żądany adres nie istnieje");
-        }
-    });
+// fetch("./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
+//     .then(resp => {
+//         if (resp.ok) {
+//             return resp.json()
+//         } else {
+//             return Promise.reject(resp)
+//         }
+//     })
+//     .then(resp => {
+//         console.log(resp)
+//     })
+//     .catch(error => {
+//         if (error.status === 404) {
+//             console.log("Błąd: żądany adres nie istnieje");
+//         }
+//     });
 
 if (window.hasOwnProperty('datepicker')) {
     console.info(typeof(datepicker));
