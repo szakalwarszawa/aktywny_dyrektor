@@ -109,17 +109,28 @@
                                         {% set rodzaj_uprawnien = true %}
                                         <div>
                                         {# twigcs się czepia zmiennej, ale ona jest wykorzystywana w JS #}
-                                        {% if rodzaj_uprawnien %}
-                                        {% endif %}
+                                        {% if rodzaj_uprawnien and userzasoby.poziomDostepu is defined %}
+
                                             <label>Rodzaj uprawnień</label>
-                                            {{ form_widget(userzasoby.rodzajUprawnien, {attr: {class: 'poziom-dostepu-switch'}}) }}
+                                            {{ form_widget(userzasoby.rodzajUprawnien, {'attr': {
+                                                'data-resource-id': userzasoby.vars.value.zasobId,
+                                                'onchange': 'loadPoziomDostepu(this)',
+                                                'data-dependent': 'poziomDostepu_' ~ loop.index,
+                                                'data-source': path('find_access_levels_form_data')
+                                                }}) }}
                                             <small>Wybierz aby odblokować `Poziom dostępu`</small>
                                         </div><br />
                                         {% endif %}
-                                        <div>
-                                        <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fas fa-check-square">&nbsp;</i></a></label>
-                                        {{ form_widget(userzasoby.poziomDostepu) }}
-                                        </div>
+                                        {% endif %}
+                                        {% if userzasoby.poziomDostepu is defined %}
+                                            <div>
+                                            <label>Poziom dostępu  <a href="#" onclick="event.preventDefault(); zaznaczOdznaczWszsytkoSelect2(this)" class=" pull-"><i class="fas fa-check-square">&nbsp;</i></a></label>
+                                            {{ form_widget(userzasoby.poziomDostepu, {'attr': {'data-dependent-child': 'poziomDostepu_' ~ loop.index}}) }}
+                                            </div>
+                                            {% else %}
+                                                <br />
+                                                <div class="alert alert-danger">Edycja poziomu dostępu niemożliwa z powodu ustawień grupowania dla zasobu <b>{{ userzasoby.vars.value.zasobNazwa }}</b>.</div>
+                                        {% endif %}
                                     </td>
 
                                     <td>
@@ -152,45 +163,36 @@
     </div>
 <script type="text/javascript" src="{{ asset('js/wnioskiZasoby.js') }}"></script>
 <script>
-$(document).ready(function () {
-    zablokujOdblokujPoziom();
-    $('.poziom-dostepu-switch').change(function () {
-        $('.odblokujPoWyborze').val(null).trigger('change');
-        zablokujOdblokujPoziom();
-    })
-})
+{% if rodzaj_uprawnien %}
+    function loadPoziomDostepu(domElement)
+    {
+        var resourceId = $(domElement).data('resource-id');
+        var selectValue = domElement.value;
+        var dependentChildId = $(domElement).data('dependent');
+        var dependentChildElement = $('select[data-dependent-child="' + dependentChildId + '"]');
+        var source = $(domElement).data('source');
+        if (selectValue && source) {
+            if (dependentChildElement.length) {
+                dependentChildElement.find('option').remove();
+                $.get(source, {
+                    resource: resourceId,
+                    type: selectValue
+                }, function (data) {
+                    $.each(data, function (key, text) {
+                        var option = new Option(text, key);
+                        dependentChildElement.append(option);
+                    })
+                });
 
-function zablokujOdblokujPoziom()
-{
-    var rodzajUprawnienElement = $('.poziom-dostepu-switch');
-    if (rodzajUprawnienElement.length) {
-        if ($('.odblokujPoWyborze').hasClass('select2-hidden-accessible')) {
-            $('.odblokujPoWyborze').select2('destroy');
-        }
-        $('.odblokujPoWyborze').attr('disabled', true);
-        var elementValue = rodzajUprawnienElement.val();
-        if (elementValue === "0" || elementValue === "1") {
-            $('.odblokujPoWyborze').attr('disabled', false);
-            var wyswietlacGrupy = elementValue === "0"? true : false;
-            if (wyswietlacGrupy) {
-                $('.poziom-grupa').removeAttr('disabled');
-                $('.poziom-niegrupa').attr('disabled', true);
-            } else {
-                $('.poziom-grupa').attr('disabled', true);
-                $('.poziom-niegrupa').removeAttr('disabled');
+                dependentChildElement.removeAttr('disabled');
+                dependentChildElement.val(null).trigger('change');
             }
-
-            $('.odblokujPoWyborze').select2({dropdownAutoWidth : true, width: '100%'});
+        } else {
+            dependentChildElement.attr('disabled', 'disabled');
         }
     }
-}
-
-
+{% endif %}
     function zaznaczOdznaczWszsytkoSelect2(dys) {
-        {% if rodzaj_uprawnien %}
-            alert('Funkcja niedostępna');
-            return false;
-        {% endif %}
         if (typeof dys == 'string') {
             $('select.' + dys).each(function () {
                 zaznaczSelect2(this);
@@ -203,10 +205,6 @@ function zablokujOdblokujPoziom()
         }
     }
     function zaznaczSelect2(dys) {
-        {% if rodzaj_uprawnien %}
-            alert('Funkcja niedostępna');
-            return false;
-        {% endif %}
         var sel = $(dys).attr('data-selected') == 'true';
         $('option', $(dys)).prop('selected', !sel ? 'selected' : false);
         $(dys).trigger('change');

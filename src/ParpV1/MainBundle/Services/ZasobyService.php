@@ -11,6 +11,9 @@ use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
 use Doctrine\Common\Collections\ArrayCollection;
 use InvalidArgumentException;
 use Doctrine\ORM\EntityNotFoundException;
+use Symfony\Component\OptionsResolver\OptionsResolver;
+use ParpV1\MainBundle\Constants\AccessLevelTypes;
+use ParpV1\MainBundle\Entity\AccessLevelGroup;
 
 class ZasobyService
 {
@@ -57,6 +60,53 @@ class ZasobyService
         }
 
         return false;
+    }
+
+    /**
+     * Odnajduje poziomy dostępu dla zasobu na podstawie typu (grupa lub pojedyncze poziomy).
+     *
+     * @param array $params - klucze: resource (id zasobu), type (grupa/pojedynczy poziom)
+     *
+     * @return array
+     */
+    public function findAccessLevels(array $params): array
+    {
+        $resolver = new OptionsResolver();
+        $resolver
+            ->setRequired(['resource', 'type'])
+            ->setAllowedTypes('resource', 'numeric')
+            ->setAllowedTypes('type', 'numeric')
+        ;
+        $resolver->resolve($params);
+
+        if (in_array((int) $params['type'], AccessLevelTypes::getTypes())) {
+            $accessLevelType = (int) $params['type'];
+            $entityManager = $this->entityManager;
+            if (AccessLevelTypes::GROUP === $accessLevelType) {
+                $groups = $entityManager
+                    ->getRepository(AccessLevelGroup::class)
+                    ->findAccessLevelGroups($params['resource'], true)
+                ;
+
+                return $groups;
+
+            } elseif (AccessLevelTypes::SINGLE) {
+                $zasob = $entityManager
+                    ->getRepository(Zasoby::class)
+                    ->findOneBy([
+                        'id' => $params['resource']
+                    ]);
+                if (null !== $zasob) {
+                    $tempArray = [];
+                    foreach (explode(';', $zasob->getPoziomDostepu()) as $poziomDostepu) {
+                        $tempArray[$poziomDostepu] = $poziomDostepu;
+                    }
+                    return $tempArray;
+                }
+            }
+        }
+
+        return [];
     }
 
     /**
