@@ -1,15 +1,23 @@
 @import 'custom_variables';
 @import 'font-awesome';
 @import '../../../node_modules/@fortawesome/fontawesome-pro/scss/fontawesome';
-@import '../../../node_modules/jquery-treegrid/css/jquery.treegrid.css';
+@import '~jquery-treegrid/css/jquery.treegrid.css';
 @import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
+@import '~tag-it/css/jquery.tagit.css';
+@import '~tag-it/css/tagit.ui-zendesk.css';
+@import '../../css/table.sorter.css';
+@import '~tablesorter/dist/css/scss/theme';
+
 // @import 'bootstrap_min'; // stare style (przed wprowadzeniem SCSS)
 @import '~select2/dist/css/select2.css';
 @import 'bootstrap_custom';
 @import 'main';
 
-
-// test
-#parp_mainbundle_wnioseknadanieodebraniezasobow {
-    background-color: #745;
-}
+// <link rel="stylesheet" href="{{ asset('css/bootstrap-datetimepicker.min.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/slider.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/jquery.tagit.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/tagit.ui-zendesk.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/jquery.treegrid.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/table.sorter.css') }}">
+// <link rel="stylesheet" href="{{ asset('css/bootstrap-toggle.min.css') }}">
