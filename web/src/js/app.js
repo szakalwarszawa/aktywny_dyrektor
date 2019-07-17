@@ -29,8 +29,6 @@ import * as datepicker from 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
-import '../../../node_modules/colresizable/colResizable-1.6.min.js';
-import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'jquery';
 import 'jquery-ui';
 import 'jquery.maskedinput';
@@ -39,7 +37,8 @@ import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
 import 'moment';
 import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
-
+import '../../../node_modules/colresizable/colResizable-1.6.min.js';
+import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
 
@@ -79,7 +78,14 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
-console.log(`%c ${select2} `, 'font-size: 6px;');
+// console.log(`%c ${select2} `, 'font-size: 6px;');
+
+if (window.hasOwnProperty('select2')) {
+    console.info(typeof(select2));
+    console.log(`%c ${select2} `, 'font-size: 4px; color: green;');
+} else {
+    console.warn('no select2');
+}
 
 function showInfo(info) {
     console.info(
