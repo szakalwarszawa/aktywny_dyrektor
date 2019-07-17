@@ -41,7 +41,7 @@
                     {% set powod_wniosku = (wniosek_odebranie ? z.powodOdebrania : z.powodNadania) %}
                     {% if powod_wniosku not in przetworzone_powody %}
                         {% set przetworzone_powody = przetworzone_powody|merge([powod_wniosku]) %}
-                        <span class="btn celWniosku">{{ powod_wniosku }}</span>
+                        <span class="celWniosku">{{ powod_wniosku }}</span>
                     {% endif %}
                 {% endfor %}
                 </li>

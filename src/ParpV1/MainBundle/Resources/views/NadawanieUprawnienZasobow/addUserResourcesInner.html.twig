@@ -35,7 +35,7 @@
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
                                     <td>
 
-                                        <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
+                                        <a id="przyciskUsunZWniosku_{{ loop.index }}" class="przycisk-usun-uzytkownika-wniosek btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
                                     </td>
                                 </tr>
                                 {% set n = n + 1 %}
@@ -131,6 +131,16 @@
                                                 <br />
                                                 <div class="alert alert-danger">Edycja poziomu dostępu niemożliwa z powodu ustawień grupowania dla zasobu <b>{{ userzasoby.vars.value.zasobNazwa }}</b>.</div>
                                         {% endif %}
+                                        {% set zablokuj_cel = wniosek.wniosek.status.nazwaSystemowa %}
+                                        {% set powod_attr = {} %}
+                                        {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY', '00_TWORZONY'] %}
+                                            {% set powod_attr = {'disabled': 'disabled'} %}
+                                        {% endif %}
+                                        {% if userzasoby.powodNadania is defined %}
+                                            <br />
+                                            <label>Cel nadania/odebrania</label>
+                                            {{ form_widget(userzasoby.powodNadania, {'attr': powod_attr}) }}
+                                        {% endif %}
                                     </td>
 
                                     <td>
@@ -144,11 +154,7 @@
                                         {{ form_widget(userzasoby.sumowanieUprawnien) }}
                                         {{ form_widget(userzasoby.uprawnieniaAdministracyjne) }}
 
-                                        {% if userzasoby.powodNadania is defined %}
-                                            <br />
-                                            <h4>Cel nadania/odebrania</h4>
-                                            {{ form_widget(userzasoby.powodNadania) }}
-                                        {% endif %}
+                                    </td>
                                 </tr>
                             {% endfor %}
                         </tbody>
