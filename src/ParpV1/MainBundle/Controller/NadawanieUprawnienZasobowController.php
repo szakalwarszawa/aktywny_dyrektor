@@ -934,7 +934,11 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
 
-                        //if($suz == null){
+                        $statusWniosku = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+                        $statusyMozliwaEdycjaCelu = [
+                            '02_EDYCJA_PRZELOZONY',
+                            '00_TWORZONY'
+                        ];
                         if ($oz->getId() > 0) {
                             //$z2 = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($oz->getId());
                             //$this->getDoctrine()->getManager()->remove($z2);
@@ -946,7 +950,13 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
                             $z->setBezterminowo($oz->getBezterminowo());
                             $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
-                            $z->setPowodNadania($oz->getPowodNadania());
+
+                            if (in_array($statusWniosku, $statusyMozliwaEdycjaCelu)) {
+                                if (!empty($oz->getPowodNadania()) ) {
+                                    $z->setPowodNadania($oz->getPowodNadania());
+                                }
+                            }
+
                             if ($oz->getAktywneDo() == '' || $oz->getBezterminowo()) {
                                 $z->setAktywneDo(null);
                             } else {
@@ -968,8 +978,11 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setCzyAktywne($wniosekId == 0);
                             $z->setCzyNadane(false);
                             $z->setWniosek($wniosek);
-
-                            $z->setPowodNadania($oz->getPowodNadania());
+                            if (in_array($statusWniosku, $statusyMozliwaEdycjaCelu)) {
+                                if (!empty($oz->getPowodNadania()) ) {
+                                    $z->setPowodNadania($oz->getPowodNadania());
+                                }
+                            }
                             $z->setSamaccountname($currentsam);
 
                             $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
