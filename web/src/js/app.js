@@ -25,7 +25,7 @@ import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
-import 'bootstrap-datepicker';
+import * as datepicker from 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
