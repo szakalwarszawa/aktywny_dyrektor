@@ -133,7 +133,7 @@
                                         {% endif %}
                                         {% set zablokuj_cel = wniosek.wniosek.status.nazwaSystemowa %}
                                         {% set powod_attr = {} %}
-                                        {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY','00_TWORZONY'] %}
+                                        {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY', '00_TWORZONY'] %}
                                             {% set powod_attr = {'disabled': 'disabled'} %}
                                         {% endif %}
                                         {% if userzasoby.powodNadania is defined %}

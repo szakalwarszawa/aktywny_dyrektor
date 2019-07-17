@@ -952,7 +952,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
 
                             if (in_array($statusWniosku, $statusyMozliwaEdycjaCelu)) {
-                                if (!empty($oz->getPowodNadania()) ) {
+                                if (!empty($oz->getPowodNadania())) {
                                     $z->setPowodNadania($oz->getPowodNadania());
                                 }
                             }
@@ -975,17 +975,17 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $z->setAktywneDo($oz->getAktywneDo());
                             }
                         }
-                            $z->setCzyAktywne($wniosekId == 0);
-                            $z->setCzyNadane(false);
-                            $z->setWniosek($wniosek);
-                            if (in_array($statusWniosku, $statusyMozliwaEdycjaCelu)) {
-                                if (!empty($oz->getPowodNadania()) ) {
-                                    $z->setPowodNadania($oz->getPowodNadania());
-                                }
+                        $z->setCzyAktywne($wniosekId == 0);
+                        $z->setCzyNadane(false);
+                        $z->setWniosek($wniosek);
+                        if (in_array($statusWniosku, $statusyMozliwaEdycjaCelu)) {
+                            if (!empty($oz->getPowodNadania())) {
+                                $z->setPowodNadania($oz->getPowodNadania());
                             }
-                            $z->setSamaccountname($currentsam);
+                        }
+                        $z->setSamaccountname($currentsam);
 
-                            $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
+                        $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {
                             $this->addFlash('warning', $msg);
                         }
