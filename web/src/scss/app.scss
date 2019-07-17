@@ -4,5 +4,12 @@
 @import '../../../node_modules/jquery-treegrid/css/jquery.treegrid.css';
 @import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
 // @import 'bootstrap_min'; // stare style (przed wprowadzeniem SCSS)
+@import '~select2/dist/css/select2.css';
 @import 'bootstrap_custom';
 @import 'main';
+
+
+// test
+#parp_mainbundle_wnioseknadanieodebraniezasobow {
+    background-color: #745;
+}
