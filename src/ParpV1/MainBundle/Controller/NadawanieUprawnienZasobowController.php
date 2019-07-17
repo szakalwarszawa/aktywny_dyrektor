@@ -999,9 +999,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 }
             } else {
                 $ndata = $form->getData();
-
-               // print_r($ee);
-
             }
         }
 

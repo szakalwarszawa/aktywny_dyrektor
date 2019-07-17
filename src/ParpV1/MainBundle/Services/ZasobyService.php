@@ -89,7 +89,6 @@ class ZasobyService
                 ;
 
                 return $groups;
-
             } elseif (AccessLevelTypes::SINGLE) {
                 $zasob = $entityManager
                     ->getRepository(Zasoby::class)
