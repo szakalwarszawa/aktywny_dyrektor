@@ -25,7 +25,7 @@ import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
-import 'bootstrap-filestyle';
+// import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
 import '../../../node_modules/colresizable/colResizable-1.6.min.js';

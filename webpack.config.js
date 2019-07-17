@@ -5,6 +5,7 @@ Encore.setOutputPath('web/build/')
     .setPublicPath('/build')
     .cleanupOutputBeforeBuild() //new
     .addEntry('app', './web/src/js/app.js')
+    .addEntry('bootstrap-filestyle', './node_modules/bootstrap-filestyle/src/bootstrap-filestyle.js')
     .enableSingleRuntimeChunk()
     .cleanupOutputBeforeBuild()
     .enableSourceMaps(!Encore.isProduction())
