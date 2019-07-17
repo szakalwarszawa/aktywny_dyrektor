@@ -35,7 +35,7 @@
                                     <td><a href="{{ path('userEdit', {samaccountname: row.samaccountname}) }}">{{ row.samaccountname }}</a></td>
                                     <td>
 
-                                        <a class="btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
+                                        <a id="przyciskUsunZWniosku_{{ loop.index }}" class="przycisk-usun-uzytkownika-wniosek btn btn-danger" href="#" onclick="usunUzytkownikaZwniosku('{{ row.samaccountname }}', this)">Usuń</a>
                                     </td>
                                 </tr>
                                 {% set n = n + 1 %}
