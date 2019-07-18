@@ -33,6 +33,7 @@ use ParpV1\MainBundle\Form\AccessLevelGroupType;
 use ParpV1\MainBundle\Form\AccessLevelGroupCollectionType;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
 use Symfony\Component\HttpFoundation\Response;
+use ParpV1\MainBundle\Constants\AccessLevelTypes;
 
 /**
  * Zasoby controller.
@@ -76,9 +77,26 @@ class ZasobyController extends Controller
     }
 
     /**
+     * Zwraca opcje pola wyboru poziomu dostępu w formularzu.
+     *
+     * @Route("/accesslevel/find/formData", name="find_access_levels_form_data")
+     *
+     * @param Request
+     *
+     * @return JsonResponse
+     */
+    public function findAccessLevelsFormData(Request $request): JsonResponse
+    {
+        $queryData = $request->query->all();
+        $zasobyService = $this->get('zasoby_service');
+
+        return new JsonResponse($zasobyService->findAccessLevels($queryData));
+    }
+
+    /**
      * Zarządzanie grupami poziomów dostepu dla danego zasobu.
      *
-     * @Route("/accesslevelgroup/manage/{zasob}", name="access_level_group_manage")
+     * @Route("/accesslevel/group/manage/{zasob}", name="access_level_group_manage")
      *
      * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
