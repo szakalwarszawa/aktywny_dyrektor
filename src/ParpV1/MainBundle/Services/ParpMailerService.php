@@ -43,9 +43,7 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4 = 'pracownikWygasniecieUprawnien4.html.twig';
     const TEMPLATE_PRACOWNIKZMIANASEKCJI1 = 'pracownikZmianaSekcji1.html.twig';
     const TEMPLATE_PRACOWNIKZMIANASEKCJI2 = 'pracownikZmianaSekcji2.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA1 = 'pracownikZmianaStanowiska1.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA2 = 'pracownikZmianaStanowiska2.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA3 = 'pracownikZmianaStanowiska3.html.twig';
+    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA = 'pracownikZmianaStanowiska.html.twig';
     const TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA = 'pracownikZmianaZaangazowania.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE1 = 'pracownikZwolnienie1.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE2 = 'pracownikZwolnienie2.html.twig';
@@ -239,27 +237,18 @@ class ParpMailerService
         $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2, $dane);
     }
 
-    public function sendEmailZmianaStanowiska($user, $noweStanowisko, $administratorzy)
+    public function sendEmailZmianaStanowiska($user, $noweStanowisko, $dyrektor)
     {
         $now = new \Datetime();
-        $odbiorcy = [$user['samaccountname']];
         $dane = [
-            'odbiorcy'         => $odbiorcy,
+            'odbiorcy'         => $dyrektor,
             'imie_nazwisko'    => $user['name'],
             'login'            => $user['samaccountname'],
             'stare_stanowisko' => $user['title'],
             'nowe_stanowisko'  => $noweStanowisko,
             'data_zmiany'      => $now,
         ];
-        $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1, $dane);
-        $dane['odbiorcy'] = [
-            $user['samaccountname'],
-            // $this->getManagerLoginFromDN($user['manager']),
-            ParpMailerService::EMAIL_DO_AUMS_AD,
-        ];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2, $dane);
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3, $dane);
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA, $dane);
     }
 
     public function sendEmailZmianaKadrowaMigracja($daneRekord, $poprzednieDaneRekord, $wDniuZmiany = true)
@@ -570,9 +559,7 @@ class ParpMailerService
             case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2:
                 $wymaganePola = array_merge($wymaganePola, ['stara_sekcja', 'nowa_sekcja', 'data_zmiany']);
                 break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1:
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2:
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3:
+            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA:
                 $wymaganePola = array_merge($wymaganePola, ['stare_stanowisko', 'nowe_stanowisko', 'data_zmiany']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE3:
@@ -635,9 +622,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4     => 'Wygaśnięcie ważności uprawnień: Zasoby inne niż INT, SG(G) i EXT:',
             ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1             => 'Pracownik zmienia sekcję pozostając w dotychczasowym D/B',
             ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2             => 'Pracownik zmienia sekcję pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
+            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
             ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA       => 'Pracownikowi zmieniono zaangażowanie',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE1               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE2               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
@@ -674,9 +659,9 @@ class ParpMailerService
      *
      * @param array|string $recipient
      *
-     * @return array|string
+     * @return array
      */
-    protected function getRecipient($recipient)
+    protected function getRecipient($recipient): array
     {
         if (is_array($recipient)) {
             $recipientArr = [];
@@ -694,7 +679,7 @@ class ParpMailerService
                 $recipient = $this->getUserMail($recipient);
             }
 
-            return $recipient;
+            return array($recipient);
         }
     }
 
