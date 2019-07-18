@@ -226,22 +226,26 @@ class LdapUpdate extends Simulation
                     $group->removeMember($writableAdUser);
                 }
 
-                $this->addMessage(
-                    new Messages\SuccessMessage(),
-                    '[Usuń] Usunięto z grupy - ' . $group->getName(),
-                    AdUserConstants::GRUPY_AD,
-                    $adUser->getUser()
-                );
+                if (!$this->eraseUserGroups) {
+                    $this->addMessage(
+                        new Messages\SuccessMessage(),
+                        '[Usuń] Usunięto z grupy - ' . $group->getName(),
+                        AdUserConstants::GRUPY_AD,
+                        $adUser->getUser()
+                    );
+                }
 
                 return true;
             }
 
-            $this->addMessage(
-                new Messages\InfoMessage(),
-                '[Usuń] Użytkownik nie był w grupie ' . $group->getName(),
-                AdUserConstants::GRUPY_AD,
-                $adUser->getUser()
-            );
+            if (!$this->eraseUserGroups) {
+                $this->addMessage(
+                    new Messages\InfoMessage(),
+                    '[Usuń] Użytkownik nie był w grupie ' . $group->getName(),
+                    AdUserConstants::GRUPY_AD,
+                    $adUser->getUser()
+                );
+            }
 
             return true;
         }
@@ -305,8 +309,6 @@ class LdapUpdate extends Simulation
      */
     public function setGroupsAttribute($groupsAd, AdUser $adUser): void
     {
-        $adUser->sync();
-
         if (is_array($groupsAd)) {
             (new OptionsResolver())
                 ->setRequired(['add', 'remove'])
@@ -317,32 +319,43 @@ class LdapUpdate extends Simulation
                 $this->groupAdd($adUser, $groupAdd);
             }
 
-            $adUser->sync();
-
             foreach ($groupsAd['remove'] as $groupRemove) {
                 $this->groupRemove($adUser, $groupRemove);
             }
         }
 
-        $groupsRemoved = [];
-        $groupsAdded = [];
+        $groupsToRemove = [];
+        $groupsToAdd = [];
         foreach (explode(',', $groupsAd) as $groupName) {
             if (self::REMOVE_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::REMOVE_GROUP_SIGN);
-                if (!in_array($groupName, $groupsRemoved)) {
-                    $this->groupRemove($adUser, $groupName);
-                    $groupsRemoved[] = $groupName;
+                if (!in_array($groupName, $groupsToRemove)) {
+                    if ($this->eraseUserGroups) {
+                        $this->groupRemove($adUser, $groupName);
+                    }
+                    $groupsToRemove[] = $groupName;
                 }
             }
 
-            $adUser->sync();
-
             if (self::ADD_GROUP_SIGN === substr($groupName, 0, 1)) {
                 $groupName = ltrim($groupName, self::ADD_GROUP_SIGN);
-                if (!in_array($groupName, $groupsAdded)) {
-                    $this->groupAdd($adUser, $groupName);
-                    $groupsAdded[] = $groupName;
+                if (!in_array($groupName, $groupsToAdd)) {
+                    if ($this->eraseUserGroups) {
+                        $this->groupAdd($adUser, $groupName);
+                    }
+                    $groupsToAdd[] = $groupName;
                 }
+            }
+        }
+
+        if (!$this->eraseUserGroups) {
+            $groupsToRemove = array_diff($groupsToRemove, $groupsToAdd);
+            $groupsToAdd = array_diff($groupsToAdd, $groupsToRemove);
+            foreach ($groupsToRemove as $group) {
+                $this->groupRemove($adUser, $group);
+            }
+            foreach ($groupsToAdd as $group) {
+                $this->groupAdd($adUser, $group);
             }
         }
     }
@@ -419,6 +432,7 @@ class LdapUpdate extends Simulation
         }
         $moveToAnotherOu = false;
         $userGroups = $writableUserObject->getGroupNames();
+        $groupsToChange = null;
         foreach ($changes as $value) {
             $parseViewData = false;
             $keepAttributeValue = false;
@@ -460,7 +474,7 @@ class LdapUpdate extends Simulation
                 }
 
                 if (AdUserConstants::GRUPY_AD === $value->getTarget()) {
-                    $this->setGroupsAttribute($newValue, $adUser);
+                    $groupsToChange = $newValue;
 
                     continue;
                 }
@@ -621,6 +635,10 @@ class LdapUpdate extends Simulation
                 ->ldapFetch
                 ->refreshAdUser($adUser)
             ;
+        }
+
+        if (null !== $groupsToChange) {
+            $this->setGroupsAttribute($groupsToChange, $adUser, $userGroups);
         }
 
         if (!$simulateProcess) {
