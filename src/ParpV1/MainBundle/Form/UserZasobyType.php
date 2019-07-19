@@ -44,7 +44,9 @@ class UserZasobyType extends AbstractType
                     'required' => false,
                     'data' => $d1,
                 ))
-            ->add('powodNadania', TextareaType::class)
+            ->add('powodNadania', TextareaType::class, [
+                'label' => 'Cel ' . ($options['zablokuj_edycje_poziomu']? 'nadania' : 'odebrania')
+            ])
             ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
             //->add('aktywneOdPomijac')
@@ -166,7 +168,7 @@ class UserZasobyType extends AbstractType
             $nadpiszDane = true;
         }
 
-        $zablokujNowy = !$options['zablokuj_edycje_poziomu'] && 'poziomDostepu' === $fieldName;
+        $zablokujNowy = !$options['zablokuj_edycje_poziomu'] && 'poziomDostepu' === $fieldName && $accessLevelGroups;
         $form->add(
             $fieldName, /* NestedComboType::class */
             ChoiceType::class,

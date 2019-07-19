@@ -66,7 +66,7 @@
             <div id="collapse1" class="panel-collapse collapse in">
                 {% if users|length > 1 %}
                 <div class="alert alert-info">
-                wszystkim użytkownikom zostanie przypisany ten sam zestaw parametrów: Moduł, Poziom Dostępu etc., po zapisie będzie można edytować to pole per użytkownik
+                 Wszystkim użytkownikom zostanie przypisany ten sam zestaw uprawnień. W następnym kroku, w zakładce "Zasoby", możliwa będzie osobna edycja uprawnień.
                 </div>
                 {% endif %}
                 <div class="panel-body">
@@ -133,12 +133,12 @@
                                         {% endif %}
                                         {% set zablokuj_cel = wniosek.wniosek.status.nazwaSystemowa %}
                                         {% set powod_attr = {} %}
-                                        {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY', '00_TWORZONY'] %}
+                                        {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY', '00_TWORZONY', '01_EDYCJA_WNIOSKODAWCA'] %}
                                             {% set powod_attr = {'disabled': 'disabled'} %}
                                         {% endif %}
                                         {% if userzasoby.powodNadania is defined %}
                                             <br />
-                                            <label>Cel nadania/odebrania</label>
+                                            <label>{{ userzasoby.powodNadania.vars.label }}</label>
                                             {{ form_widget(userzasoby.powodNadania, {'attr': powod_attr}) }}
                                         {% endif %}
                                     </td>
