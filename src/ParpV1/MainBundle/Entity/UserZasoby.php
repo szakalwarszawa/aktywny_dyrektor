@@ -1124,28 +1124,28 @@ class UserZasoby
         return $this;
     }
 
-	/**
-	 * Get accessLevelGroups
-	 *
-	 * @return ArrayCollection
-	 */
-	public function getAccessLevelGroups()
-	{
-		return $this->accessLevelGroups;
-	}
+    /**
+     * Get accessLevelGroups
+     *
+     * @return ArrayCollection
+     */
+    public function getAccessLevelGroups()
+    {
+        return $this->accessLevelGroups;
+    }
 
-	/**
-	 * Set accessLevelGroups
-	 *
-	 * @param ArrayCollection $accessLevelGroups
-	 *
-	 * @return self
-	 */
-	public function setAccessLevelGroups(ArrayCollection $accessLevelGroups)
-	{
-		$this->accessLevelGroups = $accessLevelGroups;
+    /**
+     * Set accessLevelGroups
+     *
+     * @param ArrayCollection $accessLevelGroups
+     *
+     * @return self
+     */
+    public function setAccessLevelGroups(ArrayCollection $accessLevelGroups)
+    {
+        $this->accessLevelGroups = $accessLevelGroups;
 
-		return $this;
+        return $this;
     }
 
     /**
