@@ -365,7 +365,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => array(
                         'class' => 'form-control',
                     ),
-                    'label' => 'Cel ' . ($formNadanie? 'nadania' : 'odebrania'),
+                    'label' => 'Cel ' . ($formNadanie? 'nadania uprawnień' : 'odebrania uprawnień'),
                     'label_attr' => array(
                         'class' => 'cel-nadania-odebrania',
                     ),

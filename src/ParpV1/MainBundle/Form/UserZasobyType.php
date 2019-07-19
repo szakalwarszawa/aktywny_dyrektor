@@ -45,7 +45,7 @@ class UserZasobyType extends AbstractType
                     'data' => $d1,
                 ))
             ->add('powodNadania', TextareaType::class, [
-                'label' => 'Cel ' . ($options['zablokuj_edycje_poziomu']? 'nadania' : 'odebrania')
+                'label' => 'Cel ' . ($options['zablokuj_edycje_poziomu']? 'nadania uprawnień' : 'odebrania uprawnień')
             ])
             ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
