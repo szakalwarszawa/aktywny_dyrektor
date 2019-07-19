@@ -932,7 +932,8 @@ class NadawanieUprawnienZasobowController extends Controller
                         $statusWniosku = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
                         $statusyMozliwaEdycjaCelu = [
                             '02_EDYCJA_PRZELOZONY',
-                            '00_TWORZONY'
+                            '00_TWORZONY',
+                            '01_EDYCJA_WNIOSKODAWCA'
                         ];
                         if ($oz->getId() > 0) {
                             //$z2 = $this->getDoctrine()->getManager()->getRepository(UserZasoby::class)->find($oz->getId());
