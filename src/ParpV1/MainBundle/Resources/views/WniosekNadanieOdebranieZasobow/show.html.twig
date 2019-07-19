@@ -353,7 +353,15 @@
                                     {% endif %}
                                 </td>
                                 <td class="col-modul">{{ z.modul|showMultiFieldAsNewLines|raw }}</td>
-                                <td class="col-poziom-dostepu nowrap">{{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}</td>
+                                <td class="col-poziom-dostepu nowrap">
+                                    {% if z.hasAccessLevelGroups %}
+                                        <b>Poziomy dostępów z grup: </b>
+                                        {% for group in z.accessLevelGroups %}
+                                            {{ group.groupName }},
+                                        {% endfor %}
+                                    {% endif %}
+                                    {{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}
+                                </td>
                                 <td class="col-sumowanie-upr">{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                 <td class="col-aktywne-od nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
                                 <td class="col-bezterminowo nowrap">{{ koniec_umowy_bezterminowo ? '<div class="alert alert-danger" role="alert"><span class="fas fa-exclamation-circle" aria-hidden="true"></span> ' : '' }}
