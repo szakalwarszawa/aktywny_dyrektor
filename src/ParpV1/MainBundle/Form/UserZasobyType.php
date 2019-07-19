@@ -168,7 +168,7 @@ class UserZasobyType extends AbstractType
             $nadpiszDane = true;
         }
 
-        $zablokujNowy = !$options['zablokuj_edycje_poziomu'] && 'poziomDostepu' === $fieldName;
+        $zablokujNowy = !$options['zablokuj_edycje_poziomu'] && 'poziomDostepu' === $fieldName && $accessLevelGroups;
         $form->add(
             $fieldName, /* NestedComboType::class */
             ChoiceType::class,
