@@ -1064,10 +1064,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
 
                 if (isset($changeSet['stanowisko'])) {
-                    // Do stanowiska pobieramy dane bezpośrednio z Rekorda - gdyż nie ma w formularzu możliwości
-                    // wyboru stanowiska. W ogóle z ciekawostek - $administratorzy nie są w ogóle wykorzystyw
                     $this->get('parp.mailer')
-                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $administratorzy);
+                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor());
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']
