@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * UserZasoby
@@ -253,7 +254,27 @@ class UserZasoby
      */
     protected $dataOdebrania;
 
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="AccessLevelGroup", cascade={"all"}, orphanRemoval=true)
+     * @ORM\JoinTable(name="userzasoby_grupy_poziomow",
+     *      joinColumns={@ORM\JoinColumn(name="userzasob_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="grupa_poziomow_dostepu", referencedColumnName="id")}
+     *     )
+     */
+    protected $accessLevelGroups;
+
     protected $_ADUser;
+
+    /**
+     * Konstruktor
+     */
+    public function __construct()
+    {
+        $this->accessLevelGroups = new ArrayCollection();
+    }
 
     /**
      * Set _ADUser
@@ -1101,5 +1122,68 @@ class UserZasoby
         $this->zasob = $zasob;
 
         return $this;
+    }
+
+	/**
+	 * Get accessLevelGroups
+	 *
+	 * @return ArrayCollection
+	 */
+	public function getAccessLevelGroups()
+	{
+		return $this->accessLevelGroups;
+	}
+
+	/**
+	 * Set accessLevelGroups
+	 *
+	 * @param ArrayCollection $accessLevelGroups
+	 *
+	 * @return self
+	 */
+	public function setAccessLevelGroups(ArrayCollection $accessLevelGroups)
+	{
+		$this->accessLevelGroups = $accessLevelGroups;
+
+		return $this;
+    }
+
+    /**
+     * Add AccessLevelGroup element
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return UserZasoby
+     */
+    public function addAccessLevelGroup(AccessLevelGroup $accessLevelGroup): UserZasoby
+    {
+        $this
+            ->accessLevelGroups
+            ->add($accessLevelGroup)
+        ;
+
+        return $this;
+    }
+
+    /**
+     * Remove AccessLevelGroup element
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return UserZasoby
+     */
+    public function removeAccessLevelGroup(AccessLevelGroup $accessLevelGroup): UserZasoby
+    {
+        $this
+            ->accessLevelGroups
+            ->remove($accessLevelGroup)
+        ;
+
+        return $this;
+    }
+
+    public function hasAccessLevelGroups()
+    {
+        return ($this->accessLevelGroups->count());
     }
 }

@@ -25,6 +25,7 @@ use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
 use ParpV1\MainBundle\Entity\Komentarz;
+use Doctrine\Common\Collections\ArrayCollection;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -794,7 +795,7 @@ class NadawanieUprawnienZasobowController extends Controller
             }
 
             $uz->setZasobNazwa($z->getNazwa());
-            $uz->accessLevelGroups = $z->getAccessLevelGroups();
+            $uz->availableAccessLevelGroups = $z->getAccessLevelGroups();
             //$uz->setSamaccountname($z->getId());
             $userzasoby[] = $uz;
         }
@@ -877,6 +878,8 @@ class NadawanieUprawnienZasobowController extends Controller
                             throw new SecurityTestException('Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!');
                         }
 
+                        $oz->setAccessLevelGroups(new ArrayCollection());
+
                         $poziomyDostepu = $oz->getPoziomDostepu();
                         $czesciPoziomow = explode(';', $poziomyDostepu);
                         if ($czesciPoziomow) {
@@ -884,6 +887,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $istniejeGrupa = false;
                             $istniejaPojedyncze = false;
                             $grupyWybrane = [];
+
                             foreach ($czesciPoziomow as $idPoziomuGrupy) {
                                 if (is_numeric($idPoziomuGrupy)) {
                                     $accessLevelGroup = $this
@@ -894,6 +898,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                     ;
 
                                     if (null !== $accessLevelGroup) {
+                                        $oz->addAccessLevelGroup($accessLevelGroup);
                                         $istniejeGrupa = true;
                                         $grupyWybrane[] = $accessLevelGroup->getGroupName();
                                         $nowePoziomyDostepu[] = $accessLevelGroup->getAccessLevels();
@@ -920,16 +925,6 @@ class NadawanieUprawnienZasobowController extends Controller
                                     }
                                 }
 
-                                $komentarz = new Komentarz();
-                                $komentarz
-                                    ->setObiekt('WniosekNadanieOdebranieZasobow')
-                                    ->setObiektId($wniosek->getId())
-                                    ->setTytul('Wybrano grupy poziomów dostępu')
-                                    ->setOpis(implode(', ', $grupyWybrane))
-                                    ->setSamaccountname($this->getUser()->getUsername());
-                                ;
-                                $this->getDoctrine()->getManager()->persist($komentarz);
-
                                 $oz->setPoziomDostepu(implode(';', $tempArray));
                             }
                         }
@@ -947,6 +942,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             if (!empty($oz->getPoziomDostepu())) {
                                 $z->setPoziomDostepu($oz->getPoziomDostepu());
                             }
+                            $z->setAccessLevelGroups($oz->getAccessLevelGroups());
                             $z->setSumowanieUprawnien($oz->getSumowanieUprawnien());
                             $z->setBezterminowo($oz->getBezterminowo());
                             $z->setAktywneOd(new \DateTime($oz->getAktywneOd()));
