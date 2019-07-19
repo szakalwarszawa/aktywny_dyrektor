@@ -679,7 +679,7 @@ class ParpMailerService
                 $recipient = $this->getUserMail($recipient);
             }
 
-            return array($recipient);
+            return [$recipient];
         }
     }
 
