@@ -1,0 +1,45 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Changelog</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Utworzono</th>
+                {#  <th>DeletedAt</th> #}
+                <th>Autor</th>
+                <th>Wersja</th>
+                <th>Tytul</th>
+                <th>Opis</th>
+                <th>Opublikowany</th>
+                <th>Akcje</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for changelog in changelogs %}
+            <tr>
+                <td>{{ changelog.id }}</td>
+                <td>{{ changelog.createdAt ? changelog.createdAt|date('Y-m-d H:i:s') : '' }}</td>
+                {# <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td> #}
+                <td>{{ changelog.samaccountname }}</td>
+                <td>{{ changelog.wersja }}</td>
+                <td>{{ changelog.dodatkowyTytul }}</td>
+                <td>{{ changelog.opis }}</td>
+                <td>{{ changelog.opublikowany ? 'Tak' : 'Nie' }}</td>
+                <td>
+                    <a href="{{ path('changelog_show', {'id': changelog.id}) }}">show</a>
+                    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}">edit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="9">Nie znaleziono wpisów</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('changelog_new') }}">Nowy wpis</a>
+{% endblock %}
