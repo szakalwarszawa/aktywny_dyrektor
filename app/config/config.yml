@@ -84,6 +84,7 @@ doctrine:
         dql:
             string_functions:
                 group_concat: DoctrineExtensions\Query\Mysql\GroupConcat
+                md5: DoctrineExtensions\Query\Mysql\Md5
         auto_generate_proxy_classes: "%kernel.debug%"
         auto_mapping: true
         mappings:
