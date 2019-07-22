@@ -1,45 +1,17 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Changelog - administracja</h1>
-
-    <table class="table table-striped table-condensed">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Utworzono</th>
-                {#  <th>DeletedAt</th> #}
-                {# <th>Autor</th> #}
-                <th>Wersja</th>
-                <th>Tytul</th>
-                <th>Opis</th>
-                <th>Opublikowany</th>
-                <th>Akcje</th>
-            </tr>
-        </thead>
-        <tbody>
+    <h1>Opis zmian</h1>
+    <br />
         {% for changelog in changelogs %}
-            <tr{{ changelog.opublikowany ? '' : ' class="danger"' }}>
-                <td>{{ changelog.id }}</td>
-                <td>{{ changelog.createdAt ? changelog.createdAt|date('Y-m-d H:i:s') : '' }}</td>
-                {# <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td> #}
-                {# <td>{{ changelog.samaccountname }}</td> #}
-                <td>{{ changelog.wersja }}</td>
-                <td>{{ changelog.dodatkowyTytul }}</td>
-                <td>{{ changelog.opis }}</td>
-                <td>{{ changelog.opublikowany ? 'Tak' : 'Nie' }}</td>
-                <td class="btn-group">
-                    <a href="{{ path('changelog_show', {'id': changelog.id}) }}" class="btn btn-success"><i class="fas fa-eye"></i> podgląd</a>
-                    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}" class="btn btn-danger"><i class="fas fa-edit"></i> Edycja</a>
-                </td>
-            </tr>
+            <div class="panel panel-default">
+                <div class="panel-heading">{{ changelog.wersja }}</div>
+                    <div class="panel-body">
+                        <h4>{{ changelog.dodatkowyTytul }}</h4><br />
+                        {{ changelog.opis|nl2br }}
+                    </div>
+            </div>
         {% else %}
-            <tr>
-                <td colspan="9">Nie znaleziono wpisów</td>
-            </tr>
+            <p>Nie znaleziono wpisów</p>
         {% endfor %}
-        </tbody>
-    </table>
-
-    <a href="{{ path('changelog_new') }}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Nowy wpis</a>
 {% endblock %}

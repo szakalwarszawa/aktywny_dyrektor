@@ -5,7 +5,7 @@
 
     {{ include('changelog/_form.html.twig', {'button_label': 'Zapisz zmiany'}) }}
 
-    <a href="{{ path('changelog_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> powrót do listy</a>
+    <a href="{{ path('changelog_admin_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> Powrót do listy</a>
 
     {{ include('changelog/_delete_form.html.twig') }}
 {% endblock %}

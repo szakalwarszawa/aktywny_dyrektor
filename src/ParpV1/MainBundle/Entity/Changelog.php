@@ -38,6 +38,13 @@ class Changelog
     private $deletedAt;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     */
+    private $dataWprowadzeniaZmiany;
+
+    /**
      * @var string|null
      *
      * @ORM\Column(name="samaccountname", type="string", length=255, nullable=true)
@@ -47,7 +54,7 @@ class Changelog
     /**
      * @var string
      *
-     * @ORM\Column(name="wersja", type="string", length=20)
+     * @ORM\Column(name="wersja", type="string", length=20, nullable=true)
      */
     private $wersja;
 
@@ -249,5 +256,29 @@ class Changelog
     public function getCreatedAt()
     {
         return $this->createdAt;
+    }
+
+    /**
+     * Get dataWprowadzeniaZmiany.
+     *
+     * @return \DateTime
+     */
+    public function getDataWprowadzeniaZmiany(): ?\DateTimeInterface
+    {
+        return $this->dataWprowadzeniaZmiany;
+    }
+
+    /**
+     * Set dataWprowadzeniaZmiany.
+     *
+     * @param \DateTime $dataWprowadzeniaZmiany
+     *
+     * @return Changelog
+     */
+    public function setDataWprowadzeniaZmiany(?\DateTimeInterface $dataWprowadzeniaZmiany): self
+    {
+        $this->dataWprowadzeniaZmiany = $dataWprowadzeniaZmiany;
+
+        return $this;
     }
 }

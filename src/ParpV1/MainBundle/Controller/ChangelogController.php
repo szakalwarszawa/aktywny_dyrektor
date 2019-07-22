@@ -16,14 +16,29 @@ use Symfony\Component\Routing\Annotation\Route;
 class ChangelogController extends Controller
 {
     /**
-     * @Route("/admin/", name="changelog_index", methods={"GET"})
+     * @Route("/", name="changelog_index", methods={"GET"})
      */
     public function index(): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')->findAll();
+        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')
+            ->findBy(['opublikowany' => true]);
+
 
         return $this->render('ParpMainBundle:Changelog:index.html.twig', [
+            'changelogs' => $entity,
+        ]);
+    }
+
+    /**
+     * @Route("/admin/", name="changelog_admin_index", methods={"GET"})
+     */
+    public function indexAdmin(): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')->findAll();
+
+        return $this->render('ParpMainBundle:Changelog:index-admin.html.twig', [
             'changelogs' => $entity,
         ]);
     }
@@ -33,7 +48,8 @@ class ChangelogController extends Controller
      */
     public function new(Request $request): Response
     {
-        $changelog = new Changelog();
+        $changelog = (new Changelog())
+            ->setSamaccountname($this->getUser()->getUsername());
         $form = $this->createForm(Changelog1Type::class, $changelog);
         $form->handleRequest($request);
 
@@ -42,7 +58,7 @@ class ChangelogController extends Controller
             $entityManager->persist($changelog);
             $entityManager->flush();
 
-            return $this->redirectToRoute('changelog_index');
+            return $this->redirectToRoute('changelog_admin_index');
         }
 
         return $this->render('ParpMainBundle:Changelog:new.html.twig', [
@@ -72,7 +88,7 @@ class ChangelogController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $this->getDoctrine()->getManager()->flush();
 
-            return $this->redirectToRoute('changelog_index');
+            return $this->redirectToRoute('changelog_admin_index');
         }
 
         return $this->render('ParpMainBundle:Changelog:edit.html.twig', [
@@ -92,6 +108,6 @@ class ChangelogController extends Controller
             $entityManager->flush();
         }
 
-        return $this->redirectToRoute('changelog_index');
+        return $this->redirectToRoute('changelog_admin_index');
     }
 }
