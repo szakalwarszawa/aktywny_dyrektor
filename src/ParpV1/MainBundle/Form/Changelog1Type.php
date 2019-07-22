@@ -12,8 +12,8 @@ class Changelog1Type extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('createdAt')
-            ->add('deletedAt')
+            // ->add('createdAt')
+            // ->add('deletedAt')
             ->add('samaccountname')
             ->add('wersja')
             ->add('dodatkowyTytul')

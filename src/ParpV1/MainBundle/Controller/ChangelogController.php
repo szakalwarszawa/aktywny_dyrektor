@@ -20,8 +20,8 @@ class ChangelogController extends Controller
      */
     public function index(): Response
     {
-        $em = $this->getDoctrine()->getManager();
-        $entity = $em->getRepository('ParpMainBundle:Changelog')->findAll();
+        $entityManager = $this->getDoctrine()->getManager();
+        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')->findAll();
 
         return $this->render('ParpMainBundle:Changelog:index.html.twig', [
             'changelogs' => $entity,

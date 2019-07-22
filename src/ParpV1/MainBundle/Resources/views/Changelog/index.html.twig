@@ -1,15 +1,15 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Changelog</h1>
+    <h1>Changelog - administracja</h1>
 
-    <table class="table">
+    <table class="table table-striped table-condensed">
         <thead>
             <tr>
                 <th>Id</th>
                 <th>Utworzono</th>
                 {#  <th>DeletedAt</th> #}
-                <th>Autor</th>
+                {# <th>Autor</th> #}
                 <th>Wersja</th>
                 <th>Tytul</th>
                 <th>Opis</th>
@@ -19,18 +19,18 @@
         </thead>
         <tbody>
         {% for changelog in changelogs %}
-            <tr>
+            <tr{{ changelog.opublikowany ? '' : ' class="danger"' }}>
                 <td>{{ changelog.id }}</td>
                 <td>{{ changelog.createdAt ? changelog.createdAt|date('Y-m-d H:i:s') : '' }}</td>
                 {# <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td> #}
-                <td>{{ changelog.samaccountname }}</td>
+                {# <td>{{ changelog.samaccountname }}</td> #}
                 <td>{{ changelog.wersja }}</td>
                 <td>{{ changelog.dodatkowyTytul }}</td>
                 <td>{{ changelog.opis }}</td>
                 <td>{{ changelog.opublikowany ? 'Tak' : 'Nie' }}</td>
-                <td>
-                    <a href="{{ path('changelog_show', {'id': changelog.id}) }}">show</a>
-                    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}">edit</a>
+                <td class="btn-group">
+                    <a href="{{ path('changelog_show', {'id': changelog.id}) }}" class="btn btn-success"><i class="fas fa-eye"></i> podgląd</a>
+                    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}" class="btn btn-danger"><i class="fas fa-edit"></i> Edycja</a>
                 </td>
             </tr>
         {% else %}
@@ -41,5 +41,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('changelog_new') }}">Nowy wpis</a>
+    <a href="{{ path('changelog_new') }}" class="btn btn-primary"><i class="fas fa-plus-circle"></i> Nowy wpis</a>
 {% endblock %}

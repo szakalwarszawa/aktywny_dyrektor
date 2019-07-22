@@ -1,9 +1,9 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Create new Changelog</h1>
+    <h1>Nowy wpis</h1>
 
     {{ include('changelog/_form.html.twig') }}
 
-    <a href="{{ path('changelog_index') }}">back to list</a>
+    <a href="{{ path('changelog_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> powrót do listy</a>
 {% endblock %}

@@ -23,17 +23,18 @@ class Changelog
     private $id;
 
     /**
-     * @var \DateTime
+     * @var \DateTime $createdAt
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @Gedmo\Timestampable(on="update")
+     * @Gedmo\Timestampable(on="create")
      */
     private $createdAt;
 
-     /**
+    /**
      * @var \DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
-    */
+     */
     private $deletedAt;
 
     /**
@@ -87,7 +88,7 @@ class Changelog
      *
      * @param \DateTime $deletedAt
      *
-     * @return WniosekNadanieOdebranieZasobowEditor
+     * @return Changelog
      */
     public function setDeletedAt($deletedAt)
     {

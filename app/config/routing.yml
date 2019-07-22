@@ -1,3 +1,7 @@
+parp_main_changelog:
+    resource: "@ParpMainBundle/Controller/ChangelogController.php"
+    type:     annotation
+
 parp_cron:
     resource: "@ParpCronBundle/Controller/"
     type:     annotation

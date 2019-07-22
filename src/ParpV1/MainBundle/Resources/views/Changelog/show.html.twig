@@ -1,7 +1,7 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-    <h1>Changelog</h1>
+    <h1>Changelog - szczegóły wpisu</h1>
 
     <table class="table">
         <tbody>
@@ -10,15 +10,11 @@
                 <td>{{ changelog.id }}</td>
             </tr>
             <tr>
-                <th>CreatedAt</th>
+                <th>Utworzony</th>
                 <td>{{ changelog.createdAt ? changelog.createdAt|date('Y-m-d H:i:s') : '' }}</td>
             </tr>
             <tr>
-                <th>DeletedAt</th>
-                <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td>
-            </tr>
-            <tr>
-                <th>Samaccountname</th>
+                <th>Autor</th>
                 <td>{{ changelog.samaccountname }}</td>
             </tr>
             <tr>
@@ -26,7 +22,7 @@
                 <td>{{ changelog.wersja }}</td>
             </tr>
             <tr>
-                <th>DodatkowyTytul</th>
+                <th>Dodatkowy tytul</th>
                 <td>{{ changelog.dodatkowyTytul }}</td>
             </tr>
             <tr>
@@ -35,14 +31,11 @@
             </tr>
             <tr>
                 <th>Opublikowany</th>
-                <td>{{ changelog.opublikowany ? 'Yes' : 'No' }}</td>
+                <td>{{ changelog.opublikowany ? 'Tak' : 'Nie' }}</td>
             </tr>
         </tbody>
     </table>
-
-    <a href="{{ path('changelog_index') }}">back to list</a>
-
-    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}">edit</a>
-
+    <a href="{{ path('changelog_edit', {'id': changelog.id}) }}" class="btn btn-danger"><i class="fas fa-edit"></i> Edycja</a>
     {{ include('changelog/_delete_form.html.twig') }}
+    <a href="{{ path('changelog_index') }}" class="btn btn-info"><i class="fas fa-list-alt"></i> powrót do listy</a>
 {% endblock %}
