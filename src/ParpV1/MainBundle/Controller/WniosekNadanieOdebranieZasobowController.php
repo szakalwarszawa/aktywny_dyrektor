@@ -1113,6 +1113,40 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
 
     /**
+     * Przekierowanie do showAction na podstawie zahaszowanego numeru wniosku (nie mylić z ID).
+     *
+     * @Route("/{hash}/show/h", name="show_wniosek_by_md5")
+     *
+     * @param string $hash
+     *
+     * @return Response
+     */
+    public function showByMd5(string $hash): Response
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $entity = $entityManager
+            ->getRepository(WniosekNadanieOdebranieZasobow::class)
+            ->findByMd5($hash)
+        ;
+
+        if (null === $entity) {
+            $this
+                ->addFlash('danger', 'Wniosek nie istnieje.')
+            ;
+
+            return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
+        }
+
+        return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', [
+            'id' => $entity->getId()
+        ]);
+    }
+
+    /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/show", name="wnioseknadanieodebraniezasobow_show")
      * @Method("GET")

@@ -5,4 +5,8 @@ Wniosek o numerze <b>{{ numer_wniosku }}</b> dotyczący użytkowników:<br />
 {% endfor %}
 </ul>
 czeka na akceptację przełożonego.<br /><br />
-<a href="{{ url('wnioseknadanieodebraniezasobow_show', {id: id_wniosku}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>
+{% if wniosek.id is not null %}
+    <a href="{{ url('wnioseknadanieodebraniezasobow_show', {id: wniosek.wniosekNadanieOdebranieZasobow.id}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>
+    {% else %}
+        <a href="{{ url('show_wniosek_by_md5', {hash: wniosek.numer|md5}) }}">Przejdź do wniosku: {{ numer_wniosku }}</a>
+{% endif %}

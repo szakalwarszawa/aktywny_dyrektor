@@ -355,12 +355,11 @@ class ParpMailerService
             }
         }
         $loginy = array_unique($loginy);
-
         $data = [
             'odbiorcy'                           => $odbiorcy,
             'login'                              => $loginy,
             'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
-            'id_wniosku'                         => $wniosek->getWniosek()->getWniosekNadanieOdebranieZasobow()->getId(),
+            'wniosek' => $wniosek->getWniosek()
         ];
 
         $this->sendEmailByType($template, $data);
