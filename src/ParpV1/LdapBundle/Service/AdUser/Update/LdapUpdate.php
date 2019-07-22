@@ -943,7 +943,6 @@ class LdapUpdate extends Simulation
      */
     public function getResponseMessages(string $groupBy = null)
     {
-        $x = new Group();
         if (null !== $groupBy) {
             $groupedArray = [];
             foreach ($this->responseMessages as $message) {
