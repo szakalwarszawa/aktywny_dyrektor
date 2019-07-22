@@ -396,6 +396,9 @@ class ParpMailerService
         if (!$wniosek->getPracownikSpozaParp()) {
             foreach ($wniosek->getUserZasoby() as $userZasob) {
                 $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
+                if (!isset($user[0])) {
+                    return false;
+                }
                 $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobId());
                 $usermail = $this->getUserMail($userZasob->getSamaccountname());
                 $data = [
