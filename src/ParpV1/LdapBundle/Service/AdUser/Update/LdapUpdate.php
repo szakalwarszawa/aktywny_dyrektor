@@ -32,6 +32,7 @@ use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\LdapBundle\AdUser\ParpAttributes;
 use ParpV1\LdapBundle\Constants\Attributes;
+use ParpV1\LdapBundle\DataCollection\Message\Messages\ErrorMessage;
 
 /**
  * LdapUpdate
@@ -123,6 +124,11 @@ class LdapUpdate extends Simulation
      * @var string
      */
     public $searchBy = SearchBy::LOGIN;
+
+    /**
+     * @var bool
+     */
+    public $isReadyToImplement = true;
 
     public function __construct(
         LdapFetch $ldapFetch,
@@ -291,6 +297,18 @@ class LdapUpdate extends Simulation
             ;
         }
 
+        if ($message instanceof ErrorMessage) {
+            $this->isReadyToImplement = false;
+            if (!$message->children->count()) {
+                $extraMessage = clone $message;
+                $extraMessage->setMessage('Wszystkie powyższe zmiany użytkownika zostały wycofane!');
+                $message
+                    ->children
+                    ->add($extraMessage)
+                ;
+            }
+        }
+
         $this
             ->responseMessages
             ->add($message)
@@ -383,20 +401,13 @@ class LdapUpdate extends Simulation
      */
     public function pushChangesToAd(ArrayCollection $changes, AdUser $adUser, Entry $entry = null): self
     {
+        $this->isReadyToImplement = true;
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
         $baseParameters = $this
             ->ldapFetch
             ->getBaseParameters()
         ;
         $simulateProcess = $this->isSimulation();
-
-        if ($this->eraseUserGroups) {
-            $this->removeAllUserGroups($adUser, $entry);
-            $adUser = $this
-                ->ldapFetch
-                ->refreshAdUser($adUser)
-            ;
-        }
 
         if (true === $this->unblockAccount) {
             $changeAccountState = new AccountState\Enable(
@@ -433,6 +444,7 @@ class LdapUpdate extends Simulation
         $moveToAnotherOu = false;
         $userGroups = $writableUserObject->getGroupNames();
         $groupsToChange = null;
+        $renameUser = null;
         foreach ($changes as $value) {
             $parseViewData = false;
             $keepAttributeValue = false;
@@ -448,11 +460,7 @@ class LdapUpdate extends Simulation
                 }
 
                 if (AdUserConstants::CN_AD_STRING === $value->getTarget()) {
-                    $this->renameUser($adUser, $newValue);
-                    $adUser = $this
-                        ->ldapFetch
-                        ->refreshAdUser($adUser)
-                    ;
+                    $renameUser = $newValue;
 
                     continue;
                 }
@@ -596,9 +604,8 @@ class LdapUpdate extends Simulation
                 );
             }
         }
-
-        if (!$simulateProcess) {
-            $writableUserObject->save();
+        if (false === $this->isReadyToImplement) {
+            return $this;
         }
 
         if (isset($disableEnableAccount[AdUserConstants::WYLACZONE])) {
@@ -635,6 +642,18 @@ class LdapUpdate extends Simulation
                 ->ldapFetch
                 ->refreshAdUser($adUser)
             ;
+        }
+
+        if (false === $this->isReadyToImplement) {
+            return $this;
+        }
+
+        if (null !== $renameUser) {
+            $this->renameUser($adUser, $renameUser);
+        }
+
+        if ($this->eraseUserGroups) {
+            $this->removeAllUserGroups($adUser, $entry);
         }
 
         if (null !== $groupsToChange) {
@@ -699,9 +718,6 @@ class LdapUpdate extends Simulation
             $parentDn = AdStringTool::getParentRootFromDn($currentDn);
 
             $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, $parentDn);
-            $writableUserObject->syncOriginal();
-            $writableUserObject->save();
-
             if (!$renameStatus) {
                 $this
                     ->addMessage(
@@ -744,6 +760,8 @@ class LdapUpdate extends Simulation
                     $adUser->getUser()
                 )
             ;
+
+            return $this;
         }
 
         $writableUserObject = $adUser->getUser(AdUser::FULL_USER_OBJECT);
@@ -780,6 +798,8 @@ class LdapUpdate extends Simulation
                         $adUser->getUser()
                     )
                 ;
+
+                return $this;
             }
 
             $writableUserObject->setDescription($newDepartment->getShortname());
@@ -940,16 +960,17 @@ class LdapUpdate extends Simulation
 
     /**
      * Zwraca czy istnieje błąd niepozwalający na poprawne wypchnięcie zmian.
+     * Metoda na razie zdezaktywowana. #82803
      *
      * @return bool
      */
     public function hasError(): bool
     {
-        foreach ($this->responseMessages as $message) {
-            if ($message instanceof Messages\ErrorMessage) {
-                return true;
-            }
-        }
+        // foreach ($this->responseMessages as $message) {
+        //     if ($message instanceof Messages\ErrorMessage) {
+        //         return true;
+        //     }
+        // }
 
         return false;
     }

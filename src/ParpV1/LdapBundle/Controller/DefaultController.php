@@ -68,7 +68,7 @@ class DefaultController extends Controller
             'change_log' => $updateByEntry->getResponseMessages(GroupBy::LOGIN),
             'is_simulation' => $isSimulation,
             'form' => $form->createView(),
-            'has_error' => $updateByEntry->hasError(),
+            'has_error' => false,
             'application_id' => $application
         ]);
     }
