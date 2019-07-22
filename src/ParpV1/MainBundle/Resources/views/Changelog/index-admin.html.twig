@@ -19,7 +19,7 @@
         </thead>
         <tbody>
         {% for changelog in changelogs %}
-            <tr{{ changelog.opublikowany ? ' class="success"' : ''}}>
+            <tr{{ changelog.opublikowany ? ' class="success"' : '' }}>
                 <td>{{ changelog.id }}</td>
                 <td>{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d H:i:s') : '' }}</td>
                 {# <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td> #}
