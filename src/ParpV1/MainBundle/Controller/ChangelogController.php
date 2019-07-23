@@ -17,14 +17,14 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class ChangelogController extends Controller
 {
     /**
-     * Lists all Changelog entities in public view.
+     * Lista wszystkich opublikowanych wpisów Changeloga.
      *
      * @Route("/", name="changelog_index", methods={"GET"})
      */
     public function index(): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')
+        $entity = $entityManager->getRepository(Changelog::class)
             ->findBy(['opublikowany' => true], ['id' => 'DESC']);
 
 
@@ -34,7 +34,7 @@ class ChangelogController extends Controller
     }
 
     /**
-     * Lists all Changelog entities in admin view.
+     * Administracyjna lista wszystkich wpisów Changelogaew.
      *
      * @Route("/admin/", name="changelog_admin_index", methods={"GET"})
      *
@@ -43,7 +43,7 @@ class ChangelogController extends Controller
     public function indexAdmin(): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
-        $entity = $entityManager->getRepository('ParpMainBundle:Changelog')->findAll();
+        $entity = $entityManager->getRepository(Changelog::class)->findAll();
 
         return $this->render('ParpMainBundle:Changelog:index-admin.html.twig', [
             'changelogs' => $entity,
@@ -51,7 +51,7 @@ class ChangelogController extends Controller
     }
 
     /**
-     * Creates a new Changelog entity.
+     * Tworzy nowy wpis changeloga.
      *
      * @Route("/admin/new", name="changelog_new", methods={"GET","POST"})
      *
@@ -80,7 +80,7 @@ class ChangelogController extends Controller
     }
 
     /**
-     * Finds and displays a Changelog entity in admin view.
+     * Wyświetla wpis changeloga w trybie podglądu.
      *
      * @Route("/admin/{id}", name="changelog_show", methods={"GET"})
      *
@@ -94,7 +94,7 @@ class ChangelogController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing Changelog entity.
+     * Wyświetla formularz edycji wpisu changeloga.
      *
      * @Route("/admin/{id}/edit", name="changelog_edit", methods={"GET","POST"})
      *
@@ -118,7 +118,7 @@ class ChangelogController extends Controller
     }
 
     /**
-     * Deletes a Changelog entity
+     * Usuwa wpis changeloga.
      *
      * @Route("/admin/{id}", name="changelog_delete", methods={"DELETE"})
      *
