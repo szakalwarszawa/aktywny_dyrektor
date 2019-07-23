@@ -5,7 +5,7 @@
     <br />
     {% for changelog in changelogs %}
         <div class="panel panel-default">
-            <div class="panel-heading">{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') ~ ' - ': '' }}{{ changelog.wersja }}</div>
+            <div class="panel-heading">{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') ~ ' - ' : '' }}{{ changelog.wersja }}</div>
                 <div class="panel-body">
                     {% if changelog.dodatkowyTytul %}
                     <h4>{{ changelog.dodatkowyTytul }}</h4><br />
