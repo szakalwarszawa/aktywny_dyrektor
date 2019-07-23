@@ -24,8 +24,6 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
-use ParpV1\MainBundle\Entity\Komentarz;
-use Doctrine\Common\Collections\ArrayCollection;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -857,7 +855,6 @@ class NadawanieUprawnienZasobowController extends Controller
                 $powod = $ndata['powod'];
                 $wniosekId = $ndata['wniosekId'];
                 $wniosek = $this->getDoctrine()->getRepository(WniosekNadanieOdebranieZasobow::class)->find($wniosekId);
-                //var_dump($ndata); die();
                 foreach ($ndata['userzasoby'] as $oz) {
                     foreach ($sams as $currentsam) {
                         $zmianaupr = array();
@@ -877,8 +874,6 @@ class NadawanieUprawnienZasobowController extends Controller
                             //wtedy nie moze
                             throw new SecurityTestException('Tylko administrator zasobu (albo administrator AkD) może dodawać do swoich zasobów użytkowników bez wniosku!!!');
                         }
-
-                        $oz->setAccessLevelGroups(new ArrayCollection());
 
                         $poziomyDostepu = $oz->getPoziomDostepu();
                         $czesciPoziomow = explode(';', $poziomyDostepu);
