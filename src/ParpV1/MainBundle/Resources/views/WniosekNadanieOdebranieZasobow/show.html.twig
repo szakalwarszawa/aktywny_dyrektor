@@ -358,11 +358,16 @@
                                 <td class="col-poziom-dostepu nowrap">
                                     {% if z.hasAccessLevelGroups %}
                                         <b>Poziomy dostępów z grup: </b>
-                                        {% for group in z.accessLevelGroups %}
-                                            {{ group.groupName }},
-                                        {% endfor %}
+                                        <ul>
+                                            {% for group in z.accessLevelGroups %}
+                                                <li>{{ group.groupName }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                        <a data-toggle="collapse" data-target="#access-level-{{ loop.index }}">Rozwiń poziomy</a>
                                     {% endif %}
-                                    {{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}
+                                    <span {% if z.hasAccessLevelGroups %}id="access-level-{{ loop.index }}" class="collapse"{% endif %}>
+                                        {{ z.poziomDostepu|showMultiFieldAsNewLines|raw }}
+                                    </span>
                                 </td>
                                 <td class="col-sumowanie-upr">{{ z.sumowanieUprawnien ? "TAK" : "NIE" }}</td>
                                 <td class="col-aktywne-od nowrap">{{ z.aktywneOd|date("Y-m-d") }}</td>
