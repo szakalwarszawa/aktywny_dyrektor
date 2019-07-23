@@ -79,6 +79,13 @@ class Changelog
      */
     private $opublikowany;
 
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="czy_markdown", type="boolean")
+     */
+    private $czyMarkdown;
+
 
     /**
      * Get id.
@@ -278,6 +285,30 @@ class Changelog
     public function setDataWprowadzeniaZmiany(?\DateTimeInterface $dataWprowadzeniaZmiany): self
     {
         $this->dataWprowadzeniaZmiany = $dataWprowadzeniaZmiany;
+
+        return $this;
+    }
+
+    /**
+     * Get czyMarkdown.
+     *
+     * @return bool
+     */
+    public function getCzyMarkdown(): ?bool
+    {
+        return $this->czyMarkdown;
+    }
+
+    /**
+     * Set czyMarkdown.
+     *
+     * @param bool $czyMarkdown
+     *
+     * @return Changelog
+     */
+    public function setCzyMarkdown(bool $czyMarkdown): self
+    {
+        $this->czyMarkdown = $czyMarkdown;
 
         return $this;
     }

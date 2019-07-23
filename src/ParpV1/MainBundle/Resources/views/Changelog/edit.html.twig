@@ -2,10 +2,7 @@
 
 {% block body %}
     <h1>Edycja Changeloga</h1>
-
     {{ include('changelog/_form.html.twig', {'button_label': 'Zapisz zmiany'}) }}
-
-    <a href="{{ path('changelog_admin_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> Powrót do listy</a>
-
     {{ include('changelog/_delete_form.html.twig') }}
+    <a href="{{ path('changelog_admin_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> Powrót do listy</a>
 {% endblock %}

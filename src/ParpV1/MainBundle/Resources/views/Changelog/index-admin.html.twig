@@ -2,31 +2,26 @@
 
 {% block body %}
     <h1>Changelog - administracja</h1>
-
-    <table class="table table-striped table-condensed table-bordered">
+    <table class="table table-striped table-bordered">
         <thead>
             <tr>
-                <th>Id</th>
-                <th>Data Zmiany</th>
-                {#  <th>DeletedAt</th> #}
-                {# <th>Autor</th> #}
-                <th>Wersja</th>
-                <th>Tytul</th>
+                <th class="col-md-1">Id</th>
+                <th class="col-md-1">Data Zmiany</th>
+                <th class="col-md-1">Wersja</th>
+                <th class="col-md-2">Tytul</th>
                 <th>Opis</th>
-                <th>Opublikowany</th>
-                <th>Akcje</th>
+                <th class="col-md-1">Opublikowany</th>
+                <th class="col-md-1">Akcje</th>
             </tr>
         </thead>
         <tbody>
         {% for changelog in changelogs %}
             <tr{{ changelog.opublikowany ? ' class="success"' : '' }}>
                 <td>{{ changelog.id }}</td>
-                <td>{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d H:i:s') : '' }}</td>
-                {# <td>{{ changelog.deletedAt ? changelog.deletedAt|date('Y-m-d H:i:s') : '' }}</td> #}
-                {# <td>{{ changelog.samaccountname }}</td> #}
+                <td>{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') : '' }}</td>
                 <td>{{ changelog.wersja }}</td>
                 <td>{{ changelog.dodatkowyTytul }}</td>
-                <td>{{ changelog.opis }}</td>
+                <td>{{ changelog.opis[:150] ~ '...' }}</td>
                 <td>{{ changelog.opublikowany ? '<i class="fas fa-check"></i>' : '<i class="fas fa-times"></i>' }}</td>
                 <td>
                     <a href="{{ path('changelog_show', {'id': changelog.id}) }}" class="btn btn-success"><i class="far fa-eye"></i> Podgląd</a>
