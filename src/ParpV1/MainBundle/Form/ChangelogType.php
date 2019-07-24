@@ -6,10 +6,15 @@ use ParpV1\MainBundle\Entity\Changelog;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 
+/**
+ * Klasa formularza edycji wpisów Changeloga
+ */
 class ChangelogType extends AbstractType
 {
     /**
@@ -33,22 +38,30 @@ class ChangelogType extends AbstractType
                     'class' => 'datepicker',
                 ],
             ])
-            ->add('wersja')
-            ->add('dodatkowyTytul')
-            ->add('opis', null, [
+            ->add('wersja', TextType::class, [
+                'label' => 'Nr wersji',
+                'required' => false,
+            ])
+            ->add('dodatkowyTytul', TextType::class, [
+                'label' => 'Dodatkowy tytul',
+                'required' => false,
+            ])
+            ->add('opis', TextareaType::class, [
                 'required' => true,
             ])
-            ->add('czyMarkdown', null, [
+            ->add('czyMarkdown', CheckboxType::class, [
                 'label' => 'Opis sformatowany w Markdown',
-                ])
-            ->add('opublikowany')
+                'required' => false,
+            ])
+            ->add('opublikowany', CheckboxType::class, [
+                'required' => false,
+            ])
             ->add('save', SubmitType::class, [
                 'label' => 'Zapisz',
                 'attr' => [
                     'class' => 'btn btn-primary',
                 ],
             ]);
-        ;
     }
 
     public function configureOptions(OptionsResolver $resolver)

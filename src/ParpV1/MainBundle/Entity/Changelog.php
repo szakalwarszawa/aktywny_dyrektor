@@ -4,6 +4,8 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
+use Symfony\Component\Validator\Constraints as Assert;
+use DateTime;
 
 /**
  * Changelog
@@ -55,6 +57,11 @@ class Changelog
      * @var string
      *
      * @ORM\Column(name="wersja", type="string", length=20, nullable=true)
+     * @Assert\Length(
+     *      min = 1,
+     *      max = 20,
+     *      minMessage = "Numer/nazwa wersji musi zawierać min {{ limit }} znaków.",
+     *      maxMessage = "Numer/nazwa wersji  musi zawierać max {{ limit }} znaków.")
      */
     private $wersja;
 
@@ -69,6 +76,12 @@ class Changelog
      * @var string|null
      *
      * @ORM\Column(name="opis", type="text", nullable=true)
+     * @Assert\NotBlank(message = "Opis zmiany nie może pozostać pusty.")
+     * @Assert\Length(
+     *      min = 10,
+     *      max = 2000,
+     *      minMessage = "Opis zmiany musi zawierać min {{ limit }} znaków.",
+     *      maxMessage = "Opis zmiany musi zawierać max {{ limit }} znaków.")
      */
     private $opis;
 
@@ -268,9 +281,9 @@ class Changelog
     /**
      * Get dataWprowadzeniaZmiany.
      *
-     * @return DateTime
+     * @return DateTime|null
      */
-    public function getDataWprowadzeniaZmiany(): ?\DateTimeInterface
+    public function getDataWprowadzeniaZmiany(): ?DateTime
     {
         return $this->dataWprowadzeniaZmiany;
     }
@@ -282,7 +295,7 @@ class Changelog
      *
      * @return Changelog
      */
-    public function setDataWprowadzeniaZmiany(?\DateTimeInterface $dataWprowadzeniaZmiany): self
+    public function setDataWprowadzeniaZmiany(?DateTime $dataWprowadzeniaZmiany): self
     {
         $this->dataWprowadzeniaZmiany = $dataWprowadzeniaZmiany;
 
