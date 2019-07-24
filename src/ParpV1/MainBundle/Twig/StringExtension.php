@@ -122,12 +122,16 @@ class StringExtension extends \Twig_Extension
     /**
      * Zwraca datę końca umowy dla użytkownika
      *
-     * @param string $samaccountname
+     * @param string|null $samaccountname
      *
      * @return DateTime|null
      */
-    public function podajKoniecUmowy(string $samaccountname): ?DateTime
+    public function podajKoniecUmowy(?string $samaccountname = null): ?DateTime
     {
+        if (null === $samaccountname) {
+            return null;
+        }
+
         $dataUmowy = $this->entityManager->getRepository('ParpMainBundle:DaneRekord')
             ->podajKoniecUmowy($samaccountname);
 
