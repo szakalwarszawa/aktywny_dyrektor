@@ -704,16 +704,21 @@ class WniosekUtworzenieZasobuController extends Controller
         $form->handleRequest($request);
 
         if ($form->isValid()) {
-            $em = $this->getDoctrine()->getManager();
-            $entity = $em->getRepository(WniosekUtworzenieZasobu::class)->find($id);
+            $enityManager = $this->getDoctrine()->getManager();
+            $entity = $enityManager->getRepository(WniosekUtworzenieZasobu::class)->find($id);
 
             if (!$entity) {
                 throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
             }
 
+            if (null !== $entity->getZmienianyZasob()) {
+                $entity->getZmienianyZasob()->setWniosekSkasowanieZasobu(null);
+                $enityManager->persist($entity->getZmienianyZasob());
+            }
+
             $this->addFlash('warning', 'Wniosek został skasowany.');
-            $em->remove($entity);
-            $em->flush();
+            $enityManager->remove($entity);
+            $enityManager->flush();
         }
 
         return $this->redirect($this->generateUrl('wniosekutworzeniezasobu'));
