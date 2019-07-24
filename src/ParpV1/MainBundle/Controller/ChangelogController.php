@@ -1,10 +1,9 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Controller;
 
 use ParpV1\MainBundle\Entity\Changelog;
 use ParpV1\MainBundle\Form\ChangelogType;
-use ParpV1\MainBundle\Repository\ChangelogRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -20,6 +19,8 @@ class ChangelogController extends Controller
      * Lista wszystkich opublikowanych wpisów Changeloga.
      *
      * @Route("/", name="changelog_index", methods={"GET"})
+     *
+     * @return Response
      */
     public function index(): Response
     {
@@ -39,6 +40,8 @@ class ChangelogController extends Controller
      * @Route("/admin/", name="changelog_admin_index", methods={"GET"})
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @return Response
      */
     public function indexAdmin(): Response
     {
@@ -56,6 +59,10 @@ class ChangelogController extends Controller
      * @Route("/admin/new", name="changelog_new", methods={"GET","POST"})
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Request $request
+     *
+     * @return Response
      */
     public function new(Request $request): Response
     {
@@ -85,6 +92,10 @@ class ChangelogController extends Controller
      * @Route("/admin/{id}", name="changelog_show", methods={"GET"})
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Changelog $changelog
+     *
+     * @return Response
      */
     public function show(Changelog $changelog): Response
     {
@@ -99,6 +110,11 @@ class ChangelogController extends Controller
      * @Route("/admin/{id}/edit", name="changelog_edit", methods={"GET","POST"})
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Request $request
+     * @param Changelog $changelog
+     *
+     * @return Response
      */
     public function edit(Request $request, Changelog $changelog): Response
     {
@@ -123,6 +139,11 @@ class ChangelogController extends Controller
      * @Route("/admin/{id}", name="changelog_delete", methods={"DELETE"})
      *
      * @Security("has_role('PARP_ADMIN')")
+     *
+     * @param Request $request
+     * @param Changelog $changelog
+     *
+     * @return Response
      */
     public function delete(Request $request, Changelog $changelog): Response
     {

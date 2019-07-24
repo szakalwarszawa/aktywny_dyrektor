@@ -23,7 +23,7 @@ class Changelog
     private $id;
 
     /**
-     * @var \DateTime $createdAt
+     * @var DateTime $createdAt
      *
      * @ORM\Column(type="datetime", nullable=false)
      * @Gedmo\Timestampable(on="create")
@@ -31,14 +31,14 @@ class Changelog
     private $createdAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
     private $deletedAt;
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
      */
@@ -100,7 +100,7 @@ class Changelog
     /**
      * Set deletedAt
      *
-     * @param \DateTime $deletedAt
+     * @param DateTime $deletedAt
      *
      * @return Changelog
      */
@@ -114,7 +114,7 @@ class Changelog
     /**
      * Get deletedAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDeletedAt()
     {
@@ -244,7 +244,7 @@ class Changelog
     /**
      * Set createdAt.
      *
-     * @param \DateTime $createdAt
+     * @param DateTime $createdAt
      *
      * @return Changelog
      */
@@ -258,7 +258,7 @@ class Changelog
     /**
      * Get createdAt.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {
@@ -268,7 +268,7 @@ class Changelog
     /**
      * Get dataWprowadzeniaZmiany.
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDataWprowadzeniaZmiany(): ?\DateTimeInterface
     {
@@ -278,7 +278,7 @@ class Changelog
     /**
      * Set dataWprowadzeniaZmiany.
      *
-     * @param \DateTime $dataWprowadzeniaZmiany
+     * @param DateTime $dataWprowadzeniaZmiany
      *
      * @return Changelog
      */
