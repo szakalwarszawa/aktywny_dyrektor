@@ -26,7 +26,13 @@
             </tr>
             <tr>
                 <th>Opis</th>
-                <td>{{ changelog.opis }}</td>
+                <td>
+                    {% if changelog.czyMarkdown %}
+                        {{ changelog.opis|extra_markdown }}
+                    {% else %}
+                        {{ changelog.opis|nl2br }}
+                    {% endif %}
+                </td>
             </tr>
             <tr>
                 <th>Czy opis sformatowany w Markdown? </th>
