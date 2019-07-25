@@ -2049,6 +2049,44 @@ class DefaultController extends Controller
     }
 
     /**
+     * Cofa wpis do problematycznych.
+     *
+     * @Route("/cofnij_do_problematycznych/{id}", name="cofnij_do_problematycznych")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW') or has_role('PARP_BZK_1')")
+     *
+     * @throws EntityNotFoundException Nie ma takiego wpisu w bazie.
+     *
+     * @param Entry|null $entry
+     *
+     * @return Response
+     *
+     */
+    public function cofnijDoProblematycznych(?Entry $entry = null): Response
+    {
+        if (null === $entry) {
+            throw new EntityNotFoundException('Nie ma takiego wpisu w bazie.');
+        }
+
+        $daneRekord = $entry->getDaneRekord();
+        $daneRekord
+            ->setNewUnproccessed($daneRekord->getStaticStatusNumber())
+        ;
+
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+        $entityManager->persist($daneRekord);
+        $entityManager->remove($entry);
+        $entityManager->flush();
+
+        $this->addFlash('danger', sprintf('Cofnięto użytkownika do problematycznych (ID: %s)', $daneRekord->getId()));
+
+        return $this->redirectToRoute('przejrzyjnowych');
+    }
+
+    /**
      * Zwraca użytkowników z AD z grupami uprawnień (na potrzeby śledzenia zmian w AD).
      *
      * @Route("/usersAdData/{showall}", defaults={"showall" : 0})

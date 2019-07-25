@@ -39,7 +39,10 @@
                             {% endif %}
                         </td>
                         <td>
-                            <a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger">Usuń zmianę</a>
+                            <a href="{{ path('delete_pending', {'id': row.id}) }}" class="btn btn-xs btn-danger"><i class="fas fa-trash"></i> Usuń zmianę</a>
+                            {% if row.daneRekord is not null %}
+                                <a href="{{ path('cofnij_do_problematycznych', {'id': row.id}) }}" class="btn btn-xs btn-info"><i class="fas fa-undo"></i> Cofnij do problematycznych</a>
+                            {% endif %}
                         </td>
                     </tr>
                 {% endfor %}

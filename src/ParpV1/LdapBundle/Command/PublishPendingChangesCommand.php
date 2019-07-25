@@ -29,6 +29,7 @@ class PublishPendingChangesCommand extends Command
      */
     public function __construct(UpdateFromEntry $updateFromEntry)
     {
+        $updateFromEntry->throwExceptions();
         $this->updateFromEntry = $updateFromEntry;
 
         parent::__construct();
