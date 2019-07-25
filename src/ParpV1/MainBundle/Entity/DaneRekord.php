@@ -20,7 +20,6 @@ use Doctrine\Common\Annotations\UniqueConstraint;
  */
 class DaneRekord
 {
-
     /**
      *
      */
@@ -172,6 +171,12 @@ class DaneRekord
      */
     private $newUnproccessed = 0;
 
+    /**
+     * @var int
+     *
+     * @ORM\Column(name="static_status_number", type="integer", options={"default": 0})
+     */
+    protected $staticStatusNumber = 0;
 
     /**
      * Get id
@@ -564,5 +569,29 @@ class DaneRekord
     public function getImieNazwisko()
     {
         return $this->getImie()." ".$this->getNazwisko();
+    }
+
+    /**
+     * Get staticStatusNumber
+     *
+     * @return int
+     */
+    public function getStaticStatusNumber(): int
+    {
+        return $this->staticStatusNumber;
+    }
+
+    /**
+     * Set staticStatusNumber
+     *
+     * @param int $staticStatusNumber
+     *
+     * @return DaneRekord
+     */
+    public function setStaticStatusNumber(int $staticStatusNumber): DaneRekord
+    {
+        $this->staticStatusNumber = $staticStatusNumber;
+
+        return $this;
     }
 }

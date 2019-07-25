@@ -292,6 +292,7 @@ class ImportRekordDaneController extends Controller
                         ->setCreatedBy($this->getUser()->getUsername())
                         ->setCreatedAt($d)
                         ->setNewUnproccessed(1)
+                        ->setStaticStatusNumber(1)
                     ;
 
                     $em->persist($dr);
@@ -357,7 +358,10 @@ class ImportRekordDaneController extends Controller
 
                     if ((isset($changeSet['departament']) || isset($changeSet['stanowisko'])) && !$nowy) {
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
-                        $dr->setNewUnproccessed(2);
+                        $dr
+                            ->setNewUnproccessed(2)
+                            ->setStaticStatusNumber(2)
+                        ;
                     } elseif (count($changeSet) > 0 && !$nowy) {
                         $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;

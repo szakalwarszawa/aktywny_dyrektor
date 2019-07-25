@@ -32,6 +32,8 @@ use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\LdapBundle\AdUser\ParpAttributes;
 use ParpV1\LdapBundle\Constants\Attributes;
+use ParpV1\MainBundle\Entity\Section;
+use ParpV1\LdapBundle\Exception\PushFailedException;
 
 /**
  * LdapUpdate
@@ -116,6 +118,14 @@ class LdapUpdate extends Simulation
      * @var ParpUser|null
      */
     protected $currentUser = null;
+
+    /**
+     * Jeżeli true - rzucany będzie wyjątek zamiast komunikatu wypycharki o błędzie.
+     *
+     * @var bool
+     */
+    protected $throwExceptions = false;
+
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -269,10 +279,16 @@ class LdapUpdate extends Simulation
      * @param string $target
      * @param mixed $vars
      *
+     * @throws PushFailedException jeżeli opcja throwExceptions jest true i istnieje błąd wypycharki
+     *
      * @return void
      */
     private function addMessage(Message $message, string $text = '', string $target = '', $vars = null): void
     {
+        if ($message instanceof Messages\ErrorMessage && $this->throwExceptions) {
+            throw new PushFailedException($text);
+        }
+
         if (!empty($text)) {
             $message
                 ->setMessage($text)
@@ -438,6 +454,12 @@ class LdapUpdate extends Simulation
             $keepAttributeValue = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
+
+                if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
+                    if (!$this->isSectionExists($adUser, $newValue)) {
+                        return $this;
+                    }
+                }
 
                 if (AdUserConstants::DEPARTAMENT_NAZWA === $value->getTarget()) {
                     $moveToAnotherOu = $value;
@@ -952,6 +974,51 @@ class LdapUpdate extends Simulation
         }
 
         return false;
+    }
+
+    /**
+     * Sprawdza czy sekcja istnieje w bazie danych.
+     * Jezeli nie, dodaje błąd.
+     *
+     * @param AdUser $adUser
+     * @param string $sectionName
+     *
+     * @return bool
+     */
+    private function isSectionExists(AdUser $adUser, string $sectionName): bool
+    {
+        $section = $this
+            ->entityManager
+            ->getRepository(Section::class)
+            ->findOneBy([
+                'name' => $sectionName
+            ])
+        ;
+
+        if (null === $section) {
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono sekcji w słowniku - ' . $sectionName,
+                    AdUserConstants::DEPARTAMENT_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Rzucany będzie wyjątek do Redmine zamiast komunikatu o błędzie wypycharki.
+     *
+     * @return void
+     */
+    public function throwExceptions(): void
+    {
+        $this->throwExceptions = true;
     }
 
     /**
