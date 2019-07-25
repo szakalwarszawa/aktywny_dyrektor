@@ -13,7 +13,7 @@ use ParpV1\MainBundle\Entity\Komentarz;
 
 class KomentarzType extends AbstractType
 {
-        /**
+    /**
      * @param FormBuilderInterface $builder
      * @param array $options
      */
@@ -32,7 +32,6 @@ class KomentarzType extends AbstractType
             ->add('submit', SubmitType::class, [
                 'label' => 'Utwórz Komentarz'
             ]);
-        ;
     }
 
     /**

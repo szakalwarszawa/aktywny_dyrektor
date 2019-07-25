@@ -1,0 +1,23 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Rejestr zmian</h1>
+    <br />
+    {% for changelog in changelogs %}
+        <div class="panel panel-default">
+            <div class="panel-heading">{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') ~ ' - ' : '' }}{{ changelog.wersja }}</div>
+                <div class="panel-body">
+                    {% if changelog.dodatkowyTytul %}
+                    <h4>{{ changelog.dodatkowyTytul }}</h4><br />
+                    {% endif %}
+                    {% if changelog.czyMarkdown %}
+                        {{ changelog.opis|extra_markdown }}
+                    {% else %}
+                        {{ changelog.opis|nl2br }}
+                    {% endif %}
+                </div>
+        </div>
+    {% else %}
+        <p>Nie znaleziono wpisów</p>
+    {% endfor %}
+{% endblock %}
