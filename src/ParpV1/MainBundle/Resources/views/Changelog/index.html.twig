@@ -5,7 +5,9 @@
     <div class="panel-group" id="accordion">
     {% for changelog in changelogs %}
         <div class="panel panel-default" id="panel{{ loop.index }}">
-            <div class="panel-heading"><a data-toggle="collapse" data-target="#collapse{{ loop.index }}" href="#collapse{{ loop.index }}">{{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') ~ ' - ' : '' }}{{ changelog.wersja }}</a></div>
+            <div class="panel-heading"><a data-toggle="collapse" data-target="#collapse{{ loop.index }}" href="#collapse{{ loop.index }}" aria-expanded="true" aria-controls="collapse{{ loop.index }}">
+            <i class="fa" aria-hidden="true"></i>
+            {{ changelog.dataWprowadzeniaZmiany ? changelog.dataWprowadzeniaZmiany|date('Y-m-d') ~ ' - ' : '' }}{{ changelog.wersja }}</a></div>
                 <div id="collapse{{ loop.index }}" class="panel-collapse collapse{{ loop.first ? ' in' : '' }}">
                     <div class="panel-body">
                         {% if changelog.dodatkowyTytul %}
@@ -22,5 +24,9 @@
     {% else %}
         <p>Nie znaleziono wpisów</p>
     {% endfor %}
+    </div>
+
+    <div class="pagerfanta">
+    {{ pagerfanta(changelogs, 'twitter_bootstrap3_translated') }}
     </div>
 {% endblock %}

@@ -9,6 +9,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
+use Pagerfanta\Adapter\ArrayAdapter;
+use Pagerfanta\Pagerfanta;
 
 /**
  * @Route("/changelog")
@@ -16,21 +18,36 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 class ChangelogController extends Controller
 {
     /**
+     * Stronnicowanie - domyślna liczba wpisów na stronę
+     *
+     * @var int
+     */
+    const ILE_WPISOW_NA_STRONE = 2;
+
+    /**
      * Lista wszystkich opublikowanych wpisów Changeloga.
      *
      * @Route("/", name="changelog_index", methods={"GET"})
      *
+     * @param Request $request
+     * @param int     $wynikowNaStrone
+     *
      * @return Response
      */
-    public function index(): Response
+    public function index(Request $request, $wynikowNaStrone = self::ILE_WPISOW_NA_STRONE): Response
     {
         $entityManager = $this->getDoctrine()->getManager();
         $entity = $entityManager->getRepository(Changelog::class)
             ->findBy(['opublikowany' => true], ['id' => 'DESC']);
 
+        $adapter = new ArrayAdapter($entity);
+        $page = (int)($request->query->get('page') == null ?  1 : $request->query->get('page'));
+        $pagerfanta = new Pagerfanta($adapter);
+        $pagerfanta->setMaxPerPage($wynikowNaStrone);
+        $pagerfanta->setCurrentPage($page);
 
         return $this->render('ParpMainBundle:Changelog:index.html.twig', [
-            'changelogs' => $entity,
+            'changelogs' => $pagerfanta,
         ]);
     }
 

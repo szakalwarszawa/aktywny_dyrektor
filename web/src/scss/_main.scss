@@ -661,3 +661,12 @@ footer.helpdesk {
         border-bottom: 1px solid #dedede;
     }
 }
+
+/* Strzalki naglowkow rozwijanych paneli */
+[data-toggle="collapse"] .fa:before {
+    content: "\f107";
+  }
+
+[data-toggle="collapse"].collapsed .fa:before {
+    content: "\f106";
+}
