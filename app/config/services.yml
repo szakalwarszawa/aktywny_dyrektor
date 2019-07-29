@@ -62,7 +62,7 @@ services:
     kernel.listener.command_dispatch:
         class: ParpV1\MainBundle\EventListener\ConsoleExceptionListener
         arguments:
-            - '@logger'
+            - '@parp.redmine'
         tags:
             - { name: kernel.event_listener, event: console.exception }
     adcheck_service:
