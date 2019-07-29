@@ -934,7 +934,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
         $poprzednieDane = explode(' ', current($userFromAD)['name']);
-
+        $daneRekord->setStaticStatusNumber($daneRekord->getNewUnproccessed());
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];
 

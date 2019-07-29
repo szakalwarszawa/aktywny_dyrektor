@@ -286,7 +286,7 @@ class LdapUpdate extends Simulation
     private function addMessage(Message $message, string $text = '', string $target = '', $vars = null): void
     {
         if ($message instanceof Messages\ErrorMessage && $this->throwExceptions) {
-            throw new PushFailedException($text);
+            throw new PushFailedException('[WYPYCHARKA] ' . $text);
         }
 
         if (!empty($text)) {
@@ -387,7 +387,7 @@ class LdapUpdate extends Simulation
      *      włączajacej lub wyłączającej konto.
      *
      *  $disableEnableAccount (array) - jeżeli tablica zostanie uzupełniona to znaczy, że konto musi zostać wyłączone|włączone
-     *  $moveToAnotherOu (bool|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
+     *  $moveToAnotherOu (null|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
      *      musi się to dziać na samym końcu!
      *  $keepAttributeValue - mimo zmiany wartośc atrybutu zostanie zachowana
      *
@@ -446,9 +446,10 @@ class LdapUpdate extends Simulation
                 ->refreshAdUser($adUser)
             ;
         }
-        $moveToAnotherOu = false;
+        $moveToAnotherOu = null;
         $userGroups = $writableUserObject->getGroupNames();
         $groupsToChange = null;
+        $sectionChange = null;
         foreach ($changes as $value) {
             $parseViewData = false;
             $keepAttributeValue = false;
@@ -456,9 +457,7 @@ class LdapUpdate extends Simulation
                 $newValue = $value->getNew();
 
                 if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
-                    if (!$this->isSectionExists($adUser, $newValue)) {
-                        return $this;
-                    }
+                    $sectionChange = $newValue;
                 }
 
                 if (AdUserConstants::DEPARTAMENT_NAZWA === $value->getTarget()) {
@@ -657,6 +656,12 @@ class LdapUpdate extends Simulation
                 ->ldapFetch
                 ->refreshAdUser($adUser)
             ;
+        }
+
+        if ($sectionChange) {
+            if (!$this->isSectionExists($adUser, $sectionChange, $moveToAnotherOu)) {
+                return $this;
+            }
         }
 
         if (null !== $groupsToChange) {
@@ -961,6 +966,16 @@ class LdapUpdate extends Simulation
     }
 
     /**
+     * Czyści kontener wiadomości.
+     *
+     * @return void
+     */
+    public function cleanMessages(): void
+    {
+        $this->responseMessages = new ArrayCollection();
+    }
+
+    /**
      * Zwraca czy istnieje błąd niepozwalający na poprawne wypchnięcie zmian.
      *
      * @return bool
@@ -982,16 +997,48 @@ class LdapUpdate extends Simulation
      *
      * @param AdUser $adUser
      * @param string $sectionName
+     * @param null|AdUserChange
      *
      * @return bool
      */
-    private function isSectionExists(AdUser $adUser, string $sectionName): bool
+    private function isSectionExists(AdUser $adUser, string $sectionName, ?AdUserChange $changeDepartment = null): bool
     {
+        $userDepartmentName = $adUser
+            ->getUser()[AdUserConstants::DEPARTAMENT_NAZWA]
+        ;
+
+        if ($changeDepartment) {
+            $userDepartmentName = $changeDepartment->getNew();
+        }
+
+        $department = $this
+            ->entityManager
+            ->getRepository(Departament::class)
+            ->findOneBy([
+                'name' => $userDepartmentName,
+                'nowaStruktura' => 1
+            ])
+        ;
+
+        if (null === $department) {
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono departamentu w słowniku - ' . $userDepartmentName,
+                    AdUserConstants::SEKCJA_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
+
+            return false;
+        }
+
         $section = $this
             ->entityManager
             ->getRepository(Section::class)
             ->findOneBy([
-                'name' => $sectionName
+                'name' => $sectionName,
+                'departament' => $department->getId()
             ])
         ;
 
@@ -999,8 +1046,9 @@ class LdapUpdate extends Simulation
             $this
                 ->addMessage(
                     new Messages\ErrorMessage(),
-                    'Nie odnaleziono sekcji w słowniku - ' . $sectionName,
-                    AdUserConstants::DEPARTAMENT_NAZWA,
+                    'Nie odnaleziono sekcji w słowniku (departament - ' .
+                        $department->getShortname() . ') ' . $sectionName,
+                    AdUserConstants::SEKCJA_NAZWA,
                     $adUser->getUser()
                 )
             ;
