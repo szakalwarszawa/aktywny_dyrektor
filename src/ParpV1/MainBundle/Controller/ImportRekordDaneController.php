@@ -367,12 +367,6 @@ class ImportRekordDaneController extends Controller
                         $imported[] = $dr;
                     }
 
-                    if (false === $nowy) {
-                        if (isset($changeSet['departament'])) {
-                            //zmiana departamentu
-                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
-                        }
-                    }
                 }
             }
         }
