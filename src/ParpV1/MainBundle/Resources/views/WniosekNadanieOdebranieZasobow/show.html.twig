@@ -86,10 +86,15 @@
                 {% endif %}
             {% endif %}
             <div class="btn-group container">
+                {% if app.user.username in administratorzy_techniczni and not status_ostatecznie_zablokowany and entity.wniosek.status.nazwaSystemowa == '07_ROZPATRZONY_POZYTYWNIE' %}
+                    <h4>Akcje:</h4>
+                    <a href="{{ path('opublikuj_zmiany_ldap_wniosek', {application: entity.wniosek.id}) }}" class="btn btn-danger">Opublikuj do AD<i class="fas fa-check-circle">&nbsp;</i> </a>
+                    {% set opublikuj_rendered = true %}
+                {% endif %}
                 {% if editor and not status_ostatecznie_zablokowany %}
                     {% if entity.userZasoby|length > 0 %}
-                        <h4>Akcje:</h4>
-                        {% if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" %}
+                        {% if opublikuj_rendered is not defined %}<h4>Akcje:</h4>{% endif %}
+                        {% if entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE" and opublikuj_rendered is not defined %}
                             {#jesli tu jestesmy znaczy ze jest ediutorem i jest pozytywnie wiec musi byc opublikowany do AD #}
                             <a href="{{ path('opublikuj_zmiany_ldap_wniosek', {application: entity.wniosek.id}) }}" class="btn btn-danger">Opublikuj do AD<i class="fas fa-check-circle">&nbsp;</i> </a>
                         {% else %}
