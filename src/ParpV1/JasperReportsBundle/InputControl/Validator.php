@@ -81,7 +81,7 @@ class Validator
      */
     public static function keyOrValue(string $value): bool
     {
-        $pattern = '/^[A-Za-z]+$/m';
+        $pattern = '/^[A-Za-z_]+$/m';
         $result = 1 === preg_match($pattern, $value);
 
         if (self::$throwException && !$result) {
