@@ -13,13 +13,14 @@ use Symfony\Component\HttpFoundation\Response;
 use ParpV1\JasperReportsBundle\Grid\PathsGrid;
 use ParpV1\JasperReportsBundle\Grid\PathRoleGrid;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
-use ParpV1\JasperReportsBundle\Helper\FileHeadersHelper;
 use Doctrine\DBAL\Exception\ForeignKeyConstraintViolationException;
 use ParpV1\JasperReportsBundle\Voter\ReportVoter;
 use ParpV1\JasperReportsBundle\Form\GenerateReportType;
 use ParpV1\JasperReportsBundle\InputControl\InputControlResolver;
 use ParpV1\JasperReportsBundle\InputControl\Validator;
 use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
+use ParpV1\JasperReportsBundle\Utils\SpecialCharactersUrlEncoder;
+use ParpV1\JasperReportsBundle\Utils\FileHeadersUtil;
 
 class DefaultController extends Controller
 {
@@ -96,7 +97,7 @@ class DefaultController extends Controller
         $inputControlResolver = new InputControlResolver($this->get('jasper.fetch'));
         $inputControls = $inputControlResolver->resolveFormPostRequest($request);
         $validator = new Validator();
-        if (!$validator::validateArray($inputControls)) {
+        if (null !== $inputControls && !$validator::validateArray($inputControls)) {
             $this
                 ->addFlash('danger', sprintf('Nieprawidłowa wartość opcji wejściowej ("%s")', $validator::invalidAsString()))
             ;
@@ -106,7 +107,7 @@ class DefaultController extends Controller
 
         $printer = $this->get('jasper.report_print');
         $downloadedData = $printer->printReport(
-            $requestPostData['report_uri'],
+            SpecialCharactersUrlEncoder::encode($requestPostData['report_uri']),
             $requestPostData['format'],
             $inputControls
         );
@@ -122,7 +123,7 @@ class DefaultController extends Controller
         $response = new Response($downloadedData);
         $response
             ->headers
-            ->add(FileHeadersHelper::create($requestPostData['format']))
+            ->add(FileHeadersUtil::create($requestPostData['format']))
         ;
 
         return $response;
