@@ -42,9 +42,7 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKZWOLNIENIE2 = 'pracownikZwolnienie2.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE3 = 'pracownikZwolnienie3.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE4 = 'pracownikZwolnienie4.html.twig';
-
     const TEMPLATE_RAPORTZBIORCZY = 'raportZbiorczy.html.twig';
-
     const TEMPLATE_WNIOSEKNADANIEUPRAWNIEN = 'wniosekNadanieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN = 'wniosekOdebranieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODRZUCENIE = 'wniosekOdrzucenie.html.twig';
@@ -56,6 +54,7 @@ class ParpMailerService
     const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN = 'odebranie_uprawnien_bez_grup.html.twig';
+    const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -503,6 +502,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
