@@ -30,7 +30,7 @@
                     {% set i = i + 1 %}
                     {% if z.zasobId not in przetworzone_zasoby %}
                         {% set przetworzone_zasoby = przetworzone_zasoby|merge([z.zasobId]) %}
-                        <a class="btn" href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobId|zasobNazwa }} </a>
+                        <a class="button-white-round" href="{{ path('zasoby_edit', {'id': z.zasobId, 'readOnly': 1}) }}">{{ z.zasobId|zasobNazwa }}</a>
 {#                         {% if i != entity.userZasoby|length %},{% endif %} #}
                     {% endif %}
                 {% endfor %}
