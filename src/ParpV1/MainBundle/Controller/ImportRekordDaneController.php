@@ -292,6 +292,7 @@ class ImportRekordDaneController extends Controller
                         ->setCreatedBy($this->getUser()->getUsername())
                         ->setCreatedAt($d)
                         ->setNewUnproccessed(1)
+                        ->setStaticStatusNumber(1)
                     ;
 
                     $em->persist($dr);
@@ -357,17 +358,13 @@ class ImportRekordDaneController extends Controller
 
                     if ((isset($changeSet['departament']) || isset($changeSet['stanowisko'])) && !$nowy) {
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
-                        $dr->setNewUnproccessed(2);
+                        $dr
+                            ->setNewUnproccessed(2)
+                            ->setStaticStatusNumber(2)
+                        ;
                     } elseif (count($changeSet) > 0 && !$nowy) {
                         $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;
-                    }
-
-                    if (false === $nowy) {
-                        if (isset($changeSet['departament'])) {
-                            //zmiana departamentu
-                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
-                        }
                     }
                 }
             }
@@ -431,7 +428,7 @@ class ImportRekordDaneController extends Controller
                 $imie = $poprzednieDane[1];
                 $nazwisko = $poprzednieDane[0];
             }
-
+            $entry->setRenaming(true);
             $entry->setCn($this->get('samaccountname_generator')
                 ->generateFullname(
                     $dr->getImie(),
@@ -930,7 +927,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
         $poprzednieDane = explode(' ', current($userFromAD)['name']);
-
+        $daneRekord->setStaticStatusNumber($daneRekord->getNewUnproccessed());
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];
 

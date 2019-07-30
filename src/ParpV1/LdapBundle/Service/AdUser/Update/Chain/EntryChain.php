@@ -9,6 +9,8 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Services\StatusWnioskuService;
 use ParpV1\LdapBundle\Service\AdUser\Update\Chain\Operations\ResourceApplicationFinish;
 use Doctrine\ORM\EntityManager;
+use ParpV1\LdapBundle\Service\AdUser\Update\Chain\Operations\GlpiMessage;
+use ParpV1\MainBundle\Services\ParpMailerService;
 
 /**
  * Łańcuch zdarzeń wywoływanych w trakcie wypychania entry.
@@ -48,20 +50,28 @@ class EntryChain extends Simulation
     private $entityManager;
 
     /**
+     * @var ParpMailerService
+     */
+    private $parpMailer;
+
+    /**
      * Do konstruktora przekazywane są wszystkie parametry potrzebne do poszczególnych operacji.
      *
      * @param UprawnieniaService|null $uprawnieniaService
      * @param StatusWnioskuService|null $statusWnioskuService
      * @param EntityManager|null $entityManager
+     * @param ParpMailerService $parpMailer
      */
     public function __construct(
-        UprawnieniaService $uprawnieniaService = null,
-        StatusWnioskuService $statusWnioskuService = null,
-        EntityManager $entityManager = null
+        ?UprawnieniaService $uprawnieniaService = null,
+        ?StatusWnioskuService $statusWnioskuService = null,
+        ?EntityManager $entityManager = null,
+        ?ParpMailerService $parpMailer = null
     ) {
         $this->uprawnieniaService = $uprawnieniaService;
         $this->statusWnioskuService = $statusWnioskuService;
         $this->entityManager = $entityManager;
+        $this->parpMailer = $parpMailer;
     }
 
     /**
@@ -79,6 +89,7 @@ class EntryChain extends Simulation
             $this->entityManager,
             $entry
         );
+        $this->chainClasses[] = new GlpiMessage($entry, $this->parpMailer);
 
         $this->chainReady = true;
 

@@ -69,7 +69,7 @@ class DefaultController extends Controller
             'is_simulation' => $isSimulation,
             'form' => $form->createView(),
             'has_error' => $updateByEntry->hasError(),
-            'application_id' => $application
+            'application_id' => $application,
         ]);
     }
 }

@@ -104,7 +104,11 @@ class AdPublishVoter extends Voter
             return false;
         }
 
-        $resourceAdmins = explode(',', $resource->getAdministratorZasobu());
+        $resourceAdmins = array_unique(array_merge(
+            explode(',', $resource->getAdministratorZasobu()),
+            explode(',', $resource->getAdministratorTechnicznyZasobu())
+        ));
+
         if (in_array($username, $resourceAdmins)) {
             return true;
         }

@@ -28,6 +28,12 @@ use Symfony\Component\VarDumper\VarDumper;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use DateTime;
+use ParpV1\MainBundle\Grid\AccessLevelGroupList;
+use ParpV1\MainBundle\Form\AccessLevelGroupType;
+use ParpV1\MainBundle\Form\AccessLevelGroupCollectionType;
+use ParpV1\MainBundle\Entity\AccessLevelGroup;
+use Symfony\Component\HttpFoundation\Response;
+use ParpV1\MainBundle\Constants\AccessLevelTypes;
 
 /**
  * Zasoby controller.
@@ -68,6 +74,84 @@ class ZasobyController extends Controller
                 'aktywne' => $aktywne
             )
         );
+    }
+
+    /**
+     * Zwraca opcje pola wyboru poziomu dostępu w formularzu.
+     *
+     * @Route("/accesslevel/find/formData", name="find_access_levels_form_data")
+     *
+     * @param Request
+     *
+     * @return JsonResponse
+     */
+    public function findAccessLevelsFormData(Request $request): JsonResponse
+    {
+        $queryData = $request->query->all();
+        $zasobyService = $this->get('zasoby_service');
+
+        return new JsonResponse($zasobyService->findAccessLevels($queryData));
+    }
+
+    /**
+     * Zarządzanie grupami poziomów dostepu dla danego zasobu.
+     *
+     * @Route("/accesslevel/group/manage/{zasob}", name="access_level_group_manage")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     *
+     * @param Request $request
+     * @param Zasoby $zasob
+     *
+     * @return Response
+     */
+    public function accessLevelGroupManage(Request $request, Zasoby $zasob): Response
+    {
+        $form = $this->createForm(AccessLevelGroupCollectionType::class, $zasob, [
+            'zasob' => $zasob
+        ]);
+
+        $form->handleRequest($request);
+        if ($form->isSubmitted()) {
+            if (!$form->isValid()) {
+                return $this->render('ParpMainBundle:AccessLevelGroup:manage.html.twig', [
+                    'form' => $form->createView(),
+                    'zasob_name' => $zasob->getNazwa(),
+                ]);
+            }
+            $entityManager = $this
+                ->getDoctrine()
+                ->getManager()
+            ;
+
+            $accessLevelGroups = $form
+                ->getData()
+                ->getAccessLevelGroups()
+            ;
+
+            foreach ($accessLevelGroups as $accessLevelGroup) {
+                if ($accessLevelGroup instanceof AccessLevelGroup) {
+                    $accessLevelGroup->setZasob($zasob);
+                    $entityManager->persist($accessLevelGroup);
+                }
+            }
+
+            $entityManager->persist($form->getData());
+            $entityManager->flush();
+
+            $this
+                ->addFlash('success', 'Zapisano grupy poziomów dostępu.')
+            ;
+
+            $this->redirectToRoute('access_level_group_manage', ['zasob' => $zasob]);
+        }
+
+        return $this->render('ParpMainBundle:AccessLevelGroup:manage.html.twig', [
+            'form' => $form->createView(),
+            'zasob_name' => $zasob->getNazwa(),
+            'has_access_level' => !empty($zasob->getPoziomDostepu()),
+            'come_back_route' => $this->generateUrl('zasoby_edit', ['id' => $zasob->getId(), 'readonly' => true]),
+        ]);
     }
 
     protected function sprawdzDostep($zasob = null)
@@ -359,6 +443,8 @@ class ZasobyController extends Controller
 
         $entity = $em->getRepository(Zasoby::class)->find($id);
 
+        $preSaveCopy = clone $entity;
+
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zasoby entity.');
         }
@@ -376,6 +462,13 @@ class ZasobyController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
+            if ($preSaveCopy->getPoziomDostepu() !== $editForm->getData()->getPoziomDostepu() &&
+                $preSaveCopy->getAccessLevelGroups()->toArray()) {
+                $this->addFlash('danger', 'Nie można zmienić poziomów dostępu gdy są utworzone grupy poziomów dostępu dla zasobu!');
+
+                return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));
+            }
+
             $em->flush();
             $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));

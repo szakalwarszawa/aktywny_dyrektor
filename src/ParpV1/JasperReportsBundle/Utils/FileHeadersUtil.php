@@ -1,15 +1,15 @@
 <?php declare(strict_types=1);
 
-namespace ParpV1\JasperReportsBundle\Helper;
+namespace ParpV1\JasperReportsBundle\Utils;
 
 use DateTime;
 
 /**
- * FileHeadersHelper
+ * FileHeadersUtil
  *
  * Określa nagłówki odpowiednie do typu pliku.
  */
-class FileHeadersHelper
+class FileHeadersUtil
 {
     /**
      * Zwraca datę teraźniejszą w postaci stringa.
@@ -24,7 +24,7 @@ class FileHeadersHelper
     }
 
     /**
-     * @see FileHeadersHelper
+     * @see FileHeadersUtil
      */
     public static function pdf(): array
     {
@@ -34,7 +34,7 @@ class FileHeadersHelper
     }
 
     /**
-     * @see FileHeadersHelper
+     * @see FileHeadersUtil
      */
     public static function xls(): array
     {
@@ -46,7 +46,7 @@ class FileHeadersHelper
     }
 
     /**
-     * @see FileHeadersHelper
+     * @see FileHeadersUtil
      */
     public static function docx(): array
     {
@@ -57,7 +57,7 @@ class FileHeadersHelper
     }
 
     /**
-     * @see FileHeadersHelper
+     * @see FileHeadersUtil
      */
     public static function pptx(): array
     {
@@ -68,7 +68,7 @@ class FileHeadersHelper
     }
 
     /**
-     * @see FileHeadersHelper
+     * @see FileHeadersUtil
      */
     public static function csv(): array
     {

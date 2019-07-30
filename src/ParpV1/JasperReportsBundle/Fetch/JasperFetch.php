@@ -11,6 +11,7 @@ use Jaspersoft\Dto\Resource\Folder;
 use Jaspersoft\Service\Criteria\RepositorySearchCriteria;
 use Doctrine\Common\Collections\ArrayCollection;
 use ParpV1\JasperReportsBundle\Exception\ResourceNotFoundException;
+use ParpV1\JasperReportsBundle\Utils\SpecialCharactersUrlEncoder;
 
 /**
  * JasperFetch
@@ -75,6 +76,8 @@ class JasperFetch
      */
     public function getResourceInfo(string $url)
     {
+        $url = SpecialCharactersUrlEncoder::encode($url);
+
         $repositoryService = $this->repositoryService;
 
         try {
@@ -107,7 +110,7 @@ class JasperFetch
         $inputControls = null;
         try {
             $inputControls = $reportService
-                ->getReportInputControls($reportUri)
+                ->getReportInputControls(SpecialCharactersUrlEncoder::encode($reportUri))
             ;
         } catch (RESTRequestException $exception) {
             return $inputControls;

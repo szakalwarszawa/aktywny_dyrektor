@@ -11,6 +11,28 @@ use DoctrineExtensions\Query\Mysql\GroupConcat;
 class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
 {
     /**
+     * Szuka wniosku na podstawie zahaszowanego (md5) numeru wniosku
+     *
+     * @param string $hash
+     *
+     * @return WniosekNadanieOdebranieZasobow|null
+     */
+    public function findByMd5(string $hash): ?WniosekNadanieOdebranieZasobow
+    {
+        $queryBuilder = $this->createQueryBuilder('wno');
+        $queryBuilder
+            ->where('md5(w.numer) = :hash')
+            ->setParameter('hash', $hash)
+            ->leftJoin('wno.wniosek', 'w')
+        ;
+
+        return $queryBuilder
+            ->getQuery()
+            ->getOneOrNullResult()
+        ;
+    }
+
+    /**
      * Zwraca listę wniosków danego typu np. oczekujace lub wszystkie.
      *
      * @param string $typWniosku
