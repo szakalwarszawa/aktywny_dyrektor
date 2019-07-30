@@ -54,7 +54,11 @@
                                 {{ user_zasob.powodNadania }}
                             </td>
                             <td>
+                                {% if user_zasob.wniosek is not null %}
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_show', {id: user_zasob.wniosek.id}) }}">{{ user_zasob.wniosek.wniosek.numer }}</a>
+                                    {% else %}
+                                    bez wniosku
+                                {% endif %}
                             </td>
                         </tr>
                     {% endfor %}

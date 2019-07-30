@@ -218,7 +218,7 @@ class UserZasobyRepository extends EntityRepository
             ->where('u.deletedAt is null')
             ->andWhere('z.deletedAt is null')
             ->andWhere('u.samaccountname = :username')
-            ->join('u.wniosek', 'w')
+            ->leftJoin('u.wniosek', 'w')
             ->join(Zasoby::class, 'z', Join::WITH, 'z.id = u.zasobId')
             ->setParameter('username', $username)
         ;
@@ -235,12 +235,14 @@ class UserZasobyRepository extends EntityRepository
                 ], [
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
                 ]);
-            $notDivided = $singleRow['userZasob']
+            $notDivided = true;
+            if ($singleRow['userZasob']->getWniosek()) {
+                $notDivided = $singleRow['userZasob']
                 ->getWniosek()
                 ->getWniosek()
                 ->getStatus()
-                ->getNazwaSystemowa() !== '10_PODZIELONY'
-            ;
+                ->getNazwaSystemowa() !== '10_PODZIELONY';
+            }
 
             try {
                 if (null !== $singleRow['userZasob']->getWniosekOdebranie()) {

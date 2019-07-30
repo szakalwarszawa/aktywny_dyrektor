@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityNotFoundException;
 use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 /**
  * UserZasoby
@@ -301,6 +302,22 @@ class UserZasoby
 
 
     protected $_zasobNazwa;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ktoNadal;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dataNadania;
 
     /**
      * Set _zasobNazwa
@@ -1185,5 +1202,54 @@ class UserZasoby
     public function hasAccessLevelGroups()
     {
         return ($this->accessLevelGroups->count());
+    }
+
+    /**
+     * Get ktoNadal
+     *
+     * @return string
+     */
+    public function getKtoNadal(): ?string
+    {
+        return $this->ktoNadal;
+    }
+
+    /**
+     * Set ktoNadal
+     *
+     * @param string $ktoNadal
+     *
+     * @return UserZasoby
+     */
+    public function setKtoNadal(?string $ktoNadal): self
+    {
+        $this->ktoNadal = $ktoNadal;
+
+        return $this;
+    }
+
+    /**
+     * Get dataNadania
+     *
+     * @return DateTime
+     */
+    public function getDataNadania(): ?DateTime
+    {
+        return $this->dataNadania;
+    }
+
+
+    /**
+     * Set setDataNadania
+     *
+     * @param DateTime $dataNadania
+     *
+     * @return UserZasoby
+     */
+    public function setDataNadania(?DateTime $dataNadania): self
+    {
+        $this->dataNadania = $dataNadania;
+
+        return $this;
     }
 }

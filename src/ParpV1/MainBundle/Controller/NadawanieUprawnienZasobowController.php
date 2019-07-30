@@ -24,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
+use DateTime;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -924,7 +925,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
 
-                        $statusWniosku = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+                        $statusWniosku = $wniosek ? $wniosek->getWniosek()->getStatus()->getNazwaSystemowa() : null;
                         $statusyMozliwaEdycjaCelu = [
                             '02_EDYCJA_PRZELOZONY',
                             '00_TWORZONY',
@@ -976,6 +977,14 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
                         $z->setSamaccountname($currentsam);
+
+                        if (!$wniosekId) {
+                            $z->setCzyAktywne(true);
+                            $z->setCzyNadane(true);
+                            $z->setPowodNadania($powod);
+                            $z->setKtoNadal($this->getUser()->getUsername());
+                            $z->setDataNadania(new DateTime());
+                        }
 
                         $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {
