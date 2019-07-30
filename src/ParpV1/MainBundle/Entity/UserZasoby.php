@@ -1207,7 +1207,7 @@ class UserZasoby
     /**
      * Get ktoNadal
      *
-     * @return string
+     * @return string|null
      */
     public function getKtoNadal(): ?string
     {
@@ -1221,7 +1221,7 @@ class UserZasoby
      *
      * @return UserZasoby
      */
-    public function setKtoNadal(?string $ktoNadal): self
+    public function setKtoNadal(?string $ktoNadal): UserZasoby
     {
         $this->ktoNadal = $ktoNadal;
 
@@ -1231,7 +1231,7 @@ class UserZasoby
     /**
      * Get dataNadania
      *
-     * @return DateTime
+     * @return DateTime|null
      */
     public function getDataNadania(): ?DateTime
     {
@@ -1246,7 +1246,7 @@ class UserZasoby
      *
      * @return UserZasoby
      */
-    public function setDataNadania(?DateTime $dataNadania): self
+    public function setDataNadania(?DateTime $dataNadania): UserZasoby
     {
         $this->dataNadania = $dataNadania;
 
