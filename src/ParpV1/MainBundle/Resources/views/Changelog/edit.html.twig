@@ -1,0 +1,8 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Edycja Changeloga</h1>
+    {{ include('ParpMainBundle:Changelog:_form.html.twig', {'button_label': 'Zapisz zmiany'}) }}
+    {{ include('ParpMainBundle:Changelog:_delete_form.html.twig') }}
+    <a href="{{ path('changelog_admin_index') }}" class="btn btn-primary"><i class="fas fa-list-alt"></i> Powrót do listy</a>
+{% endblock %}

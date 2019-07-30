@@ -32,6 +32,8 @@ use ParpV1\LdapBundle\Service\LogChanges;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\LdapBundle\AdUser\ParpAttributes;
 use ParpV1\LdapBundle\Constants\Attributes;
+use ParpV1\MainBundle\Entity\Section;
+use ParpV1\LdapBundle\Exception\PushFailedException;
 
 /**
  * LdapUpdate
@@ -116,6 +118,14 @@ class LdapUpdate extends Simulation
      * @var ParpUser|null
      */
     protected $currentUser = null;
+
+    /**
+     * Jeżeli true - rzucany będzie wyjątek zamiast komunikatu wypycharki o błędzie.
+     *
+     * @var bool
+     */
+    protected $throwExceptions = false;
+
 
     /**
      * Klucz po której szuka użytkownika w AD.
@@ -269,10 +279,16 @@ class LdapUpdate extends Simulation
      * @param string $target
      * @param mixed $vars
      *
+     * @throws PushFailedException jeżeli opcja throwExceptions jest true i istnieje błąd wypycharki
+     *
      * @return void
      */
     private function addMessage(Message $message, string $text = '', string $target = '', $vars = null): void
     {
+        if ($message instanceof Messages\ErrorMessage && $this->throwExceptions) {
+            throw new PushFailedException('[WYPYCHARKA] ' . $text);
+        }
+
         if (!empty($text)) {
             $message
                 ->setMessage($text)
@@ -364,14 +380,14 @@ class LdapUpdate extends Simulation
      * Na podstawie kolekcji obiektów klasy AdUserChange wypycha zmiany do AD.
      * Kilka niestandardowych operacji:
      *  - Grupy AD - są wypychany w inny sposób niż zmiana atrybutu
-     *  - Typ DateTime - trzeba go konwertować na czas z LDAPa
+     *  - Typ DateTime - trzeba go konwertować na czas z LDAPa
      *  - Przełożony - dana przychodzi w postaci `Nazwisko Imię`, konwertowana jest do pełnego stringa AD
      *  - Wygasa - dane są konwertowane do jednego formatu - czasu LDAPowego (int) i porównywane
      *  - Wylaczone & Powod wylaczenia - są obsługiwane jako jedno i tak muszą trafić do metody
      *      włączajacej lub wyłączającej konto.
      *
      *  $disableEnableAccount (array) - jeżeli tablica zostanie uzupełniona to znaczy, że konto musi zostać wyłączone|włączone
-     *  $moveToAnotherOu (bool|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
+     *  $moveToAnotherOu (null|object) - jeżeli jest zmiana departamentu to należy przenieśc użytkownika
      *      musi się to dziać na samym końcu!
      *  $keepAttributeValue - mimo zmiany wartośc atrybutu zostanie zachowana
      *
@@ -430,14 +446,20 @@ class LdapUpdate extends Simulation
                 ->refreshAdUser($adUser)
             ;
         }
-        $moveToAnotherOu = false;
+        $moveToAnotherOu = null;
         $userGroups = $writableUserObject->getGroupNames();
         $groupsToChange = null;
+        $sectionChange = null;
+        $renameUser = null;
         foreach ($changes as $value) {
             $parseViewData = false;
             $keepAttributeValue = false;
             if ($value instanceof AdUserChange && $value->getNew() !== $value->getOld()) {
                 $newValue = $value->getNew();
+
+                if (AdUserConstants::SEKCJA_NAZWA === $value->getTarget()) {
+                    $sectionChange = $newValue;
+                }
 
                 if (AdUserConstants::DEPARTAMENT_NAZWA === $value->getTarget()) {
                     $moveToAnotherOu = $value;
@@ -448,11 +470,7 @@ class LdapUpdate extends Simulation
                 }
 
                 if (AdUserConstants::CN_AD_STRING === $value->getTarget()) {
-                    $this->renameUser($adUser, $newValue);
-                    $adUser = $this
-                        ->ldapFetch
-                        ->refreshAdUser($adUser)
-                    ;
+                    $renameUser = $newValue;
 
                     continue;
                 }
@@ -637,8 +655,22 @@ class LdapUpdate extends Simulation
             ;
         }
 
+        if ($sectionChange) {
+            if (!$this->isSectionExists($adUser, $sectionChange, $moveToAnotherOu)) {
+                return $this;
+            }
+        }
+
         if (null !== $groupsToChange) {
             $this->setGroupsAttribute($groupsToChange, $adUser, $userGroups);
+        }
+
+        if (null !== $renameUser) {
+            $this->renameUser($adUser, $renameUser);
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
         }
 
         if (!$simulateProcess) {
@@ -698,8 +730,8 @@ class LdapUpdate extends Simulation
             $currentDn = $writableUserObject->getDistinguishedName();
             $parentDn = AdStringTool::getParentRootFromDn($currentDn);
 
+
             $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, $parentDn);
-            $writableUserObject->syncOriginal();
             $writableUserObject->save();
 
             if (!$renameStatus) {
@@ -939,6 +971,16 @@ class LdapUpdate extends Simulation
     }
 
     /**
+     * Czyści kontener wiadomości.
+     *
+     * @return void
+     */
+    public function cleanMessages(): void
+    {
+        $this->responseMessages = new ArrayCollection();
+    }
+
+    /**
      * Zwraca czy istnieje błąd niepozwalający na poprawne wypchnięcie zmian.
      *
      * @return bool
@@ -952,6 +994,84 @@ class LdapUpdate extends Simulation
         }
 
         return false;
+    }
+
+    /**
+     * Sprawdza czy sekcja istnieje w bazie danych.
+     * Jezeli nie, dodaje błąd.
+     *
+     * @param AdUser $adUser
+     * @param string $sectionName
+     * @param null|AdUserChange
+     *
+     * @return bool
+     */
+    private function isSectionExists(AdUser $adUser, string $sectionName, ?AdUserChange $changeDepartment = null): bool
+    {
+        $userDepartmentName = $adUser
+            ->getUser()[AdUserConstants::DEPARTAMENT_NAZWA]
+        ;
+
+        if ($changeDepartment) {
+            $userDepartmentName = $changeDepartment->getNew();
+        }
+
+        $department = $this
+            ->entityManager
+            ->getRepository(Departament::class)
+            ->findOneBy([
+                'name' => $userDepartmentName,
+                'nowaStruktura' => 1
+            ])
+        ;
+
+        if (null === $department) {
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono departamentu w słowniku - ' . $userDepartmentName,
+                    AdUserConstants::SEKCJA_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
+
+            return false;
+        }
+
+        $section = $this
+            ->entityManager
+            ->getRepository(Section::class)
+            ->findOneBy([
+                'name' => $sectionName,
+                'departament' => $department->getId()
+            ])
+        ;
+
+        if (null === $section) {
+            $this
+                ->addMessage(
+                    new Messages\ErrorMessage(),
+                    'Nie odnaleziono sekcji w słowniku (departament - ' .
+                        $department->getShortname() . ') ' . $sectionName,
+                    AdUserConstants::SEKCJA_NAZWA,
+                    $adUser->getUser()
+                )
+            ;
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Rzucany będzie wyjątek do Redmine zamiast komunikatu o błędzie wypycharki.
+     *
+     * @return void
+     */
+    public function throwExceptions(): void
+    {
+        $this->throwExceptions = true;
     }
 
     /**
