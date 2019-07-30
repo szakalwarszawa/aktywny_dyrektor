@@ -428,7 +428,7 @@ class ImportRekordDaneController extends Controller
                 $imie = $poprzednieDane[1];
                 $nazwisko = $poprzednieDane[0];
             }
-
+            $entry->setRenaming(true);
             $entry->setCn($this->get('samaccountname_generator')
                 ->generateFullname(
                     $dr->getImie(),

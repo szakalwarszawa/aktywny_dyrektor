@@ -450,6 +450,7 @@ class LdapUpdate extends Simulation
         $userGroups = $writableUserObject->getGroupNames();
         $groupsToChange = null;
         $sectionChange = null;
+        $renameUser = null;
         foreach ($changes as $value) {
             $parseViewData = false;
             $keepAttributeValue = false;
@@ -469,11 +470,7 @@ class LdapUpdate extends Simulation
                 }
 
                 if (AdUserConstants::CN_AD_STRING === $value->getTarget()) {
-                    $this->renameUser($adUser, $newValue);
-                    $adUser = $this
-                        ->ldapFetch
-                        ->refreshAdUser($adUser)
-                    ;
+                    $renameUser = $newValue;
 
                     continue;
                 }
@@ -668,6 +665,14 @@ class LdapUpdate extends Simulation
             $this->setGroupsAttribute($groupsToChange, $adUser, $userGroups);
         }
 
+        if (null !== $renameUser) {
+            $this->renameUser($adUser, $renameUser);
+            $adUser = $this
+                ->ldapFetch
+                ->refreshAdUser($adUser)
+            ;
+        }
+
         if (!$simulateProcess) {
             $writableUserObject->save();
         }
@@ -725,8 +730,8 @@ class LdapUpdate extends Simulation
             $currentDn = $writableUserObject->getDistinguishedName();
             $parentDn = AdStringTool::getParentRootFromDn($currentDn);
 
+
             $renameStatus = $writableUserObject->rename(AdStringTool::CN . $newValue, $parentDn);
-            $writableUserObject->syncOriginal();
             $writableUserObject->save();
 
             if (!$renameStatus) {
