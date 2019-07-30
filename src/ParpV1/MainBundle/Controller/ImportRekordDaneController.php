@@ -366,7 +366,6 @@ class ImportRekordDaneController extends Controller
                         $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;
                     }
-
                 }
             }
         }
