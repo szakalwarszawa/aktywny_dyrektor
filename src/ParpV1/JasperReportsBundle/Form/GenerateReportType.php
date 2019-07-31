@@ -52,7 +52,9 @@ class GenerateReportType extends AbstractType
                     if (!$validator::key($inputOption->id)) {
                         throw new InvalidOptionKeyOrValueException(sprintf('Niepoprawny klucz parametru ("%s")', $inputOption->id));
                     }
-                    $builder->add($inputOption->id, TextType::class);
+                    $builder->add($inputOption->id, TextType::class, [
+                        'data' => $inputOption->value,
+                    ]);
                 }
             }
         }

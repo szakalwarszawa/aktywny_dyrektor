@@ -42,7 +42,7 @@ class Validator
     public function invalidAsString(): string
     {
         if (null !== self::$invalidKey) {
-            return self::$invalidKey . ' => ' . self::$invalidValue;
+            return self::$invalidKey . ' -> ' . self::$invalidValue;
         }
 
         return '';
@@ -72,6 +72,7 @@ class Validator
 
     /**
      * Sprawdza czy podany ciąg tekstowy jest pojedyńczym wyrazem.
+     * Dozwolone znaki: A-Z, a-z, 0-9, ,./-"
      *
      * @param string $value
      *
@@ -81,7 +82,7 @@ class Validator
      */
     public static function keyOrValue(string $value): bool
     {
-        $pattern = '/^[A-Za-z_]+$/m';
+        $pattern = '/^[A-Za-z0-9_",.\/-]+$/m';
         $result = 1 === preg_match($pattern, $value);
 
         if (self::$throwException && !$result) {
