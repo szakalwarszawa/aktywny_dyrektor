@@ -132,9 +132,14 @@ class JasperFetch
         $repositoryService = $this->repositoryService;
         $criteria = new RepositorySearchCriteria();
         $criteria->folderUri = $folderUrl;
-        $resources = $repositoryService->searchResources($criteria);
-
         $folderChildrenResources = new ArrayCollection();
+        try {
+            $resources = $repositoryService->searchResources($criteria);
+        } catch (RESTRequestException $exception) {
+            return $folderChildrenResources;
+        }
+
+
         foreach ($resources->items as $resource) {
             if ($asObject) {
                 $folderChildrenResources->add($resource);
