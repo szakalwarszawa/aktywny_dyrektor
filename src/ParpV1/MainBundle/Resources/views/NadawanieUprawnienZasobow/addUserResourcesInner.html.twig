@@ -131,7 +131,7 @@
                                                 <br />
                                                 <div class="alert alert-danger">Edycja poziomu dostępu niemożliwa z powodu ustawień grupowania dla zasobu <b>{{ userzasoby.vars.value.zasobNazwa }}</b>.</div>
                                         {% endif %}
-                                        {% set zablokuj_cel = wniosek.wniosek.status.nazwaSystemowa %}
+                                        {% set zablokuj_cel = wniosek.wniosek.status.nazwaSystemowa is defined ? wniosek.wniosek.status.nazwaSystemowa : null %}
                                         {% set powod_attr = {} %}
                                         {% if zablokuj_cel not in ['02_EDYCJA_PRZELOZONY', '00_TWORZONY', '01_EDYCJA_WNIOSKODAWCA'] %}
                                             {% set powod_attr = {'disabled': 'disabled'} %}
