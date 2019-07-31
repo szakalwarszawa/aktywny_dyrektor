@@ -6,11 +6,22 @@ use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
 
 /**
  * Klasa Validator
- * Klucz InputControl musi być pojedyńczym wyrazem
- * Wartość InputControl musi być pojedyńczym wyrazem
+ * Klucz InputControl musi być pojedyńczym wyrazem ponieważ służy
+ *  jako identyfiaktor w formularzu.
+ * Wartość InputControl może zawierać spację i kilka znaków specjalnych.
  */
 class Validator
 {
+    /**
+     * @var string
+     */
+    const KEY = 'key';
+
+    /**
+     * @var string
+     */
+    const VALUE = 'value';
+
     /**
      * @var bool
      */
@@ -49,21 +60,28 @@ class Validator
     }
 
     /**
-     * `Przelatuje` całą tablicę (klucze i wartości) i sprawdza wartości względem ::keyOrValue
+     * `Przelatuje` całą tablicę (klucze lub wartości) i sprawdza wartości względem ::keyOrValue
      * Zwraca prawdę jeżeli tablica prawidłowa.
      *
      * @param array $data
+     * @param string $keyOrValue - self::KEY || self::VALUE
      *
      * @return bool
      */
-    public static function validateArray(array $data): bool
+    public static function validateArray(array $data, string $keyOrValue): bool
     {
         foreach ($data as $key => $value) {
-            if (!self::key($key) || !self::value($value)) {
-                self::$invalidKey = $key;
-                self::$invalidValue = $value;
+            if (self::KEY === $keyOrValue) {
+                if (!self::key($key)) {
+                    self::$invalidKey = $key;
 
-                return false;
+                    return false;
+                }
+                if (!self::value($value)) {
+                    self::$invalidValue = $value;
+
+                    return false;
+                }
             }
         }
 
@@ -71,18 +89,30 @@ class Validator
     }
 
     /**
-     * Sprawdza czy podany ciąg tekstowy jest pojedyńczym wyrazem.
-     * Dozwolone znaki: A-Z, a-z, 0-9, ,./-"
+     * Sprawdza czy podany ciąg tekstowy klucza lub wartości InputControl jest prawidłowy.
+     * Dozwolone znaki wartości: A-Z, a-z, 0-9, ,./-" spacja
+     * Dozwolone znaki wartości klucza: A-Z, a-z, _
      *
      * @param string $value
+     * @param string $keyOrValue - self::KEY || self::VALUE
      *
-     * @throws InvalidArgumentException gdy self::$throwException true i walidacja nie powiodła się
+     * @throws InvalidOptionKeyOrValueException gdy self::$throwException true i walidacja nie powiodła się
      *
      * @return bool
      */
-    public static function keyOrValue(string $value): bool
+    public static function keyOrValue(string $value, string $keyOrValue): bool
     {
-        $pattern = '/^[A-Za-z0-9_",.\/-]+$/m';
+        $valuePattern = '/^[A-Za-z0-9_",.\/ -]+$/m';
+        $keyPattern = '/^[A-Za-z_]+$/m';
+
+        switch ($keyOrValue) {
+            case self::KEY:
+                $pattern = $keyPattern;
+                break;
+            case self::VALUE:
+                $pattern = $valuePattern;
+                break;
+        }
         $result = 1 === preg_match($pattern, $value);
 
         if (self::$throwException && !$result) {
@@ -100,7 +130,7 @@ class Validator
      */
     public static function value(string $value): bool
     {
-        return self::keyOrValue($value);
+        return self::keyOrValue($value, self::VALUE);
     }
 
     /**
@@ -110,6 +140,6 @@ class Validator
      */
     public static function key(string $value): bool
     {
-        return self::keyOrValue($value);
+        return self::keyOrValue($value, self::KEY);
     }
 }
