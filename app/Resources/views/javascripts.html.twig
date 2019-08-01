@@ -96,13 +96,15 @@ $('.select2:not([disabled2])').select2({
 
 $('.datepicker:not([disabled])').datetimepicker({
     // pickTime: false, // obsolete, use format instead
-    language: 'pl',
+    // language: 'pl', // obsolete, use locale instead
+    locale: 'pl',
     format: 'YYYY-MM-DD',
 });
 $('.datetimepicker:not([disabled])').datetimepicker({
     inline: true,
     // pickTime: true, // obsolete, use format instead
-    language: 'pl',
+    // language: 'pl', // obsolete, use locale instead
+    locale: 'pl',
     format: 'YYYY-MM-DD HH:mm',
 });
 $('form').areYouSure();
