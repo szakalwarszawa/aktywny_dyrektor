@@ -41,7 +41,7 @@ import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-import 'colresizable';
+import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
 // require jQuery normally
 // const $ = require('jquery');
