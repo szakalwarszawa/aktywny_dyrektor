@@ -412,11 +412,11 @@ class NadawanieUprawnienZasobowController extends Controller
                 ))
                 ->add('nazwafiltr', TextareaType::class, array(
                     'label_attr' => array(
-                        'class' => 'text-left'. $formNadanie? ' hidden': '',
+                        'class' => 'text-left'. ($formNadanie? ' hidden': ''),
                     ),
                     'label' => 'Filtruj po nazwie',
                     'attr' => array(
-                        'class' => 'ays-ignore' . $formNadanie? ' hidden': '',
+                        'class' => 'ays-ignore' . ($formNadanie? ' hidden': ''),
                     ),
                     'required' => false
                 ))
