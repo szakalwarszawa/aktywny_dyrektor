@@ -51,6 +51,7 @@ $(document).ready(function(){
     $('[data-toggle~="select2"]').select2();
 
     $("table").each(function(){
+        debugger;
         if($(this).closest('.tab-pane').length == 0){
             var id = $(this).attr('id');
             if (typeof myVar == 'undefined'){
@@ -58,7 +59,7 @@ $(document).ready(function(){
                 $(this).attr('id', id);
             }
             console.log("Tabelka z id "+id);
-            $('#'+id).resizable({handles: 'e'});
+            $('#'+id).select2();
         }
     });
 
