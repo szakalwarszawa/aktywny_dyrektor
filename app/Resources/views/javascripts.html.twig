@@ -51,7 +51,6 @@ $(document).ready(function(){
     $('[data-toggle~="select2"]').select2();
 
     $("table").each(function(){
-        debugger;
         if($(this).closest('.tab-pane').length == 0){
             var id = $(this).attr('id');
             if (typeof myVar == 'undefined'){
