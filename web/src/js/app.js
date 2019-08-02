@@ -53,6 +53,7 @@ global.$ = global.jQuery = $;
 global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
+global.colResizable = colResizable;
 
 
 // fetch("./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
