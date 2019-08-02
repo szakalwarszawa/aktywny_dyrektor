@@ -58,7 +58,7 @@ $(document).ready(function(){
                 $(this).attr('id', id);
             }
             console.log("Tabelka z id "+id);
-            $('#'+id).colResizable();
+            $('#'+id).resizable({handles: 'e'});
         }
     });
 
