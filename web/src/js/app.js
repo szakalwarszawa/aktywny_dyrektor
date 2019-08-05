@@ -19,7 +19,15 @@ import '../scss/app.scss';
 <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script> */
 
-// --- biblioteki zewnetrzne (node_modules) ---
+
+// require jQuery normally
+// const $ = require('jquery');
+import $ from 'jquery';
+
+// create global $ and jQuery variables
+global.$ = global.jQuery = $;
+
+// --- inne biblioteki zewnetrzne (node_modules) ---
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 import 'bootstrap-sass';
@@ -29,7 +37,7 @@ import * as datepicker from 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
-import 'jquery';
+// import 'jquery';
 import 'jquery-ui';
 import 'jquery.maskedinput';
 import 'jquery.are-you-sure';
@@ -41,53 +49,47 @@ import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
+// import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
-// require jQuery normally
-// const $ = require('jquery');
-import $ from 'jquery';
-
-// create global $ and jQuery variables
-global.$ = global.jQuery = $;
-
+global.select2 = select2;
+global.bootstrap = bootstrap-sass;
+global.moment = moment;
 global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 global.colResizable = colResizable;
 
+// --- test & log ---
+if (window.hasOwnProperty('$')) {
+    console.log(`%c jQuery is type ${typeof($)} and: ${$} `, 'font-size: 5px; color: pink;');
+} else {
+    console.warn('no jQuery');
+}
 
-// fetch("./node_modules/bootstrap-datepicker/dist/js/bootstrap-datepicker.js")
-//     .then(resp => {
-//         if (resp.ok) {
-//             return resp.json()
-//         } else {
-//             return Promise.reject(resp)
-//         }
-//     })
-//     .then(resp => {
-//         console.log(resp)
-//     })
-//     .catch(error => {
-//         if (error.status === 404) {
-//             console.log("Błąd: żądany adres nie istnieje");
-//         }
-//     });
+if (window.hasOwnProperty('moment')) {
+    console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 5px; font-style: italic; color: brown;');
+} else {
+    console.warn('no moment');
+}
+
+if (window.hasOwnProperty('bootstrap')) {
+    console.log(`%c bootstrap is type ${typeof(bootstrap)} and: ${bootstrap} `, 'font-size: 4px; font-style: italic; color: orange;');
+} else {
+    console.warn('no bootstrap');
+}
 
 if (window.hasOwnProperty('datepicker')) {
-    console.info(typeof(datepicker));
-    console.log(`%c ${datepicker} `, 'font-size: 9px; color: blue;');
+    console.log(`%c datepicker is type ${typeof(datepicker)} and: ${datepicker} `, 'font-size: 9px; color: blue;');
 } else {
     console.warn('no datepicker');
 }
 
-// console.log(`%c ${select2} `, 'font-size: 6px;');
-
 if (window.hasOwnProperty('select2')) {
-    console.info(typeof(select2));
-    console.log(`%c ${select2} `, 'font-size: 4px; color: green;');
+    console.log(`%c select to is type ${typeof(select2)} and: ${select2} `, 'font-size: 4px; color: green;');
 } else {
     console.warn('no select2');
 }
+// --- end of test & log ---
 
 function showInfo(info) {
     console.info(
