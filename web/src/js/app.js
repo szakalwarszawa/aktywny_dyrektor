@@ -30,7 +30,8 @@ global.$ = global.jQuery = $;
 // --- inne biblioteki zewnetrzne (node_modules) ---
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-import 'bootstrap-sass';
+// import 'bootstrap';
+import 'bootstrap-sass/bootstrap';
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
 import * as datepicker from 'bootstrap-datepicker';
@@ -52,12 +53,12 @@ import 'tag-it';
 // import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
 global.select2 = select2;
-global.bootstrap = bootstrap-sass;
 global.moment = moment;
 global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 global.colResizable = colResizable;
+global.bootstrap = bootstrap;
 
 // --- test & log ---
 if (window.hasOwnProperty('$')) {
