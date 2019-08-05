@@ -59,14 +59,10 @@ global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 // global.colResizable = colResizable;
-
-
-if (window.hasOwnProperty('popover')) {
-    console.log(`%c bootstrap popover is type ${typeof(popover)} and: ${popover} `, 'font-size: 4px; font-style: italic; color: orange;');
-} else {
-    console.warn('no bootstrap popover');
-}
 global.popover = popover;
+
+
+
 
 // --- test & log ---
 if (window.hasOwnProperty('$')) {
@@ -76,7 +72,7 @@ if (window.hasOwnProperty('$')) {
 }
 
 if (window.hasOwnProperty('moment')) {
-    console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 5px; font-style: italic; color: brown;');
+    console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 7px; font-style: italic; color: brown;');
 } else {
     console.warn('no moment');
 }
@@ -87,8 +83,14 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
+if (window.hasOwnProperty('popover')) {
+    console.log(`%c bootstrap popover is type ${typeof(popover)} and: ${popover} `, 'font-size: 6px; font-style: italic; color: orange;');
+} else {
+    console.warn('no bootstrap popover');
+}
+
 if (window.hasOwnProperty('select2')) {
-    console.log(`%c select to is type ${typeof(select2)} and: ${select2} `, 'font-size: 4px; color: green;');
+    console.log(`%c select to is type ${typeof(select2)} `, 'font-size: 10px; color: green;');
 } else {
     console.warn('no select2');
 }
