@@ -31,7 +31,8 @@ global.$ = global.jQuery = $;
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 // import 'bootstrap';
-import 'bootstrap-sass/bootstrap';
+import '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js';
+// /node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
 import * as datepicker from 'bootstrap-datepicker';
