@@ -32,7 +32,8 @@ import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 // import 'bootstrap';
 import '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js';
-// /node_modules/bootstrap-sass/assets/javascripts/bootstrap/affix.js
+import '../../../bootstrap-sass/assets/javascripts/bootstrap/tooltip.js';
+import '../../../bootstrap-sass/assets/javascripts/bootstrap/popover.js';
 // import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
 import * as datepicker from 'bootstrap-datepicker';
@@ -58,7 +59,14 @@ global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 // global.colResizable = colResizable;
-global.bootstrap = bootstrap;
+
+
+if (window.hasOwnProperty('popover')) {
+    console.log(`%c bootstrap popover is type ${typeof(popover)} and: ${popover} `, 'font-size: 4px; font-style: italic; color: orange;');
+} else {
+    console.warn('no bootstrap popover');
+}
+global.popover = popover;
 
 // --- test & log ---
 if (window.hasOwnProperty('$')) {
@@ -71,12 +79,6 @@ if (window.hasOwnProperty('moment')) {
     console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 5px; font-style: italic; color: brown;');
 } else {
     console.warn('no moment');
-}
-
-if (window.hasOwnProperty('bootstrap')) {
-    console.log(`%c bootstrap is type ${typeof(bootstrap)} and: ${bootstrap} `, 'font-size: 4px; font-style: italic; color: orange;');
-} else {
-    console.warn('no bootstrap');
 }
 
 if (window.hasOwnProperty('datepicker')) {
