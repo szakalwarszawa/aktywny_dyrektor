@@ -1300,6 +1300,8 @@ class LdapService
             case 'główny księgowy, z-ca dyrektora':
             case 'główny księgowy, zastępca dyrektora':
             case 'główny księgowy - p.o. zastępcy dyrektora':
+            case 'zastępca dyrektora, radca prawny':
+            case 'rzecznik prasowy, zastępca dyrektora':
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 $grupy[] = 'INT-Olimp';
@@ -1396,6 +1398,8 @@ class LdapService
         'główny księgowy - p.o. zastępcy dyrektora',
         'rzecznik beneficjenta parp, dyrektor',
         'rzecznik beneficjenta parp',
+        'zastępca dyrektora, radca prawny',
+        'rzecznik prasowy, zastępca dyrektora',
     ];
 
     public function getPrzelozeni()
