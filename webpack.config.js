@@ -20,6 +20,7 @@ Encore.setOutputPath('web/build/')
     //     }),
     //     5,
     // )
+    .addPlugin(new webpack.ProvidePlugin({ moment: 'moment' }), 11)
     .addPlugin(new webpack.ProvidePlugin({ select2: 'select2' }), 10)
     .configureBabel(function(babelConfig) {
         const preset = babelConfig.presets.find(

@@ -55,7 +55,6 @@ import 'tag-it';
 
 global.select2 = select2;
 global.moment = moment;
-global.select2 = select2;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 global.colResizable = colResizable;
