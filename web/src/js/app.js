@@ -57,7 +57,7 @@ global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-global.colResizable = colResizable;
+// global.colResizable = colResizable;
 global.bootstrap = bootstrap;
 
 // --- test & log ---
