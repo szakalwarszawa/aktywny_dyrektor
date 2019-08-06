@@ -100,7 +100,7 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
-mixText("Test importu modułów wewnętrznych");
+console.log(mixText("Test importu modułów wewnętrznych"));
 
 function showInfo(info) {
     console.info(
