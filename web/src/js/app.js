@@ -56,7 +56,7 @@ import 'tag-it';
 // import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
 // --- nasze moduły ---
-import {smallText, mixText} from './testModules';
+import {smallText, mixText} from '../web/src/js/testModules.js';
 
 
 global.select2 = select2;
