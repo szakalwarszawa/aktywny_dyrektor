@@ -31,7 +31,7 @@ global.$ = global.jQuery = $;
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
 // import 'bootstrap';
-// import '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js';
+import '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js';
 // import * as modal from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js';
 // import * as popover from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/popover.js';
 // import * as tooltip from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/tooltip.js';
