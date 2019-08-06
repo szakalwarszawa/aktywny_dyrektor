@@ -96,6 +96,7 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
+$('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
 
 function showInfo(info) {
     console.info(
