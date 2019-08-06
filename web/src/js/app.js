@@ -55,6 +55,10 @@ import 'tablesorter';
 import 'tag-it';
 // import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
+// --- nasze moduły ---
+import {smallText, mixText} from './testModules';
+
+
 global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
@@ -96,7 +100,7 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
-$('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
+mixText("Test importu modułów wewnętrznych");
 
 function showInfo(info) {
     console.info(
