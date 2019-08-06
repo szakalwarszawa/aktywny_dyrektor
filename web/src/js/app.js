@@ -61,7 +61,7 @@ global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
 // global.colResizable = colResizable;
 // global.modal = modal;
-(global.popover = {popover} = bootstrap);
+// (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
 
 
@@ -96,6 +96,10 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
+
+$('[data-toggle~="tooltip"]').tooltip();
+
+$('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
 
 function showInfo(info) {
     console.info(
