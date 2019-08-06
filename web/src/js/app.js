@@ -97,10 +97,6 @@ if (window.hasOwnProperty('select2')) {
 }
 // --- end of test & log ---
 
-$('[data-toggle~="tooltip"]').tooltip();
-
-$('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
-
 function showInfo(info) {
     console.info(
         `%c ${info} `,
