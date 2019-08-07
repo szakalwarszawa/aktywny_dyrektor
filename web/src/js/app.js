@@ -55,10 +55,9 @@ import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js';
+// import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js'; // ok
 
-// const ColumnResizer = require('column-resizer');
-// const resizer = new ColumnResizer.default(document.getElementById('mytable'), {});
+import { ColumnResizer } from 'column-resizer';
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
@@ -119,29 +118,29 @@ showGreeting('Aktywny Dyrektor v2.0 beta');
 
 
 // --- column-resizer ---
-window.onload = function() {
-    let colResizable = ColumnResizer.default;
+// window.onload = function() {
+//     let colResizable = ColumnResizer.default;
 
-    $("table").each(function(){
-        if($(this).closest('.tab-pane').length == 0){
-            var id = $(this).attr('id');
-            if (typeof myVar == 'undefined'){
-                id = "tableId"+guid();
-                $(this).attr('id', id);
-            }
-            showSmallInfo(`In App.js Tabelka z id ${id}`);
-            // $('#'+id).colResizable();
-            // $('#acceptConfirm .record_properties').resizable();ColResizable
-            const tableToResize = document.getElementById(id);
-            new colResizable(tableToResize, {
-                liveDrag:true,
-                gripInnerHtml:"<div class='grip'></div>",
-                draggingClass:"dragging",
-                resizeMode:'fit'
-            });
-        }
-    });
-};
+//     $("table").each(function(){
+//         if($(this).closest('.tab-pane').length == 0){
+//             var id = $(this).attr('id');
+//             if (typeof myVar == 'undefined'){
+//                 id = "tableId"+guid();
+//                 $(this).attr('id', id);
+//             }
+//             showSmallInfo(`In App.js Tabelka z id ${id}`);
+//             // $('#'+id).colResizable();
+//             // $('#acceptConfirm .record_properties').resizable();ColResizable
+//             const tableToResize = document.getElementById(id);
+//             new colResizable(tableToResize, {
+//                 liveDrag:true,
+//                 gripInnerHtml:"<div class='grip'></div>",
+//                 draggingClass:"dragging",
+//                 resizeMode:'fit'
+//             });
+//         }
+//     });
+// };
 
 
 $(document).ready(function () {
