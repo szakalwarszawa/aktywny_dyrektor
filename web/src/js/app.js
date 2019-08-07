@@ -55,9 +55,8 @@ import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-// import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js'; // ok
+import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js'; // ok
 
-import { ColumnResizer } from 'column-resizer';
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
