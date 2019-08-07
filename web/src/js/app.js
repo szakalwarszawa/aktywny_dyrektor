@@ -55,9 +55,9 @@ import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-import ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js';
+// import ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js';
 
-// const ColumnResizer = require('column-resizer');
+const ColumnResizer = require('column-resizer');
 // const resizer = new ColumnResizer.default(document.getElementById('mytable'), {});
 
 // --- nasze moduły ---
@@ -69,7 +69,7 @@ global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-global.ColResizable = ColumnResizer.default;
+// global.ColResizable = ColumnResizer.default;
 // global.modal = modal;
 // (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
@@ -93,12 +93,17 @@ if (window.hasOwnProperty('datepicker')) {
 } else {
     console.warn('no datepicker');
 }
-
-if (window.hasOwnProperty('ColResizable')) {
-    console.log(`%c ColumnResizer.default is type ${typeof(ColResizable)} and: ${ColResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
+if (ColumnResizer) {
+    console.log(`%c ColumnResizer is type ${typeof(ColumnResizer)} and: ${ColumnResizer} `, 'font-size: 9px; color: blue;');
 } else {
-    console.warn('no column resizer');
+    console.warn('no ColumnResizer');
 }
+
+// if (window.hasOwnProperty('ColResizable')) {
+//     console.log(`%c ColumnResizer.default is type ${typeof(ColResizable)} and: ${ColResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
+// } else {
+//     console.warn('no column resizer');
+// }
 
 if (window.hasOwnProperty('select2')) {
     console.log(`%c select to is type ${typeof(select2)} `, 'font-size: 10px; color: green;');
@@ -115,7 +120,7 @@ showGreeting('Aktywny Dyrektor v2.0 beta');
 
 // --- column-resizer ---
 window.onload = function() {
-    // let colResizable = ColumnResizer.default;
+    let colResizable = ColumnResizer.default;
 
     $("table").each(function(){
         if($(this).closest('.tab-pane').length == 0){
