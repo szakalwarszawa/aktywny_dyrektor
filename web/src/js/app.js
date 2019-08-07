@@ -51,7 +51,7 @@ import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
 import 'moment';
 import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
-import '../../../node_modules/colresizable/colResizable-1.6.min.js';
+// import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
