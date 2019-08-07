@@ -69,7 +69,7 @@ global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-// global.ColResizable = ColumnResizer.default;
+global.colResizable = ColumnResizer.default;
 // global.modal = modal;
 // (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
