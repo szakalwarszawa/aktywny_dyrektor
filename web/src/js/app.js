@@ -66,7 +66,7 @@ global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-global.colResizable = ColumnResizer.default;
+global.ColResizable = ColumnResizer.default;
 // global.modal = modal;
 // (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
@@ -125,7 +125,7 @@ window.onload = function() {
             // $('#'+id).colResizable();
             // $('#acceptConfirm .record_properties').resizable();
             const tableToResize = document.getElementById(id);
-            new colResizable(tableToResize, {
+            new ColResizable(tableToResize, {
                 liveDrag:true,
                 gripInnerHtml:"<div class='grip'></div>",
                 draggingClass:"dragging",
