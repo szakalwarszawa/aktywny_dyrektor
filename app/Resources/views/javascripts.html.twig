@@ -50,6 +50,7 @@ $(document).ready(function(){
 
     $('[data-toggle~="select2"]').select2();
 
+    /*
     $("table").each(function(){
         if($(this).closest('.tab-pane').length == 0){
             var id = $(this).attr('id');
@@ -60,6 +61,28 @@ $(document).ready(function(){
             console.log("Tabelka z id "+id);
             // $('#'+id).colResizable();
             $('#acceptConfirm .record_properties').resizable();
+        }
+    });
+    */
+    let colResizable = ColumnResizer.default;
+
+    $("table").each(function(){
+        if($(this).closest('.tab-pane').length == 0){
+            var id = $(this).attr('id');
+            if (typeof myVar == 'undefined'){
+                id = "tableId"+guid();
+                $(this).attr('id', id);
+            }
+            console.log("Tabelka z id "+id);
+            // $('#'+id).colResizable();
+            // $('#acceptConfirm .record_properties').resizable();ColResizable
+            const tableToResize = document.getElementById(id);
+            new colResizable(tableToResize, {
+                liveDrag:true,
+                gripInnerHtml:"<div class='grip'></div>",
+                draggingClass:"dragging",
+                resizeMode:'fit'
+            });
         }
     });
 
