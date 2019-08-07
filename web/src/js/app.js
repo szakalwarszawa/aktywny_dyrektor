@@ -129,7 +129,7 @@ window.onload = function() {
                 id = "tableId"+guid();
                 $(this).attr('id', id);
             }
-            console.log("In App.js Tabelka z id "+id);
+            showSmallInfo(`In App.js Tabelka z id ${id}`);
             // $('#'+id).colResizable();
             // $('#acceptConfirm .record_properties').resizable();ColResizable
             const tableToResize = document.getElementById(id);
