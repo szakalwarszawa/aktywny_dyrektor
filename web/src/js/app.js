@@ -55,17 +55,18 @@ import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-// import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
+import ColumnResizer from 'column-resizer';
 
 // --- nasze moduły ---
-import {smallText, mixText} from './testModule.js';
+import { smallText, bigText } from './testModule.js';
+import { showGreeting, showSmallInfo, showBigInfo } from './showInfo.js';
 
 
 global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-// global.colResizable = colResizable;
+global.colResizable = ColumnResizer.default;
 // global.modal = modal;
 // (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
@@ -90,10 +91,10 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
-if (window.hasOwnProperty('popover')) {
-    console.log(`%c bootstrap popover is type ${typeof(popover)} and: ${popover} `, 'font-size: 6px; font-style: italic; color: orange;');
+if (window.hasOwnProperty('colResizable')) {
+    console.log(`%c ColumnResizer.default is type ${typeof(colResizable)} and: ${colResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
 } else {
-    console.warn('no bootstrap popover');
+    console.warn('no column resizer');
 }
 
 if (window.hasOwnProperty('select2')) {
@@ -102,16 +103,38 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
-console.log(mixText("Test importu modułów wewnętrznych"));
+console.log(bigText("Test importu modułów wewnętrznych"));
 
-function showInfo(info) {
-    console.info(
-        `%c ${info} `,
-        'text-shadow: 2px 1px 0 #7A7A7A; color: #fff; font-size: 18px;',
-    );
-}
 
-showInfo('Aktywny Dyrektor v2.0 beta');
+
+showGreeting('Aktywny Dyrektor v2.0 beta');
+
+
+// --- column-resizer ---
+window.onload = function() {
+    // let colResizable = ColumnResizer.default;
+
+    $("table").each(function(){
+        if($(this).closest('.tab-pane').length == 0){
+            var id = $(this).attr('id');
+            if (typeof myVar == 'undefined'){
+                id = "tableId"+guid();
+                $(this).attr('id', id);
+            }
+            console.log("Tabelka z id "+id);
+            // $('#'+id).colResizable();
+            // $('#acceptConfirm .record_properties').resizable();
+            const tableToResize = document.getElementById(id);
+            new colResizable(tableToResize, {
+                liveDrag:true,
+                gripInnerHtml:"<div class='grip'></div>",
+                draggingClass:"dragging",
+                resizeMode:'fit'
+            });
+        }
+    });
+};
+
 
 $(document).ready(function () {
     if ($('.collection').length) {
