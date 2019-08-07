@@ -55,19 +55,20 @@ import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js'; // ok
+// import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js'; // ok
 
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
 import { showGreeting, showSmallInfo, showBigInfo } from './showInfo.js';
+import columnResizerSetter from './columnResizerSetter';
 
 
 global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-global.colResizable = ColumnResizer.default;
+// global.colResizable = ColumnResizer.default;
 // global.modal = modal;
 // (global.popover = {popover} = bootstrap);
 // global.tooltip = tooltip;
@@ -91,11 +92,11 @@ if (window.hasOwnProperty('datepicker')) {
 } else {
     console.warn('no datepicker');
 }
-if (ColumnResizer) {
-    console.log(`%c ColumnResizer is type ${typeof(ColumnResizer)} and: ${ColumnResizer} `, 'font-size: 9px; color: blue;');
-} else {
-    console.warn('no ColumnResizer');
-}
+// if (ColumnResizer) {
+//     console.log(`%c ColumnResizer is type ${typeof(ColumnResizer)} and: ${ColumnResizer} `, 'font-size: 9px; color: blue;');
+// } else {
+//     console.warn('no ColumnResizer');
+// }
 
 // if (window.hasOwnProperty('ColResizable')) {
 //     console.log(`%c ColumnResizer.default is type ${typeof(ColResizable)} and: ${ColResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
@@ -109,11 +110,9 @@ if (window.hasOwnProperty('select2')) {
     console.warn('no select2');
 }
 // --- end of test & log ---
-console.log(bigText("Test importu modułów wewnętrznych"));
-
-
-
 showGreeting('Aktywny Dyrektor v2.0 beta');
+console.log(bigText("Test importu modułów wewnętrznych"));
+columnResizerSetter();
 
 
 // --- column-resizer ---
