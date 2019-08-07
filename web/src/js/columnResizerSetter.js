@@ -12,7 +12,7 @@ function guid() {
 }
 
 // --- column-resizer ---
-export default function ColumnResizerSetter {
+export default function ColumnResizerSetter() {
     window.onload = function() {
         let colResizable = ColumnResizer.default;
     
