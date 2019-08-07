@@ -131,9 +131,9 @@ window.onload = function() {
             }
             console.log("Tabelka z id "+id);
             // $('#'+id).colResizable();
-            // $('#acceptConfirm .record_properties').resizable();
+            // $('#acceptConfirm .record_properties').resizable();ColResizable
             const tableToResize = document.getElementById(id);
-            new ColResizable(tableToResize, {
+            new colResizable(tableToResize, {
                 liveDrag:true,
                 gripInnerHtml:"<div class='grip'></div>",
                 draggingClass:"dragging",
