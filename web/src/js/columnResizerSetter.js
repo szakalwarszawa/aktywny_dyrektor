@@ -15,10 +15,10 @@ function guid() {
 export default function ColumnResizerSetter() {
     window.onload = function() {
         let colResizable = ColumnResizer.default;
-    
+
         $("table").each(function(){
             if($(this).closest('.tab-pane').length == 0){
-                var id = $(this).attr('id');
+                let id = $(this).attr('id');
                 if (typeof myVar == 'undefined'){
                     id = "tableId"+guid();
                     $(this).attr('id', id);
