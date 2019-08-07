@@ -1,15 +1,7 @@
 import * as ColumnResizer from '../../../node_modules/column-resizer/dist/column-resizer.js';
 import { showSmallInfo } from './showInfo.js';
+import guid from './randomHexadecimals';
 
-function guid() {
-    function s4() {
-      return Math.floor((1 + Math.random()) * 0x10000)
-        .toString(16)
-        .substring(1);
-    }
-    return s4() + s4() + '_' + s4() + '_' + s4() + '_' +
-      s4() + '_' + s4() + s4() + s4();
-}
 
 // --- column-resizer ---
 export default function ColumnResizerSetter() {
