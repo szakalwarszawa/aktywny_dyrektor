@@ -91,8 +91,8 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
-if (window.hasOwnProperty('colResizable')) {
-    console.log(`%c ColumnResizer.default is type ${typeof(colResizable)} and: ${colResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
+if (window.hasOwnProperty('ColResizable')) {
+    console.log(`%c ColumnResizer.default is type ${typeof(ColResizable)} and: ${ColResizable} `, 'font-size: 6px; font-style: italic; color: orange;');
 } else {
     console.warn('no column resizer');
 }
