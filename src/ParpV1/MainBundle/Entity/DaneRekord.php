@@ -367,6 +367,10 @@ class DaneRekord
     {
         $this->umowaDo = $umowaDo;
 
+        if (null !== $umowaDo) {
+            $this->umowaDo = $umowaDo->setTime(23, 59);
+        }
+
         return $this;
     }
 
