@@ -135,7 +135,13 @@ class ParpMailerService
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
             $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
-            $recipient = array('pawel_fedoruk','hubert_gorecki','jaroslaw_bednarczyk','konrad_szelepusta');
+            $recipient = [
+                'pawel_fedoruk',
+                'hubert_gorecki',
+                'katarzyna_wypich',
+                'maciej_rogulski',
+                'marcin_laskowski',
+            ];
         }
 
         $recipientArray= $this->getRecipient($recipient);
