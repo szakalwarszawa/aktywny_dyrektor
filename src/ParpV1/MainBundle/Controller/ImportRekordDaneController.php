@@ -985,7 +985,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
             $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych);
 
-            if (!$nowy && $daneRekord->getNewUnproccessed() === 2) {
+            if (!$nowy && $daneRekord->getNewUnproccessed() === 2 && true === $resetDoPodstawowych) {
                 // Jeśli nie jest nowy i istnieje w Rekordzie
                 //trzeba odebrac stare
                 $oldDepartament =
@@ -1020,13 +1020,16 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             }
 
             $entry->setDepartment($departament->getName());
-            $grupyNaPodstawieSekcjiOrazStanowiska =
+
+            if (true === $resetDoPodstawowych) {
+                $grupyNaPodstawieSekcjiOrazStanowiska =
                 $ldapService->getGrupyUsera(
                     ['title' => $daneRekord->getStanowisko()],
                     $departament->getShortname(),
                     ($section ? $section->getShortname() : '')
                 );
-            $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
+                $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '+');
+            }
 
             if ($dane['form']['accountExpires'] !== '') {
                 $v = \DateTime::createFromFormat('Y-m-d', $dane['form']['accountExpires']);
