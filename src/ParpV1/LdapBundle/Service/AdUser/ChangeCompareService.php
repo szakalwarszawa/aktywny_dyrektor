@@ -4,12 +4,9 @@ namespace ParpV1\LdapBundle\Service\AdUser;
 
 use ParpV1\MainBundle\Entity\Entry;
 use Doctrine\ORM\EntityManager;
-use ReflectionClass;
-use ParpV1\LdapBundle\Constants\Attributes;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\LdapBundle\Constants\AllowedToFetchAttributes;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\DataCollection\Change\Changes\AdUserChange;
 use Doctrine\Common\Collections\ArrayCollection;
@@ -25,6 +22,12 @@ class ChangeCompareService
      */
     private $entityManager;
 
+    /**
+     * Określenie atrybutów które mają być sprwadzone czy zaszła na nich zmiana.
+     *
+     * @var array
+     */
+    private $specifiedAttributes = [];
 
     /**
      * @param EntityManager $entityManager
@@ -58,7 +61,41 @@ class ChangeCompareService
             }
         }
 
+        if (!empty($this->specifiedAttributes)) {
+            return $this->removeNotSpecifiedChanges($changeCollector);
+        }
+
         return $changeCollector;
+    }
+
+    /**
+     * Usuwa z listy zmian niechciane elementy (nieokreślone w $this->specifiedAttributes)
+     *
+     * @param ArrayCollection $changes
+     *
+     * @return ArrayCollection
+     */
+    private function removeNotSpecifiedChanges(ArrayCollection $changes): ArrayCollection
+    {
+        foreach ($changes as $key => $change) {
+            if (!in_array($change->getTarget(), $this->specifiedAttributes, true)) {
+                $changes->remove($key);
+                continue;
+            }
+
+            if (method_exists($change->getNew(), 'getName')) {
+                if ($change->getNew()->getName() === $change->getOld()) {
+                    $changes->remove($key);
+                    continue;
+                }
+
+                $change
+                    ->setNew($change->getNew()->getName())
+                ;
+            }
+        }
+
+        return $changes;
     }
 
     /**
@@ -89,6 +126,10 @@ class ChangeCompareService
             }
         }
 
+        if (!empty($this->specifiedAttributes)) {
+            return $this->removeNotSpecifiedChanges($changeCollector);
+        }
+
         return $changeCollector;
     }
 
@@ -108,5 +149,29 @@ class ChangeCompareService
         $adAttributes = AllowedToFetchAttributes::getAll();
 
         return array_intersect($entryClassColumns, $adAttributes);
+    }
+
+    /**
+     * Get specifiedAttributes
+     *
+     * @return array
+     */
+    public function getSpecifiedAttributes(): array
+    {
+        return $this->specifiedAttributes;
+    }
+
+    /**
+     * Set specifiedAttributes
+     *
+     * @param array $specifiedAttributes
+     *
+     * @return ChangeCompareService
+     */
+    public function setSpecifiedAttributes(array $specifiedAttributes): ChangeCompareService
+    {
+        $this->specifiedAttributes = $specifiedAttributes;
+
+        return $this;
     }
 }

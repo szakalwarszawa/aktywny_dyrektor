@@ -55,6 +55,7 @@ class ParpMailerService
     const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN = 'odebranie_uprawnien_bez_grup.html.twig';
     const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
+    const ZMIANY_KADROWE_RESET_UPRAWNIEN = 'zmiany_kadrowe_reset_uprawnien.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -509,6 +510,7 @@ class ParpMailerService
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
+            self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';

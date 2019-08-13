@@ -1061,8 +1061,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
 
                 if (isset($changeSet['stanowisko'])) {
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor());
+                    $mailerService =  $this->get('parp.mailer');
+                    $mailerService
+                        ->disableFlush()
+                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor())
+                    ;
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']
