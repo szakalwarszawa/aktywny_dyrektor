@@ -3,7 +3,7 @@ Pracownikowi o loginie: <strong>{{ login }}</strong><br/>
 <strong>zostanie zarejestrowana zmiana:</strong>
 <ul>
     {% for change in changes %}
-        {{ change.target|trans({}, 'changed_attribute') }}: z <strong>{{ change.old }}</strong> nad <strong>{{ change.new }}</strong><br/>
+        {{ change.target|trans({}, 'changed_attribute') }}: z <strong>{{ change.old }}</strong> na <strong>{{ change.new }}</strong><br/>
     {% endfor %}
 </ul><br/>
 <strong><u>Zmiana spowoduje odnotowanie odebrania wszystkich dotychczasowych uprawnień, a następnie nadanie uprawnień podstawowych.</u></strong><br/>

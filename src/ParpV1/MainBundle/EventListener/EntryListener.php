@@ -13,7 +13,6 @@ use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use ParpV1\MainBundle\Tool\AdStringTool;
-use Symfony\Component\VarDumper\VarDumper;
 use Exception;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
@@ -138,7 +137,8 @@ class EntryListener
     /**
      * Wysyła mail do użytkownika oraz przełożonego z informacją
      * o resecie wszystkich uprawnień oraz ze zmianami na koncie (określonymi
-     * w $this->neededAttributes - jeżeli zaszły).
+     * w $this->neededAttributes - jeżeli zaszły) oraz o planowanych do
+     * usunięcia zasobach użytkownika.
      *
      * @param ArrayCollection $changes
      * @param EntityManagerInterface $entityManager
@@ -198,7 +198,6 @@ class EntryListener
             'from_when' => $entry->getFromWhen(),
             'removed_groups_ad' => isset($userResourcesGrouped['with_ad'])? array_unique($userResourcesGrouped['with_ad']): null,
             'removed_groups' => isset($userResourcesGrouped['with_ad'])? array_unique($userResourcesGrouped['without_ad']) : null,
-            'x' => null,
             'changes' => $changes,
         ];
 
