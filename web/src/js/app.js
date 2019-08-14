@@ -25,7 +25,7 @@ import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
-import 'tag-it';
+// import 'tag-it';
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
