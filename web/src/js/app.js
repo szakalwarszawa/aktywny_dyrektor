@@ -1,10 +1,5 @@
 import '../scss/app.scss';
 
-<<<<<<< HEAD
-=======
-require('@fortawesome/fontawesome-pro/css/all.min.css');
-
->>>>>>> development
 // require('@fortawesome/fontawesome-pro/css/all.min.css');
 
 // --- require jQuery normally ---
