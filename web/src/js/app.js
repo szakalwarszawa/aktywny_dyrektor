@@ -1,5 +1,10 @@
 import '../scss/app.scss';
 
+<<<<<<< HEAD
+=======
+require('@fortawesome/fontawesome-pro/css/all.min.css');
+
+>>>>>>> development
 // require('@fortawesome/fontawesome-pro/css/all.min.css');
 
 // --- require jQuery normally ---
@@ -69,7 +74,6 @@ global.datetimepicker = datetimepicker;
 // }
 // console.log(bigText("Test importu modułów wewnętrznych"));
 // --- end of test & log ---
-
 showGreeting('Aktywny Dyrektor v2.0 beta');
 columnResizerSetter();
 symfonyCollectionSetter();
