@@ -44,31 +44,32 @@ global.datetimepicker = datetimepicker;
 
 
 // --- test & log ---
-if (window.hasOwnProperty('$')) {
-    console.log(`%c jQuery is type ${typeof($)} and: ${$} `, 'font-size: 8px; color: pink;');
-} else {
-    console.warn('no jQuery');
-}
+// if (window.hasOwnProperty('$')) {
+//     console.log(`%c jQuery is type ${typeof($)} and: ${$} `, 'font-size: 8px; color: pink;');
+// } else {
+//     console.warn('no jQuery');
+// }
 
-if (window.hasOwnProperty('moment')) {
-    console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 7px; font-style: italic; color: brown;');
-} else {
-    console.warn('no moment');
-}
+// if (window.hasOwnProperty('moment')) {
+//     console.log(`%c moment is type ${typeof(moment)} and: ${moment} `, 'font-size: 7px; font-style: italic; color: brown;');
+// } else {
+//     console.warn('no moment');
+// }
 
-if (window.hasOwnProperty('datepicker')) {
-    console.log(`%c datepicker is type ${typeof(datepicker)} and: ${datepicker} `, 'font-size: 9px; color: blue;');
-} else {
-    console.warn('no datepicker');
-}
+// if (window.hasOwnProperty('datepicker')) {
+//     console.log(`%c datepicker is type ${typeof(datepicker)} and: ${datepicker} `, 'font-size: 9px; color: blue;');
+// } else {
+//     console.warn('no datepicker');
+// }
 
-if (window.hasOwnProperty('select2')) {
-    console.log(`%c select to is type ${typeof(select2)} `, 'font-size: 10px; color: green;');
-} else {
-    console.warn('no select2');
-}
+// if (window.hasOwnProperty('select2')) {
+//     console.log(`%c select to is type ${typeof(select2)} `, 'font-size: 10px; color: green;');
+// } else {
+//     console.warn('no select2');
+// }
+// console.log(bigText("Test importu modułów wewnętrznych"));
 // --- end of test & log ---
+
 showGreeting('Aktywny Dyrektor v2.0 beta');
-console.log(bigText("Test importu modułów wewnętrznych"));
 columnResizerSetter();
 symfonyCollectionSetter();
