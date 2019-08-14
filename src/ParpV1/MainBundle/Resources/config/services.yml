@@ -7,3 +7,6 @@ services:
   edycja_uzytkownika_service:
         class: ParpV1\MainBundle\Services\EdycjaUzytkownikaService
         arguments: ['@ldap_service', '@doctrine.orm.entity_manager', '@security.token_storage', '%ad_domain%', '%ad_ou%', '%ad_push_delay%']
+  ParpV1\MainBundle\Security\Voter\ApplicationActionVoter:
+    tags:
+      - { name: security.voter }

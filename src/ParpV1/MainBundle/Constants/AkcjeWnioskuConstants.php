@@ -58,4 +58,9 @@ class AkcjeWnioskuConstants
      * @var string
      */
     const DODAJ_PLIK = 'dodaj_plik';
+
+    /**
+     * @var string
+     */
+    public const APPLICATION_RESOURCE_REMOVE = 'application_resource_remove';
 }
