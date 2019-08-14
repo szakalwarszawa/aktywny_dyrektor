@@ -1,0 +1,24 @@
+{% extends 'base.html.twig' %}
+{% block body %}
+    <div class="container">
+        <h2>Tworzenie grup poziomów dostępu - <u>{{ zasob_name }}</u></h2>
+        <hr />
+        {% if has_access_level %}
+            <div class="well">
+                <div class="alert alert-info">
+                    Jeden zasób może posiadać wiele zgrupowanych poziomów dostępu. Aby dodać grupę użyj przycisku <b>`Dodaj`</b>.
+                </div>
+                {% form_theme form 'jquery.collection.html.twig' %}
+                {{ form_start(form) }}
+                    {{ form_widget(form.accessLevelGroups, {attr: {class: 'collection'}}) }}
+            </div>
+            {{ form_widget(form.submit, {attr: {class: 'btn btn-block btn-success'}}) }}
+            {{ form_end(form) }}
+            {% else %}
+                <div class="alert alert-danger">
+                    Wybrany zasób <b><i>{{ zasob_name }}</i></b> nie posiada określonych poziomów dostępu. <br /> <br />
+                    <a href="{{ come_back_route }}" class="btn btn-info">Wróć do podglądu zasobu</a>
+                </div>
+        {% endif %}
+    </div>
+{% endblock %}

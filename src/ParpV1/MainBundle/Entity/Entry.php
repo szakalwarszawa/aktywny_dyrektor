@@ -291,6 +291,13 @@ class Entry
     private $opis;
 
     /**
+     * @var bool
+     *
+     * @ORM\Column(name="renaming", type="boolean", nullable=true)
+     */
+    protected $renaming = false;
+
+    /**
      * Get id
      *
      * @return integer
@@ -982,6 +989,30 @@ class Entry
     public function setOdblokowanieKonta(bool $odblokowanieKonta = false): self
     {
         $this->odblokowanieKonta = $odblokowanieKonta;
+
+        return $this;
+    }
+
+    /**
+     * Is renaming
+     *
+     * @return bool|null
+     */
+    public function isRenaming(): ?bool
+    {
+        return $this->renaming;
+    }
+
+    /**
+     * Set renaming
+     *
+     * @param bool $renaming
+     *
+     * @return Entry
+     */
+    public function setRenaming(bool $renaming): Entry
+    {
+        $this->renaming = $renaming;
 
         return $this;
     }

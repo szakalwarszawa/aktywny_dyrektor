@@ -27,11 +27,6 @@ class ParpMailerService
     const EMAIL_DO_HELPDESK = 'INT-BI-HELPDESK';
     const EMAIL_DO_GLPI = 'pomoc';
 
-    const TEMPLATE_PRACOWNIKMIGRACJA1 = 'pracownikMigracja1.html.twig';
-    const TEMPLATE_PRACOWNIKMIGRACJA2 = 'pracownikMigracja2.html.twig';
-    const TEMPLATE_PRACOWNIKMIGRACJA3 = 'pracownikMigracja3.html.twig';
-    const TEMPLATE_PRACOWNIKMIGRACJA4 = 'pracownikMigracja4.html.twig';
-    const TEMPLATE_PRACOWNIKMIGRACJA5 = 'pracownikMigracja5.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEIMPORT = 'pracownikPrzyjecieImport.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN = 'pracownikPrzyjecieNadanieUprawnien.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEBI = 'pracownikPrzyjecieBi.html.twig';
@@ -41,19 +36,13 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2 = 'pracownikWygasniecieUprawnien2.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3 = 'pracownikWygasniecieUprawnien3.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4 = 'pracownikWygasniecieUprawnien4.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASEKCJI1 = 'pracownikZmianaSekcji1.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASEKCJI2 = 'pracownikZmianaSekcji2.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA1 = 'pracownikZmianaStanowiska1.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA2 = 'pracownikZmianaStanowiska2.html.twig';
-    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA3 = 'pracownikZmianaStanowiska3.html.twig';
+    const TEMPLATE_PRACOWNIKZMIANASTANOWISKA = 'pracownikZmianaStanowiska.html.twig';
     const TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA = 'pracownikZmianaZaangazowania.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE1 = 'pracownikZwolnienie1.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE2 = 'pracownikZwolnienie2.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE3 = 'pracownikZwolnienie3.html.twig';
     const TEMPLATE_PRACOWNIKZWOLNIENIE4 = 'pracownikZwolnienie4.html.twig';
-
     const TEMPLATE_RAPORTZBIORCZY = 'raportZbiorczy.html.twig';
-
     const TEMPLATE_WNIOSEKNADANIEUPRAWNIEN = 'wniosekNadanieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN = 'wniosekOdebranieUprawnien.html.twig';
     const TEMPLATE_WNIOSEKODRZUCENIE = 'wniosekOdrzucenie.html.twig';
@@ -65,6 +54,8 @@ class ParpMailerService
     const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN = 'odebranie_uprawnien_bez_grup.html.twig';
+    const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
+    const ZMIANY_KADROWE_RESET_UPRAWNIEN = 'zmiany_kadrowe_reset_uprawnien.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -145,7 +136,13 @@ class ParpMailerService
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
             $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
-            $recipient = array('pawel_fedoruk','hubert_gorecki','jaroslaw_bednarczyk','konrad_szelepusta');
+            $recipient = [
+                'pawel_fedoruk',
+                'hubert_gorecki',
+                'katarzyna_wypich',
+                'maciej_rogulski',
+                'marcin_laskowski',
+            ];
         }
 
         $recipientArray= $this->getRecipient($recipient);
@@ -217,135 +214,18 @@ class ParpMailerService
         return $parts2[0];
     }
 
-    public function sendEmailZmianaSekcji($user, $nowasekcja, $administratorzy)
-    {
-
-        $now = new \Datetime();
-        $odbiorcy = [$user['samaccountname']];
-        $dane = [
-            'odbiorcy'      => $odbiorcy,
-            'imie_nazwisko' => $user['name'],
-            'login'         => $user['samaccountname'],
-            'stara_sekcja'  => $user['division'],
-            'nowa_sekcja'   => $nowasekcja,
-            'data_zmiany'   => $now,
-        ];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1, $dane);
-        $dane['odbiorcy'] = [
-            $user['samaccountname'],
-            // $this->getManagerLoginFromDN($user['manager']),
-            ParpMailerService::EMAIL_DO_AUMS_AD,
-        ];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2, $dane);
-    }
-
-    public function sendEmailZmianaStanowiska($user, $noweStanowisko, $administratorzy)
+    public function sendEmailZmianaStanowiska($user, $noweStanowisko, $dyrektor)
     {
         $now = new \Datetime();
-        $odbiorcy = [$user['samaccountname']];
         $dane = [
-            'odbiorcy'         => $odbiorcy,
+            'odbiorcy'         => $dyrektor,
             'imie_nazwisko'    => $user['name'],
             'login'            => $user['samaccountname'],
             'stare_stanowisko' => $user['title'],
             'nowe_stanowisko'  => $noweStanowisko,
             'data_zmiany'      => $now,
         ];
-        $dane['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1, $dane);
-        $dane['odbiorcy'] = [
-            $user['samaccountname'],
-            // $this->getManagerLoginFromDN($user['manager']),
-            ParpMailerService::EMAIL_DO_AUMS_AD,
-        ];
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2, $dane);
-        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3, $dane);
-    }
-
-    public function sendEmailZmianaKadrowaMigracja($daneRekord, $poprzednieDaneRekord, $wDniuZmiany = true)
-    {
-        $nowyDep =
-            $this->entityManager->getRepository('ParpMainBundle:Departament')
-                ->findOneByNameInRekord($daneRekord->getDepartament());
-        $staryDep =
-            $this->entityManager->getRepository('ParpMainBundle:Departament')
-                ->findOneByNameInRekord($poprzednieDaneRekord->getDepartament());
-
-
-        $data = [
-            'data_dzien_rozpoczecia_pracy_w_nowym_db' => date('Y-m-d'),
-            'stary_db'                                => $staryDep->getName(),
-            'nowy_db'                                 => $nowyDep->getName(),
-            'odbiorcy'                                => '',
-            'imie_nazwisko'                           => $daneRekord->getImieNazwisko(),
-            'login'                                   => $daneRekord->getLogin(),
-
-        ];
-        if ($wDniuZmiany) {
-            $templatki =
-                [
-                    ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3,
-                    ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4,
-                    ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5,
-                ];
-        } else {
-            $templatki =
-                [ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1];//jesli nie w dniu zmiany to znaczy ze 4 dni wczesniej i inny template i tylko jeden
-        }
-        foreach ($templatki as $templatka) {
-            switch ($templatka) {
-                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3:
-                    //Pracownik migruje do innego D/B 3
-                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $data['odbiorcy'] = [ParpMailerService::EMAIL_DO_AUMS_AD];
-                    break;
-                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4:
-                    //Pracownik migruje do innego D/B 4
-                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $data['odbiorcy'] =
-                        [
-                            $staryDep->getDyrektor(),
-                            $nowyDep->getDyrektor(),
-                            $daneRekord->getLogin(),
-                            ParpMailerService::EMAIL_DO_AUMS_AD,
-                        ];
-                    /*
-                        poprzedni [P]; przyszły [P]; [U]; dw [AUMS-AD],
-                        */
-                    break;
-                case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5:
-                    //Pracownik migruje do innego D/B 5
-                    //$wymaganePola = array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                    $data['odbiorcy'] = [ParpMailerService::EMAIL_DO_HELPDESK];
-                    break;
-            }
-            $this->sendEmailByType($templatka, $data);
-        }
-
-        if ($wDniuZmiany) {
-            //wyslac maila do wsystkich administratorow zasobow!!!!
-            $userzasoby =
-                $this->entityManager->getRepository('ParpMainBundle:UserZasoby')
-                    ->findBySamaccountname($daneRekord->getLogin());
-
-
-            $zasoby = [];//@todo: wybrac faktycznie zasoby usera!!!
-            foreach ($userzasoby as $uz) {
-                $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($uz->getZasobId());
-                $zasoby[] = $zasob;
-            }
-
-            foreach ($zasoby as $zasob) {
-                $data['odbiorcy'] = [
-                    $zasob->getAdministratorZasobu(),
-                    $daneRekord->getLogin(),
-                    $nowyDep->getDyrektor(),
-                    $staryDep->getDyrektor(),
-                ];
-                $data['nazwa_zasobu'] = $zasob->getNazwa();
-                $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2, $data);
-            }
-        }
+        $this->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA, $dane);
     }
 
     public function sendEmailWniosekOczekujacy($wniosek, $template)
@@ -366,12 +246,11 @@ class ParpMailerService
             }
         }
         $loginy = array_unique($loginy);
-
         $data = [
             'odbiorcy'                           => $odbiorcy,
             'login'                              => $loginy,
             'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
-            'id_wniosku'                         => $wniosek->getWniosek()->getWniosekNadanieOdebranieZasobow()->getId(),
+            'wniosek' => $wniosek->getWniosek()
         ];
 
         $this->sendEmailByType($template, $data);
@@ -407,6 +286,9 @@ class ParpMailerService
         if (!$wniosek->getPracownikSpozaParp()) {
             foreach ($wniosek->getUserZasoby() as $userZasob) {
                 $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
+                if (!isset($user[0])) {
+                    return false;
+                }
                 $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobId());
                 $usermail = $this->getUserMail($userZasob->getSamaccountname());
                 $data = [
@@ -534,22 +416,6 @@ class ParpMailerService
                 unset($wymaganePola[1]);//imie_nazwisko
                 $wymaganePola[] = 'html';
                 break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1:
-                //Pracownik migruje do innego D/B 1
-                $wymaganePola[] = 'data_dzien_rozpoczecia_pracy_w_nowym_db';
-                break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2:
-                //Pracownik migruje do innego D/B 2
-                $wymaganePola =
-                    array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'nazwa_zasobu', 'nowy_db']);
-                break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3:
-            case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4:
-            case ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5:
-                //Pracownik migruje do innego D/B 3
-                $wymaganePola =
-                    array_merge($wymaganePola, ['data_dzien_rozpoczecia_pracy_w_nowym_db', 'stary_db', 'nowy_db']);
-                break;
             case ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEIMPORT:
             case ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN:
                 //Pracownik jest przyjmowany do pracy w PARP 1
@@ -566,13 +432,7 @@ class ParpMailerService
             case ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4:
                 $wymaganePola = array_merge($wymaganePola, ['departament', 'data_wygasania_uprawnien', 'nazwa_zasobu']);
                 break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1:
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2:
-                $wymaganePola = array_merge($wymaganePola, ['stara_sekcja', 'nowa_sekcja', 'data_zmiany']);
-                break;
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1:
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2:
-            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3:
+            case ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA:
                 $wymaganePola = array_merge($wymaganePola, ['stare_stanowisko', 'nowe_stanowisko', 'data_zmiany']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE3:
@@ -622,22 +482,13 @@ class ParpMailerService
     protected function getTytulMaila($template)
     {
         $tytuly = [
-            ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA1                 => 'Pracownik migruje do innego D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA2                 => 'Pracownik migruje do innego D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA3                 => 'Pracownik migruje do innego D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA4                 => 'Pracownik migruje do innego D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKMIGRACJA5                 => 'Pracownik migruje do innego D/B',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIEIMPORT           => 'Pracownik jest przyjmowany do pracy w PARP',
             ParpMailerService::TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN => 'Pracownik jest przyjmowany do pracy w PARP',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1     => 'Bliski termin wygaśnięcia ważności uprawnień',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2     => 'Wygaśnięcie ważności uprawnień: Zasób: Sieć PARP- poziomy dostępu: [UMG];[UMP];[UPP];[OU]',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3     => 'Wygaśnięcie ważności uprawnień: Zasób: grupa w MS-AD – uprawnienia nadane wnioskiem',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4     => 'Wygaśnięcie ważności uprawnień: Zasoby inne niż INT, SG(G) i EXT:',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI1             => 'Pracownik zmienia sekcję pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASEKCJI2             => 'Pracownik zmienia sekcję pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA1         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA2         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA3         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
+            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
             ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA       => 'Pracownikowi zmieniono zaangażowanie',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE1               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE2               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
@@ -657,7 +508,9 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIEBI              => 'Wyłączenie konta w Exchange: ',
             ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
-            self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
+            self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
@@ -674,9 +527,9 @@ class ParpMailerService
      *
      * @param array|string $recipient
      *
-     * @return array|string
+     * @return array
      */
-    protected function getRecipient($recipient)
+    protected function getRecipient($recipient): array
     {
         if (is_array($recipient)) {
             $recipientArr = [];
@@ -694,7 +547,7 @@ class ParpMailerService
                 $recipient = $this->getUserMail($recipient);
             }
 
-            return $recipient;
+            return [$recipient];
         }
     }
 

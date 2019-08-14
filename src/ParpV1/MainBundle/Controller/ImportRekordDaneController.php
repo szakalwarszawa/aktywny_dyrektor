@@ -100,7 +100,7 @@ class ImportRekordDaneController extends Controller
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND
                 (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
-            join P_MPRACY departament on departament.KOD = mpr.KOD AND mpr.KOD < 1000
+            join P_MPRACY departament on departament.KOD = mpr.KOD
             JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND
                 (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
@@ -292,6 +292,7 @@ class ImportRekordDaneController extends Controller
                         ->setCreatedBy($this->getUser()->getUsername())
                         ->setCreatedAt($d)
                         ->setNewUnproccessed(1)
+                        ->setStaticStatusNumber(1)
                     ;
 
                     $em->persist($dr);
@@ -338,7 +339,7 @@ class ImportRekordDaneController extends Controller
                         $d2 != null &&
                         $dr->getUmowaDo()->format('Y-m-d') != $d2->format('Y-m-d')))
                 ) {
-                    $dr->setUmowaDo($d2);
+                    $dr->setUmowaDo($d2)->setTime(23, 59);
                 }
 
 
@@ -357,17 +358,13 @@ class ImportRekordDaneController extends Controller
 
                     if ((isset($changeSet['departament']) || isset($changeSet['stanowisko'])) && !$nowy) {
                         //die("mam zmiane stanowiska lub depu dla istniejacego");
-                        $dr->setNewUnproccessed(2);
+                        $dr
+                            ->setNewUnproccessed(2)
+                            ->setStaticStatusNumber(2)
+                        ;
                     } elseif (count($changeSet) > 0 && !$nowy) {
                         $this->utworzEntry($em, $dr, $changeSet, $nowy, $poprzednieDane, false);
                         $imported[] = $dr;
-                    }
-
-                    if (false === $nowy) {
-                        if (isset($changeSet['departament'])) {
-                            //zmiana departamentu
-                            $this->get('parp.mailer')->sendEmailZmianaKadrowaMigracja($dr, $poprzednieDane, true);
-                        }
                     }
                 }
             }
@@ -431,7 +428,7 @@ class ImportRekordDaneController extends Controller
                 $imie = $poprzednieDane[1];
                 $nazwisko = $poprzednieDane[0];
             }
-
+            $entry->setRenaming(true);
             $entry->setCn($this->get('samaccountname_generator')
                 ->generateFullname(
                     $dr->getImie(),
@@ -930,7 +927,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         /** @var DaneRekord $daneRekord */
         $daneRekord = $objectManager->getRepository(DaneRekord::class)->find($id);
         $poprzednieDane = explode(' ', current($userFromAD)['name']);
-
+        $daneRekord->setStaticStatusNumber($daneRekord->getNewUnproccessed());
         if ($daneRekord->getNewUnproccessed() > 0) {
             $changeSet = [];
 
@@ -1063,15 +1060,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     }
                 }
 
-                if ($zmieniamySekcje && !isset($changeSet['departament'])) {
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaSekcji($userFromAD[0], $dane['form']['info'], $administratorzy);
-                }
                 if (isset($changeSet['stanowisko'])) {
-                    // Do stanowiska pobieramy dane bezpośrednio z Rekorda - gdyż nie ma w formularzu możliwości
-                    // wyboru stanowiska. W ogóle z ciekawostek - $administratorzy nie są w ogóle wykorzystyw
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $administratorzy);
+                    $mailerService =  $this->get('parp.mailer');
+                    $mailerService
+                        ->disableFlush()
+                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor())
+                    ;
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']

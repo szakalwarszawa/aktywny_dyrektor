@@ -1,33 +1,59 @@
-<?php
-// src/Acme/DemoBundle/EventListener/ConsoleExceptionListener.php
+<?php declare(strict_types=1);
+
 namespace ParpV1\MainBundle\EventListener;
 
 use Symfony\Component\Console\Event\ConsoleExceptionEvent;
-use Psr\Log\LoggerInterface;
+use ParpV1\MainBundle\Services\RedmineConnectService;
+use ReflectionClass;
 
+/**
+ * Nasłuch wyjątków z konsoli.
+ */
 class ConsoleExceptionListener
 {
-    private $logger;
+    /**
+     * @var RedmineConnectService
+     */
+    private $redmineService;
 
-    public function __construct(LoggerInterface $logger)
+    /**
+     * @param RedmineConnectService $redmineService
+     */
+    public function __construct(RedmineConnectService $redmineService)
     {
-        $this->logger = $logger;
+        $this->redmineService = $redmineService;
     }
 
-    public function onConsoleException(ConsoleExceptionEvent $event)
+    /**
+     * Łapie wyjątek z konsoli i wrzuca do redmine.
+     *
+     * @param ConsoleExceptionEvent $event
+     *
+     * @return void
+     */
+    public function onConsoleException(ConsoleExceptionEvent $event): void
     {
-        $command = $event->getCommand();
         $exception = $event->getException();
+        $exceptionReflectionClass = new ReflectionClass($exception);
 
-        $message = sprintf(
-            '%s: %s (uncaught exception) at %s line %s while running console command `%s`',
-            get_class($exception),
-            $exception->getMessage(),
-            $exception->getFile(),
-            $exception->getLine(),
-            $command->getName()
-        );
+        $descriptionElements = [
+            sprintf('exception_class: %s', $exceptionReflectionClass->getName()),
+            sprintf('command_name: %s', $event->getCommand()->getName()),
+            sprintf('line: %d', $exception->getLine()),
+            sprintf('exception_file: %s', $exception->getFile()),
+        ];
 
-        $this->logger->error($message);
+        $exceptionMessage = $exception
+            ->getMessage()
+        ;
+        $this
+            ->redmineService
+            ->putZgloszenieBeneficjenta(
+                'CRON',
+                $exceptionMessage,
+                implode(', ', $descriptionElements),
+                RedmineConnectService::ZGLOSZONE_PRZEZ_SYSTEM_KATEGORIA,
+                false
+            );
     }
 }

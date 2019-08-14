@@ -109,24 +109,6 @@ class UserZasobyRepository extends EntityRepository
      */
     public function findUsersByZasobId($zasobId)
     {
-        global $kernel;
-
-        if ('AppCache' == get_class($kernel)) {
-            $kernel = $kernel->getKernel();
-        }
-
-        $ldap = $kernel->getContainer()->get('ldap_service');
-        /*
-        $query = $this->getEntityManager()->createQuery('SELECT uz FROM ParpMainBundle:UserZasoby uz
-              JOIN ParpMainBundle:Zasoby z
-              WHERE uz.zasobId = z.id
-              AND z.id = :zasobId
-              ORDER BY uz.samaccountname ASC
-              ')->setParameter('zasobId', $zasobId);
-
-
-        $res = $query->getResult();
-        */
         $res = $this->getEntityManager()
         ->createQueryBuilder()
         ->select('uz, w')
@@ -141,16 +123,6 @@ class UserZasobyRepository extends EntityRepository
         ->getQuery()
         ->getResult();
 
-        foreach ($res as $uz) {
-            //echo $uz->getSamaccountname()."<br>";
-
-            $ADUser = $ldap->getUserFromAD($uz->getSamaccountname());
-            //echo "<pre>";print_r($ADUser); echo "</pre>";
-            if (count($ADUser) > 0) {
-                $uz->setADUser($ADUser[0]);
-            } else {
-            }
-        }
         return $res;
     }
 
@@ -246,7 +218,7 @@ class UserZasobyRepository extends EntityRepository
             ->where('u.deletedAt is null')
             ->andWhere('z.deletedAt is null')
             ->andWhere('u.samaccountname = :username')
-            ->join('u.wniosek', 'w')
+            ->leftJoin('u.wniosek', 'w')
             ->join(Zasoby::class, 'z', Join::WITH, 'z.id = u.zasobId')
             ->setParameter('username', $username)
         ;
@@ -263,12 +235,14 @@ class UserZasobyRepository extends EntityRepository
                 ], [
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
                 ]);
-            $notDivided = $singleRow['userZasob']
+            $notDivided = true;
+            if ($singleRow['userZasob']->getWniosek()) {
+                $notDivided = $singleRow['userZasob']
                 ->getWniosek()
                 ->getWniosek()
                 ->getStatus()
-                ->getNazwaSystemowa() !== '10_PODZIELONY'
-            ;
+                ->getNazwaSystemowa() !== '10_PODZIELONY';
+            }
 
             try {
                 if (null !== $singleRow['userZasob']->getWniosekOdebranie()) {

@@ -4,6 +4,8 @@ namespace ParpV1\MainBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\EntityNotFoundException;
+use Doctrine\Common\Collections\ArrayCollection;
+use DateTime;
 
 /**
  * UserZasoby
@@ -253,7 +255,27 @@ class UserZasoby
      */
     protected $dataOdebrania;
 
+
+    /**
+     * @var ArrayCollection
+     *
+     * @ORM\ManyToMany(targetEntity="AccessLevelGroup", cascade={"all"}, orphanRemoval=true)
+     * @ORM\JoinTable(name="userzasoby_grupy_poziomow",
+     *      joinColumns={@ORM\JoinColumn(name="userzasob_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="grupa_poziomow_dostepu", referencedColumnName="id")}
+     *     )
+     */
+    protected $accessLevelGroups;
+
     protected $_ADUser;
+
+    /**
+     * Konstruktor
+     */
+    public function __construct()
+    {
+        $this->accessLevelGroups = new ArrayCollection();
+    }
 
     /**
      * Set _ADUser
@@ -280,6 +302,22 @@ class UserZasoby
 
 
     protected $_zasobNazwa;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $ktoNadal;
+
+    /**
+     * @var DateTime
+     *
+     * @ORM\Column(type="datetime", nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $dataNadania;
 
     /**
      * Set _zasobNazwa
@@ -1099,6 +1137,118 @@ class UserZasoby
     public function setZasob($zasob)
     {
         $this->zasob = $zasob;
+
+        return $this;
+    }
+
+    /**
+     * Get accessLevelGroups
+     *
+     * @return ArrayCollection
+     */
+    public function getAccessLevelGroups()
+    {
+        return $this->accessLevelGroups;
+    }
+
+    /**
+     * Set accessLevelGroups
+     *
+     * @param ArrayCollection $accessLevelGroups
+     *
+     * @return self
+     */
+    public function setAccessLevelGroups(ArrayCollection $accessLevelGroups)
+    {
+        $this->accessLevelGroups = $accessLevelGroups;
+
+        return $this;
+    }
+
+    /**
+     * Add AccessLevelGroup element
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return UserZasoby
+     */
+    public function addAccessLevelGroup(AccessLevelGroup $accessLevelGroup): UserZasoby
+    {
+        $this
+            ->accessLevelGroups
+            ->add($accessLevelGroup)
+        ;
+
+        return $this;
+    }
+
+    /**
+     * Remove AccessLevelGroup element
+     *
+     * @param AccessLevelGroup $accessLevelGroup
+     *
+     * @return UserZasoby
+     */
+    public function removeAccessLevelGroup(AccessLevelGroup $accessLevelGroup): UserZasoby
+    {
+        $this
+            ->accessLevelGroups
+            ->remove($accessLevelGroup)
+        ;
+
+        return $this;
+    }
+
+    public function hasAccessLevelGroups()
+    {
+        return ($this->accessLevelGroups->count());
+    }
+
+    /**
+     * Get ktoNadal
+     *
+     * @return string|null
+     */
+    public function getKtoNadal(): ?string
+    {
+        return $this->ktoNadal;
+    }
+
+    /**
+     * Set ktoNadal
+     *
+     * @param string $ktoNadal
+     *
+     * @return UserZasoby
+     */
+    public function setKtoNadal(?string $ktoNadal): UserZasoby
+    {
+        $this->ktoNadal = $ktoNadal;
+
+        return $this;
+    }
+
+    /**
+     * Get dataNadania
+     *
+     * @return DateTime|null
+     */
+    public function getDataNadania(): ?DateTime
+    {
+        return $this->dataNadania;
+    }
+
+
+    /**
+     * Set setDataNadania
+     *
+     * @param DateTime $dataNadania
+     *
+     * @return UserZasoby
+     */
+    public function setDataNadania(?DateTime $dataNadania): UserZasoby
+    {
+        $this->dataNadania = $dataNadania;
 
         return $this;
     }

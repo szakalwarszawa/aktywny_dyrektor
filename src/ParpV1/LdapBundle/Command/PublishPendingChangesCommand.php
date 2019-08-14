@@ -29,6 +29,7 @@ class PublishPendingChangesCommand extends Command
      */
     public function __construct(UpdateFromEntry $updateFromEntry)
     {
+        $updateFromEntry->throwExceptions();
         $this->updateFromEntry = $updateFromEntry;
 
         parent::__construct();
@@ -52,14 +53,35 @@ class PublishPendingChangesCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $simulate = $input->getOption('simulate');
+
+        if (!$simulate) {
+            $this
+                ->updateFromEntry
+                ->setSimulateProcess(true)
+                ->publishAllPendingChanges(true, true)
+            ;
+
+            $this
+                ->updateFromEntry
+                ->cleanMessages()
+            ;
+        }
+
+        if (!$simulate) {
+            $this
+                ->updateFromEntry
+                ->setSimulateProcess(false)
+            ;
+        }
         $updateResult = $this
             ->updateFromEntry
-            ->publishAllPendingChanges($input->getOption('simulate'), true)
+            ->publishAllPendingChanges($simulate, true)
         ;
 
         $symfonyStyle = new SymfonyStyle($input, $output);
 
-        if ($input->getOption('simulate')) {
+        if ($simulate) {
             $symfonyStyle->warning('SYMULACJA ZMIAN');
         }
 

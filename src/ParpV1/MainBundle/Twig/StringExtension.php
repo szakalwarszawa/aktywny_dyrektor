@@ -58,7 +58,20 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('base64Decode', array($this, 'base64DecodeFilter')),
             new \Twig_SimpleFilter('base64Encode', array($this, 'base64EncodeFilter')),
             new Twig_SimpleFilter('parseAdString', [$this, 'parseAdString']),
+            new Twig_SimpleFilter('md5', [$this, 'hashString']),
         );
+    }
+
+    /**
+     * Zwraca zahaszowany string.
+     *
+     * @param string $value
+     *
+     * @return string
+     */
+    public function hashString(string $value): string
+    {
+        return md5($value);
     }
 
     /**
@@ -109,12 +122,16 @@ class StringExtension extends \Twig_Extension
     /**
      * Zwraca datę końca umowy dla użytkownika
      *
-     * @param string $samaccountname
+     * @param string|null $samaccountname
      *
      * @return DateTime|null
      */
-    public function podajKoniecUmowy(string $samaccountname): ?DateTime
+    public function podajKoniecUmowy(?string $samaccountname = null): ?DateTime
     {
+        if (null === $samaccountname) {
+            return null;
+        }
+
         $dataUmowy = $this->entityManager->getRepository('ParpMainBundle:DaneRekord')
             ->podajKoniecUmowy($samaccountname);
 

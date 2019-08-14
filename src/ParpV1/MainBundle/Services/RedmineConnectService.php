@@ -20,6 +20,10 @@ use Symfony\Component\HttpFoundation\RequestStack;
  */
 class RedmineConnectService
 {
+    /**
+     * @var int
+     */
+    const ZGLOSZONE_PRZEZ_SYSTEM_KATEGORIA = 10;
 
     /**
      * URL serwera Redmine.

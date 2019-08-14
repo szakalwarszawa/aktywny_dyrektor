@@ -13,6 +13,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use ParpV1\MainBundle\Entity\UserZasoby;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use ParpV1\MainBundle\Constants\AccessLevelTypes;
 
 class UserZasobyType extends AbstractType
 {
@@ -42,6 +44,9 @@ class UserZasobyType extends AbstractType
                     'required' => false,
                     'data' => $d1,
                 ))
+            ->add('powodNadania', TextareaType::class, [
+                'label' => 'Cel nadania uprawnień'
+            ])
             ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
             ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
             //->add('aktywneOdPomijac')
@@ -81,7 +86,10 @@ class UserZasobyType extends AbstractType
                     $o = $event->getData();
                     $choices = array();
                     if ($o) {
-                        $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder, $options);
+                        // if ((!$options['zablokuj_edycje_poziomu'] || empty($o->accessLevelGroups->toArray()))) {
+                            $this->addChoicesFromDictionary($o, $form, "getPoziomDostepu", "poziomDostepu", $builder, $options);
+                        // }
+
                         $this->addChoicesFromDictionary($o, $form, "getModul", "modul", $builder, $options);
                     }
                 }
@@ -103,15 +111,83 @@ class UserZasobyType extends AbstractType
             $choices = array('nie dotyczy' => 'nie dotyczy');
         }
         $options['data_uz'][$fieldName] = isset($options['data_uz'][$fieldName]) ? $options['data_uz'][$fieldName] : "";
+
+        $accessLevelGroups = $o->availableAccessLevelGroups->toArray();
+        $zablokujPoziom = false;
+        if ($accessLevelGroups && $fieldName === 'poziomDostepu') {
+            $zablokujPoziom = true;
+        }
+
+        $obecnyRodzajUprawnien = function ($userZasob) use ($options) {
+            $istniejaPoziomyDostepu = !empty($userZasob->getPoziomDostepu());
+            $istniejaGrupy = $userZasob->hasAccessLevelGroups();
+
+            if (false === $options['zablokuj_edycje_poziomu']) {
+                return null;
+            }
+
+            if (!$istniejaGrupy && !$istniejaPoziomyDostepu) {
+                return null;
+            }
+
+            if ($istniejaGrupy) {
+                return AccessLevelTypes::GROUP;
+            }
+
+            return AccessLevelTypes::SINGLE;
+        };
+        $dodatkowaKlasa = ' ';
+        if ($zablokujPoziom) {
+            $form
+                ->add('rodzajUprawnien', ChoiceType::class, [
+                    'data' => $obecnyRodzajUprawnien($o),
+                    'mapped' => false,
+                    'placeholder' => 'Proszę wybrać',
+                    'required' => true,
+                    'choices' => AccessLevelTypes::mapToForm()
+                ])
+            ;
+            $dodatkowaKlasa = ' odblokujPoWyborze ';
+            if (count($accessLevelGroups)) {
+                foreach ($accessLevelGroups as $accessLevelGroup) {
+                    $choices[$accessLevelGroup->getGroupName()] = $accessLevelGroup->getId();
+                }
+            }
+        }
+        $nadpiszDane = false;
+        if (AccessLevelTypes::GROUP === $obecnyRodzajUprawnien($o) && 'poziomDostepu' === $fieldName) {
+            $nadpisaneOpcje = [];
+            foreach ($o->getAccessLevelGroups() as $group) {
+                $nadpisaneOpcje[$group->getGroupName()] = $group->getId();
+            }
+
+            $choices = [];
+            foreach ($o->availableAccessLevelGroups as $group) {
+                $choices[$group->getGroupName()] = $group->getId();
+            }
+            $nadpiszDane = true;
+        }
+
+        $zablokujNowy = !$options['zablokuj_edycje_poziomu'] && 'poziomDostepu' === $fieldName && $accessLevelGroups;
         $form->add(
             $fieldName, /* NestedComboType::class */
             ChoiceType::class,
             array('choices' => $choices,
-                    'data' => explode(";", $options['data_uz'][$fieldName]),//potrzebne by zaznaczal przy edycji
+                    'data' => $nadpiszDane? $nadpisaneOpcje : explode(";", $options['data_uz'][$fieldName]),//potrzebne by zaznaczal przy edycji
                     'multiple' => true,
                     'expanded' => false,
                     'required' => true,
-                    'attr' => ['class' => 'select2 multiwybor '.$fieldName, 'required' => false]
+                    'choice_attr' => function ($choice, $key, $value) use ($zablokujPoziom) {
+                        if ($zablokujPoziom) {
+                            if (is_numeric($value)) {
+                                return ['class' => 'poziom-dostepu-element poziom-grupa'];
+                            } else {
+                                return ['class' => 'poziom-dostepu-element poziom-niegrupa'];
+                            }
+                        }
+                        return [];
+                    },
+                    'attr' => ['class' => 'select2' . $dodatkowaKlasa . 'multiwybor '.$fieldName, 'required' => false, 'disabled' => $zablokujNowy]
                 )
         );
     }
@@ -125,6 +201,7 @@ class UserZasobyType extends AbstractType
             'data_class' => UserZasoby::class,
             'is_sub_form' => true,
             'data_uz' => null,
+            'zablokuj_edycje_poziomu' => false
         ));
     }
 

@@ -9,6 +9,14 @@
     left: 0;
 }
 
+.button-white-round {
+    background: white;
+    border-radius: 6px;
+    padding: 4px;
+    margin-right: 2px;
+    border: 1px solid #dedede;
+}
+
 .popover {
     padding: 0;
 }
@@ -569,21 +577,45 @@ footer.helpdesk {
         tr {
             td {
                 .alert {
-                    min-width: 100px;
-                    padding: 5px 15px;
+                    min-width: 4.8rem;
+                    padding: .5rem;
                 }
             }
 
-            td:nth-child(2) {
-                min-width: 116px;
+            .col-nazwa-zasobu {
+                min-width: 6.4rem;
+                max-width: 30rem;
             }
 
-            td:nth-child(7) {
-                min-width: 116px;
+            .col-osoba {
+                min-width: 11.6rem;
             }
 
-            td:nth-child(11) {
-                max-width: 300px;
+            .col-bezterminowo {
+                width: 5.6rem;
+                max-width: 11.6rem;
+            }
+
+            .col-cel {
+                max-width: 40rem;
+            }
+
+            .col-akcje {
+                min-width: 6.4rem;
+                max-width: 19rem;
+
+                a {
+                    display: block;
+                    margin: 0 auto;
+                    padding: 0.5rem;
+                }
+                a[title^='Zobacz wniosek'] {
+                    width: 18rem;
+                }
+                a[href^='/wnioseknadanieodebraniezasobow/']:not([title^='Zobacz wniosek']),
+                a[href^='/addRemoveAccessToUsersAction/'] {
+                    width: 6.4rem;
+                }
             }
         }
     }
@@ -594,22 +626,55 @@ footer.helpdesk {
 
     tbody {
         tr {
-            td:nth-child(5),
-            td:nth-child(7),
-            td:nth-child(9),
-            td:nth-child(10) {
-                max-width: 48px;
+            .col-sum-upr,
+            .col-kanal-dostepu,
+            .col-upr-adm {
+                max-width: 4.8rem;
             }
 
-            td:nth-child(6),
-            td:nth-child(8) {
-                max-width: 64px;
+            .col-nazwa-zasobu {
+                min-width: 6.4rem;
+                max-width: 12rem;
             }
 
-            td:nth-child(11) {
-                min-width: 128px;
-                max-width: 240px;
+            .umowa-od,
+            .col-bezterminowo {
+                max-width: 6.4rem;
+            }
+
+            .col-umowa-do {
+                max-width: 10rem;
+            }
+
+            .col-cel {
+                min-width: 12.8rem;
+                max-width: 24rem;
             }
         }
     }
+}
+
+.nowrap {
+    white-space: nowrap;
+}
+
+/* Przyciski kolekcji */
+.collection-element {
+    padding: 2px;
+}
+
+/* Element kolekcji */
+.collection {
+    > div {
+        border-bottom: 1px solid #dedede;
+    }
+}
+
+/* Strzalki naglowkow rozwijanych paneli */
+[data-toggle="collapse"] .fa:before {
+    content: "\f107";
+  }
+
+[data-toggle="collapse"].collapsed .fa:before {
+    content: "\f106";
 }

@@ -996,16 +996,18 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                         $dostepnePoziomy = explode(';', $poziomy);
 
-                        if (!in_array($uz->getPoziomDostepu(), $dostepnePoziomy)) {
-                            $message = 'Niewłaściwy poziom dostepu dla zasobu \'' . $z->getNazwa() .
-                                '\', wybrany poziom to \'' . $uz->getPoziomDostepu() . '\', dostepne poziomy: ' .
-                                $poziomyTekst . '. Zasób uległ zmianie. ' .
-                                'Skontaktuj się z właścielem zasobu.'
-                            ;
-                            $this
-                                ->addFlash('danger', $message)
-                            ;
-                            return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', ['id' => $wniosek->getId()]);
+                        foreach (explode(';', $uz->getPoziomDostepu()) as $poziomDostepu) {
+                            if (!in_array($poziomDostepu, $dostepnePoziomy)) {
+                                $message = 'Niewłaściwy poziom dostępu dla zasobu \'' . $z->getNazwa() .
+                                    '\'. Wybrany poziom to \'' . $uz->getPoziomDostepu() . '\'. Dostępne poziomy: ' .
+                                    $poziomyTekst . '. Zasób uległ zmianie. ' .
+                                    'Skontaktuj się z właścicielem zasobu.'
+                                ;
+                                $this
+                                    ->addFlash('danger', $message)
+                                ;
+                                return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', ['id' => $wniosek->getId()]);
+                            }
                         }
                         $indexGrupy = array_search($uz->getPoziomDostepu(), $dostepnePoziomy);
 
@@ -1113,6 +1115,40 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
 
     /**
+     * Przekierowanie do showAction na podstawie zahaszowanego numeru wniosku (nie mylić z ID).
+     *
+     * @Route("/{hash}/show/h", name="show_wniosek_by_md5")
+     *
+     * @param string $hash
+     *
+     * @return Response
+     */
+    public function showByMd5(string $hash): Response
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $entity = $entityManager
+            ->getRepository(WniosekNadanieOdebranieZasobow::class)
+            ->findByMd5($hash)
+        ;
+
+        if (null === $entity) {
+            $this
+                ->addFlash('danger', 'Wniosek nie istnieje.')
+            ;
+
+            return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
+        }
+
+        return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', [
+            'id' => $entity->getId()
+        ]);
+    }
+
+    /**
      * Finds and displays a WniosekNadanieOdebranieZasobow entity.
      * @Route("/{id}/show", name="wnioseknadanieodebraniezasobow_show")
      * @Method("GET")
@@ -1175,7 +1211,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $czyLsi = false;
         $userzasobyRozbite = [];
+        $administratorzyTechniczni = null;
         foreach ($uzs as $uz) {
+            $zasob = $em
+                ->getRepository(Zasoby::class)
+                ->findOneById($uz->getZasobId())
+            ;
+            $administratorzyTechniczni = explode(',', $zasob->getAdministratorTechnicznyZasobu());
             $moduly = explode(';', $uz->getModul());
             $poziomy = explode(';', $uz->getPoziomDostepu());
             foreach ($moduly as $m) {
@@ -1229,6 +1271,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             'delete_form'           => $deleteForm->createView(),
             'userzasoby'            => $uzs,
             'editor'                => $editor,
+            'administratorzy_techniczni' => $administratorzyTechniczni,
             'canReturn'             => ($entity->getWniosek()->getStatus()->getNazwaSystemowa() != '00_TWORZONY' &&
                 $entity->getWniosek()->getStatus()->getNazwaSystemowa() !=
                 '01_EDYCJA_WNIOSKODAWCA'),

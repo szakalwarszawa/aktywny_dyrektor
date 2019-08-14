@@ -60,7 +60,7 @@ services:
             - { name: 'console.command' }
   entry_chain:
     class: ParpV1\LdapBundle\Service\AdUser\Update\Chain\EntryChain
-    arguments: ['@uprawnienia_service', '@status_wniosku_service', '@doctrine.orm.entity_manager']
+    arguments: ['@uprawnienia_service', '@status_wniosku_service', '@doctrine.orm.entity_manager', '@parp.mailer']
   publish_voter:
     class: ParpV1\LdapBundle\Voter\AdPublishVoter
     arguments: ['@doctrine.orm.entity_manager']
