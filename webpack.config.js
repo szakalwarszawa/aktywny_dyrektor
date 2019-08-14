@@ -11,7 +11,7 @@ Encore.setOutputPath('web/build/')
     .enableSourceMaps(!Encore.isProduction())
     .enableVersioning(Encore.isProduction())
     .splitEntryChunks()
-    .autoProvidejQuery()
+    // .autoProvidejQuery()
     .enableSassLoader()
     // .addPlugin(
     //     new webpack.ProvidePlugin({
