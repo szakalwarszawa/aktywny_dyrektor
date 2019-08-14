@@ -100,7 +100,7 @@ class ImportRekordDaneController extends Controller
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND
                 (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
-            join P_MPRACY departament on departament.KOD = mpr.KOD AND mpr.KOD < 1000
+            join P_MPRACY departament on departament.KOD = mpr.KOD
             JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND
                 (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
@@ -339,7 +339,7 @@ class ImportRekordDaneController extends Controller
                         $d2 != null &&
                         $dr->getUmowaDo()->format('Y-m-d') != $d2->format('Y-m-d')))
                 ) {
-                    $dr->setUmowaDo($d2);
+                    $dr->setUmowaDo($d2)->setTime(23, 59);
                 }
 
 
@@ -1061,8 +1061,11 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
 
                 if (isset($changeSet['stanowisko'])) {
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor());
+                    $mailerService =  $this->get('parp.mailer');
+                    $mailerService
+                        ->disableFlush()
+                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor())
+                    ;
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']
