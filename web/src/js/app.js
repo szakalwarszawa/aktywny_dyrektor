@@ -1,7 +1,9 @@
 import '../scss/app.scss';
 
-// require('@fortawesome/fontawesome-pro/css/all.min.css');
+require('@fortawesome/fontawesome-pro/css/all.min.css');
+require('symfony-collection');
 
+// require('@fortawesome/fontawesome-pro/css/all.min.css');
 /* <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
 <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
 <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
@@ -20,28 +22,18 @@ import '../scss/app.scss';
 <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script> */
 
 
-// require jQuery normally
-// const $ = require('jquery');
+// --- require jQuery normally ---
 import $ from 'jquery';
-
-// create global $ and jQuery variables
-global.$ = global.jQuery = $;
 
 // --- inne biblioteki zewnetrzne (node_modules) ---
 import 'core-js/stable';
 import 'regenerator-runtime/runtime';
-// import 'bootstrap';
 import '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap.js';
-// import * as modal from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/modal.js';
-// import * as popover from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/popover.js';
-// import * as tooltip from '../../../node_modules/bootstrap-sass/assets/javascripts/bootstrap/tooltip.js';
-// import * as select2 from 'select2';
 // import Datepicker from 'bootstrap-datepicker';
 import * as datepicker from 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
-// import 'jquery';
 import 'jquery-ui';
 import 'jquery.maskedinput';
 import 'jquery.are-you-sure';
@@ -49,24 +41,22 @@ import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
 import 'moment';
 import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
-import '../../../node_modules/colresizable/colResizable-1.6.min.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 import 'tag-it';
-// import colResizable from '../../../node_modules/colresizable/colResizable-1.6.min.js';
 
 // --- nasze moduły ---
-import {smallText, mixText} from './testModule.js';
+import { smallText, bigText } from './testModule.js';
+import { showGreeting, showSmallInfo, showBigInfo } from './showInfo.js';
+import columnResizerSetter from './columnResizerSetter';
 
-
+// --- create global $ and jQuery variables ---
+global.$ = global.jQuery = $;
+// --- set another globals ---
 global.select2 = select2;
 global.moment = moment;
 global.datepicker = datepicker;
 global.datetimepicker = datetimepicker;
-// global.colResizable = colResizable;
-// global.modal = modal;
-// (global.popover = {popover} = bootstrap);
-// global.tooltip = tooltip;
 
 
 // --- test & log ---
@@ -88,28 +78,16 @@ if (window.hasOwnProperty('datepicker')) {
     console.warn('no datepicker');
 }
 
-if (window.hasOwnProperty('popover')) {
-    console.log(`%c bootstrap popover is type ${typeof(popover)} and: ${popover} `, 'font-size: 6px; font-style: italic; color: orange;');
-} else {
-    console.warn('no bootstrap popover');
-}
-
 if (window.hasOwnProperty('select2')) {
     console.log(`%c select to is type ${typeof(select2)} `, 'font-size: 10px; color: green;');
 } else {
     console.warn('no select2');
 }
 // --- end of test & log ---
-console.log(mixText("Test importu modułów wewnętrznych"));
+showGreeting('Aktywny Dyrektor v2.0 beta');
+console.log(bigText("Test importu modułów wewnętrznych"));
+columnResizerSetter();
 
-function showInfo(info) {
-    console.info(
-        `%c ${info} `,
-        'text-shadow: 2px 1px 0 #7A7A7A; color: #fff; font-size: 18px;',
-    );
-}
-
-showInfo('Aktywny Dyrektor v2.0 beta');
 
 $(document).ready(function () {
     if ($('.collection').length) {

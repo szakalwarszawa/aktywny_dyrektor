@@ -1,13 +1,5 @@
 <script>
-function guid() {
-  function s4() {
-    return Math.floor((1 + Math.random()) * 0x10000)
-      .toString(16)
-      .substring(1);
-  }
-  return s4() + s4() + '_' + s4() + '_' + s4() + '_' +
-    s4() + '_' + s4() + s4() + s4();
-}
+
 $(document).ready(function(){
     //--------------------------
     // Internet Explorer 6-11
@@ -50,19 +42,6 @@ $(document).ready(function(){
 
     $('[data-toggle~="select2"]').select2();
 
-    $("table").each(function(){
-        if($(this).closest('.tab-pane').length == 0){
-            var id = $(this).attr('id');
-            if (typeof myVar == 'undefined'){
-                id = "tableId"+guid();
-                $(this).attr('id', id);
-            }
-            console.log("Tabelka z id "+id);
-            // $('#'+id).colResizable();
-            $('#acceptConfirm .record_properties').resizable();
-        }
-    });
-
     $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
 
 //    $('a[data-toggle~="tab"]').on( 'shown.bs.tab', function (e) {
@@ -96,15 +75,11 @@ $('.select2:not([disabled2])').select2({
 });
 
 $('.datepicker:not([disabled])').datetimepicker({
-    // pickTime: false, // obsolete, use format instead
-    // language: 'pl', // obsolete, use locale instead
     locale: 'pl',
     format: 'YYYY-MM-DD',
 });
 $('.datetimepicker:not([disabled])').datetimepicker({
     inline: true,
-    // pickTime: true, // obsolete, use format instead
-    // language: 'pl', // obsolete, use locale instead
     locale: 'pl',
     format: 'YYYY-MM-DD HH:mm',
 });
@@ -164,15 +139,4 @@ $('*[data-ajaxload]').bind('hover',function(){
   });
 });
 #}
-
-// muchar: zakomentowałem, gdyż nie wiem z czego wynika
-//$(document).ready(function() {
-//  $(window).keydown(function(event){
-//    if( (event.keyCode == 13) ) {
-//      event.preventDefault();
-//      return false;
-//    }
-//  });
-//});
-
 </script>
