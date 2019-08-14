@@ -2,10 +2,10 @@ import '../scss/app.scss';
 
 // require('@fortawesome/fontawesome-pro/css/all.min.css');
 
-import '@fortawesome/fontawesome-pro';
-
 // --- require jQuery normally ---
 import $ from 'jquery';
+// --- create global $ and jQuery variables ---
+global.$ = global.jQuery = $;
 
 // --- inne biblioteki zewnetrzne (node_modules) ---
 import 'core-js/stable';
@@ -25,7 +25,8 @@ import 'moment-range';
 import '../../../node_modules/moment/locale/pl.js';
 import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
-// import 'tag-it';
+import 'tag-it';
+import '@fortawesome/fontawesome-pro';
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
@@ -34,8 +35,7 @@ import columnResizerSetter from './columnResizerSetter';
 import symfonyCollectionSetter from './symfonyCollectionSetter';
 import areYouSure from './areYouSure'; // moduł IIFE
 
-// --- create global $ and jQuery variables ---
-global.$ = global.jQuery = $;
+
 // --- set another globals ---
 global.select2 = select2;
 global.moment = moment;
@@ -45,7 +45,7 @@ global.datetimepicker = datetimepicker;
 
 // --- test & log ---
 if (window.hasOwnProperty('$')) {
-    console.log(`%c jQuery is type ${typeof($)} and: ${$} `, 'font-size: 5px; color: pink;');
+    console.log(`%c jQuery is type ${typeof($)} and: ${$} `, 'font-size: 8px; color: pink;');
 } else {
     console.warn('no jQuery');
 }
