@@ -7,8 +7,9 @@
         {% endblock %}
 
         {% block javascripts %}
-            <script src="{{ asset('js/app.js') }}"></script>
-            {# <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
+            {{ encore_entry_script_tags('app') }}
+            {# <script src="{{ asset('js/app.js') }}"></script>
+            <script type="text/javascript"src="{{ asset('js/moment.min.js') }}"></script>
             <script type="text/javascript"src="{{ asset('js/moment-with-langs.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-datetimepicker.min.js') }}"></script>
@@ -24,7 +25,6 @@
             <script type="text/javascript" src="{{ asset('js/colResizable-1.6.min.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/jquery.tablesorter.js') }}"></script>
             <script type="text/javascript" src="{{ asset('js/bootstrap-toggle.min.js') }}"></script> #}
-            {{ encore_entry_script_tags('app') }}
             <script src="{{ asset('bundles/fosjsrouting/js/router.js') }}"></script>
             <script src="{{ path('fos_js_routing_js', { callback: 'fos.Router.setData' }) }}"></script>
 
