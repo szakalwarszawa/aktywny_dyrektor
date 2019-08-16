@@ -36,6 +36,7 @@ import { showGreeting, showSmallInfo, showBigInfo } from './showInfo.js';
 import columnResizerSetter from './columnResizerSetter';
 import symfonyCollectionSetter from './symfonyCollectionSetter';
 import areYouSure from './areYouSure'; // moduł IIFE
+import tagIt from './tagItModule'; // moduł IIFE
 
 
 // --- set another globals ---
