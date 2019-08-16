@@ -16,7 +16,7 @@ import * as datepicker from 'bootstrap-datepicker';
 // import 'bootstrap-filestyle'; // osobne entry
 import 'bootstrap-slider';
 import 'bootstrap-toggle';
-import 'jquery-ui';
+// import 'jquery-ui';
 import 'jquery.maskedinput';
 import 'jquery.are-you-sure';
 import '../../../node_modules/jquery-treegrid/js/jquery.treegrid.js';
@@ -27,6 +27,8 @@ import * as datetimepicker from 'eonasdan-bootstrap-datetimepicker';
 import 'tablesorter';
 // import 'tag-it';
 import '@fortawesome/fontawesome-pro';
+import 'webpack-jquery-ui';
+require('webpack-jquery-ui/css'); // ekhmm, nie moge
 
 // --- nasze moduły ---
 import { smallText, bigText } from './testModule.js';
