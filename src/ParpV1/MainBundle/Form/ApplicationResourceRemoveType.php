@@ -1,4 +1,4 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Form;
 
@@ -16,8 +16,10 @@ class ApplicationResourceRemoveType extends AbstractType
     /**
      * @param FormBuilderInterface $builder
      * @param array $options
+     *
+     * @return void
      */
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('comment', TextareaType::class, [
@@ -32,8 +34,10 @@ class ApplicationResourceRemoveType extends AbstractType
 
     /**
      * @param OptionsResolver $resolver
+     *
+     * @return void
      */
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver
             ->setDefaults([
