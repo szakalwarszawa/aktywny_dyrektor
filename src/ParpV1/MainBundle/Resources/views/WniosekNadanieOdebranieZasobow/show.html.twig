@@ -407,8 +407,7 @@
                                 {% if not status_ostatecznie_zablokowany and
                                     entity.odebranie == false and
                                     editor and
-                                    ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined)
-                                %}
+                                    ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edytuj</a>
                                     {% if userzasoby|length > 1 %}
                                         <a
