@@ -54,7 +54,14 @@ class EntryListener
         $this->mailerService = $mailerService;
     }
 
-    public function prePersist(LifecycleEventArgs $args)
+    /**
+     * Entry pre persist.
+     *
+     * @param LifecycleEventArgs $args
+     *
+     * @return void
+     */
+    public function prePersist(LifecycleEventArgs $args): void
     {
         $entity = $args->getEntity();
         if (null !== $this->entry) {
