@@ -125,11 +125,11 @@
 
                 {% endif %}
 
-                {% if not status_ostatecznie_zablokowany and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                {% if not status_ostatecznie_zablokowany and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") and not wniosek_odebranie %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish_lsi'}) }}" class="btn btn-danger">Opublikuj do LSI <i class="fas fa-check-circle">&nbsp;</i></a>
                 {% endif %}
 
-                {% if not status_ostatecznie_zablokowany and lsi_import_token_form is defined and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") %}
+                {% if not status_ostatecznie_zablokowany and lsi_import_token_form is defined and czyLsi and (entity.wniosek.status.nazwaSystemowa == "05_EDYCJA_ADMINISTRATOR" or entity.wniosek.status.nazwaSystemowa == "07_ROZPATRZONY_POZYTYWNIE") and not wniosek_odebranie %}
                     {{ form_start(lsi_import_token_form) }}
                         {{ form_widget(lsi_import_token_form.wniosek) }}
                         {{ form_widget(lsi_import_token_form.submit, {'attr': {'data-ajax': 'ajax', 'class': 'btn-primary', 'data-toggle': 'modal'}}) }}
