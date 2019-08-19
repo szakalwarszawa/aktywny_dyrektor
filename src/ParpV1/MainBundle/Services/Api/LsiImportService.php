@@ -83,6 +83,13 @@ class LsiImportService
         if ($this->validateWniosekId($wniosekId)) {
             $wniosek = $this->findWniosekByWniosekNadanieOdebranieId($wniosekId, true);
 
+            if ($wniosek->getWniosekNadanieOdebranieZasobow()->getOdebranie()) {
+                return $this->prepareJsonResponse([
+                    LsiImportToken::INVALID_APPLICATION_TYPE,
+                    new LsiImportToken(),
+                ]);
+            }
+
             $activeToken = $this->findTokensByWniosek($wniosek);
 
             if (null === $activeToken) {
@@ -132,6 +139,9 @@ class LsiImportService
                 break;
             case LsiImportToken::ACTIVE_TOKEN:
                 $message = 'Jest już aktywny token importu dla tego wniosku.';
+                break;
+            case LsiImportToken::INVALID_APPLICATION_TYPE:
+                $message = 'Wniosek o odebranie uprawnień nie jest obsługiwany.';
                 break;
         }
 
