@@ -6,13 +6,11 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LifecycleEventArgs;
 use Doctrine\ORM\Event\PostFlushEventArgs;
-use ParpV1\LdapBundle\Constants\SearchBy;
 use ParpV1\LdapBundle\Service\AdUser\ChangeCompareService;
 use ParpV1\LdapBundle\Service\LdapFetch;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Services\ParpMailerService;
-use ParpV1\MainBundle\Tool\AdStringTool;
 use Exception;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
@@ -56,14 +54,7 @@ class EntryListener
         $this->mailerService = $mailerService;
     }
 
-    /**
-     * Entry post persist.
-     *
-     * @param LifecycleEventArgs $args
-     *
-     * @return void
-     */
-    public function postPersist(LifecycleEventArgs $args): void
+    public function prePersist(LifecycleEventArgs $args)
     {
         $entity = $args->getEntity();
         if (null !== $this->entry) {
@@ -81,7 +72,6 @@ class EntryListener
         $fromWhen = $entity->getFromWhen();
         $fromWhen->modify('+1 hour');
         $entity->setFromWhen($fromWhen);
-
         $this->entry = $entity;
     }
 
@@ -97,7 +87,6 @@ class EntryListener
         if (!$this->entry) {
             return;
         }
-
         $changes = $this->getUserChanges($args->getEntityManager());
 
         if (!$changes->isEmpty()) {
@@ -148,19 +137,15 @@ class EntryListener
     private function sendMail(ArrayCollection $changes, EntityManagerInterface $entityManager): void
     {
         $entry = $this->entry;
-        $supervisor = AdStringTool::getValue($entry->getManager(), AdStringTool::CN);
 
         $recipients = [
             $entry->getSamaccountname(),
         ];
         try {
-            $adUserSupervisor = $this
-                ->ldapFetch
-                ->fetchAdUser($supervisor, SearchBy::CN_AD_STRING)
-                ->getUser()
+            $recipients[] = $entry
+                ->getDepartment()
+                ->getDyrektor()
             ;
-
-            $recipients[] = $adUserSupervisor[AdUserConstants::LOGIN];
         } catch (Exception $exception) {
         }
 
