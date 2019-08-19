@@ -510,7 +510,7 @@ class ParpMailerService
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
-            self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień',
+            self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Zmiany kadrowe użytkownika - reset uprawnień',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';

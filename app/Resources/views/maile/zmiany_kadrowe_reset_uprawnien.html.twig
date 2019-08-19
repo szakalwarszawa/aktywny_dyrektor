@@ -1,15 +1,15 @@
 W dniu: <strong>{{ from_when|date('d-m-Y') }}</strong> o godzinie <strong>{{ from_when|date('H:i') }}</strong><br />
 Pracownikowi o loginie: <strong>{{ login }}</strong><br/>
-<strong>zostanie zarejestrowana zmiana:</strong>
+<strong>"w wyniku zmian kadrowych, system AkD automatycznie wprowadzi:</strong>
 <ul>
     {% for change in changes %}
         {{ change.target|trans({}, 'changed_attribute') }}: z <strong>{{ change.old }}</strong> na <strong>{{ change.new }}</strong><br/>
     {% endfor %}
 </ul><br/>
-<strong><u>Zmiana spowoduje odnotowanie odebrania wszystkich dotychczasowych uprawnień, a następnie nadanie uprawnień podstawowych.</u></strong><br/>
-
+<strong><u>Zmiana spowoduje odnotowanie odebrania wszystkich dotychczasowych uprawnień, a następnie nadanie <a href="https://intranet.parp.gov.pl/niezbednik-pracownika/sprawy-informatyczne/264-uprawnienia-poczatkowe">uprawnień początkowych.</a></u></strong><br/>
+<br/>
 {% if removed_groups_ad is not null %}
-    Lista uprawnien, które zostaną odebrane automatycznie:
+    Lista uprawnień, które zostaną odebrane automatycznie:
     <ul>
         {% for removed_group in removed_groups_ad %}
             <li>{{ removed_group }}</li>
@@ -27,6 +27,6 @@ Pracownikowi o loginie: <strong>{{ login }}</strong><br/>
 {% endif %}
 <br />
 
-W wyjątkowych sytuacjach skontaktuj się z odpowiednim administratorem w celu tymczasowego przedłużenia dotychczasowych uprawnień. Aktualnych administratorów danego zasobu możesz znależć na <a href="{{ url('zasoby') }}">Liście Zasobów</a> w kolumnie "Administrator zasobu".<br/><br/>
+W wyjątkowych sytuacjach skontaktuj się z odpowiednim administratorem w celu tymczasowego przedłużenia dotychczasowych uprawnień. Aktualnych administratorów danego zasobu możesz znaleźć na <a href="{{ url('zasoby') }}">Liście Zasobów</a> w kolumnie "Administrator zasobu".<br/><br/>
 
-W każdym przypadku potrzeby korzystania z dodatkowych uprawnień należy złożyć wniosek w aplikacji <a href="{{ url('main_home') }}">Aktywny Dyrektor</a> po zarejestrowaniu zmiany kadrowej.
+W przypadku potrzeby rozrzeszenia uprawnień, należy złożyć wniosek w aplikacji <a href="{{ url('wnioseknadanieodebraniezasobow') }}">Aktywny Dyrektor</a>, dopiero po wspomnianym czasie wprowadzenia zmiany.
