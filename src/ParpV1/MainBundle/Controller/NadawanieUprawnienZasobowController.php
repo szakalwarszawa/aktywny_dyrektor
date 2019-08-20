@@ -55,6 +55,10 @@ class NadawanieUprawnienZasobowController extends Controller
             foreach ($moduly as $modul) {
                 $poziomy = explode(';', $uz->getPoziomDostepu());
                 foreach ($poziomy as $poziom) {
+                    if (empty($poziom)) {
+                        $poziom = 'BRAK';
+                    }
+                    $zasobNazwa = $zasobyOpisy[$uz->getZasobId()]->getNazwa();
                     $data = [
                         $zasobyOpisy[$uz->getZasobId()],
                         $uz->getSamaccountname(),
@@ -62,12 +66,11 @@ class NadawanieUprawnienZasobowController extends Controller
                         $modul,
                         $poziom
                     ];
-                    $klucz = $uzid.';'.$modul.';'.$poziom;
-                    $choices[$klucz] = implode('@@@', $data);
+                    $klucz = $uzid . ';' . $modul . ';' . $poziom;
+                    $choices[$klucz] = $zasobNazwa . '@' . $modul . '@' . $poziom;
                 }
             }
         }
-
 
         return $choices;
     }
@@ -384,59 +387,51 @@ class NadawanieUprawnienZasobowController extends Controller
                     'multiple' => false,
                     'expanded' => false
                 ));
-        if (!$formNadanie) {
+
+        if ($formNadanie) {
             $builder
-                ->add('buttonzaznacz', ButtonType::class, array(
-                    //'label' =>  false,
-                    'attr' => array(
-                        'class' => 'btn btn-info col-sm-12',
-                    ),
-                    'label' => 'Zaznacz wszystkie widoczne'
-                ))
-                ->add('buttonodznacz', ButtonType::class, array(
-                    //'label' =>  false,
-                    'attr' => array(
-                        'class' => 'btn btn-info col-sm-12',
-                    ),
-                    'label' => 'Odznacz wszystkie'
-                ))
-                ->add('wybraneZasoby', TextareaType::class, array(
-                    'mapped' => false,
-                    'label_attr' => [
-                        'class' => '',
-                    ],
-                    'attr' => [
-                        'readonly' => true,
-                        'class' => '',
-                        ]
-                ))
-                ->add('nazwafiltr', TextareaType::class, array(
+                ->add('access', ChoiceType::class, array(
+                    'required' => true,
+                    'label' => $title,
                     'label_attr' => array(
-                        'class' => 'text-left'. ($formNadanie? ' hidden': ''),
+                        'class' => 'text-left uprawnienieRow',
                     ),
-                    'label' => 'Filtruj po nazwie',
                     'attr' => array(
-                        'class' => 'ays-ignore' . ($formNadanie? ' hidden': ''),
+                        'class' => 'select2',
                     ),
-                    'required' => false
+                    'choices' => array_flip($choices),
+                    'multiple' => true,
+                    'expanded' => false,
+                ))
+        ;
+        } else {
+            $builder
+                ->add('access', ChoiceType::class, array(
+                    'required' => true,
+                    'label' => $title,
+                    'attr' => [
+                        'class' => 'multiselect-tree',
+                    ],
+                    'label_attr' => array(
+                        'class' => '',
+                    ),
+                    'choices' => array_flip($choices),
+                    'multiple' => true,
+                    'expanded' => false,
+                    'choice_attr' => function ($element, $key, $value) {
+                        $split = explode('@', $key);
+                        array_pop($split);
+
+                        return ['data-section' => implode('@', $split)];
+                    },
+                    'choice_label' => function ($element, $key, $value) {
+                        $split = explode('@', $key);
+
+                        return end($split);
+                    }
                 ))
             ;
         }
-        $builder
-            ->add('access', ChoiceType::class, array(
-                'required' => true,
-                'label' => $title,
-                'label_attr' => array(
-                    'class' => 'text-left uprawnienieRow',
-                ),
-                'attr' => array(
-                    'class' => $formNadanie? 'select2' : '',
-                ),
-                'choices' => array_flip($choices),
-                'multiple' => true,
-                'expanded' => $formNadanie? false : true,
-            ))
-        ;
 
         if (!$formNadanie) {
             $builder
