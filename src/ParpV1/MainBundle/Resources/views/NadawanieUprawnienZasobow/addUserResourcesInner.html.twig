@@ -146,7 +146,9 @@
                                     <td>
                                         {{ form_widget(userzasoby.aktywneOd) }}
                                         {{ form_widget(userzasoby.aktywneDo, {'attr': {'data-required': 'single'}}) }}
-                                        {{ form_widget(userzasoby.bezterminowo, {'attr': {'data-required': 'single'}}) }}
+                                        {% if userzasoby.bezterminowo is defined %}
+                                            {{ form_widget(userzasoby.bezterminowo, {'attr': {'data-required': 'single'}}) }}
+                                        {% endif %}
                                     </td>
 
                                     <td>
