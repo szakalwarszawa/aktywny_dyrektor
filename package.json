@@ -53,6 +53,7 @@
         "symfony-collection": "^2.1.30",
         "tablesorter": "^2.31.1",
         "tag-it": "^2.0.0",
+        "tree-multiselect": "^2.6.1",
         "webpack-jquery-ui": "^2.0.1",
         "yarn": "^1.17.3"
     },
