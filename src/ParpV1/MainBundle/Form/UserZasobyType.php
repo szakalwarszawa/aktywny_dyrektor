@@ -47,7 +47,13 @@ class UserZasobyType extends AbstractType
             ->add('powodNadania', TextareaType::class, [
                 'label' => 'Cel nadania uprawnień'
             ])
-            ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
+        ;
+        if (!$options['pracownik_zewnetrzny']) {
+            $builder
+                ->add('bezterminowo', CheckboxType::class, ['required' => false, 'attr' => ['class' => 'inputBezterminowo']])
+            ;
+        }
+        $builder
             ->add('sumowanieUprawnien', CheckboxType::class, ['required' => false])
             //->add('aktywneOdPomijac')
             ->add('aktywneDo', DateType::class, array(
@@ -197,12 +203,16 @@ class UserZasobyType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefaults(array(
+        $resolver
+            ->setDefaults([
             'data_class' => UserZasoby::class,
             'is_sub_form' => true,
             'data_uz' => null,
-            'zablokuj_edycje_poziomu' => false
-        ));
+            'zablokuj_edycje_poziomu' => false,
+            'pracownik_zewnetrzny' => false,
+            ])
+            ->setAllowedTypes('pracownik_zewnetrzny', 'bool')
+        ;
     }
 
     /**

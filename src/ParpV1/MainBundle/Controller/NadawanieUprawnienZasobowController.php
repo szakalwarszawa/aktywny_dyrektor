@@ -799,6 +799,11 @@ class NadawanieUprawnienZasobowController extends Controller
             $userzasoby[] = $uz;
         }
 
+        $pracownikZewnetrzny = false;
+        if ($ndata) {
+            $pracownicy = array_keys(json_decode($ndata['samaccountnames'], true));
+            $pracownikZewnetrzny = false !== strpos(current($pracownicy), '@');
+        }
         //print_r($fromWhenPars['data']);
         $form = $this->createFormBuilder()
             ->add('action', HiddenType::class, array(
@@ -815,7 +820,8 @@ class NadawanieUprawnienZasobowController extends Controller
                 'entry_options' => array(
                     'is_sub_form' => true,
                     'data_uz' => $datauz,
-                    'zablokuj_edycje_poziomu' => 'editResources' === $action
+                    'zablokuj_edycje_poziomu' => 'editResources' === $action,
+                    'pracownik_zewnetrzny' => $pracownikZewnetrzny,
                 ),
                 'allow_add'    => true,
                 'allow_delete'    => true,
