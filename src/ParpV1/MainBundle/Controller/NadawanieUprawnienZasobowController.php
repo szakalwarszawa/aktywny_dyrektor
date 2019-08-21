@@ -403,7 +403,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'multiple' => true,
                     'expanded' => false,
                 ))
-        ;
+            ;
         } else {
             $builder
                 ->add('access', ChoiceType::class, array(
