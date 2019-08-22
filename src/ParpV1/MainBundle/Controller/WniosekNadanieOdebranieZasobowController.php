@@ -1415,7 +1415,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $komentarz
             ->setObiekt(TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW)
             ->setObiektId($wniosekId)
-            ->setTytul('Usunięcie zasobu z wniosku')
+            ->setTytul('Usunięcie uprawnienia z wniosku')
             ->setOpis($opis)
             ->setSamaccountname($this->getUser()->getUsername())
         ;
@@ -1423,7 +1423,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $entityManager->persist($komentarz);
         $entityManager->flush();
 
-        $this->addFlash('warning', 'Usunięto zasób z wniosku.');
+        $this->addFlash('warning', 'Usunięto uprawnienie z wniosku.');
 
         return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
     }
