@@ -66,12 +66,12 @@ class ApplicationActionVoter extends Voter
             return false;
         }
 
-        if (2 > $application->getWniosekNadanieOdebranieZasobow()->getUserZasoby()->count()) {
-            return false;
-        }
-
         if ($user->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW')) {
             return true;
+        }
+
+        if (2 > $application->getWniosekNadanieOdebranieZasobow()->getUserZasoby()->count()) {
+            return false;
         }
 
         $applicationEditors = explode(',', $application->getEditornames());
