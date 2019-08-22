@@ -1,6 +1,6 @@
 W dniu: <strong>{{ from_when|date('d-m-Y') }}</strong> o godzinie <strong>{{ from_when|date('H:i') }}</strong><br />
 Pracownikowi o loginie: <strong>{{ login }}</strong><br/>
-<strong>"w wyniku zmian kadrowych, system AkD automatycznie wprowadzi:</strong>
+<strong>w wyniku zmian kadrowych, system AkD automatycznie wprowadzi:</strong>
 <ul>
     {% for change in changes %}
         {{ change.target|trans({}, 'changed_attribute') }}: z <strong>{{ change.old }}</strong> na <strong>{{ change.new }}</strong><br/>

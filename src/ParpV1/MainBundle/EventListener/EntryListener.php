@@ -189,7 +189,7 @@ class EntryListener
             'login' => $entry->getSamaccountname(),
             'from_when' => $entry->getFromWhen(),
             'removed_groups_ad' => isset($userResourcesGrouped['with_ad'])? array_unique($userResourcesGrouped['with_ad']): null,
-            'removed_groups' => isset($userResourcesGrouped['with_ad'])? array_unique($userResourcesGrouped['without_ad']) : null,
+            'removed_groups' => isset($userResourcesGrouped['without_ad'])? array_unique($userResourcesGrouped['without_ad']) : null,
             'changes' => $changes,
         ];
 
