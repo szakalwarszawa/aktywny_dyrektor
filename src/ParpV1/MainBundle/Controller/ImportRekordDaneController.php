@@ -409,7 +409,7 @@ class ImportRekordDaneController extends Controller
     {
         $ldap = $this->get('ldap_service');
         $entry = (null !== $this->getUser()) ? new Entry($this->getUser()->getUsername()) : new Entry();
-        $em->persist($entry);
+
 
         $entry->setDaneRekord($dr);
         $dr->addEntry($entry);
@@ -515,6 +515,8 @@ class ImportRekordDaneController extends Controller
         $entry->setIsImplemented(0);
         $entry->setInitialRights('');
         $entry->setIsDisabled(0);
+
+        $em->persist($entry);
 
         return $entry;
     }
@@ -1019,7 +1021,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $entry->setDistinguishedname($adDn);
             }
 
-            $entry->setDepartment($departament->getName());
+            $entry->setDepartment($departament);
             $grupyNaPodstawieSekcjiOrazStanowiska =
                 $ldapService->getGrupyUsera(
                     ['title' => $daneRekord->getStanowisko()],
