@@ -68,7 +68,9 @@
     {% set przelozony = attribute(form, constant(ad_user_constants ~ '::PRZELOZONY')) %}
     <div class='form-group {% if not przelozony.vars.valid %}has-error{% endif %}'>
         {{ form_label(przelozony, 'Przełożony', {'label_attr': {'class': 'col-md-offset-1 col-lg-2 col-lg-offset-1'}}) }}
-        <div class='col-sm-8 col-lg-6'>{{ form_widget(przelozony) }}</div>
+        <div class='col-sm-8 col-lg-6'>{{ form_widget(przelozony, {'attr': {
+            'class': 'select2'
+        }}) }}</div>
         {{ form_errors(przelozony) }}
     </div>
 
