@@ -410,13 +410,18 @@
                                     ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined)) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edytuj</a>
                                     {% if userzasoby|length > 1 or 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
-                                        <a
-                                            data-loadajaxmodal="loadajaxmodal"
-                                            data-target="#ajaxModal"
-                                            href="{{ path('remove_application_resource', {'id': z.id}) }}"
-                                            class="btn btn-danger">
-                                                Skasuj
-                                        </a>
+                                        {% if  entity.wniosek.status.nazwaSystemowa == '00_TWORZONY' %}
+                                            <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'userZasob': z.id}) }}" class="btn btn-danger">Skasuj</a>
+                                        {% else %}
+                                            <a
+                                                data-loadajaxmodal="loadajaxmodal"
+                                                data-target="#ajaxModal"
+                                                href="{{ path('remove_application_resource', {'id': z.id}) }}"
+                                                class="btn btn-danger">
+                                                    Skasuj
+                                            </a>
+                                        {% endif %}
+
                                     {% endif %}
                                 {% endif %}
 
