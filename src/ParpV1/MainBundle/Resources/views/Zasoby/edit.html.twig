@@ -181,7 +181,7 @@
 <script>
     {% if read_only %}
         $(document).ready(function () {
-            $('input, textarea').attr('readonly', 'readonly');
+            $('input, textarea').not('.keep-enabled').attr('readonly', 'readonly');
             $('select, button, input[type="checkbox"]').attr('disabled', true);
             $('.keep-unblocked').attr('disabled', false);
         });
