@@ -1343,7 +1343,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     public function renderRemoveApplcationResourceForm(int $id): Response
     {
         $form = $this->createForm(ApplicationResourceRemoveType::class, null, [
-            'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_delete_uz', ['id' => $id])
+            'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_delete_uz', ['userZasob' => $id])
         ]);
 
         return $this->render('ParpMainBundle:modal:remove_application_resource.html.twig', [
@@ -1354,43 +1354,43 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     /**
      * Displays a form to edit an existing WniosekNadanieOdebranieZasobow entity.
      *
-     * @Route("/{id}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
+     * @Route("/{userZasob}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
      *
      * @param Request $request
-     * @param int $id
+     * @param UserZasoby $id
      *
      * @return Response
      */
-    public function deleteUzAction(Request $request, int $id): Response
+    public function deleteUzAction(Request $request, UserZasoby $userZasob): Response
     {
         $entityManager = $this
             ->getDoctrine()
             ->getManager()
         ;
 
-        $postFormData = $request
-            ->request
-            ->get('application_resource_remove')
-        ;
-
-        $postComment = $postFormData['comment'] ?? null;
-
-        if (!$postFormData || !$postComment) {
-            throw new InvalidArgumentException();
+        $wniosek = $userZasob->getWniosek()->getWniosek();
+        $ignoreComment = false;
+        if ('00_TWORZONY' === $wniosek->getStatus()->getNazwaSystemowa()) {
+            $ignoreComment = true;
         }
 
-        $userZasob = $entityManager
-            ->getRepository(UserZasoby::class)
-            ->find($id)
-        ;
-        if (!$userZasob) {
-            throw new EntityNotFoundException('Nie odnaleziono obiektu ' . UserZasoby::class);
-        }
+        if (!$ignoreComment) {
+            $postFormData = $request
+                ->request
+                ->get('application_resource_remove')
+            ;
 
-        $this->denyAccessUnlessGranted(
-            AkcjeWnioskuConstants::APPLICATION_RESOURCE_REMOVE,
-            $userZasob->getWniosek()->getWniosek()
-        );
+            $postComment = $postFormData['comment'] ?? null;
+
+            if (!$postFormData || !$postComment) {
+                throw new InvalidArgumentException();
+            }
+
+            $this->denyAccessUnlessGranted(
+                AkcjeWnioskuConstants::APPLICATION_RESOURCE_REMOVE,
+                $userZasob->getWniosek()->getWniosek()
+            );
+        }
 
 
         $wniosekId = $userZasob
@@ -1404,6 +1404,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         ;
         $entityManager->remove($userZasob);
 
+        $this->addFlash('warning', 'Usunięto uprawnienie z wniosku.');
+
+        if ($ignoreComment) {
+            $entityManager->flush();
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+        }
 
         $komentarz = new Komentarz();
         $opis = sprintf(
@@ -1422,8 +1429,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $entityManager->persist($komentarz);
         $entityManager->flush();
-
-        $this->addFlash('warning', 'Usunięto uprawnienie z wniosku.');
 
         return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
     }
