@@ -1062,7 +1062,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     }
                 }
 
-                if (isset($changeSet['stanowisko'])) {
+                if (isset($changeSet['stanowisko']) && 1 === count($changeSet)) {
                     $mailerService =  $this->get('parp.mailer');
                     $mailerService
                         ->disableFlush()
