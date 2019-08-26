@@ -39,6 +39,7 @@ import areYouSure from './areYouSure'; // moduł IIFE
 import tagIt from './tagItModule'; // moduł IIFE
 import selectTreeView from './selectTreeView';
 import ajaxModalModule from './ajaxModalModule';
+import hyperlinkConfirm from './hyperlinkConfirm';
 
 
 // --- set another globals ---
