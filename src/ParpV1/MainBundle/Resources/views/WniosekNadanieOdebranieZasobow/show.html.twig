@@ -409,10 +409,11 @@
                                     editor and
                                     ((wniosek.wniosek is defined and not wniosek.wniosek.status.finished) or wniosek.wniosek is not defined)) %}
                                     <a href="{{ path('addRemoveAccessToUsersAction', {'wniosekId': entity.id, 'action': 'editResources', 'uzid': z.id, 'samaccountnames': z.samaccountnames}) }}" class="btn btn-primary">Edytuj</a>
-                                    {% if userzasoby|length > 1 or 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}
-                                        {% if  entity.wniosek.status.nazwaSystemowa == '00_TWORZONY' %}
-                                            <a href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'userZasob': z.id}) }}" class="btn btn-danger">Skasuj</a>
-                                        {% else %}
+                                        {% if entity.wniosek.status.nazwaSystemowa == '00_TWORZONY' %}
+                                            {% set rendered_btn = true %}
+                                            <a data-confirm="Czy na pewno chcesz skasować uprawnienie?" href="{{ path('wnioseknadanieodebraniezasobow_delete_uz', {'userZasob': z.id}) }}" class="btn btn-danger">Skasuj</a>
+                                        {% endif %}
+                                        {% if (userzasoby|length > 1 or 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles) and rendered_btn is not defined %}
                                             <a
                                                 data-loadajaxmodal="loadajaxmodal"
                                                 data-target="#ajaxModal"
@@ -421,10 +422,7 @@
                                                     Skasuj
                                             </a>
                                         {% endif %}
-
-                                    {% endif %}
                                 {% endif %}
-
                                 {% if not status_ostatecznie_zablokowany and (entity.odebranie and z.wniosek.id is defined and z.wniosek.id > 0) %}
                                     <a href="{{ path('wnioseknadanieodebraniezasobow_show', {'id': z.wniosek.id}) }}" class="btn btn-warning" title="Zobacz wniosek o nadanie uprawnień"><i class="fas fa-file-search"></i> wn. o nadanie upr.</a>
                                 {% else %}
