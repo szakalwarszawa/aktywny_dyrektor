@@ -236,12 +236,16 @@ class UserZasobyRepository extends EntityRepository
                     'nazwa_zasobu' => $singleRow['nazwa_zasobu']
                 ]);
             $notDivided = true;
-            if ($singleRow['userZasob']->getWniosek()) {
-                $notDivided = $singleRow['userZasob']
-                ->getWniosek()
-                ->getWniosek()
-                ->getStatus()
-                ->getNazwaSystemowa() !== '10_PODZIELONY';
+            try {
+                if ($singleRow['userZasob']->getWniosek()) {
+                    $notDivided = $singleRow['userZasob']
+                        ->getWniosek()
+                        ->getWniosek()
+                        ->getStatus()
+                        ->getNazwaSystemowa() !== '10_PODZIELONY';
+                }
+            } catch (EntityNotFoundException $exception) {
+                $notDivided = false;
             }
 
             try {
