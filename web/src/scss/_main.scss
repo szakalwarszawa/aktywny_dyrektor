@@ -682,5 +682,7 @@ footer.helpdesk {
 /* datetimepicker issue */
 
 .bootstrap-datetimepicker-widget {
+    border-color: 2px solid red; /*test reason*/
+    position: absolute;
     z-index: 2000;
 }
