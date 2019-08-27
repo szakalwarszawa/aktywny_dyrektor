@@ -681,12 +681,20 @@ footer.helpdesk {
 
 /* datetimepicker issue */
 
-.bootstrap-datetimepicker-widget {
-    border-color: 2px solid red; /*test reason*/
-    position: absolute;
-    z-index: 2000;
-}
+// .bootstrap-datetimepicker-widget {
+//     border-color: 2px solid red; /*test reason*/
+//     position: absolute;
+//     z-index: 2000;
+// }
 
-.przejrzyjnowych .record_properties.grip-resizable {
-    overflow: initial !important;
+.przejrzyjnowych {
+    .record_properties.grip-resizable {
+        tbody {
+            tr {
+                td {
+                    overflow: initial !important; /* wyłacza domyślny styl biblioteki column-resizer .grip-resizable > tbody > tr > td */
+                }
+            }
+        }
+    }
 }
