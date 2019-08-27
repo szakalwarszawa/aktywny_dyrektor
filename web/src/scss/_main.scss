@@ -578,7 +578,7 @@ footer.helpdesk {
             td {
                 .alert {
                     min-width: 4.8rem;
-                    padding: .5rem;
+                    padding: 0.5rem;
                 }
             }
 
@@ -671,10 +671,16 @@ footer.helpdesk {
 }
 
 /* Strzalki naglowkow rozwijanych paneli */
-[data-toggle="collapse"] .fa:before {
-    content: "\f107";
-  }
+[data-toggle='collapse'] .fa:before {
+    content: '\f107';
+}
 
-[data-toggle="collapse"].collapsed .fa:before {
-    content: "\f106";
+[data-toggle='collapse'].collapsed .fa:before {
+    content: '\f106';
+}
+
+/* datetimepicker issue */
+
+.bootstrap-datetimepicker-widget {
+    z-index: 2000;
 }
