@@ -340,7 +340,7 @@
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            $.post(url, data, function (result) {}).success(function () {
+            $.post(url, data, function (result) {}).done(function () {
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
