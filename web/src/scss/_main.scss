@@ -695,14 +695,18 @@ footer.helpdesk {
 
 .form-kadry {
     .form-inline {
-        .form-group {
-            .form-control:nth-of-type(1n) {
+        .form-group:nth-of-type(1n) {
+            .form-control {
                 width: 400px;
             }
-            .form-control:nth-of-type(2n) {
+        }
+        .form-group:nth-of-type(2n) {
+            .form-control {
                 width: 300px;
             }
-            .form-control:nth-of-type(3n) {
+        }
+        .form-group:nth-of-type(3n) {
+            .form-control {
                 width: 150px;
             }
         }
