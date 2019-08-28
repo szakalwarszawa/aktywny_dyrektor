@@ -3,8 +3,8 @@
 {% macro formKadry(obj, sekcje, przelozeni) %}
 <form class="form-inline">
     <div class="form-group">
-        <label  for="form_info">Sekcja:</label>
-        <select id="form_info" name="form[info]" class="form-control select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
+        <label  for="form_info{{ obj.id }}">Sekcja:</label>
+        <select id="form_info{{ obj.id }}" name="form[info]" class="form-control select2 select2-hidden-accessible" tabindex="-1" aria-hidden="true">
             <option value=""></option>
             {% for d,g in sekcje %}
             <optgroup label="{{ d }}">
@@ -16,8 +16,8 @@
         </select>
     </div>
     <div class="form-group">
-        <label for="form_manager">Przełożony:</label>
-        <select id="form_manager" name="form[manager]" class="form-control select2" tabindex="-1" aria-hidden="true">
+        <label for="form_manager{{ obj.id }}">Przełożony:</label>
+        <select id="form_manager{{ obj.id }}" name="form[manager]" class="form-control select2" tabindex="-1" aria-hidden="true">
             <option value=""></option>
            {% for s in przelozeni %}
                 <option value="{{ s.samaccountname }}">{{ s.name }} ({{ s.title }})</option>
@@ -25,16 +25,16 @@
         </select>
     </div>
     <div class="form-group">
-        <label readonly="" for="form_accountExpires">Data wygaśnięcia konta:</label><br />
+        <label readonly="" for="form_accountExpires{{ obj.id }}">Data wygaśnięcia konta:</label><br />
         <div class="input-group datepicker" id="datepicker1">
             {% if obj.umowaDo %}
-                <input type="text" id="form_accountExpires" name="form[accountExpires]" class="form-control form-control" value="{{ obj.umowaDo ? obj.umowaDo|date("Y-m-d") : "" }}">
+                <input type="text" id="form_accountExpires{{ obj.id }}" name="form[accountExpires]" class="form-control form-control" value="{{ obj.umowaDo ? obj.umowaDo|date("Y-m-d") : "" }}">
                 <span class="input-group-addon">
                     <span class="fas fa-calendar"></span>
                 </span>
             {% else %}
                 <span><i class="fas fa-exclamation-circle">&nbsp;</i> konto nigdy nie wygasa</span>
-                <input type="hidden" id="form_accountExpires" name="form[accountExpires]" class="form-control form-control" value="3000-01-01">
+                <input type="hidden" id="form_accountExpires{{ obj.id }}" name="form[accountExpires]" class="form-control form-control" value="3000-01-01">
             {% endif %}
         </div>
     </div>
