@@ -345,10 +345,7 @@
                 method: "POST",
                 url: url,
                 data: data,
-                dataType: "text",
-                /*success: function (result) {
-                    console.info("Result: ", result);
-                }*/
+                dataType: "text"
             }).done(function (result) {
                 console.info("ID po wysłaniu: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
