@@ -223,10 +223,14 @@
     </div>
     <script>
         function zapisz{{ user.samaccountname }}{{ obj.id }}() {
+            console.info("Zapisz nr 1");
             var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: user.samaccountname}) }}";
+            console.log("url: ", url);
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
+            console.log("form: ", form);
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
             save(url, form, manager, {{ obj.id }});
+            console.log("menager: ", menager);
         }
         function usun{{ obj.id }}() {
             var url = "{{ path('usunUzytkownikaZKolejki', {id: obj.id}) }}";
@@ -326,7 +330,8 @@
     <!-- koniec modal usun -->
     <script>
         function zapisz{{ obj.id }}(){
-            console.log("obj id: ", obj.id);
+            console.info("Zapisz nr 2");
+            console.log("obj id: ", this);
             var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)}) }}";
             console.log("url: ", url);
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
