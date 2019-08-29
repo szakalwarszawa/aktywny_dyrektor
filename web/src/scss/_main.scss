@@ -679,8 +679,12 @@ footer.helpdesk {
     content: '\f106';
 }
 
-/* datetimepicker issue */
+/* datepicker fix */
+.datepicker {
+    position: relative;
+}
 
+/* datetimepicker issue */
 .przejrzyjnowych {
     .record_properties.grip-resizable {
         tbody {
@@ -732,3 +736,4 @@ footer.helpdesk {
         }
     }
 }
+/* end of datetimepicker issue */
