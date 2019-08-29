@@ -683,3 +683,57 @@ footer.helpdesk {
 .datepicker {
     position: relative;
 }
+
+/* datetimepicker issue */
+.przejrzyjnowych {
+    .record_properties.grip-resizable {
+        tbody {
+            tr {
+                td {
+                    overflow: initial; /* wyłacza domyślny styl biblioteki column-resizer .grip-resizable > tbody > tr > td */
+                }
+            }
+        }
+    }
+}
+
+.form-kadry {
+    .form-inline {
+        .form-group {
+            label {
+                display: inline-block;
+            }
+            .form-control {
+                display: inline-block;
+            }
+        }
+
+        .form-group:nth-of-type(1n) {
+            min-width: 30rem;
+
+            .form-control {
+                width: 30rem;
+                height: 3rem;
+            }
+        }
+
+        .form-group:nth-of-type(2n) {
+            min-width: 30rem;
+
+            .form-control {
+                width: 30rem;
+                height: 3rem;
+            }
+        }
+
+        .form-group:nth-of-type(3n) {
+            min-width: 30rem;
+
+            .form-control {
+                width: 20rem;
+                height: 3rem;
+            }
+        }
+    }
+}
+/* end of datetimepicker issue */
