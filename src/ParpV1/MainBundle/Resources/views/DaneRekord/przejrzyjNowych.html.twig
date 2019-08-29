@@ -362,16 +362,16 @@
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            $.post(url, data, function (result) {
-                console.info("First success ", url, data, result);
-            }).done(function (result) {
+            $.post(url, data, function () {
+                console.info("First success ", url, data);
+            }).done(function () {
                 console.log("ID when done: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
-            }).fail(function (result) {
+            }).fail(function () {
                 console.warn(
-                    "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n result: " + result + "\n id: " + id
+                    "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n id: " + id
                 );
             }).always(function() {
                 console.log( "Zapisywanie ukończone" );
