@@ -347,16 +347,16 @@
                 data: data,
                 dataType: "text",
                 success: function (result) {
-                    console.info("First success ", url, data, result);
+                    console.info("Result: " result);
                 }
             }).done(function (result) {
-                return status = "OK";
+                status = "OK";
                 console.log("ID po wysłaniu: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             }).fail(function (result) {
-                return status = "fail";
+                status = "fail";
                 console.warn(
                     "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n result: " + result + "\n id: " + id
                 );
@@ -365,8 +365,6 @@
             });
         }
     }
-
-    //$("table.tablesorter").tablesorter();
 </script>
 
 {% endblock %}
