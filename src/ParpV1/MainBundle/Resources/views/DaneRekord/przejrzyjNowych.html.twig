@@ -326,21 +326,38 @@
     <!-- koniec modal usun -->
     <script>
         function zapisz{{ obj.id }}(){
+            console.log("obj id: ", obj.id);
             var url = "{{ path('przypiszUtworzUzytkownika', {id: obj.id, samaccountname: (obj.newUnproccessed == 1 ? 'nowy' : obj.login)}) }}";
+            console.log("url: ", url);
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
+            console.log("form: ", form);
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
             save(url, form, manager, {{ obj.id }});
+            console.log("menager: ", menager);
         }
     </script>
 {% endfor %}
 {% endif %}
 <script type="text/javascript">
+    /* function save(url, data, manager, id) {
+        console.log(manager);
+        if (manager === '') {
+            alert('Musisz wybrać przełożonego!');
+        } else {
+            $.post(url, data, function (result) {}).success(function () {
+                $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
+                $('button', $('#acceptUser' + id)).remove();
+                $('select, input', $('#acceptUser' + id)).prop('disabled', true);
+            });
+        }
+    } */
+
     function save(url, data, manager, id) {
         console.log(manager);
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            $.post(url, data, function (result) {}).done(function () {
+            $.post(url, data, function (result) {}).success(function () {
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
