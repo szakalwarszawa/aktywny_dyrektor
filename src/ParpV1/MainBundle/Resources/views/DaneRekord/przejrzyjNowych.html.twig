@@ -362,16 +362,22 @@
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            $.post(url, data, function () {
-                console.info("First success ", url, data);
-            }).done(function () {
+            $.ajax({
+                method: "POST",
+                url: url,
+                data: data,
+                dataType: "text",
+                success: function (result) {
+                    console.info("First success ", url, data, result);
+                }
+            }).done(function (result) {
                 console.log("ID when done: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
-            }).fail(function () {
+            }).fail(function (result) {
                 console.warn(
-                    "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n id: " + id
+                    "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n result: " + result + "\n id: " + id
                 );
             }).always(function() {
                 console.log( "Zapisywanie ukończone" );
