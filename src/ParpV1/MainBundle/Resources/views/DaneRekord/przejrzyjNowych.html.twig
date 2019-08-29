@@ -340,28 +340,30 @@
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            var status = "---";
+            var loader = $("#loader");
             $.ajax({
                 method: "POST",
                 url: url,
                 data: data,
                 dataType: "text",
-                success: function (result) {
+                /*success: function (result) {
                     console.info("Result: ", result);
-                }
+                }*/
             }).done(function (result) {
-                status = "OK";
-                console.log("ID po wysłaniu: ", id);
+                console.info("ID po wysłaniu: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             }).fail(function (result) {
-                status = "fail";
                 console.warn(
                     "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n result: " + result + "\n id: " + id
                 );
             }).always(function(status) {
-                console.log("Zapisywanie ukończone " + status);
+                if ($(loader).hasClass("loading")) {
+                    $(loader).removeClass('loading');
+                } else {
+                    console.info("Brak warstwy loadera do przełączenia");
+                }
             });
         }
     }
