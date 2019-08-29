@@ -370,7 +370,10 @@
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
             }).fail(function () {
-                console.warn("Zapisanie przełożonego nie powiodło się");
+                console.warn(
+                    "Zapisanie przełożonego nie powiodło się \n data: " + data + "\n result: " + result + "\n id: " + id
+
+                );
             }).always(function() {
                 console.log( "Zapisywanie ukończone" );
             });
