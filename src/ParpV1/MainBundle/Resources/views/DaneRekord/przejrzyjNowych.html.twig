@@ -337,7 +337,7 @@
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
             console.log("form: ", form);
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
-            console.log("menager: ", menager);
+            console.log("menager: ", manager);
             save(url, form, manager, {{ obj.id }});
         }
     </script>
