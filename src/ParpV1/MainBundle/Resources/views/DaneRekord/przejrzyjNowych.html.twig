@@ -337,8 +337,8 @@
             var form = $('form', $("#acceptUser{{ obj.id }}")).serialize();
             console.log("form: ", form);
             var manager = $('select[name="form[manager]"]', $("#acceptUser{{ obj.id }}")).val();
-            save(url, form, manager, {{ obj.id }});
             console.log("menager: ", menager);
+            save(url, form, manager, {{ obj.id }});
         }
     </script>
 {% endfor %}
@@ -362,10 +362,17 @@
         if (manager === '') {
             alert('Musisz wybrać przełożonego!');
         } else {
-            $.post(url, data, function (result) {}).success(function () {
+            var jqxhr = $.post(url, data, function (result) {
+                console.info("First success ", url, data, result);
+            }).done(function () {
+                console.log("ID when done: ", id);
                 $('#acceptUser' + id).removeClass('alert-danger').addClass('alert-success');
                 $('button', $('#acceptUser' + id)).remove();
                 $('select, input', $('#acceptUser' + id)).prop('disabled', true);
+            }).fail(function () {
+                console.warn("Zapisanie przełożonego nie powiodło się");
+            }).always(function() {
+                console.log( "Zapisywanie ukończone" );
             });
         }
     }
