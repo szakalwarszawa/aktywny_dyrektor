@@ -5,7 +5,7 @@ export default (function areYouSureReinitialize(formsToReinitializeArr) {
 
 
     $(document).ready(function(formsToReinitializeArr) {
-        console.log('el ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
+        console.log('el ' + formsToReinitializeArr + ' dł ' + formsToReinitializeArr.length);
         for (let i = 0; i < formsToReinitializeArr.length; i++) {
             let formToReinitialize = $(formsToReinitializeArr[i]);
             console.log('areYouSureReinitialize() loop ' + i + ' form ', formToReinitialize);
