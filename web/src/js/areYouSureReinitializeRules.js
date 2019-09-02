@@ -1,10 +1,7 @@
-const formsToReinitializeArr = ['#general form']; //tablica formularzy do ponownego zainicjowania po załadowaniu strony
-// console.log('form ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
 
-export default (function areYouSureReinitialize(formsToReinitializeArr) {
-
-
-    $(document).ready(function(formsToReinitializeArr) {
+export default (function areYouSureReinitialize() {
+    $(document).ready(function() {
+        const formsToReinitializeArr = ['#general form']; //tablica formularzy do ponownego zainicjowania po załadowaniu strony
         console.log('el ' + formsToReinitializeArr + ' dł ' + formsToReinitializeArr.length);
         for (let i = 0; i < formsToReinitializeArr.length; i++) {
             let formToReinitialize = $(formsToReinitializeArr[i]);
@@ -17,4 +14,4 @@ export default (function areYouSureReinitialize(formsToReinitializeArr) {
             }
         }
     });
-})(formsToReinitializeArr);
+})();
