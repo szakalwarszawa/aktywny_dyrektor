@@ -194,7 +194,7 @@
     });
     var generalForm = $('#general form');
     console.log('general form ', generalForm);
-    if (generalForm && typeof $(generalForm).trigger() !== undefined) {
+    if (generalForm) {
         $(generalForm).trigger('reinitialize.areYouSure');
         console.info('Are You Sure reintialized');
     } else {
