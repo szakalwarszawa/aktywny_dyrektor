@@ -685,6 +685,14 @@ footer.helpdesk {
 }
 
 /* datetimepicker issue */
+.bootstrap-datetimepicker-widget {
+        position: absolute;
+        z-index: 1000;
+        border: 1px solid rgba(0,0,0,.3);
+        background-color: rgba(255, 255, 255, .95);
+        width: 288px
+    }
+    
 .przejrzyjnowych {
     .record_properties.grip-resizable {
         tbody {
