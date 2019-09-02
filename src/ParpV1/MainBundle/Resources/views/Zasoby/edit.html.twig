@@ -185,15 +185,6 @@
             $('select, button, input[type="checkbox"]').attr('disabled', true);
             $('.keep-unblocked').attr('disabled', false);
         });
-
-        var generalForm = $('#general form');
-        console.log('general form ', generalForm);
-        if (generalForm) {
-            $(generalForm[0]).trigger('reinitialize.areYouSure');
-            console.info('Are You Sure reintialized');
-        } else {
-            console.warn('Are You Sure methods are not active here');
-        }
     {% endif %}
     $('form').submit(function () {
         $('form input[disabled], form input[readonly], form select[disabled], form select[readonly]').prop('disabled', false);
