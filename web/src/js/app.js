@@ -37,6 +37,7 @@ import columnResizerSetter from './columnResizerSetter';
 import symfonyCollectionSetter from './symfonyCollectionSetter';
 import tagIt from './tagItModule'; // moduł IIFE
 import areYouSure from './areYouSure'; // moduł IIFE
+import areYouSureReinitializeRules from './areYouSureReinitializeRules'; // moduł IIFE
 import selectTreeView from './selectTreeView';
 import ajaxModalModule from './ajaxModalModule';
 import hyperlinkConfirm from './hyperlinkConfirm';
