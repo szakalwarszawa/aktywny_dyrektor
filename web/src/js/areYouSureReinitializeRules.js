@@ -1,6 +1,8 @@
-export default function areYouSureReinitialize() {
-    const formsToReinitializeArr = ['#general form']; //tablica formularzy do ponownego zainicjowania po załadowaniu strony
-    console.log('form ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
+const formsToReinitializeArr = ['#general form']; //tablica formularzy do ponownego zainicjowania po załadowaniu strony
+console.log('form ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
+
+export default (function areYouSureReinitialize(formsToReinitializeArr) {
+
 
     $(document).ready(function(formsToReinitializeArr) {
         console.log('el ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
@@ -15,4 +17,4 @@ export default function areYouSureReinitialize() {
             }
         }
     });
-}
+})(formsToReinitializeArr);
