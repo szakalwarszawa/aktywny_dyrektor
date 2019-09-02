@@ -1,5 +1,5 @@
 const formsToReinitializeArr = ['#general form']; //tablica formularzy do ponownego zainicjowania po załadowaniu strony
-console.log('form ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
+// console.log('form ', formsToReinitializeArr, ' dł ', formsToReinitializeArr.length);
 
 export default (function areYouSureReinitialize(formsToReinitializeArr) {
 
