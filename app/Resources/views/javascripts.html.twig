@@ -99,14 +99,14 @@ $(document).ready(function(){
 
     function areYouSureReinitialize(formToReinitialize) {
         var generalForm = $(formToReinitialize);
-        console.log('formToReinitialize form javascripts ', generalForm[0]);
+        console.log('formToReinitialize from javascripts ', generalForm[0]);
         if (generalForm) {
             $(generalForm[0]).trigger('reinitialize.areYouSure');
             console.info('Are You Sure reintialized');
         } else {
             console.warn('Are You Sure methods are not active here');
         }
-    });
+    }
 
     areYouSureReinitialize('#general form');
 });
