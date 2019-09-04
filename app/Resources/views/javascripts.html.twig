@@ -74,35 +74,11 @@ $(document).ready(function(){
         width: '100%',
         placeholder: "Wybierz wartość"
     });
-    debugger;
+
     $('.datepicker:not([disabled])').datetimepicker({
         locale: 'pl',
         format: 'YYYY-MM-DD',
     });
-    /*
-    $('.datetimepicker:not([disabled])').datetimepicker({
-        inline: true,
-        locale: 'pl',
-        format: 'YYYY-MM-DD HH:mm',
-    });
-    */
-
-    /*
-    $('.datetimepicker:not([disabled])').on('click', function() {
-        $('.datetimepicker:not([disabled])').datetimepicker({
-            inline: true,
-            locale: 'pl',
-            format: 'YYYY-MM-DD HH:mm',
-        })
-    });
-    $('.datetimepicker:not([disabled])').on('focus', function() {
-        $('.datetimepicker:not([disabled])').datetimepicker({
-            inline: true,
-            locale: 'pl',
-            format: 'YYYY-MM-DD HH:mm',
-        })
-    });
-    */
 
     $('*[data-ajaxload]').mouseenter(function() {
         var e=$(this);
