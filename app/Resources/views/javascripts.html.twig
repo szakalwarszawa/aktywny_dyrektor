@@ -86,13 +86,13 @@ $(document).ready(function(){
         format: 'YYYY-MM-DD HH:mm',
     });
     */
-    $('.datetimepicker:not([disabled])').datetimepicker({
-        inline: true,
-        locale: 'pl',
-        format: 'YYYY-MM-DD HH:mm',
-    }).on('dp.show', function() {
+    $('.datetimepicker:not([disabled])').on('click', function() {
         console.log("dtp");
-        return $(this).data('DateTimePicker').defaultDate(new Date());
+        $('.datetimepicker:not([disabled])').datetimepicker({
+            inline: true,
+            locale: 'pl',
+            format: 'YYYY-MM-DD HH:mm',
+        })
     });
 
     $('*[data-ajaxload]').mouseenter(function() {
