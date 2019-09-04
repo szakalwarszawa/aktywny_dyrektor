@@ -59,15 +59,38 @@ class NadawanieUprawnienZasobowController extends Controller
                         $poziom = 'BRAK';
                     }
                     $zasobNazwa = $zasobyOpisy[$uz->getZasobId()]->getNazwa();
+                    $dataDo = ($uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '*');
                     $data = [
                         $zasobyOpisy[$uz->getZasobId()],
                         $uz->getSamaccountname(),
-                        $uz->getAktywneOd()->format('Y-m-d').' - '.($uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '*'),
+                        $uz->getAktywneOd()->format('Y-m-d').' - ' . $dataDo,
                         $modul,
                         $poziom
                     ];
+
+                    $przeterminowany = function ($dataDo) {
+                        if ('*' === $dataDo) {
+                            return 0;
+                        }
+
+                        $dataDoObiekt = new DateTime($dataDo);
+                        if (new DateTime() > $dataDoObiekt) {
+                            return 1;
+                        }
+
+                        return 0;
+                    };
+
                     $klucz = $uzid . ';' . $modul . ';' . $poziom;
-                    $choices[$klucz] = $zasobNazwa . '@' . $modul . '@' . $poziom;
+                    $choices[$klucz] = implode('@', [
+                        $zasobNazwa,
+                        $modul,
+                        $poziom,
+                        $uz->getAktywneOd()->format('Y-m-d'),
+                        $dataDo,
+                        $przeterminowany($dataDo),
+                        $uz->getUprawnieniaAdministracyjne()? 1 : 0,
+                    ]);
                 }
             }
         }
@@ -412,22 +435,33 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => [
                         'class' => 'multiselect-tree',
                     ],
-                    'label_attr' => array(
-                        'class' => '',
-                    ),
                     'choices' => array_flip($choices),
                     'multiple' => true,
                     'expanded' => false,
                     'choice_attr' => function ($element, $key, $value) {
-                        $split = explode('@', $key);
-                        array_pop($split);
+                        $czesci = explode('@', $key);
 
-                        return ['data-section' => implode('@', $split)];
+                        $sekcja = implode('@', [
+                            $czesci[0],
+                            $czesci[1]
+                        ]);
+
+                        $data = [
+                            'data-section' => $sekcja,
+                            'data-range' => $czesci[3] . ' - ' . $czesci[4],
+                            'data-expired' => $czesci[5],
+                        ];
+
+                        if (1 == $czesci[6]) {
+                            $data['data-description'] = 'Uprawnienia administracyjne';
+                        }
+
+                        return $data;
                     },
                     'choice_label' => function ($element, $key, $value) {
                         $split = explode('@', $key);
 
-                        return end($split);
+                        return $split[2];
                     }
                 ))
             ;

@@ -14,11 +14,9 @@ div.tree-multiselect {
 
   > div.selected,
   > div.selections {
-    display: inline-block;
     box-sizing: border-box;
     overflow: auto;
     vertical-align: top;
-    width: 50%;
   }
 
   > div.selected {
@@ -36,6 +34,9 @@ div.tree-multiselect {
         display: inline;
         &.disabled {
           color: $color-border-light;
+        }
+        > i.f-weight-300 {
+          font-weight: 300
         }
       }
     }
@@ -66,6 +67,7 @@ div.tree-multiselect {
     > div.section,
     > div.item {
       padding-left: 20px;
+      padding-right: 10px;
     }
 
     &.collapsed {
@@ -119,9 +121,8 @@ div.tree-multiselect {
 
   span.remove-selected,
   span.description {
-    background: $color-bg-dark;
     border-radius: 2px;
-    color: white;
+    color: black;
     margin-right: 5px;
     padding: 0 3px;
   }
