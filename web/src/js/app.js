@@ -40,6 +40,7 @@ import tagIt from './tagItModule'; // moduł IIFE
 import selectTreeView from './selectTreeView';
 import ajaxModalModule from './ajaxModalModule';
 import hyperlinkConfirm from './hyperlinkConfirm';
+import dateTimePickerSetter from './dateTimePickerSetter'; // moduł IIFE
 
 
 // --- set another globals ---
