@@ -39,6 +39,7 @@ import tagIt from './tagItModule'; // moduł IIFE
 import tagItInitializer from './tagItInitializer'; // on ready
 import areYouSure from './areYouSure'; // moduł IIFE
 import areYouSureReinitializeRules from './areYouSureReinitializeRules'; // on ready
+import dateTimePickerSetter from './dateTimePickerSetter'; // moduł $ on load
 import selectTreeView from './selectTreeView';
 import ajaxModalModule from './ajaxModalModule';
 import hyperlinkConfirm from './hyperlinkConfirm';
