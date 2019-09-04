@@ -37,10 +37,10 @@ import columnResizerSetter from './columnResizerSetter';
 import symfonyCollectionSetter from './symfonyCollectionSetter';
 import areYouSure from './areYouSure'; // moduł IIFE
 import tagIt from './tagItModule'; // moduł IIFE
+import dateTimePickerSetter from './dateTimePickerSetter'; // moduł $ on load
 import selectTreeView from './selectTreeView';
 import ajaxModalModule from './ajaxModalModule';
 import hyperlinkConfirm from './hyperlinkConfirm';
-import dateTimePickerSetter from './dateTimePickerSetter'; // moduł IIFE
 
 
 // --- set another globals ---

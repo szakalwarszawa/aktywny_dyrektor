@@ -1,4 +1,4 @@
-export default (function dateTimePickerSetter() {
+export default $(function dateTimePickerSetter() {
     $('.datetimepicker:not([disabled])').on('click', function() {
         $('.datetimepicker:not([disabled])').datetimepicker({
             inline: true,
@@ -13,4 +13,4 @@ export default (function dateTimePickerSetter() {
             format: 'YYYY-MM-DD HH:mm',
         })
     });
-})();
+});
