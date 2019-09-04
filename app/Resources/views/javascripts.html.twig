@@ -44,30 +44,9 @@ $(document).ready(function(){
 
     $('[data-toggle="popover"]').popover({ trigger: "hover" , html: true});
 
-//    $('a[data-toggle~="tab"]').on( 'shown.bs.tab', function (e) {
-//        $('table', $($(this).attr('href'))).colResizable();
-//        $("table.tablesorter").tablesorter();
-//    } );
-
     $("table.tablesorter").tablesorter();
 
     $('[data-toggle~="tab"]').tab();
-
-    //-----------------------------------
-
-    $('.tagAjaxInputUsers:not([disabled])').tagit({
-        autocomplete: {delay: 0, minLength: 2, source : '/app_dev.php/user/suggest/'},
-        allowSpaces: true,
-        'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
-        'singleFieldDelimiter': ";",
-        'allowDuplicates' : true
-    });
-    $('.tagAjaxInput:not([disabled])').tagit({
-        allowSpaces: true,
-        'placeholderText' : 'naciśnij enter by zaakceptować dodaną wartość i utworzyć kolejną (lub oddziel średnikem ;)',
-        'singleFieldDelimiter': ";",
-        'allowDuplicates' : true
-    });
 
     $('.select2:not([disabled2])').select2({
         dropdownAutoWidth : true,
@@ -78,11 +57,6 @@ $(document).ready(function(){
     $('.datepicker:not([disabled])').datetimepicker({
         locale: 'pl',
         format: 'YYYY-MM-DD',
-    });
-    $('.datetimepicker:not([disabled])').datetimepicker({
-        inline: true,
-        locale: 'pl',
-        format: 'YYYY-MM-DD HH:mm',
     });
 
     $('*[data-ajaxload]').mouseenter(function() {
@@ -97,14 +71,4 @@ $(document).ready(function(){
 
     $('#select2').select2();
 });
-
-{#
-$('*[data-ajaxload]').bind('hover',function(){
-  var e=$(this);
-  e.unbind('hover');
-  $.get(e.data('ajaxload'),function(d){
-      e.popover({content: d}).popover('show');
-  });
-});
-#}
 </script>
