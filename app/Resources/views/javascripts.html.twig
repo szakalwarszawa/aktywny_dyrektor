@@ -94,6 +94,14 @@ $(document).ready(function(){
             format: 'YYYY-MM-DD HH:mm',
         })
     });
+    $('.datetimepicker:not([disabled])').on('focus', function() {
+        console.log("dtp");
+        $('.datetimepicker:not([disabled])').datetimepicker({
+            inline: true,
+            locale: 'pl',
+            format: 'YYYY-MM-DD HH:mm',
+        })
+    });
 
     $('*[data-ajaxload]').mouseenter(function() {
         var e=$(this);
