@@ -4,6 +4,7 @@ namespace ParpV1\MainBundle\Services;
 
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\Email;
+use ParpV1\MainBundle\Entity\Departament;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use Symfony\Component\Validator\Exception\ValidatorException;
 use Swift_Mailer;
@@ -261,15 +262,7 @@ class ParpMailerService
         $odbiorcy = [
             $this->getUserMail($wniosek->getWniosek()->getCreatedBy()),
         ];
-        if (in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE])) {
-            //dodac wszystkich ktorzy procesowali wniosek
-            foreach ($wniosek->getWniosek()->getEditors() as $e) {
-                $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
-            }
-            foreach ($wniosek->getWniosek()->getViewers() as $v) {
-                $odbiorcy[] = $this->getUserMail($v->getSamaccountname());
-            }
-        } elseif (in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE])) {
+        if (in_array($template, [ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE])) {
             //dodac obecnych editors
             foreach ($wniosek->getWniosek()->getEditors() as $e) {
                 $odbiorcy[] = $this->getUserMail($e->getSamaccountname());
@@ -281,40 +274,62 @@ class ParpMailerService
                 $odbiorcy[] = $this->getUserMail($editor->getSamaccountname());
             }
         }
-        $odbiorcy = array_unique($odbiorcy);
+
+        $odbiorcy = array_values(array_unique($odbiorcy));
 
         if (!$wniosek->getPracownikSpozaParp()) {
-            foreach ($wniosek->getUserZasoby() as $userZasob) {
+            $maile = [];
+            foreach ($wniosek->getUserZasoby() as $key => $userZasob) {
+                $dataZasob = [];
+
                 $user = $this->ldap->getUserFromAD($userZasob->getSamaccountname());
                 if (!isset($user[0])) {
                     return false;
                 }
                 $zasob = $this->entityManager->getRepository('ParpMainBundle:Zasoby')->find($userZasob->getZasobId());
                 $usermail = $this->getUserMail($userZasob->getSamaccountname());
-                $data = [
-                    'odbiorcy'                 => array_merge($odbiorcy, [$usermail]),
+
+                $dyrektor = $this->entityManager->getRepository(Departament::class)->findOneByName($user[0]['department']);
+                $dyrektorMail = $this->getUserMail($dyrektor->getDyrektor());
+
+                $dataZasob = [
+                    'odbiorcy'                 => array_unique(array_merge($odbiorcy, [$usermail])),
                     'imie_nazwisko'            => $user[0]['name'],
                     'login'                    => $userZasob->getSamaccountname(),
                     'departament'              => $user[0]['department'],
-                    'data_zmiany'              => $this->formatDateForDisplay($userZasob->getAktywneOd()),
                     'numer_wniosku'            => $wniosek->getWniosek()->getNumer(),
                     'nazwa_zasobu'             => $zasob->getNazwa(),
-                    'data_odebrania_uprawnien' => $this->formatDateForDisplay($userZasob->getAktywneDo()),
-                    'data_zwrocenia'           => $this->formatDateForDisplay(new \Datetime()),
-                    'powod'                    => '',//$userZasob->getPowodOdebrania(),
+                    'powod'                    => '',
                 ];
+
                 switch ($template) {
                     case ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE:
-                        $data['powod'] = $wniosek->getPowodZwrotu();
+                        $dataZasob['powod'] = $wniosek->getPowodZwrotu();
+                        $dataZasob['odbiorcy'] = $odbiorcy;
+                        unset($dataZasob['imie_nazwisko']);
+                        unset($dataZasob['login']);
+                        unset($dataZasob['departament']);
+                        unset($dataZasob['nazwa_zasobu']);
                         break;
                     case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
-                        $data['powod'] = $wniosek->getPowodZwrotu();
+                        $dataZasob['powod'] = $wniosek->getPowodZwrotu();
+                        $dataZasob['odbiorcy'] = array_unique(array_merge($dataZasob['odbiorcy'], [$dyrektorMail]));
                         break;
                     case ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK:
-                        $data['odbiorcy'] = $odbiorcy;
+                        $dataZasob['odbiorcy'] = $odbiorcy;
+                        break;
+                    case ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN:
+                        $dataZasob['odbiorcy'] = array_unique(array_merge($dataZasob['odbiorcy'], [$dyrektorMail]));
                         break;
                 }
-                $this->sendEmailByType($template, $data);
+
+                $maile[] = $dataZasob;
+            }
+
+            $maileBezDuplikatow = array_map("unserialize", array_unique(array_map("serialize", $maile)));
+
+            foreach ($maileBezDuplikatow as $maileDoWysylki) {
+                $this->sendEmailByType($template, $maileDoWysylki);
             }
         }
     }
@@ -446,11 +461,11 @@ class ParpMailerService
             case ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN:
             case ParpMailerService::TEMPLATE_WNIOSEKODEBRANIEUPRAWNIEN:
                 $wymaganePola =
-                    array_merge($wymaganePola, ['departament', 'data_zmiany', 'numer_wniosku', 'nazwa_zasobu']);
+                    array_merge($wymaganePola, ['departament', 'numer_wniosku', 'nazwa_zasobu']);
                 break;
             case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
                 $wymaganePola =
-                    array_merge($wymaganePola, ['departament', 'data_odebrania_uprawnien', 'numer_wniosku', 'powod']);
+                    array_merge($wymaganePola, ['departament', 'numer_wniosku', 'powod']);
                 break;
             case ParpMailerService::TEMPLATE_WNIOSEKZASOBODRZUCENIE:
                 $wymaganePola =
@@ -465,7 +480,9 @@ class ParpMailerService
                     array_merge($wymaganePola, ['data_zwrocenia', 'numer_wniosku', 'nazwa_zasobu', 'powod']);
                 break;
             case ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE:
-                $wymaganePola = array_merge($wymaganePola, ['departament', 'data_zwrocenia', 'numer_wniosku', 'powod']);
+                unset($wymaganePola[2]);//login
+                unset($wymaganePola[1]);//imie_nazwisko
+                $wymaganePola = array_merge($wymaganePola, ['numer_wniosku', 'powod']);
                 break;
             case ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA:
                 $wymaganePola = array_merge($wymaganePola, ['departament']);
@@ -533,11 +550,11 @@ class ParpMailerService
     {
         if (is_array($recipient)) {
             $recipientArr = [];
-            for ($i = 0; $i < count($recipient); $i++) {
-                if (strstr($recipient[$i], '@') === false) {
-                    $recipient[$i] = $this->getUserMail($recipient[$i]);
+            foreach ($recipient as $recipientSingle) {
+                if (strstr($recipientSingle, '@') === false) {
+                    $recipientSingle = $this->getUserMail($recipientSingle);
                 }
-                    $recipientArr = array_merge($recipientArr, explode(';', $recipient[$i]));
+                $recipientArr = array_merge($recipientArr, explode(';', $recipientSingle));
             }
             $recipientArr = array_unique($recipientArr);
 
