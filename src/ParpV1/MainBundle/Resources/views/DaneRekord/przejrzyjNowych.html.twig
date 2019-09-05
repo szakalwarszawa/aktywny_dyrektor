@@ -341,6 +341,9 @@
             alert('Musisz wybrać przełożonego!');
         } else {
             var loader = $("#loader");
+            if ($(loader).hasClass("loading") == false) {
+                $(loader).addClass('loading');
+            }
             $.ajax({
                 method: "POST",
                 url: url,
@@ -365,5 +368,4 @@
         }
     }
 </script>
-
 {% endblock %}
