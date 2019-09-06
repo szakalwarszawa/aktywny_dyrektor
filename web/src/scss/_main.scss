@@ -745,3 +745,21 @@ footer.helpdesk {
     }
 }
 /* end of datetimepicker issue */
+
+#loader {
+    display: none;
+    position: absolute;
+    z-index: -1;
+}
+
+#loader .loading {
+    display: block;
+    position: absolute;
+    z-index: 1001;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    text-align: center;
+    color: rgba(0, 0, 0, 0.65);
+}
