@@ -82,6 +82,11 @@ final class Enable extends AccountStateManager
 
             $userAccountControlObject = $writableUserObject->getUserAccountControlObject();
             $userAccountControlObject->accountIsNormal();
+
+            if ($writableUserObject->hasAttribute(AdUserConstants::OUTLOOK_UKRYCIE_W_KSIAZCE)) {
+                $writableUserObject->deleteAttribute(AdUserConstants::OUTLOOK_UKRYCIE_W_KSIAZCE);
+            }
+
             $writableUserObject
                 ->setAttribute('description', '')
                 ->setUserAccountControl($userAccountControlObject)
