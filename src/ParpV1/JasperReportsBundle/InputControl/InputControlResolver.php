@@ -52,7 +52,7 @@ class InputControlResolver extends OptionsResolver
         foreach ($jasperInputControl as $inputControl) {
             $this
                 ->setRequired($inputControl->id)
-                ->setAllowedTypes($inputControl->id, 'string')
+                ->setAllowedTypes($inputControl->id, ['string', 'int'])
             ;
         }
 

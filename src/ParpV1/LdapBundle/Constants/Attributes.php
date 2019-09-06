@@ -115,4 +115,11 @@ class Attributes
      * @var string
      */
     const OPTIONAL_ATTRIBUTE = 'extensionAttribute14';
+
+    /**
+     * Atrybut używany do ukrycia konta w książce adresowej
+     *
+     * @var string
+     */
+    const OUTLOOK_UKRYCIE_W_KSIAZCE = 'msExchHideFromAddressLists';
 }

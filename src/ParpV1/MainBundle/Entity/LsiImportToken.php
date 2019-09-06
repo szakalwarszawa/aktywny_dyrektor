@@ -20,6 +20,11 @@ class LsiImportToken
     const SUCCESSFULLY_USED_TOKEN = 'successfully_used_token';
 
     /**
+     * @var string
+     */
+    const INVALID_APPLICATION_TYPE = 'invalid_application_type';
+
+    /**
      * @var integer
      *
      * @ORM\Column(name="id", type="integer")

@@ -22,6 +22,13 @@ use ParpV1\JasperReportsBundle\Exception\InvalidOptionKeyOrValueException;
 class GenerateReportType extends AbstractType
 {
     /**
+     * Ciąg tekstowy zwracany przez jasper jako NULL.
+     *
+     * @var string
+     */
+    const JASPER_NULL_VALUE = '~NULL~';
+
+    /**
      * @var JasperFetch
      */
     private $jasperFetch;
@@ -52,7 +59,9 @@ class GenerateReportType extends AbstractType
                     if (!$validator::key($inputOption->id)) {
                         throw new InvalidOptionKeyOrValueException(sprintf('Niepoprawny klucz parametru ("%s")', $inputOption->id));
                     }
-                    $builder->add($inputOption->id, TextType::class);
+                    $builder->add($inputOption->id, TextType::class, [
+                        'data' => self::JASPER_NULL_VALUE !== $inputOption->value? $inputOption->value : null,
+                    ]);
                 }
             }
         }

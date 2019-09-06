@@ -35,8 +35,7 @@
     {% endif %}
 
     <div class="col-sm-8">
-        <form class="form-horizontal" method="POST" role="form" {{ form_enctype(form) }}>
-            {{ form_start(form) }}
+        {{ form_start(form) }}
 
             <div class="form-group">
                 {{ form_label(form.plik) }}
@@ -46,7 +45,7 @@
             <div class="form-group">
                 <div class="col-sm-12">{{ form_widget(form.wczytaj) }}</div>
             </div>
-        </form>
+        {{ form_end(form) }}
     </div>
 
     <script>

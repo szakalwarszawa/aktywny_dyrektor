@@ -19,9 +19,6 @@ use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
 use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
 use ReflectionClass;
 use InvalidArgumentException;
-use ParpV1\MainBundle\Entity\Section;
-use Doctrine\ORM\EntityNotFoundException;
-use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
@@ -121,6 +118,9 @@ class OdbieranieUprawnienService
             }
 
             foreach ($userZasoby as $userZasob) {
+                if ('BRAK' === $userZasob['poziom_zasobu']) {
+                    $userZasob['poziom_zasobu'] = '';
+                }
                 $criteria = Criteria::create();
                 $criteria
                     ->where(

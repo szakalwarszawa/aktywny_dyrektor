@@ -80,19 +80,13 @@ class StatusWnioskuService
                         ParpMailerService::TEMPLATE_WNIOSEKNADANIEUPRAWNIEN
                     );
             }
-        } elseif ($rejected) {
-            if ($statusName == '08_ROZPATRZONY_NEGATYWNIE') {
-                //odrzucenie
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien(
-                        $wniosek,
-                        ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
-                    );
-            } else {
-                //zwroct do poprzednika
-                $this->mailerService
-                    ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
-            }
+        } elseif ($rejected && $statusName == '08_ROZPATRZONY_NEGATYWNIE') {
+            //odrzucenie
+            $this->mailerService
+                ->sendEmailWniosekNadanieOdebranieUprawnien(
+                    $wniosek,
+                    ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE
+                );
         }
 
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
@@ -181,6 +175,12 @@ class StatusWnioskuService
             $entityManager->persist($wv);
         }
         $wniosek->getWniosek()->setEditornamesSet();
+
+        if ($rejected && $statusName != '08_ROZPATRZONY_NEGATYWNIE') {
+            //zwroct do poprzednika
+            $this->mailerService
+                ->sendEmailWniosekNadanieOdebranieUprawnien($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZWROCENIE);
+        }
 
         //wstawia historie statusow
         $sh = new WniosekHistoriaStatusow();
@@ -279,7 +279,7 @@ class StatusWnioskuService
                     //bierze pierwszego z userow , bo zalozenie ze wniosek juz rozbity po przelozonych
                     $uss = explode(',', $wniosek->getWniosekNadanieOdebranieZasobow()->getPracownicy());
                     $ADUser = $this->getUserFromAD(trim($uss[0]));
-                    $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
+                    $ADManager = !empty($ADUser) ? $this->getManagerUseraDoWniosku($ADUser[0]) : [];
                 }
 
                 if (count($ADManager) == 0 || $ADManager[0]['samaccountname'] == '') {

@@ -9,16 +9,4 @@
     </div>
 
     <div id="generateReport" class="modal fade" role="dialog"></div>
-    <script>
-        $('[data-loadajaxmodal]').click (function (e) {
-            e.preventDefault();
-            var target = $(this).data('target');
-            var href = $(this).prop('href');
-            $(target).html('');
-            $.get(href, function (data) {
-                $(target).html(data);
-                $(target).modal();
-            })
-        });
-    </script>
 {% endblock %}

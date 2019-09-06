@@ -37,6 +37,7 @@ class AllowedToFetchAttributes extends Attributes
             self::AD_STRING,
             self::CN_AD_STRING,
             self::OPTIONAL_ATTRIBUTE,
+            self::OUTLOOK_UKRYCIE_W_KSIAZCE,
         ];
     }
 }
