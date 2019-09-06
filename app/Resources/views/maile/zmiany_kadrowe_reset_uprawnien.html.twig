@@ -1,0 +1,33 @@
+W dniu: <strong>{{ from_when|date('d-m-Y') }}</strong> o godzinie <strong>{{ from_when|date('H:i') }}</strong><br />
+Pracownikowi o loginie: <strong>{{ login }}</strong><br/>
+w wyniku zmian kadrowych, system AkD automatycznie wprowadzi:
+<br><br>
+<ul>
+    {% for change in changes %}
+        {{ change.target|trans({}, 'changed_attribute') }}: z <strong>{{ change.old }}</strong> na <strong>{{ change.new }}</strong><br/>
+    {% endfor %}
+</ul><br/>
+<strong>Zmiana spowoduje odnotowanie odebrania wszystkich dotychczasowych uprawnień, a następnie nadanie <a href="https://intranet.parp.gov.pl/niezbednik-pracownika/sprawy-informatyczne/264-uprawnienia-poczatkowe">uprawnień początkowych.</a></strong><br/>
+<br/>
+{% if removed_groups_ad is not null %}
+    Lista uprawnień, które zostaną odebrane automatycznie:
+    <ul>
+        {% for removed_group in removed_groups_ad %}
+            <li>{{ removed_group }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+{% if removed_groups is not null %}
+    Reszta uprawnień do poniższych zasobów zostanie odebrana przez Administratorów Zasobów:
+    <ul>
+        {% for removed_group in removed_groups %}
+            <li>{{ removed_group }}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+<br />
+
+W wyjątkowych sytuacjach skontaktuj się z odpowiednim administratorem w celu tymczasowego przedłużenia dotychczasowych uprawnień. Aktualnych administratorów danego zasobu możesz znaleźć na <a href="{{ url('zasoby') }}">Liście Zasobów</a> w kolumnie "Administrator zasobu".<br/><br/>
+
+W przypadku potrzeby rozrzeszenia uprawnień, należy złożyć wniosek w aplikacji <a href="{{ url('wnioseknadanieodebraniezasobow') }}">Aktywny Dyrektor</a>, <strong>dopiero po wspomnianym czasie wprowadzenia zmiany.</strong>

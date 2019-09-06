@@ -52,7 +52,7 @@ class ReportPrint
         ;
 
         try {
-            return $reportService->runReport($reportUri, $format, $inputControls);
+            return $reportService->runReport($reportUri, $format, null, null, $inputControls);
         } catch (RESTRequestException $exception) {
             return null;
         }

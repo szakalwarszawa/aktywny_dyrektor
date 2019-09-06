@@ -1,5 +1,18 @@
 @import 'custom_variables';
+@import 'font-awesome';
+@import '../../../node_modules/@fortawesome/fontawesome-pro/css/all.min.css';
+@import '~jquery-treegrid/css/jquery.treegrid.css';
 @import '../../../node_modules/bootstrap-sass/assets/stylesheets/bootstrap';
+@import '~bootstrap-datepicker/dist/css/bootstrap-datepicker.standalone.css';
+// @import '~eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.css';
+@import '~eonasdan-bootstrap-datetimepicker/src/sass/_bootstrap-datetimepicker';
+@import '~tag-it/css/jquery.tagit.css';
+@import '~tag-it/css/tagit.ui-zendesk.css';
+@import '../../css/table.sorter.css';
+@import '../../css/slider.css';
+@import '~tablesorter/dist/css/scss/theme';
 // @import 'bootstrap_min'; // stare style (przed wprowadzeniem SCSS)
+@import '~select2/dist/css/select2.css';
 @import 'bootstrap_custom';
 @import 'main';
+@import '../css/selectTreeView.scss';

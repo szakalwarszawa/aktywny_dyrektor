@@ -97,7 +97,7 @@ class DefaultController extends Controller
         $inputControlResolver = new InputControlResolver($this->get('jasper.fetch'));
         $inputControls = $inputControlResolver->resolveFormPostRequest($request);
         $validator = new Validator();
-        if (null !== $inputControls && !$validator::validateArray($inputControls)) {
+        if (null !== $inputControls && !$validator::validateArray($inputControls, Validator::VALUE)) {
             $this
                 ->addFlash('danger', sprintf('Nieprawidłowa wartość opcji wejściowej ("%s")', $validator::invalidAsString()))
             ;

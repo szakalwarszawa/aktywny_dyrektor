@@ -409,7 +409,7 @@ class ImportRekordDaneController extends Controller
     {
         $ldap = $this->get('ldap_service');
         $entry = (null !== $this->getUser()) ? new Entry($this->getUser()->getUsername()) : new Entry();
-        $em->persist($entry);
+
 
         $entry->setDaneRekord($dr);
         $dr->addEntry($entry);
@@ -515,6 +515,8 @@ class ImportRekordDaneController extends Controller
         $entry->setIsImplemented(0);
         $entry->setInitialRights('');
         $entry->setIsDisabled(0);
+
+        $em->persist($entry);
 
         return $entry;
     }
@@ -1063,9 +1065,12 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     }
                 }
 
-                if (isset($changeSet['stanowisko'])) {
-                    $this->get('parp.mailer')
-                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor());
+                if (isset($changeSet['stanowisko']) && 1 === count($changeSet)) {
+                    $mailerService =  $this->get('parp.mailer');
+                    $mailerService
+                        ->disableFlush()
+                        ->sendEmailZmianaStanowiska($userFromAD[0], $daneRekord->getStanowisko(), $departament->getDyrektor())
+                    ;
                 }
             } else {
                 //['departament', 'data_nadania_uprawnien_poczatkowych']

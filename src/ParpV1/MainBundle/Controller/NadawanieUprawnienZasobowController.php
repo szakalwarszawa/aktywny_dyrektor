@@ -24,6 +24,7 @@ use Symfony\Component\Form\Extension\Core\Type\ButtonType;
 use Symfony\Component\Validator\Constraints;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use ParpV1\MainBundle\Entity\AccessLevelGroup;
+use DateTime;
 
 class NadawanieUprawnienZasobowController extends Controller
 {
@@ -54,19 +55,45 @@ class NadawanieUprawnienZasobowController extends Controller
             foreach ($moduly as $modul) {
                 $poziomy = explode(';', $uz->getPoziomDostepu());
                 foreach ($poziomy as $poziom) {
+                    if (empty($poziom)) {
+                        $poziom = 'BRAK';
+                    }
+                    $zasobNazwa = $zasobyOpisy[$uz->getZasobId()]->getNazwa();
+                    $dataDo = ($uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '*');
                     $data = [
                         $zasobyOpisy[$uz->getZasobId()],
                         $uz->getSamaccountname(),
-                        $uz->getAktywneOd()->format('Y-m-d').' - '.($uz->getAktywneDo() ? $uz->getAktywneDo()->format('Y-m-d') : '*'),
+                        $uz->getAktywneOd()->format('Y-m-d').' - ' . $dataDo,
                         $modul,
                         $poziom
                     ];
-                    $klucz = $uzid.';'.$modul.';'.$poziom;
-                    $choices[$klucz] = implode('@@@', $data);
+
+                    $przeterminowany = function ($dataDo) {
+                        if ('*' === $dataDo) {
+                            return 0;
+                        }
+
+                        $dataDoObiekt = new DateTime($dataDo);
+                        if (new DateTime() > $dataDoObiekt) {
+                            return 1;
+                        }
+
+                        return 0;
+                    };
+
+                    $klucz = $uzid . ';' . $modul . ';' . $poziom;
+                    $choices[$klucz] = implode('@', [
+                        $zasobNazwa,
+                        $modul,
+                        $poziom,
+                        $uz->getAktywneOd()->format('Y-m-d'),
+                        $dataDo,
+                        $przeterminowany($dataDo),
+                        $uz->getUprawnieniaAdministracyjne()? 1 : 0,
+                    ]);
                 }
             }
         }
-
 
         return $choices;
     }
@@ -383,59 +410,62 @@ class NadawanieUprawnienZasobowController extends Controller
                     'multiple' => false,
                     'expanded' => false
                 ));
-        if (!$formNadanie) {
+
+        if ($formNadanie) {
             $builder
-                ->add('buttonzaznacz', ButtonType::class, array(
-                    //'label' =>  false,
-                    'attr' => array(
-                        'class' => 'btn btn-info col-sm-12',
-                    ),
-                    'label' => 'Zaznacz wszystkie widoczne'
-                ))
-                ->add('buttonodznacz', ButtonType::class, array(
-                    //'label' =>  false,
-                    'attr' => array(
-                        'class' => 'btn btn-info col-sm-12',
-                    ),
-                    'label' => 'Odznacz wszystkie'
-                ))
-                ->add('wybraneZasoby', TextareaType::class, array(
-                    'mapped' => false,
-                    'label_attr' => [
-                        'class' => '',
-                    ],
-                    'attr' => [
-                        'readonly' => true,
-                        'class' => '',
-                        ]
-                ))
-                ->add('nazwafiltr', TextareaType::class, array(
+                ->add('access', ChoiceType::class, array(
+                    'required' => true,
+                    'label' => $title,
                     'label_attr' => array(
-                        'class' => 'text-left'. ($formNadanie? ' hidden': ''),
+                        'class' => 'text-left uprawnienieRow',
                     ),
-                    'label' => 'Filtruj po nazwie',
                     'attr' => array(
-                        'class' => 'ays-ignore' . ($formNadanie? ' hidden': ''),
+                        'class' => 'select2',
                     ),
-                    'required' => false
+                    'choices' => array_flip($choices),
+                    'multiple' => true,
+                    'expanded' => false,
+                ))
+            ;
+        } else {
+            $builder
+                ->add('access', ChoiceType::class, array(
+                    'required' => true,
+                    'label' => $title,
+                    'attr' => [
+                        'class' => 'multiselect-tree',
+                    ],
+                    'choices' => array_flip($choices),
+                    'multiple' => true,
+                    'expanded' => false,
+                    'choice_attr' => function ($element, $key, $value) {
+                        $czesci = explode('@', $key);
+
+                        $sekcja = implode('@', [
+                            $czesci[0],
+                            $czesci[1]
+                        ]);
+
+                        $data = [
+                            'data-section' => $sekcja,
+                            'data-range' => $czesci[3] . ' - ' . $czesci[4],
+                            'data-expired' => $czesci[5],
+                        ];
+
+                        if (1 == $czesci[6]) {
+                            $data['data-description'] = 'Uprawnienia administracyjne';
+                        }
+
+                        return $data;
+                    },
+                    'choice_label' => function ($element, $key, $value) {
+                        $split = explode('@', $key);
+
+                        return $split[2];
+                    }
                 ))
             ;
         }
-        $builder
-            ->add('access', ChoiceType::class, array(
-                'required' => true,
-                'label' => $title,
-                'label_attr' => array(
-                    'class' => 'text-left uprawnienieRow',
-                ),
-                'attr' => array(
-                    'class' => $formNadanie? 'select2' : '',
-                ),
-                'choices' => array_flip($choices),
-                'multiple' => true,
-                'expanded' => $formNadanie? false : true,
-            ))
-        ;
 
         if (!$formNadanie) {
             $builder
@@ -798,6 +828,11 @@ class NadawanieUprawnienZasobowController extends Controller
             $userzasoby[] = $uz;
         }
 
+        $pracownikZewnetrzny = false;
+        if ($ndata) {
+            $pracownicy = array_keys(json_decode($ndata['samaccountnames'], true));
+            $pracownikZewnetrzny = false !== strpos(current($pracownicy), '@');
+        }
         //print_r($fromWhenPars['data']);
         $form = $this->createFormBuilder()
             ->add('action', HiddenType::class, array(
@@ -814,7 +849,8 @@ class NadawanieUprawnienZasobowController extends Controller
                 'entry_options' => array(
                     'is_sub_form' => true,
                     'data_uz' => $datauz,
-                    'zablokuj_edycje_poziomu' => 'editResources' === $action
+                    'zablokuj_edycje_poziomu' => 'editResources' === $action,
+                    'pracownik_zewnetrzny' => $pracownikZewnetrzny,
                 ),
                 'allow_add'    => true,
                 'allow_delete'    => true,
@@ -924,7 +960,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
 
-                        $statusWniosku = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
+                        $statusWniosku = $wniosek ? $wniosek->getWniosek()->getStatus()->getNazwaSystemowa() : null;
                         $statusyMozliwaEdycjaCelu = [
                             '02_EDYCJA_PRZELOZONY',
                             '00_TWORZONY',
@@ -976,6 +1012,14 @@ class NadawanieUprawnienZasobowController extends Controller
                             }
                         }
                         $z->setSamaccountname($currentsam);
+
+                        if (!$wniosekId) {
+                            $z->setCzyAktywne(true);
+                            $z->setCzyNadane(true);
+                            $z->setPowodNadania($powod);
+                            $z->setKtoNadal($this->getUser()->getUsername());
+                            $z->setDataNadania(new DateTime());
+                        }
 
                         $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {

@@ -32,6 +32,10 @@ use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use DateTime;
+use InvalidArgumentException;
+use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
+use ParpV1\MainBundle\Constants\TypWnioskuConstants;
+use ParpV1\MainBundle\Form\ApplicationResourceRemoveType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 /**
@@ -1328,28 +1332,103 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     }
 
     /**
-     * Displays a form to edit an existing WniosekNadanieOdebranieZasobow entity.
-     * @Route("/{id}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
-     * @Method("GET")
-     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
-     * @Template()
+     * Zwraca widok formularza.
+     *
+     * @Route("/remove_application_resource/{id}", name="remove_application_resource")
+     *
+     * @param int $id
+     *
+     * @return Response
      */
-    public function deleteUzAction($id)
+    public function renderRemoveApplcationResourceForm(int $id): Response
     {
+        $form = $this->createForm(ApplicationResourceRemoveType::class, null, [
+            'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_delete_uz', ['userZasob' => $id])
+        ]);
 
-        $em = $this->getDoctrine()->getManager();
+        return $this->render('ParpMainBundle:modal:remove_application_resource.html.twig', [
+            'form' => $form->createView(),
+        ]);
+    }
 
-        $entity = $em->getRepository(UserZasoby::class)->find($id);
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find UserZasoby entity.');
+    /**
+     * Displays a form to edit an existing WniosekNadanieOdebranieZasobow entity.
+     *
+     * @Route("/{userZasob}/delete_uz", name="wnioseknadanieodebraniezasobow_delete_uz")
+     *
+     * @param Request $request
+     * @param UserZasoby $id
+     *
+     * @return Response
+     */
+    public function deleteUzAction(Request $request, UserZasoby $userZasob): Response
+    {
+        $entityManager = $this
+            ->getDoctrine()
+            ->getManager()
+        ;
+
+        $wniosek = $userZasob->getWniosek()->getWniosek();
+        $ignoreComment = false;
+        if ('00_TWORZONY' === $wniosek->getStatus()->getNazwaSystemowa()) {
+            $ignoreComment = true;
         }
-        if ($entity->getWniosek()->getWniosek()->getIsBlocked()) {
-            throw new AccessDeniedException('Wniosek jest ostatecznie zablokowany.');
+
+        if (!$ignoreComment) {
+            $postFormData = $request
+                ->request
+                ->get('application_resource_remove')
+            ;
+
+            $postComment = $postFormData['comment'] ?? null;
+
+            if (!$postFormData || !$postComment) {
+                throw new InvalidArgumentException();
+            }
+
+            $this->denyAccessUnlessGranted(
+                AkcjeWnioskuConstants::APPLICATION_RESOURCE_REMOVE,
+                $userZasob->getWniosek()->getWniosek()
+            );
         }
-        $wniosekId = $entity->getWniosek()->getId();
-        $entity->getWniosek()->removeUserZasoby($entity);
-        $em->remove($entity);
-        $em->flush();
+
+
+        $wniosekId = $userZasob
+            ->getWniosek()
+            ->getId()
+        ;
+        $userZasobData = clone $userZasob;
+        $userZasob
+            ->getWniosek()
+            ->removeUserZasoby($userZasob)
+        ;
+        $entityManager->remove($userZasob);
+
+        $this->addFlash('warning', 'Usunięto uprawnienie z wniosku.');
+
+        if ($ignoreComment) {
+            $entityManager->flush();
+
+            return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
+        }
+
+        $komentarz = new Komentarz();
+        $opis = sprintf(
+            'Komentarz: %s, Moduł: %s, Poziom dostępu: %s',
+            $postComment,
+            $userZasobData->getModul(),
+            $userZasobData->getPoziomDostepu()
+        );
+        $komentarz
+            ->setObiekt(TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW)
+            ->setObiektId($wniosekId)
+            ->setTytul('Usunięcie uprawnienia z wniosku')
+            ->setOpis($opis)
+            ->setSamaccountname($this->getUser()->getUsername())
+        ;
+
+        $entityManager->persist($komentarz);
+        $entityManager->flush();
 
         return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $wniosekId)));
     }
