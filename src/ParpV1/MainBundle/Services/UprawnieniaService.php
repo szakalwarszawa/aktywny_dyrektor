@@ -28,6 +28,7 @@ use ParpV1\MainBundle\Entity\WniosekStatus;
 use Psr\Cache\CacheItemPoolInterface;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\AuthBundle\Security\ParpUser;
+use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 use Symfony\Component\VarDumper\VarDumper;
@@ -706,7 +707,7 @@ class UprawnieniaService
                 }
             }
 
-            $this->wyslijInfoDoAdministratorow($accountName, $przeprocesowaneBezGrup, new DateTime());
+            $this->wyslijInfoDoAdministratorow($accountName, $przeprocesowaneBezGrup, new DateTime(), $powodOdebrania);
 
 
             return $przeprocesowaneWnioski;
@@ -721,13 +722,20 @@ class UprawnieniaService
      * @param string $nazwaUzytkownika
      * @param array $procesowaneZasoby
      * @param DateTime $dataZmiany
+     * @param string|null $powodOdebrania
      *
      * @return void
      */
-    private function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany)
+    private function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany, string $powodOdebrania = null): void
     {
         $entityManager = $this->getDoctrine();
         $odebraneZasoby = [];
+        $template = ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN;
+
+        if (WyzwalaczeConstants::ROZWIAZANIE_UMOWY_O_PRACE_TITLE === $powodOdebrania) {
+            $template = ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY;
+        }
+
         foreach ($przeprocesowneZasoby as $zasob) {
             if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE  === $zasob['status']) {
                 $userZasob = $entityManager
@@ -751,11 +759,9 @@ class UprawnieniaService
         $mailer->disableFlush();
         foreach ($odebraneZasoby as $odebrany) {
             $odebrany['odbiorcy'] = [$mailer->getUserMail($odebrany['object']->getAdministratorZasobu())];
-            $odebrany['imie_nazwisko'] = $odebrany['object']->getAdministratorZasobu();
-            $odebrany['login'] = $odebrany['object']->getAdministratorZasobu();
             $odebrany['dotyczy'] = $nazwaUzytkownika;
             $odebrany['data_zmiany'] = $dataZmiany;
-            $mailer->sendEmailByType(ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN, $odebrany);
+            $mailer->sendEmailByType($template, $odebrany);
         }
 
         $this->logWpis[$nazwaUzytkownika]['wyslano_mail_do_admina'] = $odebraneZasoby;
