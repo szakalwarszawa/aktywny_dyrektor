@@ -111,6 +111,7 @@ final class Disable extends AccountStateManager
 
             if (self::USER_REMOVED === $state) {
                 $writableUserObject->setManager(null);
+                $writableUserObject->setAttribute(AdUserConstants::OUTLOOK_UKRYCIE_W_KSIAZCE, 'TRUE');
             }
 
             $writableUserObject->save();
