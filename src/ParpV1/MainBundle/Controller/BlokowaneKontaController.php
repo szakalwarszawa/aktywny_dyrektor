@@ -154,9 +154,15 @@ class BlokowaneKontaController extends Controller
                     'login'          => $entry->getSamaccountname(),
                     'departament'    => $entry->getDepartment()->getName(),
                     'manager'        => $entry->getManager(),
+                    'stanowisko'     => $entry->getTitle()->getName(),
                     'odbiorcy'       => [ParpMailerService::EMAIL_DO_GLPI],
                 ];
+                // zgłoszenie do GLPI-BI
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI, $daneEmail);
+
+                // wysyłamy formularz GLPI-BA do dyrektora D/B:
+                $daneEmail['odbiorcy'] = [$entry->getDepartment()->getDyrektor()];
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM, $daneEmail);
             }
 
             $em->persist($entry);
