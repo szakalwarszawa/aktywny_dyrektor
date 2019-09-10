@@ -33,6 +33,7 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKPRZYJECIEBI = 'pracownikPrzyjecieBi.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE = 'pracownikPrzyjecieBiEx.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEFORM = 'pracownikPrzyjecieForm.html.twig';
+    const TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI = 'pracownikNieobecnyPowrotBi.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1 = 'pracownikWygasniecieUprawnien1.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2 = 'pracownikWygasniecieUprawnien2.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3 = 'pracownikWygasniecieUprawnien3.html.twig';
@@ -535,6 +536,7 @@ class ParpMailerService
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY           => 'Zmiany kadrowe użytkownika - rozwiązanie umowy',
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
             self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI                   => '[BI] Powrót z długotrwałej nieobecności: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
