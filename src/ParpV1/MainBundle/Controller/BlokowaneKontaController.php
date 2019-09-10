@@ -28,7 +28,7 @@ use APY\DataGridBundle\Grid\Column\TextColumn;
 use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
-use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\MainBundle\Services\ParpMailerService;
 
 /**
  * BlokowaneKontaController .
@@ -115,6 +115,7 @@ class BlokowaneKontaController extends Controller
             $data = $form->getData();
             $ouGoscia = $ADUser[0]['distinguishedname'];
             $zablokowanyByl = false !== strpos($ouGoscia, 'Zablokowane');
+            $nieobecnyByl = false !== strpos($ouGoscia, 'Nieobecni');
 
             if ($zablokowanyByl) {
                 //trzeba nadać podstawowe
@@ -146,6 +147,17 @@ class BlokowaneKontaController extends Controller
 
             $ctrl->parseUserFormData($data, $entry);
 
+            if (true === $nieobecnyByl) {
+                $daneEmail = [
+                    'tytul'          => $entry->getCn(),
+                    'imie_nazwisko'  => $entry->getCn(),
+                    'login'          => $entry->getSamaccountname(),
+                    'departament'    => $entry->getDepartment()->getName(),
+                    'manager'        => $entry->getManager(),
+                    'odbiorcy'       => [ParpMailerService::EMAIL_DO_GLPI],
+                ];
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI, $daneEmail);
+            }
 
             $em->persist($entry);
             $em->flush();
