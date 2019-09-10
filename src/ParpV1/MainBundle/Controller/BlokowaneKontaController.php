@@ -147,7 +147,7 @@ class BlokowaneKontaController extends Controller
 
             $ctrl->parseUserFormData($data, $entry);
 
-            if ($nieobecnyByl) {
+            if (true === $nieobecnyByl) {
                 $daneEmail = [
                     'tytul'          => $entry->getCn(),
                     'imie_nazwisko'  => $entry->getCn(),
