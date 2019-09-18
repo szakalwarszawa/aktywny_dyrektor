@@ -22,7 +22,7 @@ class ChangelogController extends Controller
      *
      * @var int
      */
-    const ILE_WPISOW_NA_STRONE = 2;
+    const ILE_WPISOW_NA_STRONE = 10;
 
     /**
      * Lista wszystkich opublikowanych wpisów Changeloga.

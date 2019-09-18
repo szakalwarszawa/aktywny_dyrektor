@@ -65,7 +65,7 @@ class StatusWnioskuService
      */
     public function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null, $komentarz = null)
     {
-        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE', '11_OPUBLIKOWANY'];
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE'];
         if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
             if ($wniosek->getOdebranie()) {
                 $this->mailerService

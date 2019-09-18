@@ -314,6 +314,7 @@ class ParpMailerService
                         unset($dataZasob['nazwa_zasobu']);
                         break;
                     case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
+                        unset($dataZasob['nazwa_zasobu']);
                         $dataZasob['powod'] = $wniosek->getPowodZwrotu();
                         $dataZasob['odbiorcy'] = array_unique(array_merge($dataZasob['odbiorcy'], [$dyrektorMail]));
                         break;
