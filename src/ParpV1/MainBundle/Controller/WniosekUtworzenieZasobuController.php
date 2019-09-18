@@ -812,7 +812,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
     protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null)
     {
-        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', '11_OPUBLIKOWANY_O_ZASOB'];
+        $statusyAkceptujacePoKtorychWyslacMaila = ['07_ROZPATRZONY_POZYTYWNIE_O_ZASOB'];
         if (in_array($statusName, $statusyAkceptujacePoKtorychWyslacMaila)) {
             $this->get('parp.mailer')->sendEmailWniosekZasoby($wniosek, ParpMailerService::TEMPLATE_WNIOSEKZASOBZREALIZOWANIE);
         } elseif ($rejected) {
