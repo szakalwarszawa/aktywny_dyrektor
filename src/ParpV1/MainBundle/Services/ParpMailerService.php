@@ -365,8 +365,11 @@ class ParpMailerService
         }
         $dodatkowyMailWlascicielZasobu = $this->getUserMail($zasob->getWlascicielZasobu());
 
+        $odbiorcy = array_merge($odbiorcy, [$dodatkowyMailWlascicielZasobu]);
+        $odbiorcy = array_values(array_unique($odbiorcy));
+
         $data = [
-            'odbiorcy'                           => array_merge($odbiorcy, [$dodatkowyMailWlascicielZasobu]),
+            'odbiorcy'                           => $odbiorcy,
             'imie_nazwisko'                      => $wniosek->getImienazwisko(),
             'login'                              => $wniosek->getLogin(),
             'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
