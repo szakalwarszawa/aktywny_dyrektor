@@ -160,6 +160,11 @@ class ParpMailerService
             ->setBody($contentTxt, 'text/plain')// ->setId(time().'.'.md5($recipient.time()).'.'.$recipientForId)
         ;
 
+        // szpachla #90358: do czasu zralizowania #88368
+        if ($subject === 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień') {
+            $message->setBcc(['hubert_gorecki@parp.gov.pl']);
+        }
+
         $message->addPart($contentHtml, 'text/html');
         $message->setReturnPath(self::RETURN_PATH);
         $message->setPriority($priority);
