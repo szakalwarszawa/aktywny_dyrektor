@@ -33,6 +33,8 @@ class ParpMailerService
     const TEMPLATE_PRACOWNIKPRZYJECIEBI = 'pracownikPrzyjecieBi.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEBIEXCHANGE = 'pracownikPrzyjecieBiEx.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIEFORM = 'pracownikPrzyjecieForm.html.twig';
+    const TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI = 'pracownikNieobecnyPowrotBi.html.twig';
+    const TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM = 'pracownikNieobecnyPowrotForm.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN1 = 'pracownikWygasniecieUprawnien1.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2 = 'pracownikWygasniecieUprawnien2.html.twig';
     const TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3 = 'pracownikWygasniecieUprawnien3.html.twig';
@@ -55,6 +57,7 @@ class ParpMailerService
     const TEMPLATE_OCZEKUJACYWNIOSEK = 'wniosekOczekujacyPrzelozony.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN = 'odebranie_uprawnien_bez_grup.html.twig';
+    const TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY = 'odebranie_uprawnien_bez_grup_rozwiazanie_umowy.html.twig';
     const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
     const ZMIANY_KADROWE_RESET_UPRAWNIEN = 'zmiany_kadrowe_reset_uprawnien.html.twig';
 
@@ -157,6 +160,11 @@ class ParpMailerService
             ->setBody($contentTxt, 'text/plain')// ->setId(time().'.'.md5($recipient.time()).'.'.$recipientForId)
         ;
 
+        // szpachla #90358: do czasu zralizowania #88368
+        if ($subject === 'Aktywny Dyrektor komunikat: Zmiany kadrowe użytkownika - reset uprawnień') {
+            $message->setBcc(['hubert_gorecki@parp.gov.pl']);
+        }
+
         $message->addPart($contentHtml, 'text/html');
         $message->setReturnPath(self::RETURN_PATH);
         $message->setPriority($priority);
@@ -181,7 +189,6 @@ class ParpMailerService
         if ($this->doFlush) {
             $this->entityManager->flush();
         }
-
 
         return $sent;
     }
@@ -312,6 +319,7 @@ class ParpMailerService
                         unset($dataZasob['nazwa_zasobu']);
                         break;
                     case ParpMailerService::TEMPLATE_WNIOSEKODRZUCENIE:
+                        unset($dataZasob['nazwa_zasobu']);
                         $dataZasob['powod'] = $wniosek->getPowodZwrotu();
                         $dataZasob['odbiorcy'] = array_unique(array_merge($dataZasob['odbiorcy'], [$dyrektorMail]));
                         break;
@@ -362,8 +370,11 @@ class ParpMailerService
         }
         $dodatkowyMailWlascicielZasobu = $this->getUserMail($zasob->getWlascicielZasobu());
 
+        $odbiorcy = array_merge($odbiorcy, [$dodatkowyMailWlascicielZasobu]);
+        $odbiorcy = array_values(array_unique($odbiorcy));
+
         $data = [
-            'odbiorcy'                           => array_merge($odbiorcy, [$dodatkowyMailWlascicielZasobu]),
+            'odbiorcy'                           => $odbiorcy,
             'imie_nazwisko'                      => $wniosek->getImienazwisko(),
             'login'                              => $wniosek->getLogin(),
             'numer_wniosku'                      => $wniosek->getWniosek()->getNumer(),
@@ -489,7 +500,13 @@ class ParpMailerService
                 unset($wymaganePola[1]);
                 break;
             case ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK:
+            case ParpMailerService::ZMIANY_KADROWE_RESET_UPRAWNIEN:
                 unset($wymaganePola[1]);
+                break;
+            case ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN:
+            case ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY:
+                unset($wymaganePola[1]);
+                unset($wymaganePola[2]);
                 break;
         }
 
@@ -526,8 +543,11 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_OCZEKUJACYWNIOSEK                  => 'Akceptacja przełożonego, wniosek o nadanie/odebranie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY           => 'Zmiany kadrowe użytkownika - rozwiązanie umowy',
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
             self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Zmiany kadrowe użytkownika - reset uprawnień',
+            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI                   => '[BI] Powrót z długotrwałej nieobecności: ',
+            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM                 => '[Formularz] Powracający pracownik: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
