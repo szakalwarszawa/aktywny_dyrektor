@@ -263,9 +263,6 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             in_array('PARP_ADMIN', $this->getUser()->getRoles());
 
         $ktoreDepartamenty = [mb_strtolower(trim($aduser[0]['department']))];
-        if ($this->getUser()->getUsername() == 'monika_standziak') {
-            $ktoreDepartamenty[] = 'zarząd';
-        }
 
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
