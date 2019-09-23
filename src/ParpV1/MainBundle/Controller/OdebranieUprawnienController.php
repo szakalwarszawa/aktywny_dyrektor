@@ -127,7 +127,7 @@ class OdebranieUprawnienController extends Controller
 
             return ['uprawnienia' => $uprawnienia];
         } else {
-            die('Nie masz uprawnien by to ogladac!');
+            die('Brak uprawnień do wyświetlania tej strony.');
         }
     }
 
