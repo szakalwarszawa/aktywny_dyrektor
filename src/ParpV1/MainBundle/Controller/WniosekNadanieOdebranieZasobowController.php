@@ -258,7 +258,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
      *
      * @return array
      */
-    private function getUsersFromAD(?int $czyOdebranie = null): array
+    private function getUsersFromAD(int $czyOdebranie = null): array
     {
         $ldap = $this->get('ldap_service');
         $aduser = $this->getUserFromAD($this->getUser()->getUsername());
