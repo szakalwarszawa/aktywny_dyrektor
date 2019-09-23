@@ -8,7 +8,7 @@
             <h3>Wniosek o {{ entity.odebranie ? "odebranie" : "nadanie" }} zasobów numer : {{ entity.wniosek.numer }}</h3>
             <ul>
                 <li><b>Pracownicy :</b> {{ entity.pracownicy|addSpaces }}</li>
-                {% if '_' in entity.pracownicy|addSpaces %}
+                {% if ('_' in entity.pracownicy|addSpaces) and (not entity.pracownikSpozaParp) %}
                     <li>
                         <div class="alert alert-danger">
                             <b>UWAGA! Wniosek dotyczy pracowników z nieaktywnymi kontami!</b>
@@ -18,7 +18,7 @@
                 {% if entity.pracownikSpozaParp %}
                 <li>
                     <div class="alert alert-danger">
-                        <b>Czy pracownik/pracownicy spoza PARP</b>
+                        <b>Czy pracownik/pracownicy spoza PARP:</b>
                         <b>{{ entity.pracownikSpozaParp ? "TAK" : "NIE" }}</b>
                     </div>
                 </li>
@@ -139,10 +139,6 @@
 
                 {% if not status_ostatecznie_zablokowany and canUnblock %}
                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'unblock'}) }}" class="btn btn-primary">Odblokuj wniosek <i class="fas fa-check">&nbsp;</i> </a>
-                {% endif %}
-                {% if app.user.username == 'marcin_lipinski' or app.user.username == 'kamil_jakacki' %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj i PONÓW PUBLIKACJĘ <i class="fas fa-check-circle">&nbsp;</i> </a>
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'publish'}) }}" class="btn btn-danger">Opublikuj do AD PONOWNIE<i class="fas fa-check-circle">&nbsp;</i> </a>
                 {% endif %}
 
                 {% if not status_ostatecznie_zablokowany and 'PARP_ADMIN_REJESTRU_ZASOBOW' in app.user.roles %}

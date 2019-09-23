@@ -20,6 +20,7 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\ADUser;
+use ParpV1\MainBundle\Exception\SecurityTestException;
 use ParpV1\MainBundle\Form\DaneRekordType;
 
 /**
@@ -127,7 +128,7 @@ class OdebranieUprawnienController extends Controller
 
             return ['uprawnienia' => $uprawnienia];
         } else {
-            die('Nie masz uprawnien by to ogladac!');
+            throw new SecurityTestException('Brak uprawnień do wyświetlania tej strony.');
         }
     }
 

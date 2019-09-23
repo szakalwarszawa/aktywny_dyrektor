@@ -267,20 +267,19 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ADUsers = $ldap->getAllFromAD();
         $users = array();
 
-        //temp
-        ///$widzi_wszystkich = false;
-        //$aduser[0]['department'] = 'Biuro Prezesa';
-
         foreach ($ADUsers as &$u) {
-            //unset($u['thumbnailphoto']);
-            //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-            //echo ".".strtolower($aduser[0]['department']).".";
             if ($widzi_wszystkich || in_array(mb_strtolower(trim($u['department'])), $ktoreDepartamenty)) {
                 $users[$u['samaccountname']] = $u['name'];
             }
         }
 
-        //echo "<pre>"; var_dump($users); die();
+        $usersZUprawnieniami =
+            $this->getDoctrine()
+            ->getManager()
+            ->getRepository(UserZasoby::class)
+            ->usunPracownikowBezZasobow(array_keys($users));
+        $users = array_intersect_key($users, array_flip($usersZUprawnieniami));
+
         return $users;
     }
 
