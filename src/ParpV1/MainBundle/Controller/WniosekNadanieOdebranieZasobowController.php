@@ -252,9 +252,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
 
     /**
+     * Zwraca tablicę użytkowników z AD
+     *
+     * @param int|null $czyOdebranie
+     *
      * @return array
      */
-    private function getUsersFromAD()
+    private function getUsersFromAD(?int $czyOdebranie = null): array
     {
         $ldap = $this->get('ldap_service');
         $aduser = $this->getUserFromAD($this->getUser()->getUsername());
@@ -273,12 +277,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             }
         }
 
-        $usersZUprawnieniami =
-            $this->getDoctrine()
-            ->getManager()
-            ->getRepository(UserZasoby::class)
-            ->usunPracownikowBezZasobow(array_keys($users));
-        $users = array_intersect_key($users, array_flip($usersZUprawnieniami));
+        if (1 === $czyOdebranie) {
+            $usersZUprawnieniami =
+                $this->getDoctrine()
+                ->getManager()
+                ->getRepository(UserZasoby::class)
+                ->usunPracownikowBezZasobow(array_keys($users));
+            $users = array_intersect_key($users, array_flip($usersZUprawnieniami));
+        }
 
         return $users;
     }
@@ -318,7 +324,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 'action' => $this->generateUrl('wnioseknadanieodebraniezasobow_create'),
                 'method' => 'POST',
                 'czy_odebranie' => $entity->getOdebranie(),
-                'ad_users' => $this->getUsersFromAD(),
+                'ad_users' => $this->getUsersFromAD($entity->getOdebranie()),
                 'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
@@ -1485,7 +1491,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     array('id' => $entity->getId())
                 ),
                 'method' => 'PUT',
-                'ad_users' => $this->getUsersFromAD(),
+                'ad_users' => $this->getUsersFromAD($entity->getOdebranie()),
                 'managerzy_spoza_parp' => $this->getUsersFromADWithRole('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP'),
             ));
 
