@@ -305,7 +305,8 @@ class UserZasobyRepository extends EntityRepository
     {
         $query = $this->getEntityManager()->createQuery('
               SELECT distinct(uz.samaccountname) FROM ParpMainBundle:UserZasoby uz
-              WHERE uz.czyAktywne = 1 AND uz.samaccountname IN (:usernames)')
+              WHERE uz.czyAktywne = 1 AND uz.wniosekOdebranie IS NULL
+              AND uz.samaccountname IN (:usernames)')
             ->setParameter('usernames', $users);
         $result = $query->getResult();
 
