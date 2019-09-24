@@ -13,8 +13,8 @@
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
                 <h1> {{ entity.id ? "Edycja" : "Tworzenie" }} wniosku o {{ entity.odebranie ? "odebranie" : "nadanie" }} uprawnień do zasobów </h1>
+                {{ entity.odebranie ? '<div class="alert alert-info">Lista pracowników zawiera wyłącznie konta osób posiadających aktywne uprawnienia, które można odebrać.</div>' }}
                 <div class="tabContent">
-
                     {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
                     {{ form(form) }}
                 </div>

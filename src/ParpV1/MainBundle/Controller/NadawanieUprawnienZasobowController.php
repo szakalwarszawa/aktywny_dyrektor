@@ -660,7 +660,7 @@ class NadawanieUprawnienZasobowController extends Controller
     protected function sprawdzCzyMozeDodawacOdbieracUprawnieniaBezWniosku($zids)
     {
         if (!in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $this->getUser()->getRoles(), true)) {
-            die('Nie masz uprawnien by wykonywac ta akcje, musisz byc administratorem zasobow ze specjalna rola!');
+            throw new SecurityTestException('Nie masz uprawnień, aby wykonać tę akcję. Musisz być administratorem zasobów ze specjalną rolą!');
         }
         $jestAdminemWszystkichZasobow = true;
         $username = $this->getUser()->getUsername();

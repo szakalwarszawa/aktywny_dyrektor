@@ -292,4 +292,29 @@ class UserZasobyRepository extends EntityRepository
         $a2 = $query->getResult();
         return $a2;
     }
+
+    /**
+     * Filtruje listę kont użytkowników, pozostawiając
+     * tylko te konta, które mają uprawnienia do odebrania.
+     *
+     * @param array $users
+     *
+     * @return array
+     */
+    public function usunPracownikowBezZasobow(array $users): array
+    {
+        $query = $this->getEntityManager()->createQuery('
+              SELECT distinct(uz.samaccountname) FROM ParpMainBundle:UserZasoby uz
+              WHERE uz.czyAktywne = 1 AND uz.wniosekOdebranie IS NULL
+              AND uz.samaccountname IN (:usernames)')
+            ->setParameter('usernames', $users);
+        $result = $query->getResult();
+
+        $kontaZzasobami = [];
+        foreach ($result as $key => $user) {
+            $kontaZzasobami[] = strtolower($user[1]);
+        }
+
+        return $kontaZzasobami;
+    }
 }
