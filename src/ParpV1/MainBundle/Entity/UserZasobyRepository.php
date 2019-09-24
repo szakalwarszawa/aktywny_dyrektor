@@ -312,7 +312,7 @@ class UserZasobyRepository extends EntityRepository
 
         $kontaZzasobami = [];
         foreach ($result as $key => $user) {
-            $kontaZzasobami[] = $user[1];
+            $kontaZzasobami[] = strtolower($user[1]);
         }
 
         return $kontaZzasobami;
