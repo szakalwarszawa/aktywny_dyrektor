@@ -741,73 +741,18 @@ class WniosekUtworzenieZasobuController extends Controller
         ;
     }
 
-    private function getManagers()
+     /**
+     * @param $entity
+     * @param bool $onlyEditors
+     * @param null $username
+     *
+     * @return array
+     */
+    protected function checkAccess($entity, $onlyEditors = false, $username = null): array
     {
+        $statusWnioskuService = $this->get('status_wniosku_service');
 
-        $ldap = $this->get('ldap_service');
-        $ADUsers = $ldap->getAllManagersFromAD();
-        $users = array();
-        foreach ($ADUsers as $u) {
-            $users[$u['samaccountname']] = $u['name'];
-        }
-        return $users;
-    }
-    private function getUsersFromAD()
-    {
-
-        $ldap = $this->get('ldap_service');
-        $ADUsers = $ldap->getAllFromAD();
-        $users = array();
-        foreach ($ADUsers as $u) {
-            $users[$u['samaccountname']] = $u['name'];
-        }
-        return $users;
-    }
-
-    protected function checkAccess($entity, $onlyEditors = false)
-    {
-
-        $em = $this->getDoctrine()->getManager();
-        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
-
-        //print_r($uzs); die();
-        if (!$entity) {
-            throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
-        }
-
-        $editor = $em->getRepository(WniosekEditor::class)->findOneBy(array(
-            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
-            'wniosek' => $entity->getWniosek()
-            ));
-        //to sprawdza czy ma bezposredni dostep do edycji bez brania pod uwage zastepstw
-        $editorsBezZastepstw = $em->getRepository(WniosekEditor::class)->findOneBy(array(
-            'samaccountname' => $this->getUser()->getUsername(),
-            'wniosek' => $entity->getWniosek()
-            ));
-        if ($entity->getWniosek()->getLockedBy()) {
-            if ($entity->getWniosek()->getLockedBy() != $this->getUser()->getUsername()) {
-                $editor = null;
-            }
-        } elseif ($editor) {
-            $entity->getWniosek()->setLockedBy($this->getUser()->getUsername());
-            $entity->getWniosek()->setLockedAt(new \Datetime());
-            $em->flush();
-        }
-        //die(($editor->getId()).".");
-        $viewer = $em->getRepository('ParpMainBundle:WniosekViewer')->findOneBy(array(
-            'samaccountname' => $zastepstwa, //$this->getUser()->getUsername(),
-            'wniosek' => $entity->getWniosek()
-            ));
-        //|| $onlyEditors
-/*
-        if ((!$editor ) && (!$viewer)) {
-
-
-            return false;
-        }
-*/
-
-        return ['viewer' => $viewer, 'editor' => $editor, 'editorsBezZastepstw' => $editorsBezZastepstw];
+        return $statusWnioskuService->checkAccess($entity, $onlyEditors, $username);
     }
 
     protected function setWniosekStatus($wniosek, $statusName, $rejected, $oldStatus = null)
@@ -957,6 +902,14 @@ class WniosekUtworzenieZasobuController extends Controller
 
         if (!$wniosek) {
             throw $this->createNotFoundException('Unable to find WniosekUtworzenieZasobu entity.');
+        }
+
+        $access = $this->checkAccess($wniosek);
+        if (null === $access['editor']) {
+            return $this->render('ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig', [
+                'wniosek' => $wniosek,
+                'viewer' => 0
+            ]);
         }
 
         if ($request->isMethod('POST')) {
