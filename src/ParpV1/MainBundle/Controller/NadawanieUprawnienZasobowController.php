@@ -82,7 +82,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     };
 
                     $klucz = $uzid . ';' . $modul . ';' . $poziom;
-                    $choices[$klucz] = implode('@', [
+                    $choices[$klucz] = implode('^^', [
                         $zasobNazwa,
                         $modul,
                         $poziom,
@@ -439,9 +439,9 @@ class NadawanieUprawnienZasobowController extends Controller
                     'multiple' => true,
                     'expanded' => false,
                     'choice_attr' => function ($element, $key, $value) {
-                        $czesci = explode('@', $key);
+                        $czesci = explode('^^', $key);
 
-                        $sekcja = implode('@', [
+                        $sekcja = implode('^^', [
                             $czesci[0],
                             $czesci[1]
                         ]);
@@ -459,7 +459,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         return $data;
                     },
                     'choice_label' => function ($element, $key, $value) {
-                        $split = explode('@', $key);
+                        $split = explode('^^', $key);
 
                         return $split[2];
                     }
