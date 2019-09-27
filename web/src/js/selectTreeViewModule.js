@@ -1210,7 +1210,7 @@ export default $(function() {
     let maxSelections = 500;
     $('.multiselect-tree').treeMultiselect({
         hideSidePanel: true,
-        sectionDelimiter: '@',
+        sectionDelimiter: '^^',
         collapsible: true,
         startCollapsed: true,
         maxSelections: maxSelections,
