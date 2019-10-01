@@ -1,10 +1,11 @@
 image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:latest"
-    
+
 stages:
     - build
     - test
     - quality
     - stats
+    - security
     - doc
     - postbuild
 
@@ -79,6 +80,12 @@ tidyhtml:
     script:
         - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/*
         - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
+
+yarn_audit:
+    stage: security
+    allow_failure: false
+    script:
+        - '/usr/bin/yarn audit'
 
 sami:
     stage: doc
