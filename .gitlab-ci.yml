@@ -109,6 +109,9 @@ testy_autom_start:
         - apk add jq
         - curl -X POST -s -F token=$TOKEN_TESTY -F ref=development https://gitlab.parp.gov.pl/api/v4/projects/130/trigger/pipeline | jq '.id, .status' | tee .pipeline_id
     when: manual
+    only:
+      refs:
+        - development
 
 automerge:
     stage: postbuild
