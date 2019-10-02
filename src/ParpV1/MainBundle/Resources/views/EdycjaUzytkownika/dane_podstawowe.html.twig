@@ -43,7 +43,7 @@
                     <i class="fas fa-puzzle-piece"></i> Zaangażowanie
                 </a>
             {% endif %}
-            {% if dane_rekord is not null and is_granted(expression('"PARP_BZK_2" in roles')) and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
+            {% if dane_rekord is not null and is_granted('PARP_BZK_2') and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
                 <a class="btn btn-primary" href="{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}">
                     <i class='fas fa-briefcase'></i> Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych
                 </a>
