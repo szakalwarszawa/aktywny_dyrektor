@@ -62,6 +62,7 @@ class Zastepstwo
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @Gedmo\Mapping\Annotation\Versioned
     */
     private $dataOd;
     
@@ -70,6 +71,7 @@ class Zastepstwo
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @Gedmo\Mapping\Annotation\Versioned
     */
     private $dataDo;
     
