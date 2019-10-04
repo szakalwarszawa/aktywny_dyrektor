@@ -1141,7 +1141,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     /**
      * Umożliwia przeniesienie pracownika do problematycznych
      *
-     * @Route("/zmanaDepSekcjiPrzelozDlaTymczasowych/{UserRekordId}", name="zmanaDepSekcjiPrzelozDlaTymczasowych", defaults={})
+     * @Route("/przenies_do_problematycznych/{UserRekordId}", name="przeniesDoProblematycznych", defaults={})
      *
      * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_2')")
      *
@@ -1158,7 +1158,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      * @throws \InvalidArgumentException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function zmanaDepSekcjiPrzelozDlaTymczasowychAction(Request $request, $UserRekordId)
+    public function przeniesDoProblematycznychAction(Request $request, $UserRekordId)
     {
         $UserRekordId = (int) $UserRekordId;
         $entityManager = $this->getDoctrine()->getManager();

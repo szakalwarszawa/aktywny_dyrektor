@@ -30,22 +30,25 @@
         {% if departament.vars.value is empty and dane_rekord is defined %}
             <div class='alert alert-danger'>
                 <b>Uwaga!</b> Departament powinien być ustawiony w rekordzie? Nie jest możliwa edycja tego pola z tego miejsca.
-                {% if dane_rekord is not null and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
-                    <hr />
-                    <a class='btn btn-primary' href='{{ path('zmanaDepSekcjiPrzelozDlaTymczasowych', {UserRekordId: dane_rekord.id}) }}'>
-                        <i class='fas fa-briefcase'></i>
-                        Zmiana Dep./Sekcji/przełożonego - przenieś do problematycznych
-                    </a>
-                {% endif %}
             </div>
         {% endif %}
     </div>
 
     {# ZAANGAŻOWANIE #}
     <div class='form-group'>
-        {% if username is defined %}
-            <a class='btn btn-primary col-sm-2 col-xs-12 col-sm-offset-8 col-md-2 col-md-offset-9 col-lg-offset-7' href='{{ path('engageUser', {samaccountname: username}) }}'><i class='fas fa-puzzle-piece'></i> Zaangażowanie</a>
-        {% endif %}
+        <label class="col-md-offset-1 col-lg-2 col-lg-offset-1 col-sm-2 control-label required">Inne</label>
+        <div class="'col-sm-8 col-lg-6">
+            {% if username is defined %}
+                <a class="btn btn-primary" href="{{ path('engageUser', {samaccountname: username}) }}">
+                    <i class="fas fa-puzzle-piece"></i> Zaangażowanie
+                </a>
+            {% endif %}
+            {% if dane_rekord is not null and is_granted(expression('"PARP_BZK_2" in roles')) and null != dane_rekord.departament and dane_rekord.departament in [600, 1000] %}
+                <a class="btn btn-primary" href="{{ path('przeniesDoProblematycznych', {UserRekordId: dane_rekord.id}) }}">
+                    <i class='fas fa-exclamation-circle'></i> Zmiana D/B - przenieś do problematycznych
+                </a>
+            {% endif %}
+        </div>
     </div>
 
     {# STANOWISKO #}
