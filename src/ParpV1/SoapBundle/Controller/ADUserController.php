@@ -21,6 +21,8 @@ use ParpV1\SoapBundle\Form\ADUserType;
  * ADUser controller.
  *
  * @Route("/aduser")
+ *
+ * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
  */
 class ADUserController extends Controller
 {

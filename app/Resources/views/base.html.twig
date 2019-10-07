@@ -107,9 +107,11 @@
                                         <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
                                         <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
                                         <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
+                                    {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles %}
                                         <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
                                         <li><a href="{{ path('adgroup') }}"><i class="fas fa-users"></i> Groups AD</a></li>
                                         <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
+                                    {% endif %}
                                     </ul>
                                 </li>
                             {% endif %}
