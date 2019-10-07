@@ -21,6 +21,8 @@ use ParpV1\SoapBundle\Form\ADOrganizationalUnitType;
  * ADOrganizationalUnit controller.
  *
  * @Route("/adorganizationalunit")
+ *
+ * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
  */
 class ADOrganizationalUnitController extends Controller
 {

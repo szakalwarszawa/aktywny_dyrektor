@@ -21,6 +21,8 @@ use ParpV1\SoapBundle\Form\ADGroupType;
  * ADGroup controller.
  *
  * @Route("/adgroup")
+ *
+ * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
  */
 class ADGroupController extends Controller
 {
