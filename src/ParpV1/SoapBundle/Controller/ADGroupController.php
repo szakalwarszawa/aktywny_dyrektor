@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\APYDataGridBundle;
 use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Source\Entity;
@@ -21,6 +22,8 @@ use ParpV1\SoapBundle\Form\ADGroupType;
  * ADGroup controller.
  *
  * @Route("/adgroup")
+ *
+ * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
  */
 class ADGroupController extends Controller
 {
