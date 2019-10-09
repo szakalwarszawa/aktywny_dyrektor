@@ -15,6 +15,7 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\MainBundle\Entity\Position;
+use ParpV1\MainBundle\Entity\PositionGroups;
 use ParpV1\MainBundle\Form\PositionType;
 
 /**

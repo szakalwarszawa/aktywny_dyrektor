@@ -6,6 +6,8 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\MainBundle\Entity\Position;
+use ParpV1\MainBundle\Entity\PositionGroups;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 
 class PositionType extends AbstractType
 {
@@ -15,15 +17,24 @@ class PositionType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('name', null, array(
-            'required' => false,
-            'label' => 'Nazwa stanowiska',
-            'label_attr' => array(
-                'class' => 'col-sm-2 control-label',
-            ),
-            'attr' => array(
-                'class' => 'form-control',
-            )));
+        $builder
+            ->add('name', null, array(
+                'required' => false,
+                'label' => 'Nazwa stanowiska',
+                'label_attr' => array(
+                    'class' => 'col-sm-2 control-label',
+                ),
+                'attr' => array(
+                    'class' => 'form-control',
+                )))
+            ->add('group', EntityType::class, [
+                'class' => PositionGroups::class,
+                'placeholder' => 'Wybierz grupę',
+                'required' => false,
+                'label' => 'Grupa do uprawnień',
+                'choice_label' => 'name',
+            ])
+        ;
     }
 
     /**

@@ -45,7 +45,7 @@ class AdUserConstants extends Attributes
             self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
             self::DEPARTAMENT_NAZWA,
             self::SEKCJA_NAZWA,
-            //self::STANOWISKO,
+            self::STANOWISKO,
             self::SEKCJA_NAZWA
         ];
     }
