@@ -80,6 +80,7 @@ class ZastepstwoController extends Controller
 
         if ($form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
+            $entity->setLastModifiedBy($this->getUser()->getUsername());
             $entityManager->persist($entity);
             $entityManager->flush();
 
@@ -218,9 +219,9 @@ class ZastepstwoController extends Controller
      */
     public function updateAction(Request $request, $id)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
 
-        $entity = $em->getRepository(Zastepstwo::class)->find($id);
+        $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
@@ -231,7 +232,8 @@ class ZastepstwoController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            $em->flush();
+            $entity->setLastModifiedBy($this->getUser()->getUsername());
+            $entityManager->flush();
             $this->addFlash('warning', 'Zmiany zostały zapisane');
             return $this->redirect($this->generateUrl('zastepstwo_edit', array('id' => $id)));
         }
