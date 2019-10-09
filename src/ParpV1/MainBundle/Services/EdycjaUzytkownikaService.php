@@ -452,7 +452,7 @@ class EdycjaUzytkownikaService
             $changes[] = AdUserConstants::IMIE_NAZWISKO;
         }
 
-        if ($formData[AdUserConstants::STANOWISKO] !== $adUserHelper::getStanowisko(true)) {
+        if ($formData[AdUserConstants::STANOWISKO]->getGroup() !== $adUserHelper::getStanowisko(true)->getGroup()) {
             $changes[] = AdUserConstants::STANOWISKO;
         }
 

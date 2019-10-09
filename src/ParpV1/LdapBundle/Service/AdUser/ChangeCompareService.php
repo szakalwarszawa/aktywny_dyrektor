@@ -3,6 +3,7 @@
 namespace ParpV1\LdapBundle\Service\AdUser;
 
 use ParpV1\MainBundle\Entity\Entry;
+use ParpV1\MainBundle\Entity\Position;
 use Doctrine\ORM\EntityManager;
 use ParpV1\LdapBundle\Helper\AttributeGetterSetterHelper;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -93,6 +94,13 @@ class ChangeCompareService
                     ->setNew($change->getNew()->getName())
                 ;
             }
+
+            if ($change->getTarget() === 'title') {
+                if ($this->czyStanowiskoZtejSamejGrupy($change->getOld(), $change->getNew())) {
+                    $changes->remove($key);
+                }
+                continue;
+            }
         }
 
         return $changes;
@@ -173,5 +181,26 @@ class ChangeCompareService
         $this->specifiedAttributes = $specifiedAttributes;
 
         return $this;
+    }
+
+    /**
+     * Porównujemy czy stnaowiska należą do tej samej grupy
+     *
+     * @param string $stanowiskoStare
+     * @param string $stanowiskoNowe
+     *
+     * @return bool
+     */
+    public function czyStanowiskoZtejSamejGrupy(string $stanowiskoStare, string $stanowiskoNowe): bool
+    {
+        $stanowiska = $this->entityManager->getRepository(Position::class)->findBy([
+            'name' => [$stanowiskoStare, $stanowiskoNowe],
+        ]);
+
+        if (count($stanowiska) !== 2) {
+            return false;
+        }
+
+        return ($stanowiska[0]->getGroup() === $stanowiska[1]->getGroup());
     }
 }

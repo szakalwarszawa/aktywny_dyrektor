@@ -41,6 +41,7 @@ class EntryListener
     private $neededAttributes = [
         AdUserConstants::DEPARTAMENT_NAZWA,
         AdUserConstants::SEKCJA_NAZWA,
+        AdUserConstants::STANOWISKO,
     ];
 
     /**
@@ -122,6 +123,7 @@ class EntryListener
         } catch (Exception $exception) {
             return new ArrayCollection();
         }
+
         $changes = $changeCompareService
             ->setSpecifiedAttributes($this->neededAttributes)
             ->compareByEntry($entry, $adUser)
@@ -149,10 +151,15 @@ class EntryListener
             $entry->getSamaccountname(),
         ];
         try {
-            $recipients[] = $entry
-                ->getDepartment()
-                ->getDyrektor()
-            ;
+            if ($entry->getDepartment() instanceof Departament) {
+                $recipients[] = $entry
+                    ->getDepartment()
+                    ->getDyrektor()
+                    ;
+            } else {
+                $department = $entityManager->getRepository(Departament::class)->findOneBy(['name' => $entry->getDepartment()]);
+                $recipients[] = $department->getDyrektor();
+            }
         } catch (Exception $exception) {
         }
 
