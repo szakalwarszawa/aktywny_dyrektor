@@ -1129,8 +1129,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
             'name' => [$stanowiskoStare, $stanowiskoNowe],
         ]);
 
-        if (count($stanowiska) !== 2) {
-            return false;
+        if (count($stanowiska) === 1 && !($stanowiska[0]->getGroup() instanceof PositionGroups)) {
+            return true;
         }
 
         return ($stanowiska[0]->getGroup() === $stanowiska[1]->getGroup());
