@@ -454,16 +454,20 @@ class EdycjaUzytkownikaService
             $changes[] = AdUserConstants::IMIE_NAZWISKO;
         }
 
+        if ($formData[AdUserConstants::STANOWISKO] !== $adUserHelper::getStanowisko(true)) {
+            $changes[] = AdUserConstants::STANOWISKO;
+        }
+
         if (($adUserHelper::getStanowisko(true) instanceof Position)
             && ($formData[AdUserConstants::STANOWISKO]->getGroup() !== $adUserHelper::getStanowisko(true)->getGroup())
         ) {
-            $changes[] = AdUserConstants::STANOWISKO;
+            $changes[] = AdUserConstants::STANOWISKO_GRUPA;
         }
 
         if (!is_object($adUserHelper::getStanowisko(true))
             && $formData[AdUserConstants::STANOWISKO]->getGroup() instanceof PositionGroups
         ) {
-            $changes[] = AdUserConstants::STANOWISKO;
+            $changes[] = AdUserConstants::STANOWISKO_GRUPA;
         }
 
         if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {
