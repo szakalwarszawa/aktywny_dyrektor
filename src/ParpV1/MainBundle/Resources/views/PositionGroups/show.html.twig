@@ -1,0 +1,39 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Stanowiska - grupy</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ position_group.id }}</td>
+            </tr>
+            <tr>
+                <th>Nazwa</th>
+                <td>{{ position_group.name }}</td>
+            </tr>
+            <tr>
+                <th>Opis</th>
+                <td>{{ position_group.description }}</td>
+            </tr>
+            <tr>
+                <th>Przypisane stanowiska</th>
+                <td>
+                    <ul>
+                    {% for position in positions %}
+                        <li>{{ position.name }}</li>
+                    {% else %}
+                        <li><em>brak przypisanych stanowisk</em></li>
+                    {% endfor %}
+                    </ul>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('position_groups_index') }}"><i class="fas fa-list"></i> Powrót do listy</a>
+    <a class="btn btn-danger" href="{{ path('position_groups_edit', {'id': position_group.id}) }}"><i class="fas fa-pencil"></i> Edycja</a>
+
+    {{ include('ParpMainBundle:PositionGroups:_delete_form.html.twig') }}
+{% endblock %}

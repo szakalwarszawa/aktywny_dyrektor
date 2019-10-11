@@ -11,6 +11,7 @@ use ParpV1\MainBundle\Entity\Entry;
 use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\Zasoby;
+use ParpV1\MainBundle\Entity\Position;
 use ParpV1\MainBundle\Services\ParpMailerService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -503,7 +504,7 @@ class ImportRekordDaneController extends Controller
         if ($resetDoPodstawowych) {
             $resetEntry = new OdebranieZasobowEntry();
             $resetEntry
-                ->setPowodOdebrania('Zmiana departamentu/sekcji (rekord import)')
+                ->setPowodOdebrania('Zmiana departamentu/sekcji/stanowiska (rekord import)')
                 ->setUzytkownik($entry->getSamaccountname())
             ;
 
@@ -985,6 +986,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $resetDoPodstawowych = true;
             }
 
+            if (!$this->czyStanowiskoZtejSamejGrupy($userFromAD[0]['title'], $daneRekord->getStanowisko())) {
+                $resetDoPodstawowych = true;
+            }
+
             $entry = $this->utworzEntry($objectManager, $daneRekord, $changeSet, $nowy, $poprzednieDane, $resetDoPodstawowych);
 
             if (!$nowy && $daneRekord->getNewUnproccessed() === 2 && true === $resetDoPodstawowych) {
@@ -1111,6 +1116,27 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     }
 
     /**
+     * Porównujemy czy stnaowiska należą do tej samej grupy
+     *
+     * @param string $stanowiskoStare
+     * @param string $stanowiskoNowe
+     *
+     * @return bool
+     */
+    public function czyStanowiskoZtejSamejGrupy(string $stanowiskoStare, string $stanowiskoNowe): bool
+    {
+        $stanowiska = $this->getDoctrine()->getRepository(Position::class)->findBy([
+            'name' => [$stanowiskoStare, $stanowiskoNowe],
+        ]);
+
+        if (count($stanowiska) === 1 && !($stanowiska[0]->getGroup() instanceof PositionGroups)) {
+            return true;
+        }
+
+        return ($stanowiska[0]->getGroup() === $stanowiska[1]->getGroup());
+    }
+
+    /**
      * @Route("/usunUzytkownikaZKolejki/{id}", name="usunUzytkownikaZKolejki", defaults={})
      * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_1')")
      * @Method("POST")
@@ -1141,7 +1167,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     /**
      * Umożliwia przeniesienie pracownika do problematycznych
      *
-     * @Route("/zmanaDepSekcjiPrzelozDlaTymczasowych/{UserRekordId}", name="zmanaDepSekcjiPrzelozDlaTymczasowych", defaults={})
+     * @Route("/przenies_do_problematycznych/{UserRekordId}", name="przeniesDoProblematycznych", defaults={})
      *
      * @Security("has_role('PARP_ADMIN') or has_role('PARP_BZK_2')")
      *
@@ -1158,7 +1184,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
      * @throws \InvalidArgumentException
      * @throws \Doctrine\ORM\OptimisticLockException
      */
-    public function zmanaDepSekcjiPrzelozDlaTymczasowychAction(Request $request, $UserRekordId)
+    public function przeniesDoProblematycznychAction(Request $request, $UserRekordId)
     {
         $UserRekordId = (int) $UserRekordId;
         $entityManager = $this->getDoctrine()->getManager();

@@ -18,6 +18,8 @@ use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\Position;
+use ParpV1\MainBundle\Entity\PositionGroups;
 use Doctrine\Common\Collections\ArrayCollection;
 use DateTime;
 use ParpV1\LdapBundle\Helper\LdapTimeHelper;
@@ -454,6 +456,18 @@ class EdycjaUzytkownikaService
 
         if ($formData[AdUserConstants::STANOWISKO] !== $adUserHelper::getStanowisko(true)) {
             $changes[] = AdUserConstants::STANOWISKO;
+        }
+
+        if (($adUserHelper::getStanowisko(true) instanceof Position)
+            && ($formData[AdUserConstants::STANOWISKO]->getGroup() !== $adUserHelper::getStanowisko(true)->getGroup())
+        ) {
+            $changes[] = AdUserConstants::STANOWISKO_GRUPA;
+        }
+
+        if (!is_object($adUserHelper::getStanowisko(true))
+            && $formData[AdUserConstants::STANOWISKO]->getGroup() instanceof PositionGroups
+        ) {
+            $changes[] = AdUserConstants::STANOWISKO_GRUPA;
         }
 
         if ($formData[AdUserConstants::WYGASA] !== $adUserHelper::getKiedyWygasa()) {

@@ -31,6 +31,13 @@ class AdUserConstants extends Attributes
     const FORCE_CLEAN = 'force_clean';
 
     /**
+     * Zmiana stanowiska pomiędzy grupami uprawnień.
+     *
+     * @var string
+     */
+    const STANOWISKO_GRUPA = 'stanowisko_grupa_resetu_uprawnien';
+
+    /**
      * Zwraca wyzwalacze przy których będą resetowane uprawnienia do podstawowych.
      *
      * @todo Stanowisko jest wyłączone ponieważ trzeba obsłużyć w jakim przypadku ma byc resetowane
@@ -45,7 +52,8 @@ class AdUserConstants extends Attributes
             self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
             self::DEPARTAMENT_NAZWA,
             self::SEKCJA_NAZWA,
-            //self::STANOWISKO,
+            // self::STANOWISKO,
+            self::STANOWISKO_GRUPA,
             self::SEKCJA_NAZWA
         ];
     }

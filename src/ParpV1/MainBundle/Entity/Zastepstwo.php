@@ -24,7 +24,7 @@ class Zastepstwo
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -39,7 +39,7 @@ class Zastepstwo
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $opis;
-    
+
     /**
      * @var string
      *
@@ -47,8 +47,8 @@ class Zastepstwo
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $ktoZastepuje;
-    
-    
+
+
     /**
      * @var string
      *
@@ -56,23 +56,25 @@ class Zastepstwo
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $kogoZastepuje;
-    
-    
+
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @Gedmo\Mapping\Annotation\Versioned
     */
     private $dataOd;
-    
-    
+
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @Gedmo\Mapping\Annotation\Versioned
     */
     private $dataDo;
-    
+
     /**
      * @var string
      *
@@ -80,8 +82,14 @@ class Zastepstwo
      * @@Gedmo\Mapping\Annotation\Versioned
      */
     private $wniosekHistoriaStatusu;
-    
-    
+
+     /**
+     * @var string|null
+     *
+     * @ORM\Column(name="lastModifiedBy", type="string", length=255, nullable=true)
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $lastModifiedBy;
 
     /**
      * Get id
@@ -290,5 +298,29 @@ class Zastepstwo
     public function getDataDo()
     {
         return $this->dataDo;
+    }
+
+    /**
+     * Set lastModifiedBy.
+     *
+     * @param string|null $lastModifiedBy
+     *
+     * @return Zastepstwo
+     */
+    public function setLastModifiedBy(?string $lastModifiedBy): Zastepstwo
+    {
+        $this->lastModifiedBy = $lastModifiedBy;
+
+        return $this;
+    }
+
+    /**
+     * Get lastModifiedBy.
+     *
+     * @return string|null
+     */
+    public function getLastModifiedBy(): ?string
+    {
+        return $this->lastModifiedBy;
     }
 }
