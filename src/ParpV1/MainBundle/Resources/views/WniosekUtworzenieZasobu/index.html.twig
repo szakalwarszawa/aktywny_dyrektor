@@ -24,6 +24,9 @@
     {% if(zastepstwa|length > 0) %}
         {{ include('ParpMainBundle:Zastepstwo:_zastepstwa_za_box.html.twig') }}
     {% endif %}
+    {% if(zastepuja_mnie|length > 0) %}
+        {{ include('ParpMainBundle:Zastepstwo:_zastepuja_mnie_box.html.twig') }}
+    {% endif %}
     <ul class="nav nav-tabs">
         <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'oczekujace'}) }}">Oczekujące na realizację</a></li>
         <li class="{{ ktore == "wtoku" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'wtoku'}) }}">W toku</a></li>

@@ -32,6 +32,27 @@ class ZastepstwoRepository extends EntityRepository
     }
 
     /**
+     * Znajduje osoby, które mają ustawione zastępstwo za wybraną osobę
+     *
+     * @param string $samaccountname
+     *
+     * @return array|null
+     */
+    public function znajdzKtoZastepuje(string $samaccountname): ?array
+    {
+        $queryBuilder = $this->createQueryBuilder('zk');
+        $now = new \Datetime();
+        $queryBuilder->select('z')
+            ->from('ParpMainBundle:Zastepstwo', 'z')
+            ->where('z.kogoZastepuje = :samaccountname')
+            ->andWhere('z.dataOd <= :now')
+            ->andWhere('z.dataDo >= :now')
+            ->setParameters(array('samaccountname' => $samaccountname, 'now' => $now));
+
+        return $queryBuilder->getQuery()->getResult();
+    }
+
+    /**
      * @param $samaccountname
      *
      * @return array
