@@ -58,7 +58,7 @@ class ZastepstwoController extends Controller
         $source->manipulateRow(
             function ($row) use ($now) {
                 if ($row->getField('dataOd') > $now) {
-                    $row->setColor('#cecece');
+                    $row->setColor('#d6e8f2');
                     $row->setField('opis', '<i class="fad fa-hourglass-half"></i> ' . $row->getField('opis'));
                 }
 
