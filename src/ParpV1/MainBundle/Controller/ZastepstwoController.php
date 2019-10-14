@@ -3,6 +3,7 @@
 namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -13,6 +14,7 @@ use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Export\ExcelExport;
+use DateTime;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Form\ZastepstwoType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -28,12 +30,41 @@ class ZastepstwoController extends Controller
     /**
      * Lists all Zastepstwo entities.
      *
-     * @Route("/index", name="zastepstwo")
-     * @Template()
+     * @Route("/index/{aktywne}", name="zastepstwo", defaults={"aktywne" : true})
+     *
+     * @param bool $aktywne
+     *
+     * @return Response
      */
-    public function indexAction()
+    public function indexAction(bool $aktywne = true): Response
     {
         $source = new Entity(Zastepstwo::class);
+        $now = new DateTime();
+
+        $tableAlias = $source->getTableAlias();
+        $source->manipulateQuery(
+            function ($query) use ($tableAlias, $now, $aktywne) {
+                if ($aktywne) {
+                    $query->andWhere($tableAlias . '.dataDo >= :now')
+                        ->setParameter(':now', $now)
+                        ->addOrderBy($tableAlias . '.dataDo', 'ASC');
+                } else {
+                    $query->andWhere($tableAlias . '.dataDo < :now')
+                        ->setParameter(':now', $now)
+                        ->addOrderBy($tableAlias . '.dataDo', 'DESC');
+                }
+            }
+        );
+        $source->manipulateRow(
+            function ($row) use ($now) {
+                if ($row->getField('dataOd') > $now) {
+                    $row->setColor('#cecece');
+                    $row->setField('opis', '<i class="fad fa-hourglass-half"></i> ' . $row->getField('opis'));
+                }
+
+                return $row;
+            }
+        );
 
         $grid = $this->get('grid');
         $grid->setSource($source);
@@ -60,12 +91,16 @@ class ZastepstwoController extends Controller
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
 
+
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         $grid->isReadyForRedirect();
 
-        return $grid->getGridResponse();
+        return $grid->getGridResponse("ParpMainBundle:Zastepstwo:index.html.twig", [
+                'aktywne' => $aktywne
+        ]);
     }
+
     /**
      * Creates a new Zastepstwo entity.
      *

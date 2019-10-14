@@ -16,6 +16,11 @@
     </div>
 </div>
 
+<ul class="nav nav-tabs">
+  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zastepstwo', {'aktywne': 1}) }}">Zastępstwa aktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zastepstwo', {'aktywne': 0}) }}">Zastępstwa nieaktywne</a></li>
+</ul>
+
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
 
 {% endblock %}
