@@ -1,45 +1,72 @@
 {% extends '::base.html.twig' %}
 
 {% block body -%}
-    <h1>Usuwanie: Zastępstwo</h1>
+    <h1>Zastępstwo</h1>
+    {% if entity.dataOd > date("now") %}
     <div class="alert alert-danger">
-        Czy na pewno chcesz skasować poniższy Zastepstwo ?
+        Czy na pewno chcesz skasować poniższe Zastępstwo?
     </div>
-    <table class="record_properties table table-striped">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ entity.id }}</td>
-            </tr>
-            <tr>
-                <th>Deletedat</th>
-                <td>{{ entity.deletedAt|date('Y-m-d H:i:s') }}</td>
-            </tr>
-            <tr>
-                <th>Opis</th>
-                <td>{{ entity.opis }}</td>
-            </tr>
-            <tr>
-                <th>Ktozastepuje</th>
-                <td>{{ entity.ktoZastepuje }}</td>
-            </tr>
-            <tr>
-                <th>Kogozastepuje</th>
-                <td>{{ entity.kogoZastepuje }}</td>
-            </tr>
-            <tr>
-                <th>Dataod</th>
-                <td>{{ entity.dataOd|date('Y-m-d H:i:s') }}</td>
-            </tr>
-            <tr>
-                <th>Datado</th>
-                <td>{{ entity.dataDo|date('Y-m-d H:i:s') }}</td>
-            </tr>
-        </tbody>
-    </table>
+    {% endif %}
+    <ul class="nav nav-tabs">
+        <li class="active">
+            <a data-toggle="tab" href="#general">Dane podstawowe</a>
+        </li>
+        <li>
+            <a data-toggle="tab" href="#historia">Historia wersji</a>
+        </li>
+    </ul>
+    <div class="tab-content">
+        <div id="general" class="tab-pane fade in active">
+            <table class="record_properties table table-striped">
+                <tbody>
+                    <tr>
+                        <th>Id</th>
+                        <td>{{ entity.id }}</td>
+                    </tr>
+                    <tr>
+                        <th>Usunięte dnia</th>
+                        <td>{{ entity.deletedAt ? entity.deletedAt|date('Y-m-d H:i:s') : '-' }}</td>
+                    </tr>
+                    <tr>
+                        <th>Opis</th>
+                        <td>{{ entity.opis }}</td>
+                    </tr>
+                    <tr>
+                        <th>Kto zastepuje</th>
+                        <td>{{ entity.ktoZastepuje|showFullname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Kogo zastepuje</th>
+                        <td>{{ entity.kogoZastepuje|showFullname }}</td>
+                    </tr>
+                    <tr>
+                        <th>Data od</th>
+                        <td>{{ entity.dataOd|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                    <tr>
+                        <th>Data do</th>
+                        <td>{{ entity.dataDo|date('Y-m-d H:i:s') }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-        <div class="btn-group">
+        <div id="historia" class="tab-pane fade">
+            <div class="tabContent">
+                {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Zastepstwo', id: entity.id})) }}
+            </div>
+        </div>
+    </div>
 
-    {{ form(delete_form) }}
-</div>
+    <div class="btn-group">
+        <a class="btn btn-primary" href="{{ path('zastepstwo') }}"><i class="fas fa-list"></i> Powrót do listy</a>
+        {% if entity.dataDo > date("now") %}
+        <a class="btn btn-warning" href="{{ path('zastepstwo_edit', {'id': entity.id}) }}"><i class="fas fa-pencil"></i> Edycja</a><br />
+        {% endif %}
+    </div>
+
+    {% if entity.dataOd > date("now") %}
+        {{ form(delete_form) }}
+    {% endif %}
+
 {% endblock %}

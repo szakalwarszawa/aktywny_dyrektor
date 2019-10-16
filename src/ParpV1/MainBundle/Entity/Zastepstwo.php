@@ -1,9 +1,14 @@
-<?php
+<?php declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Entity;
 
 use APY\DataGridBundle\Grid\Mapping as GRID;
+use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use ParpV1\MainBundle\Validator as ZastepstwoAssert;
+use ParpV1\MainBundle\Entity\Wniosek;
+use Doctrine\Common\Collections\ArrayCollection;
 
 /**
  * Zastepstwo
@@ -13,6 +18,7 @@ use Doctrine\ORM\Mapping as ORM;
  * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis, ktoZastepuje, kogoZastepuje, dataOd, dataDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
+ * @ZastepstwoAssert\Zastepstwa
  */
 class Zastepstwo
 {
@@ -26,7 +32,8 @@ class Zastepstwo
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
@@ -37,6 +44,7 @@ class Zastepstwo
      *
      * @ORM\Column(type="text", length=5000, nullable=true)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @Assert\Length(min=10)
      */
     private $opis;
 
@@ -45,33 +53,48 @@ class Zastepstwo
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @Assert\NotBlank()
      */
     private $ktoZastepuje;
-
 
     /**
      * @var string
      *
      * @ORM\Column(type="string", length=255)
      * @Gedmo\Mapping\Annotation\Versioned
+     * @Assert\NotBlank()
      */
     private $kogoZastepuje;
 
-
     /**
-     * @var \DateTime
+     * @var DateTime
+     *
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
      * @Gedmo\Mapping\Annotation\Versioned
+     * @Assert\Type("DateTime")
+     * @Assert\Expression(
+     *      "this.getDataOd() <=  this.getDataDo()",
+     *      message="Data rozpoczęcia nie może być późniejsza od daty końca zastępstwa!"
+     * )
     */
     private $dataOd;
 
-
     /**
-     * @var \DateTime
+     * @var DateTime
+     *
      * @ORM\Column(type="datetime", nullable=false)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
      * @Gedmo\Mapping\Annotation\Versioned
+     * @Assert\Type("DateTime")
+     * @Assert\Expression(
+     *      "this.getDataDo() >=  this.getDataOd()",
+     *      message="Data końcowa nie może być wczesniejsza od daty rozpoczęcia zastępstwa!"
+     * )
+     * @Assert\Expression(
+     *      "this.getDataDo() > this.getCurrentDate()",
+     *      message="Data końcowa nie może być datą przeszłą!"
+     * )
     */
     private $dataDo;
 
@@ -96,7 +119,7 @@ class Zastepstwo
      *
      * @return integer
      */
-    public function getId()
+    public function getId(): int
     {
         return $this->id;
     }
@@ -104,11 +127,11 @@ class Zastepstwo
     /**
      * Set deletedAt
      *
-     * @param \DateTime $deletedAt
+     * @param DateTime|null $deletedAt
      *
      * @return Zastepstwo
      */
-    public function setDeletedAt($deletedAt)
+    public function setDeletedAt(?DateTime $deletedAt): Zastepstwo
     {
         $this->deletedAt = $deletedAt;
 
@@ -118,9 +141,9 @@ class Zastepstwo
     /**
      * Get deletedAt
      *
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getDeletedAt()
+    public function getDeletedAt(): ?DateTime
     {
         return $this->deletedAt;
     }
@@ -132,7 +155,7 @@ class Zastepstwo
      *
      * @return Zastepstwo
      */
-    public function setOpis($opis)
+    public function setOpis(string $opis): Zastepstwo
     {
         $this->opis = $opis;
 
@@ -142,9 +165,9 @@ class Zastepstwo
     /**
      * Get opis
      *
-     * @return string
+     * @return string|null
      */
-    public function getOpis()
+    public function getOpis(): ?string
     {
         return $this->opis;
     }
@@ -156,7 +179,7 @@ class Zastepstwo
      *
      * @return Zastepstwo
      */
-    public function setKtoZastepuje($ktoZastepuje)
+    public function setKtoZastepuje(string $ktoZastepuje): Zastepstwo
     {
         $this->ktoZastepuje = $ktoZastepuje;
 
@@ -166,9 +189,9 @@ class Zastepstwo
     /**
      * Get ktoZastepuje
      *
-     * @return string
+     * @return string|null
      */
-    public function getKtoZastepuje()
+    public function getKtoZastepuje(): ?string
     {
         return $this->ktoZastepuje;
     }
@@ -180,7 +203,7 @@ class Zastepstwo
      *
      * @return Zastepstwo
      */
-    public function setKogoZastepuje($kogoZastepuje)
+    public function setKogoZastepuje(string $kogoZastepuje): Zastepstwo
     {
         $this->kogoZastepuje = $kogoZastepuje;
 
@@ -190,9 +213,9 @@ class Zastepstwo
     /**
      * Get kogoZastepuje
      *
-     * @return string
+     * @return string|null
      */
-    public function getKogoZastepuje()
+    public function getKogoZastepuje(): ?string
     {
         return $this->kogoZastepuje;
     }
@@ -200,11 +223,11 @@ class Zastepstwo
     /**
      * Set wniosekHistoriaStatusu
      *
-     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param Wniosek|null $wniosekHistoriaStatusu
      *
      * @return Zastepstwo
      */
-    public function setWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu = null)
+    public function setWniosekHistoriaStatusu(?Wniosek $wniosekHistoriaStatusu): Zastepstwo
     {
         $this->wniosekHistoriaStatusu = $wniosekHistoriaStatusu;
 
@@ -214,9 +237,9 @@ class Zastepstwo
     /**
      * Get wniosekHistoriaStatusu
      *
-     * @return \ParpV1\MainBundle\Entity\Wniosek
+     * @return Wniosek|null
      */
-    public function getWniosekHistoriaStatusu()
+    public function getWniosekHistoriaStatusu(): ?Wniosek
     {
         return $this->wniosekHistoriaStatusu;
     }
@@ -225,17 +248,17 @@ class Zastepstwo
      */
     public function __construct()
     {
-        $this->wniosekHistoriaStatusu = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->wniosekHistoriaStatusu = new ArrayCollection();
     }
 
     /**
      * Add wniosekHistoriaStatusu
      *
-     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param Wniosek $wniosekHistoriaStatusu
      *
      * @return Zastepstwo
      */
-    public function addWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    public function addWniosekHistoriaStatusu(Wniosek $wniosekHistoriaStatusu): Zastepstwo
     {
         $this->wniosekHistoriaStatusu[] = $wniosekHistoriaStatusu;
 
@@ -245,9 +268,9 @@ class Zastepstwo
     /**
      * Remove wniosekHistoriaStatusu
      *
-     * @param \ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu
+     * @param Wniosek $wniosekHistoriaStatusu
      */
-    public function removeWniosekHistoriaStatusu(\ParpV1\MainBundle\Entity\Wniosek $wniosekHistoriaStatusu)
+    public function removeWniosekHistoriaStatusu(Wniosek $wniosekHistoriaStatusu)
     {
         $this->wniosekHistoriaStatusu->removeElement($wniosekHistoriaStatusu);
     }
@@ -255,11 +278,11 @@ class Zastepstwo
     /**
      * Set dataOd
      *
-     * @param \DateTime $dataOd
+     * @param DateTime $dataOd
      *
      * @return Zastepstwo
      */
-    public function setDataOd($dataOd)
+    public function setDataOd(DateTime $dataOd): Zastepstwo
     {
         $this->dataOd = $dataOd;
 
@@ -269,9 +292,9 @@ class Zastepstwo
     /**
      * Get dataOd
      *
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getDataOd()
+    public function getDataOd(): ?DateTime
     {
         return $this->dataOd;
     }
@@ -279,11 +302,11 @@ class Zastepstwo
     /**
      * Set dataDo
      *
-     * @param \DateTime $dataDo
+     * @param DateTime $dataDo
      *
      * @return Zastepstwo
      */
-    public function setDataDo($dataDo)
+    public function setDataDo(DateTime $dataDo): Zastepstwo
     {
         $this->dataDo = $dataDo;
 
@@ -293,9 +316,9 @@ class Zastepstwo
     /**
      * Get dataDo
      *
-     * @return \DateTime
+     * @return DateTime|null
      */
-    public function getDataDo()
+    public function getDataDo(): ?DateTime
     {
         return $this->dataDo;
     }
@@ -322,5 +345,15 @@ class Zastepstwo
     public function getLastModifiedBy(): ?string
     {
         return $this->lastModifiedBy;
+    }
+
+    /**
+     * Get Current Date.
+     *
+     * @return DateTime
+     */
+    public function getCurrentDate(): DateTime
+    {
+        return new DateTime();
     }
 }

@@ -78,22 +78,44 @@ class ZastepstwoController extends Controller
                 ->setFilterable(false)
                 ->setSafe(true);
 
+        // Podgląd zastępstwa
+        $rowAction1 = new RowAction('<i class="far fa-search"></i> Podgląd', 'zastepstwo_show');
+        $rowAction1->setColumn('akcje');
+        $rowAction1->addAttribute('class', 'btn btn-info btn-xs');
+
         // Edycja zastępstwa
         $rowAction2 = new RowAction('<i class="fas fa-pencil"></i> Edycja', 'zastepstwo_edit');
         $rowAction2->setColumn('akcje');
         $rowAction2->addAttribute('class', 'btn btn-success btn-xs');
+        $rowAction2->addManipulateRender(
+            function ($action, $row) use ($now) {
+                if ($row->getField('dataDo') > $now) {
+                    return $action;
+                } else {
+                    return null;
+                }
+            }
+        );
 
         // Usunięcie zastępstwa
         $rowAction3 = new RowAction('<i class="far fa-trash-alt"></i> Skasuj', 'zastepstwo_delete');
         $rowAction3->setColumn('akcje');
         $rowAction3->addAttribute('class', 'btn btn-danger btn-xs');
+        $rowAction3->addManipulateRender(
+            function ($action, $row) use ($now) {
+                if ($row->getField('dataOd') > $now) {
+                    return $action;
+                } else {
+                    return null;
+                }
+            }
+        );
 
+        $grid->addRowAction($rowAction1);
         $grid->addRowAction($rowAction2);
         $grid->addRowAction($rowAction3);
 
-
         $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
-
         $grid->isReadyForRedirect();
 
         return $grid->getGridResponse("ParpMainBundle:Zastepstwo:index.html.twig", [
@@ -210,7 +232,10 @@ class ZastepstwoController extends Controller
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
         }
 
-        if (!in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles()) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()) {
+        if (!in_array("PARP_ADMIN", $this->getUser()->getRoles())
+            && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())
+            && $entity->getKogoZastepuje() != $this->getUser()->getUsername()
+            ) {
             $this->addFlash('warning', 'Nie masz uprawnień do edycji nie swoich zastępstw.');
             return $this->redirect($this->generateUrl('zastepstwo'));
         }
@@ -234,6 +259,12 @@ class ZastepstwoController extends Controller
     */
     private function createEditForm(Zastepstwo $entity)
     {
+        $now = new DateTime();
+
+        if ($entity->getDataDo() < $now) {
+            $this->addFlash('danger', 'Nie można edytować zakończonych zastępstw. Wprowadzone zmiany nie zostaną zapisane.');
+        }
+
         $form = $this->createForm(ZastepstwoType::class, $entity, array(
             'current_user' => $this->getUser(),
             'ad_users' => $this->getUsersFromAD(),
@@ -255,11 +286,17 @@ class ZastepstwoController extends Controller
     public function updateAction(Request $request, $id)
     {
         $entityManager = $this->getDoctrine()->getManager();
+        $now = new DateTime();
 
         $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
             throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
+        }
+
+        if ($entity->getDataDo() < $now) {
+            $this->addFlash('danger', 'Nie można edytować zakończonych zastępstw.');
+            return $this->redirectToRoute('zastepstwo');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -289,6 +326,7 @@ class ZastepstwoController extends Controller
     {
         $form = $this->createDeleteForm($id);
         $form->handleRequest($request);
+        $now = new DateTime();
 
         if ($form->isValid()) {
             $entityManager = $this->getDoctrine()->getManager();
@@ -298,7 +336,15 @@ class ZastepstwoController extends Controller
                 throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
             }
 
-            if (!in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles()) && $entity->getKogoZastepuje() != $this->getUser()->getUsername()) {
+            if ($entity->getDataOd() < $now) {
+                $this->addFlash('danger', 'Nie można usuwać rozpoczętych zastępstw.');
+                return $this->redirectToRoute('zastepstwo');
+            }
+
+            if (!in_array("PARP_ADMIN", $this->getUser()->getRoles())
+                && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())
+                && $entity->getKogoZastepuje() != $this->getUser()->getUsername()
+            ) {
                 $this->addFlash('warning', 'Nie masz uprawnień do usunięcia nie swoich zastępstw.');
             } else {
                 $entityManager->remove($entity);
