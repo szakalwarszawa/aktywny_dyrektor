@@ -142,3 +142,8 @@ services:
         tags:
             - { name: doctrine.event_listener, event: prePersist, lazy: true }
             - { name: doctrine.event_listener, event: postFlush, lazy: true }
+    zastepstwa.validator:
+        class : ParpV1\MainBundle\Validator\ZastepstwaValidator
+        arguments: ['@doctrine.orm.entity_manager']
+        tags:
+            - { name: validator.constraint_validator }
