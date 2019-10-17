@@ -141,7 +141,7 @@ class ZastepstwoController extends Controller
             $entityManager->persist($entity);
             $entityManager->flush();
 
-            $this->addFlash('warning', 'Zastepstwo zostało utworzone.');
+            $this->addFlash('warning', 'Zastępstwo zostało utworzone.');
 
             return $this->redirect($this->generateUrl('zastepstwo'));
         }
@@ -168,7 +168,7 @@ class ZastepstwoController extends Controller
             'method' => 'POST',
         ));
 
-        $form->add('submit', SubmitType::class, array('label' => 'Utwórz Zastepstwo', 'attr' => array('class' => 'btn btn-success' )));
+        $form->add('submit', SubmitType::class, array('label' => 'Dodaj zastępstwo', 'attr' => array('class' => 'btn btn-success' )));
 
         return $form;
     }
@@ -205,7 +205,7 @@ class ZastepstwoController extends Controller
         $entity = $em->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
+            throw $this->createNotFoundException('Podane zastępstwo nie zostało odnalezione.');
         }
 
         $deleteForm = $this->createDeleteForm($id);
@@ -229,7 +229,7 @@ class ZastepstwoController extends Controller
         $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
+            throw $this->createNotFoundException('Podane zastępstwo nie zostało odnalezione.');
         }
 
         if (!in_array("PARP_ADMIN", $this->getUser()->getRoles())
@@ -291,7 +291,7 @@ class ZastepstwoController extends Controller
         $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
         if (!$entity) {
-            throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
+            throw $this->createNotFoundException('Podane zastępstwo nie zostało odnalezione.');
         }
 
         if ($entity->getDataDo() < $now) {
@@ -333,7 +333,7 @@ class ZastepstwoController extends Controller
             $entity = $entityManager->getRepository(Zastepstwo::class)->find($id);
 
             if (!$entity) {
-                throw $this->createNotFoundException('Unable to find Zastepstwo entity.');
+                throw $this->createNotFoundException('Podane zastępstwo nie zostało odnalezione.');
             }
 
             if ($entity->getDataOd() < $now) {
@@ -368,7 +368,7 @@ class ZastepstwoController extends Controller
         return $this->createFormBuilder()
             ->setAction($this->generateUrl('zastepstwo_delete', array('id' => $id)))
             ->setMethod('DELETE')
-            ->add('submit', SubmitType::class, array('label' => 'Skasuj Zastępstwo','attr' => array('class' => 'btn btn-danger' )))
+            ->add('submit', SubmitType::class, array('label' => 'Skasuj zastępstwo','attr' => array('class' => 'btn btn-danger' )))
             ->getForm()
         ;
     }

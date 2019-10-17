@@ -20,11 +20,15 @@ class ZastepstwoType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('opis', TextareaType::class, ['required' => true])
+            ->add('opis', TextareaType::class, [
+                'required' => true,
+                'label' => 'Powód',
+                ])
             ->add('ktoZastepuje', ChoiceType::class, array(
                 'choices' => array_flip($options['ad_users']),
                 'required' => true,
                 'label' => 'Kto zastępuje',
+                'placeholder' => 'Proszę wybrać',
                 'attr' => array(
                     'class' => 'select2'
                 )
@@ -36,6 +40,7 @@ class ZastepstwoType extends AbstractType
                 'choices' => array_flip($options['ad_users']),
                 'required' => true,
                 'label' => 'Kogo zastępuje',
+                'placeholder' => 'Proszę wybrać',
                 'attr' => array(
                     'class' => 'select2'
                 )
@@ -45,6 +50,7 @@ class ZastepstwoType extends AbstractType
                     'choices' => array_flip($options['ad_users']),
                     'required' => true,
                     'label' => 'Kogo zastępuje',
+                    'placeholder' => 'Proszę wybrać',
                     'attr' => array(
                         'class' => 'select2'
                     )
@@ -64,7 +70,7 @@ class ZastepstwoType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
                     ),
-                    'label' => 'Data od',
+                    'label' => 'Od kiedy',
                     'label_attr' => array(
                         'class' => 'zastepstwo-data-od',
                     ),
@@ -77,7 +83,7 @@ class ZastepstwoType extends AbstractType
                     'attr' => array(
                         'class' => 'form-control datetimepicker',
                     ),
-                    'label' => 'Data do',
+                    'label' => 'Do kiedy',
                     'label_attr' => array(
                         'class' => 'zastepstwo-data-do',
                     ),

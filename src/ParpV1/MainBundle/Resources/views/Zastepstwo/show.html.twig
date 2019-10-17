@@ -28,23 +28,23 @@
                         <td>{{ entity.deletedAt ? entity.deletedAt|date('Y-m-d H:i:s') : '-' }}</td>
                     </tr>
                     <tr>
-                        <th>Opis</th>
+                        <th>Powód</th>
                         <td>{{ entity.opis }}</td>
                     </tr>
                     <tr>
-                        <th>Kto zastepuje</th>
+                        <th>Kto zastępuje</th>
                         <td>{{ entity.ktoZastepuje|showFullname }}</td>
                     </tr>
                     <tr>
-                        <th>Kogo zastepuje</th>
+                        <th>Kogo zastępuje</th>
                         <td>{{ entity.kogoZastepuje|showFullname }}</td>
                     </tr>
                     <tr>
-                        <th>Data od</th>
+                        <th>Od kiedy</th>
                         <td>{{ entity.dataOd|date('Y-m-d H:i:s') }}</td>
                     </tr>
                     <tr>
-                        <th>Data do</th>
+                        <th>Do kiedy</th>
                         <td>{{ entity.dataDo|date('Y-m-d H:i:s') }}</td>
                     </tr>
                 </tbody>
@@ -59,7 +59,7 @@
     </div>
 
     <div class="btn-group">
-        <a class="btn btn-primary" href="{{ path('zastepstwo') }}"><i class="fas fa-list"></i> Powrót do listy</a>
+        <a class="btn btn-primary" href="{{ path('zastepstwo') }}"><i class="fas fa-list"></i> Powrót do listy zastępstw</a>
         {% if entity.dataDo > date("now") %}
         <a class="btn btn-warning" href="{{ path('zastepstwo_edit', {'id': entity.id}) }}"><i class="fas fa-pencil"></i> Edycja</a><br />
         {% endif %}
