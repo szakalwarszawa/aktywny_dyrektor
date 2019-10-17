@@ -6,6 +6,8 @@ use ParpV1\JasperReportsBundle\Constants\ReportFormat;
 use ParpV1\JasperReportsBundle\Connection\JasperConnection;
 use UnexpectedValueException;
 use Jaspersoft\Exception\RESTRequestException;
+use ParpV1\JasperReportsBundle\Constants\RaportInputParameters;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorage;
 
 /**
  * Drukarka raportów jasper.
@@ -18,13 +20,20 @@ class ReportPrint
     private $jasperConnection;
 
     /**
+     * @var TokenStorage
+     */
+    private $tokenStorage;
+
+    /**
      * Konstruktor
      *
      * @param JasperConnection $jasperConnection
+     * @param TokenStorage     $tokenStorage
      */
-    public function __construct(JasperConnection $jasperConnection)
+    public function __construct(JasperConnection $jasperConnection, TokenStorage $tokenStorage)
     {
         $this->jasperConnection = $jasperConnection;
+        $this->tokenStorage = $tokenStorage;
     }
 
     /**
@@ -38,6 +47,7 @@ class ReportPrint
      */
     public function printReport($reportUri, string $format = ReportFormat::PDF, ?array $inputControls = null): ?string
     {
+
         if (!in_array($format, ReportFormat::getFormats())) {
             throw new UnexpectedValueException('Niewspierany format raportu');
         }
@@ -50,6 +60,8 @@ class ReportPrint
             ->jasperConnection
             ->getReportService()
         ;
+
+        $inputControls[RaportInputParameters::LOGIN_PARAMETER] = $this->tokenStorage->getToken()->getUsername();
 
         try {
             return $reportService->runReport($reportUri, $format, null, null, $inputControls);

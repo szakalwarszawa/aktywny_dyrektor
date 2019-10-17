@@ -1,17 +1,20 @@
 image: "gitlab.parp.gov.pl:5055/ci/aktywny_dyrektor:latest"
-    
+
 stages:
     - build
     - test
     - quality
     - stats
+    - security
     - doc
+    - tests
     - postbuild
 
-build:
+# stage wyłączony - na razi nie jest do niczego potrzebny
+.build:
     stage: build
     script:
-        - /usr/bin/composer.phar global show -i > .gitlab-ci/gitlab-ci-composer.dump
+        - /usr/bin/composer.phar global show > .gitlab-ci/gitlab-ci-composer.dump
         - php -d memory_limit=5G /usr/bin/composer.phar install --prefer-dist --no-suggest --no-progress --no-interaction
     artifacts:
         expire_in: 4 days
@@ -80,6 +83,12 @@ tidyhtml:
         - tidy --gnu-emacs true --doctype omit -e ./src/ParpV1/*
         - tidy --gnu-emacs true --doctype omit -e ./app/Resources/views/*
 
+yarn_audit:
+    stage: security
+    allow_failure: false
+    script:
+        - '/usr/bin/yarn audit'
+
 sami:
     stage: doc
     allow_failure: true
@@ -91,6 +100,18 @@ sami:
         expire_in: 1 day
         paths:
             - .gitlab-ci/doc/api/
+
+testy_autom_start:
+    stage: tests
+    allow_failure: true
+    script:
+        - echo "Wykonuję wymagane testy automatyczne..."
+        - apk add jq
+        - curl -X POST -s -F token=$TOKEN_TESTY -F ref=development https://gitlab.parp.gov.pl/api/v4/projects/130/trigger/pipeline | jq '.id, .status' | tee .pipeline_id
+    when: manual
+    only:
+      refs:
+        - development
 
 automerge:
     stage: postbuild

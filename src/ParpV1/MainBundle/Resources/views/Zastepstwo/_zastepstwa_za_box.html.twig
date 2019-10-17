@@ -1,0 +1,37 @@
+<br />
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Uwaga, obecnie masz aktywne zastępstw{{ zastepstwa|length > 1 ? "a" : "o" }} za: </strong>
+    {% for z in zastepstwa %}
+        <span data-toggle="popover" title="Zastępstwo" data-placement="right" data-content="Zastępstwo za: {{ z.kogoZastepuje|showFullname }} <br />od  {{ z.dataOd|date("Y-m-d") }} do {{ z.datado|date("Y-m-d") }}"> {{ z.kogoZastepuje|showFullname }}</span>{{ loop.last ? ' ' : ', ' }}
+    {% endfor %}
+    <a class="btn-xs btn-primary" role="button" data-toggle="collapse" href="#zastepstwaOpis" aria-expanded="false" aria-controls="zastepstwaOpis">
+        <i class="fas fa-file-search"></i> Szczegóły
+    </a>
+    <div class="collapse" id="zastepstwaOpis">
+        <br/>
+        <div class="row">
+            <div class="well col-md-7">
+                <p>Obecnie możesz akceptować wnioski w imieniu osoby zastępowanej.
+                Jeśli chciał{{ (zastepstwa[0].ktoZastepuje|split('_')[0]|last == 'a') ? 'a' : '' }}byś to zmienić, skontaktuj się z autorem zastępstwa.
+                </p>
+                <table class="table table-condensed table-bordered small">
+                    <tr>
+                        <th>Zastępstwo za</th>
+                        <th>Od</th>
+                        <th>Do</th>
+                        <th>Autor zastępstwa</th>
+                    </tr>
+                {% for zastepstwo_row in zastepstwa %}
+                    <tr>
+                        <td>{{ zastepstwo_row.kogoZastepuje|showFullname }}</td>
+                        <td>{{ zastepstwo_row.dataOd|date("Y-m-d") }}</td>
+                        <td>{{ zastepstwo_row.datado|date("Y-m-d") }}</td>
+                        <td>{{ zastepstwo_row.lastModifiedBy|showFullname }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
