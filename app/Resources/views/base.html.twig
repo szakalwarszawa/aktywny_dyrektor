@@ -52,7 +52,7 @@
                         <ul class="nav navbar-nav">
 
                             {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
-                            <li class="dropdown">
+                            <li class="dropdown" id="top-menu-kadry">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy w AD</a></li>
@@ -68,7 +68,7 @@
                             {% endif %}
 
                             {% if "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                                <li class="dropdown" id="top-menu-slowniki">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
@@ -87,7 +87,7 @@
                                 </li>
                             {% endif %}
 
-                            <li class="dropdown">
+                            <li class="dropdown" id="top-menu-zasoby">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('zasoby') }}"><i class="fa fa-database"></i> Zasoby</a></li>
@@ -100,7 +100,7 @@
                             </li>
 
                             {% if "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                                <li class="dropdown" id="top-menu-dev">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-user-cog"></i> DEV <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li class=""><a href="{{ path('listLogs') }}"><i class="fal fa-file-alt"></i> Logi z wypychania do AD</a></li>
@@ -118,7 +118,7 @@
                             {% endif %}
 
                             {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                                <li class="dropdown" id="top-menu-raporty">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-file-chart-line"></i> Raporty <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         {% if "PARP_BZK_RAPORTY" in app.user.roles %}
@@ -133,14 +133,14 @@
                             {% endif %}
                         </ul>
 
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right" id="top-menu-user">
                             <li class="dropdown red-tooltip"
                                 data-toggle="popover"
                                 title="Role w systemie AkD:"
                                 data-content="{{ app.user.getRolesHtml }}"
                                 data-placement="left">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu" id="top-menu-logout">
                                         <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
                                     </ul>
                             </li>
