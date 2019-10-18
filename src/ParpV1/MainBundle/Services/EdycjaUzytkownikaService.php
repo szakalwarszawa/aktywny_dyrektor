@@ -286,7 +286,9 @@ class EdycjaUzytkownikaService
             $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
         }
 
-        if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]) {
+        if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]
+            || AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC === $formData[AdUserConstants::POWOD_WYLACZENIA]
+        ) {
             $entry->setMemberOf(null);
         }
 

@@ -479,7 +479,9 @@ class LdapAdminService
 
             if ($person->getIsDisabled()) {
                 $entry['description'] = $person->getDisableDescription();
-                if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
+                if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY
+                    || $person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
+                ) {
                     $grupyWszystkie = $userAD[0]['memberOf'];
                     $person->addGrupyAD($grupyWszystkie, '-');
                 }
