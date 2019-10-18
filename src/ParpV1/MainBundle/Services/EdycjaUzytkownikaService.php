@@ -425,7 +425,14 @@ class EdycjaUzytkownikaService
             if (!isset($changedElements['DISABLE'])) {
                 throw new LogicException('Nie określono powodu wyłączenia.');
             }
-            $applicationCancellationReason = $dictionary->get('disable');
+            switch ($changedElements['DISABLE']) {
+                case 'wyl_konta_rozwiazanie_umowy':
+                    $applicationCancellationReason = $dictionary->get('disable_rozwiazanie_umowy');
+                    break;
+                case 'wyl_konta_nieobecnosc':
+                    $applicationCancellationReason = $dictionary->get('disable_nieobecnosc');
+                    break;
+            }
         }
 
         if (null === $applicationCancellationReason) {
