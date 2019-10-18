@@ -12,7 +12,7 @@ class Zastepstwa extends Constraint
     /**
      * @var string
      */
-    public $formularzZawieraBledy = 'Formularz zawiera bledy!';
+    public $formularzZawieraBledy = 'Formularz zawiera błędy!';
 
     /**
      * @var string
