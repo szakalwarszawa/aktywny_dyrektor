@@ -736,6 +736,10 @@ class UprawnieniaService
             $template = ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY;
         }
 
+        if (WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC_TITLE === $powodOdebrania) {
+            $template = ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_DLUGOTRWALA_NIEOBECNOSC;
+        }
+
         foreach ($przeprocesowneZasoby as $zasob) {
             if (WniosekStatus::ODEBRANO_ADMINISTRACYJNIE  === $zasob['status']) {
                 $userZasob = $entityManager

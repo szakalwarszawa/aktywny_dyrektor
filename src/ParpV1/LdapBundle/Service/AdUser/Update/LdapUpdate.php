@@ -637,7 +637,7 @@ class LdapUpdate extends Simulation
             }
 
 
-            if ($disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
+            if ($disableReason === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY || $disableReason === AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC) {
                 $this->removeAllUserGroups($adUser, $entry);
 
                 if (!$simulateProcess) {
