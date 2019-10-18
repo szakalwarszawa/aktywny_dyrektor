@@ -897,9 +897,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $maBycIbi = false;
                             foreach ($wniosek->getUserZasoby() as $uz) {
                                 $maBycIbi =
-                                    $maBycIbi ||
-                                    $uz->getUprawnieniaAdministracyjne() ||
-                                    $wniosek->getPracownikSpozaParp();
+                                    $maBycIbi
+                                    || $uz->getUprawnieniaAdministracyjne();
                             }
 
                             if ($maBycIbi) {
@@ -940,9 +939,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $maBycIbi = false;
                             foreach ($wniosek->getUSerZasoby() as $uz) {
                                 $maBycIbi =
-                                    $maBycIbi ||
-                                    $uz->getUprawnieniaAdministracyjne() ||
-                                    $wniosek->getPracownikSpozaParp();
+                                    $maBycIbi
+                                    || $uz->getUprawnieniaAdministracyjne();
                             }
                             if ($maBycIbi) {
                                 $this->setWniosekStatus($wniosek, '04_EDYCJA_IBI', false);
