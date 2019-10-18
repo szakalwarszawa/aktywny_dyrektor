@@ -70,7 +70,8 @@ class AdUserConstants extends Attributes
             self::PRZELOZONY,
             self::SEKCJA_NAZWA,
             self::WYGASA,
-            self::WYLACZONE
+            self::WYLACZONE,
+            self::DODATKOWY_PODPIS
         ];
     }
 

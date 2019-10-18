@@ -131,6 +131,23 @@ class AdUserHelper
         return $value;
     }
 
+
+    /**
+     * Zwraca dodatkowy podpis w stopce maila
+     *
+     * @return string|null
+     */
+    public static function getDodatkowyPodpis(): ?string
+    {
+        if (isset(self::$adUser[AdUserConstants::DODATKOWY_PODPIS])) {
+            $value = self::$adUser[AdUserConstants::DODATKOWY_PODPIS];
+        } else {
+            return null;
+        }
+
+        return $value;
+    }
+
     /**
      * Zwraca datę wygaśnięcia konta
      *

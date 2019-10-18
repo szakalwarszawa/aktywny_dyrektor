@@ -122,4 +122,11 @@ class Attributes
      * @var string
      */
     const OUTLOOK_UKRYCIE_W_KSIAZCE = 'msExchHideFromAddressLists';
+
+    /**
+     * Dodatkowa linia w podpisie maili (pod stanowiskiem).
+     *
+     * @var string
+     */
+    const DODATKOWY_PODPIS = 'extensionAttribute10';
 }

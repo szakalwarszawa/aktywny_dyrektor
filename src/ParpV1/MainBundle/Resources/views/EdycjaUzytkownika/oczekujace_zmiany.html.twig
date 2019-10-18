@@ -8,6 +8,7 @@
                     <th>Departament</th>
                     <th>Przełożony</th>
                     <th>Stanowisko</th>
+                    <th>Dodatkowy podpis</th>
                     <th>Sekcja</th>
                     <th>Uprawnienia początkowe</th>
                     <th>Od kiedy</th>
@@ -22,6 +23,7 @@
                         <td>{{ row.department }}</td>
                         <td>{{ row.manager|parseAdString('CN') }}</td>
                         <td>{{ row.title }}</td>
+                        <td>{{ row.dodatkowyPodpis }}</td>
                         <td>{{ row.info }}</td>
                         <td>
                             {% if row.odebranieZasobowEntry is not null %}

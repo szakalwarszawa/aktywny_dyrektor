@@ -164,6 +164,7 @@ class EdycjaUzytkownikaService
             )
             ->setCreatedAt(new DateTime())
             ->setActivateDeactivated(true)
+            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         $this
@@ -265,6 +266,7 @@ class EdycjaUzytkownikaService
             ->setCreatedAt(new DateTime())
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($changeDate($formData['zmianaOd']))
+            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         if ($createOdebranieZasobowEntry) {

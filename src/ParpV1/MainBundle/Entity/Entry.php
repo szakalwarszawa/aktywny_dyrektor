@@ -298,6 +298,15 @@ class Entry
     protected $renaming = false;
 
     /**
+     * Dodatkowa linia podpisu w stopce maili
+     *
+     * @var string
+     *
+     * @ORM\Column(type="string", length=255, nullable=true)
+     */
+    private $dodatkowyPodpis;
+
+    /**
      * Get id
      *
      * @return integer
@@ -1013,6 +1022,30 @@ class Entry
     public function setRenaming(bool $renaming): Entry
     {
         $this->renaming = $renaming;
+
+        return $this;
+    }
+
+    /**
+     * Get dodatkowyPodpis.
+     *
+     * @return string|null
+     */
+    public function getDodatkowyPodpis(): ?string
+    {
+        return $this->dodatkowyPodpis;
+    }
+
+    /**
+     * Set dodatkowyPodpis
+     *
+     * @param string|null $dodatkowyPodpis
+     *
+     * @return Entry
+     */
+    public function setDodatkowyPodpis(?string $dodatkowyPodpis): Entry
+    {
+        $this->dodatkowyPodpis = $dodatkowyPodpis;
 
         return $this;
     }
