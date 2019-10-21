@@ -302,9 +302,9 @@ class Entry
      *
      * @var string
      *
-     * @ORM\Column(type="string", length=255, nullable=true)
+     * @ORM\Column(name="extensionAttribute10", type="string", length=255, nullable=true)
      */
-    private $dodatkowyPodpis;
+    private $extensionAttribute10;
 
     /**
      * Get id
@@ -1027,25 +1027,25 @@ class Entry
     }
 
     /**
-     * Get dodatkowyPodpis.
+     * Get extensionAttribute10.
      *
      * @return string|null
      */
-    public function getDodatkowyPodpis(): ?string
+    public function getExtensionAttribute10(): ?string
     {
-        return $this->dodatkowyPodpis;
+        return $this->extensionAttribute10;
     }
 
     /**
-     * Set dodatkowyPodpis
+     * Set extensionAttribute10
      *
-     * @param string|null $dodatkowyPodpis
+     * @param string|null $extensionAttribute10
      *
      * @return Entry
      */
-    public function setDodatkowyPodpis(?string $dodatkowyPodpis): Entry
+    public function setExtensionAttribute10(?string $extensionAttribute10): Entry
     {
-        $this->dodatkowyPodpis = $dodatkowyPodpis;
+        $this->extensionAttribute10 = $extensionAttribute10;
 
         return $this;
     }

@@ -56,8 +56,8 @@ class LdapService
         'distinguishedName',
         'cn',
         'mailnickname',
-        'memberOf'
-            //"extensionAttribute14"
+        'memberOf',
+        'extensionAttribute10',
     );
 
     public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
@@ -922,7 +922,7 @@ class LdapService
                 $result[$i]['distinguishedname'] = $tmpResult['distinguishedname'][0];
                 $result[$i]['cn'] = $tmpResult['cn'][0];
                 $result[$i]['memberOf'] = $this->parseMemberOf($tmpResult);
-                //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
+                $result[$i]['extensionAttribute10'] =  isset($tmpResult['extensionattribute10'][0]) ? $tmpResult['extensionattribute10'][0] : '';
 
                 if ('ekranEdycji' === $this->dodatkoweOpcje) {
                     $roles = $this->container->get('doctrine')
