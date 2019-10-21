@@ -140,12 +140,10 @@ class AdUserHelper
     public static function getDodatkowyPodpis(): ?string
     {
         if (isset(self::$adUser[AdUserConstants::DODATKOWY_PODPIS])) {
-            $value = self::$adUser[AdUserConstants::DODATKOWY_PODPIS];
-        } else {
-            return null;
+            return self::$adUser[AdUserConstants::DODATKOWY_PODPIS];
         }
 
-        return $value;
+        return null;
     }
 
     /**
