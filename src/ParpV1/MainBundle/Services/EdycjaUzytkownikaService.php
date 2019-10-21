@@ -164,6 +164,7 @@ class EdycjaUzytkownikaService
             )
             ->setCreatedAt(new DateTime())
             ->setActivateDeactivated(true)
+            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         $this
@@ -265,6 +266,7 @@ class EdycjaUzytkownikaService
             ->setCreatedAt(new DateTime())
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($changeDate($formData['zmianaOd']))
+            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         if ($createOdebranieZasobowEntry) {
@@ -284,7 +286,9 @@ class EdycjaUzytkownikaService
             $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
         }
 
-        if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]) {
+        if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]
+            || AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC === $formData[AdUserConstants::POWOD_WYLACZENIA]
+        ) {
             $entry->setMemberOf(null);
         }
 
@@ -421,7 +425,14 @@ class EdycjaUzytkownikaService
             if (!isset($changedElements['DISABLE'])) {
                 throw new LogicException('Nie określono powodu wyłączenia.');
             }
-            $applicationCancellationReason = $dictionary->get('disable');
+            switch ($changedElements['DISABLE']) {
+                case 'wyl_konta_rozwiazanie_umowy':
+                    $applicationCancellationReason = $dictionary->get('disable_rozwiazanie_umowy');
+                    break;
+                case 'wyl_konta_nieobecnosc':
+                    $applicationCancellationReason = $dictionary->get('disable_nieobecnosc');
+                    break;
+            }
         }
 
         if (null === $applicationCancellationReason) {

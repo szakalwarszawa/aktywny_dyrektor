@@ -19,6 +19,7 @@ class NullableAttributes extends Attributes
         return [
             self::WYGASA,
             self::POWOD_WYLACZENIA,
+            self::DODATKOWY_PODPIS,
         ];
     }
 }

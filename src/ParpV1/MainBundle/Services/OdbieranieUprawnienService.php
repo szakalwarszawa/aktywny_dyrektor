@@ -381,7 +381,8 @@ class OdbieranieUprawnienService
 
         $accountName = $formData['samaccountname'];
         $nieCzyszczoneWyzwalacze = [
-            WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC,
+            // nie wywalam tego całkowicie - zostawiam na przysżłość, bo jeszcze może się coś zmienić.
+            // WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC,
         ];
 
         if ($wyzwalacz && !in_array($wyzwalacz, $nieCzyszczoneWyzwalacze)) {

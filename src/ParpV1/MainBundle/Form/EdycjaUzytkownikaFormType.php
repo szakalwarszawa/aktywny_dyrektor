@@ -52,7 +52,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
     /**
      * @var string
      */
-    const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni';
+    const WYLACZENIE_KONTA_NIEOBECNOSC = 'Konto wyłączono z powodu nieobecności dłuższej niż 30 dni';
 
     /**
      * Typ formularza do edycji.
@@ -131,6 +131,11 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 ],
                 'placeholder' => 'Proszę wybrać',
                 'data' => $adUserHelper? $adUserHelper->getStanowisko(true) : null,
+            ])
+            ->add(AdUserConstants::DODATKOWY_PODPIS, TextType::class, [
+                'required' => false,
+                'label' => 'Dodatkowy podpis w stopce',
+                'data' => $adUserHelper? $adUserHelper->getDodatkowyPodpis() : null,
             ])
             ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
                 'required' => true,
@@ -222,7 +227,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     'label' => 'Powód wyłączenia',
                     'choices' => [
                         'Konto wyłączono z powodu rozwiązania stosunku pracy' => AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
-                        'Konto wyłączono z powodu nieobecności dłuższej niż 21 dni' => AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
+                        'Konto wyłączono z powodu nieobecności dłuższej niż 30 dni' => AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
                     ],
                     'placeholder' => 'Proszę wybrać',
                 ])
