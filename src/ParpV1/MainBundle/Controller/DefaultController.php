@@ -2127,4 +2127,25 @@ class DefaultController extends Controller
 
         return new JsonResponse($users);
     }
+
+    /**
+     * Zestawienie uprawnień do zasobów dla użytkownika.
+     *
+     * @Route("/zasoby_uzytkownika", name="zasoby_uzytkownika")
+     *
+     * @return Response
+     */
+    public function zasobyUzytkownikaAction(): Response
+    {
+        $entityManager = $this->getDoctrine()->getManager();
+
+        $userResources =
+            $entityManager
+                ->getRepository(UserZasoby::class)
+                ->findZasobyUzytkownika(strtolower($this->getUser()->getUsername()));
+
+        return $this->render('ParpMainBundle:EdycjaUzytkownika:lista_zasobow_uzytkownika.html.twig', [
+            'zasoby_uzytkownika' => $userResources
+        ]);
+    }
 }
