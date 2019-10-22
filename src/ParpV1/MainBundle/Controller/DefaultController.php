@@ -159,6 +159,7 @@ class DefaultController extends Controller
                 'distinguishedname',
                 'memberOf',
                 'roles',
+                'extensionAttribute10'
             ));
             // Konfiguracja nazw kolumn
 
