@@ -137,7 +137,7 @@ class AdUserHelper
      *
      * @return string|null
      */
-    public static function getDodatkowyPodpis(): ?string
+    public static function getExtensionAttribute10(): ?string
     {
         if (isset(self::$adUser[AdUserConstants::DODATKOWY_PODPIS])) {
             return self::$adUser[AdUserConstants::DODATKOWY_PODPIS];

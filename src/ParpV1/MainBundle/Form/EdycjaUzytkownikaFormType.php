@@ -135,7 +135,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
             ->add(AdUserConstants::DODATKOWY_PODPIS, TextType::class, [
                 'required' => false,
                 'label' => 'Dodatkowy podpis w stopce',
-                'data' => $adUserHelper? $adUserHelper->getDodatkowyPodpis() : null,
+                'data' => $adUserHelper? $adUserHelper->getExtensionAttribute10() : null,
             ])
             ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
                 'required' => true,
