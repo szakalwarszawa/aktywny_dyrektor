@@ -615,8 +615,7 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
                 {% if editor %}
-                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }}
-                        wniosek
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Zaakceptuj wniosek
                         <i class="fas fa-check-circle">&nbsp;</i>
                     </a>
                 {% endif %}
