@@ -164,7 +164,7 @@ class EdycjaUzytkownikaService
             )
             ->setCreatedAt(new DateTime())
             ->setActivateDeactivated(true)
-            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
+            ->setExtensionAttribute10($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         $this
@@ -266,7 +266,7 @@ class EdycjaUzytkownikaService
             ->setCreatedAt(new DateTime())
             ->setDisableDescription($formData[AdUserConstants::POWOD_WYLACZENIA])
             ->setFromWhen($changeDate($formData['zmianaOd']))
-            ->setDodatkowyPodpis($formData[AdUserConstants::DODATKOWY_PODPIS])
+            ->setExtensionAttribute10($formData[AdUserConstants::DODATKOWY_PODPIS])
         ;
 
         if ($createOdebranieZasobowEntry) {
@@ -528,6 +528,10 @@ class EdycjaUzytkownikaService
 
         if ($formData[AdUserConstants::PRZELOZONY] !== $adUserHelper::getPrzelozony()) {
             $changes[] = AdUserConstants::PRZELOZONY;
+        }
+
+        if ($formData[AdUserConstants::DODATKOWY_PODPIS] !== $adUserHelper::getExtensionAttribute10()) {
+            $changes[] = AdUserConstants::DODATKOWY_PODPIS;
         }
 
         return $changes;
