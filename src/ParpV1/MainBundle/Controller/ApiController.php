@@ -104,6 +104,7 @@ class ApiController extends Controller
             unset($user['useraccountcontrol']);
             unset($user['memberOf']);
             unset($user['roles']);
+            unset($user['extensionAttribute10']);
             $users[] = $user;
         }
 
@@ -147,6 +148,7 @@ class ApiController extends Controller
         unset($user['useraccountcontrol']);
         unset($user['memberOf']);
         unset($user['roles']);
+        unset($user['extensionAttribute10']);
 
         $response = new JsonResponse(array(
             'user' => $user
