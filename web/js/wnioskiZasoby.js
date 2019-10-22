@@ -103,6 +103,11 @@ function ZaakceptujWniosek(event, wlasciciel) {
 	}
 }
 
+function ZaakceptujKomunikatIbi(event) {
+		event.preventDefault();
+		$('#acceptConfirmPbi').modal('show')
+}
+
 function beforeSubmit(event) {
 	var nieWybrane = false;
 	$('.select2.multiwybor').each(function () {
