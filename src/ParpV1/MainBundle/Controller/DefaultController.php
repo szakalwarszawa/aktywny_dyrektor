@@ -50,6 +50,7 @@ use ParpV1\MainBundle\Services\EdycjaUzytkownikaFormService;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\MainBundle\Grid\ZasobyUzytkownikaGrid;
 
 /**
  * Class DefaultController
@@ -2129,23 +2130,24 @@ class DefaultController extends Controller
     }
 
     /**
-     * Zestawienie uprawnień do zasobów dla użytkownika.
+     * Zestawienie uprawnień do zasobów dla zalogowanego użytkownika.
      *
-     * @Route("/zasoby_uzytkownika", name="zasoby_uzytkownika")
+     * @Route("/zasoby_uzytkownika/{aktywne}", name="zasoby_uzytkownika", defaults={"aktywne" : true})
+     *
+     * @param bool $aktywne
      *
      * @return Response
      */
-    public function zasobyUzytkownikaAction(): Response
+    public function zasobyUzytkownikaAction(bool $aktywne = true): Response
     {
-        $entityManager = $this->getDoctrine()->getManager();
+        $grid = $this
+            ->get('zasoby_uzytkownika_grid')
+            ->generateForUser($this->getUser(), $aktywne)
+        ;
 
-        $userResources =
-            $entityManager
-                ->getRepository(UserZasoby::class)
-                ->findZasobyUzytkownika(strtolower($this->getUser()->getUsername()));
-
-        return $this->render('ParpMainBundle:EdycjaUzytkownika:lista_zasobow_uzytkownika.html.twig', [
-            'zasoby_uzytkownika' => $userResources
+        return $grid->getGridResponse('ParpMainBundle:Default:lista_zasobow_uzytkownika_grid.html.twig', [
+            'grid' => $grid,
+            'aktywne' => $aktywne
         ]);
     }
 }
