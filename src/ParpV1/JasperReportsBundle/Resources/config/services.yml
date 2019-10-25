@@ -26,7 +26,7 @@ services:
     arguments: ['@grid']
   jasper.report_print:
     class: '%bundle_path%\Printer\ReportPrint'
-    arguments: ['@jasper.connection']
+    arguments: ['@jasper.connection','@security.token_storage']
   jasper.report_voter:
     class: '%bundle_path%\Voter\ReportVoter'
     arguments: ['@doctrine.orm.entity_manager', '@jasper.fetch']

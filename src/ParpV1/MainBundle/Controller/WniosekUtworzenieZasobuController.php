@@ -33,7 +33,6 @@ use ParpV1\MainBundle\Entity\AclUserRole;
 use ParpV1\MainBundle\Entity\Zastepstwo;
 use ParpV1\MainBundle\Constants\AkcjeWnioskuConstants;
 use DateTime;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * WniosekUtworzenieZasobu controller.
@@ -56,33 +55,27 @@ class WniosekUtworzenieZasobuController extends Controller
      */
     public function indexAction($ktore = 'oczekujace')
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
         $grid = $this->generateGrid($ktore);
-        //$grid2 = $this->generateGrid("oczekujace");
-        //$grid3 = $this->generateGrid("zamkniete");
-        $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
+        $zastepstwa = $entityManager->getRepository(Zastepstwo::class)->znajdzZastepstwa($this->getUser()->getUsername());
 
-        if ($grid->isReadyForRedirect() /* || $grid2->isReadyForRedirect() || $grid3->isReadyForRedirect() */) {
+        $zastepujaMnie = $entityManager
+            ->getRepository(Zastepstwo::class)
+            ->znajdzKtoZastepuje($this->getUser()->getUsername())
+        ;
+
+        if ($grid->isReadyForRedirect()) {
             if ($grid->isReadyForExport()) {
                 return $grid->getExportResponse();
             }
-
-/*
-            if ($grid2->isReadyForExport())
-            {
-                return $grid2->getExportResponse();
-            }
-
-            if ($grid3->isReadyForExport())
-            {
-                return $grid3->getExportResponse();
-            }
-*/
-
-            // Url is the same for the grids
             return new \Symfony\Component\HttpFoundation\RedirectResponse($grid->getRouteUrl());
         } else {
-            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:index.html.twig', array('ktore' => $ktore, 'grid' => $grid, 'zastepstwa' => $zastepstwa));
+            return $this->render('ParpMainBundle:WniosekUtworzenieZasobu:index.html.twig', [
+                'ktore'          => $ktore,
+                'grid'           => $grid,
+                'zastepstwa'     => $zastepstwa,
+                'zastepuja_mnie' => $zastepujaMnie,
+            ]);
         }
     }
 
@@ -586,7 +579,12 @@ class WniosekUtworzenieZasobuController extends Controller
         }
         $encoders = array(new XmlEncoder(), new JsonEncoder());
         $normalizer = new ObjectNormalizer();
-        $normalizer->setIgnoredAttributes(array('wniosekUtworzenieZasobu', 'wnioskiZmieniajaceZasob', 'wniosekSkasowanieZasobu'));
+        $normalizer->setIgnoredAttributes([
+            'wniosekUtworzenieZasobu',
+            'wnioskiZmieniajaceZasob',
+            'wniosekSkasowanieZasobu',
+            'accessLevelGroups',
+        ]);
         $normalizers = array($normalizer);
 
         $serializer = new Serializer($normalizers, $encoders);

@@ -5,6 +5,7 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
+use APY\DataGridBundle\Grid\Mapping as GRID;
 
 /**
  * Position
@@ -15,9 +16,9 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
  *     fields={"name"},
  *     errorPath="name",
  *     message="Nazwa stanowiska musi być unikalna")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
+ * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, name, group.name")
  */
 class Position
 {
@@ -29,7 +30,7 @@ class Position
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     private $id;
-    
+
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
@@ -41,6 +42,7 @@ class Position
      * @var string
      *
      * @ORM\Column(name="name", type="string", length=255)
+     * @GRID\Column(field="name", title="Nazwa stanowiska")
      * @Assert\NotBlank(message = "Nazwa stanowiska nie jest wypełniona.")
      * @Assert\Length(
      *      min = 2,
@@ -50,6 +52,14 @@ class Position
      * @Gedmo\Mapping\Annotation\Versioned
      */
     private $name;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="ParpV1\MainBundle\Entity\PositionGroups", inversedBy="positions")
+     * @ORM\JoinColumn(name="group_id", referencedColumnName="id")
+     * @GRID\Column(field="group.name", title="Grupa uprawnień")
+     * @Gedmo\Mapping\Annotation\Versioned
+     */
+    private $group;
 
 
     /**
@@ -112,5 +122,29 @@ class Position
     public function getDeletedAt()
     {
         return $this->deletedAt;
+    }
+
+    /**
+     * Get group
+     *
+     * @return PositionGroups
+     */
+    public function getGroup(): ?PositionGroups
+    {
+        return $this->group;
+    }
+
+    /**
+     * Set group
+     *
+     * @param PositionGroups $group
+     *
+     * @return Position
+     */
+    public function setGroup(?PositionGroups $group): self
+    {
+        $this->group = $group;
+
+        return $this;
     }
 }

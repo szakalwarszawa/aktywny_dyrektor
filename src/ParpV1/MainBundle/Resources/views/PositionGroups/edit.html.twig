@@ -1,28 +1,27 @@
 {% extends '::base.html.twig' %}
 
-{% block body -%}
+{% block body %}
     <div class="col-sm-12">
         <ul class="nav nav-tabs">
             <li class="active"><a data-toggle="tab" href="#general">Dane podstawowe</a></li>
             <li><a data-toggle="tab" href="#historia">Historia wersji</a></li>
         </ul>
-
         <div class="tab-content">
             <div id="general" class="tab-pane fade in active">
-                <h1>Edycja zastępstwa</h1>
+                <h1>Edycja grupy stanowisk </h1>
                 <div class="tabContent">
                     <div class="btn-group">
-                        <a class="btn btn-primary" href="{{ path('zastepstwo') }}">
-                            <i class="fas fa-list"></i> Lista zastępstw
+                        <a class="btn btn-primary" href="{{ path('position_groups_index') }}">
+                            <i class="fas fa-list"></i> Lista grup stanowisk
                         </a>
                     </div>
-                    {% form_theme edit_form 'bootstrap_3_horizontal_layout.html.twig' %}
-                    {{ form(edit_form) }}
+                    {% form_theme form 'bootstrap_3_horizontal_layout.html.twig' %}
+                    {{ form(form) }}
                 </div>
             </div>
             <div id="historia" class="tab-pane fade">
                 <div  class="tabContent">
-                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'Zastepstwo', id: edit_form.vars.value.id})) }}
+                    {{ render(controller('ParpMainBundle:Version:versions', {repository: 'PositionGroups', id: form.vars.value.id})) }}
                 </div>
             </div>
         </div>

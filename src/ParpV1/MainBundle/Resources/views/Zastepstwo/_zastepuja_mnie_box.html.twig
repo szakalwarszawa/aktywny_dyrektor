@@ -1,0 +1,38 @@
+
+<div class="alert alert-danger">
+    <button type="button" class="close" data-dismiss="alert">&times;</button>
+    <strong>Uwaga, obecnie </strong>
+    {% for z in zastepuja_mnie %}
+        <span data-toggle="popover" title="Zastępują mnie" data-placement="right" data-content="Zastępstwo za: {{ z.kogoZastepuje|showFullname }} <br />od  {{ z.dataOd|date("Y-m-d") }} do {{ z.datado|date("Y-m-d") }}"> {{ z.ktoZastepuje|showFullname }}</span>{{ loop.last ? ' ' : ', ' }}
+    {% endfor %}
+    <strong>{{ zastepuja_mnie|length > 1 ? "mają" : "ma" }} ustawione za Ciebie zastępstwo.</strong>
+    <a class="btn-xs btn-primary" role="button" data-toggle="collapse" href="#zastepujaMnieOpis" aria-expanded="false" aria-controls="zastepujaMnieOpis">
+        <i class="fas fa-file-search"></i> Szczegóły
+    </a>
+    <div class="collapse" id="zastepujaMnieOpis">
+        <br/>
+        <div class="row">
+            <div class="well col-md-7">
+                <p>Osoba zastępująca może akceptować wnioski w Twoim imieniu. <br />
+                Możesz to zmienić, wybierając z menu "Zasoby" pozycję "Zastępstwa", a następnie edytując ustawione za Ciebie zastępstwo.
+                </p>
+                <table class="table table-condensed table-bordered small">
+                    <tr>
+                        <th>Zastępują mnie</th>
+                        <th>Od</th>
+                        <th>Do</th>
+                        <th>Autor zastępstwa</th>
+                    </tr>
+                {% for zastepstwo_row in zastepuja_mnie %}
+                    <tr>
+                        <td>{{ zastepstwo_row.ktoZastepuje|showFullname }}</td>
+                        <td>{{ zastepstwo_row.dataOd|date("Y-m-d") }}</td>
+                        <td>{{ zastepstwo_row.datado|date("Y-m-d") }}</td>
+                        <td>{{ zastepstwo_row.lastModifiedBy|showFullname }}</td>
+                    </tr>
+                {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>

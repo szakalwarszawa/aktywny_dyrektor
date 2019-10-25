@@ -1,7 +1,7 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-<h1>Lista Position</h1>
+<h1>Stanowiska</h1>
 {% for flashMessage in app.session.flashbag.get('warning') %}
     <div class="alert alert-info">
         <button type="button" class="close" data-dismiss="alert">&times;</button>
@@ -13,7 +13,7 @@
 <div class="center-block">
     <div class="btn-group">
         <a class="btn btn-primary btn-xs" href="?{{ grid.hash }}[_reset]=">Wyczyść filtr i sortowanie</a>
-        <a class="btn btn-primary btn-xs" href="{{ path('position_new') }}">Dodaj Position</a>
+        <a class="btn btn-primary btn-xs" href="{{ path('position_new') }}">Dodaj stanowisko</a>
     </div>
 </div>
 

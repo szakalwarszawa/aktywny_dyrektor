@@ -10,6 +10,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use Jaspersoft\Dto\Report\InputControl;
+use ParpV1\JasperReportsBundle\Constants\RaportInputParameters;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use ParpV1\JasperReportsBundle\InputControl\Validator;
@@ -59,9 +60,11 @@ class GenerateReportType extends AbstractType
                     if (!$validator::key($inputOption->id)) {
                         throw new InvalidOptionKeyOrValueException(sprintf('Niepoprawny klucz parametru ("%s")', $inputOption->id));
                     }
-                    $builder->add($inputOption->id, TextType::class, [
-                        'data' => self::JASPER_NULL_VALUE !== $inputOption->value? $inputOption->value : null,
-                    ]);
+                    if ($inputOption->id !== RaportInputParameters::LOGIN_PARAMETER) {
+                        $builder->add($inputOption->id, TextType::class, [
+                            'data' => self::JASPER_NULL_VALUE !== $inputOption->value? $inputOption->value : null,
+                        ]);
+                    }
                 }
             }
         }

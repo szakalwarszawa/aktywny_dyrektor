@@ -6,8 +6,8 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use ParpV1\JasperReportsBundle\Fetch\JasperFetch;
 use Symfony\Component\HttpFoundation\Request;
 use Doctrine\ORM\UnexpectedResultException;
-use ParpV1\JasperReportsBundle\InputControl\Validator;
-use Symfony\Component\VarDumper\VarDumper;
+use ParpV1\AuthBundle\Security\ParpUser;
+use ParpV1\JasperReportsBundle\Constants\RaportInputParameters;
 
 /**
  * Klasa InputControlResolver rozszerzająca OptionsResolver
@@ -26,7 +26,7 @@ class InputControlResolver extends OptionsResolver
      * Na podstawie klucze 'report_uri' pobiera z jasper opcje
      * tego raportu i ustawia niezbędne wartości wejściowe.
      *
-     * @param Request $request
+     * @param Request  $request
      *
      * @return array
      * @return null gdy raport nie posiada opcji wejściowych
@@ -50,18 +50,19 @@ class InputControlResolver extends OptionsResolver
         }
 
         foreach ($jasperInputControl as $inputControl) {
-            $this
-                ->setRequired($inputControl->id)
-                ->setAllowedTypes($inputControl->id, ['string', 'int'])
-            ;
-        }
-
-        foreach ($requestPostData as $key => $postElement) {
-            if (!$this->isDefined($key)) {
-                unset($requestPostData[$key]);
+            if ($inputControl->id != RaportInputParameters::LOGIN_PARAMETER) {
+                $this
+                    ->setRequired($inputControl->id)
+                    ->setAllowedTypes($inputControl->id, ['string', 'int']);
             }
-        }
 
-        return $this->resolve($requestPostData);
+            foreach ($requestPostData as $key => $postElement) {
+                if (!$this->isDefined($key)) {
+                    unset($requestPostData[$key]);
+                }
+            }
+
+            return $this->resolve($requestPostData);
+        }
     }
 }

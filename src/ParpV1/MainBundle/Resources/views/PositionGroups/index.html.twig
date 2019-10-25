@@ -1,0 +1,37 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Stanowiska - grupy</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nazwa</th>
+                <th>Opis</th>
+                <th>Działania</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for position_group in position_groups %}
+            <tr>
+                <td>{{ position_group.id }}</td>
+                <td>{{ position_group.name }}</td>
+                <td>{{ position_group.description }}</td>
+                <td>
+                    <div class="btn-group btn-group-justified">
+                        <a class="btn btn-success btn-xs" href="{{ path('position_groups_show', {'id': position_group.id}) }}"><i class="fas fa-eye"></i> Podgląd</a>
+                        <a class="btn btn-danger btn-xs" href="{{ path('position_groups_edit', {'id': position_group.id}) }}"><i class="fas fa-pencil"></i> Edycja</a>
+                    </div>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">nie znaleziono rekordów</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a  class="btn btn-primary" href="{{ path('position_groups_new') }}">Dodaj nową grupę</a>
+{% endblock %}

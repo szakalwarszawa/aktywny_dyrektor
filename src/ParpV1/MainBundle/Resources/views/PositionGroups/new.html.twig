@@ -1,0 +1,9 @@
+{% extends '::base.html.twig' %}
+
+{% block body %}
+    <h1>Nowa grupa stanowisk</h1>
+
+    {{ include('ParpMainBundle:PositionGroups:_form.html.twig') }}
+
+    <a href="{{ path('position_groups_index') }}">powrót do listy</a>
+{% endblock %}

@@ -27,6 +27,7 @@ class ParpMailerService
     const EMAIL_DO_AUMS_AD = 'jaroslaw_bednarczyk';
     const EMAIL_DO_HELPDESK = 'INT-BI-HELPDESK';
     const EMAIL_DO_GLPI = 'pomoc';
+    const EMAIL_TEST = 'akd_test';
 
     const TEMPLATE_PRACOWNIKPRZYJECIEIMPORT = 'pracownikPrzyjecieImport.html.twig';
     const TEMPLATE_PRACOWNIKPRZYJECIENADANIEUPRAWNIEN = 'pracownikPrzyjecieNadanieUprawnien.html.twig';
@@ -140,13 +141,7 @@ class ParpMailerService
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
             $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
-            $recipient = [
-                'pawel_fedoruk',
-                'hubert_gorecki',
-                'katarzyna_wypich',
-                'maciej_rogulski',
-                'marcin_laskowski',
-            ];
+            $recipient = self::EMAIL_TEST;
         }
 
         $recipientArray= $this->getRecipient($recipient);

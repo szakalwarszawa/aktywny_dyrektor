@@ -97,6 +97,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ->getRepository(Zastepstwo::class)
             ->znajdzZastepstwa($this->getUser()->getUsername())
         ;
+        $zastepujaMnie = $entityManager
+            ->getRepository(Zastepstwo::class)
+            ->znajdzKtoZastepuje($this->getUser()->getUsername())
+        ;
 
         $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
 
@@ -105,10 +109,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         return $grid->getGridResponse($szablonTwig, [
-                'ktore'      => $ktore,
-                'grid'       => $grid,
-                'zastepstwa' => $zastepstwa,
-                'ajax_grid'  => $ajaxGrid
+                'ktore'          => $ktore,
+                'grid'           => $grid,
+                'zastepstwa'     => $zastepstwa,
+                'zastepuja_mnie' => $zastepujaMnie,
+                'ajax_grid'      => $ajaxGrid
         ]);
     }
 

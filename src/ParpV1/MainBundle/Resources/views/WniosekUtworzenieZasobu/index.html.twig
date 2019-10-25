@@ -18,20 +18,14 @@
         <div class="center-block">
             <div class="btn-group">
                 <a class="btn btn-success btn" href="{{ path('wniosekutworzeniezasobu_new') }}">Dodaj Wniosek o utworzenie/zmianę/usunięcie zasobu</a>
-
             </div>
         </div>
+
     {% if(zastepstwa|length > 0) %}
-        <div class="alert alert-danger">
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
-            <strong>Uwaga, obecnie masz aktywne zastępstw{{ zastepstwa|length > 1 ? "a" : "o" }} za :</strong>
-            <div class="btn-group">
-                {% for z in zastepstwa %}
-                      <a href="{{ path('userEdit', {samaccountname: z.kogoZastepuje}) }}" class="btn-xs btn-primary" data-toggle="popover" title="Zastępstwo" data-content="Zastępstwo za {{ z.kogoZastepuje }} od  {{ z.dataOd|date("Y-m-d") }} do {{ z.dataDo|date("Y-m-d") }}">{{ z.kogoZastepuje }}</a>
-                {% endfor %}
-            </div>
-
-        </div>
+        {{ include('ParpMainBundle:Zastepstwo:_zastepstwa_za_box.html.twig') }}
+    {% endif %}
+    {% if(zastepuja_mnie|length > 0) %}
+        {{ include('ParpMainBundle:Zastepstwo:_zastepuja_mnie_box.html.twig') }}
     {% endif %}
     <ul class="nav nav-tabs">
         <li class="{{ ktore == "oczekujace" ? 'active' : '' }}"><a  href="{{ path('wniosekutworzeniezasobu', {'ktore': 'oczekujace'}) }}">Oczekujące na realizację</a></li>
