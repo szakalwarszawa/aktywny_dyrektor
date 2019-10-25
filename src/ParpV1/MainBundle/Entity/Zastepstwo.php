@@ -91,7 +91,7 @@ class Zastepstwo
      * @Assert\Type("DateTime")
      * @Assert\Expression(
      *      "this.getDataDo() >=  this.getDataOd()",
-     *      message="Data końcowa nie może być wczesniejsza od daty rozpoczęcia zastępstwa!"
+     *      message="Data końcowa nie może być wcześniejsza od daty rozpoczęcia zastępstwa!"
      * )
      * @Assert\Expression(
      *      "this.getDataDo() > this.getCurrentDate()",
