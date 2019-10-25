@@ -49,7 +49,7 @@ class ParpUserProvider implements UserProviderInterface
             $ldapconn = ldap_connect($this->ad_host);
         }
 
-        $ldapdomain = '@'.$this->ad_domain;//parp.local";
+        $ldapdomain = '@' . $this->ad_domain;//parp.local";
         if ($_POST) {
             $username = $_POST['_username'];
             $password = $_POST['_password'];
@@ -67,7 +67,7 @@ class ParpUserProvider implements UserProviderInterface
                     if ('test' === $idSrodowiska) {
                         $ldapbind = true;
                     } else {
-                        $ldapbind = ldap_bind($ldapconn, $username.$ldapdomain, $password);
+                        $ldapbind = ldap_bind($ldapconn, $username . $ldapdomain, $password);
                     }
                 } catch (Exception $e) {
                     throw new UsernameNotFoundException(sprintf('Użytkownik "%s" nie istnieje.', $username));
@@ -160,14 +160,15 @@ class ParpUserProvider implements UserProviderInterface
     {
         $idSrodowiska = $this->idSrodowiska;
         $ldapconn = ldap_connect($this->ad_host);
-        $ldapdomain = '@'.$this->ad_domain;
-        $userdn = $this->ad_ou.',DC='.$this->ad_dc1.',DC='.$this->ad_dc2;
+        $ldapdomain = '@' . $this->ad_domain;
+        $userdn = $this->ad_ou . ',DC=' . $this->ad_dc1 . ',DC=' . $this->ad_dc2;
         ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
 
         ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
         ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0); // We need this for doing an LDAP search.
 
-        if ($ldapconn &&
+        if (
+            $ldapconn &&
             $ldappass &&
             $ldapuser
         ) {
@@ -177,7 +178,7 @@ class ParpUserProvider implements UserProviderInterface
                 } else {
                     $errorlevel = error_reporting();
                     error_reporting($errorlevel & ~E_WARNING);
-                    $ldapbind = ldap_bind($ldapconn, $ldapuser.$ldapdomain, $ldappass);
+                    $ldapbind = ldap_bind($ldapconn, $ldapuser . $ldapdomain, $ldappass);
                     error_reporting($errorlevel);
                 }
             } catch (Exception $e) {

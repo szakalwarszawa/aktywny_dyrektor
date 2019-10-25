@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Form;
 
@@ -119,7 +121,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
-                'data' => $adUserHelper? $adUserHelper->getImieNazwisko() : null,
+                'data' => $adUserHelper ? $adUserHelper->getImieNazwisko() : null,
             ])
             ->add(AdUserConstants::STANOWISKO, EntityType::class, [
                 'required' => true,
@@ -130,12 +132,12 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     new Assert\NotBlank()
                 ],
                 'placeholder' => 'Proszę wybrać',
-                'data' => $adUserHelper? $adUserHelper->getStanowisko(true) : null,
+                'data' => $adUserHelper ? $adUserHelper->getStanowisko(true) : null,
             ])
             ->add(AdUserConstants::DODATKOWY_PODPIS, TextType::class, [
                 'required' => false,
                 'label' => 'Dodatkowy podpis w stopce',
-                'data' => $adUserHelper? $adUserHelper->getExtensionAttribute10() : null,
+                'data' => $adUserHelper ? $adUserHelper->getExtensionAttribute10() : null,
             ])
             ->add(AdUserConstants::DEPARTAMENT_NAZWA, EntityType::class, [
                 'required' => true,
@@ -146,7 +148,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     new Assert\NotBlank()
                 ],
                 'placeholder' => 'Proszę wybrać',
-                'data' => $adUserHelper? $adUserHelper->getDepartamentNazwa(false, true) : null,
+                'data' => $adUserHelper ? $adUserHelper->getDepartamentNazwa(false, true) : null,
             ])
             ->add(AdUserConstants::PRZELOZONY, ChoiceType::class, [
                 'required' => true,
@@ -158,7 +160,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                     new Assert\NotBlank()
                 ],
                 'placeholder' => 'Proszę wybrać',
-                'data' => $adUserHelper? $adUserHelper->getPrzelozony() : null,
+                'data' => $adUserHelper ? $adUserHelper->getPrzelozony() : null,
             ])
             ->add(AdUserConstants::SEKCJA_NAZWA, EntityType::class, [
                 'required' => true,
@@ -194,12 +196,12 @@ class EdycjaUzytkownikaFormType extends AbstractType
                 'constraints' => [
                     new Assert\NotBlank()
                 ],
-                'data' => $adUserHelper? $adUserHelper->getSekcja(false, true) : null,
+                'data' => $adUserHelper ? $adUserHelper->getSekcja(false, true) : null,
             ])
             ->add(AdUserConstants::WYGASA, DateType::class, [
                 'required' => false,
                 'label' => 'Data wygaśnięcia konta',
-                'data' => $adUserHelper? $adUserHelper->getKiedyWygasa() : null,
+                'data' => $adUserHelper ? $adUserHelper->getKiedyWygasa() : null,
                 'widget' => 'single_text',
                 'html5' => false,
                 'constraints' => [
@@ -220,7 +222,7 @@ class EdycjaUzytkownikaFormType extends AbstractType
                         new Assert\NotNull()
                     ],
                     // 'placeholder' => 'Proszę wybrać',
-                    'data' => $adUserHelper? $adUserHelper->getCzyWylaczone() : null,
+                    'data' => $adUserHelper ? $adUserHelper->getCzyWylaczone() : null,
                 ])
                 ->add(AdUserConstants::POWOD_WYLACZENIA, ChoiceType::class, [
                     'required' => false,

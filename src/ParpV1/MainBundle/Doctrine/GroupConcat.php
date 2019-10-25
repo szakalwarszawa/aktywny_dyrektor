@@ -1,4 +1,5 @@
 <?php
+
 namespace DoctrineExtensions\Query\Mysql;
 
 use Doctrine\ORM\Query\AST\Functions\FunctionNode;
@@ -51,10 +52,10 @@ class GroupConcat extends FunctionNode
         }
         $result .= sprintf('%s', implode(', ', $fields));
         if ($this->orderBy) {
-            $result .= ' '.$sqlWalker->walkOrderByClause($this->orderBy);
+            $result .= ' ' . $sqlWalker->walkOrderByClause($this->orderBy);
         }
         if ($this->separator) {
-            $result .= ' SEPARATOR '.$sqlWalker->walkStringPrimary($this->separator);
+            $result .= ' SEPARATOR ' . $sqlWalker->walkStringPrimary($this->separator);
         }
         $result .= ')';
         return $result;

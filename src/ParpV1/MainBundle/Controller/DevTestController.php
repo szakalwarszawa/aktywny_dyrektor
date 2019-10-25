@@ -48,7 +48,7 @@ class DevTestController extends Controller
         $historia = $em->getRepository('ParpMainBundle:Entry')->createQueryBuilder('o')
             ->where('o.memberOf LIKE :groupa')
             ->andWhere('o.fromWhen >= \'2017-01-01 00:00:00\'')
-            ->setParameter('groupa', '%'.($nadanie ? '+' : '-').$zasob.'%')
+            ->setParameter('groupa', '%' . ($nadanie ? '+' : '-') . $zasob . '%')
             ->getQuery()
             ->getResult();
         //var_dump($historia);
@@ -83,7 +83,7 @@ class DevTestController extends Controller
         for ($i = 0; $i < count($historia); $i++) {
             if (count($zmiany) == 0) {
                 $zmiany[] = [
-                    'data'=>$historia[$i]->getCreatedAt(),
+                    'data' => $historia[$i]->getCreatedAt(),
                     'zasob' => $historia[$i]->getName(),
                     'members' => $this->parseCNNames($historia[$i]->getMember()),
                     'odeszli' => [],
@@ -127,6 +127,6 @@ class DevTestController extends Controller
         $ps1 = explode(",", $cn);
         $name = str_replace('CN=', '', $ps1[0]);
         $ou = str_replace('OU=', '', $ps1[1]);
-        return $name." / ".$ou;
+        return $name . " / " . $ou;
     }
 }

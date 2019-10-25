@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\CronBundle\Command;
 
@@ -83,7 +85,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         if (count($zasob) > 0) {
             $zasoby = implode(', ', $zasob);
             $czyKontynuowac = $this->getHelper('question');
-            $pytanie = new ConfirmationQuestion('Odebranie zostaną uprawnienia do zasobów: '.$zasoby.'. Czynności nie da się cofnąć. Kontynuować?', false, '/^(y|t)/i');
+            $pytanie = new ConfirmationQuestion('Odebranie zostaną uprawnienia do zasobów: ' . $zasoby . '. Czynności nie da się cofnąć. Kontynuować?', false, '/^(y|t)/i');
 
             if (true === $niePytaj || $czyKontynuowac->ask($input, $output, $pytanie)) {
                 $output->writeln('<comment>Rozpoczynam odbieranie...</comment>');
@@ -150,7 +152,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                             ->getManager();
 
         $zasob = $entityManager->getRepository('ParpMainBundle:Zasoby')->find($idZasobu);
-        $output->section('Odnotowuję dla zasobu: '. $idZasobu . ' ' . $zasob->getNazwa());
+        $output->section('Odnotowuję dla zasobu: ' . $idZasobu . ' ' . $zasob->getNazwa());
 
         $userZasobyAktywne = $entityManager
             ->getRepository('ParpMainBundle:UserZasoby')
@@ -170,7 +172,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         $userZasoby = $entityManager
             ->getRepository('ParpMainBundle:UserZasoby')
             ->createQueryBuilder('uz')
-            ->where('uz.zasobId = '.$idZasobu)
+            ->where('uz.zasobId = ' . $idZasobu)
             ->andWhere('uz.aktywneDo <= :now')
             ->andWhere('uz.deletedAt is NULL')
             ->andWhere('uz.czyAktywne = true')
@@ -184,7 +186,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                 // pomijam wnioski dla osób zewnętrznych
                 if (null !== $userZasob->getWniosek() && $userZasob->getWniosek()->getPracownikSpozaParp()) {
-                    $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
+                    $output->writeln('<bg=blue>Pomijam ZEWNĘTRZNEGO:</> <fg=cyan>(' . $userZasob->getId() . ')</><info> ' . $login . '</info>');
                     $this->ilePominietych++;
                     $ilePominietychZasob++;
                     continue;
@@ -208,7 +210,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                 $entityManager->persist($userZasob);
 
-                $output->writeln('Odnotowuję odebranie uprawnień: <fg=cyan>('. $userZasob->getId().')</><info> ' . $login.'</info>');
+                $output->writeln('Odnotowuję odebranie uprawnień: <fg=cyan>(' . $userZasob->getId() . ')</><info> ' . $login . '</info>');
 
                 $grupyDoAd = '';
                 if (!in_array($login, $pomijajKonta, true)) {
@@ -220,7 +222,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
                     $czyGrupaWUpp = $grupaDoOdebrania !== 'brak' ? $this->sprawdzCzyGrupaNalezyDoUpp($login, $grupaDoOdebrania, $output) : true;
 
                     if (!$czyGrupaWUpp) {
-                        $grupyDoAd .= '-'.$grupaDoOdebrania;
+                        $grupyDoAd .= '-' . $grupaDoOdebrania;
                     }
                 }
 
@@ -239,14 +241,14 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
 
                     $entityManager->persist($entry);
 
-                    $output->writeln("\t".'<comment>Odbieram uprawnienia w AD: ' . $grupyDoAd.'</comment>');
+                    $output->writeln("\t" . '<comment>Odbieram uprawnienia w AD: ' . $grupyDoAd . '</comment>');
 
                     $this->ileOdebranych++;
                     $ileOdebranychZasob++;
                 }
             }
         } else {
-            $output->writeln("\t".'Brak uprawnień do odebrania.');
+            $output->writeln("\t" . 'Brak uprawnień do odebrania.');
         }
 
         $this->podumowanieTabela[] = [$idZasobu . ' ' . $zasob->getNazwa(), $ileOdnotowanychZasob, $ileOdebranychZasob, $ilePominietychZasob];
@@ -333,7 +335,7 @@ class OdnotowanieTerminowychCommand extends ContainerAwareCommand
         $ADUser = $ldapService->getUserFromAD($login, null, null, 'wszyscyWszyscy');
 
         if (false === strpos($ADUser[0]['distinguishedname'], 'Zespoly_2016')) {
-            $output->writeln("\t".'<comment>Konto zablokowane w AD.</comment>');
+            $output->writeln("\t" . '<comment>Konto zablokowane w AD.</comment>');
             return false;
         }
 

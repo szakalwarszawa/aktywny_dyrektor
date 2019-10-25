@@ -34,8 +34,10 @@ class ZastepstwoType extends AbstractType
                 )
             ));
 
-        if (in_array("PARP_ADMIN", $options['current_user']->getRoles())
-            || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())) {
+        if (
+            in_array("PARP_ADMIN", $options['current_user']->getRoles())
+            || in_array("PARP_ADMIN_ZASTEPSTW", $options['current_user']->getRoles())
+        ) {
             $builder->add('kogoZastepuje', ChoiceType::class, array(
                 'choices' => array_flip($options['ad_users']),
                 'required' => true,

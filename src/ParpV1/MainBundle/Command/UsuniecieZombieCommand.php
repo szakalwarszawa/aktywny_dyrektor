@@ -350,7 +350,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
                 $wniosek = $entry->getWniosek();
                 $listaZmian[] = array(
                     'status'     => 'zamieniono',
-                    'id_wniosku' => null !== $wniosek? $wniosek->getId() : '0',
+                    'id_wniosku' => null !== $wniosek ? $wniosek->getId() : '0',
                     'zmiana_na'  => $this->uzytkownikDoZamiany
                 );
             } else {

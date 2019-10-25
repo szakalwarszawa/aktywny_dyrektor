@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\MainBundle\Listener;
 
 use Symfony\Component\HttpKernel\Event\GetResponseEvent;
@@ -19,7 +20,7 @@ class DoctrineExtensionListener
         $nv = $event->getEntity()->getGrupyHistoriaZmian();
 
         print_r($nv);
-        die('   preUpdate '.get_class($event));
+        die('   preUpdate ' . get_class($event));
     }
 
     public function onConsoleCommand()

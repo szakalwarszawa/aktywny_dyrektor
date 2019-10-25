@@ -153,10 +153,10 @@ class RaportyKadroweController extends Controller
             //echo "<pre>"; print_r($rok); print_r($i); print_r($dane);  //die();
             $lastId = '';
             foreach ($dane as $d) {
-                $program = $this->parseValue($d['DZIALANIE']).' '.$this->parseValue($d['ZRODLO_FIN']).' '.$this->parseValue($d['WPL_WYD']).
-                    ' '.$this->parseValue($d['ZADANIE']);
+                $program = $this->parseValue($d['DZIALANIE']) . ' ' . $this->parseValue($d['ZRODLO_FIN']) . ' ' . $this->parseValue($d['WPL_WYD']) .
+                    ' ' . $this->parseValue($d['ZADANIE']);
                 if (!isset($data['headers'][$program])) {
-                    $data['headers']['programowe'][$program.' '] = $program;
+                    $data['headers']['programowe'][$program . ' '] = $program;
                 }
                 if ($lastId === '' || $lastId != $this->parseValue($d['ID'])) {
                     if ($lastId !== '') {
@@ -173,7 +173,7 @@ class RaportyKadroweController extends Controller
                         'kolumny' => []
                     ];
                 }
-                $newdata['kolumny'][$program.' '] = $this->parseValue($d['KWOTA']);
+                $newdata['kolumny'][$program . ' '] = $this->parseValue($d['KWOTA']);
                 ///echo "<pre>";print_r($newdata);
                 $lastId = $this->parseValue($d['ID']);
             }
@@ -194,7 +194,7 @@ class RaportyKadroweController extends Controller
             $lastId = '';
             foreach ($dane as $d) {
                 if (!isset($data['headers'][$d['RODZAJ']])) {
-                    $data['headers']['placowe'][$this->parseValue($d['RODZAJ']).' '] = '['.$d['RODZAJ'].'] '.$this->parseValue($d['OPIS']);
+                    $data['headers']['placowe'][$this->parseValue($d['RODZAJ']) . ' '] = '[' . $d['RODZAJ'] . '] ' . $this->parseValue($d['OPIS']);
                 }
                 if ($lastId === '' || $lastId != $this->parseValue($d['ID'])) {
                     if ($lastId !== '') {
@@ -216,7 +216,7 @@ class RaportyKadroweController extends Controller
                         'kolumny' => []
                     ];
                 }
-                $newdata['kolumny'][$this->parseValue($d['RODZAJ']).' '] = $this->parseValue($d['KWOTA']);
+                $newdata['kolumny'][$this->parseValue($d['RODZAJ']) . ' '] = $this->parseValue($d['KWOTA']);
                 $lastId = $this->parseValue($d['ID']);
             }
             if (!isset($data['data'][$i][$newdata['Id']])) {
@@ -246,7 +246,7 @@ class RaportyKadroweController extends Controller
                     //bylo jeszcze ZSN ale to to samo co ZSI
                     $opis = $opisy[$this->parseValue($d['RODZAJ'])];
 
-                    $data['headers']['placowe'][$this->parseValue($d['RODZAJ']).' '] = $opis;
+                    $data['headers']['placowe'][$this->parseValue($d['RODZAJ']) . ' '] = $opis;
                 }
                 if ($lastId === '' || $lastId != $this->parseValue($d['ID'])) {
                     if ($lastId !== '') {
@@ -267,7 +267,7 @@ class RaportyKadroweController extends Controller
                         'kolumny' => []
                     ];
                 }
-                $newdata['kolumny'][$this->parseValue($d['RODZAJ']).' '] = $this->parseValue($d['KWOTA']);
+                $newdata['kolumny'][$this->parseValue($d['RODZAJ']) . ' '] = $this->parseValue($d['KWOTA']);
                 $lastId = $this->parseValue($d['ID']);
             }
             if (!isset($data['data'][$i][$newdata['Id']])) {
@@ -317,13 +317,13 @@ class RaportyKadroweController extends Controller
             //return iconv("WINDOWS-1250", "UTF-8", trim($v));
             return iconv('WINDOWS-1250', 'UTF-8', trim($v));
         } catch (\Exception $e) {
-            die(trim($v).' '.$e->getMessage());
+            die(trim($v) . ' ' . $e->getMessage());
         }
     }
     protected function getSqlDoRaportuKadrowegoSkladnikiPlacowe($rok, $miesiac)
     {
         $pominKolumny = [/* 725, 726, 740, 742, 743, 744, 745, 746, 748, 747,  */825, 830, 856, 857, 905, 906, 907, 910, 913, 914, '006'];
-        $pomin = '\''.implode('\',\'', $pominKolumny).'\'';
+        $pomin = '\'' . implode('\',\'', $pominKolumny) . '\'';
         //die($pomin);
 
         $sql = 'select  pr.symbol as id, pr.nazwisko, pr.imie, m.kod symbol, p.rodz as rodzaj, s.opis,sum(kwota) kwota, sum(godz)/60 godz, mp.opis as departament
@@ -334,10 +334,10 @@ p_lp_prac m,
 p_pra_grgus g,
 p_pracownik pr,
 p_mpracy mp
-where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
+where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = ' . $rok . ' and l.miesiac_O = ' . $miesiac . '   and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
 and mp.kod = m.kod
-and p.rodz not in ( '.$pomin.' )
-'.$this->xtraWhereForTests.'
+and p.rodz not in ( ' . $pomin . ' )
+' . $this->xtraWhereForTests . '
 group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 
 union
@@ -350,15 +350,15 @@ p_lp_prac m,
 p_pra_grgus g ,
 p_pracownik pr,
 p_mpracy mp
-where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
+where l.id=p.id and p.rodz=s.rodz  and p.symbol=m.symbol  and l.rok_O = ' . $rok . ' and l.miesiac_O = ' . $miesiac . '  and p.symbol=g.symbol  and m.id=l.id and m.typ=0 and 1=1 and 1=1  and 1=1 and pr.symbol = p.symbol
 and mp.kod = m.kod
-and p.rodz not in ( '.$pomin.')
- '.$this->xtraWhereForTests.'
+and p.rodz not in ( ' . $pomin . ')
+ ' . $this->xtraWhereForTests . '
 group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol
 order by 5,2,3
 ';
         if ($this->showSqlsAndDie) {
-            echo $sql.'<br>';
+            echo $sql . '<br>';
         }
         return $sql;
     }
@@ -370,13 +370,13 @@ order by 5,2,3
         p_listapl l,
         p_pracownik pr,
         f_db f
-        where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O ='.$miesiac.'
+        where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = ' . $rok . ' and l.miesiac_O =' . $miesiac . '
         and d.rodz IN (\'6AA\')
-        '.$this->xtraWhereForTests.'
+        ' . $this->xtraWhereForTests . '
         group by 1,2,3,5,6,7,8,9,10 order by pr.nazwisko, pr.imie'; // bylo 010 rodz
 
         if ($this->showSqlsAndDie) {
-            echo $sql.'<br>';
+            echo $sql . '<br>';
         }
         return $sql;
     }
@@ -384,13 +384,13 @@ order by 5,2,3
     {
         $sql = 'select
         d.symbol as id ,d.rodz  as rodzaj, sum(d.kwota) kwota,p.nazwisko,p.imie
-        from p_lp_pla_db d,p_listapl l,p_pracownik p,f_db f where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = '.$rok.
-            ' and l.miesiac_O = '.$miesiac."
+        from p_lp_pla_db d,p_listapl l,p_pracownik p,f_db f where d.id=l.id and d.symbol=p.symbol and f.db=d.db and l.rok_O = ' . $rok .
+            ' and l.miesiac_O = ' . $miesiac . "
         and d.rodz in ('ZSA', 'ZSC', 'ZSF', 'ZSI')
         group by 1,2,4,5 order by p.nazwisko,p.imie;";
 
         if ($this->showSqlsAndDie) {
-            echo $sql.'<br>';
+            echo $sql . '<br>';
         }
         return $sql;
     }
@@ -404,15 +404,15 @@ order by 5,2,3
             stanowisko.OPIS stanowisko
 
             from P_PRACOWNIK pr
-            left join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok.
-            '-'.$miesiac."-01') AND mpr.DATA_OD <=  '".$rok.
-            '-'.$miesiac."-01'
+            left join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '" . $rok .
+            '-' . $miesiac . "-01') AND mpr.DATA_OD <=  '" . $rok .
+            '-' . $miesiac . "-01'
             left join P_MPRACY departament on departament.KOD = mpr.KOD
-            left JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$rok.
-            '-'.$miesiac."-01') AND stjoin.DATA_OD <= '".$rok.
-            '-'.$miesiac."-01'
+            left JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '" . $rok .
+            '-' . $miesiac . "-01') AND stjoin.DATA_OD <= '" . $rok .
+            '-' . $miesiac . "-01'
             left join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            where 1 = 1 ".$this->xtraWhereForTests.
+            where 1 = 1 " . $this->xtraWhereForTests .
             '
             group by pr.SYMBOL,
             departament.OPIS ,
@@ -420,7 +420,7 @@ order by 5,2,3
             stanowisko.OPIS';
 
         if ($this->showSqlsAndDie) {
-            echo $sql.'<br>';
+            echo $sql . '<br>';
         }
             //die($sql);
         return $sql;
@@ -435,15 +435,15 @@ order by 5,2,3
             stanowisko.OPIS stanowisko
 
             from P_PRACOWNIK pr
-            join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$rok.
-            '-'.$miesiac."-01') AND mpr.DATA_OD <=  '".$rok.
-            '-'.$miesiac."-01'
+            join PV_MP_PRA mpr on mpr.SYMBOL = pr.SYMBOL AND (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '" . $rok .
+            '-' . $miesiac . "-01') AND mpr.DATA_OD <=  '" . $rok .
+            '-' . $miesiac . "-01'
             join P_MPRACY departament on departament.KOD = mpr.KOD
-            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '".$rok.
-            '-'.$miesiac."-01') AND stjoin.DATA_OD <= '".$rok.
-            '-'.$miesiac."-01'
+            JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= pr.SYMBOL AND (stjoin.DATA_DO is NULL OR stjoin.DATA_DO > '" . $rok .
+            '-' . $miesiac . "-01') AND stjoin.DATA_OD <= '" . $rok .
+            '-' . $miesiac . "-01'
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
-            where 1 = 1 ".$this->xtraWhereForTests.
+            where 1 = 1 " . $this->xtraWhereForTests .
             '
             group by pr.SYMBOL,
             departament.OPIS ,
@@ -451,7 +451,7 @@ order by 5,2,3
             stanowisko.OPIS';
 
         if ($this->showSqlsAndDie) {
-            echo $sql.'<br>';
+            echo $sql . '<br>';
         }
             //die($sql);
         return $sql;
@@ -476,7 +476,7 @@ order by 5,2,3
             // Add new sheet
             $objWorkSheet = $phpExcelObject->createSheet($i1); //Setting index when creating
             $miesiac = $this->miesiace[($i1)];
-            $objWorkSheet->setTitle($miesiac.' '.$rok);
+            $objWorkSheet->setTitle($miesiac . ' ' . $rok);
             for ($i2 = 0; $i2 < count($kolumny); $i2++) {
                 //echo "dodaje kolumne $i2, 1, ".$kolumny[$i2];
                 $objWorkSheet->setCellValueByColumnAndRow($i2, 1, $kolumny[$i2]);
@@ -521,7 +521,7 @@ order by 5,2,3
                             $objWorkSheet->setCellValueByColumnAndRow($i2, ($rzad + 1), $osoba['Id']);
                             break;
                         case 'Imię i nazwisko':
-                            $objWorkSheet->setCellValueByColumnAndRow($i2, ($rzad + 1), $osoba['Nazwisko'].' '.$osoba['Imie']);
+                            $objWorkSheet->setCellValueByColumnAndRow($i2, ($rzad + 1), $osoba['Nazwisko'] . ' ' . $osoba['Imie']);
                             break;
                         case 'Departament':
                             $objWorkSheet->setCellValueByColumnAndRow($i2, ($rzad + 1), $osoba['Departament']);
@@ -566,7 +566,7 @@ order by 5,2,3
         // adding headers
         $dispositionHeader = $response->headers->makeDisposition(
             ResponseHeaderBag::DISPOSITION_ATTACHMENT,
-            'raportKadrowy'.$rok.'.xls'
+            'raportKadrowy' . $rok . '.xls'
         );
         $response->headers->set('Content-Type', 'text/vnd.ms-excel; charset=utf-8');
         $response->headers->set('Pragma', 'public');
@@ -607,14 +607,14 @@ f_db f ,
     group by p.rodz,s.opis, pr.nazwisko, pr.imie, pr.symbol, m.kod, mp.opis
 ) as s
 
-where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = '.$rok.' and l.miesiac_O = '.$miesiac.'
+where d.id=l.id and d.symbol=pr.symbol and f.db=d.db and l.rok_O = ' . $rok . ' and l.miesiac_O = ' . $miesiac . '
 
 
 --and d.rodz IN (\'6AA\')
 
 and l.LABEL not like \'Premia%\'
 and s.id = pr.symbol
-        '.$this->xtraWhereForTests.'
+        ' . $this->xtraWhereForTests . '
 order by pr.nazwisko, pr.imie';
         return $sql;
     }

@@ -179,7 +179,7 @@ class UserZasobyType extends AbstractType
             $fieldName, /* NestedComboType::class */
             ChoiceType::class,
             array('choices' => $choices,
-                    'data' => $nadpiszDane? $nadpisaneOpcje : explode(";", $options['data_uz'][$fieldName]),//potrzebne by zaznaczal przy edycji
+                    'data' => $nadpiszDane ? $nadpisaneOpcje : explode(";", $options['data_uz'][$fieldName]),//potrzebne by zaznaczal przy edycji
                     'multiple' => true,
                     'expanded' => false,
                     'required' => true,
@@ -193,7 +193,7 @@ class UserZasobyType extends AbstractType
                         }
                         return [];
                     },
-                    'attr' => ['class' => 'select2' . $dodatkowaKlasa . 'multiwybor '.$fieldName, 'required' => false, 'disabled' => $zablokujNowy]
+                    'attr' => ['class' => 'select2' . $dodatkowaKlasa . 'multiwybor ' . $fieldName, 'required' => false, 'disabled' => $zablokujNowy]
                 )
         );
     }

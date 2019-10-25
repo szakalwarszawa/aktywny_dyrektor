@@ -64,7 +64,7 @@ class DepartamentController extends Controller
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $ktore) {
 
-                $query->andWhere($tableAlias.'.nowaStruktura = '.($ktore == 'stare' ? '0' : '1'));
+                $query->andWhere($tableAlias . '.nowaStruktura = ' . ($ktore == 'stare' ? '0' : '1'));
             }
         );
         $grid = $this->get('grid');

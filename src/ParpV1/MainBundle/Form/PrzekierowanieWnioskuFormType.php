@@ -47,7 +47,7 @@ class PrzekierowanieWnioskuFormType extends AbstractType
                 'required' => false,
                 'label' => 'Editors',
                 'choices' => array_flip($options['ad_users']),
-                'data' => empty($currentEditors)? null : $currentEditors,
+                'data' => empty($currentEditors) ? null : $currentEditors,
                 'multiple' => true,
                 'expanded' => false
             ])

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Form;
 
@@ -62,7 +64,7 @@ class GenerateReportType extends AbstractType
                     }
                     if ($inputOption->id !== RaportInputParameters::LOGIN_PARAMETER) {
                         $builder->add($inputOption->id, TextType::class, [
-                            'data' => self::JASPER_NULL_VALUE !== $inputOption->value? $inputOption->value : null,
+                            'data' => self::JASPER_NULL_VALUE !== $inputOption->value ? $inputOption->value : null,
                         ]);
                     }
                 }

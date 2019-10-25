@@ -702,7 +702,7 @@ class Entry
             $gr = [];
             foreach ($grupy as $g) {
                 if (strlen($g) > 0) {
-                    $gr[] = $czyDodaj.$g;
+                    $gr[] = $czyDodaj . $g;
                 }
             }
             $this->setMemberOf(implode(",", $gr));
@@ -712,7 +712,7 @@ class Entry
     {
         $grupyJuzSa = explode(",", $this->getMemberOf());
         foreach ($grupy as $g) {
-            $grupyJuzSa[] = $znak.$g;
+            $grupyJuzSa[] = $znak . $g;
         }
         $this->setMemberOf(implode(",", $grupyJuzSa));
     }

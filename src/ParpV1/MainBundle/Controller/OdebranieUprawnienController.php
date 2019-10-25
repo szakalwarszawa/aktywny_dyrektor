@@ -63,12 +63,12 @@ class OdebranieUprawnienController extends Controller
                 $uprawnienia = $this->audytUprawnienUsera($user);
                 $wpis = ['osoba' => $user['name'], 'samaccountname' => $user['samaccountname'], 'zdjac' => [], 'dodac' => []];
                 foreach ($uprawnienia['zdjac'] as $zdjac) {
-                    $e = $this->zrobEntry($dt, $user, '-'.$zdjac['grupaAD']);
+                    $e = $this->zrobEntry($dt, $user, '-' . $zdjac['grupaAD']);
                     $em->persist($e);
                     $wpis['zdjac'][] = $zdjac['grupaAD'];
                 }
                 foreach ($uprawnienia['dodac'] as $dodac) {
-                    $e = $this->zrobEntry($dt, $user, '+'.$dodac);
+                    $e = $this->zrobEntry($dt, $user, '+' . $dodac);
                     $em->persist($e);
                     $wpis['dodac'][] = $dodac;
                 }
@@ -148,12 +148,12 @@ class OdebranieUprawnienController extends Controller
         }
         $uprawnienia = $this->audytUprawnienUsera($user[0]);
         $urawnieniaJson = json_encode($uprawnienia);
-        $dir = __DIR__."/../../../../app/logs/uprawnienia";
+        $dir = __DIR__ . "/../../../../app/logs/uprawnienia";
         if (!file_exists($dir)) {
             mkdir($dir);
         }
         $datetime = new \Datetime();
-        file_put_contents($dir."/upr-".$uprawnienia['osoba'].'-'.$datetime->format("YmdHis").'.json', $urawnieniaJson."\r\n", FILE_APPEND);
+        file_put_contents($dir . "/upr-" . $uprawnienia['osoba'] . '-' . $datetime->format("YmdHis") . '.json', $urawnieniaJson . "\r\n", FILE_APPEND);
 
         return new JsonResponse($uprawnienia);
     }
@@ -222,7 +222,8 @@ class OdebranieUprawnienController extends Controller
         foreach ($userzasoby as $uz) {
             $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
             //var_dump($z->getGrupyAD());
-            if ($z->getGrupyAD()
+            if (
+                $z->getGrupyAD()
                 || $z->getId() == 4311
                 //&&
                 //$uz->getPoziomDostepu() != "nie dotyczy" &&
@@ -338,7 +339,7 @@ class OdebranieUprawnienController extends Controller
         $em = $this->getDoctrine()->getManager();
         $dt = new \Datetime();
         foreach ($grupyRozbite as $grupa) {
-            $e = $this->zrobEntry($dt, ['samaccountname' => $login], '+'.$grupa);
+            $e = $this->zrobEntry($dt, ['samaccountname' => $login], '+' . $grupa);
             //var_dump($e);
             $e->setOpis($opis);
             $em->persist($e);

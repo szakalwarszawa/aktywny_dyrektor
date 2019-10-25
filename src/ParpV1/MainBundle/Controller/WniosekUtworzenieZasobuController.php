@@ -100,22 +100,22 @@ class WniosekUtworzenieZasobuController extends Controller
                 $query->leftJoin('w.editors', 'e');
                 $query->leftJoin('w.status', 's');
                 if ($ktore !== 'wszystkie') {
-                    $query->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                    $query->andWhere('v.samaccountname IN (\'' . implode('\',\'', $zastepstwa) . '\')');
                 }
 
                 $statusy = ['08_ROZPATRZONY_NEGATYWNIE_O_ZASOB', '07_ROZPATRZONY_POZYTYWNIE_O_ZASOB', '00_TWORZONY_O_ZASOB'];
                 switch ($ktore) {
                     case 'wtoku':
-                        $w = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusy).'\')';
+                        $w = 's.nazwaSystemowa NOT IN (\'' . implode('\',\'', $statusy) . '\')';
                         //rdie($w);
                         $query->andWhere($w);
-                        $query->andWhere($tableAlias.'.id NOT in (select wn.id from ParpMainBundle:WniosekUtworzenieZasobu wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\'))');
+                        $query->andWhere($tableAlias . '.id NOT in (select wn.id from ParpMainBundle:WniosekUtworzenieZasobu wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\'' . implode('\',\'', $zastepstwa) . '\'))');
                         break;
                     case 'oczekujace':
-                        $query->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                        $query->andWhere('e.samaccountname IN (\'' . implode('\',\'', $zastepstwa) . '\')');
                         break;
                     case 'zakonczone':
-                        $query->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusy).'\')');
+                        $query->andWhere('s.nazwaSystemowa IN (\'' . implode('\',\'', $statusy) . '\')');
                         break;
                 }
 
@@ -470,7 +470,7 @@ class WniosekUtworzenieZasobuController extends Controller
         $z1 = array();
         $z2 = array();
         foreach ($metadata->getFieldNames() as $fm) {
-            $getter = 'get'.ucfirst($fm);
+            $getter = 'get' . ucfirst($fm);
             $val1 = $entity->getZasob()->{$getter}();
             $val2 = $entity->getZmienianyZasob()->{$getter}();
             if (\is_a($val1, 'Datetime')) {
@@ -539,10 +539,10 @@ class WniosekUtworzenieZasobuController extends Controller
             'user'      => $this->getUser(),
         ));
 
-        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('submit2', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
-        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success'.($readonly ? ' hidden' : '') )));
+        $form->add('submit', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' . ($readonly ? ' hidden' : '') )));
+        $form->add('submit2', SubmitType::class, array('label' => 'Zapisz zmiany', 'attr' => array('class' => 'btn btn-success' . ($readonly ? ' hidden' : '') )));
+        $form->add('dalej', ButtonType::class, array( 'label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' . ($readonly ? ' hidden' : '') )));
+        $form->add('dalej2', ButtonType::class, array('label' => 'Dalej', 'attr' => array('class' => 'btn btn-success' . ($readonly ? ' hidden' : '') )));
 
 /*
         foreach($form->all() as $ff){
@@ -766,7 +766,7 @@ class WniosekUtworzenieZasobuController extends Controller
 
 
         if ($this->debug) {
-            echo '<br>setWniosekStatus '.$statusName.'<br>';
+            echo '<br>setWniosekStatus ' . $statusName . '<br>';
         }
 
         $zastepstwo = $this->sprawdzCzyDzialaZastepstwo($wniosek);
@@ -821,7 +821,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $wniosek->getWniosek()->addViewer($wv);
             $wv->setSamaccountname($v);
             if ($this->debug) {
-                echo '<br>dodaje usera viewra '.$v;
+                echo '<br>dodaje usera viewra ' . $v;
             }
             $em->persist($wv);
         }
@@ -833,7 +833,7 @@ class WniosekUtworzenieZasobuController extends Controller
             $wniosek->getWniosek()->addEditor($wv);
             $wv->setSamaccountname($v);
             if ($this->debug) {
-                echo '<br>dodaje usera editora '.$v;
+                echo '<br>dodaje usera editora ' . $v;
             }
             $em->persist($wv);
         }
@@ -1123,7 +1123,7 @@ class WniosekUtworzenieZasobuController extends Controller
                         $delta = $this->obliczZmienionePola($wniosek, true);
                         //var_dump($delta);
                         foreach ($delta as $k => $v) {
-                            $getter = 'set'.ucfirst($k);
+                            $getter = 'set' . ucfirst($k);
                             $wniosek->getZmienianyZasob()->{$getter}($v);
                         }
 
@@ -1172,7 +1172,7 @@ class WniosekUtworzenieZasobuController extends Controller
     protected function addViewersEditors($wniosek, &$where, $who)
     {
         if ($this->debug) {
-            echo '<br>addViewersEditors '.$who.'<br>';
+            echo '<br>addViewersEditors ' . $who . '<br>';
         }
         if ($wniosek->getWniosekUtworzenieZasobu()->getTyp() === 'nowy') {
             $zasob = $wniosek->getWniosekUtworzenieZasobu()->getZasob();
@@ -1187,7 +1187,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 //
                 $where[$wniosek->getCreatedBy()] = $wniosek->getCreatedBy();
                 if ($this->debug) {
-                    echo '<br>added '.$wniosek->getCreatedBy().'<br>';
+                    echo '<br>added ' . $wniosek->getCreatedBy() . '<br>';
                 }
                 break;
             case 'wlasciciel':
@@ -1203,17 +1203,17 @@ class WniosekUtworzenieZasobuController extends Controller
                     //$g = $this->get('renameService')->fixImieNazwisko($g);
                     $ADManager = $ldap->getUserFromAD($g);
                     if ($this->debug) {
-                        echo '<br>szuka wlasciciela  '.$g.'<br>';
+                        echo '<br>szuka wlasciciela  ' . $g . '<br>';
                     }
                     if (count($ADManager) > 0) {
                         if ($this->debug) {
-                            echo '<br>added '.$ADManager[0]['name'].'<br>';
+                            echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                         }
                         $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         break;
                     } else {
                         //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
-                        die('!!!!!!!!!!blad 111 nie moge znalezc usera '.$g);
+                        die('!!!!!!!!!!blad 111 nie moge znalezc usera ' . $g);
                     }
                     //echo "<br>dodaje wlasciciela ".$g;
                     //print_r($where);
@@ -1227,7 +1227,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
+                        echo '<br>added ' . $u->getSamaccountname() . '<br>';
                     }
                 }
                 break;
@@ -1239,7 +1239,7 @@ class WniosekUtworzenieZasobuController extends Controller
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
+                        echo '<br>added ' . $u->getSamaccountname() . '<br>';
                     }
                 }
                 break;
@@ -1253,11 +1253,11 @@ class WniosekUtworzenieZasobuController extends Controller
                     $ADManager = $ldap->getUserFromAD($g);
                     if (count($ADManager) > 0) {
                         if ($this->debug) {
-                            echo '<br>added '.$ADManager[0]['name'].'<br>';
+                            echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                         }
                         $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                     } else {
-                        throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : '.$g);
+                        throw $this->createNotFoundException('Nie moge znalezc administrator zasobu w AD : ' . $g);
                     }
                 }
                 break;
@@ -1271,7 +1271,7 @@ class WniosekUtworzenieZasobuController extends Controller
                     $ADManager = $ldap->getUserFromAD($g);
                     $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                     if ($this->debug) {
-                        echo '<br>added '.$ADManager[0]['name'].'<br>';
+                        echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                     }
                 }
                 break;

@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Tool;
 
@@ -113,7 +115,7 @@ class AdStringTool
                 if (false !== strpos($value, $valueKey)) {
                     if ($ouIndex === $loopIndex) {
                         $tempArray = explode('=', $value);
-                        $tempArray[count($tempArray)-1] = $replaceTo;
+                        $tempArray[count($tempArray) - 1] = $replaceTo;
                         $adStringParts[$key] = implode('=', $tempArray);
                     }
                     $loopIndex++;
@@ -122,7 +124,7 @@ class AdStringTool
 
             if ($loopIndex <= $ouIndex) {
                 throw new InvalidArgumentException(
-                    'Podany AD string nie posiada tylu (min: 0, max: ' . ($loopIndex-1) . ') kluczy ' . $valueKey
+                    'Podany AD string nie posiada tylu (min: 0, max: ' . ($loopIndex - 1) . ') kluczy ' . $valueKey
                 );
             }
 
@@ -133,7 +135,7 @@ class AdStringTool
             $containsKey = strpos($value, $valueKey);
             if (false !== $containsKey) {
                 $tempArray = explode('=', $value);
-                $tempArray[count($tempArray)-1] = $replaceTo;
+                $tempArray[count($tempArray) - 1] = $replaceTo;
                 $adStringParts[$key] = implode('=', $tempArray);
             }
         }

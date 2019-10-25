@@ -390,7 +390,7 @@ class EngagementController extends Controller
         $sheetData = $objPHPExcel->getActiveSheet()->toArray(null, true, true, true);
 
 
-        for ($i = 2; $i < count($sheetData)+1; $i++) {
+        for ($i = 2; $i < count($sheetData) + 1; $i++) {
             $dane = [];
             $j = 0;
             foreach ($this->mapowanieKolumn as $k => $f) {

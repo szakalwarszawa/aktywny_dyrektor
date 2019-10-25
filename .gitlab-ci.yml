@@ -10,7 +10,7 @@ stages:
     - tests
     - postbuild
 
-# stage wyłączony - na razi nie jest do niczego potrzebny
+# stage wyłączony - do czasu kupna nowego klucza do fontawesome-pro
 .build:
     stage: build
     script:
@@ -32,11 +32,13 @@ parallellint:
         - /root/.composer/vendor/bin/parallel-lint --colors --blame ./app
         - /root/.composer/vendor/bin/parallel-lint --colors --blame ./web
 
-psr2:
+psr12:
     stage: quality
     allow_failure: false
     script:
-        - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR2 --extensions=php src/
+        - /usr/bin/composer.phar global require "squizlabs/php_codesniffer"  --prefer-dist --no-suggest --no-progress --no-interaction --no-scripts
+        - /root/.composer/vendor/bin/phpcs --version
+        - /root/.composer/vendor/bin/phpcs -n --colors --report=full --standard=PSR12 --extensions=php src/
 
 twigcs:
     stage: quality

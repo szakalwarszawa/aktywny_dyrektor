@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Controller;
 
@@ -129,7 +131,7 @@ class PositionGroupsController extends Controller
      */
     public function delete(Request $request, PositionGroups $positionGroup): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$positionGroup->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $positionGroup->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($positionGroup);
             $entityManager->flush();

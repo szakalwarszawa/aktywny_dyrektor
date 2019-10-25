@@ -54,7 +54,7 @@ class WniosekStatusType extends AbstractType
                 'attr' => array(
                     'class' => 'select2'
                 ),
-                'choices' =>array_flip($this->role),
+                'choices' => array_flip($this->role),
                 'required' => false,
                 'label' => 'Kto może edytować wniosek o tym statusie'
             ))->addModelTransformer($transformer))

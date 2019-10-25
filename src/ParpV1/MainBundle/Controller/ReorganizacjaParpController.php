@@ -104,7 +104,7 @@ class ReorganizacjaParpController extends Controller
                         'user' => $u['samaccountname'],
                         'name' => $u['name'],
                         'rekordDepartament' => $rekordDepartament,
-                        'coMa' => $imieNazwisko[0].", ".$imieNazwisko[1],
+                        'coMa' => $imieNazwisko[0] . ", " . $imieNazwisko[1],
                         'coPowinienMiec' => $imieNazwisko,
                         'info' => '',
                     ];
@@ -120,8 +120,8 @@ class ReorganizacjaParpController extends Controller
                         'user' => $u['samaccountname'],
                         'name' => $u['name'],
                         'rekordDepartament' => $rekordDepartament,
-                        'coMa' => "'".$name1."'",
-                        'coPowinienMiec' => "'".$name2."'",
+                        'coMa' => "'" . $name1 . "'",
+                        'coPowinienMiec' => "'" . $name2 . "'",
                         'info' => '',
                     ];
                     $brakImport++;
@@ -145,13 +145,13 @@ class ReorganizacjaParpController extends Controller
                         $sekcje [] = $s->getInfo();
                     }
                     $bledy[] = [
-                    'blad' => 'Znalazl za duzo wpisow: '.count($entry).' nowych sekcji w AkD!!!',
+                    'blad' => 'Znalazl za duzo wpisow: ' . count($entry) . ' nowych sekcji w AkD!!!',
                     'user' => $u['samaccountname'],
                     'name' => $u['name'],
                     'rekordDepartament' => $rekordDepartament,
                     'coMa' => $name1,
                     'coPowinienMiec' => $name2,
-                    'info' => 'sekcje: "'.implode(",", $sekcje).'"!!!',
+                    'info' => 'sekcje: "' . implode(",", $sekcje) . '"!!!',
                     ];
                 }
                     //jest ok znalazl
@@ -170,8 +170,8 @@ class ReorganizacjaParpController extends Controller
                         $typPracownika = $import[0]->getTypPracownika();
                     }
                     $nieZnaleziony = true;
-                    $newDepartamentSkrot = "___NIE_ZNALAZL (typPracownika: ".$typPracownika.")___"; //$entry[0]->getDepartamentSkrot();
-                    $newDepartamentNazwa = "___NIE_ZNALAZL (typPracownika: ".$typPracownika.")___"; //$entry[0]->getDepartament();
+                    $newDepartamentSkrot = "___NIE_ZNALAZL (typPracownika: " . $typPracownika . ")___"; //$entry[0]->getDepartamentSkrot();
+                    $newDepartamentNazwa = "___NIE_ZNALAZL (typPracownika: " . $typPracownika . ")___"; //$entry[0]->getDepartament();
                     if ($u['samaccountname'] == 'kamila_sek') {
                         //echo "<pre>"; var_dump($danerekord); die();
                     }
@@ -179,7 +179,7 @@ class ReorganizacjaParpController extends Controller
                         //wtedy bierzemy jednak z rekorda!!!
                         $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
                         if (!$departament && $danerekord->getDepartament() > 500) {
-                            die("Nie mam departamentu ".$danerekord->getDepartament());
+                            die("Nie mam departamentu " . $danerekord->getDepartament());
                         }
                         if ($departament) {
                             $newDepartamentSkrot = $departament->getShortname();
@@ -187,8 +187,8 @@ class ReorganizacjaParpController extends Controller
                             $nieZnaleziony = false;
                         } else {
                             $nieZnaleziony = true;
-                            $newDepartamentSkrot .= "na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartamentSkrot();
-                            $newDepartamentNazwa .= "na podstawie id ".$danerekord->getDepartament()." ___"; //$entry[0]->getDepartament();
+                            $newDepartamentSkrot .= "na podstawie id " . $danerekord->getDepartament() . " ___"; //$entry[0]->getDepartamentSkrot();
+                            $newDepartamentNazwa .= "na podstawie id " . $danerekord->getDepartament() . " ___"; //$entry[0]->getDepartament();
                         }
                     } else {
                             $nieZnaleziony = true;
@@ -231,7 +231,7 @@ class ReorganizacjaParpController extends Controller
                             $b = $ldapAdmin->ldapRename($ldapconn, $u['distinguishedname'], "CN=" . $u['name'], $roznicaDn, true);
                             $ldapstatus = $ldapAdmin->ldapError($ldapconn);
                             //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapRename $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapRename $ldapstatus " . $u['distinguishedname'] . "</span> \r\n<br>";
                         }
                         if (count($roznica) > 0 && $zmieniajSekcjewIDescriptionAD) {
                             foreach ($roznica as $k => $v) {
@@ -244,7 +244,7 @@ class ReorganizacjaParpController extends Controller
                             $res = $ldapAdmin->ldapModify($ldapconn, $u['distinguishedname'], $roznica);
                             $ldapstatus = $ldapAdmin->ldapError($ldapconn);
                             //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModify $ldapstatus " . $u['distinguishedname'] . "</span> \r\n<br>";
                         }
                         if ($zmieniajGrupy) {
                             $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $sekcjaSkrot);
@@ -255,7 +255,7 @@ class ReorganizacjaParpController extends Controller
                                 //var_dump($g, $addtogroup, array('member' => $dn ));
                                 $ldapAdmin->ldapModAdd($ldapconn, $addtogroup, array('member' => $dn ));
                                 $ldapstatus = $ldapAdmin->ldapError($ldapconn);
-                                echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModAdd $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                                echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModAdd $ldapstatus dla osoby " . $addtogroup . " " . $dn . "</span>\r\n<br>";
                             }
                         }
 
@@ -272,7 +272,7 @@ class ReorganizacjaParpController extends Controller
                             $res = $ldapAdmin->ldapModify($ldapconn, $u['distinguishedname'], $zmiany);
                             $ldapstatus = $ldapAdmin->ldapError($ldapconn);
                             //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModify $ldapstatus " . $u['distinguishedname'] . "</span> \r\n<br>";
                         }
                     } else {
                         $okad++;
@@ -284,12 +284,12 @@ class ReorganizacjaParpController extends Controller
         }
         //echo "<pre>"; print_r($titles); die();
         $bledy[] = [
-            'blad' => 'Przetworzone rekordy '.count($users),
-            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji '.$ok,
-            'name' => 'Wpisow ktore nie maja rekordu w imporcie '.$brakImport,
-            'coMa' => 'Wpisow z bledami '.count($bledy),
-            'coPowinienMiec' => 'Zgadza sie w AD '.$okad,
-            'info' => 'Braki w rekord '.$brakRekord,
+            'blad' => 'Przetworzone rekordy ' . count($users),
+            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji ' . $ok,
+            'name' => 'Wpisow ktore nie maja rekordu w imporcie ' . $brakImport,
+            'coMa' => 'Wpisow z bledami ' . count($bledy),
+            'coPowinienMiec' => 'Zgadza sie w AD ' . $okad,
+            'info' => 'Braki w rekord ' . $brakRekord,
         ];
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $bledy]);
     }
@@ -332,7 +332,7 @@ class ReorganizacjaParpController extends Controller
                     'blad' => 'Nie znalazl danych w systemie rekord!!!',
                     'user' => $u['samaccountname'],
                     'name' => $u['name'],
-                    'coMa' => $imieNazwisko[0].", ".$imieNazwisko[1],
+                    'coMa' => $imieNazwisko[0] . ", " . $imieNazwisko[1],
                     'coPowinienMiec' => $imieNazwisko,
                     'info' => '',
                 ];
@@ -343,14 +343,14 @@ class ReorganizacjaParpController extends Controller
                     'blad' => 'nie znalazl usera w imporcie!!!',
                     'user' => $u['samaccountname'],
                     'name' => $u['name'],
-                    'coMa' => "'".$name1."'",
-                    'coPowinienMiec' => "'".$name2."'",
+                    'coMa' => "'" . $name1 . "'",
+                    'coPowinienMiec' => "'" . $name2 . "'",
                     'info' => '',
                 ];
                 $brakImport++;
             } elseif (count($import) > 1) {
                 $bledy[] = [
-                    'blad' => 'Znalazl za duzo wpisow: '.count($import).'!!!',
+                    'blad' => 'Znalazl za duzo wpisow: ' . count($import) . '!!!',
                     'user' => $u['samaccountname'],
                     'name' => $u['name'],
                     'coMa' => $name1,
@@ -374,7 +374,7 @@ class ReorganizacjaParpController extends Controller
                     //wtedy bierzemy jednak z rekorda!!!
                     $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $danerekord->getDepartament(), 'nowaStruktura' => true]);
                     if (!$departament && $danerekord->getDepartament() > 500) {
-                        die("Nie mam departamentu ".$danerekord->getDepartament());
+                        die("Nie mam departamentu " . $danerekord->getDepartament());
                     }
                     if ($departament) {
                         $newDepartamentSkrot = $departament->getShortname();
@@ -411,7 +411,7 @@ class ReorganizacjaParpController extends Controller
                         $b = $ldapAdmin->ldapRename($ldapconn, $u['distinguishedname'], "CN=" . $u['name'], $roznicaDn, true);
                         $ldapstatus = $ldapAdmin->ldapError($ldapconn);
                         //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapRename $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                        echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapRename $ldapstatus " . $u['distinguishedname'] . "</span> \r\n<br>";
                     }
                     if (count($roznica) > 0 && $zmieniajSekcjewIDescriptionAD) {
                         foreach ($roznica as $k => $v) {
@@ -424,7 +424,7 @@ class ReorganizacjaParpController extends Controller
                         $res = $ldapAdmin->ldapModify($ldapconn, $u['distinguishedname'], $roznica);
                         $ldapstatus = $ldapAdmin->ldapError($ldapconn);
                         //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModify $ldapstatus ".$u['distinguishedname']."</span> \r\n<br>";
+                        echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModify $ldapstatus " . $u['distinguishedname'] . "</span> \r\n<br>";
                     }
                     if ($zmieniajGrupy) {
                         $grupy = $this->get('ldap_service')->getGrupyUsera($u, $newDepartamentSkrot, $import[0]->getSekcjaSkrot());
@@ -435,7 +435,7 @@ class ReorganizacjaParpController extends Controller
                             //var_dump($g, $addtogroup, array('member' => $dn ));
                             $ldapAdmin->ldapModAdd($ldapconn, $addtogroup, array('member' => $dn ));
                             $ldapstatus = $ldapAdmin->ldapError($ldapconn);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModAdd $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModAdd $ldapstatus dla osoby " . $addtogroup . " " . $dn . "</span>\r\n<br>";
                         }
                     }
                 } else {
@@ -444,12 +444,12 @@ class ReorganizacjaParpController extends Controller
             }
         }
         $bledy[] = [
-            'blad' => 'Przetworzone rekordy '.count($users),
-            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji '.$ok,
-            'name' => 'Wpisow ktore nie maja rekordu w imporcie '.$brakImport,
-            'coMa' => 'Wpisow z bledami '.count($bledy),
-            'coPowinienMiec' => 'Zgadza sie w AD '.$okad,
-            'info' => 'Braki w rekord '.$brakRekord,
+            'blad' => 'Przetworzone rekordy ' . count($users),
+            'user' => 'Wpisow ktore maja rekordy w imporcie sekcji ' . $ok,
+            'name' => 'Wpisow ktore nie maja rekordu w imporcie ' . $brakImport,
+            'coMa' => 'Wpisow z bledami ' . count($bledy),
+            'coPowinienMiec' => 'Zgadza sie w AD ' . $okad,
+            'info' => 'Braki w rekord ' . $brakRekord,
         ];
         return $this->render('ParpMainBundle:Dev:showData.html.twig', ['data' => $bledy]);
     }
@@ -502,10 +502,10 @@ class ReorganizacjaParpController extends Controller
                 //$login = $this->get('samaccountname_generator')->generateSamaccountname($c->parseValue($row['IMIE']), $c->parseValue($row['NAZWISKO']));
                 $danerekord = $em->getRepository(DaneRekord::class)->findOneBySymbolRekordId($c->parseValue($row['SYMBOL']));
                 if (!$danerekord) {
-                    die("Nie moge znalezc osoby !!! ".trim($row['NAZWISKO'])." ".trim($row['IMIE'])." - ".$row['SYMBOL']);
+                    die("Nie moge znalezc osoby !!! " . trim($row['NAZWISKO']) . " " . trim($row['IMIE']) . " - " . $row['SYMBOL']);
                 }
                 $departament = $em->getRepository(Departament::class)->findOneBy(['nameInRekord' => $c->parseValue($row['DEPARTAMENT']), 'nowaStruktura' => true]);
-                $prac = mb_strtoupper($danerekord->getNazwisko()." ".$danerekord->getImie());//$c->parseValue($row['NAZWISKO'], false)." ".trim($c->parseValue['IMIE'], false);
+                $prac = mb_strtoupper($danerekord->getNazwisko() . " " . $danerekord->getImie());//$c->parseValue($row['NAZWISKO'], false)." ".trim($c->parseValue['IMIE'], false);
                 $sekcja = $em->getRepository(ImportSekcjeUser::class)->findOneBy(['pracownik' => $prac]);
                 $login = $danerekord->getLogin();
                 if (count($tylkoTychUserow) == 0 || in_array($login, $tylkoTychUserow)) {
@@ -538,7 +538,7 @@ class ReorganizacjaParpController extends Controller
                             //die($aduser[0]['distinguishedname']);
                             $res = $ldap->ldapModify($ldapconn, $aduser[0]['distinguishedname'], $zmiana);
                             $ldapstatus = $ldap->ldapError($ldapconn);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModify $ldapstatus dla osoby ".$aduser[0]['distinguishedname']."</span> \r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModify $ldapstatus dla osoby " . $aduser[0]['distinguishedname'] . "</span> \r\n<br>";
                         }
                     }
                     if (!$departament) {
@@ -583,7 +583,7 @@ class ReorganizacjaParpController extends Controller
                             //var_dump($g, $addtogroup, array('member' => $dn ));
                             $ldap->ldapModAdd($ldapconn, $addtogroup, array('member' => $dn ));
                             $ldapstatus = $ldap->ldapError($ldapconn);
-                            echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModAdd $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                            echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModAdd $ldapstatus dla osoby " . $addtogroup . " " . $dn . "</span>\r\n<br>";
                         }
                     }
 
@@ -595,7 +595,7 @@ class ReorganizacjaParpController extends Controller
                         $b = $ldap->ldapRename($ldapconn, $aduser[0]['distinguishedname'], "CN=" . $cn, $parent, true);
                         $ldapstatus = $ldap->ldapError($ldapconn);
                         //var_dump($aduser[0]['distinguishedname'], "CN=" . $cn, $parent);
-                        echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapRename $ldapstatus ".$aduser[0]['distinguishedname']."</span> \r\n<br>";
+                        echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapRename $ldapstatus " . $aduser[0]['distinguishedname'] . "</span> \r\n<br>";
                     }
                 }
             }
@@ -607,7 +607,7 @@ class ReorganizacjaParpController extends Controller
     }
     public function writeln($txt)
     {
-        echo "<br>".$txt."<br>";
+        echo "<br>" . $txt . "<br>";
     }
 
     /**
@@ -741,8 +741,8 @@ class ReorganizacjaParpController extends Controller
                     {
                         $zmiany = [];
                     foreach ($mapowanie as $k => $v) {
-                        $getter = "get".ucfirst($v);
-                        $setter = "set".ucfirst($v);
+                        $getter = "get" . ucfirst($v);
+                        $setter = "set" . ucfirst($v);
                         $vold = $zasob->{$getter}();
                         $value = $row[$k];
                         if (strstr($setter, "Data") !== false) {
@@ -815,7 +815,7 @@ class ReorganizacjaParpController extends Controller
         foreach ($sheetData as $row) {
             //pomijamy pierwszy rzad
             if ($i > 1 && $row['D'] != "" && $row['E'] != "") {
-                $importSekcjeArr = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $row['E'], 'departament' =>$row['C']]);
+                $importSekcjeArr = $em->getRepository(ImportSekcjeUser::class)->findBy(['pracownik' => $row['E'], 'departament' => $row['C']]);
                 if (count($importSekcjeArr) == 0) {
                     $importSekcje = new \ParpV1\MainBundle\Entity\ImportSekcjeUser();
                 } else {
@@ -823,7 +823,7 @@ class ReorganizacjaParpController extends Controller
                 }
                 foreach ($mapowanie as $k => $v) {
                     if ($v != "") {
-                        $setter = "set".ucfirst($v);
+                        $setter = "set" . ucfirst($v);
                         $importSekcje->{$setter}($row[$k]);
                         $em->persist($importSekcje);
                     }
@@ -883,7 +883,7 @@ class ReorganizacjaParpController extends Controller
                         $ldapAdmin->ldapModAdd($ldapconn, $addtogroup, array('member' => $dn ));
 
                         $ldapstatus = $ldapAdmin->ldapError($ldapconn);
-                        $msg = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModAdd $ldapstatus dla osoby ".$addtogroup." ".$dn." ".$g."</span>\r\n<br>";
+                        $msg = "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModAdd $ldapstatus dla osoby " . $addtogroup . " " . $dn . " " . $g . "</span>\r\n<br>";
                     }
                 }
 
@@ -959,7 +959,8 @@ class ReorganizacjaParpController extends Controller
 
         foreach ($userzasoby as $uz) {
             $z = $em->getRepository(Zasoby::class)->find($uz->getZasobId());
-            if ($z->getGrupyAD() &&
+            if (
+                $z->getGrupyAD() &&
                 $uz->getPoziomDostepu() != "nie dotyczy" &&
                 $uz->getPoziomDostepu() != "do wypełnienia przez właściciela zasobu"
             ) {
@@ -985,7 +986,7 @@ class ReorganizacjaParpController extends Controller
         $grupy = explode(";", $z->getGrupyAD());
         $poziomy = explode(";", $z->getPoziomDostepu());
         $ktoryPoziom = $this->znajdzPoziom($poziomy, $uz->getPoziomDostepu());
-        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : "!!!blad $ktoryPoziom ".count($grupy)."!!!";
+        return $ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : "!!!blad $ktoryPoziom " . count($grupy) . "!!!";
     }
     protected function znajdzPoziom($poziomy, $poziom)
     {
@@ -1025,7 +1026,7 @@ class ReorganizacjaParpController extends Controller
                     $departament = $em->getRepository(Departament::class)->findBy(['shortname' => $this->get('ldap_service')->getOUfromDN($u), 'nowaStruktura' => 1]);
 
                     if (count($departament) == 0) {
-                        die("Nie mam departaMENTU ".$this->get('ldap_service')->getOUfromDN($u)." ".$u['description']);
+                        die("Nie mam departaMENTU " . $this->get('ldap_service')->getOUfromDN($u) . " " . $u['description']);
                     }
 
                     $section = $em->getRepository(Section::class)->findBy(['departament' => $departament[0], 'shortname' => $u['division']]);
@@ -1033,7 +1034,7 @@ class ReorganizacjaParpController extends Controller
                         $manager = $section[0]->getKierownikDN();
                         $pominal = false;
                     } else {
-                        echo ( "<br> szuka ".$u['distinguishedname']." ".$u['samaccountname']." ".$u['description']." ".$u['division']." ".count($section)." ".($departament[0] ? $departament[0]->getName() : "brak"));
+                        echo ( "<br> szuka " . $u['distinguishedname'] . " " . $u['samaccountname'] . " " . $u['description'] . " " . $u['division'] . " " . count($section) . " " . ($departament[0] ? $departament[0]->getName() : "brak"));
                     }
                 }
                 //szukam tytulu osoby
@@ -1057,7 +1058,7 @@ class ReorganizacjaParpController extends Controller
                     }
                     $res = $ldap->ldapModify($ldapconn, $u['distinguishedname'], $entry);
                     $ldapstatus = $ldap->ldapError($ldapconn);
-                    echo "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModify $ldapstatus dla osoby ".$u[0]['distinguishedname']."</span> \r\n<br>";
+                    echo "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModify $ldapstatus dla osoby " . $u[0]['distinguishedname'] . "</span> \r\n<br>";
 
                     $zrobieni[$u['samaccountname']] = $entry;
                 }
@@ -1103,7 +1104,7 @@ class ReorganizacjaParpController extends Controller
                 //var_dump($g, $addtogroup, array('member' => $dn ));
                 $ldapAdmin->ldapModAdd($ldapconn, $addtogroup, array('member' => $dn ));
                 $ldapstatus = $ldapAdmin->ldapError($ldapconn);
-                $errors[] = "<span style='color:".($ldapstatus == "Success" ? "green" : "red")."'>ldapModAdd $ldapstatus dla osoby ".$addtogroup." ".$dn."</span>\r\n<br>";
+                $errors[] = "<span style='color:" . ($ldapstatus == "Success" ? "green" : "red") . "'>ldapModAdd $ldapstatus dla osoby " . $addtogroup . " " . $dn . "</span>\r\n<br>";
             }
 
 
@@ -1124,7 +1125,7 @@ class ReorganizacjaParpController extends Controller
 
     protected function getGrupyDepartamentu($dep)
     {
-        $g = $this->get('ldap_service')->getGroupsFromAD("SGG-".$dep, "*");
+        $g = $this->get('ldap_service')->getGroupsFromAD("SGG-" . $dep, "*");
 
         $ret = [];
         foreach ($g as $k => $r) {
@@ -1195,7 +1196,7 @@ class ReorganizacjaParpController extends Controller
                     }
                 }
                 $daneImportSekcje = $this->getDoctrine()->getManager()->getRepository(ImportSekcjeUser::class)->findOneBy([
-                    'pracownik' => $rname[0]." ".$rname[1],
+                    'pracownik' => $rname[0] . " " . $rname[1],
                 ]);
                 if ($daneImportSekcje) {
                     $dane['jestWimporcieSekcji'] = 'TAK';
@@ -1264,8 +1265,8 @@ class ReorganizacjaParpController extends Controller
                 $sekcje[$u['department']] = $i;
                 $section = $em->getRepository(Departament::class)->findOneBy(['name' => $u['department']]);
                 $data[$i++] = [
-                    'department' => "'".$u['department']."'",
-                    'description' => "'".$u['description']."'",
+                    'department' => "'" . $u['department'] . "'",
+                    'description' => "'" . $u['description'] . "'",
                     'istniejeWbazie' => ($section ? "TAK" : "NIE"),
                     'users' => [$u['samaccountname']]
                 ];
@@ -1383,7 +1384,7 @@ class ReorganizacjaParpController extends Controller
             }
 
 
-            $sekcja = "Sekcja ".implode(" ", $wyrazy2);
+            $sekcja = "Sekcja " . implode(" ", $wyrazy2);
         } else {
             //samodzielne stanowisko
             $sekcja = str_replace(" it", " IT", $sekcja);
@@ -1521,7 +1522,7 @@ class ReorganizacjaParpController extends Controller
                 $o['disabled'] = 0;
                 if (count($aduser) == 0 && $o['name'] != "") {
                     $im = explode(" ", $o['name']);
-                    $searchName = $im[0]."*".$im[1];
+                    $searchName = $im[0] . "*" . $im[1];
                     //echo "SZukam $searchName ";
                     $aduser = $ldap->getUserFromAD(null, $searchName, null, "wszyscyWszyscy");
                     $o['disabled'] = 1;
@@ -1549,9 +1550,9 @@ class ReorganizacjaParpController extends Controller
                     ['name' => $o['info']]
                 );
                 $o['dbSekcja'] = $sekcja ? $sekcja->getId() : 0;
-                if ($o['info'] != "" && !isset($sekcjeSa[$o['info'].$o['department']])) {
+                if ($o['info'] != "" && !isset($sekcjeSa[$o['info'] . $o['department']])) {
                     $sekcje[] = ['info' => $o['info'], 'departament' => $o['department'], 'dbSekcja' => $o['dbSekcja'], 'dbDep' => $o['dbDep']];
-                    $sekcjeSa[$o['info'].$o['department']] = 1;
+                    $sekcjeSa[$o['info'] . $o['department']] = 1;
                 }
 
                 if ($sekcja == null) {
@@ -1600,7 +1601,7 @@ class ReorganizacjaParpController extends Controller
                 $aduser = $ldap->getUserFromAD($w['samaccountname'], null, null, "wszyscyWszyscy");
                 if (count($aduser) > 0 && $w['samaccountname'] != "!!!") {
                     $zmian = 0;
-                    echo "<br>zmiany dla ".$w['name']." ".$w['samaccountname']."<br>";
+                    echo "<br>zmiany dla " . $w['name'] . " " . $w['samaccountname'] . "<br>";
                     $zmiany = new Entry();
                     $sekcja = $em->getRepository(Section::class)->findOneBy(
                         ['name' => $w['info']]
@@ -1612,43 +1613,43 @@ class ReorganizacjaParpController extends Controller
                     if ($sekcja) {
                         if ($aduser[0]['info'] != $sekcja->getName()) {
                             $zmiany->setInfo($sekcja->getName());
-                            echo "          zmiana nazwy sekcji ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['info'] ." na ".$sekcja->getName()."<br>";
+                            echo "          zmiana nazwy sekcji " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['info'] . " na " . $sekcja->getName() . "<br>";
                             $zmian++;
                         }
                         if ($aduser[0]['division'] != $sekcja->getShortname()) {
                             $zmiany->setDivision($sekcja->getShortname());
-                            echo "          zmiana skrotu sekcji ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['division'] ." na ".$sekcja->getShortname()."<br>";
+                            echo "          zmiana skrotu sekcji " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['division'] . " na " . $sekcja->getShortname() . "<br>";
                             $zmian++;
                         }
                     } else {
                         if ($aduser[0]['info'] != '') {
                             $zmiany->setInfo("BRAK");
-                            echo "          czyszczenie sekcji ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['info'] ." <br>";
+                            echo "          czyszczenie sekcji " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['info'] . " <br>";
                             $zmian++;
                         }
                         if ($aduser[0]['division'] != '') {
                             $zmiany->setDivision("BRAK");
-                            echo "          czyszczenie skrotu sekcji ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['division'] ." <br>";
+                            echo "          czyszczenie skrotu sekcji " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['division'] . " <br>";
                             $zmian++;
                         }
                     }
                     if ($departament != null && $aduser[0]['department'] != $departament->getName()) {
                         //$zmiany->setDepartment($departament->getName());
-                        echo "          zmiana nazwy department ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['department'] ." na ".$departament->getName()."<br>";
+                        echo "          zmiana nazwy department " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['department'] . " na " . $departament->getName() . "<br>";
                     }
                     if ($departament != null && $aduser[0]['description'] != $departament->getShortname() && !strstr("Konto wy", $aduser[0]['description']) === false) {
                         //$zmiany->setDescription($departament->getShortname());
-                        echo "          zmiana skrotu department ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['description'] ." na ".$departament->getShortname()."<br>";
+                        echo "          zmiana skrotu department " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['description'] . " na " . $departament->getShortname() . "<br>";
                     }
                     $manager = $ldap->getUserFromAD($w['adManager']);
                     if (count($manager) > 0) {
                         if ($manager[0]['distinguishedname'] != $aduser[0]['manager']) {
-                            echo "          zmiana managera ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['manager'] ." na ".$manager[0]['distinguishedname']."<br>";
+                            echo "          zmiana managera " . $w['name'] . " " . $w['samaccountname'] . " z " . $aduser[0]['manager'] . " na " . $manager[0]['distinguishedname'] . "<br>";
                             $zmian++;
                             $zmiany->setManager($manager[0]['distinguishedname']);
                         }
                     } else {
-                        echo "BLAD nie znalazl managera !!!! ".$w['name']." ".$w['samaccountname']." ".$w['manager']."<br>";
+                        echo "BLAD nie znalazl managera !!!! " . $w['name'] . " " . $w['samaccountname'] . " " . $w['manager'] . "<br>";
                     }
                     if ($zmian > 0) {
                         echo "Robie zmiany ";
@@ -1663,10 +1664,10 @@ class ReorganizacjaParpController extends Controller
                         echo "          zmiana skrotu department ".$w['name']." ".$w['samaccountname']." z ".$aduser[0]['description'] ." na ".$departament->getShortname()."<br>";
                     }*/
                 } else {
-                    echo "BLAD nie znalazl !!!! ".$w['name']." ".$w['samaccountname']."<br>";
+                    echo "BLAD nie znalazl !!!! " . $w['name'] . " " . $w['samaccountname'] . "<br>";
                 }
             } else {
-                echo "kasuje ".$w['samaccountname']."<br>";
+                echo "kasuje " . $w['samaccountname'] . "<br>";
             }
         }
         ///$em->flush();
@@ -1681,7 +1682,7 @@ class ReorganizacjaParpController extends Controller
                 $dep = $em->getRepository(Departament::class)->find($d['dbDep']);
                 if ($d['dbSekcja'] == 0) {
                     $short = $this->getSekcjaShortname($d['info']);
-                    echo "<br>tworze sekcje ".$d['info']." ze skrotem $short<br>";
+                    echo "<br>tworze sekcje " . $d['info'] . " ze skrotem $short<br>";
                     $s = new \ParpV1\MainBundle\Entity\Section();
 
                     $s->setShortname($short);
@@ -1690,7 +1691,7 @@ class ReorganizacjaParpController extends Controller
                     $em->persist($s);
                 } else {
                     $s = $em->getRepository(Section::class)->find($d['dbSekcja']);
-                    echo "<br>update sekcji ".$d['info']." ".$d['dbSekcja']."<br>";
+                    echo "<br>update sekcji " . $d['info'] . " " . $d['dbSekcja'] . "<br>";
                     if ($d['dbDep'] != $dep->getId()) {
                         echo "<br>!!!!!!!!!!!!!!! nie zgadza sie dep !!!!<br>";
                     }
