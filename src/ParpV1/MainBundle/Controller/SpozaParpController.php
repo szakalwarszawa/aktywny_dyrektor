@@ -44,7 +44,7 @@ class SpozaParpController extends Controller
         $wynik = [];
         foreach ($wnioski as $wniosek) {
             foreach ($wniosek->getUserZasoby() as $uz) {
-                $id = $uz->getSamaccountname()." ".$wniosek->getManagerSpozaParp();
+                $id = $uz->getSamaccountname() . " " . $wniosek->getManagerSpozaParp();
                 $wynik[$id] = [
                     'osoba' => $uz->getSamaccountname(),
                     'manager' => $wniosek->getManagerSpozaParp(),

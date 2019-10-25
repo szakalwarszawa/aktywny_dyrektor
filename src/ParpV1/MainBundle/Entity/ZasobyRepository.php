@@ -67,7 +67,7 @@ class ZasobyRepository extends EntityRepository
     {
         $query = $this->createQueryBuilder('z')
             ->leftJoin('z.wniosekUtworzenieZasobu', 'w')
-            ->andWhere('z.published = '.($aktywne ? "1" : "0"))
+            ->andWhere('z.published = ' . ($aktywne ? "1" : "0"))
             ->andWhere('(not w.typWnioskuZmianaWistniejacym = 1 or w.typWnioskuZmianaWistniejacym is null)')
         ;
 

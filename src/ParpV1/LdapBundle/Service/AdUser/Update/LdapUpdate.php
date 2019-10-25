@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\LdapBundle\Service\AdUser\Update;
 
@@ -34,6 +36,7 @@ use ParpV1\LdapBundle\AdUser\ParpAttributes;
 use ParpV1\LdapBundle\Constants\Attributes;
 use ParpV1\MainBundle\Entity\Section;
 use ParpV1\LdapBundle\Exception\PushFailedException;
+use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * LdapUpdate
@@ -561,7 +564,7 @@ class LdapUpdate extends Simulation
                     }
 
                     if (is_bool($value)) {
-                        return $value? 'PRAWDA' : 'FAŁSZ';
+                        return $value ? 'PRAWDA' : 'FAŁSZ';
                     }
 
                     if (false !== strpos($value, AdStringTool::CN)) {

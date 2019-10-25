@@ -105,11 +105,11 @@ class LdapAdminService
             $this->hostId = 1;
         }
 
-        $this->ad_host = $this->protocol.$this->container->getParameter('ad_host'.($this->hostId > 1 ? $this->hostId : ''));//.":".$this->port;
+        $this->ad_host = $this->protocol . $this->container->getParameter('ad_host' . ($this->hostId > 1 ? $this->hostId : ''));//.":".$this->port;
         if ($error !== '') {
             $msg = "Nie udało się połączyć z serwerem $prevHost z powodu błędu '$error', przełączam na serwer {$this->ad_host}";
             //print_r("\n".$this->ad_host."\n");
-            $this->output->writeln('<error>'.$msg.'</error>');
+            $this->output->writeln('<error>' . $msg . '</error>');
         }
     }
 
@@ -190,11 +190,11 @@ class LdapAdminService
         $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
 
         if ($samaccountname) {
-            $searchString = '(&(samaccountname='. $samaccountname .')(objectClass=person))';
+            $searchString = '(&(samaccountname=' . $samaccountname . ')(objectClass=person))';
         } elseif ($cnname) {
             $searchString = $cnname;
         } elseif ($query) {
-            $searchString = '(&('.$query.')(objectClass=person))';
+            $searchString = '(&(' . $query . ')(objectClass=person))';
         } else {
             $searchString = '(objectClass=person)';
         }
@@ -263,7 +263,7 @@ class LdapAdminService
     protected function parseMemberOf($res)
     {
         $ret = array();
-        $gr = isset($res['memberof']) ? $res['memberof']: array();
+        $gr = isset($res['memberof']) ? $res['memberof'] : array();
         foreach ($gr as $k => $g) {
             if ($k !== 'count') {
                 $p = explode(',', $g);
@@ -338,7 +338,7 @@ class LdapAdminService
                 // znajdz sciezke przelozonego
                 $cn = preg_replace('/\\\\-/', '-', preg_quote($manager));
 
-                $searchString = '(&(cn='. $cn .')(objectClass=person))';
+                $searchString = '(&(cn=' . $cn . ')(objectClass=person))';
 
                 $search = ldap_search($ldapconn, $userdn, $searchString, array(
                     'name',
@@ -400,11 +400,11 @@ class LdapAdminService
             $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department']), 'nowaStruktura' => true]);
             if (!$departmentOld) {
                 //szuka z nazwa stara struktura
-                $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department']).
+                $departmentOld =  $this->doctrine->getRepository('ParpMainBundle:Departament')->findOneBy(['name' => trim($userAD[0]['department']) .
                     ' - stara struktura', 'nowaStruktura'                                                         => false]);
             }
             if (!$departmentOld) {
-                echo("Nie znalazl starego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
+                echo("Nie znalazl starego departamentu '" . $userAD[0]['samaccountname'] . "' - '" . $userAD[0]['department'] . "'");
             } else {
                 $person->addGrupyAD($departmentOld, '-');
                 $grupyNaPodstawieSekcjiOrazStanowiska = $this->container->get('ldap_service')->getGrupyUsera($userAD[0], $departmentOld->getShortname(), $userAD[0]['division']);
@@ -417,7 +417,7 @@ class LdapAdminService
             }
             //jesli zmiana departamnentu dodajemy nowe grupy AD
             if (!$department) {
-                echo("Nie znalazl nowego departamentu '".$userAD[0]['samaccountname']."' - '".$userAD[0]['department']."'");
+                echo("Nie znalazl nowego departamentu '" . $userAD[0]['samaccountname'] . "' - '" . $userAD[0]['department'] . "'");
             } else {
                 $person->addGrupyAD($department, '-');
                 if ($person->getTitle()) {
@@ -479,7 +479,8 @@ class LdapAdminService
 
             if ($person->getIsDisabled()) {
                 $entry['description'] = $person->getDisableDescription();
-                if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY
+                if (
+                    $person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY
                     || $person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC
                 ) {
                     $grupyWszystkie = $userAD[0]['memberOf'];
@@ -503,7 +504,7 @@ class LdapAdminService
             $ldapstatus = $this->ldapError($ldapconn);
             if ($ldapstatus !== 'Success') {
                 if ($this->debug) {
-                    die('bbb '.$ldapstatus);
+                    die('bbb ' . $ldapstatus);
                 }
                 return $ldapstatus;
             }
@@ -527,7 +528,7 @@ class LdapAdminService
             if ($person->getCn()) {
                 $cn = $person->getCn();
             }
-            $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $cn, $parent, true);
+            $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN=' . $cn, $parent, true);
 
             $ldapstatus = $this->ldapError($ldapconn);
         } elseif (null === $adUserHelper || ($person->getCn() !== $adUserHelper::getImieNazwisko())) {
@@ -535,7 +536,7 @@ class LdapAdminService
             $cn = $person->getCn();
 
             $this->changePrimaryEmail($person->getSamaccountname(), $this->container->get('samaccountname_generator')->generateSamaccountnamePoZmianieNazwiska($person->getCn()));
-            $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $cn, null, true);
+            $b = $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN=' . $cn, null, true);
 
             $ldapstatus = $this->ldapError($ldapconn);
         }
@@ -543,13 +544,13 @@ class LdapAdminService
         if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY) {
             $this->ldapModDel($ldapconn, $person->getDistinguishedName(), array("manager" => array()));
             $newparent = str_replace('OU=Zespoly_2016,', 'OU=Zablokowane,', $userdn);
-            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
+            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN=' . $userAD[0]['name'], $newparent, true);
             $ldapstatus = $this->ldapError($ldapconn);
         }
         // przenosimy konto do OU=Nieobecni
         if ($person->getDisableDescription() === AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC) {
             $newparent = str_replace('OU=Zespoly_2016,', 'OU=Nieobecni,', $userdn);
-            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN='. $userAD[0]['name'], $newparent, true);
+            $this->ldapRename($ldapconn, $person->getDistinguishedName(), 'CN=' . $userAD[0]['name'], $newparent, true);
             $ldapstatus = $this->ldapError($ldapconn);
         }
         ldap_unbind($ldapconn);
@@ -593,14 +594,14 @@ class LdapAdminService
                 if ($grupa !== '') {
                     $znak = substr($grupa, 0, 1);
                     $g = substr($grupa, 1);
-                    $this->output->writeln('<comment>'.(($znak) == '+' ? 'Dodanie do' : 'Usuniecie z').' '.($znak).
-                        ' grupy  '.$g.
+                    $this->output->writeln('<comment>' . (($znak) == '+' ? 'Dodanie do' : 'Usuniecie z') . ' ' . ($znak) .
+                        ' grupy  ' . $g .
                         '</comment>'); //." , czy user w niej jest: ".in_array($g, $userAD[0]['memberOf'])."</comment>");
 
                     $grupa = $this->getGrupa($g);
                     if (!$grupa) {
-                        $error = 'Nie istnieje w AD grupa "'.$g.'"!!!';
-                        $this->output->writeln('<error>'.$error.'</error>');
+                        $error = 'Nie istnieje w AD grupa "' . $g . '"!!!';
+                        $this->output->writeln('<error>' . $error . '</error>');
                         $this->lastConnectionErrors[] = [
                             'function' => 'addRemoveMemberOf',
                             'error' => $error,
@@ -618,10 +619,10 @@ class LdapAdminService
                         } elseif ($znak == '-' && in_array($g, $userAD[0]['memberOf'])) {
                             $this->ldapModDel($ldapconn, $addtogroup, array('member' => $userAD[0]['distinguishedname'] ));
                         } elseif ($znak == '-') {
-                            $this->output->writeln('<error>Nie usunięto użytkownika z grupy '.$g.' bo w niej nie był!</error>');
+                            $this->output->writeln('<error>Nie usunięto użytkownika z grupy ' . $g . ' bo w niej nie był!</error>');
                             $akcja = true;
                         } elseif ($znak == '+') {
-                            $this->output->writeln('<error>Nie dodano użytkownika do grupy '.$g.' bo w niej już jest!</error>');
+                            $this->output->writeln('<error>Nie dodano użytkownika do grupy ' . $g . ' bo w niej już jest!</error>');
                             $akcja = true;
                         } else {
                             $akcja = true;
@@ -655,7 +656,7 @@ class LdapAdminService
     public function pwdEncryption($newPassword)
     {
 
-        $newPassword = '"'. $newPassword .'"';
+        $newPassword = '"' . $newPassword . '"';
         $len = strlen($newPassword);
         $newPassw = '';
         for ($i = 0; $i < $len; $i++) {
@@ -679,23 +680,23 @@ class LdapAdminService
         $user = $ldap->getUserFromAD($samaccountname);
 
         $view =
-            'Dnia '.
-            date('Y-m-d').
-            " został utworzony nowy użytkownik '".
-            $name.
-            "' o loginie '".
-            $samaccountname.
+            'Dnia ' .
+            date('Y-m-d') .
+            " został utworzony nowy użytkownik '" .
+            $name .
+            "' o loginie '" .
+            $samaccountname .
             "', utwórz mu pocztę pliz :)";
         $view .=
-            "<br><br>Pozostałe dane: <ul><li>stanowisko: ".
-            $user[0]['title'] . '</li><li>department: '.
-            $user[0]['department'].
-            ' [' . $user[0]['description'].
-            ']</li><li>sekcja: '.
-            $user[0]['info'].
-            ' [' . $user[0]['division'].
-            ']</li><li>e-mail wewnętrzny: '.
-            $samaccountname.
+            "<br><br>Pozostałe dane: <ul><li>stanowisko: " .
+            $user[0]['title'] . '</li><li>department: ' .
+            $user[0]['department'] .
+            ' [' . $user[0]['description'] .
+            ']</li><li>sekcja: ' .
+            $user[0]['info'] .
+            ' [' . $user[0]['division'] .
+            ']</li><li>e-mail wewnętrzny: ' .
+            $samaccountname .
             '@parp.gov.pl</li></ul>';
 
         $message = \Swift_Message::newInstance()
@@ -901,7 +902,7 @@ class LdapAdminService
         $deps = $em->getRepository('ParpMainBundle:Departament')->findByNowaStruktura(1);
         foreach ($deps as $dep) {
             if ($dep->getShortname()) {
-                $filter= '(objectClass=organizationalunit)';
+                $filter = '(objectClass=organizationalunit)';
                 $justthese = array('dn', 'ou');
 
                 //$ou = $this->adldap->folder()->find($dep->getOuAD().", ".$userdn);
@@ -909,17 +910,17 @@ class LdapAdminService
                 //var_dump($ou, $dep->getOuAD().", ".$userdn, $userdn, $filter, $justthese);
                 $info = [];
                 try {
-                    $sr=ldap_search($ldapconn, $dep->getOuAD().', '.$userdn, $filter, $justthese);
+                    $sr = ldap_search($ldapconn, $dep->getOuAD() . ', ' . $userdn, $filter, $justthese);
                     $info = ldap_get_entries($ldapconn, $sr);
                     ldap_free_result($sr);
                 } catch (Exception $e) {
-                    echo 'dodaje biuro '.$dep->getOuAD().', '.$userdn.'!!!!';
+                    echo 'dodaje biuro ' . $dep->getOuAD() . ', ' . $userdn . '!!!!';
                 }
                 if ($info['count'] > 0) {
                 } else {
                     echo 'dodaje biuro !!!!';
                     $ldapstatus2 = $this->ldapError($ldapconn);
-                    $this->ldapAdd($ldapconn, $dep->getOuAD().', '.$userdn, array(
+                    $this->ldapAdd($ldapconn, $dep->getOuAD() . ', ' . $userdn, array(
                         'ou' => $dep->getShortname(),
                         'objectClass' => 'organizationalUnit',
                         'l' => 'location'
@@ -1015,7 +1016,7 @@ class LdapAdminService
                 ldap_modify($link_identifier, $dn, $entry);
                 $poszlo = true;
             } catch (Exception $e) {
-                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+                $this->output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
 
@@ -1025,8 +1026,8 @@ class LdapAdminService
                 $data[] = "'$k' = '$v'";
             }
             $this->output->writeln('<error>wykonuje funkcje ldapModify</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
-            $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
+            $this->output->writeln('<error>entry: ' . implode(', ', $data) . '</error>');
         }
 
         $this->zalogujBlad($link_identifier, 'ldapModify');
@@ -1047,15 +1048,15 @@ class LdapAdminService
                 ldap_rename($link_identifier, $dn, $newrdn, $newparent, $deleteoldrdn);
                 $poszlo = true;
             } catch (Exception $e) {
-                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+                $this->output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
         if (!$this->pushChanges || !$poszlo) {
             $this->output->writeln('<error>wykonuje funkcje ldapRename</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
-            $this->output->writeln('<error>newrdn: '.$newrdn.'</error>');
-            $this->output->writeln('<error>newparent: '.$newparent.'</error>');
-            $this->output->writeln('<error>deleteoldrdn: '.$deleteoldrdn.'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
+            $this->output->writeln('<error>newrdn: ' . $newrdn . '</error>');
+            $this->output->writeln('<error>newparent: ' . $newparent . '</error>');
+            $this->output->writeln('<error>deleteoldrdn: ' . $deleteoldrdn . '</error>');
         }
 
         $this->zalogujBlad($link_identifier, 'ldapRename');
@@ -1077,7 +1078,7 @@ class LdapAdminService
                 ldap_mod_add($link_identifier, $dn, $entry);
                 $poszlo = true;
             } catch (Exception $e) {
-                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+                $this->output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
         if (!$this->pushChanges || !$poszlo) {
@@ -1086,8 +1087,8 @@ class LdapAdminService
                 $data[] = "'$k' = '$v'";
             }
             $this->output->writeln('<error>wykonuje funkcje ldapModAdd</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
-            $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
+            $this->output->writeln('<error>entry: ' . implode(', ', $data) . '</error>');
         }
 
         $this->zalogujBlad($link_identifier, 'ldapModAdd');
@@ -1106,7 +1107,7 @@ class LdapAdminService
                 ldap_mod_del($link_identifier, $dn, $entry);
                 $poszlo = true;
             } catch (Exception $e) {
-                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+                $this->output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
         if (!$this->pushChanges || !$poszlo) {
@@ -1115,8 +1116,8 @@ class LdapAdminService
                 $data[] = "'$k' = '$v'";
             }
             $this->output->writeln('<error>wykonuje funkcje ldapModDel</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
-            $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
+            $this->output->writeln('<error>entry: ' . implode(', ', $data) . '</error>');
         }
 
         $this->zalogujBlad($link_identifier, 'ldapModDel');
@@ -1135,7 +1136,7 @@ class LdapAdminService
                 ldap_add($linkIdentifier, $dn, $entry);
                 $poszlo = true;
             } catch (Exception $e) {
-                $this->output->writeln('<error>'.$e->getMessage().'</error>');
+                $this->output->writeln('<error>' . $e->getMessage() . '</error>');
             }
         }
         if (!$this->pushChanges || !$poszlo) {
@@ -1144,8 +1145,8 @@ class LdapAdminService
                 $data[] = "'$k' = '$v'";
             }
             $this->output->writeln('<error>wykonuje funkcje ldapAdd</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
-            $this->output->writeln('<error>entry: '.implode(', ', $data).'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
+            $this->output->writeln('<error>entry: ' . implode(', ', $data) . '</error>');
         }
 
         $this->zalogujBlad($linkIdentifier, 'ldapAdd');
@@ -1158,11 +1159,11 @@ class LdapAdminService
     public function ldapDelete($linkIdentifier, $dn)
     {
         if ($this->pushChanges) {
-            echo 'kasuje dn '.$dn;
+            echo 'kasuje dn ' . $dn;
             //ldapDelete($link_identifier, $dn);
         } else {
             $this->output->writeln('<error>wykonuje funkcje ldapDelete</error>');
-            $this->output->writeln('<error>dn: '.$dn.'</error>');
+            $this->output->writeln('<error>dn: ' . $dn . '</error>');
         }
 
         $this->zalogujBlad($linkIdentifier, 'ldapDelete');

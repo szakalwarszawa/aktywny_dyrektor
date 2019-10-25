@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Services;
 
@@ -181,7 +183,7 @@ class OdbieranieUprawnienService
                 ->setCzyOdebrane(true)
                 ->setKtoOdebral($this->currentUser)
                 ->setCzyAktywne(false)
-                ->setDataOdebrania(null === $dataOdebrania? new DateTime() : $dataOdebrania)
+                ->setDataOdebrania(null === $dataOdebrania ? new DateTime() : $dataOdebrania)
             ;
         }
 

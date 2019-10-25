@@ -34,7 +34,7 @@ class VersionController extends Controller
 
     protected function getObjectHistory($repository, $id)
     {
-        $className = "ParpV1\\MainBundle\\Entity\\".$repository;
+        $className = "ParpV1\\MainBundle\\Entity\\" . $repository;
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(HistoriaWersji::class); // we use default log entry class
         $entity = $em->find($className, $id);
@@ -65,9 +65,10 @@ class VersionController extends Controller
     {
         //nowe
         $pomijajRelacje = array('WniosekNadanieOdebranieZasobowViewer','WniosekNadanieOdebranieZasobowEditor','WniosekNadanieOdebranieZasobow','WniosekHistoriaStatusow', 'Zasob');
+        // $pomijajRelacje = array('Zasob');
         $em = $this->getDoctrine()->getManager();
         $em->getFilters()->disable('softdeleteable');
-        $className = "ParpV1\\MainBundle\\Entity\\".$repository;
+        $className = "ParpV1\\MainBundle\\Entity\\" . $repository;
         $entity = $em->getRepository($className)->find($id);
         $entities = $this->getObjectHistory($repository, $id);
         $pid = $entity->getWniosek()->getParent() ? $entity->getWniosek()->getParent()->getWniosekNadanieOdebranieZasobow()->getId() : 0;
@@ -82,11 +83,11 @@ class VersionController extends Controller
                 $repos = explode("\\", $m['targetEntity']);
                 $repo = $repos[count($repos) - 1];
                 if (!in_array($repo, $pomijajRelacje)) {
-                    $f = "get".ucfirst($m['fieldName']);
+                    $f = "get" . ucfirst($m['fieldName']);
                     $ents = $entity->{$f}();
 
                     foreach ($ents as $ed) {
-                        //echo "<pre>";var_dump($f);// die();
+                        // echo "<pre>";var_dump($f);// die();
                         $entities2 = $this->getObjectHistory($repo, $ed->getId());
                         $entities = array_merge($entities, $entities2);
                     }
@@ -148,7 +149,7 @@ class VersionController extends Controller
      */
     public function versionsAction($repository, $id, $bundle = "MainBundle")
     {
-        $className = "ParpV1\\".$bundle."\\Entity\\".$repository;
+        $className = "ParpV1\\" . $bundle . "\\Entity\\" . $repository;
         $em = $this->getDoctrine()->getManager();
         $repo = $em->getRepository(HistoriaWersji::class); // we use default log entry class
         $entity = $em->find($className, $id);

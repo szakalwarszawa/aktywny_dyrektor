@@ -141,11 +141,11 @@ class ParpMailerService
         if ($this->idSrodowiska == 'test') {
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
-            $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
+            $contentTxt .= "\n\n===================================\nOdbiorcy:" . $odbiorcy;
             $recipient = self::EMAIL_TEST;
         }
 
-        $recipientArray= $this->getRecipient($recipient);
+        $recipientArray = $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
@@ -205,7 +205,7 @@ class ParpMailerService
         }
 
         $user = $this->ldap->getUserFromAD($login);
-        $email = (!empty($user[0]['mailnickname']) ? $user[0]['mailnickname'] : $login).'@parp.gov.pl';
+        $email = (!empty($user[0]['mailnickname']) ? $user[0]['mailnickname'] : $login) . '@parp.gov.pl';
 
         return $email;
     }
@@ -406,7 +406,7 @@ class ParpMailerService
                 $view = $data['html'];
             } else {
                 $view = $this->templating->render(
-                    'maile/'.$template,
+                    'maile/' . $template,
                     $data
                 );
             }
@@ -419,11 +419,11 @@ class ParpMailerService
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg =
-                'Błąd brakuje danych do wygenerowania maila o tytule "'.
-                $tytul.
-                '" z szablonu "'.
-                $template.
-                '"!! Brakujące dane : '.
+                'Błąd brakuje danych do wygenerowania maila o tytule "' .
+                $tytul .
+                '" z szablonu "' .
+                $template .
+                '"!! Brakujące dane : ' .
                 implode(', ', $braki);
             echo($msg);
         }

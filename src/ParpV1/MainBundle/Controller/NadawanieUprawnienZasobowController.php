@@ -63,7 +63,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     $data = [
                         $zasobyOpisy[$uz->getZasobId()],
                         $uz->getSamaccountname(),
-                        $uz->getAktywneOd()->format('Y-m-d').' - ' . $dataDo,
+                        $uz->getAktywneOd()->format('Y-m-d') . ' - ' . $dataDo,
                         $modul,
                         $poziom
                     ];
@@ -89,7 +89,7 @@ class NadawanieUprawnienZasobowController extends Controller
                         $uz->getAktywneOd()->format('Y-m-d'),
                         $dataDo,
                         $przeterminowany($dataDo),
-                        $uz->getUprawnieniaAdministracyjne()? 1 : 0,
+                        $uz->getUprawnieniaAdministracyjne() ? 1 : 0,
                     ]);
                 }
             }
@@ -169,9 +169,11 @@ class NadawanieUprawnienZasobowController extends Controller
                         if (true !== $zasob->getZasobSpecjalny()) {
                             $chs[] = $zasob;
                         } elseif (true === $zasob->getZasobSpecjalny()) {
-                            if (true === $zasobSpecjalnyUprawnienie
+                            if (
+                                true === $zasobSpecjalnyUprawnienie
                                 || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())
-                                || $this->dostepDoZasobowSpecjalnych($zasob)) {
+                                || $this->dostepDoZasobowSpecjalnych($zasob)
+                            ) {
                                 $chs[] = $zasob;
                             }
                         }
@@ -190,7 +192,7 @@ class NadawanieUprawnienZasobowController extends Controller
                 $uz = $this->getDoctrine()->getRepository(UserZasoby::class)->find($uzid);
 
                 if (null === $uz) {
-                    throw new EntityNotFoundException('Nie ma zasobu o id '.$uzid);
+                    throw new EntityNotFoundException('Nie ma zasobu o id ' . $uzid);
                 }
 
                 $ndata = array(
@@ -251,7 +253,7 @@ class NadawanieUprawnienZasobowController extends Controller
 
 
                         //$uss = implode(",", $userzasoby[$ch->getId()]);
-                        $info = (count($userzasoby[$ch->getId()]) > 1 ? 'Posiadają : ' : 'Posiada : ').implode(' ', $ret);
+                        $info = (count($userzasoby[$ch->getId()]) > 1 ? 'Posiadają : ' : 'Posiada : ') . implode(' ', $ret);
                     }
 
                     if ($wniosekId == 0) {
@@ -277,7 +279,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     $info = count($sams) > 1 ? 'Nie posiadają' : 'Nie posiada';
                     if (isset($useruprawnienia[$ch->getId()]) && count($useruprawnienia[$ch->getId()]) > 0) {
                         $uss = implode(',', $useruprawnienia[$ch->getId()]);
-                        $info = count($sams) > 1 ? 'Posiadają : '. (count($useruprawnienia[$ch->getId()]) == count($sams) ? 'WSZYSCY' : $uss) : 'Posiada';
+                        $info = count($sams) > 1 ? 'Posiadają : ' . (count($useruprawnienia[$ch->getId()]) == count($sams) ? 'WSZYSCY' : $uss) : 'Posiada';
                     }
                     $gids = array();
                     foreach ($ch->getGrupy() as $g) {
@@ -390,7 +392,7 @@ class NadawanieUprawnienZasobowController extends Controller
                     'attr' => array(
                         'class' => 'form-control',
                     ),
-                    'label' => 'Cel ' . ($formNadanie? 'nadania uprawnień' : 'odebrania uprawnień'),
+                    'label' => 'Cel ' . ($formNadanie ? 'nadania uprawnień' : 'odebrania uprawnień'),
                     'label_attr' => array(
                         'class' => 'cel-nadania-odebrania',
                     ),
@@ -400,11 +402,11 @@ class NadawanieUprawnienZasobowController extends Controller
                     'required' => false,
                     'label' => 'Filtruj po grupie uprawnień',
                     'label_attr' => array(
-                        'class' => 'col-sm-12 control-label text-left '.($action == 'addResources' || $action ==
+                        'class' => 'col-sm-12 control-label text-left ' . ($action == 'addResources' || $action ==
                             'removeResources' ? 'hidden' : ''),
                     ),
                     'attr' => array(
-                        'class' => 'ays-ignore '.($action == 'addResources' || $action == 'removeResources' ? 'hidden' : ''),
+                        'class' => 'ays-ignore ' . ($action == 'addResources' || $action == 'removeResources' ? 'hidden' : ''),
                     ),
                     'choices' => $grupy,
                     'multiple' => false,
@@ -551,7 +553,7 @@ class NadawanieUprawnienZasobowController extends Controller
 
                             $u = $this->getDoctrine()->getManager()->getRepository(Uprawnienia::class)->find($z);
                             if ($suz) {
-                                $msg = 'NIE nadaje userowi '.$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma !";
+                                $msg = 'NIE nadaje userowi ' . $currentsam . " uprawnienia  '" . $u->getOpis() . "' bo je ma !";
                                 $this->addFlash('notice', $msg);
                             } else {
                                 $suz = new UserUprawnienia();
@@ -564,14 +566,14 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $suz->setPowodNadania($powod);
                                 $this->getDoctrine()->getManager()->persist($suz);
                                 //$this->getDoctrine()->getManager()->remove($suz);
-                                $msg = 'Nadaje userowi '.$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma";
+                                $msg = 'Nadaje userowi ' . $currentsam . " uprawnienia  '" . $u->getOpis() . "' bo ich nie ma";
                                 if ($u->getGrupaAd() != '') {
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
-                                    $msg .= 'I dodaje do grupy AD : '.$u->getGrupaAd();
+                                    $msg .= 'I dodaje do grupy AD : ' . $u->getGrupaAd();
                                     $entry = new Entry($this->getUser()->getUsername());
                                     $entry->setFromWhen(new \Datetime());
                                     $entry->setSamaccountname($currentsam);
-                                    $entry->setMemberOf('+'.$u->getGrupaAd());
+                                    $entry->setMemberOf('+' . $u->getGrupaAd());
                                     $entry->setIsImplemented(0);
                                     $entry->setDistinguishedName($aduser[0]['distinguishedname']);
                                     $this->getDoctrine()->getManager()->persist($entry);
@@ -608,15 +610,15 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $suz->setPowodOdebrania($powod);
                                 //$this->getDoctrine()->getManager()->persist($suz);
                                 $this->getDoctrine()->getManager()->remove($suz);
-                                $msg = 'Odbieram userowi '.$currentsam." uprawnienia  '".$u->getOpis()."' bo je ma";
+                                $msg = 'Odbieram userowi ' . $currentsam . " uprawnienia  '" . $u->getOpis() . "' bo je ma";
 
                                 if ($u->getGrupaAd() != '') {
                                     $aduser = $this->get('ldap_service')->getUserFromAD($currentsam);
-                                    $msg .= 'I wyjmuje z grupy AD : '.$u->getGrupaAd();
+                                    $msg .= 'I wyjmuje z grupy AD : ' . $u->getGrupaAd();
                                     $entry = new Entry($this->getUser()->getUsername());
                                     $entry->setFromWhen(new \Datetime());
                                     $entry->setSamaccountname($currentsam);
-                                    $entry->setMemberOf('-'.$u->getGrupaAd());
+                                    $entry->setMemberOf('-' . $u->getGrupaAd());
                                     $entry->setIsImplemented(0);
                                     $entry->setDistinguishedName($aduser[0]['distinguishedname']);
                                     $this->getDoctrine()->getManager()->persist($entry);
@@ -625,7 +627,7 @@ class NadawanieUprawnienZasobowController extends Controller
                                 $this->addFlash('warning', $msg);
                                 $zmianaupr[] = $u->getOpis();
                             } else {
-                                $msg = 'NIE odbieram userowi '.$currentsam." uprawnienia  '".$u->getOpis()."' bo ich nie ma !";
+                                $msg = 'NIE odbieram userowi ' . $currentsam . " uprawnienia  '" . $u->getOpis() . "' bo ich nie ma !";
                                 $this->addFlash('notice', $msg);
                             }
 
@@ -682,7 +684,7 @@ class NadawanieUprawnienZasobowController extends Controller
 
         if (!$jestAdminemWszystkichZasobow && !in_array('PARP_ADMIN', $this->getUser()->getRoles(), true)) {
             $msg = 'Nie możesz dodawać/odejmować uprawnień do zasbów których nie jesteś administratorem!!!';
-            $msg .= "\r\n<br>Nie jesteś administratorem tych zasobów: ".implode(', ', $nieJestAdminem);
+            $msg .= "\r\n<br>Nie jesteś administratorem tych zasobów: " . implode(', ', $nieJestAdminem);
             die($msg);
         }
     }
@@ -899,11 +901,13 @@ class NadawanieUprawnienZasobowController extends Controller
                         $zasob = $this->getDoctrine()->getManager()->getRepository(Zasoby::class)->find($oz->getZasobId());
                         $admini = explode(',', $zasob->getAdministratorZasobu());
                         //var_dump($this->getUser()->getUsername(), $admini, $this->getUser()->getRoles());
-                        if ($wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini, true) && !in_array(
-                            'PARP_ADMIN',
-                            $this->getUser()->getRoles(),
-                            true
-                        )) {
+                        if (
+                            $wniosekId == 0 && !in_array($this->getUser()->getUsername(), $admini, true) && !in_array(
+                                'PARP_ADMIN',
+                                $this->getUser()->getRoles(),
+                                true
+                            )
+                        ) {
                             //jesli bez wniosku
                             //jesli nie admin_zasobu
                             //jesli nie parp_admin
@@ -1021,7 +1025,7 @@ class NadawanieUprawnienZasobowController extends Controller
                             $z->setDataNadania(new DateTime());
                         }
 
-                        $msg = 'Dodaje usera '.$currentsam." do zasobu '".$this->get('rename_service')->zasobNazwa($oz->getZasobId())."'.";//." bo go nie ma !";
+                        $msg = 'Dodaje usera ' . $currentsam . " do zasobu '" . $this->get('rename_service')->zasobNazwa($oz->getZasobId()) . "'.";//." bo go nie ma !";
                         if ($wniosekId == 0) {
                             $this->addFlash('warning', $msg);
                         }

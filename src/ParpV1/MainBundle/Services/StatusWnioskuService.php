@@ -15,10 +15,10 @@ use ParpV1\MainBundle\Entity\UserZasoby;
 use ParpV1\MainBundle\Entity\Zasoby;
 use ParpV1\MainBundle\Entity\WniosekViewer;
 use ParpV1\MainBundle\Entity\WniosekEditor;
-use \ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
-use \ParpV1\MainBundle\Entity\AclRole;
-use \ParpV1\MainBundle\Entity\AclUserRole;
-use \ParpV1\MainBundle\Entity\Departament;
+use ParpV1\MainBundle\Entity\WniosekHistoriaStatusow;
+use ParpV1\MainBundle\Entity\AclRole;
+use ParpV1\MainBundle\Entity\AclUserRole;
+use ParpV1\MainBundle\Entity\Departament;
 use Symfony\Component\Validator\Validation;
 use Symfony\Component\Validator\Constraints\Email;
 use ParpV1\MainBundle\Entity\WniosekNadanieOdebranieZasobow;
@@ -110,7 +110,7 @@ class StatusWnioskuService
         }
 
         $typWniosku = $wniosek->getWniosek()->getWniosekUtworzenieZasobu() ?
-            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU:
+            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU :
             TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW;
 
         $czyLsi = false;
@@ -192,7 +192,7 @@ class StatusWnioskuService
         $sh->setCreatedBy($this->currentUser);
         $sh->setStatus($status);
         $sh->setStatusName($status->getNazwa());
-        $opis = null !== $komentarz? $komentarz : $status->getNazwa();
+        $opis = null !== $komentarz ? $komentarz : $status->getNazwa();
         $sh->setOpis($opis);
         $entityManager->persist($sh);
     }
@@ -234,7 +234,7 @@ class StatusWnioskuService
     {
         $entityManager = $this->entityManager;
         $typWniosku = $wniosek->getWniosekUtworzenieZasobu() ?
-            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU:
+            TypWnioskuConstants::WNIOSEK_UTWORZENIE_ZASOBU :
             TypWnioskuConstants::WNIOSEK_NADANIE_ODEBRANIE_ZASOBOW;
         switch ($who) {
             case 'nadzorcaDomen':
@@ -260,7 +260,7 @@ class StatusWnioskuService
                     }
 
                     if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
+                        echo '<br>added ' . $u->getSamaccountname() . '<br>';
                     }
                 }
                 break;
@@ -290,7 +290,7 @@ class StatusWnioskuService
                     //print_r($ADManager[0]['samaccountname']);
                     $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                     if ($this->debug) {
-                        echo '<br>added '.$ADManager[0]['samaccountname'].'<br>';
+                        echo '<br>added ' . $ADManager[0]['samaccountname'] . '<br>';
                     }
                 }
                 break;
@@ -302,7 +302,7 @@ class StatusWnioskuService
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();
                     if ($this->debug) {
-                        echo '<br>added '.$u->getSamaccountname().'<br>';
+                        echo '<br>added ' . $u->getSamaccountname() . '<br>';
                     }
                 }
                 break;
@@ -332,16 +332,16 @@ class StatusWnioskuService
                             $ADManager = $this->getUserFromAD($g);
                             if (count($ADManager) > 0) {
                                 if ($this->debug) {
-                                    echo '<br>added '.$ADManager[0]['name'].'<br>';
+                                    echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                                 }
                                 $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                             } else {
                                 //throw $this->createNotFoundException('Nie moge znalezc wlasciciel zasobu w AD : '.$g);
                                 $message =
-                                    "Nie udało się znaleźć właściciela '".
-                                    $g.
-                                    "' dla zasobu '".
-                                    $zasob->getNazwa().
+                                    "Nie udało się znaleźć właściciela '" .
+                                    $g .
+                                    "' dla zasobu '" .
+                                    $zasob->getNazwa() .
                                     "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                                 $this->session->getFlashBag()->add('warning', $message);
 
@@ -409,15 +409,15 @@ class StatusWnioskuService
                         $ADManager = $this->getUserFromAD($g);
                         if (count($ADManager) > 0) {
                             if ($this->debug) {
-                                echo '<br>added '.$ADManager[0]['name'].'<br>';
+                                echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                             }
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                         } else {
                             $message =
-                                "Nie udało się znaleźć administratora '".
-                                $g.
-                                "' dla zasobu '".
-                                $zasob->getNazwa().
+                                "Nie udało się znaleźć administratora '" .
+                                $g .
+                                "' dla zasobu '" .
+                                $zasob->getNazwa() .
                                 "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                             $this->session->getFlashBag()->add('warning', $message);
 
@@ -449,14 +449,14 @@ class StatusWnioskuService
                         if (count($ADManager) > 0) {
                             $where[$ADManager[0]['samaccountname']] = $ADManager[0]['samaccountname'];
                             if ($this->debug) {
-                                echo '<br>added '.$ADManager[0]['name'].'<br>';
+                                echo '<br>added ' . $ADManager[0]['name'] . '<br>';
                             }
                         } else {
                             $message =
-                                "Nie udało się znaleźć administratora technicznego '".
-                                $g.
-                                "' dla zasobu '".
-                                $zasob->getNazwa().
+                                "Nie udało się znaleźć administratora technicznego '" .
+                                $g .
+                                "' dla zasobu '" .
+                                $zasob->getNazwa() .
                                 "', dana osoba nie została znaleziona w rejestrze użytkowników PARP (prawdopodobnie jest na zwolnieniu lub została zwolniona).";
                             $this->session->getFlashBag()->add('warning', $message);
 
@@ -469,7 +469,7 @@ class StatusWnioskuService
         }
         foreach ($where as $k => $v) {
             if ($k == '') {
-                die($who.' mam pustego usera !!!!!');
+                die($who . ' mam pustego usera !!!!!');
             }
         }
     }
@@ -565,7 +565,7 @@ class StatusWnioskuService
                     ]);
 
                 if (null === $skrotDepartamentu) {
-                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla '.$ADUser['department']);
+                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla ' . $ADUser['department']);
                 }
 
                 $ADManager = [$ldap->getDyrektoraDepartamentu($skrotDepartamentu->getShortname())];

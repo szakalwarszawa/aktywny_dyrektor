@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Helper;
 
@@ -188,7 +190,7 @@ class AdUserHelper
 
         $value = self::$adUser[AdUserConstants::WYLACZONE];
 
-        return 1 === $value? true : false;
+        return 1 === $value ? true : false;
     }
 
     /**

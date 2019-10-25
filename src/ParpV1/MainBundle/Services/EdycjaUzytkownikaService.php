@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Services;
 
@@ -260,7 +262,7 @@ class EdycjaUzytkownikaService
             ->setSamaccountname($formData[AdUserConstants::LOGIN])
             ->setDivision($formData[AdUserConstants::SEKCJA_NAZWA]->getShortname())
             ->setIsDisabled($formData[AdUserConstants::WYLACZONE])
-            ->setOpis(isset($reason)? $reason : null)
+            ->setOpis(isset($reason) ? $reason : null)
             ->setAccountExpires($formData[AdUserConstants::WYGASA])
             ->setManager(AdStringTool::createCommonName($formData[AdUserConstants::PRZELOZONY]))
             ->setCreatedAt(new DateTime())
@@ -286,7 +288,8 @@ class EdycjaUzytkownikaService
             $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
         }
 
-        if (AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]
+        if (
+            AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY === $formData[AdUserConstants::POWOD_WYLACZENIA]
             || AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC === $formData[AdUserConstants::POWOD_WYLACZENIA]
         ) {
             $entry->setMemberOf(null);
@@ -420,8 +423,10 @@ class EdycjaUzytkownikaService
         };
 
         $applicationCancellationReason = null;
-        if (in_array(AdUserConstants::WYLACZONE, $changedElements)
-            && TakNieInterface::TAK === $formData[AdUserConstants::WYLACZONE]) {
+        if (
+            in_array(AdUserConstants::WYLACZONE, $changedElements)
+            && TakNieInterface::TAK === $formData[AdUserConstants::WYLACZONE]
+        ) {
             if (!isset($changedElements['DISABLE'])) {
                 throw new LogicException('Nie określono powodu wyłączenia.');
             }
@@ -469,13 +474,15 @@ class EdycjaUzytkownikaService
             $changes[] = AdUserConstants::STANOWISKO;
         }
 
-        if (($adUserHelper::getStanowisko(true) instanceof Position)
+        if (
+            ($adUserHelper::getStanowisko(true) instanceof Position)
             && ($formData[AdUserConstants::STANOWISKO]->getGroup() !== $adUserHelper::getStanowisko(true)->getGroup())
         ) {
             $changes[] = AdUserConstants::STANOWISKO_GRUPA;
         }
 
-        if (!is_object($adUserHelper::getStanowisko(true))
+        if (
+            !is_object($adUserHelper::getStanowisko(true))
             && $formData[AdUserConstants::STANOWISKO]->getGroup() instanceof PositionGroups
         ) {
             $changes[] = AdUserConstants::STANOWISKO_GRUPA;
@@ -509,8 +516,10 @@ class EdycjaUzytkownikaService
                 AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC,
                 AdUserConstants::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY
             ];
-            if (!empty($formData[AdUserConstants::WYLACZONE]) &&
-                !in_array($formData[AdUserConstants::POWOD_WYLACZENIA], $allowedReasons)) {
+            if (
+                !empty($formData[AdUserConstants::WYLACZONE]) &&
+                !in_array($formData[AdUserConstants::POWOD_WYLACZENIA], $allowedReasons)
+            ) {
                 if ($formData[AdUserConstants::POWOD_WYLACZENIA] !== TakNieInterface::NIE) {
                     throw new LogicException('Konto wyłączane bez wybrania powodu lub nieobsługiwany powód.');
                 }

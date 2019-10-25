@@ -170,10 +170,11 @@ class ZasobyController extends Controller
             $this->niemozeEdytowac = !in_array("PARP_ADMIN", $this->getUser()->getRoles()) && !in_array("PARP_ADMIN_REJESTRU_ZASOBOW", $this->getUser()->getRoles());
         }
 
-        if ($this->niemozeEdytowac
+        if (
+            $this->niemozeEdytowac
         ) {
-            $link = "<br><br><a class='btn btn-success' href='".$this->generateUrl("wniosekutworzeniezasobu_new")."'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
-            throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: ".$link, 721);
+            $link = "<br><br><a class='btn btn-success' href='" . $this->generateUrl("wniosekutworzeniezasobu_new") . "'>Utwórz wniosek o utworzenie/zmianę/usunięcie zasobu</a><br><br>";
+            throw new SecurityTestException("Tylko administrator AkD (lub właściciel lub powiernika właściciela zasobu) może aktualizować zmiany w zasobach AkD, pozostali użytkownicy muszą skorzystać z wniosku o utworzenie/zamianę/usunięcie wniosku, w celu utworzenia wniosku tutaj: " . $link, 721);
         }
     }
     /**
@@ -283,9 +284,11 @@ class ZasobyController extends Controller
             $administratorZasobu = explode(',', $zasob->getAdministratorZasobu());
             $administratorTechniczny = explode(',', $zasob->getAdministratorTechnicznyZasobu());
 
-            if (in_array($currentUser->getUsername(), $administratorZasobu) ||
+            if (
+                in_array($currentUser->getUsername(), $administratorZasobu) ||
                 $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW ' ||
-                in_array($currentUser->getUsername(), $administratorTechniczny))) {
+                in_array($currentUser->getUsername(), $administratorTechniczny))
+            ) {
                 if (null !== $zasob) {
                     $userZasob
                         ->setPowodOdebrania($requestParams['message'])
@@ -374,9 +377,11 @@ class ZasobyController extends Controller
         $administratorZasobu = explode(',', $entity->getAdministratorZasobu());
         $administratorTechniczny = explode(',', $entity->getAdministratorTechnicznyZasobu());
         $mozeUproszczonymOdebrac = false;
-        if (in_array($currentUser->getUsername(), $administratorZasobu) ||
+        if (
+            in_array($currentUser->getUsername(), $administratorZasobu) ||
                 $currentUser->hasRole('PARP_ADMIN_REJESTRU_ZASOBOW') ||
-                in_array($currentUser->getUsername(), $administratorTechniczny)) {
+                in_array($currentUser->getUsername(), $administratorTechniczny)
+        ) {
                     $mozeUproszczonymOdebrac = true;
         }
 
@@ -462,8 +467,10 @@ class ZasobyController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            if ($preSaveCopy->getPoziomDostepu() !== $editForm->getData()->getPoziomDostepu() &&
-                $preSaveCopy->getAccessLevelGroups()->toArray()) {
+            if (
+                $preSaveCopy->getPoziomDostepu() !== $editForm->getData()->getPoziomDostepu() &&
+                $preSaveCopy->getAccessLevelGroups()->toArray()
+            ) {
                 $this->addFlash('danger', 'Nie można zmienić poziomów dostępu gdy są utworzone grupy poziomów dostępu dla zasobu!');
 
                 return $this->redirect($this->generateUrl('zasoby_edit', array('id' => $id)));

@@ -68,7 +68,7 @@ class ZgloszenieController extends Controller
             ))
             ->add('email', EmailType::class, array(
                  'label' => 'Proszę podać email kontaktowy',
-                 'data' => trim(@$ad[0]['samaccountname'])."@parp.gov.pl",//trim(@$ad[0]['email']),
+                 'data' => trim(@$ad[0]['samaccountname']) . "@parp.gov.pl",//trim(@$ad[0]['email']),
                  'attr' => array(
                     'class' => 'form-control col-xs-5',
                  ),
@@ -154,7 +154,7 @@ class ZgloszenieController extends Controller
 
             $request->getSession()->getFlashBag()->add(
                 'notice',
-                'Zarejestrowano zgłoszenie techniczne. Posiada ono numer '.$odpowiedz['issue']['id'].'.'.
+                'Zarejestrowano zgłoszenie techniczne. Posiada ono numer ' . $odpowiedz['issue']['id'] . '.' .
                 'W każdej chwili można sprawdzić stan zgłoszenia na tej stronie.'
             );
         }

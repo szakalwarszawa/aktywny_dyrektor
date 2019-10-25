@@ -100,13 +100,13 @@ class ImportRekordDaneController extends Controller
 
             from P_PRACOWNIK p
             join PV_MP_PRA mpr on mpr.SYMBOL = p.SYMBOL AND
-                (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '".$this->dataGraniczna."')
+                (mpr.DATA_DO is NULL OR mpr.DATA_DO >= '" . $this->dataGraniczna . "')
             join P_MPRACY departament on departament.KOD = mpr.KOD
             JOIN PV_ST_PRA stjoin on stjoin.SYMBOL= p.SYMBOL AND
-                (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '".$this->dataGraniczna."')
+                (stjoin.DATA_DO is NULL OR stjoin.DATA_DO >= '" . $this->dataGraniczna . "')
             join P_STANOWISKO stanowisko on stanowisko.KOD = stjoin.KOD
             join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL AND
-                (umowa.DATA_DO is NULL OR umowa.DATA_DO >= '".$this->dataGraniczna."')
+                (umowa.DATA_DO is NULL OR umowa.DATA_DO >= '" . $this->dataGraniczna . "')
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
 
             GROUP BY
@@ -145,7 +145,7 @@ class ImportRekordDaneController extends Controller
             from P_PRACOWNIK p
             join P_UMOWA umowa on umowa.SYMBOL = p.SYMBOL
             join P_RODZUMOWY rodzaj on rodzaj.RODZAJ_UM = umowa.RODZAJ_UM
-            where p.SYMBOL IN ('.implode(', ', $ids).')
+            where p.SYMBOL IN (' . implode(', ', $ids) . ')
             GROUP BY
 
             p.SYMBOL,
@@ -172,7 +172,7 @@ class ImportRekordDaneController extends Controller
         if (count($aduser) > 0) {
             return $aduser;
         }
-        $fullname = $dr->getNazwisko().' '.$dr->getImie();
+        $fullname = $dr->getNazwisko() . ' ' . $dr->getImie();
         //echo "<br> szuka ".$fullname;
         $aduser = $ldap->getUserFromAD(null, $fullname);
         if (count($aduser) > 0) {
@@ -182,13 +182,13 @@ class ImportRekordDaneController extends Controller
         if (count($aduser) > 0) {
             return $aduser;
         }
-        $fullname = $dr->getNazwisko().' (*) '.$dr->getImie();
+        $fullname = $dr->getNazwisko() . ' (*) ' . $dr->getImie();
         //echo "<br> szuka ".$fullname;
         $aduser = $ldap->getUserFromAD(null, $fullname);
         if (count($aduser) > 0) {
             return $aduser;
         }
-        $fullname = $dr->getNazwisko().' (*) '.$dr->getImie();
+        $fullname = $dr->getNazwisko() . ' (*) ' . $dr->getImie();
         //echo "<br> szuka ".$fullname;
         $aduser = $ldap->getNieobecnyUserFromAD(null, $fullname);
         if (count($aduser) > 0) {
@@ -238,7 +238,7 @@ class ImportRekordDaneController extends Controller
                 //podmieniamy id biur prezesow
                 $row['DEPARTAMENT'] = $mapowanieDepartamentowPrezesow[trim($row['DEPARTAMENT'])];
             }
-            $in = $this->parseValue($row['IMIE']).' '.$this->parseValue($row['NAZWISKO']);
+            $in = $this->parseValue($row['IMIE']) . ' ' . $this->parseValue($row['NAZWISKO']);
             $data[$in][] = $row;
         }
         $totalmsg = [];
@@ -263,12 +263,12 @@ class ImportRekordDaneController extends Controller
                 }
 
                 $msg =
-                    'Są duplikaty umów dla  '.
-                    $in.
-                    ' wybrano najwcześniej podpisaną umowę z dnia '.
-                    $minDate->format('Y-m-d').
-                    ' te same daty: '.
-                    ($teSameDaty ? 'tak' : 'nie').
+                    'Są duplikaty umów dla  ' .
+                    $in .
+                    ' wybrano najwcześniej podpisaną umowę z dnia ' .
+                    $minDate->format('Y-m-d') .
+                    ' te same daty: ' .
+                    ($teSameDaty ? 'tak' : 'nie') .
                     '.';
                 $this->addFlash('warning', $msg);
             } else {
@@ -322,7 +322,8 @@ class ImportRekordDaneController extends Controller
                 ;
 
                 $d1 = $row['UMOWAOD'] ? new \Datetime($row['UMOWAOD']) : null;
-                if (($d1 !== null) &&
+                if (
+                    ($d1 !== null) &&
                     (
                         ($dr->getUmowaOd() == null && $d1 != null) ||
                         ($dr->getUmowaOd() != null && $d1 == null) ||
@@ -333,7 +334,8 @@ class ImportRekordDaneController extends Controller
                 }
                 $d2 = $row['UMOWADO'] ? new \Datetime($row['UMOWADO']) : null;
 
-                if ((
+                if (
+                    (
                     ($dr->getUmowaDo() == null && $d2 != null) ||
                     ($dr->getUmowaDo() != null && $d2 == null) ||
                     ($dr->getUmowaDo() != null &&
@@ -353,7 +355,7 @@ class ImportRekordDaneController extends Controller
                     unset($changeSet['lastModifiedAt']);
 
                     if (count($changeSet) > 0) {
-                        $totalmsg[] = "\n".($nowy ? 'Utworzono dane' : 'Uzupełniono dane ').' dla  '.$dr->getLogin().
+                        $totalmsg[] = "\n" . ($nowy ? 'Utworzono dane' : 'Uzupełniono dane ') . ' dla  ' . $dr->getLogin() .
                             ' .';
                     }
 
@@ -452,7 +454,7 @@ class ImportRekordDaneController extends Controller
                 ->findOneByNameInRekord($dr->getDepartament());
 
         if ($department == null) {
-            echo('nie mam departamentu "'.$dr->getDepartament().'" dla '.$entry->getCn());
+            echo('nie mam departamentu "' . $dr->getDepartament() . '" dla ' . $entry->getCn());
         } else {
             if ($nowy || isset($changeSet['departament'])) {
                 $entry->setDepartment($department->getName());
@@ -463,12 +465,12 @@ class ImportRekordDaneController extends Controller
             $tab = explode('.', $this->container->getParameter('ad_domain'));
             $ou = ($this->container->getParameter('ad_ou'));
             if ($nowy) {
-                $dn = 'CN='.$entry->getCn().', OU='.$department->getShortname().','.$ou.', DC='.$tab[0].
-                    ',DC='.$tab[1];
+                $dn = 'CN=' . $entry->getCn() . ', OU=' . $department->getShortname() . ',' . $ou . ', DC=' . $tab[0] .
+                    ',DC=' . $tab[1];
             } else {
                 $aduser = $this->getUserFromAD($ldap, $dr);//$ldap->getUserFromAD($dr->getLogin());
                 if (count($aduser) === 0) {
-                    $errors[] = ('Nie moge znalezc osoby  !!!: '.$dr->getLogin());
+                    $errors[] = ('Nie moge znalezc osoby  !!!: ' . $dr->getLogin());
                 } else {
                     $dn = $aduser[0]['distinguishedname'];
                 }
@@ -489,7 +491,7 @@ class ImportRekordDaneController extends Controller
         }
         $entry->setFromWhen(new \Datetime());
         if ($nowy) {
-            $in = mb_substr($dr->getImie(), 0, 1, 'UTF-8').mb_substr($dr->getNazwisko(), 0, 1, 'UTF-8');
+            $in = mb_substr($dr->getImie(), 0, 1, 'UTF-8') . mb_substr($dr->getNazwisko(), 0, 1, 'UTF-8');
             if ($in === '') {
                 $in = null;
             }
@@ -609,7 +611,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
         $cz = explode(' ', $n);
         $ret = [];
         foreach ($cz as $c) {
-            $ret[] = mb_strtoupper(mb_substr($c, 0, 1)).mb_strtolower(mb_substr($c, 1));
+            $ret[] = mb_strtoupper(mb_substr($c, 0, 1)) . mb_strtolower(mb_substr($c, 1));
         }
 
         return implode(' ', $ret);
@@ -697,7 +699,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $fc = mb_strtoupper(mb_substr($str, 0, 1, 'UTF-8'), 'UTF-8');
 
-        return $fc.mb_substr($str, 1, mb_strlen($str, 'UTF-8'), 'UTF-8');
+        return $fc . mb_substr($str, 1, mb_strlen($str, 'UTF-8'), 'UTF-8');
     }
 
     public function parseValue($v, $fupper = true)
@@ -751,11 +753,13 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
     protected function executeQueryIbase($sql)
     {
-        if ($db = \ibase_connect(
-            'localhost:/var/www/parp/PARP_KP.FDB',
-            'user',
-            'pass'
-        )) {
+        if (
+            $db = \ibase_connect(
+                'localhost:/var/www/parp/PARP_KP.FDB',
+                'user',
+                'pass'
+            )
+        ) {
             $result = \ibase_query($db, $sql);
 
             $count = 0;
@@ -785,7 +789,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
     {
         $ret = [];
         foreach ($props as $p) {
-            $getter = 'get'.ucfirst($p);
+            $getter = 'get' . ucfirst($p);
             $ret[$p] = $obj->{$getter}();
         }
 
@@ -823,7 +827,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 ]);
             $d['users'] = $users;
             $d['konto_wylaczone'] = false;
-            $d['departament'] = (null != $departament)? $departament : new Departament();
+            $d['departament'] = (null != $departament) ? $departament : new Departament();
 
             if (false !== strpos(current($users)['useraccountcontrol'], 'ACCOUNTDISABLE')) {
                 $d['konto_wylaczone'] = true;
@@ -877,7 +881,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
             }
         }
-        $fullname = $dr->getNazwisko().' '.$dr->getImie();
+        $fullname = $dr->getNazwisko() . ' ' . $dr->getImie();
         //echo "<br> szuka ".$fullname;
         $aduser = $ldap->getUserFromAD(null, $fullname, null, 'wszyscyWszyscy');
         if (count($aduser) > 0) {
@@ -887,7 +891,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 }
             }
         }
-        $fullname = $dr->getNazwisko().' (*) '.$dr->getImie();
+        $fullname = $dr->getNazwisko() . ' (*) ' . $dr->getImie();
         //echo "<br> szuka ".$fullname;
         $aduser = $ldap->getUserFromAD(null, $fullname, null, 'wszyscyWszyscy');
         if (count($aduser) > 0) {
@@ -950,7 +954,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                     $nowy = true;
                     $changeSet = ['imie' => 1, 'nazwisko' => 1, 'departament' => 1, 'stanowisko' => 1];
                 } else {
-                    if ($userFromAD[0]['name'] !== $daneRekord->getNazwisko().' '.$daneRekord->getImie()) {
+                    if ($userFromAD[0]['name'] !== $daneRekord->getNazwisko() . ' ' . $daneRekord->getImie()) {
                         $changeSet['imie'] = 1;
                         $changeSet['nazwisko'] = 1;
                     }
@@ -1002,10 +1006,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $section = $objectManager->getRepository(Section::class)->findOneByShortname($userFromAD[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska =
                     $ldapService->getGrupyUsera(
-                        $userFromAD[0],
-                        $oldDepartament->getShortname(),
-                        ($section ? $section->getShortname() : '')
-                    );
+                    $userFromAD[0],
+                    $oldDepartament->getShortname(),
+                    ($section ? $section->getShortname() : '')
+                );
                 $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
             }
 
@@ -1062,7 +1066,8 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
 
                 foreach ($userzasoby as $uz) {
                     $zasob = $objectManager->getRepository(Zasoby::class)->find($uz->getZasobId());
-                    if ($uz->getZasobId()
+                    if (
+                        $uz->getZasobId()
                         && !in_array($zasob->getAdministratorZasobu(), $administratorzy, true)
                     ) {
                         // Pobieramy administratora zasobu
@@ -1082,7 +1087,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $manager = ($dane['form']['manager'] !== '') ? $dane['form']['manager'] : '';
                 $now = new \Datetime();
                 $dane = [
-                    'imie_nazwisko'                       => $daneRekord->getImie().' '.$daneRekord->getNazwisko(),
+                    'imie_nazwisko'                       => $daneRekord->getImie() . ' ' . $daneRekord->getNazwisko(),
                     'login'                               => $daneRekord->getLogin(),
                     'departament'                         => $departament->getName(),
                     'data_nadania_uprawnien_poczatkowych' => $now->format('Y-m-d'),

@@ -238,7 +238,7 @@ class WniosekUtworzenieZasobuType extends AbstractType
 
             $builder->add('zasob', HiddenType::class, ['attr' => ['class' => 'form-item']]);
         } else {
-            throw new UnexpectedTypeException('Nieznany typ '. $typ, null);
+            throw new UnexpectedTypeException('Nieznany typ ' . $typ, null);
         }
     }
 

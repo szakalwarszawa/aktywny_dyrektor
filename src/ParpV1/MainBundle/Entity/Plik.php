@@ -249,11 +249,11 @@ class Plik
         // target filename to move to
         $guid = uniqid();
         //print $this->getFile();
-        $fname = $guid."_".$this->getFile()->getClientOriginalName();
+        $fname = $guid . "_" . $this->getFile()->getClientOriginalName();
         $this->getFile()->move($this->getUploadRootDir(), $fname);
     
         // set the path property to the filename where you've saved the file
-        $this->path = $guid."_".$this->getFile()->getClientOriginalName();
+        $this->path = $guid . "_" . $this->getFile()->getClientOriginalName();
     
         // clean up the file property as you won't need it anymore
         $this->file = null;
@@ -265,7 +265,7 @@ class Plik
     {
         // the absolute directory path where uploaded
         // documents should be saved
-        return __DIR__.'/../../../../'.$this->getUploadDir();
+        return __DIR__ . '/../../../../' . $this->getUploadDir();
     }
 
     protected function getUploadDir()
@@ -276,7 +276,7 @@ class Plik
     }
     public function getFilePath()
     {
-        return $this->getUploadRootDir()."/".$this->getFile();
+        return $this->getUploadRootDir() . "/" . $this->getFile();
     }
 
     /**

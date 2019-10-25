@@ -102,7 +102,7 @@ class LdapCommand extends ContainerAwareCommand
             }
 
             $this->showonly = $input->getArgument('showonly');
-            $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)": "Publikowanie zmian do AD";
+            $msg = $this->showonly ? "Tryb w którym zmiany nie będą wypychane do AD (tylko pokazuje zmiany czekające na publikację)" : "Publikowanie zmian do AD";
 
             if (php_sapi_name() === "cli") {
                 $output = new BufferedOutput(
@@ -111,7 +111,7 @@ class LdapCommand extends ContainerAwareCommand
                 );
             }
 
-            $output->writeln('<comment>'.$msg.'</comment>', false);
+            $output->writeln('<comment>' . $msg . '</comment>', false);
             $output->writeln('<comment>Wczytuję usługi ...                             </comment>', false);
             $doctrine = $this->getContainer()->get('doctrine');
             $output->writeln('<comment>Wczytano usługe doctrine ...                             </comment>', false);
@@ -122,10 +122,10 @@ class LdapCommand extends ContainerAwareCommand
             $time = date("Y-m-d_H-i-s");
             if ($ldap->pushChanges) {
                 $output->writeln('<error>                             PUBLIKUJE zmiany do AD...</error>', false);
-                $logfile = __DIR__."/../../../../work/logs/"."publish_".$time.".html";
+                $logfile = __DIR__ . "/../../../../work/logs/" . "publish_" . $time . ".html";
             } else {
                 $output->writeln('<error>                             NIE publikuje zmiany do AD...</error>', false);
-                $logfile = __DIR__."/../../../../work/logs/"."tylko_test_publish_".$time.".html";
+                $logfile = __DIR__ . "/../../../../work/logs/" . "tylko_test_publish_" . $time . ".html";
             }
 
 
@@ -150,11 +150,11 @@ class LdapCommand extends ContainerAwareCommand
                     if ($userNow) {
                         $liczbaZmian = 0;
                         if ($ktorzy == "aktywne") {
-                            $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                            $output->writeln('<info>Znalazłem następujące zmiany dla użytkownika "' . $zmiana->getSamaccountname() . '" (id: ' . $zmiana->getId() . '):</info>');
                         } elseif ($ktorzy == "zablokowane") {
-                            $output->writeln('<info>Znalazłem następujące zmiany dla ZABLOKOWANEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                            $output->writeln('<info>Znalazłem następujące zmiany dla ZABLOKOWANEGO użytkownika "' . $zmiana->getSamaccountname() . '" (id: ' . $zmiana->getId() . '):</info>');
                         } elseif ($ktorzy == "nieaktywne") {
-                            $output->writeln('<info>Znalazłem następujące zmiany dla NIEAKTYWNEGO użytkownika "'.$zmiana->getSamaccountname().'" (id: '.$zmiana->getId().'):</info>');
+                            $output->writeln('<info>Znalazłem następujące zmiany dla NIEAKTYWNEGO użytkownika "' . $zmiana->getSamaccountname() . '" (id: ' . $zmiana->getId() . '):</info>');
                         }
 
                         if ($zmiana->getAccountExpires()) {
@@ -181,7 +181,7 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['info']) {
                                 $output->writeln('  - Zmiana sekcji: ' . $userNow[0]['info'] . ' -> ' . $zmiana->getInfo());
                             } else {
-                                $output->writeln('  - Nadanie sekcji: ' . ($zmiana->getInfo() == null ? "n/d": ""));
+                                $output->writeln('  - Nadanie sekcji: ' . ($zmiana->getInfo() == null ? "n/d" : ""));
                             }
                         }
                         if ($zmiana->getDivision() != null) {
@@ -189,7 +189,7 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['division']) {
                                 $output->writeln('  - Zmiana skrótu sekcji: ' . $userNow[0]['division'] . ' -> ' . $zmiana->getDivision());
                             } else {
-                                $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d": ""));
+                                $output->writeln('  - Nadanie skrótu sekcji: ' . ($zmiana->getDivision() == null ? "n/d" : ""));
                             }
                         }
                         if ($zmiana->getCn() !== $adUserHelper::getImieNazwisko()) {
@@ -197,7 +197,7 @@ class LdapCommand extends ContainerAwareCommand
                             if ($userNow[0]['cn']) {
                                 $output->writeln('  - Zmiana imienia i nazwiska: ' . $userNow[0]['cn'] . ' -> ' . $zmiana->getCn());
                             } else {
-                                $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn().$zmiana->getId());
+                                $output->writeln('  - Nadanie imienia i nazwiska: ' . $zmiana->getCn() . $zmiana->getId());
                             }
                         }
                         if ($zmiana->getManager() !== $adUserHelper::getPrzelozony(false)) {
@@ -304,13 +304,13 @@ class LdapCommand extends ContainerAwareCommand
                                 //if($liczbaZmian == 0) echo ("zero zian ");
                             }
                         } else {
-                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla '.$zmiana->getSamaccountname().':</error>', false);
-                            $output->writeln('<error>'.$ldapstatus.'</error>', false);
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian dla ' . $zmiana->getSamaccountname() . ':</error>', false);
+                            $output->writeln('<error>' . $ldapstatus . '</error>', false);
                         }
 
                         // nie znaleziono w ldap tzn ze mamy nowego usera do wstawienia
                     } else {
-                        $output->writeln('<info>Znalazłem następujące zmiany (id: '.$zmiana->getId().'):   - Dodanie pracownika: ' . $zmiana->getCn()." ".$zmiana->getSamaccountname()."</info>");
+                        $output->writeln('<info>Znalazłem następujące zmiany (id: ' . $zmiana->getId() . '):   - Dodanie pracownika: ' . $zmiana->getCn() . " " . $zmiana->getSamaccountname() . "</info>");
 
                         $ldapstatus = $this->tryToPushChanges($ldap, $zmiana, true);
                         if ($ldapstatus == "Success") {
@@ -342,8 +342,8 @@ class LdapCommand extends ContainerAwareCommand
                                 }
                             }
                         } else {
-                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) '.$zmiana->getCn().':</error>', false);
-                            $output->writeln('<error>'.$ldapstatus.'</error>', false);
+                            $output->writeln('<error>Błąd...Nie udało się wprowadzić zmian (utworzyć użytkownika) ' . $zmiana->getCn() . ':</error>', false);
+                            $output->writeln('<error>' . $ldapstatus . '</error>', false);
                         }
                     }
                 }
@@ -355,7 +355,7 @@ class LdapCommand extends ContainerAwareCommand
 
             $t2 = microtime(true) ;
             $td = ($t2 - $t1);
-                $output->writeln('<comment>Czas operacji: '.$td.' sekund.</comment>', false);
+                $output->writeln('<comment>Czas operacji: ' . $td . ' sekund.</comment>', false);
 
 
             if (!$this->showonly && count($zmiany) > 0) {
@@ -366,8 +366,8 @@ class LdapCommand extends ContainerAwareCommand
 //                    true // true for decorated
 //                );
                 $converter = new AnsiToHtmlConverter();
-                $msg = '<link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">'.
-                    $converter->convert($output2->fetch()).
+                $msg = '<link rel="stylesheet" href="https://aktywnydyrektor.parp.gov.pl/css/main.css"><div class="publishOutput">' .
+                    $converter->convert($output2->fetch()) .
                     "</div>"; //"sdadsadsa";
 
                 $fs = new Filesystem();
@@ -377,8 +377,8 @@ class LdapCommand extends ContainerAwareCommand
             }
         } catch (\Exception $e) {
             $output->writeln('<error>Błąd...                             </error>', false);
-            $output->writeln('<error>'.$e->getMessage()."</error>", false);
-            $output->writeln('<error>'.$e->getTraceAsString()."</error>", false);
+            $output->writeln('<error>' . $e->getMessage() . "</error>", false);
+            $output->writeln('<error>' . $e->getTraceAsString() . "</error>", false);
         }
     }
 
@@ -405,7 +405,7 @@ class LdapCommand extends ContainerAwareCommand
                         $e['lastEntry']->setIsImplemented(1);
                         //echo "...ustawiam isImplemented ".$e['lastEntry']->getId();
                         unset($e['lastEntry']);
-                        $logfileThis = str_replace(".html", "-".$e['function'].".log", $logfile);
+                        $logfileThis = str_replace(".html", "-" . $e['function'] . ".log", $logfile);
 
 
 

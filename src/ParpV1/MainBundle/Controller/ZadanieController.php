@@ -52,7 +52,7 @@ class ZadanieController extends Controller
         //print_r($username);
         $source->manipulateQuery(
             function ($query) use ($username, $aktywne) {
-                $query->andWhere('_a.osoby like :user')->setParameter('user', '%'.$username.'%');
+                $query->andWhere('_a.osoby like :user')->setParameter('user', '%' . $username . '%');
                 if ($aktywne) {
                     $query->andWhere('_a.dataUkonczenia is null');
                 } else {
@@ -260,7 +260,8 @@ class ZadanieController extends Controller
         $editForm->handleRequest($request);
 
         if ($editForm->isValid()) {
-            if (($entity->getDataUkonczenia() != null && $oldEn->getDataUkonczenia() == null)
+            if (
+                ($entity->getDataUkonczenia() != null && $oldEn->getDataUkonczenia() == null)
             ) {
                 //zmiana daty ukonczenie
 
@@ -269,7 +270,8 @@ class ZadanieController extends Controller
                 $username = trim($ad[0]['name']);
                 $entity->setUkonczonePrzez($username);
             }
-            if ($entity->getStatus() == "zrealizowany" && $oldEn->getStatus() != "zrealizowany"
+            if (
+                $entity->getStatus() == "zrealizowany" && $oldEn->getStatus() != "zrealizowany"
             ) {
                 //zmiana statusu
 

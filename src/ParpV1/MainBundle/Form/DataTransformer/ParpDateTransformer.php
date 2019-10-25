@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\MainBundle\Form\DataTransformer;
 
 use Symfony\Component\Form\DataTransformerInterface;
@@ -53,7 +54,7 @@ class ParpDateTransformer implements DataTransformerInterface
         //echo ".".$datestr;
         if (strstr($datestr, " ") === false) {
             $d = explode(" ", $datestr);
-            $datestr = $d[0]." 00:00:00";
+            $datestr = $d[0] . " 00:00:00";
         }
         $date = \DateTime::createFromFormat($this->input_format, $datestr);
         //die(print_r($date, true));

@@ -572,7 +572,7 @@ class DaneRekord
 
     public function getImieNazwisko()
     {
-        return $this->getImie()." ".$this->getNazwisko();
+        return $this->getImie() . " " . $this->getNazwisko();
     }
 
     /**

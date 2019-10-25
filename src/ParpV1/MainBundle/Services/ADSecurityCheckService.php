@@ -39,10 +39,10 @@ class ADSecurityCheckService
                 $ret = $ret || $ps[1] == $n;
             }
             if (!$ret) {
-                $msg = "Nie można edytować użytkowników których nazwisko nie jest '".$nazwisko."' , edycja użytkownika : '".$sam."' nie jest możliwa w środowisku testowym, zmiany nie zostały zapisane.";
+                $msg = "Nie można edytować użytkowników których nazwisko nie jest '" . $nazwisko . "' , edycja użytkownika : '" . $sam . "' nie jest możliwa w środowisku testowym, zmiany nie zostały zapisane.";
                 $this->container->get('session')->getFlashBag()->set('notice', $msg);
                 //throw new RedirectResponse($this->container->get('router')->generate('main'));
-                throw new SecurityTestException("Nie można edytować użytkowników których nazwisko nie jest '".$nazwisko."' , edycja użytkownika : '".$sam."' nie jest możliwa w środowisku testowym.", 777);
+                throw new SecurityTestException("Nie można edytować użytkowników których nazwisko nie jest '" . $nazwisko . "' , edycja użytkownika : '" . $sam . "' nie jest możliwa w środowisku testowym.", 777);
             }
         } else {
         }

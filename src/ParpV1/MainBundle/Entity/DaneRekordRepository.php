@@ -14,7 +14,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
     {
 
         $query = $this->createQueryBuilder('dr')
-          ->where('dr.symbolRekordId NOT IN ('.implode(", ", $ids).')')
+          ->where('dr.symbolRekordId NOT IN (' . implode(", ", $ids) . ')')
           ->getQuery();
 
 
@@ -46,11 +46,11 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 
     public function findChangesInMonth($rok, $miesiac)
     {
-        $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
+        $dataStart = new \Datetime($rok . '-' . $miesiac . '-01');
         if ($miesiac < 12) {
-            $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
+            $dataEnd = new \Datetime($rok . '-' . ($miesiac + 1) . '-01');
         } else {
-            $dataEnd = new \Datetime(($rok+1).'-01-01');
+            $dataEnd = new \Datetime(($rok + 1) . '-01-01');
         }
 
         $result = $this
@@ -74,18 +74,18 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
 
     public function findChangesInMonthByPole($rok, $miesiac, $pole = 'departament')
     {
-        $dataStart = new \Datetime($rok.'-'.$miesiac.'-01');
+        $dataStart = new \Datetime($rok . '-' . $miesiac . '-01');
         if ($miesiac < 12) {
-            $dataEnd = new \Datetime($rok.'-'.($miesiac+1).'-01');
+            $dataEnd = new \Datetime($rok . '-' . ($miesiac + 1) . '-01');
         } else {
-            $dataEnd = new \Datetime(($rok+1).'-01-01');
+            $dataEnd = new \Datetime(($rok + 1) . '-01-01');
         }
 
         $result = $this
            ->createQueryBuilder('e')
            ->select('e, w.id, w.data, w.version, w.loggedAt')
            ->innerJoin('ParpV1\MainBundle\Entity\HistoriaWersji', 'w')
-           ->where("w.objectId = e.id and w.data like '%\"".$pole."\"%' and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
+           ->where("w.objectId = e.id and w.data like '%\"" . $pole . "\"%' and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
            and (w.loggedAt >= :dataStart and w.loggedAt < :dataEnd)")
             ->orderBy("e.nazwisko")
            ->getQuery()
@@ -103,7 +103,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
     {
         $where = [];
         foreach ($pola as $pole) {
-            $where[] = "w.data like '%\"".$pole."\"%'";
+            $where[] = "w.data like '%\"" . $pole . "\"%'";
         }
 
 
@@ -112,7 +112,7 @@ class DaneRekordRepository extends \Doctrine\ORM\EntityRepository
             ->createQueryBuilder('e')
             ->select('e, w.id, w.data, w.version, w.loggedAt')
             ->innerJoin('ParpV1\MainBundle\Entity\HistoriaWersji', 'w')
-            ->where("w.objectId = e.id and (".implode(' OR ', $where).") and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
+            ->where("w.objectId = e.id and (" . implode(' OR ', $where) . ") and w.objectClass = 'ParpV1\MainBundle\Entity\DaneRekord'
            and e.login like :login")
             ->orderBy("e.nazwisko")
             ->getQuery()

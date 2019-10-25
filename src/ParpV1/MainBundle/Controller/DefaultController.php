@@ -93,7 +93,8 @@ class DefaultController extends Controller
             $ADUsers = array();
             foreach ($ADUsersTemp as $u) {
                 //albo ma role ze widzi wszystkich albo widzi tylko swoj departament
-                if ($widzi_wszystkich ||
+                if (
+                    $widzi_wszystkich ||
                     (!empty($u['department']) &&
                     mb_strtolower(trim($aduser[0]['department'])) === mb_strtolower(trim($u['department'])))
                 ) {
@@ -268,45 +269,47 @@ class DefaultController extends Controller
             $grid->addRowAction($rowAction3);
         }
 
-        if ((in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $roles, true) ||
-                in_array('PARP_ADMIN', $roles, true))
-            && ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni')
+        if (
+            (in_array('PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW', $roles, true) ||
+                in_array('PARP_ADMIN', $roles, true)) &&
+            ($ktorzy !== 'zablokowane' &&
+            $ktorzy !== 'nieobecni')
         ) {
             $massAction1 =
                 new MassAction(
-                    'Przypisz dodatkowe zasoby',
-                    'ParpMainBundle:Default:processMassAction',
-                    true,
-                    array('action' => 'addResources')
-                );
+                'Przypisz dodatkowe zasoby',
+                'ParpMainBundle:Default:processMassAction',
+                true,
+                array('action' => 'addResources')
+            );
             $grid->addMassAction($massAction1);
 
             $massAction2 =
                 new MassAction(
-                    'Odbierz prawa do zasobów',
-                    'ParpMainBundle:Default:processMassAction',
-                    true,
-                    array('action' => 'removeResources')
-                );
+                'Odbierz prawa do zasobów',
+                'ParpMainBundle:Default:processMassAction',
+                true,
+                array('action' => 'removeResources')
+            );
             $grid->addMassAction($massAction2);
         }
         if (in_array('PARP_ADMIN', $roles, true) && ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni')) {
             $massAction3 =
                 new MassAction(
-                    'Przypisz dodatkowe uprawnienia',
-                    'ParpMainBundle:Default:processMassAction',
-                    false,
-                    array('action' => 'addPrivileges')
-                );
+                'Przypisz dodatkowe uprawnienia',
+                'ParpMainBundle:Default:processMassAction',
+                false,
+                array('action' => 'addPrivileges')
+            );
             //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
             $grid->addMassAction($massAction3);
             $massAction4 =
                 new MassAction(
-                    'Odbierz uprawnienia',
-                    'ParpMainBundle:Default:processMassAction',
-                    false,
-                    array('action' => 'removePrivileges')
-                );
+                'Odbierz uprawnienia',
+                'ParpMainBundle:Default:processMassAction',
+                false,
+                array('action' => 'removePrivileges')
+            );
             //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
             $grid->addMassAction($massAction4);
         }
@@ -830,8 +833,10 @@ class DefaultController extends Controller
         $ADUser = $ldap->getUserFromAD($samaccountname);
 
         // Prezes nie ma przełożonego...
-        if ($ADUser[0]['title'] === 'p.o. prezesa' ||
-            $ADUser[0]['title'] === 'prezes') {
+        if (
+            $ADUser[0]['title'] === 'p.o. prezesa' ||
+            $ADUser[0]['title'] === 'prezes'
+        ) {
             $ADManager = '';
         } else {
             // Pobieramy przełożonego
@@ -839,7 +844,7 @@ class DefaultController extends Controller
         }
 
         // Pobieramy wszystkich jego pracowników (w których występuje jako przełożony)
-        $ADWorkers = $ldap->getUserFromAD(null, null, 'manager='.$ADUser[0]['distinguishedname'].'');
+        $ADWorkers = $ldap->getUserFromAD(null, null, 'manager=' . $ADUser[0]['distinguishedname'] . '');
 
         return array(
             'przelozony' => $ADManager,
@@ -1129,7 +1134,7 @@ class DefaultController extends Controller
             return null;
         }
         $p = explode(' ', $request->get('cn'));
-        $initials = substr($p[1], 0, 1).substr($p[0], 0, 1);
+        $initials = substr($p[1], 0, 1) . substr($p[0], 0, 1);
         /*
 
         $samaccountname = $request->get('samaccountname', null);
@@ -1412,11 +1417,11 @@ class DefaultController extends Controller
         foreach ($userdane as $user => $angaz) {
             $u = $this->findUserByName($user);
             if ($u == null) {
-                $this->addFlash('notice', 'Pomijam usera "'.$user.'" bo go nie ma w systemie');
+                $this->addFlash('notice', 'Pomijam usera "' . $user . '" bo go nie ma w systemie');
             } else {
                 foreach ($angaz as $prog => $year) {
                     if (!isset($programy[$prog])) {
-                        $this->addFlash('notice', 'Pomijam program "'.$prog.'" bo go nie ma w systemie');
+                        $this->addFlash('notice', 'Pomijam program "' . $prog . '" bo go nie ma w systemie');
                     } else {
                         //$pid = $programy[$prog]->getId();
                         foreach ($year as $m => $proc) {
@@ -1593,7 +1598,7 @@ class DefaultController extends Controller
                                 //die();
                             }
                             if ($v) {
-                                $zasob->{'set'.$setter}($v);
+                                $zasob->{'set' . $setter}($v);
                             }
                         }
                     }
@@ -1625,18 +1630,18 @@ class DefaultController extends Controller
             if ($c % 2 == 1) {
                 if ($inTheMiddle) {
                     $buffer .= $line;
-                    $out .= $buffer."\n";
+                    $out .= $buffer . "\n";
                     $inTheMiddle = false;
                     $buffer = '';
                 } else {
                     $inTheMiddle = true;
                     //$buffer = "";
-                    $buffer = $line."\\n";
+                    $buffer = $line . "\\n";
                 }
             } elseif ($inTheMiddle) {
-                $buffer .= $line."\\n";
+                $buffer .= $line . "\\n";
             } else {
-                $out .= $line."\n";
+                $out .= $line . "\n";
             }
         }//die($out);
         return $out;
@@ -1691,7 +1696,7 @@ class DefaultController extends Controller
 
                 $dane = explode(';', $wiersz);
                 if ($dane[1] !== '' && $dane[1] !== '') {
-                    $cnname = $this->ldapEscape($dane[1]).'*'.$this->ldapEscape($dane[0]);
+                    $cnname = $this->ldapEscape($dane[1]) . '*' . $this->ldapEscape($dane[0]);
                     //echo ".".$wiersz.".<br>";
                     $ADUser = $ldap->getUserFromAD(null, $cnname);
                 }
@@ -1761,7 +1766,7 @@ class DefaultController extends Controller
                     if ($equal) {
                         foreach ($wiersz2getter as $col => $getter) {
                             if (!in_array($col, $pomijacKolumnyPrzyPorownaniu, true)) {
-                                $val = $uzs->{'get'.$getter}();
+                                $val = $uzs->{'get' . $getter}();
                                 if ($col == 6 || $col == 8) {
                                     $val = $val->format('D M d H:i:s T Y');
                                 }
@@ -1799,7 +1804,7 @@ class DefaultController extends Controller
                                 //die();
                             }
                             if ($v) {
-                                $newUserZasob->{'set'.$setter}($v);
+                                $newUserZasob->{'set' . $setter}($v);
                             }
                         }
                     }
@@ -1891,10 +1896,10 @@ class DefaultController extends Controller
         // Encode leading/trailing spaces in DN values
         if ($dn) {
             if ($result[0] === ' ') {
-                $result = '\\20'.substr($result, 1);
+                $result = '\\20' . substr($result, 1);
             }
             if ($result[strlen($result) - 1] === ' ') {
-                $result = substr($result, 0, -1).'\\20';
+                $result = substr($result, 0, -1) . '\\20';
             }
         }
 

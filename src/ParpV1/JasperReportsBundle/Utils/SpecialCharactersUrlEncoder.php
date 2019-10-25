@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Utils;
 
@@ -57,7 +59,7 @@ class SpecialCharactersUrlEncoder
 
         self::$url = implode('/', $urlParts);
 
-        return self::$protocol? self::$protocol . self::$url : self::$url;
+        return self::$protocol ? self::$protocol . self::$url : self::$url;
     }
 
     /**

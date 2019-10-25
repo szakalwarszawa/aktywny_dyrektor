@@ -348,7 +348,7 @@ class UserEngagement
      */
     public function setPercentFormat($percent)
     {
-        $this->setPercent($percent*100);
+        $this->setPercent($percent * 100);
 
         return $this;
     }

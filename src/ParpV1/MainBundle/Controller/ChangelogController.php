@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Controller;
 
@@ -164,7 +166,7 @@ class ChangelogController extends Controller
      */
     public function delete(Request $request, Changelog $changelog): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$changelog->getId(), $request->request->get('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $changelog->getId(), $request->request->get('_token'))) {
             $entityManager = $this->getDoctrine()->getManager();
             $entityManager->remove($changelog);
             $entityManager->flush();

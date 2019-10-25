@@ -666,7 +666,7 @@ class UprawnieniaService
         }
 
         //$uz->getId()." ".$z->getId()." ".
-        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"'.$z->getNazwa().'" ('.$grupy[0].')') ; //$grupy[0];
+        return  ($ktoryPoziom >= 0 && $ktoryPoziom < count($grupy) ? $grupy[$ktoryPoziom] : '"' . $z->getNazwa() . '" (' . $grupy[0] . ')') ; //$grupy[0];
     }
 
     public function znajdzPoziom($poziomy, $poziom)
@@ -836,8 +836,10 @@ class UprawnieniaService
                 $wnioskiZasobyDoOdebrania['user_zasob'] =  $userZasob;
 
                 $statusOdebrania = $this->odbierzAnulujZasobyAdministracyjnie($wnioskiZasobyDoOdebrania, $komentarzOdebrania);
-                if ($this->czyTworzycEntry($userZasob)
-                    && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']) {
+                if (
+                    $this->czyTworzycEntry($userZasob)
+                    && $wnioskiZasobyDoOdebrania['wniosek_do_odebrania_administracyjnego']
+                ) {
                     $zasobyDoUtworzeniaEntry[] = $userZasob;
                     $przeprocesowaneWnioski[$wniosekNadanieOdebranieId]['stworzono_entry'] = true;
                     $odebraneUserZasoby[$userZasob->getId()]['stworzono_entry'] = true;
@@ -898,7 +900,7 @@ class UprawnieniaService
         $entry = new Entry();
         $entry->setFromWhen(new Datetime());
         $entry->setSamaccountname($nazwaUzytkownika);
-        $entry->setMemberOf('-'.implode(',-', $grupyDoOdebrania));
+        $entry->setMemberOf('-' . implode(',-', $grupyDoOdebrania));
         $entry->setCreatedBy('SYSTEM');
         $entry->setOpis('Odebrano administracyjnie.');
         $this
@@ -1006,7 +1008,7 @@ class UprawnieniaService
 
         $resolver->resolve($zasobDoOdebrania);
 
-        $status = $zasobDoOdebrania['wniosek_do_odebrania_administracyjnego']?
+        $status = $zasobDoOdebrania['wniosek_do_odebrania_administracyjnego'] ?
             WniosekStatus::ODEBRANO_ADMINISTRACYJNIE :
             WniosekStatus::ANULOWANO_ADMINISTRACYJNIE;
         if ($zasobDoOdebrania['jeden_uzytkownik']) {
@@ -1024,7 +1026,7 @@ class UprawnieniaService
             ;
         }
 
-        $status = null !== $komentarzOdebrania? $komentarzOdebrania : $status;
+        $status = null !== $komentarzOdebrania ? $komentarzOdebrania : $status;
         $userZasob = $zasobDoOdebrania['user_zasob'];
 
         if (null === $userZasob->getPowodOdebrania()) {
@@ -1084,8 +1086,10 @@ class UprawnieniaService
         }
 
         if (in_array($status, $statusyKoncowe) && false === $wniosek->getWniosek()->getIsBlocked()) {
-            if ($wniosek->getWniosek()->getStatus()->getFinished() &&
-                WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status) {
+            if (
+                $wniosek->getWniosek()->getStatus()->getFinished() &&
+                WniosekStatus::ANULOWANO_ADMINISTRACYJNIE === $status
+            ) {
                 return false;
             }
             $statusWnioskuService = $this->statusWnioskuService;
@@ -1153,7 +1157,7 @@ class UprawnieniaService
     ): bool {
         $pracownicyWeWniosku = explode(',', $wniosekNadanieOdebranieZasobow->getPracownicy());
 
-        return count($pracownicyWeWniosku) === 1? true: false;
+        return count($pracownicyWeWniosku) === 1 ? true : false;
     }
 
     /**
