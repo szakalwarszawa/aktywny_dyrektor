@@ -1,11 +1,11 @@
 {% extends '::base.html.twig' %}
 
 {% block body %}
-<h1>Twoje uprawnienia do zasobów</h1>
+<h1>Moje uprawnienia do zasobów</h1>
 <br />
 <ul class="nav nav-tabs">
-  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 1}) }}">Zasoby użytkownika - aktywne</a></li>
-  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 0}) }}">Zasoby użytkownika - nieaktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 1}) }}">Moje uprawnienia - aktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 0}) }}">Moje uprawnienia - nieaktywne</a></li>
 </ul>
 
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}

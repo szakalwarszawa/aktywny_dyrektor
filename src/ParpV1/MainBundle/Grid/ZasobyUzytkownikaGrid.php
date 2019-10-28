@@ -115,7 +115,7 @@ class ZasobyUzytkownikaGrid
                 ->setFilterable(false)
                 ->setSafe(true)
                 ->setClass('text-center')
-                ->setSize(150)
+                ->setSize(125)
         ;
         $grid->getColumn('bezterminowo')
                 ->setClass('text-center');
@@ -125,12 +125,15 @@ class ZasobyUzytkownikaGrid
             'wnioseknadanieodebraniezasobow_show',
             false,
             '_self',
-            ['class' => 'btn btn-warning btn-xs']
+            [
+                'class' => 'btn btn-warning btn-xs',
+                'title' => 'Zobacz wniosek o ' . ($aktywne ? 'nadanie' : 'odebranie') . ' uprawnień',
+            ]
         );
 
         if ($aktywne) {
             $rowAction
-                ->setTitle('<i class="fas fa-file-search"></i> Wniosek o nadanie')
+                ->setTitle('<i class="fas fa-file-search"></i> wn. o nadanie upr.')
                 ->addManipulateRender(
                     function ($action, $row) {
                         if ($row->getField('wniosek_n_id') === '') {
@@ -147,7 +150,7 @@ class ZasobyUzytkownikaGrid
             $grid->setVisibleColumns(ZasobyUzytkownikaGrid::kolumnyZasobyAktywne());
         } else {
             $rowAction
-                ->setTitle('<i class="fas fa-file-search"></i> Wniosek o odebranie')
+                ->setTitle('<i class="fas fa-file-search"></i> wn. o odebranie upr.')
                 ->addManipulateRender(
                     function ($action, $row) {
                         if ($row->getField('wniosek_o_id') === '') {
@@ -252,7 +255,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Nazwa zasobu',
                 'primary' => true,
-                'size'    => 230,
+                'size'    => 200,
             ]),
             new Column\TextColumn([
                 'id'      => 'modul',
@@ -274,7 +277,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Aktywne od',
                 'format' => 'Y-m-d',
-                'size'    => 90,
+                'size'    => 65,
             ]),
             new Column\BooleanColumn([
                 'id'      => 'bezterminowo',
@@ -288,7 +291,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Aktywne do',
                 'format' => 'Y-m-d',
-                'size'    => 90,
+                'size'    => 65,
             ]),
             new Column\TextColumn([
                 'id'      => 'powodNadania',
