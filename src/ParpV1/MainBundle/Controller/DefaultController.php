@@ -62,8 +62,8 @@ class DefaultController extends Controller
     protected $ADUsers = array();
 
     /**
-     * @Route("/index/{ktorzy}", name="main", defaults={"ktorzy": "usersFromAd"})
-     * @Route("/", name="main_home")
+     * @Route("/users/index/{ktorzy}", name="main", defaults={"ktorzy": "usersFromAd"})
+     * @Route("/users", name="main_home")
      * @Template()
      * @param string $ktorzy
      *
@@ -2138,6 +2138,7 @@ class DefaultController extends Controller
      * Zestawienie uprawnień do zasobów dla zalogowanego użytkownika.
      *
      * @Route("/zasoby_uzytkownika/{aktywne}", name="zasoby_uzytkownika", defaults={"aktywne" : true})
+     * @Route("/", name="zasoby_uzytkownika_home")
      *
      * @param bool $aktywne
      *
