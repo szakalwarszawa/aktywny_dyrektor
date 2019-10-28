@@ -1006,10 +1006,10 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $section = $objectManager->getRepository(Section::class)->findOneByShortname($userFromAD[0]['division']);
                 $grupyNaPodstawieSekcjiOrazStanowiska =
                     $ldapService->getGrupyUsera(
-                    $userFromAD[0],
-                    $oldDepartament->getShortname(),
-                    ($section ? $section->getShortname() : '')
-                );
+                        $userFromAD[0],
+                        $oldDepartament->getShortname(),
+                        ($section ? $section->getShortname() : '')
+                    );
                 $entry->addGrupyAD($grupyNaPodstawieSekcjiOrazStanowiska, '-');
             }
 

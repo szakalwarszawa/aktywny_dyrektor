@@ -95,7 +95,6 @@
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
-                                    <li><a href="{{ path('reports_list') }}"><i class="fas fa-file-alt"></i> Raporty Jasper</a></li>
                                 </ul>
                             </li>
 
@@ -117,7 +116,7 @@
                                 </li>
                             {% endif %}
 
-                            {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
+                            {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles or "PARP_ADMIN_ZASOBOW" in app.user.roles %}
                                 <li class="dropdown" id="top-menu-raporty">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-file-chart-line"></i> Raporty <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
@@ -127,6 +126,10 @@
 
                                         {% if "PARP_ADMIN" in app.user.roles %}
                                             <li class=""><a href="{{ path('raportIT1') }}"><i class="fas fa-file-code"></i> Raport IT</a></li>
+                                        {% endif %}
+
+                                        {% if "PARP_ADMIN_ZASOBOW" in app.user.roles %}
+                                            <li><a href="{{ path('reports_list') }}"><i class="fas fa-file-alt"></i> Raporty Jasper</a></li>
                                         {% endif %}
                                     </ul>
                                 </li>

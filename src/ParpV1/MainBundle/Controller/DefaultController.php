@@ -277,39 +277,39 @@ class DefaultController extends Controller
         ) {
             $massAction1 =
                 new MassAction(
-                'Przypisz dodatkowe zasoby',
-                'ParpMainBundle:Default:processMassAction',
-                true,
-                array('action' => 'addResources')
-            );
+                    'Przypisz dodatkowe zasoby',
+                    'ParpMainBundle:Default:processMassAction',
+                    true,
+                    array('action' => 'addResources')
+                );
             $grid->addMassAction($massAction1);
 
             $massAction2 =
                 new MassAction(
-                'Odbierz prawa do zasobów',
-                'ParpMainBundle:Default:processMassAction',
-                true,
-                array('action' => 'removeResources')
-            );
+                    'Odbierz prawa do zasobów',
+                    'ParpMainBundle:Default:processMassAction',
+                    true,
+                    array('action' => 'removeResources')
+                );
             $grid->addMassAction($massAction2);
         }
         if (in_array('PARP_ADMIN', $roles, true) && ($ktorzy !== 'zablokowane' && $ktorzy !== 'nieobecni')) {
             $massAction3 =
                 new MassAction(
-                'Przypisz dodatkowe uprawnienia',
-                'ParpMainBundle:Default:processMassAction',
-                false,
-                array('action' => 'addPrivileges')
-            );
+                    'Przypisz dodatkowe uprawnienia',
+                    'ParpMainBundle:Default:processMassAction',
+                    false,
+                    array('action' => 'addPrivileges')
+                );
             //$massAction3->setParameters(array('action' => 'addPrivileges', 'samaccountname' => 'samaccountname'));
             $grid->addMassAction($massAction3);
             $massAction4 =
                 new MassAction(
-                'Odbierz uprawnienia',
-                'ParpMainBundle:Default:processMassAction',
-                false,
-                array('action' => 'removePrivileges')
-            );
+                    'Odbierz uprawnienia',
+                    'ParpMainBundle:Default:processMassAction',
+                    false,
+                    array('action' => 'removePrivileges')
+                );
             //'ParpMainBundle:Default:processMassAction', false, array('action' => 'removePrivileges'));
             $grid->addMassAction($massAction4);
         }
