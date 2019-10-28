@@ -296,11 +296,11 @@ class RaportyITController extends Controller
                             }
                             $daneZRekorda[$u['samaccountname']] =
                                 $this->zrobRekordZRekorda(
-                                $dr,
-                                $ndata['rok'],
-                                $ndata['miesiac'],
-                                'wygaszenie konta w AD'
-                            );
+                                    $dr,
+                                    $ndata['rok'],
+                                    $ndata['miesiac'],
+                                    'wygaszenie konta w AD'
+                                );
                         }
                     }
                 }
@@ -616,9 +616,9 @@ class RaportyITController extends Controller
         }
         $content .= '<br><a href="' .
             $this->generateUrl(
-            'nadajGrupy',
-            ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]
-        ) .
+                'nadajGrupy',
+                ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]
+            ) .
             '" class="btn btn-success" target="_blank">NAPRAW</a>';
 
 
