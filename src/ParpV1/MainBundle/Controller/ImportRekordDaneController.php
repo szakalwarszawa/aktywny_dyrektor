@@ -990,7 +990,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                 $resetDoPodstawowych = true;
             }
 
-            if (!$this->czyStanowiskoZtejSamejGrupy($userFromAD[0]['title'], $daneRekord->getStanowisko())) {
+            if ($userFromAD && !$this->czyStanowiskoZtejSamejGrupy($userFromAD[0]['title'], $daneRekord->getStanowisko())) {
                 $resetDoPodstawowych = true;
             }
 
