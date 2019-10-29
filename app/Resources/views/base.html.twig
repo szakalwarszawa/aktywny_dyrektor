@@ -184,12 +184,14 @@
                     <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
                     <a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
                     <a href="{{ path('changelog_index') }}"><small>Lista zmian</small></a>
+                    <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
                 </footer>
             {% endif %}
         {% else %}
            <footer class="helpdesk">
                 <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
                 <a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+                <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
             </footer>
         {% endif %}
         <div id="loader">Ładuję...</div>
