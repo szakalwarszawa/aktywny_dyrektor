@@ -3,7 +3,6 @@
 namespace ParpV1\MainBundle\Entity;
 
 use APY\DataGridBundle\Grid\Mapping as GRID;
-
 use Doctrine\ORM\Mapping as ORM;
 
 /**

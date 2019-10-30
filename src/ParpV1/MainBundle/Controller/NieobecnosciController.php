@@ -160,7 +160,7 @@ class NieobecnosciController extends Controller
         $d1 = new \Datetime($poprzedni['ODD']);
         $d2 = new \Datetime($poprzedni['DOD']);
         $diff = $d2->diff($d1);
-        $poprzedni['dni'] = $diff->format("%d")+1;
+        $poprzedni['dni'] = $diff->format("%d") + 1;
         return $poprzedni;
     }
     
@@ -207,7 +207,7 @@ class NieobecnosciController extends Controller
     
     protected function ustandaryzujDane($d)
     {
-        $dzien = $d['ROK']."-".\str_pad($d['MIESIAC'], 2, '0', \STR_PAD_LEFT)."-".\str_pad($d['DZIEN'], 2, '0', \STR_PAD_LEFT);
+        $dzien = $d['ROK'] . "-" . \str_pad($d['MIESIAC'], 2, '0', \STR_PAD_LEFT) . "-" . \str_pad($d['DZIEN'], 2, '0', \STR_PAD_LEFT);
         return [
             'NAZWISKO' => $d['NAZWISKO'],
             'IMIE' => $d['IMIE'],
@@ -232,7 +232,7 @@ class NieobecnosciController extends Controller
     {
         $dataKoniec = date('m/d/Y');
         $dataPoczatek = new \Datetime();
-        $dataPoczatek->sub(new \DateInterval('P'.$this->ileDni.'D'));
+        $dataPoczatek->sub(new \DateInterval('P' . $this->ileDni . 'D'));
         $dataPoczatek = $dataPoczatek->format('m/d/Y');
         
         $sql = "

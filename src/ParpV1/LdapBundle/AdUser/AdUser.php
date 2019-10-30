@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\LdapBundle\AdUser;
 
@@ -88,9 +90,8 @@ class AdUser
         $allowedToFetchAttributes = AllowedToFetchAttributes::getAll();
         $returnArray = [];
         foreach ($allowedToFetchAttributes as $attributeName) {
-            $returnArray[$attributeName] = isset($userAttributes[$attributeName])? current($userAttributes[$attributeName]) : null;
+            $returnArray[$attributeName] = isset($userAttributes[$attributeName]) ? current($userAttributes[$attributeName]) : null;
         }
-
         $returnArray[AdUserConstants::GRUPY_AD] = $this->getUserAdGroups($adUser);
         $returnArray[AdUserConstants::WYLACZONE] = $adUser->isDisabled();
         $returnArray[AdUserConstants::WYGASA] = $adUser->getAccountExpiry();

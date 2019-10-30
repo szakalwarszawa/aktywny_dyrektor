@@ -45,14 +45,14 @@
             <nav class="navbar navbar-default" role="navigation">
                 <div class="container-fluid">
                     <div class="navbar-header">
-                        <a class="navbar-brand" href="{{ path('powitalna') }}">Aktywny Dyrektor</a>
+                        <a class="navbar-brand" href="{{ path('zasoby_uzytkownika_home') }}">Aktywny Dyrektor</a>
                     </div>
 
                     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
                         <ul class="nav navbar-nav">
 
                             {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
-                            <li class="dropdown">
+                            <li class="dropdown" id="top-menu-kadry">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy w AD</a></li>
@@ -68,7 +68,7 @@
                             {% endif %}
 
                             {% if "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                                <li class="dropdown" id="top-menu-slowniki">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-book"></i> Słowniki <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
@@ -87,7 +87,7 @@
                                 </li>
                             {% endif %}
 
-                            <li class="dropdown">
+                            <li class="dropdown" id="top-menu-zasoby">
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('zasoby') }}"><i class="fa fa-database"></i> Zasoby</a></li>
@@ -95,12 +95,11 @@
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
-                                    <li><a href="{{ path('reports_list') }}"><i class="fas fa-file-alt"></i> Raporty Jasper</a></li>
                                 </ul>
                             </li>
 
                             {% if "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                                <li class="dropdown" id="top-menu-dev">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-user-cog"></i> DEV <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li class=""><a href="{{ path('listLogs') }}"><i class="fal fa-file-alt"></i> Logi z wypychania do AD</a></li>
@@ -117,8 +116,9 @@
                                 </li>
                             {% endif %}
 
-                            {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles %}
-                                <li class="dropdown">
+                            {# dodany ostatni warunek, trzeba będzie generować menu dynamicznie lub pokazać w końcu zakładkę 'Raporty' wszystkim użytkownikom #}
+                            {% if "PARP_BZK_RAPORTY" in app.user.roles or "PARP_ADMIN" in app.user.roles or "PARP_ADMIN_ZASOBOW" in app.user.roles or "PARP_ADMINISTRATOR_ZASOBU_MS_AD" in app.user.roles %}
+                                <li class="dropdown" id="top-menu-raporty">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-file-chart-line"></i> Raporty <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         {% if "PARP_BZK_RAPORTY" in app.user.roles %}
@@ -128,19 +128,24 @@
                                         {% if "PARP_ADMIN" in app.user.roles %}
                                             <li class=""><a href="{{ path('raportIT1') }}"><i class="fas fa-file-code"></i> Raport IT</a></li>
                                         {% endif %}
+
+                                        {% if "PARP_ADMIN_ZASOBOW" in app.user.roles or "PARP_ADMINISTRATOR_ZASOBU_MS_AD" in app.user.roles %}
+                                            <li><a href="{{ path('reports_list') }}"><i class="fas fa-file-alt"></i> Raporty Jasper</a></li>
+                                        {% endif %}
                                     </ul>
                                 </li>
                             {% endif %}
                         </ul>
 
-                        <ul class="nav navbar-nav navbar-right">
+                        <ul class="nav navbar-nav navbar-right" id="top-menu-user">
                             <li class="dropdown red-tooltip"
                                 data-toggle="popover"
                                 title="Role w systemie AkD:"
                                 data-content="{{ app.user.getRolesHtml }}"
                                 data-placement="left">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
-                                    <ul class="dropdown-menu">
+                                    <ul class="dropdown-menu" id="top-menu-logout">
+                                        <li><a href="{{ path('zasoby_uzytkownika') }}"><i class="fas fa-file-alt"></i> Moje uprawnienia</a></li>
                                         <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
                                     </ul>
                             </li>
@@ -179,12 +184,14 @@
                     <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
                     <a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
                     <a href="{{ path('changelog_index') }}"><small>Lista zmian</small></a>
+                    <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
                 </footer>
             {% endif %}
         {% else %}
            <footer class="helpdesk">
                 <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
                 <a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
+                <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
             </footer>
         {% endif %}
         <div id="loader">Ładuję...</div>

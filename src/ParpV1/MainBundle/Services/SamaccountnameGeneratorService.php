@@ -35,7 +35,7 @@ class SamaccountnameGeneratorService
         $imie = mb_strtolower(str_replace($find, $replace, $imie));
         $nazwiskoCzesci = explode('-', $nazwisko);
         $nazwisko = mb_strtolower(str_replace($find, $replace, $nazwiskoCzesci[0]));
-        $ret2 = $imie.'_'.$nazwisko;
+        $ret2 = $imie . '_' . $nazwisko;
         $ret2_array = str_split($ret2);
         $ret = '';
         //wyrzucam niedozwolone znaki
@@ -47,7 +47,7 @@ class SamaccountnameGeneratorService
         if ($try == 0) {
             $ret = substr($ret, 0, 20);
         } else {
-            $ret = substr($ret, 0, (20 - strlen($try))).$try;
+            $ret = substr($ret, 0, (20 - strlen($try))) . $try;
         }
         //var_dump($imie, $nazwisko,$ret2, $try, $ret); //die();
         return $ret;
@@ -78,9 +78,9 @@ class SamaccountnameGeneratorService
 
     public function generateFullname($imie, $nazwisko, $stareImie = '', $stareNazwisko = '')
     {
-        $ret = $nazwisko.' '.$imie; //$dr->getImie()." ".$dr->getNazwisko();
+        $ret = $nazwisko . ' ' . $imie; //$dr->getImie()." ".$dr->getNazwisko();
         if ($stareNazwisko != '') {
-            $ret = $nazwisko.' ('.$stareNazwisko.') '.$imie;
+            $ret = $nazwisko . ' (' . $stareNazwisko . ') ' . $imie;
         }
         return $ret;
     }
@@ -105,7 +105,7 @@ class SamaccountnameGeneratorService
         $ou = $this->container->getParameter('ad_ou');
         $patch = ',DC=' . $tab[0] . ',DC=' . $tab[1];
 
-        $ret = 'CN='.$nazwisko.' '.$imie.',OU='.$departament.','.$ou.$patch;
+        $ret = 'CN=' . $nazwisko . ' ' . $imie . ',OU=' . $departament . ',' . $ou . $patch;
         return $ret;
     }
 
@@ -143,7 +143,7 @@ class SamaccountnameGeneratorService
         foreach ($parts as $p) {
             if (mb_strstr($p, '(') !== false) {
                 $p2 = str_replace(['(', ')'], ['', ''], $p);
-                $p2 = '('.$this->mbUcfirst(mb_strtolower($p2)).')';
+                $p2 = '(' . $this->mbUcfirst(mb_strtolower($p2)) . ')';
                 $ret[] = $p2;
             } elseif (false !== strpos($p, '-')) {
                 $p2 = explode('-', $p);

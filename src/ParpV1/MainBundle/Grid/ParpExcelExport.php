@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\MainBundle\Grid;
 
 use APY\DataGridBundle\Grid\Export\Export;
@@ -50,6 +51,6 @@ class ParpExcelExport extends Export
             }
         }
         
-        die("<pre>".print_r($edata, true));
+        die("<pre>" . print_r($edata, true));
     }
 }

@@ -27,7 +27,7 @@ class RenameService
     public function fixImieNazwisko($imienazwisko)
     {
         $p = explode(" ", $imienazwisko);
-        return $p[1]." ".$p[0];
+        return $p[1] . " " . $p[0];
     }
     public function objectTitles($var)
     {

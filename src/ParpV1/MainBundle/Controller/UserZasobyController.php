@@ -7,6 +7,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\APYDataGridBundle;
 use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Source\Entity;
@@ -28,6 +29,8 @@ class UserZasobyController extends Controller
 
     /**
      * Lists all UserZasoby entities.
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      *
      * @Route("/index", name="userzasoby")
      * @Template()
@@ -78,6 +81,8 @@ class UserZasobyController extends Controller
      *
      * @Route("/", name="userzasoby_create")
      * @Method("POST")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template("ParpMainBundle:UserZasoby:new.html.twig")
      */
     public function createAction(Request $request)
@@ -125,6 +130,7 @@ class UserZasobyController extends Controller
      *
      * @Route("/new", name="userzasoby_new")
      * @Method("GET")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template()
      */
     public function newAction()
@@ -142,6 +148,7 @@ class UserZasobyController extends Controller
      * Finds and displays a UserZasoby entity.
      *
      * @Route("/{id}", name="userzasoby_show")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Method("GET")
      * @Template()
      */
@@ -167,6 +174,7 @@ class UserZasobyController extends Controller
      * Displays a form to edit an existing UserZasoby entity.
      *
      * @Route("/{id}/edit", name="userzasoby_edit")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Method("GET")
      * @Template()
      */
@@ -231,6 +239,7 @@ class UserZasobyController extends Controller
      *
      * @Route("/{id}", name="userzasoby_update")
      * @Method("PUT")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Template("ParpMainBundle:UserZasoby:edit.html.twig")
      */
     public function updateAction(Request $request, $id)
@@ -264,6 +273,7 @@ class UserZasobyController extends Controller
      *
      * @Route("/{id}", name="userzasoby_delete")
      * @Method("DELETE")
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      */
     public function deleteAction(Request $request, $id)
     {

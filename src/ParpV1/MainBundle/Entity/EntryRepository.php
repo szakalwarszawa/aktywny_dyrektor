@@ -29,7 +29,7 @@ class EntryRepository extends EntityRepository
     {
         $where = "1 = 1";
         if ($ids != "") {
-            $where = 'e.id IN ('.$ids.')';
+            $where = 'e.id IN (' . $ids . ')';
         }
         $query = $this->createQueryBuilder('e')
                 ->where('e.isImplemented = false')

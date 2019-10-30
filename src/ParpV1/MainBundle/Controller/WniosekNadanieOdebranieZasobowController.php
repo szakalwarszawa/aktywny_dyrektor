@@ -173,7 +173,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $this->addFlash('danger', 'Nie wybrano managera pracowników spoza PARP');
 
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new', [
-                'odebranie' => $entity->getOdebranie()? 1 : 0
+                'odebranie' => $entity->getOdebranie() ? 1 : 0
             ]));
         }
 
@@ -456,7 +456,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     ]);
 
                 if (null === $skrotDepartamentu) {
-                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla '.$ADUser['department']);
+                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla ' . $ADUser['department']);
                 }
 
                 $ADManager = [$ldap->getDyrektoraDepartamentu($skrotDepartamentu->getShortname())];
@@ -478,7 +478,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $role = $em->getRepository(AclRole::class)->findOneByName('PARP_ADMIN_REJESTRU_ZASOBOW');
         $users = $em->getRepository(AclUserRole::class)->findByRole($role);
         foreach ($users as $u) {
-            $mails[] = $u->getSamaccountname().'@parp.gov.pl';
+            $mails[] = $u->getSamaccountname() . '@parp.gov.pl';
         }
 
 
@@ -542,7 +542,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $czyZastepstwo = (in_array($wniosek->getWniosek()->getLockedBy(), $zastepstwa));
 
         $acc = $this->checkAccess($wniosek);
-        if ($acc['editor'] === null &&
+        if (
+            $acc['editor'] === null &&
             !($isAccepted == 'publish_lsi' ||
                 in_array($this->getUser()->getUsername(), ['marcin_lipinski'])) &&
             !($isAccepted == 'unblock' && ($czyZastepstwo || in_array('PARP_ADMIN_REJESTRU_ZASOBOW', $this->getUser()->getRoles())))
@@ -564,7 +565,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 $kom = new \ParpV1\MainBundle\Entity\Komentarz();
                 $kom->setObiekt('WniosekNadanieOdebranieZasobow');
                 $kom->setObiektId($id);
-                $kom->setTytul('Wniosek '.($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia').' z powodu:');
+                $kom->setTytul('Wniosek ' . ($isAccepted == 'return' ? 'zwrócenia' : 'odrzucenia') . ' z powodu:');
                 $kom->setOpis($txt);
                 $kom->setSamaccountname($this->getUser()->getUsername());
                 $em->persist($kom);
@@ -590,7 +591,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $status = $wniosek->getWniosek()->getStatus()->getNazwaSystemowa();
-        if ($isAccepted == 'acceptAndPublish' && !in_array($status, [
+        if (
+            $isAccepted == 'acceptAndPublish' && !in_array($status, [
                 '05_EDYCJA_ADMINISTRATOR',
                 '06_EDYCJA_TECHNICZNY',
                 '07_ROZPATRZONY_POZYTYWNIE',
@@ -673,14 +675,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                         $nabor = $naborDane[1];
                         $rola = $p;
                         $sql =
-                            "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".
-                            $uz->getSamaccountname().
-                            "', '".
-                            $dzialanie.
-                            "', '".
-                            $nabor.
-                            "', '".
-                            $rola.
+                            "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('" .
+                            $uz->getSamaccountname() .
+                            "', '" .
+                            $dzialanie .
+                            "', '" .
+                            $nabor .
+                            "', '" .
+                            $rola .
                             "')";
                         $sqls[] = $sql;
                     }
@@ -716,7 +718,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     //biore managera z pola managerSpoząParp
                                     $ADManager = $this->getUserFromAD($wniosek->getManagerSpozaParp());
                                     if (count($ADManager) == 0) {
-                                        die('Blad 453 Nie moge znalezc przelozonego dla osoby : '.
+                                        die('Blad 453 Nie moge znalezc przelozonego dla osoby : ' .
                                             $uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
@@ -725,7 +727,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                     $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
 
                                     if (count($ADManager) == 0) {
-                                        die('Blad 657 Nie moge znalezc przelozonego dla osoby : '.
+                                        die('Blad 657 Nie moge znalezc przelozonego dla osoby : ' .
                                             $uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
@@ -743,8 +745,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $this->setWniosekStatus($wniosek, '10_PODZIELONY', false);
                                 foreach ($przelozeni as $sam => $p) {
                                     if ($this->debug) {
-                                        echo '<br><br>Tworzy nowy wniosek dla przelozonego  '.$sam.
-                                            ' wzietego z osoby  '.$p[0]->getSamaccountname().
+                                        echo '<br><br>Tworzy nowy wniosek dla przelozonego  ' . $sam .
+                                            ' wzietego z osoby  ' . $p[0]->getSamaccountname() .
                                             ' :<br><br>';
                                     }
 
@@ -821,7 +823,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 //teraz dla kazdego zasobu tworzy oddzielny wniosek
                                 foreach ($zasoby as $z) {
                                     if ($this->debug) {
-                                        echo '<br><br>Tworzy nowy wniosek dla zasobu '.$z->getZasobId().
+                                        echo '<br><br>Tworzy nowy wniosek dla zasobu ' . $z->getZasobId() .
                                             '<br><br>';
                                     }
                                     $wn = new WniosekNadanieOdebranieZasobow();
@@ -897,9 +899,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $maBycIbi = false;
                             foreach ($wniosek->getUserZasoby() as $uz) {
                                 $maBycIbi =
-                                    $maBycIbi ||
-                                    $uz->getUprawnieniaAdministracyjne() ||
-                                    $wniosek->getPracownikSpozaParp();
+                                    $maBycIbi
+                                    || $uz->getUprawnieniaAdministracyjne();
                             }
 
                             if ($maBycIbi) {
@@ -940,9 +941,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             $maBycIbi = false;
                             foreach ($wniosek->getUSerZasoby() as $uz) {
                                 $maBycIbi =
-                                    $maBycIbi ||
-                                    $uz->getUprawnieniaAdministracyjne() ||
-                                    $wniosek->getPracownikSpozaParp();
+                                    $maBycIbi
+                                    || $uz->getUprawnieniaAdministracyjne();
                             }
                             if ($maBycIbi) {
                                 $this->setWniosekStatus($wniosek, '04_EDYCJA_IBI', false);
@@ -967,7 +967,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     break;
             }
 
-            if ($isAccepted == 'acceptAndPublish' && in_array($status, [
+            if (
+                $isAccepted == 'acceptAndPublish' && in_array($status, [
                     '05_EDYCJA_ADMINISTRATOR',
                     '06_EDYCJA_TECHNICZNY',
                     '07_ROZPATRZONY_POZYTYWNIE',
@@ -1052,7 +1053,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $entry->setFromWhen(new \Datetime());
                                 $entry->setSamaccountname($aduser[0]['samaccountname']);
                                 $symbol = $wniosek->getOdebranie() ? '-' : '+';
-                                $entry->setMemberOf($symbol.$grupa);
+                                $entry->setMemberOf($symbol . $grupa);
                                 $entry->setIsImplemented(0);
                                 $entry->setDistinguishedName($aduser[0]['distinguishedname']);
                                 $em->persist($entry);
@@ -1085,7 +1086,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                 if ($wniosek->getOdebranie()) {
                     $flashMessage = 'Odnotowałem odebranie wskazanych uprawnień.';
                     if (null === $wniosek->getDataOdebrania() && $wniosek->getZawieraZasobyZAd()) {
-                        $flashMessage.= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
+                        $flashMessage .= ' Data odebrania zostanie ustawiona po opublikowaniu zmian w AD!';
                     }
                     $this->addFlash('danger', $flashMessage);
                 }
@@ -1701,7 +1702,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         if (empty($aduser)) {
-            echo "Problem z ".$samaccountname."<br/>";
+            echo "Problem z " . $samaccountname . "<br/>";
             echo "<pre>";
             var_dump(debug_backtrace(null, 1));
         }

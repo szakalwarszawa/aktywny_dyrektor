@@ -312,7 +312,7 @@ class UprawnieniaController extends Controller
         $nowyPoziomDostepuString = $this->stringUnCode($nowyPoziomDostepuB64);
 
         /** @var UserZasoby $obecnyPoziomDostepu */
-        $obecnyUserZasob= $manager->getRepository(UserZasoby::class)->find($obecnyUserZasobId);
+        $obecnyUserZasob = $manager->getRepository(UserZasoby::class)->find($obecnyUserZasobId);
 
         if (null === $obecnyUserZasob) {
             throw new EntityNotFoundException('Nie ma UserZasobu o takim identyfikatorze!');

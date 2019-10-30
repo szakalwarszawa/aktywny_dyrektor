@@ -42,7 +42,7 @@ class KomentarzController extends Controller
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
-                $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
+                $query->andWhere($tableAlias . '.obiekt = \'' . $obiekt . '\' and ' . $tableAlias . '.obiektId = \'' . $obiektId . '\'');
             }
         );
         $grid = $this->get('grid');
@@ -182,7 +182,7 @@ class KomentarzController extends Controller
 
         $editForm = $this->createEditForm($entity);
         $deleteForm = $this->createDeleteForm($id);
-        $pt = strtolower($entity->getObiekt())."_edit";
+        $pt = strtolower($entity->getObiekt()) . "_edit";
         return array(
             'entity'      => $entity,
             'edit_form'   => $editForm->createView(),

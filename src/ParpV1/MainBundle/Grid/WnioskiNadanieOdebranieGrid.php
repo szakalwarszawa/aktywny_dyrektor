@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\MainBundle\Grid;
 
 use APY\DataGridBundle\Grid\Grid;
@@ -166,8 +167,10 @@ class WnioskiNadanieOdebranieGrid
                     $row->setClass('wiersz-odebranie');
                 }
 
-                if ($row->getField('utworzonyPrzez') === 'magdalena_warecka'
-                    && $this->getCurrentUser()->getUsername() === 'marcin_lipinski') {
+                if (
+                    $row->getField('utworzonyPrzez') === 'magdalena_warecka'
+                    && $this->getCurrentUser()->getUsername() === 'marcin_lipinski'
+                ) {
                     $row->setClass('wiersz-cito');
                 }
                 return $row;

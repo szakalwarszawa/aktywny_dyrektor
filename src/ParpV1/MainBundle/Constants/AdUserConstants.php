@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Constants;
 
@@ -50,6 +52,7 @@ class AdUserConstants extends Attributes
     {
         return [
             self::WYLACZENIE_KONTA_ROZWIAZANIE_UMOWY,
+            self::WYLACZENIE_KONTA_NIEOBECNOSC,
             self::DEPARTAMENT_NAZWA,
             self::SEKCJA_NAZWA,
             // self::STANOWISKO,
@@ -70,7 +73,8 @@ class AdUserConstants extends Attributes
             self::PRZELOZONY,
             self::SEKCJA_NAZWA,
             self::WYGASA,
-            self::WYLACZONE
+            self::WYLACZONE,
+            self::DODATKOWY_PODPIS
         ];
     }
 

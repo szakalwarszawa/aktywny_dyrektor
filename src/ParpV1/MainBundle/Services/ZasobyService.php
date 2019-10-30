@@ -232,6 +232,6 @@ class ZasobyService
 
         $grupyAd = $zasob->getGrupyAD();
 
-        return empty($grupyAd)? false : true;
+        return empty($grupyAd) ? false : true;
     }
 }

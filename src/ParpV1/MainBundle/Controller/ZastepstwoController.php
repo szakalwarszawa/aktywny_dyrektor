@@ -232,10 +232,11 @@ class ZastepstwoController extends Controller
             throw $this->createNotFoundException('Podane zastępstwo nie zostało odnalezione.');
         }
 
-        if (!in_array("PARP_ADMIN", $this->getUser()->getRoles())
+        if (
+            !in_array("PARP_ADMIN", $this->getUser()->getRoles())
             && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())
             && $entity->getKogoZastepuje() != $this->getUser()->getUsername()
-            ) {
+        ) {
             $this->addFlash('warning', 'Nie masz uprawnień do edycji nie swoich zastępstw.');
             return $this->redirect($this->generateUrl('zastepstwo'));
         }
@@ -341,7 +342,8 @@ class ZastepstwoController extends Controller
                 return $this->redirectToRoute('zastepstwo');
             }
 
-            if (!in_array("PARP_ADMIN", $this->getUser()->getRoles())
+            if (
+                !in_array("PARP_ADMIN", $this->getUser()->getRoles())
                 && !in_array("PARP_ADMIN_ZASTEPSTW", $this->getUser()->getRoles())
                 && $entity->getKogoZastepuje() != $this->getUser()->getUsername()
             ) {

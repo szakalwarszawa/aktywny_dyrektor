@@ -59,6 +59,7 @@ class ParpMailerService
     const TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY = 'odebranie_uprawnien_bez_grup_jednorazowy.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN = 'odebranie_uprawnien_bez_grup.html.twig';
     const TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY = 'odebranie_uprawnien_bez_grup_rozwiazanie_umowy.html.twig';
+    const TEMPLATE_ODEBRANIE_UPRAWNIEN_DLUGOTRWALA_NIEOBECNOSC = 'odebranie_uprawnien_bez_grup_dlugotrwala_nieobecnosc.html.twig';
     const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
     const ZMIANY_KADROWE_RESET_UPRAWNIEN = 'zmiany_kadrowe_reset_uprawnien.html.twig';
 
@@ -140,11 +141,11 @@ class ParpMailerService
         if ($this->idSrodowiska == 'test') {
             $odbiorcy = implode(", ", $this->getRecipient($recipient));
             $contentHtml .= "<br><hr><div style='width: 100%;'>Odbiorcy: " . $odbiorcy . "</div>";
-            $contentTxt .= "\n\n===================================\nOdbiorcy:". $odbiorcy;
+            $contentTxt .= "\n\n===================================\nOdbiorcy:" . $odbiorcy;
             $recipient = self::EMAIL_TEST;
         }
 
-        $recipientArray= $this->getRecipient($recipient);
+        $recipientArray = $this->getRecipient($recipient);
 
         /** @var \Swift_Message $message */
         $message = \Swift_Message::newInstance()
@@ -204,7 +205,7 @@ class ParpMailerService
         }
 
         $user = $this->ldap->getUserFromAD($login);
-        $email = (!empty($user[0]['mailnickname']) ? $user[0]['mailnickname'] : $login).'@parp.gov.pl';
+        $email = (!empty($user[0]['mailnickname']) ? $user[0]['mailnickname'] : $login) . '@parp.gov.pl';
 
         return $email;
     }
@@ -405,7 +406,7 @@ class ParpMailerService
                 $view = $data['html'];
             } else {
                 $view = $this->templating->render(
-                    'maile/'.$template,
+                    'maile/' . $template,
                     $data
                 );
             }
@@ -418,11 +419,11 @@ class ParpMailerService
         } else {
             $braki = array_diff($wymaganePola, array_keys($data));
             $msg =
-                'Błąd brakuje danych do wygenerowania maila o tytule "'.
-                $tytul.
-                '" z szablonu "'.
-                $template.
-                '"!! Brakujące dane : '.
+                'Błąd brakuje danych do wygenerowania maila o tytule "' .
+                $tytul .
+                '" z szablonu "' .
+                $template .
+                '"!! Brakujące dane : ' .
                 implode(', ', $braki);
             echo($msg);
         }
@@ -500,6 +501,7 @@ class ParpMailerService
                 break;
             case ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN:
             case ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY:
+            case ParpMailerService::TEMPLATE_ODEBRANIE_UPRAWNIEN_DLUGOTRWALA_NIEOBECNOSC:
                 unset($wymaganePola[1]);
                 unset($wymaganePola[2]);
                 break;
@@ -539,6 +541,7 @@ class ParpMailerService
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN__JEDNORAZOWY                => 'Weryfikacja wniosków o nadanie uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN                             => 'Zmiany kadrowe użytkownika - reset uprawnień',
             self::TEMPLATE_ODEBRANIE_UPRAWNIEN_ROZWIAZANIE_UMOWY           => 'Zmiany kadrowe użytkownika - rozwiązanie umowy',
+            self::TEMPLATE_ODEBRANIE_UPRAWNIEN_DLUGOTRWALA_NIEOBECNOSC     => 'Zmiany kadrowe użytkownika - długotrwała nieobecność',
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
             self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Zmiany kadrowe użytkownika - reset uprawnień',
             self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI                   => '[BI] Powrót z długotrwałej nieobecności: ',

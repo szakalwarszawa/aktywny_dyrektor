@@ -112,6 +112,8 @@
                                     <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'acceptAndPublish'}) }}" class="btn btn-success">Zaakceptuj wniosek <i class="fas fa-check-circle">&nbsp;</i> </a>
                                 {% endif %}
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Przekaż do administratora technicznego <i class="fas fa-check-circle">&nbsp;</i> </a>
+                            {% elseif entity.pracownikSpozaParp and entity.wniosek.status.nazwaSystemowa == "02_EDYCJA_PRZELOZONY" %}
+                                <a href="#" onclick="ZaakceptujKomunikatIbi(event)" class="btn btn-success">Zaakceptuj wniosek <i class="fas fa-check-circle">&nbsp;</i> </a>
                             {% else %}
                                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}"
                                 onclick="ZaakceptujWniosek(event, '{{ entity.wniosek.status.nazwaSystemowa == '03_EDYCJA_WLASCICIEL' ? '1' : '0' }}')" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }} wniosek <i class="fas fa-check-circle">&nbsp;</i> </a>
@@ -495,6 +497,7 @@
 
 <div id="ajaxModal" class="modal fade" role="dialog"></div>
 
+
 <!-- Modal -->
 <div id="acceptConfirm" class="modal fade" role="dialog">
     <div class="modal-dialog modal-lg">
@@ -566,6 +569,50 @@
                 <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
                 {% if editor %}
                 <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">{{ entity.wniosek.status.nazwaSystemowa == "00_TWORZONY" ? "Złóż" : "Zaakceptuj" }} wniosek <i class="fas fa-check-circle">&nbsp;</i> </a>
+                {% endif %}
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div id="acceptConfirmPbi" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                <h4 class="modal-title">Akceptacja wniosku</h4>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="alert alert-danger">
+                        <h2>Akceptujesz nadanie uprawnień pracownikowi podmiotu zewnętrznego</h2>
+                    </div>
+                    <p>Zgodnie z Polityką kontroli dostępu do zasobów informatycznych, stanowiącą załącznik do Polityki Bezpieczeństwa Informacji, dyrektor komórki organizacyjnej wskazany we wniosku o nadanie uprawnień dostępu do zasobu aplikacyjnego pracownikowi podmiotu zewnętrznego, odpowiedzialny jest za weryfikację, czy osoba ta jest uprawniona do uzyskania dostępu w zakresie wskazanym we wniosku.</p>
+                    <p>Nadanie uprawnień dostępu do zasobu aplikacyjnego pracownikowi podmiotu zewnętrznego możliwe jest przy spełnieniu następujących wymagań:</p>
+                    <ol>
+                        <li>zapisy umowy zawartej z podmiotem zewnętrznym lub dokumentacji przetargowej (w tym w szczególności opisu przedmiotu zamówienia) dopuszczają możliwość udostępnienia wskazanego we wniosku zasobu aplikacyjnego;</li>
+                        <li>okres obowiązywania uprawnień jest zgodny z zawartą umową;</li>
+                        <li>zakres uprawnień jest niezbędny do realizacji zawartej umowy;</li>
+                        <li>osoba wskazana we wniosku jest pracownikiem podmiotu zewnętrznego lub osobą w inny sposób uprawnioną do uzyskania dostępu do zasobów aplikacyjnych.</li>
+                    </ol>
+                    <p>Jednocześnie uprawnienia dostępu do zasobu aplikacyjnego dla pracownika podmiotu zewnętrznego mogą być nadane wyłącznie na czas określony, niezbędny do wykonania określonych czynności. W przypadku braku spełnienia powyższych wymogów, nadanie uprawnień może nastąpić jedynie po uzyskaniu akceptacji członka Kierownictwa PARP nadzorującego Biuro Informatyki.</p>
+                    <p>Akceptacja niniejszego wniosku oznacza potwierdzenie, że:</p>
+                    <ul>
+                        <li>spełnione zostały wymagania określone powyżej lub</li>
+                        <li>uzyskano akceptację członka Kierownictwa PARP nadzorującego Biuro Informatyki.</li>
+                    </ul>
+                    <p>
+                        <em>Inspektor Bezpieczeństwa Informacji</em>
+                    </p>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Zamknij</button>
+                {% if editor %}
+                    <a href="{{ path('wnioseknadanieodebraniezasobow_accept_reject', {id: entity.id, isAccepted: 'accept'}) }}" class="btn btn-success">Zaakceptuj wniosek
+                        <i class="fas fa-check-circle">&nbsp;</i>
+                    </a>
                 {% endif %}
             </div>
         </div>

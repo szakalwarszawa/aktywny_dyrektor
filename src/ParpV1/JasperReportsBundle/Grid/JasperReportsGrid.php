@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Grid;
 
@@ -61,6 +63,7 @@ class JasperReportsGrid
             ->setSource($source)
         ;
 
+        $grid->hideColumns(['url']);
         $grid = $this->setRowActions($grid);
         $grid
             ->setNoDataMessage('Nie posiadasz dostępu do żadnego raportu.')

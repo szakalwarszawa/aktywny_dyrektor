@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\LdapBundle\Constants;
 
@@ -38,6 +40,7 @@ class AllowedToFetchAttributes extends Attributes
             self::CN_AD_STRING,
             self::OPTIONAL_ATTRIBUTE,
             self::OUTLOOK_UKRYCIE_W_KSIAZCE,
+            self::DODATKOWY_PODPIS,
         ];
     }
 }
