@@ -7,9 +7,7 @@
   <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 1}) }}">Moje uprawnienia - aktywne</a></li>
   <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby_uzytkownika', {'aktywne': 0}) }}">Moje uprawnienia - nieaktywne</a></li>
 </ul>
-<div class="tab-content">
-   <div class="tab-pane active">
-    {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
-  </div>
-</div>
+
+{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
 {% endblock %}

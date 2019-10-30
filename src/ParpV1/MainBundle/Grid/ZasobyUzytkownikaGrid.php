@@ -115,7 +115,7 @@ class ZasobyUzytkownikaGrid
                 ->setFilterable(false)
                 ->setSafe(true)
                 ->setClass('text-center')
-                ->setSize(125)
+                ->setSize(135)
         ;
         $grid->getColumn('bezterminowo')
                 ->setClass('text-center');
@@ -255,7 +255,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Nazwa zasobu',
                 'primary' => true,
-                'size'    => 200,
+                'size'    => 230,
             ]),
             new Column\TextColumn([
                 'id'      => 'modul',
@@ -277,7 +277,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Aktywne od',
                 'format' => 'Y-m-d',
-                'size'    => 65,
+                'size'    => 70,
             ]),
             new Column\BooleanColumn([
                 'id'      => 'bezterminowo',
@@ -291,7 +291,7 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Aktywne do',
                 'format' => 'Y-m-d',
-                'size'    => 65,
+                'size'    => 70,
             ]),
             new Column\TextColumn([
                 'id'      => 'powodNadania',
@@ -313,24 +313,25 @@ class ZasobyUzytkownikaGrid
                 'source'  => true,
                 'title'   => 'Data odebrania',
                 'format' => 'Y-m-d',
-                'size'    => 90,
+                'size'    => 70,
             ]),
             new Column\TextColumn([
                 'id'      => 'wniosek_n_numer',
                 'field'   => 'wniosek_n_numer',
                 'source'  => true,
                 'title'   => 'Wniosek o nadanie upr.',
-                'size'    => 90,
+                'size'    => 120,
             ]),
             new Column\TextColumn([
                 'id'      => 'wniosek_o_numer',
                 'field'   => 'wniosek_o_numer',
                 'source'  => true,
                 'title'   => 'Wniosek o odebranie upr.',
-                'size'    => 90,
+                'size'    => 120,
             ]),
         ];
 
         return $columns;
     }
+
 }
