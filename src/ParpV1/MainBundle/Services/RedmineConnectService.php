@@ -114,7 +114,7 @@ class RedmineConnectService
     public function getZgloszeniaBeneficjenta($id_beneficjenta)
     {
         $id_srodowiska = $this->container->getParameter('id_srodowiska');
-        $adres = $this->redmine_protokol . '://' . $this->redmine_serwer . '/issues.json?cf_2=' . $id_beneficjenta."_".$id_srodowiska."&status_id=*";
+        $adres = $this->redmine_protokol . '://' . $this->redmine_serwer . '/issues.json?cf_2=' . $id_beneficjenta . "_" . $id_srodowiska . "&status_id=*";
 //die($adres);
         $curl = curl_init();
 
@@ -187,7 +187,7 @@ class RedmineConnectService
             'description' => $opis,
             'category_id' => $kategoria, # 21 - Zgłoszone przez system; 22 - Zgłoszone przez użytkownika
             'custom_fields' => array(
-                array('id' => 2, 'value' => $id_beneficjenta."_".$id_srodowiska), # ID Beneficjenta
+                array('id' => 2, 'value' => $id_beneficjenta . "_" . $id_srodowiska), # ID Beneficjenta
                 array('id' => 3, 'value' => $uri), # ID wniosku
                 array('id' => 14, 'value' => $komunikat_systemowy), # Komunikat systemowy (np. Błąd 500, który nie może być pokazany beneficjentowi ze względów bezpieczeństwa)
 //                array("id" => 9, "value" => "Zgłoszenie LSI" ),   # Kanał komunikacji

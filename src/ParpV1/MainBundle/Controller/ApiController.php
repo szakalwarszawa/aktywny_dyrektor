@@ -104,6 +104,7 @@ class ApiController extends Controller
             unset($user['useraccountcontrol']);
             unset($user['memberOf']);
             unset($user['roles']);
+            unset($user['extensionAttribute10']);
             $users[] = $user;
         }
 
@@ -147,6 +148,7 @@ class ApiController extends Controller
         unset($user['useraccountcontrol']);
         unset($user['memberOf']);
         unset($user['roles']);
+        unset($user['extensionAttribute10']);
 
         $response = new JsonResponse(array(
             'user' => $user
@@ -324,8 +326,8 @@ class ApiController extends Controller
                 foreach ($nabory as $nabor) {
                     $naborArr = array_filter(explode('/', $nabor));
                     if (count($naborArr) >= 1) {
-                        $dzialanie = isset($naborArr[0])? $naborArr[0] : 'TYLKO_ROLA';
-                        $nrNaboru = isset($naborArr[1])? $naborArr[1] : 'TYLKO_ROLA';
+                        $dzialanie = isset($naborArr[0]) ? $naborArr[0] : 'TYLKO_ROLA';
+                        $nrNaboru = isset($naborArr[1]) ? $naborArr[1] : 'TYLKO_ROLA';
 
                         if ('do wypełnienia przez właściciela zasobu' === $dzialanie) {
                             $dzialanie = 'TYLKO_ROLA';

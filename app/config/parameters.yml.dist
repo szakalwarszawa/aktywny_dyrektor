@@ -79,3 +79,5 @@ parameters:
     jasper_username: ''
     jasper_password: ''
     jasper_request_timeout: 30
+
+    link_akd_faq: 'https://intranet.parp.gov.pl/images/Niezbednik-pracownika/Sprawy-informatyczne/AkD_FAQ_v2_0.pdf'

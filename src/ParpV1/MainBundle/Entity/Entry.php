@@ -298,6 +298,15 @@ class Entry
     protected $renaming = false;
 
     /**
+     * Dodatkowa linia podpisu w stopce maili
+     *
+     * @var string
+     *
+     * @ORM\Column(name="extensionAttribute10", type="string", length=255, nullable=true)
+     */
+    private $extensionAttribute10;
+
+    /**
      * Get id
      *
      * @return integer
@@ -693,7 +702,7 @@ class Entry
             $gr = [];
             foreach ($grupy as $g) {
                 if (strlen($g) > 0) {
-                    $gr[] = $czyDodaj.$g;
+                    $gr[] = $czyDodaj . $g;
                 }
             }
             $this->setMemberOf(implode(",", $gr));
@@ -703,7 +712,7 @@ class Entry
     {
         $grupyJuzSa = explode(",", $this->getMemberOf());
         foreach ($grupy as $g) {
-            $grupyJuzSa[] = $znak.$g;
+            $grupyJuzSa[] = $znak . $g;
         }
         $this->setMemberOf(implode(",", $grupyJuzSa));
     }
@@ -1013,6 +1022,30 @@ class Entry
     public function setRenaming(bool $renaming): Entry
     {
         $this->renaming = $renaming;
+
+        return $this;
+    }
+
+    /**
+     * Get extensionAttribute10.
+     *
+     * @return string|null
+     */
+    public function getExtensionAttribute10(): ?string
+    {
+        return $this->extensionAttribute10;
+    }
+
+    /**
+     * Set extensionAttribute10
+     *
+     * @param string|null $extensionAttribute10
+     *
+     * @return Entry
+     */
+    public function setExtensionAttribute10(?string $extensionAttribute10): Entry
+    {
+        $this->extensionAttribute10 = $extensionAttribute10;
 
         return $this;
     }

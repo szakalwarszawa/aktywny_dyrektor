@@ -48,7 +48,7 @@ class ParpUser implements UserInterface, EquatableInterface, \Serializable
     public function getRolesHtml()
     {
         $ret = implode("</li><li class='list-group-item'>", $this->getRoles());
-        return "<ul class='list-group'><li class='list-group-item'>".$ret."</li></ul>";
+        return "<ul class='list-group'><li class='list-group-item'>" . $ret . "</li></ul>";
     }
     public function hasRole($role)
     {

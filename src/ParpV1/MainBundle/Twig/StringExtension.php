@@ -256,7 +256,7 @@ class StringExtension extends \Twig_Extension
     public function getMultipleCheckboxLabel($string, $part)
     {
         $e = explode("@@@", $string);
-        $ret = $part <= count($e) -1 ? $e[$part] : "";
+        $ret = $part <= count($e) - 1 ? $e[$part] : "";
         return $ret;
     }
 
@@ -270,7 +270,7 @@ class StringExtension extends \Twig_Extension
         $ss = explode(",", $cs);
         $ret = array();
         foreach ($ss as $id) {
-            $ret[] = "grupaUprawnien".$id;
+            $ret[] = "grupaUprawnien" . $id;
         }
         return implode(" ", $ret);
     }
@@ -300,7 +300,7 @@ class StringExtension extends \Twig_Extension
      */
     public function showMultiFieldAsNewLines($str)
     {
-        return "<div class='border'>".str_replace(";", "</div><div class='border'>", $str)."</div>";
+        return "<div class='border'>" . str_replace(";", "</div><div class='border'>", $str) . "</div>";
     }
 
     /**

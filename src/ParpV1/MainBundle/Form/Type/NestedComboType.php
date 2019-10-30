@@ -9,7 +9,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 
 class NestedComboType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface  $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
     }
 

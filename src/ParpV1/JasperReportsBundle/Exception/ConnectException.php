@@ -1,4 +1,5 @@
 <?php
+
 namespace ParpV1\JasperReportsBundle\Exception;
 
 use Exception;

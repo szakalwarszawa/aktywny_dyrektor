@@ -56,8 +56,8 @@ class LdapService
         'distinguishedName',
         'cn',
         'mailnickname',
-        'memberOf'
-            //"extensionAttribute14"
+        'memberOf',
+        'extensionAttribute10',
     );
 
     public function __construct(Container $container, CacheItemPoolInterface $cacheItemPool, LdapConnection $ldapConnection, LdapFetch $ldapFetch)
@@ -892,7 +892,8 @@ class LdapService
                 $result[$i]['samaccountname'] = $tmpResult['samaccountname'][0];
                 $result[$i]['accountExpires'] = $date->format('Y') > 2000 && $date->format('Y') < 3000 ? $date->format('Y-m-d') : '';
                 if (isset($tmpResult['accountexpires'][0])) {
-                    if ($tmpResult['accountexpires'][0] == 9223372036854775807 ||
+                    if (
+                        $tmpResult['accountexpires'][0] == 9223372036854775807 ||
                             $tmpResult['accountexpires'][0] == 0
                     ) {
                         $result[$i]['accountexpires'] = '';
@@ -922,7 +923,7 @@ class LdapService
                 $result[$i]['distinguishedname'] = $tmpResult['distinguishedname'][0];
                 $result[$i]['cn'] = $tmpResult['cn'][0];
                 $result[$i]['memberOf'] = $this->parseMemberOf($tmpResult);
-                //$result[$i]['extensionAttribute14'] = $tmpResult["extensionAttribute14"][0];
+                $result[$i]['extensionAttribute10'] =  isset($tmpResult['extensionattribute10'][0]) ? $tmpResult['extensionattribute10'][0] : '';
 
                 if ('ekranEdycji' === $this->dodatkoweOpcje) {
                     $roles = $this->container->get('doctrine')
@@ -1243,16 +1244,16 @@ class LdapService
                     $section = $sekcja;
                 }
                 if (null === $section) {
-                    throw new Exception('Nie znaleziono sekcji: '.$sekcja.' w departamencie: '.$depshortname.' (pracownik: '.$user['name'].')'
-                        .' #class:'.debug_backtrace()[1]['class'].' #function:'.debug_backtrace()[1]['function']);
+                    throw new Exception('Nie znaleziono sekcji: ' . $sekcja . ' w departamencie: ' . $depshortname . ' (pracownik: ' . $user['name'] . ')'
+                        . ' #class:' . debug_backtrace()[1]['class'] . ' #function:' . debug_backtrace()[1]['function']);
                 }
                 $sekcja = $section->getShortname();
             }
             $skrotSekcjiRozbity = explode('.', $sekcja);
 
             if (strtoupper($skrotSekcjiRozbity[0]) != strtoupper($depshortname->getShortname())) {
-                throw new Exception('Niewłaściwy D/B ('.$depshortname->getShortname().') lub sekcja ('.$sekcja.') dla pracownika: '.$user['name']
-                    .' #class:'.debug_backtrace()[1]['class'].'#function:'.debug_backtrace()[1]['function']);
+                throw new Exception('Niewłaściwy D/B (' . $depshortname->getShortname() . ') lub sekcja (' . $sekcja . ') dla pracownika: ' . $user['name']
+                    . ' #class:' . debug_backtrace()[1]['class'] . '#function:' . debug_backtrace()[1]['function']);
             }
             if ($skrotSekcjiRozbity[1][0] === 'S') {
                 $grupy[] = 'SGG-(skrót D/B)-Wewn-(skrót sekcji)-RW';
@@ -1343,7 +1344,7 @@ class LdapService
             $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname->getShortname(), $grupy[$i]));
         }
 
-        if (null!==$depshortname && !empty($depshortname->getGrupyAD())) {
+        if (null !== $depshortname && !empty($depshortname->getGrupyAD())) {
             $grupyDepartamentowe = explode(';', $depshortname->getGrupyAD());
             foreach ($grupyDepartamentowe as $grupaDep) {
                 if ($grupaDep != '') {

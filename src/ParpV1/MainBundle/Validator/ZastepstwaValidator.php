@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Validator;
 
@@ -87,7 +89,8 @@ class ZastepstwaValidator extends ConstraintValidator
         $stareZastepstwoDane = $stareZastepstwo->getOriginalEntityData($value);
 
         if (!empty($stareZastepstwoDane)) {
-            if ($stareZastepstwoDane['dataDo'] < $value->getDataDo()
+            if (
+                $stareZastepstwoDane['dataDo'] < $value->getDataDo()
                 && $now > $value->getDataOd()
             ) {
                 $this->context->buildViolation($constraint->wydluzenieZastepstwa)

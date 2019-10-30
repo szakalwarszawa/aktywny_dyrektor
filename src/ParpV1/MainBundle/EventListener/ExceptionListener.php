@@ -104,7 +104,7 @@ class ExceptionListener implements EventSubscriberInterface
 
             $wyjatek = $event->getException();
 
-            if ($this->kernel->getContainer()->getParameter('id_srodowiska')=='testowy') {
+            if ($this->kernel->getContainer()->getParameter('id_srodowiska') == 'testowy') {
                 var_dump($wyjatek->getMessage());
             }
             //print_r($wyjatek);die();

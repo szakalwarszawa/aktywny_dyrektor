@@ -30,34 +30,34 @@ class LdapImportCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         try {
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Zaczynam import ous ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Zaczynam import ous ...                             </comment>', false);
             
             $this->getContainer()->get('ldap_import')->importOUsAction();
             
             
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Skonczylem import ous ...                             </comment>', false);
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Zaczynam import groups ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Skonczylem import ous ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Zaczynam import groups ...                             </comment>', false);
             
             $this->getContainer()->get('ldap_import')->importGroupsAction();
             
             
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Skonczylem import groups ...                             </comment>', false);
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Zaczynam import users ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Skonczylem import groups ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Zaczynam import users ...                             </comment>', false);
             
                 
             $letters = "abcdefghijklmnopqrstuvwxyz";
             $letters_array = str_split($letters);
             
             foreach ($letters_array as $l) {
-                $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Import users na litere "'.$l.'" ...                             </comment>', false);
+                $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Import users na litere "' . $l . '" ...                             </comment>', false);
                 $this->getContainer()->get('ldap_import')->importUsersAction($l);
             }
             
             
-            $output->writeln('<comment>'.date("Y-m-d-H-I-s").' - Skonczylem import users ...                             </comment>', false);
+            $output->writeln('<comment>' . date("Y-m-d-H-I-s") . ' - Skonczylem import users ...                             </comment>', false);
         } catch (\Exception $e) {
             $output->writeln('<error>Błąd...                             </error>', false);
-            $output->writeln('<error>'.$e->getMessage()."</error>", false);
+            $output->writeln('<error>' . $e->getMessage() . "</error>", false);
         }
     }
 }

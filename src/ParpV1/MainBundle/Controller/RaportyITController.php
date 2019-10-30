@@ -239,7 +239,7 @@ class RaportyITController extends Controller
                     $dep2 =
                         $em->getRepository(Departament::class)
                             ->findOneByNameInRekord($wpisNowy->getDepartament());
-                    $akcja = "Zmiana departamentu z '".$dep1->getName()."' na '".$dep2->getName()."'";
+                    $akcja = "Zmiana departamentu z '" . $dep1->getName() . "' na '" . $dep2->getName() . "'";
                     //var_dump($zmiana);
                     $dr = [
                         'login'      => $wpisNowy->getLogin(),
@@ -267,7 +267,7 @@ class RaportyITController extends Controller
                 $dataExpire = DateTime::createFromFormat('Y-m-d', $u['accountExpires']);
 
                 if ($rok == date('Y')) {
-                    if ($rok < 3000 && $dataExpire->format('Y-m') == $ndata['rok'].'-'.$miesiac) {
+                    if ($rok < 3000 && $dataExpire->format('Y-m') == $ndata['rok'] . '-' . $miesiac) {
                         //$akcja = 'Nowa osoba przyszła do pracy';
                         //$dataZmiany = $dr['umowaOd']->format("Y-m-d");
                         if (!isset($daneZRekorda[$u['samaccountname']])) {
@@ -344,11 +344,11 @@ class RaportyITController extends Controller
         if ($akcja == '') {
             $akcja = '';
             //echo ($dr['umowaOd']->format("Y-m") ."___". $rok."-".$miesiac);
-            if ($dr['umowaOd']->format('Y-m') == $rok.'-'.$miesiac) {
+            if ($dr['umowaOd']->format('Y-m') == $rok . '-' . $miesiac) {
                 $akcja = 'Nowa osoba przyszła do pracy';
                 $dataZmiany = $dr['umowaOd']->format('Y-m-d');
             } else {
-                if ($dr['umowaDo'] && $dr['umowaDo']->format('Y-m') == $rok.'-'.$miesiac) {
+                if ($dr['umowaDo'] && $dr['umowaDo']->format('Y-m') == $rok . '-' . $miesiac) {
                     $akcja = 'Osoba odeszła z pracy';
                     $dataZmiany = $dr['umowaDo']->format('Y-m-d');
                 }
@@ -402,7 +402,7 @@ class RaportyITController extends Controller
                 }
                 $group = $l;
                 $dana = [
-                    'id'        => \uniqid().$l.''.$log->getId(),
+                    'id'        => \uniqid() . $l . '' . $log->getId(),
                     'content'   => $content,
                     'kolejnosc' => 1,
                     'title'     => $content,
@@ -419,9 +419,9 @@ class RaportyITController extends Controller
                 $ret[] = $dana;
                 $datyKonca[$l] = $log->getLoggedAt();
                 if ($l == 'departament') {
-                    $dana['id'] = $dana['id'].md5($content);
+                    $dana['id'] = $dana['id'] . md5($content);
                     $dana['type'] = 'background';
-                    $dana['className'] = 'tloWykresu'.$this->className++;
+                    $dana['className'] = 'tloWykresu' . $this->className++;
                     unset($dana['group']);
                     if ($this->ostatniDepartament == null) {
                         $this->ostatniDepartament = $dana;
@@ -517,13 +517,13 @@ class RaportyITController extends Controller
                     $uz->getAktywneDo() ? ($uz->getAktywneDo() <
                     $d['end'] ? $uz->getAktywneDo() : $d['end']) : $d['end'];
                 $c =
-                    ' <a href="'.
-                    $this->generateUrl('zasoby_edit', ['id' => $zasob->getId()]).
-                    '">'.
-                    $zasob->getNazwa().
+                    ' <a href="' .
+                    $this->generateUrl('zasoby_edit', ['id' => $zasob->getId()]) .
+                    '">' .
+                    $zasob->getNazwa() .
                     '</a>';
                 $dana = [
-                    'id'         => \uniqid().'Zasob'.$zasob->getId(),
+                    'id'         => \uniqid() . 'Zasob' . $zasob->getId(),
                     'content'    => $c,
                     'kolejnosc'  => 1,
                     'title'      => $zasob->getNazwa(),
@@ -558,7 +558,8 @@ class RaportyITController extends Controller
             return $a['start'] < $b['start'];
         });
         for ($i = 0; $i < count($dane); $i++) {
-            if ($dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
+            if (
+                $dane[$i]['start'] >= $this->ostatniDepartament['start'] &&
                 $dane[$i]['start'] <= $this->ostatniDepartament['end']
             ) {
                 if ($this->sumaUprawnien == null) {
@@ -603,21 +604,21 @@ class RaportyITController extends Controller
         $this->sumaUprawnien['grupy'] = array_unique(array_filter($this->sumaUprawnien['grupy']));
         $this->sumaUprawnien['title'] = implode(', <br>', $this->sumaUprawnien['grupy']);
 
-        $content = $this->sumaUprawnien['content'].': <br><br>';
+        $content = $this->sumaUprawnien['content'] . ': <br><br>';
         $this->sumaUprawnien['brakujace'] = [];
         foreach ($this->sumaUprawnien['grupy'] as $g) {
             if (!in_array($g, $this->user['memberOf'], true)) {
-                $content .= '<span style="color:red"><b>'.$g.'</b></span><br>';
+                $content .= '<span style="color:red"><b>' . $g . '</b></span><br>';
                 $this->sumaUprawnien['brakujace'][] = $g;
             } else {
-                $content .= $g.'<br>';
+                $content .= $g . '<br>';
             }
         }
-        $content .= '<br><a href="'.
+        $content .= '<br><a href="' .
             $this->generateUrl(
                 'nadajGrupy',
                 ['login' => $this->user['samaccountname'], 'grupy' => implode(',', $this->sumaUprawnien['grupy'])]
-            ).
+            ) .
             '" class="btn btn-success" target="_blank">NAPRAW</a>';
 
 
@@ -655,7 +656,7 @@ class RaportyITController extends Controller
         $entry = new Entry();
         $entry->setFromWhen(new DateTime());
         $entry->setSamaccountname($login);
-        $entry->setMemberOf('+'.implode(',+', $grupy));
+        $entry->setMemberOf('+' . implode(',+', $grupy));
         $entry->setCreatedBy($this->getUser()->getUsername());
         $entry->setOpis('Przywracanie uprawnien za pomoca linku.');
         $this->getDoctrine()->getManager()->persist($entry);

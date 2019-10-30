@@ -30,7 +30,7 @@ class LdapImportService
      */
     public function importUsersAction($letter)
     {
-        set_time_limit(60*60*6);
+        set_time_limit(60 * 60 * 6);
         $manager = $this->container->get('doctrine')->getManager();
         $ldap = $this->container->get('ldap_service');
         // Sięgamy do AD:
@@ -53,7 +53,7 @@ class LdapImportService
             }
 
             foreach ($ADUser as $key => $item) {
-                $set = "set".ucfirst($key);
+                $set = "set" . ucfirst($key);
                 if (in_array($key, $namesCols)) {
                     $set .= 'Names';
                     $item = implode(";", $item);
@@ -89,7 +89,7 @@ class LdapImportService
 
     public function importGroupsAction()
     {
-        set_time_limit(60*60*6);
+        set_time_limit(60 * 60 * 6);
         $pomijajPola = ["objectguid", "objectsid"];
         $manager = $this->container->get('doctrine')->getManager();
         // Sięgamy do AD:
@@ -105,7 +105,7 @@ class LdapImportService
 
                 foreach ($adg as $k => $valarr) {
                     if (!in_array($k, $pomijajPola)) {
-                        $set = "set".ucfirst($k);
+                        $set = "set" . ucfirst($k);
 
                         if (method_exists($ADGroup, $set)) {
                             $val = array();
@@ -137,18 +137,18 @@ class LdapImportService
      */
     protected function saveToLogFile($msg, $file)
     {
-        $dir = __DIR__."/../../../../app/logs";
+        $dir = __DIR__ . "/../../../../app/logs";
         if (!file_exists($dir)) {
             mkdir($dir);
         }
         $datetime = new \Datetime();
-        $msg = ($this->i++)." : ".$datetime->format("Y-m-d-H-I-s")." - ".$msg;
-        file_put_contents($dir."/".$file, $msg."\r\n", FILE_APPEND);
+        $msg = ($this->i++) . " : " . $datetime->format("Y-m-d-H-I-s") . " - " . $msg;
+        file_put_contents($dir . "/" . $file, $msg . "\r\n", FILE_APPEND);
     }
 
     public function importOUsAction()
     {
-        set_time_limit(60*60*6);
+        set_time_limit(60 * 60 * 6);
 
         $manager = $this->container->get('doctrine')->getManager();
         $ldap = $this->container->get('ldap_service');
@@ -167,7 +167,7 @@ class LdapImportService
                     $ADOrganizationalUnit = new ADOrganizationalUnit();
                 }
                 foreach ($adou as $k => $valarr) {
-                    $set = "set".ucfirst($k);
+                    $set = "set" . ucfirst($k);
 
                     if (method_exists($ADOrganizationalUnit, $set)) {
                         $val = array();

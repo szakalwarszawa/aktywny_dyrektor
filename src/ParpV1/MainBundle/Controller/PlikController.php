@@ -107,7 +107,7 @@ class PlikController extends Controller
         $tableAlias = $source->getTableAlias();
         $source->manipulateQuery(
             function ($query) use ($tableAlias, $obiekt, $obiektId) {
-                $query->andWhere($tableAlias.'.obiekt = \''.$obiekt.'\' and '.$tableAlias.'.obiektId = \''.$obiektId.'\'');
+                $query->andWhere($tableAlias . '.obiekt = \'' . $obiekt . '\' and ' . $tableAlias . '.obiektId = \'' . $obiektId . '\'');
             }
         );
         $grid = $this->get('grid');
@@ -181,7 +181,7 @@ class PlikController extends Controller
             $entityManager->flush();
 
             $this->addFlash('warning', 'Plik został załączony.');
-                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId())));
+                return $this->redirect($this->generateUrl(strtolower($entity->getObiekt()) . "_edit", array('id' => $entity->getObiektId())));
         }
 
         return array(
@@ -375,7 +375,7 @@ class PlikController extends Controller
         }
 
 
-        $url = $this->generateUrl(strtolower($entity->getObiekt())."_edit", array('id' => $entity->getObiektId()));
+        $url = $this->generateUrl(strtolower($entity->getObiekt()) . "_edit", array('id' => $entity->getObiektId()));
 
         if ($form->isValid()) {
             if (!$entity) {

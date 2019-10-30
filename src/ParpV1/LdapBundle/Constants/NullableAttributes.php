@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\LdapBundle\Constants;
 
@@ -19,6 +21,7 @@ class NullableAttributes extends Attributes
         return [
             self::WYGASA,
             self::POWOD_WYLACZENIA,
+            self::DODATKOWY_PODPIS,
         ];
     }
 }

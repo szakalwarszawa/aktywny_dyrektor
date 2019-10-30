@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\JasperReportsBundle\Form;
 
@@ -58,7 +60,7 @@ class RolePrivilegeFormType extends AbstractType
                 'class' => Path::class,
                 'choice_label' => function ($path) {
                     $isRepository = $path->isRepository();
-                    $repositoryInfo = $isRepository? '[Folder] ': '';
+                    $repositoryInfo = $isRepository ? '[Folder] ' : '';
 
                     return $repositoryInfo . $path->getUrl();
                 },

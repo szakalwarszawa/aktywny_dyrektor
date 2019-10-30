@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Helper;
 
@@ -131,6 +133,21 @@ class AdUserHelper
         return $value;
     }
 
+
+    /**
+     * Zwraca dodatkowy podpis w stopce maila
+     *
+     * @return string|null
+     */
+    public static function getExtensionAttribute10(): ?string
+    {
+        if (isset(self::$adUser[AdUserConstants::DODATKOWY_PODPIS])) {
+            return self::$adUser[AdUserConstants::DODATKOWY_PODPIS];
+        }
+
+        return null;
+    }
+
     /**
      * Zwraca datę wygaśnięcia konta
      *
@@ -173,7 +190,7 @@ class AdUserHelper
 
         $value = self::$adUser[AdUserConstants::WYLACZONE];
 
-        return 1 === $value? true : false;
+        return 1 === $value ? true : false;
     }
 
     /**

@@ -272,26 +272,26 @@ class RaportZmianCommand extends ContainerAwareCommand
         $ldapService = $this->getContainer()->get('ldap_service');
 
         foreach ($diffes as $key => $diff) {
-            $sheet->setCellValue('A'. $wierszIndex, $key);
+            $sheet->setCellValue('A' . $wierszIndex, $key);
             $poczatekTabeliWiersz = $wierszIndex;
             if (isset($ldapService->getUserFromAD($key)[0])) {
                 $imieNazwisko = $ldapService->getUserFromAD($key)[0]['name'];
-                $sheet->setCellValue('B'. $wierszIndex, $imieNazwisko);
+                $sheet->setCellValue('B' . $wierszIndex, $imieNazwisko);
             }
 
             foreach ($diff as $pojedynczaZmiana) {
                 if (empty($pojedynczaZmiana['stare']) && empty($pojedynczaZmiana['nowe'])) {
-                    $sheet->setCellValue('E'. $wierszIndex, $pojedynczaZmiana['status']);
+                    $sheet->setCellValue('E' . $wierszIndex, $pojedynczaZmiana['status']);
                     $wierszIndex++;
                     continue;
                 }
-                $sheet->setCellValue('C'. $wierszIndex, $pojedynczaZmiana['status']);
-                $sheet->setCellValue('D'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['stare']));
-                $sheet->setCellValue('E'. $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['nowe']));
+                $sheet->setCellValue('C' . $wierszIndex, $pojedynczaZmiana['status']);
+                $sheet->setCellValue('D' . $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['stare']));
+                $sheet->setCellValue('E' . $wierszIndex, $this->tlumaczWyrazy($pojedynczaZmiana['nowe']));
                 $wierszIndex++;
             }
 
-            $sheet->getStyle('A' . $poczatekTabeliWiersz .':E' . $wierszIndex)
+            $sheet->getStyle('A' . $poczatekTabeliWiersz . ':E' . $wierszIndex)
                 ->getBorders()
                 ->getBottom()
                 ->setBorderStyle(ExcelBorder::BORDER_THICK);
@@ -302,7 +302,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         $dataTeraz = new \DateTime();
 
         $katalog = $this->getContainer()->getParameter('porownania_json')['katalog_raportow'];
-        $nazwaPliku = 'raport_' . $zakresCzasowy[0] . '__' .$zakresCzasowy[1] .'.xlsx';
+        $nazwaPliku = 'raport_' . $zakresCzasowy[0] . '__' . $zakresCzasowy[1] . '.xlsx';
         $writer->save($katalog . $nazwaPliku);
 
         return $nazwaPliku;
@@ -344,7 +344,7 @@ class RaportZmianCommand extends ContainerAwareCommand
         } elseif (isset($diff['upd']['isDisabled'])) {
             // nie zwracamy reszty zmian w koncie jeżeli zostało dopiero włączone/wyłączone
             $status = $diff['upd']['isDisabled']['new'];
-            $komunikat = $this->getKomunikat(($status === 1? 'ACCOUNT_DISABLED' : 'ACCOUNT_ENABLED'));
+            $komunikat = $this->getKomunikat(($status === 1 ? 'ACCOUNT_DISABLED' : 'ACCOUNT_ENABLED'));
             $outputDiff = array(array(
                 'status' => $komunikat,
                 'stare' => '',
@@ -420,8 +420,10 @@ class RaportZmianCommand extends ContainerAwareCommand
                 $tymczasowaTablica['stare'] = $element['old'];
                 $tymczasowaTablica['nowe'] = $element['new'];
 
-                if (('initials' === $klucz && empty($element['new'])) ||
-                    ('initials' === $klucz && !empty($element['old']))) {
+                if (
+                    ('initials' === $klucz && empty($element['new'])) ||
+                    ('initials' === $klucz && !empty($element['old']))
+                ) {
                     continue;
                 }
                 $aktualizacje[] = $tymczasowaTablica;

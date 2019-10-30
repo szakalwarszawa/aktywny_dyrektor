@@ -10,3 +10,6 @@ services:
   ParpV1\MainBundle\Security\Voter\ApplicationActionVoter:
     tags:
       - { name: security.voter }
+  zasoby_uzytkownika_grid:
+    class: ParpV1\MainBundle\Grid\ZasobyUzytkownikaGrid
+    arguments: ['@grid', '@doctrine.orm.entity_manager']

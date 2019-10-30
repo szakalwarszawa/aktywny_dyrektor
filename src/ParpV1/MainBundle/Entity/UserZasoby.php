@@ -393,7 +393,7 @@ class UserZasoby
     public function getSamaccountnames()
     {
         //uzywane przy generaowaniu linka do edycji userZasoby przy wniosku
-        return '{"'.$this->samaccountname.'" : 1}';
+        return '{"' . $this->samaccountname . '" : 1}';
     }
     /**
      * Set zasobId
@@ -792,28 +792,28 @@ class UserZasoby
     {
         $html = "";
         if ($this->getLoginDoZasobu() != "") {
-            $html .= "<b>Login:</b> ".$this->getLoginDoZasobu().$spacer;
+            $html .= "<b>Login:</b> " . $this->getLoginDoZasobu() . $spacer;
         }
         if ($this->getModul() != "") {
-            $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
+            $html .= "<b>Moduł:</b> " . $this->getModul() . $spacer;
         }
         if ($this->getPoziomDostepu() != "") {
-            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
+            $html .= "<b>Poziom dostępu:</b> " . $this->getPoziomDostepu() . $spacer;
         }
         if ($this->getAktywneOd() != "") {
-            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
+            $html .= "<b>Aktywne od:</b> " . $this->getAktywneOd()->format("Y-m-d") . $spacer;
         }
         if ($this->getAktywneDo() != "") {
-            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
+            $html .= "<b>Aktywne do:</b> " . $this->getAktywneDo()->format("Y-m-d") . " " . ($this->getBezterminowo() ? "(bezterminowo)" : "") . $spacer;
         }
         if ($this->getKanalDostepu() != "") {
-            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
+            $html .= "<b>Kanał dostępu:</b> " . $this->getKanalDostepu() . $spacer;
         }
         if ($this->getUprawnieniaAdministracyjne() != "") {
-            $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK" . $spacer;
         }
 
-        $html = "<div>".$html."</div>";
+        $html = "<div>" . $html . "</div>";
         if ($stripTags) {
             $html = strip_tags($html);
         }
@@ -825,25 +825,25 @@ class UserZasoby
     {
         $html = "";
         if ($this->getModul() != "") {
-            $html .= "<b>Moduł:</b> ".$this->getModul().$spacer;
+            $html .= "<b>Moduł:</b> " . $this->getModul() . $spacer;
         }
         if ($this->getPoziomDostepu() != "") {
-            $html .= "<b>Poziom dostępu:</b> ".$this->getPoziomDostepu().$spacer;
+            $html .= "<b>Poziom dostępu:</b> " . $this->getPoziomDostepu() . $spacer;
         }
         if ($this->getAktywneOd() != "") {
-            $html .= "<b>Aktywne od:</b> ".$this->getAktywneOd()->format("Y-m-d").$spacer;
+            $html .= "<b>Aktywne od:</b> " . $this->getAktywneOd()->format("Y-m-d") . $spacer;
         }
         if ($this->getAktywneDo() != "") {
-            $html .= "<b>Aktywne do:</b> ".$this->getAktywneDo()->format("Y-m-d")." ".($this->getBezterminowo() ? "(bezterminowo)" : "").$spacer;
+            $html .= "<b>Aktywne do:</b> " . $this->getAktywneDo()->format("Y-m-d") . " " . ($this->getBezterminowo() ? "(bezterminowo)" : "") . $spacer;
         }
         if ($this->getKanalDostepu() != "") {
-            $html .= "<b>Kanał dostępu:</b> ".$this->getKanalDostepu().$spacer;
+            $html .= "<b>Kanał dostępu:</b> " . $this->getKanalDostepu() . $spacer;
         }
         if ($this->getUprawnieniaAdministracyjne() != "") {
-            $html .= "<b>Uprawnienia Administracyjne:</b> TAK".$spacer;
+            $html .= "<b>Uprawnienia Administracyjne:</b> TAK" . $spacer;
         }
 
-        $html = "<div>".$html."</div>";
+        $html = "<div>" . $html . "</div>";
         if ($stripTags) {
             $html = strip_tags($html);
         }
@@ -995,10 +995,10 @@ class UserZasoby
                     $dzialanie = $naborDane[0];
                     $nabor = $naborDane[1];
                     $rola = $p;
-                    $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('".$this->getSamaccountname()."', '".$dzialanie."', '".$nabor."', '".$rola."')";
+                    $sql = "SELECT * FROM uzytkownicy.akd_realizacja_wnioskow('" . $this->getSamaccountname() . "', '" . $dzialanie . "', '" . $nabor . "', '" . $rola . "')";
                     $sqls[] = $sql;
                 } else {
-                    echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby ".$this->getSamaccountname();
+                    echo "<br>Brak danych o naborze dla modulu $m i poziomu $p dla osoby " . $this->getSamaccountname();
                 }
             }
         }
@@ -1017,7 +1017,7 @@ class UserZasoby
         //szukam tych co nie sa odbierane ale pokrywaja sie z nimi poziomami
         foreach ($dane['moduly'] as $m) {
             foreach ($dane['poziomy'] as $p) {
-                if (!isset($dane['odbiera'][$m.$p])) {
+                if (!isset($dane['odbiera'][$m . $p])) {
                     //znaczy ze musze utworzyc
                     $noweUz[] = [
                         'odbierane' => 0,

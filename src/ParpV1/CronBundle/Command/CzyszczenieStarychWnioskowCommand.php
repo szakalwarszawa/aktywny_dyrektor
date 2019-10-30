@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\CronBundle\Command;
 
@@ -271,8 +273,10 @@ class CzyszczenieStarychWnioskowCommand extends Command
 
             $status = false;
             $wniosekNadanieOdebranieZasobowId = null;
-            if (null !== $wniosekNadanieOdebranieZasobow
-                && !$wniosekNadanieOdebranieZasobow->getWniosek()->getIsBlocked()) {
+            if (
+                null !== $wniosekNadanieOdebranieZasobow
+                && !$wniosekNadanieOdebranieZasobow->getWniosek()->getIsBlocked()
+            ) {
                 $wniosekNadanieOdebranieZasobowId = $wniosekNadanieOdebranieZasobow->getId();
                 $status = $uprawnieniaService
                     ->zablokujKoncowoWniosek(
@@ -284,7 +288,7 @@ class CzyszczenieStarychWnioskowCommand extends Command
 
             $tempArray = [
                 'wniosek_id' => $wniosekNadanieOdebranieZasobowId,
-                'status' => $status? 'success' : 'fail'
+                'status' => $status ? 'success' : 'fail'
             ];
 
             if (null !== $wniosekNadanieOdebranieZasobowId) {

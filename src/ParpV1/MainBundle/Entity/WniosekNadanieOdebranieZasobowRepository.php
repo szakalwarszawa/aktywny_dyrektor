@@ -1,4 +1,6 @@
-<?php declare(strict_types=1);
+<?php
+
+declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Entity;
 
@@ -62,7 +64,7 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
         ;
 
         if ($typWniosku !== WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE) {
-            $queryBuilder->andWhere('v.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+            $queryBuilder->andWhere('v.samaccountname IN (\'' . implode('\',\'', $zastepstwa) . '\')');
         }
 
         $statusyZamkniete = [
@@ -76,21 +78,21 @@ class WniosekNadanieOdebranieZasobowRepository extends EntityRepository
 
         switch ($typWniosku) {
             case WniosekNadanieOdebranieZasobow::WNIOSKI_W_TOKU:
-                $warunek = 's.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')';
+                $warunek = 's.nazwaSystemowa NOT IN (\'' . implode('\',\'', $statusyZamkniete) . '\')';
                 $queryBuilder->andWhere($warunek);
-                $queryBuilder->andWhere('wno.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\''.
-                    implode('\',\'', $zastepstwa).
+                $queryBuilder->andWhere('wno.id NOT in (select wn.id from ParpMainBundle:WniosekNadanieOdebranieZasobow wn left join wn.wniosek w2 left join w2.editors e2 where e2.samaccountname IN (\'' .
+                    implode('\',\'', $zastepstwa) .
                     '\'))');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_OCZEKUJACE:
-                $queryBuilder->andWhere('s.nazwaSystemowa NOT IN (\''.implode('\',\'', $statusyZamkniete).'\')');
-                $queryBuilder->andWhere('e.samaccountname IN (\''.implode('\',\'', $zastepstwa).'\')');
+                $queryBuilder->andWhere('s.nazwaSystemowa NOT IN (\'' . implode('\',\'', $statusyZamkniete) . '\')');
+                $queryBuilder->andWhere('e.samaccountname IN (\'' . implode('\',\'', $zastepstwa) . '\')');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_ZAKONCZONE:
-                $queryBuilder->andWhere('s.nazwaSystemowa IN (\''.implode('\',\'', $statusyZamkniete).'\')');
+                $queryBuilder->andWhere('s.nazwaSystemowa IN (\'' . implode('\',\'', $statusyZamkniete) . '\')');
                 break;
             case WniosekNadanieOdebranieZasobow::WNIOSKI_WSZYSTKIE:
-                $w = 's.nazwaSystemowa IN (\''.implode('\',\'', $statusyZamkniete).'\', \'00_TWORZONY\')';
+                $w = 's.nazwaSystemowa IN (\'' . implode('\',\'', $statusyZamkniete) . '\', \'00_TWORZONY\')';
                 break;
         }
 
