@@ -269,7 +269,7 @@ class Entry
      *
      * @var OdebranieZasobowEntry
      *
-     * @ORM\OneToOne(targetEntity="OdebranieZasobowEntry")
+     * @ORM\OneToOne(targetEntity="OdebranieZasobowEntry", orphanRemoval=true)
      * @ORM\JoinColumn(name="odebranie_zasobow_entry_id", referencedColumnName="id", nullable=true)
      */
     protected $odebranieZasobowEntry = null;
