@@ -4,7 +4,7 @@ declare(strict_types=1);
 
 namespace ParpV1\MainBundle\Entity;
 
-use APY\DataGridBundle\Grid\Mapping as GRID;
+use APY\DataGridBundle\Grid as GRID;
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -17,7 +17,7 @@ use Doctrine\Common\Collections\ArrayCollection;
  *
  * @ORM\Table(name="zastepstwo")
  * @ORM\Entity(repositoryClass="ParpV1\MainBundle\Entity\ZastepstwoRepository")
- * @APY\DataGridBundle\Grid\Mapping\Source(columns="id, opis, ktoZastepuje, kogoZastepuje, dataOd, dataDo")
+ * @GRID\Mapping\Source(columns="id, opis, ktoZastepuje, kogoZastepuje, dataOd, dataDo")
  * @Gedmo\Mapping\Annotation\SoftDeleteable(fieldName="deletedAt", timeAware=false)
  * @Gedmo\Mapping\Annotation\Loggable(logEntryClass="ParpV1\MainBundle\Entity\HistoriaWersji")
  * @ZastepstwoAssert\Zastepstwa
@@ -30,6 +30,7 @@ class Zastepstwo
      * @ORM\Column(name="id", type="integer")
      * @ORM\Id
      * @ORM\GeneratedValue(strategy="AUTO")
+     * @GRID\Mapping\Column(visible=false)
      */
     private $id;
 
@@ -37,7 +38,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=true)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
+     * @GRID\Mapping\Column(visible=false)
     */
     private $deletedAt;
 
@@ -45,6 +46,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="text", length=5000, nullable=true)
+     * @GRID\Mapping\Column(visible=true, type="text", title="Powód")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Length(min=10)
      */
@@ -54,6 +56,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="string", length=255)
+     * @GRID\Mapping\Column(visible=true, type="text", title="Kto zastępuje")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\NotBlank()
      */
@@ -63,6 +66,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="string", length=255)
+     * @GRID\Mapping\Column(visible=true, type="text", title="Kogo zastępuje")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\NotBlank()
      */
@@ -72,7 +76,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @GRID\Mapping\Column(visible=true, type="datetime", title="Od kiedy")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
@@ -86,7 +90,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @APY\DataGridBundle\Grid\Mapping\Column(visible=true, type="datetime")
+     * @GRID\Mapping\Column(visible=true, type="datetime", title="Do kiedy")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
