@@ -46,7 +46,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="text", length=5000, nullable=true)
-     * @GRID\Mapping\Column(visible=true, type="text", title="Powód")
+     * @GRID\Mapping\Column(visible=true, type="text", title="Powód", size="-1")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Length(min=10)
      */
@@ -56,7 +56,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @GRID\Mapping\Column(visible=true, type="text", title="Kto zastępuje")
+     * @GRID\Mapping\Column(visible=true, type="text", title="Kto zastępuje", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\NotBlank()
      */
@@ -66,7 +66,7 @@ class Zastepstwo
      * @var string
      *
      * @ORM\Column(type="string", length=255)
-     * @GRID\Mapping\Column(visible=true, type="text", title="Kogo zastępuje")
+     * @GRID\Mapping\Column(visible=true, type="text", title="Kogo zastępuje", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\NotBlank()
      */
@@ -76,7 +76,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", title="Od kiedy")
+     * @GRID\Mapping\Column(visible=true, type="datetime", title="Od kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
@@ -90,7 +90,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", title="Do kiedy")
+     * @GRID\Mapping\Column(visible=true, type="datetime", title="Do kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
