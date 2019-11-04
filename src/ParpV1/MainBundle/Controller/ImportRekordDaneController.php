@@ -342,7 +342,7 @@ class ImportRekordDaneController extends Controller
                         $d2 != null &&
                         $dr->getUmowaDo()->format('Y-m-d') != $d2->format('Y-m-d')))
                 ) {
-                    $dr->setUmowaDo($d2)->setTime(23, 59);
+                    $dr->setUmowaDo($d2);
                 }
 
 
@@ -969,7 +969,7 @@ and (rdb$system_flag is null or rdb$system_flag = 0);';
                         $depName = $depName->getName();
                     }
                     if ($userFromAD[0]['department'] !== $depName) {
-                        $changeSet['department'] = 1;
+                        $changeSet['departament'] = 1;
                     }
                     if ($userFromAD[0]['title'] !== $daneRekord->getStanowisko()) {
                         $changeSet['stanowisko'] = 1;
