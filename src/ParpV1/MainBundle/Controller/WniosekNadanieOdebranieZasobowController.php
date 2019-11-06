@@ -1175,7 +1175,13 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $access = $this->checkAccess($entity);
 
-        if (!$access['viewer'] && !$access['editor'] && !in_array('PARP_ADMIN', $this->getUser()->getRoles())) {
+        if (
+            !$access['viewer']
+            && !$access['editor']
+            && !(in_array('PARP_ADMIN', $this->getUser()->getRoles())
+                || in_array('PARP_IBI_EBSI', $this->getUser()->getRoles())
+                )
+        ) {
             return $this->render(
                 'ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig',
                 array('wniosek' => $entity, 'viewer' => 0)

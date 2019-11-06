@@ -387,7 +387,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
 
         foreach ($roleUzytkownika as $rola) {
             $nazwaRoli = $rola->getRole()->getName();
-            if ('PARP_IBI' === $nazwaRoli || 'PARP_NADZORCA_DOMEN' === $nazwaRoli) {
+            if ('PARP_IBI_EBSI' === $nazwaRoli || 'PARP_NADZORCA_DOMEN' === $nazwaRoli) {
                 $this->dodajNowyWpisRoli($nazwaUzytkownika, $rola->getRole(), $nazwaRoli);
                 $entityManager->remove($rola);
             }
@@ -395,7 +395,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
     }
 
     /**
-     * Dodaje przełożonego użytkownika do roli PARP_IBI lub
+     * Dodaje przełożonego użytkownika do roli PARP_IBI_EBSI lub
      * dyrektora DKM jako PARP_NADZORCA_DOMEN
      *
      * @param string $nazwaUzytkownika
@@ -409,7 +409,7 @@ class UsuniecieZombieCommand extends ContainerAwareCommand
         $entityManager = $this->getContainer()->get('doctrine')->getManager();
         $ldapService = $this->getContainer()->get('ldap_service');
 
-        if ('PARP_IBI' === $nazwaRoli) {
+        if ('PARP_IBI_EBSI' === $nazwaRoli) {
             $przelozonyUzytkownika = $ldapService->getPrzelozony($nazwaUzytkownika)['samaccountname'];
         } elseif ('PARP_NADZORCA_DOMEN' === $nazwaRoli) {
             $departament = $entityManager

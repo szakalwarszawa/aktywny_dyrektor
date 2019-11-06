@@ -297,7 +297,7 @@ class StatusWnioskuService
             case 'ibi':
                 //
                 $entityManager = $this->entityManager;
-                $role = $entityManager->getRepository(AclRole::class)->findOneByName('PARP_IBI');
+                $role = $entityManager->getRepository(AclRole::class)->findOneByName('PARP_IBI_EBSI');
                 $users = $entityManager->getRepository(AclUserRole::class)->findByRole($role);
                 foreach ($users as $u) {
                     $where[$u->getSamaccountname()] = $u->getSamaccountname();

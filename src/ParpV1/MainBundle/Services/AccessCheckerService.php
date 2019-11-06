@@ -153,7 +153,7 @@ class AccessCheckerService
             $allowedRoles = [
                 'PARP_ADMIN_REJESTRU_ZASOBOW',
                 'PARP_ADMIN',
-                'PARP_IBI'
+                'PARP_IBI_EBSI'
             ];
 
             if (!empty(array_intersect($userRoles, $allowedRoles))) {
