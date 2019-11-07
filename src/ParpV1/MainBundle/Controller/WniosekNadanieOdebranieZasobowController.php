@@ -87,20 +87,17 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $wnioskiNadanieOdebranieGrid = $this->get('wnioski_nadanie_odebranie_grid');
         $grid = $wnioskiNadanieOdebranieGrid
-             ->setTypWniosku($ktore)
-             ->forceWyswietlGrid()
-             ->generateGrid($pustyGrid)
-         ;
+            ->setTypWniosku($ktore)
+            ->forceWyswietlGrid()
+            ->generateGrid($pustyGrid);
 
         $entityManager = $this->getDoctrine()->getManager();
         $zastepstwa = $entityManager
             ->getRepository(Zastepstwo::class)
-            ->znajdzZastepstwa($this->getUser()->getUsername())
-        ;
+            ->znajdzZastepstwa($this->getUser()->getUsername());
         $zastepujaMnie = $entityManager
             ->getRepository(Zastepstwo::class)
-            ->znajdzKtoZastepuje($this->getUser()->getUsername())
-        ;
+            ->znajdzKtoZastepuje($this->getUser()->getUsername());
 
         $szablonTwig = 'ParpMainBundle:WniosekNadanieOdebranieZasobow:index.html.twig';
 
@@ -109,11 +106,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         return $grid->getGridResponse($szablonTwig, [
-                'ktore'          => $ktore,
-                'grid'           => $grid,
-                'zastepstwa'     => $zastepstwa,
-                'zastepuja_mnie' => $zastepujaMnie,
-                'ajax_grid'      => $ajaxGrid
+            'ktore'          => $ktore,
+            'grid'           => $grid,
+            'zastepstwa'     => $zastepstwa,
+            'zastepuja_mnie' => $zastepujaMnie,
+            'ajax_grid'      => $ajaxGrid
         ]);
     }
 
@@ -157,14 +154,14 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         if ($entity->getOdebranie()) {
             $userZasoby = $this
-                    ->getDoctrine()
-                    ->getRepository(UserZasoby::class)
-                    ->findBy(
-                        array(
-                            'samaccountname' => $listaPracownikow,
-                            'czyAktywne' => true
-                        )
-                    );
+                ->getDoctrine()
+                ->getRepository(UserZasoby::class)
+                ->findBy(
+                    array(
+                        'samaccountname' => $listaPracownikow,
+                        'czyAktywne' => true
+                    )
+                );
 
             $jestCoOdebrac = count($userZasoby) > 0;
         }
@@ -179,7 +176,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         if ($entity->getOdebranie() && 1 !== count($listaPracownikow)) {
             $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
-            . 'zasobów można złożyć tylko dla jednej osoby.');
+                . 'zasobów można złożyć tylko dla jednej osoby.');
 
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_new', array('odebranie' => 1)));
         }
@@ -193,7 +190,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             if (count($listaPracownikow) === 0) {
                 throw new SecurityTestException(
                     'Nie można złożyć wniosku bez wybrania osób których dotyczy, użyj przycisku wstecz' .
-                    ' w przeglądarce i wybierz conajmniej jedną osobę w polu "Pracownicy"!',
+                        ' w przeglądarce i wybierz conajmniej jedną osobę w polu "Pracownicy"!',
                     745
                 );
             }
@@ -224,8 +221,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow', array()));
         }
         if ($entity->getOdebranie() && !$jestCoOdebrac) {
-            $msg =
-                ('Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!');
+            $msg = ('Nie można utworzyć takiego wniosku bo żadna z osób nie ma dostępu do żadnych zasobów - nie ma co odebrać!!!');
         }
 
         return array(
@@ -302,9 +298,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $ldap = $this->get('ldap_service');
         $managersSpozaParp =
             $this->getDoctrine()
-                ->getManager()
-                ->getRepository(AclRole::class)
-                ->findOneByName('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP');
+            ->getManager()
+            ->getRepository(AclRole::class)
+            ->findOneByName('ROLE_MANAGER_DLA_OSOB_SPOZA_PARP');
 
         $managerzySpozaParp = [];
         foreach ($managersSpozaParp->getUsers() as $u) {
@@ -416,9 +412,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $status =
             $this->getDoctrine()
-                ->getManager()
-                ->getRepository(WniosekStatus::class)
-                ->findOneByNazwaSystemowa('00_TWORZONY');
+            ->getManager()
+            ->getRepository(WniosekStatus::class)
+            ->findOneByNazwaSystemowa('00_TWORZONY');
 
         $entity = $this->createEmptyWniosek($odebranie);
         $form = $this->createCreateForm($entity);
@@ -697,7 +693,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             $view = $this->renderView('ParpMainBundle:WniosekNadanieOdebranieZasobow:publish_lsi.html.twig', array(
                 'query_list' => $sqls
-                ));
+            ));
             $response->setContent($view);
 
             return $response;
@@ -722,6 +718,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                             $uz->getSamaccountname());
                                     }
                                     $przelozeni[$ADManager[0]['samaccountname']][] = $uz;
+                                    $departament = $em->getRepository(Departament::class)->findOneByName($ADManager[0]['department']);
+                                    $wniosek->setOdpowiedzialnyDepartament($departament);
                                 } else {
                                     $ADUser = $this->getUserFromAD($uz->getSamaccountname());
                                     $ADManager = $this->getManagerUseraDoWniosku($ADUser[0]);
@@ -860,8 +858,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                         }
 
                                         $wn
-                                            ->setZawieraZasobyZAd($zasobyService->czyZasobMaGrupyAd($userZasobPersist))
-                                        ;
+                                            ->setZawieraZasobyZAd($zasobyService->czyZasobMaGrupyAd($userZasobPersist));
                                     }
 
                                     $wn->setPracownicy(implode(',', $users));
@@ -981,8 +978,8 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
                     $department =
                         $this->getDoctrine()
-                            ->getRepository(Departament::class)
-                            ->findOneByName(trim($aduser[0]['department']));
+                        ->getRepository(Departament::class)
+                        ->findOneByName(trim($aduser[0]['department']));
                     $biuro = $department->getShortname();
                     //print_r($biuro);    die();
                 }
@@ -1013,11 +1010,9 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                                 $message = 'Niewłaściwy poziom dostępu dla zasobu \'' . $z->getNazwa() .
                                     '\'. Wybrany poziom to \'' . $uz->getPoziomDostepu() . '\'. Dostępne poziomy: ' .
                                     $poziomyTekst . '. Zasób uległ zmianie. ' .
-                                    'Skontaktuj się z właścicielem zasobu.'
-                                ;
+                                    'Skontaktuj się z właścicielem zasobu.';
                                 $this
-                                    ->addFlash('danger', $message)
-                                ;
+                                    ->addFlash('danger', $message);
                                 return $this->redirectToRoute('wnioseknadanieodebraniezasobow_show', ['id' => $wniosek->getId()]);
                             }
                         }
@@ -1073,7 +1068,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                             'Zasoby',
                             $uz->getZasobId(),
                             ($status ==
-                            '05_EDYCJA_ADMINISTRATOR' ? $z->getAdministratorZasobu() : $z->getAdministratorTechnicznyZasobu()),
+                                '05_EDYCJA_ADMINISTRATOR' ? $z->getAdministratorZasobu() : $z->getAdministratorTechnicznyZasobu()),
                             $wniosek
                         );
 
@@ -1139,18 +1134,15 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $entityManager = $this
             ->getDoctrine()
-            ->getManager()
-        ;
+            ->getManager();
 
         $entity = $entityManager
             ->getRepository(WniosekNadanieOdebranieZasobow::class)
-            ->findByMd5($hash)
-        ;
+            ->findByMd5($hash);
 
         if (null === $entity) {
             $this
-                ->addFlash('danger', 'Wniosek nie istnieje.')
-            ;
+                ->addFlash('danger', 'Wniosek nie istnieje.');
 
             return $this->redirectToRoute('wnioseknadanieodebraniezasobow');
         }
@@ -1179,8 +1171,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             !$access['viewer']
             && !$access['editor']
             && !(in_array('PARP_ADMIN', $this->getUser()->getRoles())
-                || in_array('PARP_IBI_EBSI', $this->getUser()->getRoles())
-                )
+                || in_array('PARP_IBI_EBSI', $this->getUser()->getRoles()))
         ) {
             return $this->render(
                 'ParpMainBundle:WniosekNadanieOdebranieZasobow:denied.html.twig',
@@ -1207,7 +1198,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             $szukanaGrupaDane = $ldap->getGrupa(substr($e->getMemberOf(), 1));
 
             //echo "<pre>"; print_r($szukanaGrupaDane); die();
-            $szukanaGrupa = $szukanaGrupaDane['distinguishedname'];//"CN="..$patch;
+            $szukanaGrupa = $szukanaGrupaDane['distinguishedname']; //"CN="..$patch;
             $czyMaByc = substr($e->getMemberOf(), 0, 1) == '+';
 
 
@@ -1233,8 +1224,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         foreach ($uzs as $uz) {
             $zasob = $em
                 ->getRepository(Zasoby::class)
-                ->findOneById($uz->getZasobId())
-            ;
+                ->findOneById($uz->getZasobId());
             $administratorzyTechniczni = explode(',', $zasob->getAdministratorTechnicznyZasobu());
             $moduly = explode(';', $uz->getModul());
             $poziomy = explode(';', $uz->getPoziomDostepu());
@@ -1252,7 +1242,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         $deleteForm = $this->createDeleteForm($id);
         $comments =
             $em->getRepository(Komentarz::class)
-                ->getCommentCount('WniosekNadanieOdebranieZasobow', $entity->getId());
+            ->getCommentCount('WniosekNadanieOdebranieZasobow', $entity->getId());
 
         $zastepstwa = $em->getRepository(Zastepstwo::class)->znajdzKogoZastepuje($this->getUser()->getUsername());
 
@@ -1267,12 +1257,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         }
 
         $potrzebnaDataOdebrania = function () use ($entity) {
-            $edycjaAdministratora = (
-                $entity
-                    ->getWniosek()
-                    ->getStatus()
-                    ->getNazwaSystemowa() === '05_EDYCJA_ADMINISTRATOR'
-            );
+            $edycjaAdministratora = ($entity
+                ->getWniosek()
+                ->getStatus()
+                ->getNazwaSystemowa() === '05_EDYCJA_ADMINISTRATOR');
             $wniosekOdebranie = $entity->getOdebranie();
             $zawieraZasobyZAd = !$entity->getZawieraZasobyZAd();
 
@@ -1379,8 +1367,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
     {
         $entityManager = $this
             ->getDoctrine()
-            ->getManager()
-        ;
+            ->getManager();
 
         $wniosek = $userZasob->getWniosek()->getWniosek();
         $ignoreComment = false;
@@ -1391,8 +1378,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
         if (!$ignoreComment) {
             $postFormData = $request
                 ->request
-                ->get('application_resource_remove')
-            ;
+                ->get('application_resource_remove');
 
             $postComment = $postFormData['comment'] ?? null;
 
@@ -1409,13 +1395,11 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
         $wniosekId = $userZasob
             ->getWniosek()
-            ->getId()
-        ;
+            ->getId();
         $userZasobData = clone $userZasob;
         $userZasob
             ->getWniosek()
-            ->removeUserZasoby($userZasob)
-        ;
+            ->removeUserZasoby($userZasob);
         $entityManager->remove($userZasob);
 
         $this->addFlash('warning', 'Usunięto uprawnienie z wniosku.');
@@ -1438,8 +1422,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             ->setObiektId($wniosekId)
             ->setTytul('Usunięcie uprawnienia z wniosku')
             ->setOpis($opis)
-            ->setSamaccountname($this->getUser()->getUsername())
-        ;
+            ->setSamaccountname($this->getUser()->getUsername());
 
         $entityManager->persist($komentarz);
         $entityManager->flush();
@@ -1549,7 +1532,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
 
             if ($entity->getOdebranie() && 1 !== count($osoby)) {
                 $this->addFlash('danger', 'Wniosek o odebranie uprawnień do '
-                . 'zasobów można złożyć tylko dla jednej osoby.');
+                    . 'zasobów można złożyć tylko dla jednej osoby.');
 
                 return $this->redirect($this->generateUrl('wnioseknadanieodebraniezasobow_show', array('id' => $id)));
             }
@@ -1614,8 +1597,7 @@ class WniosekNadanieOdebranieZasobowController extends Controller
             foreach ($userZasobyWniosku as $userZasob) {
                 $userZasob
                     ->setPowodOdebrania(null)
-                    ->setWniosekOdebranie(null)
-                ;
+                    ->setWniosekOdebranie(null);
 
                 $em->persist($userZasob);
             }
