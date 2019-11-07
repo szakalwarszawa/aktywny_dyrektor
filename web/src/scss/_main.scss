@@ -763,3 +763,28 @@ footer.helpdesk {
     text-align: center;
     color: rgba(0, 0, 0, 0.65);
 }
+
+/* overwrite grip resizable */
+
+table.grip-padding > {
+    tbody > {
+        tr > {
+            td, th {
+                padding-left: .3rem !important;
+                padding-right: .3rem !important;
+            }
+        }
+    }
+}
+
+/* wyśrodkowanie nagłówków tabel */
+.grid-row-titles {
+    th {
+        text-align: center;
+    }
+}
+
+/* wyśrodkowanie dat w tabelach */
+.grid-column-aktywneOd, .grid-column-aktywneDo, .grid-column-utworzonyDnia, .grid-column-umowaOd, .grid-column-umowaDo, .grid-column-dataOd, .grid-column-dataDo {
+    text-align: center;
+}

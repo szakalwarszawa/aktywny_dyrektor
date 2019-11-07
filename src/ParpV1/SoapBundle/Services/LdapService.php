@@ -1156,20 +1156,13 @@ class LdapService
 
     protected $stanowiskaDyrektorzy = [
         'dyrektor',
-        'dyrektor (p.o.)',
         'p.o. dyrektora',
-        'rzecznik beneficjenta parp, dyrektor',
-        'główny księgowy, dyrektor',
         'główny księgowy',
     ];
 
     protected $stanowiskaWiceDyrektorzy = [
         'zastępca dyrektora',
-        'zastępca dyrektora (p.o.)',
         'p.o. zastępcy dyrektora',
-        'główny księgowy, z-ca dyrektora',
-        'główny księgowy, zastępca dyrektora',
-        'główny księgowy - p.o. zastępcy dyrektora',
     ];
 
     public function getSekcjePodwladnych($manager)
@@ -1195,7 +1188,7 @@ class LdapService
 
     /**
      * Zwraca grupy AD z UPP na podstawie stanowiska, D/B, skrótu sekcji i roli w AkD
-     * (na podstaiwe rejestru uprawnień początkowych v1.5)
+     * (na podstaiwe rejestru uprawnień początkowych v1.6)
      *
      * @param array  $user         użytkownik z AD
      * @param string $depshortname skrót D/B
@@ -1221,6 +1214,7 @@ class LdapService
         }
 
         $pomijajSekcje = ['ND', 'BRAK', 'N/D', 'n/d', ''];
+        // [UPP]
         $grupy = [
             'Pracownicy',
             'DLP-gg-USB_CD_DVD-DENY',
@@ -1260,15 +1254,6 @@ class LdapService
             }
         }
 
-        // uprawnienia na podstawie roli w AkD
-        // $maDostep =
-        //     in_array("PARP_BZK_1", $this->getUser()->getRoles()) ||
-        //     in_array("PARP_ADMIN", $this->getUser()->getRoles())
-        // ;
-        // if (!$maDostep) {
-        //     throw new \ParpV1\MainBundle\Exception\SecurityTestException('Nie masz uprawnień by odblokowywania użytkowników!');
-        // }
-
         // uprawnienia na podstawie stanowiska
         switch ($stanowisko) {
             // [UPr], [UZPr]
@@ -1276,39 +1261,28 @@ class LdapService
             case 'p.o. prezesa':
             case 'zastępca prezesa':
             case 'zastępca prezesa (p.o.)':
-                // $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
-                // $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT-Olimp';
+                $grupy[] = 'INT Olimp';
                 $grupy[] = 'INT-Prezesi';
                 break;
             // [UD]
             case 'dyrektor':
-            case 'dyrektor (p.o.)':
             case 'p.o. dyrektora':
-            case 'rzecznik beneficjenta parp, dyrektor':
-            case 'dyrektor, rzecznik funduszy europejskich parp':
             case 'główny księgowy':
+                $grupy[] = 'INT Olimp';
+                $grupy[] = 'INT-Dyrektorzy';
+                $grupy[] = 'SG-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
                 $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT-Olimp';
-                $grupy[] = 'SG-Olimp-RW';
-                $grupy[] = 'INT-Dyrektorzy';
                 break;
             // [UZD]
             case 'zastępca dyrektora':
-            case 'zastępca dyrektora (p.o.)':
             case 'p.o. zastępcy dyrektora':
-            case 'główny księgowy, z-ca dyrektora':
-            case 'główny księgowy, zastępca dyrektora':
-            case 'główny księgowy - p.o. zastępcy dyrektora':
-            case 'zastępca dyrektora, radca prawny':
-            case 'rzecznik prasowy, zastępca dyrektora':
-                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
-                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
-                $grupy[] = 'INT-Olimp';
-                $grupy[] = 'SG-Olimp-RW';
+                $grupy[] = 'INT Olimp';
                 $grupy[] = 'INT-Dyrektorzy';
                 $grupy[] = 'INT-Zastepcy-Dyrektorow';
+                $grupy[] = 'SG-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Olimp-RW';
+                $grupy[] = 'SGG-(skrót D/B)-Public-RW';
                 break;
             // [UK]
             case 'kierownik':
@@ -1316,29 +1290,6 @@ class LdapService
                 $grupy[] = 'INT-Kierownicy';
                 break;
         }
-
-        // uprawnienia na podstawie sekcji
-        switch ($sekcja) {
-            // [IBI]: 'Samodzielne stanowisko inspektora bezpieczeństwa informacji (IBI)'
-            case 'BP.IBI':
-                $grupy[] = 'SG-KPI-RW';
-                $grupy[] = 'SG-KSBI-RW';
-                break;
-            // [ABI]: 'Samodzielne stanowisko administratora bezpieczeństwa informacji (ABI)'
-            case 'BP.ABI':
-                $grupy[] = 'SG-KSBI-RW';
-                break;
-            case 'BI.SOR':
-                $grupy[] = 'SG-BI-VPN-Access';
-                break;
-        }
-
-        // $em = $this->container->get('doctrine')->getManager();
-        // $rola = $em->getRepository('ParpMainBundle:AclRole')->findOneByName($role);
-        // $users = $em->getRepository('ParpMainBundle:AclUserRole')->findByRole($rola);
-        // foreach ($users as $u) {
-        //     $ret[$u->getSamaccountname()] = $u->getSamaccountname();
-        // }
 
         for ($i = 0; $i < count($grupy); $i++) {
             $grupy[$i] = str_replace('(skrót sekcji)', $sekcja, str_replace('(skrót D/B)', $depshortname->getShortname(), $grupy[$i]));
