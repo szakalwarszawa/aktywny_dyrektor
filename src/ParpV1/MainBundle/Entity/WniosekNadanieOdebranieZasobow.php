@@ -174,6 +174,13 @@ class WniosekNadanieOdebranieZasobow
     private $zawieraZasobyZAd = false;
 
     /**
+     * @var Departament
+     *
+     * @ORM\ManyToOne(targetEntity="ParpV1\MainBundle\Entity\Departament", inversedBy="wniosekSpozaParp")
+     */
+    private $odpowiedzialnyDepartament;
+
+    /**
      * Get id
      *
      * @return integer
@@ -613,6 +620,30 @@ class WniosekNadanieOdebranieZasobow
     public function setZawieraZasobyZAd(bool $zawieraZasobyZAd): self
     {
         $this->zawieraZasobyZAd = $zawieraZasobyZAd;
+
+        return $this;
+    }
+
+    /**
+     * Get odpowiedzialnyDepartament
+     *
+     * @return Departament|null
+     */
+    public function getOdpowiedzialnyDepartament(): ?Departament
+    {
+        return $this->odpowiedzialnyDepartament;
+    }
+
+    /**
+     * Set odpowiedzialnyDepartament
+     *
+     * @param Departament|null $odpowiedzialnyDepartament
+     *
+     * @return WniosekNadanieOdebranieZasobow
+     */
+    public function setOdpowiedzialnyDepartament(?Departament $odpowiedzialnyDepartament): WniosekNadanieOdebranieZasobow
+    {
+        $this->odpowiedzialnyDepartament = $odpowiedzialnyDepartament;
 
         return $this;
     }
