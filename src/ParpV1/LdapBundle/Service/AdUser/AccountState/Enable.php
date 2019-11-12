@@ -21,9 +21,9 @@ final class Enable extends AccountStateManager
     /**
      * @see AccountStateManager
      */
-    public function __construct(AdUser $adUser, array $baseParameters, bool $isSimulation, EntityManager $entityManager)
+    public function __construct(AdUser $adUser, EntityManager $entityManager, array $baseParameters, bool $isSimulation)
     {
-        parent::__construct($adUser, $baseParameters, $isSimulation, $entityManager);
+        parent::__construct($adUser, $entityManager, $baseParameters, $isSimulation);
     }
 
     /**

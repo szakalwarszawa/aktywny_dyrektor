@@ -46,15 +46,15 @@ class AccountStateManager extends Simulation
      * Publiczny konstruktor
      *
      * @param AdUser $adUser
+     * @param EntityManager $entityManager
      * @param array $baseParameters - parametry podstawowe określone w klasie LdapConnection
      * @param bool $isSimulation
-     * @param EntityManager $entityManager
      */
     public function __construct(
         AdUser $adUser,
+        EntityManager $entityManager,
         array $baseParameters = [],
-        bool $isSimulation = false,
-        EntityManager $entityManager
+        bool $isSimulation = false
     ) {
         $this->adUser = $adUser;
         $this->responseMessages = new ArrayCollection();
