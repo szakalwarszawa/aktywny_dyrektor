@@ -9,7 +9,6 @@ use UnexpectedValueException;
 use Adldap\Models\Attributes\AccountControl;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use ParpV1\MainBundle\Services\DictionaryService;
 

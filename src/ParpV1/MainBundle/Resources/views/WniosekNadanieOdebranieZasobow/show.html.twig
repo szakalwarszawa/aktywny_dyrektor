@@ -16,7 +16,7 @@
                     </li>
                 {% endif %}
                 {% if entity.pracownikSpozaParp %}
-                <li>
+                <li class="list-unstyled">
                     <div class="alert alert-danger">
                         <b>Czy pracownik/pracownicy spoza PARP:</b>
                         <b>{{ entity.pracownikSpozaParp ? "TAK" : "NIE" }}</b>
@@ -270,17 +270,23 @@
                                 <th>Czy pracownik/pracownicy spoza PARP</th>
                                 <td>{{ entity.pracownikSpozaParp ? "TAK" : "NIE" }}</td>
                             </tr>
+                            {% if entity.pracownikSpozaParp %}
                             <tr>
-                                <th>Jednostka organizacyjna</th>
-                                <td>{{ entity.wniosek.jednostkaOrganizacyjna }}</td>
+                                <th>Odpowiedzialny Departament/Biuro</th>
+                                <td>{{ entity.wniosek.wniosekNadanieOdebranieZasobow.odpowiedzialnyDepartament }}</td>
+                            </tr>
+                            {% endif %}
+                            <tr>
+                                <th>Utworzony dnia</th>
+                                <td>{{ entity.wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
                             </tr>
                             <tr>
                                 <th>Utworzony przez</th>
                                 <td>{{ entity.wniosek.createdBy|showFullname }}</td>
                             </tr>
                             <tr>
-                                <th>Utworzony dnia</th>
-                                <td>{{ entity.wniosek.createdAt|date('Y-m-d H:i:s') }}</td>
+                                <th>Jednostka organizacyjna</th>
+                                <td>{{ entity.wniosek.jednostkaOrganizacyjna }}</td>
                             </tr>
                             <tr>
                                 <th>Edytowany (zablokowany) przez</th>

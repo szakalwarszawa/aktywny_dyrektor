@@ -19,6 +19,7 @@ class WniosekStatusType extends AbstractType
                     'administrator' => 'administrator zasobu',
                     'techniczny' => 'administrator techniczny zasobu (wylacznie pracownicy BI)',
                     'administratorZasobow' => 'administrator rejestru zasobów (PARP_ADMIN_REJESTRU_ZASOBOW)',
+                    'nadzorcaDomen' => 'nadzorca domen',
                 );
     /**
      * @param FormBuilderInterface $builder

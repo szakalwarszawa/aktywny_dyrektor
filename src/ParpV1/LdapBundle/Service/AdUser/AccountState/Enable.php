@@ -88,7 +88,7 @@ final class Enable extends AccountStateManager
             }
 
             $writableUserObject
-                ->setAttribute('description', '')
+                ->setAttribute(AdUserConstants::DEPARTAMENT_SKROT, $departmentOu)
                 ->setUserAccountControl($userAccountControlObject)
             ;
 
