@@ -73,6 +73,23 @@
     #}
                             </td>
                         </tr>
+                        <tr>
+                            <th>Data wygaśnięcia konta</th>
+                            <td>{{ user ? user.accountExpires : "bezterminowo" }}</td>
+                            <td>{{ daneRekord ? daneRekord.umowaDo|date('Y-m-d') : "BRAK DANYCH W REKORD" }}</td>
+                            <td>
+                                <div class="form-group">
+                                    <div class="col-sm-12">
+                                        <div class="input-group datepicker" id="datepicker">
+                                            {{ form_widget(form.accountExpires) }}
+                                            <span class="input-group-addon">
+                                                <span class="fas fa-calendar"></span>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
 
                 </table>
@@ -89,5 +106,5 @@
 
     {% include 'ParpMainBundle:Default:managerWindow.html.twig' %}
 
-    <script type="text/javascript"src="{{ asset('js/userForm.js') }}"></script>
+    <script type="text/javascript" src="{{ asset('js/userForm.js') }}"></script>
 {% endblock %}

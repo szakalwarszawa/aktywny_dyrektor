@@ -76,7 +76,8 @@ class ZastepstwoController extends Controller
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
                 ->setFilterable(false)
-                ->setSafe(true);
+                ->setSafe(true)
+                ->setSize(120);
 
         // Podgląd zastępstwa
         $rowAction1 = new RowAction('<i class="far fa-search"></i> Podgląd', 'zastepstwo_show');

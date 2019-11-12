@@ -51,6 +51,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Grid\ZasobyUzytkownikaGrid;
+use DateTime;
 
 /**
  * Class DefaultController
@@ -161,6 +162,7 @@ class DefaultController extends Controller
                 'distinguishedname',
                 'memberOf',
                 'roles',
+                'mailnickname',
                 'extensionAttribute10'
             ));
             // Konfiguracja nazw kolumn
@@ -204,6 +206,7 @@ class DefaultController extends Controller
             $grid->getColumn('isDisabled')
                 ->setTitle('Konto wyłączone')
                 ->setOperators(array('like'))
+                ->setClass('text-center')
                 ->setOperatorsVisible(false);
         }
 
@@ -703,12 +706,16 @@ class DefaultController extends Controller
                     break;
                 case 'accountExpires':
                     if ($value) {
-                        $entry->setAccountexpires(new \DateTime($value));
+                        if ($value instanceof DateTime) {
+                            $entry->setAccountexpires($value);
+                        } else {
+                            $entry->setAccountexpires(new DateTime($value));
+                        }
                         if ($entry->getAccountExpires()) {
                             $entry->setAccountExpires($entry->getAccountExpires()->setTime(23, 59));
                         }
                     } else {
-                        $entry->setAccountexpires(new \DateTime('3000-01-01 00:00:00'));
+                        $entry->setAccountexpires(new DateTime('3000-01-01 00:00:00'));
                     }
 
                     break;
@@ -718,6 +725,9 @@ class DefaultController extends Controller
                 case 'info':
                     $entry->setInfo($value);
                     break;
+                case 'division':
+                    $entry->setDivision($value);
+                    break;
                 case 'department':
                     $entry->setDepartment($value);
                     break;
@@ -725,7 +735,7 @@ class DefaultController extends Controller
                     $entry->setManager($value);
                     break;
                 case 'fromWhen':
-                    $entry->setFromWhen(new \DateTime($value));
+                    $entry->setFromWhen(new DateTime($value));
                     break;
                 case 'initialrights':
                     $value = implode(',', $value);

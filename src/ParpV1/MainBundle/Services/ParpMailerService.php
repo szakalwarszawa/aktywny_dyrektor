@@ -62,6 +62,7 @@ class ParpMailerService
     const TEMPLATE_ODEBRANIE_UPRAWNIEN_DLUGOTRWALA_NIEOBECNOSC = 'odebranie_uprawnien_bez_grup_dlugotrwala_nieobecnosc.html.twig';
     const TEMPLATE_ZMIANA_NAZWISKA = 'zmiana_nazwiska.html.twig';
     const ZMIANY_KADROWE_RESET_UPRAWNIEN = 'zmiany_kadrowe_reset_uprawnien.html.twig';
+    const TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI_EXCHANGE = 'pracownikNieobecnyPowrotBiEx.html.twig';
 
     /**
      * @var \Doctrine\ORM\EntityManager
@@ -519,7 +520,7 @@ class ParpMailerService
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN2     => 'Wygaśnięcie ważności uprawnień: Zasób: Sieć PARP- poziomy dostępu: [UMG];[UMP];[UPP];[OU]',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN3     => 'Wygaśnięcie ważności uprawnień: Zasób: grupa w MS-AD – uprawnienia nadane wnioskiem',
             ParpMailerService::TEMPLATE_PRACOWNIKWYGASNIECIEUPRAWNIEN4     => 'Wygaśnięcie ważności uprawnień: Zasoby inne niż INT, SG(G) i EXT:',
-            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA         => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
+            ParpMailerService::TEMPLATE_PRACOWNIKZMIANASTANOWISKA          => 'Pracownik zmienia stanowisko pozostając w dotychczasowym D/B',
             ParpMailerService::TEMPLATE_PRACOWNIKZMIANAZAANGAZOWANIA       => 'Pracownikowi zmieniono zaangażowanie',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE1               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
             ParpMailerService::TEMPLATE_PRACOWNIKZWOLNIENIE2               => 'Pracownik odchodzi z PARP (pracuje do ostatniego dnia)',
@@ -545,7 +546,8 @@ class ParpMailerService
             self::TEMPLATE_ZMIANA_NAZWISKA                                 => '[BI] Zmiana nazwiska',
             self::ZMIANY_KADROWE_RESET_UPRAWNIEN                           => 'Zmiany kadrowe użytkownika - reset uprawnień',
             self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI                   => '[BI] Powrót z długotrwałej nieobecności: ',
-            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM                 => '[Formularz] Powracający pracownik: ',
+            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM                 => '[Formularz] Pracownik powracający z długotrwałej nieobecności: ',
+            self::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI_EXCHANGE          => '[BI] Aktywacja konta Exchange: ',
         ];
 
         return isset($tytuly[$template]) ? $tytuly[$template] : 'Domyślny tytuł maila';
