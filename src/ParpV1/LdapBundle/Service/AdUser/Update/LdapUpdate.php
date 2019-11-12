@@ -421,7 +421,8 @@ class LdapUpdate extends Simulation
             $changeAccountState = new AccountState\Enable(
                 $adUser,
                 $baseParameters,
-                $this->isSimulation()
+                $this->isSimulation(),
+                $this->entityManager
             );
 
             if (null === $entry) {
@@ -626,7 +627,8 @@ class LdapUpdate extends Simulation
             $changeAccountState = new AccountState\Disable(
                 $adUser,
                 $baseParameters,
-                $this->isSimulation()
+                $this->isSimulation(),
+                $this->entityManager
             );
 
             $disableReason = $disableEnableAccount[AdUserConstants::POWOD_WYLACZENIA];

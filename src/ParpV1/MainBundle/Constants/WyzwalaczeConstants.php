@@ -87,4 +87,14 @@ class WyzwalaczeConstants
      * @var string
      */
     const RESET_DO_UPRAWNIEN_POCZATKOWYCH_TITLE = 'Zresetowano do uprawnień początkowych.';
+
+    /**
+     * @var string
+     */
+    const POWROT_Z_DLUGOTRWALEJ_NIEOBECNOSCI = 'Powrót z długotrwałej nieobecności';
+
+    /**
+     * @var string
+     */
+    const POWROT_PO_ROZWIAZANIU_UMOWY = 'Powrót po rozwiązaniu umowy';
 }
