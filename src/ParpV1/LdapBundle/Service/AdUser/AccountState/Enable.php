@@ -9,8 +9,6 @@ use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use Adldap\Models\Attributes\DistinguishedName;
-use ParpV1\MainBundle\Entity\Departament;
-use Doctrine\ORM\EntityManager;
 
 /**
  * Klasa Enable
@@ -21,9 +19,9 @@ final class Enable extends AccountStateManager
     /**
      * @see AccountStateManager
      */
-    public function __construct(AdUser $adUser, EntityManager $entityManager, array $baseParameters, bool $isSimulation)
+    public function __construct(AdUser $adUser, array $baseParameters, bool $isSimulation)
     {
-        parent::__construct($adUser, $entityManager, $baseParameters, $isSimulation);
+        parent::__construct($adUser, $baseParameters, $isSimulation);
     }
 
     /**
@@ -89,12 +87,8 @@ final class Enable extends AccountStateManager
                 $writableUserObject->deleteAttribute(AdUserConstants::OUTLOOK_UKRYCIE_W_KSIAZCE);
             }
 
-            $departamentEntry = $writableUserObject->getAttribute('department');
-            $departament = $this->entityManager->getRepository(Departament::class)->findOneByName($departamentEntry);
-            $departamentShort = $departament->getShortname();
-
             $writableUserObject
-                ->setAttribute(AdUserConstants::DEPARTAMENT_SKROT, $departamentShort)
+                ->setAttribute(AdUserConstants::DEPARTAMENT_SKROT, $departmentOu)
                 ->setUserAccountControl($userAccountControlObject)
             ;
 
