@@ -29,6 +29,8 @@ use ParpV1\MainBundle\Entity\Departament;
 use ParpV1\MainBundle\Entity\DaneRekord;
 use ParpV1\MainBundle\Form\EdycjaUzytkownikaFormType;
 use ParpV1\MainBundle\Services\ParpMailerService;
+use DateTime;
+use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
 
 /**
  * BlokowaneKontaController .
@@ -88,17 +90,17 @@ class BlokowaneKontaController extends Controller
      */
     public function unblockAction(Request $request, $ktorzy, $samaccountname)
     {
-        $em = $this->getDoctrine()->getManager();
+        $entityManager = $this->getDoctrine()->getManager();
         $ldap = $this->get('ldap_service');
         $ADUser = $ldap->getUserFromAD($samaccountname, null, null, $ktorzy);
-        $daneRekord = $em->getRepository(DaneRekord::class)->findOneBy([
+        $daneRekord = $entityManager->getRepository(DaneRekord::class)->findOneBy([
             'login' => $samaccountname
         ]);
 
         $ctrl = new DefaultController();
         $ctrl->setContainer($this->container);
         $form = $this->createForm(EdycjaUzytkownikaFormType::class, null, [
-            'entity_manager' => $em,
+            'entity_manager' => $entityManager,
             'username' => $samaccountname,
             'form_type' => EdycjaUzytkownikaFormType::TYP_EDYCJA,
             'short_form' => false
@@ -106,7 +108,7 @@ class BlokowaneKontaController extends Controller
 
         $departamentRekord = "";
         if ($daneRekord) {
-            $departamentRekord = $em->getRepository(Departament::class)->findOneBy([
+            $departamentRekord = $entityManager->getRepository(Departament::class)->findOneBy([
                 'nameInRekord' => $daneRekord->getDepartament()
             ]);
         }
@@ -117,17 +119,12 @@ class BlokowaneKontaController extends Controller
             $zablokowanyByl = false !== strpos($ouGoscia, 'Zablokowane');
             $nieobecnyByl = false !== strpos($ouGoscia, 'Nieobecni');
 
-            if ($zablokowanyByl) {
-                //trzeba nadać podstawowe
-                $ADUser[] = ['title' => $data['title']->getName()];
-                $ADUser = array_merge($ADUser[0], $ADUser[1]);
-                $noweGrupy = $ldap->getGrupyUsera($ADUser, $data['department'], $data['info']);
-            }
-
-
+            // nadajemy UPP
+            $ADUser[] = ['title' => $data['title']->getName()];
+            $ADUser = array_merge($ADUser[0], $ADUser[1]);
+            $noweGrupy = $ldap->getGrupyUsera($ADUser, $data['department'], $data['info']);
             $nowyDn = str_replace('Zablokowane', $data['department']->getShortname(), $ouGoscia);
             $nowyDn = str_replace('Nieobecni', $data['department']->getShortname(), $nowyDn);
-
 
             $ctrl = new DefaultController();
             $ctrl->setContainer($this->container);
@@ -135,19 +132,20 @@ class BlokowaneKontaController extends Controller
             $entry->setSamaccountname($samaccountname)
                 ->setActivateDeactivated(true)
                 ->setIsDisabled(0)
-                ->setFromWhen(new \Datetime())
+                ->setFromWhen(new Datetime())
                 ->setDistinguishedName($nowyDn)
+                ->setCreatedAt(new Datetime())
                 ->setCreatedBy($this->getUser()->getUsername())
                 ->setOdblokowanieKonta(true)
+                ->addGrupyAD($noweGrupy, '+')
             ;
 
-            if ($zablokowanyByl) {
-                $entry->addGrupyAD($noweGrupy, '+');
-            }
-
+            // $data['division'] = $data['info']->getShortname();
+            $entry->setDivision($data['info']->getShortname());
             $ctrl->parseUserFormData($data, $entry);
 
             if (true === $nieobecnyByl) {
+                $entry->setOpis(WyzwalaczeConstants::POWROT_Z_DLUGOTRWALEJ_NIEOBECNOSCI);
                 $daneEmail = [
                     'tytul'          => $entry->getCn(),
                     'imie_nazwisko'  => $entry->getCn(),
@@ -159,14 +157,19 @@ class BlokowaneKontaController extends Controller
                 ];
                 // zgłoszenie do GLPI-BI
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI, $daneEmail);
+                $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_BI_EXCHANGE, $daneEmail);
 
                 // wysyłamy formularz GLPI-BA do dyrektora D/B:
                 $daneEmail['odbiorcy'] = [$entry->getDepartment()->getDyrektor()];
                 $this->get('parp.mailer')->sendEmailByType(ParpMailerService::TEMPLATE_PRACOWNIK_NIEOBECNY_POWROT_FORM, $daneEmail);
             }
 
-            $em->persist($entry);
-            $em->flush();
+            if (true === $zablokowanyByl) {
+                $entry->setOpis(WyzwalaczeConstants::POWROT_PO_ROZWIAZANIU_UMOWY);
+            }
+
+            $entityManager->persist($entry);
+            $entityManager->flush();
 
             return $this->redirect($this->generateUrl('main'));
         }

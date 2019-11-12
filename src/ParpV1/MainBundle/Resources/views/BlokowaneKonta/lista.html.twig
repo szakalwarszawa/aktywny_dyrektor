@@ -17,8 +17,14 @@
         </div>
     {% endfor %}
 
+    {% if ktorzy == 'nieobecni' %}
+        <h1>Pracownicy na zwolnieniach</h1>
+    {% elseif ktorzy == 'zablokowane' %}
+        <h1>Osoby niepracujące</h1>
+    {% endif %}
 
     {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
     <script>
         $('.popoverElement').on('click', function (e) {
             var skadZdjecie = $(this).attr('href');
@@ -29,11 +35,12 @@
         $('.popoverElement').popover();
     </script>
     <style>
-        table tr td:first-child, table tr th:first-child{
-            min-width:30px;
-            width: 30px!important;
+        table tr td:first-child,
+        table tr th:first-child {
+            min-width: 30px;
+            width: 30px !important;
         }
-        form.dirty{
+        form.dirty {
             background: transparent;
         }
     </style>

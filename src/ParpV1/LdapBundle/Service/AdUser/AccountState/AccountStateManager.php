@@ -5,6 +5,7 @@ namespace ParpV1\LdapBundle\Service\AdUser\AccountState;
 use ParpV1\LdapBundle\Service\AdUser\Update\Simulation;
 use ParpV1\LdapBundle\AdUser\AdUser;
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\ORM\EntityManager;
 
 /**
  * Klasa AccountStateManager
@@ -45,11 +46,13 @@ class AccountStateManager extends Simulation
      * Publiczny konstruktor
      *
      * @param AdUser $adUser
+     * @param EntityManager $entityManager
      * @param array $baseParameters - parametry podstawowe określone w klasie LdapConnection
      * @param bool $isSimulation
      */
     public function __construct(
         AdUser $adUser,
+        EntityManager $entityManager,
         array $baseParameters = [],
         bool $isSimulation = false
     ) {
@@ -57,6 +60,7 @@ class AccountStateManager extends Simulation
         $this->responseMessages = new ArrayCollection();
         $this->baseParameters = $baseParameters;
         $this->setSimulateProcess($isSimulation);
+        $this->entityManager = $entityManager;
     }
 
     /**
