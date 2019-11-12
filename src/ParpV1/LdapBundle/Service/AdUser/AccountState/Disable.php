@@ -9,10 +9,8 @@ use UnexpectedValueException;
 use Adldap\Models\Attributes\AccountControl;
 use Adldap\Models\Attributes\DistinguishedName;
 use ParpV1\LdapBundle\DataCollection\Message\Messages;
-use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Tool\AdStringTool;
 use ParpV1\MainBundle\Services\DictionaryService;
-use Doctrine\ORM\EntityManager;
 
 /**
  * Klasa Disable
@@ -33,9 +31,9 @@ final class Disable extends AccountStateManager
     /**
      * @see AccountStateManager
      */
-    public function __construct(AdUser $adUser, EntityManager $entityManager, array $baseParameters, bool $isSimulation)
+    public function __construct(AdUser $adUser, array $baseParameters, bool $isSimulation)
     {
-        parent::__construct($adUser, $entityManager, $baseParameters, $isSimulation);
+        parent::__construct($adUser, $baseParameters, $isSimulation);
     }
 
     /**

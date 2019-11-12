@@ -420,7 +420,6 @@ class LdapUpdate extends Simulation
         if (true === $this->unblockAccount) {
             $changeAccountState = new AccountState\Enable(
                 $adUser,
-                $this->entityManager,
                 $baseParameters,
                 $this->isSimulation()
             );
@@ -626,7 +625,6 @@ class LdapUpdate extends Simulation
         if (isset($disableEnableAccount[AdUserConstants::WYLACZONE])) {
             $changeAccountState = new AccountState\Disable(
                 $adUser,
-                $this->entityManager,
                 $baseParameters,
                 $this->isSimulation()
             );
