@@ -1041,6 +1041,11 @@ class LdapUpdate extends Simulation
             return false;
         }
 
+        // #94846 - zezwalamy na sekcję 'BRAK'.
+        if ('BRAK' === $sectionName) {
+            return true;
+        }
+
         $section = $this
             ->entityManager
             ->getRepository(Section::class)
