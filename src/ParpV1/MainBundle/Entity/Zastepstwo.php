@@ -76,7 +76,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i:s", title="Od kiedy", size="170")
+     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i", title="Od kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
@@ -90,7 +90,7 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i:s", title="Do kiedy", size="170")
+     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i", title="Do kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
