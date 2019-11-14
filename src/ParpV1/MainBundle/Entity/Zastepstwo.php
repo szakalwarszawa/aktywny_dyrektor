@@ -76,21 +76,21 @@ class Zastepstwo
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", title="Od kiedy", size="170")
+     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i:s", title="Od kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
      *      "this.getDataOd() <=  this.getDataDo()",
      *      message="Data rozpoczęcia nie może być późniejsza od daty końca zastępstwa!"
      * )
-    */
+     */
     private $dataOd;
 
     /**
      * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
-     * @GRID\Mapping\Column(visible=true, type="datetime", title="Do kiedy", size="170")
+     * @GRID\Mapping\Column(visible=true, type="datetime", format="Y-m-d H:i:s", title="Do kiedy", size="170")
      * @Gedmo\Mapping\Annotation\Versioned
      * @Assert\Type("DateTime")
      * @Assert\Expression(
@@ -101,7 +101,7 @@ class Zastepstwo
      *      "this.getDataDo() > this.getCurrentDate()",
      *      message="Data końcowa nie może być datą przeszłą!"
      * )
-    */
+     */
     private $dataDo;
 
     /**
