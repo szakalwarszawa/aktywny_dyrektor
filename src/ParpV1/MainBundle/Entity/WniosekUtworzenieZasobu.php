@@ -40,7 +40,7 @@ class WniosekUtworzenieZasobu
      * @GRID\Column(field="wniosek.status.nazwa", title="Status")
      * @GRID\Column(field="wniosek.createdBy", title="Utworzony przez")
      * @GRID\Column(field="wniosek.numer", title="Numer")
-     * @GRID\Column(field="wniosek.createdAt", type="date", title="Utworzono")
+     * @GRID\Column(field="wniosek.createdAt", type="date", format="Y-m-d", title="Utworzono")
      * @GRID\Column(field="wniosek.lockedBy", title="Zablokowany przez")
      * @GRID\Column(field="wniosek.lockedAt", type="date", title="Zablokowano")
      * @GRID\Column(field="wniosek.editornames", title="Edytorzy")
