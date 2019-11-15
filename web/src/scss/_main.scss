@@ -705,6 +705,16 @@ footer.helpdesk {
     }
 }
 
+#odblokowanieForm .grip-resizable {
+    tbody {
+        tr {
+            td {
+                overflow: initial; /* wyłacza domyślny styl biblioteki column-resizer .grip-resizable > tbody > tr > td */
+            }
+        }
+    }
+}
+
 .form-kadry {
     .form-inline {
         .form-group {
@@ -787,4 +797,16 @@ table.grip-padding > {
 /* wyśrodkowanie dat w tabelach */
 .grid-column-aktywneOd, .grid-column-aktywneDo, .grid-column-utworzonyDnia, .grid-column-umowaOd, .grid-column-umowaDo, .grid-column-dataOd, .grid-column-dataDo {
     text-align: center;
+}
+
+.indicator-true {
+    font-size: 1.3em;
+    // color: #158C27;
+    color: #699934; // z palety kolorystycznej naszych bootstrapowych buttonów
+}
+
+.indicator-false {
+    font-size: 1.3em;
+    // color: #FF6347;
+    color: #c94e00; // z palety kolorystycznej naszych bootstrapowych buttonów
 }

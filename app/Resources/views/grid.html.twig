@@ -152,9 +152,9 @@
 
 {% block grid_column_boolean_cell %}
     {% if value == "true" %}
-        <i style="font-size: 1.3em; color: #158C27;" class="fad fa-check-square" title="true"></i>
+        <i class="fad fa-check-square indicator-true" title="true"></i>
     {% elseif value == "false" %}
-        <i style="font-size: 1.3em; color: #FF6347;" class="fad fa-times-square" title="false"> </i>
+        <i class="fad fa-times-square indicator-false" title="false"> </i>
     {% endif %}
 {% endblock %}
 
