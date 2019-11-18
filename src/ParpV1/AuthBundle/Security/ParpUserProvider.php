@@ -140,6 +140,21 @@ class ParpUserProvider implements UserProviderInterface
         foreach ($rolesEntities as $r) {
             $roles[] = $r->getRole()->getName();
         }
+
+        // Dodatkowa rola dynamiczna #91551
+        $roleDyrektor =
+            $kernel->getContainer()
+            ->get('doctrine')
+            ->getRepository('ParpMainBundle:Departament')
+            ->findBy([
+                'dyrektor' => $username,
+                'nowaStruktura' => true,
+            ]);
+
+        if ($roleDyrektor) {
+            $roles[] = 'PARP_D_DYREKTOR';
+        }
+
         return $roles;
     }
 

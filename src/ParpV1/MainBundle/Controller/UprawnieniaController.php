@@ -9,6 +9,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Template;
+use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use APY\DataGridBundle\Grid\Source\Entity;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use APY\DataGridBundle\Grid\Action\RowAction;
@@ -298,6 +299,7 @@ class UprawnieniaController extends Controller
     }
 
     /**
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
      * @Route("/zamien/{obecnyPoziomDostepuIdB64}/{obecnyPoziomDostepuB64}/{nowyPoziomDostepuB64}", name="uprawnienia_zamien")
      *
      * @param $obecnyPoziomDostepuB64

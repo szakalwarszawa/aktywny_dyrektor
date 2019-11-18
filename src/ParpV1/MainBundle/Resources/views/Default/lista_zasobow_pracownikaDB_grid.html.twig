@@ -1,0 +1,17 @@
+{% extends '::base.html.twig' %}
+
+{% block title %}
+- Uprawnienia do zasobów, pracownik: {{ samaccountname }}
+{% endblock %}
+
+{% block body %}
+<h1>Uprawnienia do zasobów, pracownik: {{ samaccountname }}</h1>
+<br />
+<ul class="nav nav-tabs">
+  <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby_pracownika', {'samaccountname': samaccountname, 'aktywne': 1}) }}">Uprawnienia - aktywne</a></li>
+  <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby_pracownika', {'samaccountname': samaccountname, 'aktywne': 0}) }}">Uprawnienia - nieaktywne</a></li>
+</ul>
+
+{{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+{% endblock %}
