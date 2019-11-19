@@ -10,8 +10,7 @@ stages:
     - tests
     - postbuild
 
-# stage wyłączony - do czasu kupna nowego klucza do fontawesome-pro
-.build:
+build:
     stage: build
     script:
         - /usr/bin/composer.phar global show > .gitlab-ci/gitlab-ci-composer.dump
