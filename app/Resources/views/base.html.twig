@@ -54,15 +54,14 @@
 
                             {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles or "PARP_AZ_UPRAWNIENIA_BEZ_WNIOSKOW" in app.user.roles %}
                             <li class="dropdown" id="top-menu-kadry">
-                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Kadry <b class="caret"></b></a>
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-user"></i> Użytkownicy <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
-                                    <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> użytkownicy w AD</a></li>
+                                    <li><a href="{{ path('main') }}"><i class="fa fa-users"></i> Lista pracowników (Aktywni)</a></li>
                                     {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles or "PARP_BZK_1" in app.user.roles or "PARP_BZK_2" in app.user.roles %}
-                                        <li><a href="{{ path('przejrzyjnowych') }}"><i class="fas fa-exclamation-circle"></i> użytkownicy problematyczni - nowi z rekorda</a></li>
-                                        <li><a href="{{ path('main', {'onlyTemporary': 'onlyTemporary'}) }}"><i class="fa fa-user"></i> użytkownicy nowi (czekający na utworzenia w AD)</a></li>
+                                        <li><a href="{{ path('przejrzyjnowych') }}"><i class="fas fa-exclamation-circle"></i> Użytkownicy problematyczni (Nowi z rekorda)</a></li>
                                         <li><a href="{{ path('userAdd') }}"><i class="fa fa-plus-square"></i> Dodaj użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'nieobecni'}) }}"><i class="far fa-user-injured"></i> Odblokuj nieaktywnego użytkownika</a></li>
-                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'zablokowane'}) }}"><i class="fas fa-user-lock"></i> Odblokuj zablokowanego użytkownika</a></li>
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'nieobecni'}) }}"><i class="far fa-user-injured"></i> Pracownicy nieobecni</a></li>
+                                        <li><a href="{{ path('lista_odblokowania', {'ktorzy': 'zablokowane'}) }}"><i class="fas fa-user-lock"></i> Osoby niepracujące</a></li>
                                     {% endif %}
                                 </ul>
                             </li>
@@ -75,14 +74,14 @@
                                         <li><a href="{{ path('departament') }}"><i class="fa fa-building"></i> Biura / Departamenty</a></li>
                                         <li><a href="{{ path('section') }}"><i class="fa fa-archive"></i> Sekcje</a></li>
                                         <li><a href="{{ path('position') }}"><i class="fa fa-user-md"></i> Stanowiska</a></li>
-                                        <li><a href="{{ path('position_groups_index') }}"><i class="fas fa-users-class"></i> Stanowiska - grupy</a></li>
+                                        <li><a href="{{ path('position_groups_index') }}"><i class="fas fa-users-class"></i> Grupy stanowisk</a></li>
                                         <li><a href="{{ path('engagement') }}"><i class="fa fa-calendar"></i> Zaangażowania</a></li>
-                                        <li><a href="{{ path('uprawnienia') }}"><i class="fal fa-edit"></i> Uprawnienia</a></li>
-                                        <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li>
+                                        {# <li><a href="{{ path('uprawnienia') }}"><i class="fal fa-edit"></i> Uprawnienia</a></li> #}
+                                        {# <li><a href="{{ path('grupyuprawnien') }}"><i class="fa fa-list-ul"></i> Grupy uprawnień</a></li> #}
                                         <li><a href="{{ path('aclrole') }}"><i class="fa fa-female"></i> Role w systemie</a></li>
-                                        <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li>
+                                        {# <li><a href="{{ path('aclaction') }}"><i class="fa fa-arrows-alt"></i> Akcje w systemie</a></li> #}
                                         <li><a href="{{ path('wniosekstatus') }}"><i class="fal fa-ballot-check"></i> Statusy wniosków</a></li>
-                                        <li><a href="{{ path('jasper_management') }}"><i class="fas fa-folder-tree"></i> Zasoby Jasper</a></li>
+                                        <li><a href="{{ path('jasper_management') }}"><i class="fas fa-folder-tree"></i> Raporty Jasper</a></li>
                                         <li><a href="{{ path('changelog_admin_index') }}"><i class="fas fa-stars"></i> Changelog</a></li>
                                     </ul>
                                 </li>
@@ -92,7 +91,7 @@
                                 <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fa fa-database"></i> Zasoby <b class="caret"></b></a>
                                 <ul class="dropdown-menu">
                                     <li><a href="{{ path('zasoby') }}"><i class="fa fa-database"></i> Zasoby</a></li>
-                                    <li><a href="{{ path('zadanie') }}"><i class="fas fa-cog"></i> Zadania</a></li>
+                                    {# <li><a href="{{ path('zadanie') }}"><i class="fas fa-cog"></i> Zadania</a></li> #}
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
@@ -104,15 +103,9 @@
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="far fa-user-cog"></i> DEV <b class="caret"></b></a>
                                     <ul class="dropdown-menu">
                                         <li class=""><a href="{{ path('listLogs') }}"><i class="fal fa-file-alt"></i> Logi z wypychania do AD</a></li>
-                                        <li class=""><a href="{{ path('form_file_ecm') }}"><i class="fal fa-file-alt"></i> Wczytaj dane ECM</a></li>
                                         <li><a href="{{ path('importfirebird_grid_index') }}"><i class="fa fa-male"></i>  Dane w rekord obecnie</a></li>
                                         <li><a href="{{ path('importfirebird') }}"><i class="fa fa-male"></i> Import rekord</a></li>
                                         <li><a href="{{ path('danerekord') }}"><i class="fa fa-list"></i> Dane rekord</a></li>
-                                    {% if "PARP_ADMIN_REJESTRU_ZASOBOW" in app.user.roles %}
-                                        <li><a href="{{ path('aduser') }}"><i class="fa fa-user"></i> Users AD</a></li>
-                                        <li><a href="{{ path('adgroup') }}"><i class="fas fa-users"></i> Groups AD</a></li>
-                                        <li><a href="{{ path('adorganizationalunit') }}"><i class="fa fa-folder-open"></i> OUs AD</a></li>
-                                    {% endif %}
                                     </ul>
                                 </li>
                             {% endif %}

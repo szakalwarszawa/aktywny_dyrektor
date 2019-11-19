@@ -281,7 +281,7 @@ class WnioskiNadanieOdebranieGrid
                 'field'   => 'utworzonyDnia',
                 'source'  => true,
                 'title'   => 'Utworzony dnia',
-                'format' => 'd-m-Y',
+                'format' => 'Y-m-d',
             ]),
             new Column\TextColumn([
                 'id'      => 'zablokowanyPrzez',
