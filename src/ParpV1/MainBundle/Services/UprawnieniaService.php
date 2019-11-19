@@ -726,7 +726,7 @@ class UprawnieniaService
      *
      * @return void
      */
-    private function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany, string $powodOdebrania = null): void
+    public function wyslijInfoDoAdministratorow(string $nazwaUzytkownika, array $przeprocesowneZasoby, DateTime $dataZmiany, string $powodOdebrania = null): void
     {
         $entityManager = $this->getDoctrine();
         $odebraneZasoby = [];
