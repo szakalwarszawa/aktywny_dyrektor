@@ -26,6 +26,9 @@ use Exception;
 use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Entity\WniosekStatus;
 use ParpV1\MainBundle\Services\ParpMailerService;
+use ParpV1\MainBundle\Constants\AdUserConstants;
+use ParpV1\MainBundle\Constants\WyzwalaczeConstants;
+use ParpV1\MainBundle\Entity\OdebranieZasobowEntry;
 
 /**
  * RaportyIT controller.
@@ -983,6 +986,90 @@ class RaportyITController extends Controller
         VarDumper::dump($this->logWpis);
         die;
     }
+
+    /**
+     * @Route("/jednorazoweAnulowanieDlaNieobecnych/{nazwaUzytkownika}/{wprowadzZmiany}", name="jednorazowe_anulowanie_dla_nieobecnych")
+     *
+     * @Security("has_role('PARP_ADMIN_REJESTRU_ZASOBOW')")
+     */
+    public function jednorazoweAnulowanieDlaNieobecnych(string $nazwaUzytkownika, bool $wprowadzZmiany = false)
+    {
+        $dataGraniczna = new DateTime();
+        $czyDodacOdebranieZasobowEntry = false;
+        $powodOdebrania = WyzwalaczeConstants::DLUGOTRWALA_NIEOBECNOSC_TITLE;
+        $atrybut = 'description';
+        $nowaWartosc = 'Konto wyłączono z powodu nieobecności dłuższej niż 30 dni';
+
+        $uprawnieniaService = $this->get('uprawnienia_service');
+        $uprawnieniaService->setWypchnijEntryPrzyAnulowaniu(false);
+        $zasobyZGrupamiAd = $uprawnieniaService->pobierzZasobyIdZGrupamiAd();
+        $przeprocesowane = $uprawnieniaService->odbierzZasobyUzytkownikaOdDaty($nazwaUzytkownika, $dataGraniczna, $powodOdebrania, false, true);
+
+        $przeprocesowaneBezGrup = [];
+        $przeprocesowaneZGrupami = [];
+        if (is_array($przeprocesowane) && !empty($przeprocesowane)) {
+            foreach ($przeprocesowane as $jedenZasob) {
+                if (in_array($jedenZasob['zasob'], $zasobyZGrupamiAd)) {
+                    $przeprocesowaneZGrupami[] = $jedenZasob;
+                } else {
+                    $przeprocesowaneBezGrup[] = $jedenZasob;
+                }
+            }
+        }
+
+        VarDumper::dump(['Odebrane administracyjnie z grupami AD' => $przeprocesowaneZGrupami]);
+        VarDumper::dump(['Odebrane administracyjnie bez grup' => $przeprocesowaneBezGrup]);
+
+        $uprawnieniaService->wyslijInfoDoAdministratorow($nazwaUzytkownika, $przeprocesowaneBezGrup, $dataGraniczna, $powodOdebrania);
+
+        $ldapService = $this->get('ldap_service');
+        $ldapAdmin = $this->get('ldap_admin_service');
+        $ldapconn = $ldapAdmin->prepareConnection();
+
+        $adUser = $ldapService->getUserFromAD($nazwaUzytkownika, null, null, 'nieobecni')[0];
+        $ldapAdmin->ldapModify($ldapconn, $adUser['distinguishedname'], [$atrybut => $nowaWartosc]);
+
+        $wszystkiePosiadaneDoUsuniecia = $adUser['memberOf'];
+
+        VarDumper::dump(['Grupy do usuniecia' => $wszystkiePosiadaneDoUsuniecia]);
+
+        $entityManager = $this->getDoctrine()->getManager();
+        if (!empty($wszystkiePosiadaneDoUsuniecia)) {
+            $entry = new Entry();
+            $entry
+                ->setSamaccountname($nazwaUzytkownika)
+                ->setIsDisabled(true)
+                ->setCreatedBy('SYSTEM')
+                ->setOpis($powodOdebrania)
+                ->setMemberOf('-' . implode(',-', $wszystkiePosiadaneDoUsuniecia))
+                ->setCreatedAt(new DateTime())
+                ->setDisableDescription(AdUserConstants::WYLACZENIE_KONTA_NIEOBECNOSC)
+                ->setFromWhen(new DateTime());
+            $entityManager->persist($entry);
+
+            if ($czyDodacOdebranieZasobowEntry) {
+                $odebranieZasobowEntry = new OdebranieZasobowEntry();
+                $odebranieZasobowEntry
+                    ->setPowodOdebrania($powodOdebrania)
+                    ->setUzytkownik($nazwaUzytkownika);
+
+                $entityManager->persist($odebranieZasobowEntry);
+
+                $entry->setOdebranieZasobowEntry($odebranieZasobowEntry);
+                $entityManager->persist($entry);
+            }
+
+            $this->logWpis[$nazwaUzytkownika]['usunieto_grupy_ad'] = $wszystkiePosiadaneDoUsuniecia;
+        }
+
+        if ($wprowadzZmiany) {
+            $this->getDoctrine()->getManager()->flush();
+        }
+
+        VarDumper::dump($this->logWpis);
+        die();
+    }
+
 
     /**
      * Trzeba tylko zrobić żeby zerowało mu grupy i nadało z tych wniosków
