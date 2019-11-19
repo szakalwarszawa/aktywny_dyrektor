@@ -5,6 +5,8 @@ namespace ParpV1\MainBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Gedmo\Mapping\Annotation as Gedmo;
 use Symfony\Component\Validator\Constraints as Assert;
+use APY\DataGridBundle\Grid\Mapping as GRID;
+use DateTime;
 
 /**
  * UserZasoby
@@ -27,7 +29,8 @@ class Komentarz
     private $id;
 
     /**
-     * @var \DateTime
+     * @var DateTime
+     *
      * @ORM\Column(type="datetime", nullable=true)
      * @APY\DataGridBundle\Grid\Mapping\Column(visible=false)
     */
@@ -37,6 +40,7 @@ class Komentarz
      * @var string
      *
      * @ORM\Column(name="samaccountname", type="string", length=255)
+     * @GRID\Column(title="Autor")
      * @Gedmo\Versioned
      */
     private $samaccountname;
@@ -44,9 +48,10 @@ class Komentarz
 
 
     /**
-     * @var \DateTime
+     * @var DateTime
      *
      * @ORM\Column(type="datetime", nullable=false)
+     * @GRID\Column(type="datetime", format="Y-m-d H:i:s", title="Utworzono")
      * @Gedmo\Timestampable(on="update")
      * @Gedmo\Versioned
      */
@@ -57,6 +62,7 @@ class Komentarz
      *
      * @ORM\Column(name="tytul", type="string", length=100, nullable=false)
      * @Gedmo\Versioned
+     * @GRID\Column(title="Tytuł")
      * @Assert\NotBlank
      * @Assert\Length(
      *      min = 5,
@@ -71,6 +77,7 @@ class Komentarz
      * @var string
      *
      * @ORM\Column(name="opis", type="string", length=5000, nullable=false)
+     * @GRID\Column(title="Opis")
      * @Gedmo\Versioned
      * @Assert\NotBlank
      * @Assert\Length(
@@ -112,7 +119,7 @@ class Komentarz
     /**
      * Set deletedAt
      *
-     * @param \DateTime $deletedAt
+     * @param DateTime $deletedAt
      *
      * @return WniosekNadanieOdebranieZasobowEditor
      */
@@ -126,7 +133,7 @@ class Komentarz
     /**
      * Get deletedAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getDeletedAt()
     {
@@ -160,7 +167,7 @@ class Komentarz
     /**
      * Get createdAt
      *
-     * @return \DateTime
+     * @return DateTime
      */
     public function getCreatedAt()
     {

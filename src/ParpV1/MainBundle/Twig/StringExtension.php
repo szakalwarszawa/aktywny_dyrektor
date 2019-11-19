@@ -300,7 +300,7 @@ class StringExtension extends \Twig_Extension
      */
     public function showMultiFieldAsNewLines($str)
     {
-        return "<div class='border'>" . str_replace(";", "</div><div class='border'>", $str) . "</div>";
+        return str_replace(';', '<br />', $str);
     }
 
     /**
