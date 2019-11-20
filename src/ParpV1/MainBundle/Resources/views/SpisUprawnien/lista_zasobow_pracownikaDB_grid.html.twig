@@ -5,13 +5,19 @@
 {% endblock %}
 
 {% block body %}
-<h1>Uprawnienia do zasobów, pracownik: {{ samaccountname }}</h1>
-<br />
+<h2>Uprawnienia do zasobów, pracownik: {{ samaccountname }}</h2>
+
+<a href="{{ path('pracownicy_db') }}" class="btn btn-primary"> <i class="fad fa-angle-double-left"></i> Powrót do listy pracowników</a>
+<br/>
+<br/>
+
 <ul class="nav nav-tabs">
   <li role="presentation" class="{{ aktywne ? "active" : "" }}"><a href="{{ path('zasoby_pracownika', {'samaccountname': samaccountname, 'aktywne': 1}) }}">Uprawnienia - aktywne</a></li>
   <li role="presentation" class="{{ aktywne ? "" : "active" }}"><a href="{{ path('zasoby_pracownika', {'samaccountname': samaccountname, 'aktywne': 0}) }}">Uprawnienia - nieaktywne</a></li>
 </ul>
 
 {{ grid(grid,'ParpMainBundle:Default:index_grid.html.twig') }}
+
+<a href="{{ path('pracownicy_db') }}" class="btn btn-primary"> <i class="fad fa-angle-double-left"></i> Powrót do listy pracowników</a>
 
 {% endblock %}
