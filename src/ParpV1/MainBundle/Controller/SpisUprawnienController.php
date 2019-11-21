@@ -105,7 +105,7 @@ class SpisUprawnienController extends Controller
                     'Błędny D/B: "%s" u pracownika: "%s"',
                     $skrotDb,
                     $this->getUser()->getUsername()
-                    )
+                )
             );
         }
 

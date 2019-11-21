@@ -1054,7 +1054,9 @@ class LdapService
             $tmpResults = ldap_get_entries($ldapconn, $search);
             ldap_unbind($ldapconn);
             $result = $this->parseResults($tmpResults);
-        } catch (Exception $e) { }
+        } catch (Exception $e) {
+            throw new Exception('Bład wyszukiwania w AD.');
+        }
 
         return $result;
     }
