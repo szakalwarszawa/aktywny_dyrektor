@@ -59,6 +59,7 @@ class StringExtension extends \Twig_Extension
             new \Twig_SimpleFilter('base64Encode', array($this, 'base64EncodeFilter')),
             new Twig_SimpleFilter('parseAdString', [$this, 'parseAdString']),
             new Twig_SimpleFilter('md5', [$this, 'hashString']),
+            new Twig_SimpleFilter('czyDyrektor', [$this, 'czyDyrektor']),
         );
     }
 
@@ -136,6 +137,25 @@ class StringExtension extends \Twig_Extension
             ->podajKoniecUmowy($samaccountname);
 
         return (!empty($dataUmowy) ? $dataUmowy[0]['umowaDo'] : null);
+    }
+
+    /**
+     * Sprawdza czy uzytkownik jest dyrektorem D/B - na potrzeby menu.
+     *
+     * @param string|null $samaccountname
+     *
+     * @return bool
+     */
+    public function czyDyrektor(?string $samaccountname = null): bool
+    {
+        // $czyDyrektor = true;
+        $czyDyrektor = $this->entityManager->getRepository('ParpMainBundle:Departament')
+            ->findBy([
+                'dyrektor' => $samaccountname,
+                'nowaStruktura' => true,
+            ]);
+
+        return ($czyDyrektor ? true : false);
     }
 
     /**

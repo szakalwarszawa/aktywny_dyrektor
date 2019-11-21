@@ -174,7 +174,7 @@ class ZasobyUzytkownikaGrid
             ->setNoDataMessage('Brak uprawnień do wyświetlenia.')
         ;
         $grid->isReadyForRedirect();
-        $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
+        // $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         return $grid;
     }

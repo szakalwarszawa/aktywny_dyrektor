@@ -12,9 +12,9 @@
 
 <script>
     $('.popoverElement').on('click', function (e) {
+        var skadZdjecie = $(this).attr('href');
         e.preventDefault();
         $('.popoverElement').not(this).popover('hide');
-        var skadZdjecie = $(this).attr('href');
         $(this).attr('data-content', '<div class="center-block"><img style="height: 120px;" src="' + skadZdjecie + '" /></div>');
     });
     $('.popoverElement').popover();

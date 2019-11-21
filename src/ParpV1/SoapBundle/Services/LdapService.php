@@ -1010,6 +1010,55 @@ class LdapService
         return $result;
     }
 
+    /**
+     * Zwraca tablicę pracowników podanego D/B z AD
+     *
+     * @param string $skrotDb
+     *
+     * @throws Exception
+     *
+     * @return array
+     */
+    public function getPracownicyDepartamentu($skrotDb): array
+    {
+        if (!preg_match("/^[A-Z]{2,3}$/", $skrotDb)) {
+            throw new Exception(sprintf('%s: Błędny D/B: "%s"', __FUNCTION__, $skrotDb));
+        }
+
+        $ldapconn = ldap_connect($this->ad_host);
+        if (!$ldapconn) {
+            throw new Exception('Brak połączenia z serwerem domeny!');
+        }
+        $ldapdomain = $this->ad_domain;
+
+        ldap_set_option($ldapconn, LDAP_OPT_SIZELIMIT, 2000);
+        ldap_set_option($ldapconn, LDAP_OPT_PROTOCOL_VERSION, 3) or die('Unable to set LDAP protocol version');
+        ldap_set_option($ldapconn, LDAP_OPT_REFERRALS, 0);
+
+        $ldap_username = $this->container->getParameter('ad_user');
+        $ldap_password = $this->container->getParameter('ad_password');
+
+        $ldapbind = ldap_bind($ldapconn, $ldap_username . $ldapdomain, $ldap_password);
+
+        $userdn = 'OU=' . $skrotDb . ',' . $this->useradn . $this->patch;
+
+        $result = [];
+
+        try {
+            $search = ldap_search(
+                $ldapconn,
+                $userdn,
+                '(&(samaccountname=*)(objectClass=person)(!(name=*Testowy))(!(samaccountname=testowe_*)))',
+                $this->ADattributes
+            );
+            $tmpResults = ldap_get_entries($ldapconn, $search);
+            ldap_unbind($ldapconn);
+            $result = $this->parseResults($tmpResults);
+        } catch (Exception $e) { }
+
+        return $result;
+    }
+
     protected function LDAPtoUnix($ldap_ts)
     {
         return ($ldap_ts / 10000000) - 11644473600;

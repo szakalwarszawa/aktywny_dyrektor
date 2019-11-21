@@ -101,15 +101,17 @@ class SpisUprawnienController extends Controller
         $skrotDb = trim($aduser[0]['description']);
         $departament = trim($aduser[0]['department']);
 
-        if (
-            empty($skrotDb)
-            || strlen($skrotDb) < 2
-            || strlen($skrotDb) > 3
-        ) {
-            throw new Exception(sprintf('Błędny D/B: "%s"', $skrotDb));
+        if (!preg_match("/^[A-Z]{2,3}$/", $skrotDb)) {
+            throw new Exception(
+                sprintf(
+                    'Błędny D/B: "%s" u pracownika: "%s"',
+                    $skrotDb,
+                    $this->getUser()->getUsername()
+                    )
+            );
         }
 
-        $pracownicyOu = $ldap->getUsersFromOU($skrotDb);
+        $pracownicyOu = $ldap->getPracownicyDepartamentu($skrotDb);
 
         $grid = $this
             ->get('pracownicy_db_grid')
