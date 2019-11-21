@@ -79,7 +79,7 @@ class PracownicyDbGrid
 
         $grid->getColumn('samaccountname')
             ->setTitle('Nazwa użytkownika')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false)
             ->setPrimary(true);
         $grid->getColumn('name')
