@@ -71,6 +71,7 @@ class PracownicyDbGrid
     public function getUserGrid($AdUsers): Grid
     {
         $source = new Vector($AdUsers);
+
         $source->setId('samaccountname');
 
         $grid = $this->grid;
@@ -84,31 +85,32 @@ class PracownicyDbGrid
             ->setPrimary(true);
         $grid->getColumn('name')
             ->setTitle('Nazwisko imię')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('initials')
             ->setTitle('Inicjały')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('title')
             ->setTitle('Stanowisko')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('department')
             ->setTitle('Jednostka')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('info')
             ->setTitle('Sekcja')
-            ->setOperators(array('like'))
+            ->setSize(550)
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('lastlogon')
             ->setTitle('Ostatnie logowanie')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('accountexpires')
             ->setTitle('Umowa wygasa')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setOperatorsVisible(false);
         $grid->getColumn('thumbnailphoto')
             ->setTitle('Zdj.')
@@ -116,7 +118,7 @@ class PracownicyDbGrid
             ->setFilterable(false);
         $grid->getColumn('isDisabled')
             ->setTitle('Konto wyłączone')
-            ->setOperators(array('like'))
+            ->setOperators(['like'])
             ->setClass('text-center')
             ->setOperatorsVisible(false);
         $grid->getColumn('division')
@@ -133,15 +135,13 @@ class PracownicyDbGrid
             ->setSize(135);
 
         $rowAction = new RowAction('<i class="fas fa-file-alt"></i> Uprawnienia', 'zasoby_pracownika');
-        $rowAction->setColumn('akcje');
-        $rowAction->setRouteParameters(
-            array('samaccountname')
-        );
-        $rowAction->addAttribute('class', 'btn btn-success btn-xs');
+        $rowAction->setColumn('akcje')
+            ->setRouteParameters(['samaccountname'])
+            ->addAttribute('class', 'btn btn-success btn-xs');
         $grid->addRowAction($rowAction);
 
-        $grid->setLimits(100);
-        $grid->isReadyForRedirect();
+        $grid->setLimits(100)
+            ->isReadyForRedirect();
 
         return $grid;
     }

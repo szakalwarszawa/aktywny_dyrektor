@@ -9,6 +9,7 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Exception;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
  * Spis uprawnień własnych pracownika oraz uprawnień pracowników D/B
@@ -68,7 +69,7 @@ class SpisUprawnienController extends Controller
         $adPracownik = $ldap->getUserFromAD($samaccountname);
 
         if (trim($adDyrektor[0]['department']) !== trim($adPracownik[0]['department'])) {
-            throw new Exception('Nie możesz przeglądać uprawnień pracowników z innych D/B.');
+            throw new AccessDeniedException('Nie możesz przeglądać uprawnień pracowników z innych D/B.');
         }
 
         $grid = $this
@@ -90,6 +91,8 @@ class SpisUprawnienController extends Controller
      * @Security("has_role('PARP_D_DYREKTOR')")
      *
      * @throws Exception
+     *
+     * @return Response
      */
     public function pracownicyDbAction(): Response
     {
