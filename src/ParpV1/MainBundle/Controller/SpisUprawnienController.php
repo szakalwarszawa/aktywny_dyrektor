@@ -91,7 +91,7 @@ class SpisUprawnienController extends Controller
      *
      * @throws Exception
      */
-    public function pracownicyDbAction()
+    public function pracownicyDbAction(): Response
     {
         $ldap = $this->get('ldap_service');
         $aduser = $ldap->getUserFromAD($this->getUser()->getUsername());
