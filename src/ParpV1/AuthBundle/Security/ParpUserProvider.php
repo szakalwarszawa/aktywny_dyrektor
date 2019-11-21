@@ -146,7 +146,7 @@ class ParpUserProvider implements UserProviderInterface
         $roleDyrektor =
             $kernel->getContainer()
             ->get('doctrine')
-            ->getRepository('ParpMainBundle:Departament')
+            ->getRepository(Departament::class)
             ->findBy([
                 'dyrektor' => $username,
                 'nowaStruktura' => true,
