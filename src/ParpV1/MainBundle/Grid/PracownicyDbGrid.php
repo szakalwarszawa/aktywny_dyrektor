@@ -9,9 +9,6 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Column;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
-use Doctrine\ORM\EntityManager;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Grid z listą pracowników D/B

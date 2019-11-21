@@ -6,11 +6,9 @@ namespace ParpV1\MainBundle\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Security;
 use Exception;
-use Symfony\Component\VarDumper\VarDumper;
 
 /**
  * Spis uprawnień własnych pracownika oraz uprawnień pracowników D/B

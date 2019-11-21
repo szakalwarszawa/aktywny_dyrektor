@@ -9,7 +9,6 @@ use APY\DataGridBundle\Grid\Source\Vector;
 use APY\DataGridBundle\Grid\Column;
 use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
-use APY\DataGridBundle\Grid\Export\ExcelExport;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\UserZasoby;
 
@@ -174,7 +173,6 @@ class ZasobyUzytkownikaGrid
             ->setNoDataMessage('Brak uprawnień do wyświetlenia.')
         ;
         $grid->isReadyForRedirect();
-        // $grid->addExport(new ExcelExport('Eksport do pliku', 'Plik'));
 
         return $grid;
     }
