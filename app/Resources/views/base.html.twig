@@ -95,8 +95,15 @@
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
-                                {% if 'PARP_D_DYREKTOR' in app.user.roles %}
-                                    <li><a href="{{ path('pracownicy_db') }}"><i class="fas fa-file-alt"></i> Uprawnienia pracowników D/B</a></li>
+                                </ul>
+                            </li>
+
+                            <li class="dropdown" id="top-menu-dev">
+                                <a href="#" class="dropdown-toggle" data-toggle="dropdown"><i class="fal fa-list-alt"></i> Uprawnienia <b class="caret"></b></a>
+                                <ul class="dropdown-menu">
+                                    <li><a href="{{ path('zasoby_uzytkownika') }}"><i class="fad fa-layer-group"></i> Moje uprawnienia</a></li>
+                                {% if "PARP_D_DYREKTOR" in app.user.roles %}
+                                    <li><a href="{{ path('pracownicy_db') }}"><i class="fas fa-layer-group"></i> Uprawnienia pracowników D/B</a></li>
                                 {% endif %}
                                 </ul>
                             </li>
@@ -142,7 +149,7 @@
                                 data-placement="left">
                                     <a href="#" class="dropdown-toggle" data-toggle="dropdown">{{ app.user.username }} <b class="caret"></b></a>
                                     <ul class="dropdown-menu" id="top-menu-logout">
-                                        <li><a href="{{ path('zasoby_uzytkownika') }}"><i class="fas fa-file-alt"></i> Moje uprawnienia</a></li>
+                                        <li><a href="{{ path('zasoby_uzytkownika') }}"><i class="fad fa-layer-group"></i> Moje uprawnienia</a></li>
                                         <li><a href="{{ path('logout') }}"><i class="fa fa-sign-out"></i> Wyloguj</a></li>
                                     </ul>
                             </li>
@@ -178,17 +185,17 @@
         {% if app.user %}
             {% if app.request.attributes.get('_route') != path('nowa_pomoc_techniczna') %}
                 <footer class="helpdesk">
-                    <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
-                    <a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
-                    <a href="{{ path('changelog_index') }}"><small>Lista zmian</small></a>
-                    <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
+                    <span class="copy"><i class="fal fa-copyright"></i> Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+                    <a href="{{ path('nowa_pomoc_techniczna',{uri: app.request.uri|url_encode }) }}"><small><i class="fal fa-user-hard-hat"></i> Zgłoś problem techniczny</small></a>
+                    <a href="{{ path('changelog_index') }}"><small><i class="fas fa-stars"></i> Lista zmian</small></a>
+                    <a href="{{ link_akd_faq }}"><small><i class="fal fa-question"></i> Pomoc</small></a>
                 </footer>
             {% endif %}
         {% else %}
            <footer class="helpdesk">
-                <span class="copy">© Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
-                <a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small>Zgłoś problem techniczny</small></a>
-                <a href="{{ link_akd_faq }}"><small>Pomoc</small></a>
+                <span class="copy"><i class="fal fa-copyright"></i> Polska Agencja Rozwoju Przedsiębioroczości 2019</span>
+                <a href="{{ path('nowe_zgloszenie',{uri: app.request.uri|url_encode }) }}"><small><i class="fal fa-user-hard-hat"></i> Zgłoś problem techniczny</small></a>
+                <a href="{{ link_akd_faq }}"><small><i class="fal fa-question"></i> Pomoc</small></a>
             </footer>
         {% endif %}
         <div id="loader">Ładuję...</div>
