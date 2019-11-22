@@ -53,6 +53,7 @@ twig:
     globals:
         redmine_projekt: '%redmine_projekt%'
         link_akd_faq:    '%link_akd_faq%'
+        id_srodowiska:   '%id_srodowiska%'
 # Assetic Configuration
 assetic:
     debug:          "%kernel.debug%"
