@@ -1,0 +1,21 @@
+$test-bg-color: #7a17cc;
+$test-border-color: #5e187d;
+
+.navbar-default {
+    background-color: $test-bg-color;
+    border-color: $test-border-color;
+}
+
+.navbar-brand {
+    &:after {
+        content: " (TESTOWY)";
+    }
+}
+
+.page-header {
+    h1 {
+        &:after {
+            content: " (TESTOWY)";
+        }
+    }
+}
