@@ -52,6 +52,7 @@ use Symfony\Component\VarDumper\VarDumper;
 use ParpV1\MainBundle\Constants\AdUserConstants;
 use ParpV1\MainBundle\Grid\ZasobyUzytkownikaGrid;
 use DateTime;
+use Exception;
 
 /**
  * Class DefaultController
@@ -148,8 +149,8 @@ class DefaultController extends Controller
                 'manager',
                 //'accountDisabled',
                 //'info',
-                'description',
-                'division',
+                // 'description',
+                // 'division',
                 //            'thumbnailphoto',
                 'useraccountcontrol',
                 //'samaccountname',
@@ -202,6 +203,7 @@ class DefaultController extends Controller
                 ->setOperatorsVisible(false);
             $grid->getColumn('thumbnailphoto')
                 ->setTitle('Zdj.')
+                ->setSize(45)
                 ->setFilterable(false);
             $grid->getColumn('isDisabled')
                 ->setTitle('Konto wyłączone')
@@ -218,6 +220,7 @@ class DefaultController extends Controller
         // Zdejmujemy filtr
         $grid->getColumn('akcje')
             ->setFilterable(false)
+            ->setSize(135)
             ->setSafe(true);
 
 
@@ -2142,28 +2145,5 @@ class DefaultController extends Controller
         }
 
         return new JsonResponse($users);
-    }
-
-    /**
-     * Zestawienie uprawnień do zasobów dla zalogowanego użytkownika.
-     *
-     * @Route("/zasoby_uzytkownika/{aktywne}", name="zasoby_uzytkownika", defaults={"aktywne" : true})
-     * @Route("/", name="zasoby_uzytkownika_home")
-     *
-     * @param bool $aktywne
-     *
-     * @return Response
-     */
-    public function zasobyUzytkownikaAction(bool $aktywne = true): Response
-    {
-        $grid = $this
-            ->get('zasoby_uzytkownika_grid')
-            ->generateForUser($this->getUser(), $aktywne)
-        ;
-
-        return $grid->getGridResponse('ParpMainBundle:Default:lista_zasobow_uzytkownika_grid.html.twig', [
-            'grid' => $grid,
-            'aktywne' => $aktywne
-        ]);
     }
 }

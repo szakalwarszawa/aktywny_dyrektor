@@ -9,6 +9,7 @@ use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
+use ParpV1\MainBundle\Entity\Departament;
 
 class ParpUserProvider implements UserProviderInterface
 {
@@ -140,6 +141,21 @@ class ParpUserProvider implements UserProviderInterface
         foreach ($rolesEntities as $r) {
             $roles[] = $r->getRole()->getName();
         }
+
+        // Dodatkowa rola dynamiczna #91551
+        $roleDyrektor =
+            $kernel->getContainer()
+            ->get('doctrine')
+            ->getRepository(Departament::class)
+            ->findBy([
+                'dyrektor' => $username,
+                'nowaStruktura' => true,
+            ]);
+
+        if ($roleDyrektor) {
+            $roles[] = 'PARP_D_DYREKTOR';
+        }
+
         return $roles;
     }
 

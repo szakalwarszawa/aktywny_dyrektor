@@ -95,6 +95,9 @@
                                     <li><a href="{{ path('wnioseknadanieodebraniezasobow') }}"><i class="fas fa-file-alt"></i> Wnioski o nadanie/odebranie uprawnień</a></li>
                                     <li><a href="{{ path('wniosekutworzeniezasobu') }}"><i class="fa fa-briefcase"></i> Wnioski o utworzenie zasobu</a></li>
                                     <li><a href="{{ path('zastepstwo') }}"><i class="fa fa-exchange"></i> Zastępstwa</a></li>
+                                {% if 'PARP_D_DYREKTOR' in app.user.roles %}
+                                    <li><a href="{{ path('pracownicy_db') }}"><i class="fas fa-file-alt"></i> Uprawnienia pracowników D/B</a></li>
+                                {% endif %}
                                 </ul>
                             </li>
 

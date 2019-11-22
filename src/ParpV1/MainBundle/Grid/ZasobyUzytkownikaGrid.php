@@ -11,7 +11,6 @@ use APY\DataGridBundle\Grid\Action\RowAction;
 use APY\DataGridBundle\Grid\Column\ActionsColumn;
 use Doctrine\ORM\EntityManager;
 use ParpV1\MainBundle\Entity\UserZasoby;
-use ParpV1\AuthBundle\Security\ParpUser;
 
 /**
  * Grid z uprawnieniami do zasobów pracownika
@@ -84,14 +83,14 @@ class ZasobyUzytkownikaGrid
     /**
      * Generuje grida z uprawnieniami użytkownika.
      *
-     * @param ParpUser $parpUser
+     * @param string $samaccountname
      * @param bool $aktywne
      *
      * @return Grid
      */
-    public function generateForUser(ParpUser $parpUser, bool $aktywne): Grid
+    public function generateForUser(string $samaccountname, bool $aktywne): Grid
     {
-        $userResources = $this->getZasobyUzytkownika($parpUser, $aktywne);
+        $userResources = $this->getZasobyUzytkownika($samaccountname, $aktywne);
         $source = new Vector($userResources, $this->getColumns());
 
         $grid = $this->grid;
@@ -181,12 +180,12 @@ class ZasobyUzytkownikaGrid
     /**
      * Pobieranie danych urawnień użytkownika
      *
-     * @param ParpUser $parpUser
-     * @param bool $aktywne
+     * @param string $samaccountname
+     * @param bool   $aktywne
      *
      * @return array
      */
-    private function getZasobyUzytkownika(ParpUser $parpUser, bool $aktywne): array
+    private function getZasobyUzytkownika(string $samaccountname, bool $aktywne): array
     {
         $ktore = $aktywne ? 'aktywne' : 'nieaktywne';
         $uprawnieniaAktywne = [];
@@ -195,7 +194,7 @@ class ZasobyUzytkownikaGrid
             $this
                 ->entityManager
                 ->getRepository(UserZasoby::class)
-                ->findZasobyUzytkownika(strtolower($parpUser->getUsername()));
+                ->findZasobyUzytkownika(strtolower($samaccountname));
 
         if (empty($userResources)) {
             return [];

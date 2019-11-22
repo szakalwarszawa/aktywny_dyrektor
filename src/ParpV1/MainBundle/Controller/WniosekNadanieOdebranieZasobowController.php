@@ -452,7 +452,10 @@ class WniosekNadanieOdebranieZasobowController extends Controller
                     ]);
 
                 if (null === $skrotDepartamentu) {
-                    throw new EntityNotFoundException('Nie mogę znaleźć skrótu departamentu dla ' . $ADUser['department']);
+                    throw new EntityNotFoundException(
+                        'Przełożony do wniosku: nie mogę znaleźć skrótu departamentu dla ' . $ADUser['department']
+                        . ', pracownik: ' . $ADUser['samaccountname']
+                    );
                 }
 
                 $ADManager = [$ldap->getDyrektoraDepartamentu($skrotDepartamentu->getShortname())];

@@ -47,9 +47,13 @@ class ParpUser implements UserInterface, EquatableInterface, \Serializable
 
     public function getRolesHtml()
     {
-        $ret = implode("</li><li class='list-group-item'>", $this->getRoles());
+        // pomija w wyświetlaniu grupy nadawane dynamicznie 'PARP_D_'
+        $role = preg_grep("/^PARP_D_/", $this->getRoles(), PREG_GREP_INVERT);
+        $ret = implode("</li><li class='list-group-item'>", $role);
+
         return "<ul class='list-group'><li class='list-group-item'>" . $ret . "</li></ul>";
     }
+
     public function hasRole($role)
     {
         if (in_array($role, $this->getRoles())) {

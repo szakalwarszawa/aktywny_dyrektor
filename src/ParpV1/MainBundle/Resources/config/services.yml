@@ -13,3 +13,6 @@ services:
   zasoby_uzytkownika_grid:
     class: ParpV1\MainBundle\Grid\ZasobyUzytkownikaGrid
     arguments: ['@grid', '@doctrine.orm.entity_manager']
+  pracownicy_db_grid:
+    class: ParpV1\MainBundle\Grid\PracownicyDbGrid
+    arguments: ['@grid']
