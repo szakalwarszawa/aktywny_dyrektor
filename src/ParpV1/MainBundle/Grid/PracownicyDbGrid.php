@@ -120,6 +120,7 @@ class PracownicyDbGrid
             ->setTitle('Konto wyłączone')
             ->setOperators(['like'])
             ->setClass('text-center')
+            ->setVisible(false)
             ->setOperatorsVisible(false);
         $grid->getColumn('division')
             ->setTitle('Symbol sekcji')
@@ -134,7 +135,7 @@ class PracownicyDbGrid
             ->setClass('text-center')
             ->setSize(135);
 
-        $rowAction = new RowAction('<i class="fas fa-file-alt"></i> Uprawnienia', 'zasoby_pracownika');
+        $rowAction = new RowAction('<i class="fad fa-layer-group"></i> Uprawnienia', 'zasoby_pracownika');
         $rowAction->setColumn('akcje')
             ->setRouteParameters(['samaccountname'])
             ->addAttribute('class', 'btn btn-success btn-xs');
