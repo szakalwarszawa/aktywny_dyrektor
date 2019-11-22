@@ -35,9 +35,12 @@
 
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
+            {% if id_srodowiska == 'test' %}
+                {{ encore_entry_link_tags('test') }}
+            {% endif %}
         {% endblock %}
 
-        {% if id_srodowiska == 'test' %}
+        {# {% if id_srodowiska == 'test' %}
             <style>
                 .navbar-default {
                     background-color: #7a17cc;
@@ -47,7 +50,7 @@
                     content: " (TESTOWY)";
                 }
             </style>
-        {% endif %}
+        {% endif %} #}
 
         <title>Aktywny Dyrektor {% block title %}{% endblock %}</title>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}" />
