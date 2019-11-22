@@ -147,10 +147,10 @@ class DefaultController extends Controller
             //echo "<pre>"; print_r($ADUsers); die();
             $grid->hideColumns(array(
                 'manager',
-                //'accountDisabled',
+                // 'accountDisabled',
                 //'info',
-                // 'description',
-                // 'division',
+                'description',
+                'division',
                 //            'thumbnailphoto',
                 'useraccountcontrol',
                 //'samaccountname',
