@@ -35,6 +35,9 @@
 
         {% block stylesheets %}
             {{ encore_entry_link_tags('app') }}
+            {% if id_srodowiska == 'test' %}
+                {{ encore_entry_link_tags('test') }}
+            {% endif %}
         {% endblock %}
 
         <title>Aktywny Dyrektor {% block title %}{% endblock %}</title>
