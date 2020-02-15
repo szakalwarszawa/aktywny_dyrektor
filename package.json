@@ -54,7 +54,7 @@
         "tablesorter": "^2.31.1",
         "tag-it": "^2.0.0",
         "webpack-jquery-ui": "^2.0.1",
-        "yarn": "^1.17.3"
+        "yarn": "^1.22.0"
     },
     "browserslist": {
         "production": [
