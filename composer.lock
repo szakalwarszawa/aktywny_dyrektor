@@ -1,7 +1,7 @@
 {
     "_readme": [
         "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
+        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
     "content-hash": "3f6f18c813ea6fcc67bee67837ea7d2e",
@@ -137,7 +137,7 @@
             "time": "2018-03-31T10:39:30+00:00"
         },
         {
-            "name": "beberlei/DoctrineExtensions",
+            "name": "beberlei/doctrineextensions",
             "version": "v1.1.5",
             "source": {
                 "type": "git",
@@ -837,6 +837,7 @@
                 "cache",
                 "caching"
             ],
+            "abandoned": true,
             "time": "2018-11-09T06:25:35+00:00"
         },
         {
@@ -1460,6 +1461,7 @@
             "keywords": [
                 "reflection"
             ],
+            "abandoned": "roave/better-reflection",
             "time": "2018-06-14T14:45:07+00:00"
         },
         {
@@ -2328,7 +2330,7 @@
             "time": "2016-11-11T18:43:20+00:00"
         },
         {
-            "name": "liuggio/ExcelBundle",
+            "name": "liuggio/excelbundle",
             "version": "v2.1.0",
             "source": {
                 "type": "git",
@@ -2821,12 +2823,12 @@
             "version": "v2.0.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/whiteoctober/Pagerfanta.git",
+                "url": "https://github.com/BabDev/Pagerfanta.git",
                 "reference": "15770d9d7f6e8e07af568aed104a51f869591e73"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/Pagerfanta/zipball/15770d9d7f6e8e07af568aed104a51f869591e73",
+                "url": "https://api.github.com/repos/BabDev/Pagerfanta/zipball/15770d9d7f6e8e07af568aed104a51f869591e73",
                 "reference": "15770d9d7f6e8e07af568aed104a51f869591e73",
                 "shasum": ""
             },
@@ -2882,6 +2884,12 @@
                 "pagination",
                 "paginator",
                 "paging"
+            ],
+            "funding": [
+                {
+                    "url": "https://github.com/mbabker",
+                    "type": "github"
+                }
             ],
             "time": "2018-05-17T09:23:52+00:00"
         },
@@ -3507,6 +3515,7 @@
                 "configuration",
                 "distribution"
             ],
+            "abandoned": true,
             "time": "2018-10-25T15:26:23+00:00"
         },
         {
@@ -3631,6 +3640,7 @@
                 }
             ],
             "description": "This bundle generates code for you",
+            "abandoned": "symfony/maker-bundle",
             "time": "2017-12-07T15:36:41+00:00"
         },
         {
@@ -3721,6 +3731,7 @@
                 }
             ],
             "description": "A security checker for your composer.lock",
+            "abandoned": "https://github.com/fabpot/local-php-security-checker",
             "time": "2018-12-10T06:08:43+00:00"
         },
         {
@@ -3840,6 +3851,7 @@
                 "mail",
                 "mailer"
             ],
+            "abandoned": "symfony/mailer",
             "time": "2018-07-31T09:26:32+00:00"
         },
         {
@@ -4065,12 +4077,12 @@
                 }
             },
             "autoload": {
-                "psr-4": {
-                    "Symfony\\Polyfill\\Apcu\\": ""
-                },
                 "files": [
                     "bootstrap.php"
-                ]
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Apcu\\": ""
+                }
             },
             "notification-url": "https://packagist.org/downloads/",
             "license": [
@@ -4099,20 +4111,23 @@
         },
         {
             "name": "symfony/polyfill-ctype",
-            "version": "v1.10.0",
+            "version": "v1.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-ctype.git",
-                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19"
+                "reference": "30885182c981ab175d4d034db0f6f469898070ab"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/e3d826245268269cd66f8326bd8bc066687b4a19",
-                "reference": "e3d826245268269cd66f8326bd8bc066687b4a19",
+                "url": "https://api.github.com/repos/symfony/polyfill-ctype/zipball/30885182c981ab175d4d034db0f6f469898070ab",
+                "reference": "30885182c981ab175d4d034db0f6f469898070ab",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=7.1"
+            },
+            "provide": {
+                "ext-ctype": "*"
             },
             "suggest": {
                 "ext-ctype": "For best performance"
@@ -4120,7 +4135,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9-dev"
+                    "dev-main": "1.23-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -4137,12 +4156,12 @@
             ],
             "authors": [
                 {
-                    "name": "Symfony Community",
-                    "homepage": "https://symfony.com/contributors"
-                },
-                {
                     "name": "Gert de Pagter",
                     "email": "BackEndTea@gmail.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
                 }
             ],
             "description": "Symfony polyfill for ctype functions",
@@ -4153,7 +4172,21 @@
                 "polyfill",
                 "portable"
             ],
-            "time": "2018-08-06T14:22:27+00:00"
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-10-20T20:35:02+00:00"
         },
         {
             "name": "symfony/polyfill-intl-icu",
@@ -4215,20 +4248,23 @@
         },
         {
             "name": "symfony/polyfill-mbstring",
-            "version": "v1.10.0",
+            "version": "v1.24.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/polyfill-mbstring.git",
-                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494"
+                "reference": "0abb51d2f102e00a4eefcf46ba7fec406d245825"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/c79c051f5b3a46be09205c73b80b346e4153e494",
-                "reference": "c79c051f5b3a46be09205c73b80b346e4153e494",
+                "url": "https://api.github.com/repos/symfony/polyfill-mbstring/zipball/0abb51d2f102e00a4eefcf46ba7fec406d245825",
+                "reference": "0abb51d2f102e00a4eefcf46ba7fec406d245825",
                 "shasum": ""
             },
             "require": {
-                "php": ">=5.3.3"
+                "php": ">=7.1"
+            },
+            "provide": {
+                "ext-mbstring": "*"
             },
             "suggest": {
                 "ext-mbstring": "For best performance"
@@ -4236,7 +4272,11 @@
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "1.9-dev"
+                    "dev-main": "1.23-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
                 }
             },
             "autoload": {
@@ -4270,7 +4310,21 @@
                 "portable",
                 "shim"
             ],
-            "time": "2018-09-21T13:07:52+00:00"
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-11-30T18:21:41+00:00"
         },
         {
             "name": "symfony/polyfill-php56",
@@ -4388,6 +4442,79 @@
             "time": "2018-09-21T06:26:08+00:00"
         },
         {
+            "name": "symfony/polyfill-php72",
+            "version": "v1.24.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/symfony/polyfill-php72.git",
+                "reference": "9a142215a36a3888e30d0a9eeea9766764e96976"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/symfony/polyfill-php72/zipball/9a142215a36a3888e30d0a9eeea9766764e96976",
+                "reference": "9a142215a36a3888e30d0a9eeea9766764e96976",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.1"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-main": "1.23-dev"
+                },
+                "thanks": {
+                    "name": "symfony/polyfill",
+                    "url": "https://github.com/symfony/polyfill"
+                }
+            },
+            "autoload": {
+                "files": [
+                    "bootstrap.php"
+                ],
+                "psr-4": {
+                    "Symfony\\Polyfill\\Php72\\": ""
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Nicolas Grekas",
+                    "email": "p@tchwork.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://symfony.com/contributors"
+                }
+            ],
+            "description": "Symfony polyfill backporting some PHP 7.2+ features to lower PHP versions",
+            "homepage": "https://symfony.com",
+            "keywords": [
+                "compatibility",
+                "polyfill",
+                "portable",
+                "shim"
+            ],
+            "funding": [
+                {
+                    "url": "https://symfony.com/sponsor",
+                    "type": "custom"
+                },
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/symfony/symfony",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2021-05-27T09:17:38+00:00"
+        },
+        {
             "name": "symfony/polyfill-util",
             "version": "v1.10.0",
             "source": {
@@ -4496,6 +4623,7 @@
             ],
             "description": "Symfony SwiftmailerBundle",
             "homepage": "http://symfony.com",
+            "abandoned": "symfony/mailer",
             "time": "2017-10-19T01:06:41+00:00"
         },
         {
@@ -4618,12 +4746,12 @@
             },
             "autoload": {
                 "psr-4": {
-                    "Symfony\\Bridge\\Doctrine\\": "src/Symfony/Bridge/Doctrine/",
-                    "Symfony\\Bridge\\Monolog\\": "src/Symfony/Bridge/Monolog/",
-                    "Symfony\\Bridge\\ProxyManager\\": "src/Symfony/Bridge/ProxyManager/",
-                    "Symfony\\Bridge\\Twig\\": "src/Symfony/Bridge/Twig/",
                     "Symfony\\Bundle\\": "src/Symfony/Bundle/",
-                    "Symfony\\Component\\": "src/Symfony/Component/"
+                    "Symfony\\Component\\": "src/Symfony/Component/",
+                    "Symfony\\Bridge\\Twig\\": "src/Symfony/Bridge/Twig/",
+                    "Symfony\\Bridge\\Monolog\\": "src/Symfony/Bridge/Monolog/",
+                    "Symfony\\Bridge\\Doctrine\\": "src/Symfony/Bridge/Doctrine/",
+                    "Symfony\\Bridge\\ProxyManager\\": "src/Symfony/Bridge/ProxyManager/"
                 },
                 "classmap": [
                     "src/Symfony/Component/Intl/Resources/stubs"
@@ -4712,12 +4840,12 @@
             "version": "v5.8.9",
             "source": {
                 "type": "git",
-                "url": "https://github.com/tightenco/collect.git",
+                "url": "https://github.com/tighten/collect.git",
                 "reference": "1e4120c90b3536a9ebd080d50ecaae7b75719054"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/tightenco/collect/zipball/1e4120c90b3536a9ebd080d50ecaae7b75719054",
+                "url": "https://api.github.com/repos/tighten/collect/zipball/1e4120c90b3536a9ebd080d50ecaae7b75719054",
                 "reference": "1e4120c90b3536a9ebd080d50ecaae7b75719054",
                 "shasum": ""
             },
@@ -4810,36 +4938,37 @@
                 "i18n",
                 "text"
             ],
+            "abandoned": true,
             "time": "2018-12-05T18:34:18+00:00"
         },
         {
             "name": "twig/twig",
-            "version": "v2.5.0",
+            "version": "v2.14.11",
             "source": {
                 "type": "git",
                 "url": "https://github.com/twigphp/Twig.git",
-                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323"
+                "reference": "66baa66f29ee30e487e05f1679903e36eb01d727"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/6a5f676b77a90823c2d4eaf76137b771adf31323",
-                "reference": "6a5f676b77a90823c2d4eaf76137b771adf31323",
+                "url": "https://api.github.com/repos/twigphp/Twig/zipball/66baa66f29ee30e487e05f1679903e36eb01d727",
+                "reference": "66baa66f29ee30e487e05f1679903e36eb01d727",
                 "shasum": ""
             },
             "require": {
-                "php": "^7.0",
+                "php": ">=7.1.3",
                 "symfony/polyfill-ctype": "^1.8",
-                "symfony/polyfill-mbstring": "~1.0"
+                "symfony/polyfill-mbstring": "^1.3",
+                "symfony/polyfill-php72": "^1.8"
             },
             "require-dev": {
                 "psr/container": "^1.0",
-                "symfony/debug": "^2.7",
-                "symfony/phpunit-bridge": "^3.3"
+                "symfony/phpunit-bridge": "^4.4.9|^5.0.9|^6.0"
             },
             "type": "library",
             "extra": {
                 "branch-alias": {
-                    "dev-master": "2.5-dev"
+                    "dev-master": "2.14-dev"
                 }
             },
             "autoload": {
@@ -4862,14 +4991,13 @@
                     "role": "Lead Developer"
                 },
                 {
+                    "name": "Twig Team",
+                    "role": "Contributors"
+                },
+                {
                     "name": "Armin Ronacher",
                     "email": "armin.ronacher@active-4.com",
                     "role": "Project Founder"
-                },
-                {
-                    "name": "Twig Team",
-                    "homepage": "https://twig.symfony.com/contributors",
-                    "role": "Contributors"
                 }
             ],
             "description": "Twig, the flexible, fast, and secure template language for PHP",
@@ -4877,29 +5005,42 @@
             "keywords": [
                 "templating"
             ],
-            "time": "2018-07-13T07:18:09+00:00"
+            "funding": [
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/twig/twig",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2022-02-04T06:57:25+00:00"
         },
         {
             "name": "white-october/pagerfanta-bundle",
             "version": "dev-master",
             "source": {
                 "type": "git",
-                "url": "https://github.com/whiteoctober/WhiteOctoberPagerfantaBundle.git",
-                "reference": "3a2f39fecde9b8aefe7c9cbd0baf06bc72ef3e5e"
+                "url": "https://github.com/sampart/WhiteOctoberPagerfantaBundle.git",
+                "reference": "24a9ba537b13fc10149ee9a6c359e22c07c8d8ea"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/whiteoctober/WhiteOctoberPagerfantaBundle/zipball/3a2f39fecde9b8aefe7c9cbd0baf06bc72ef3e5e",
-                "reference": "3a2f39fecde9b8aefe7c9cbd0baf06bc72ef3e5e",
+                "url": "https://api.github.com/repos/sampart/WhiteOctoberPagerfantaBundle/zipball/24a9ba537b13fc10149ee9a6c359e22c07c8d8ea",
+                "reference": "24a9ba537b13fc10149ee9a6c359e22c07c8d8ea",
                 "shasum": ""
             },
             "require": {
                 "pagerfanta/pagerfanta": "^1.1.0|^2.0.0",
-                "php": ">=5.3",
+                "php": ">=5.3.3",
                 "symfony/framework-bundle": "~2.3|~3.0|~4.0",
                 "symfony/property-access": "~2.3|~3.0|~4.0",
                 "symfony/translation": "~2.3|~3.0|~4.0",
                 "symfony/twig-bundle": "~2.3|~3.0|~4.0"
+            },
+            "conflict": {
+                "twig/twig": "<1.34|>=2.0,<2.4"
             },
             "require-dev": {
                 "phpunit/phpunit": "~3.7|~4.0|^5.0",
@@ -4935,7 +5076,8 @@
                 "page",
                 "paging"
             ],
-            "time": "2018-12-05T16:58:18+00:00"
+            "abandoned": "babdev/pagerfanta-bundle",
+            "time": "2020-11-15T19:32:53+00:00"
         },
         {
             "name": "willdurand/jsonp-callback-validator",
@@ -5080,6 +5222,7 @@
                 "code",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-code",
             "time": "2018-08-13T20:36:59+00:00"
         },
         {
@@ -5134,6 +5277,7 @@
                 "events",
                 "zf2"
             ],
+            "abandoned": "laminas/laminas-eventmanager",
             "time": "2018-04-25T15:33:34+00:00"
         }
     ],
@@ -5266,5 +5410,6 @@
     "platform": {
         "php": "^5.5.9|>=7.0.8"
     },
-    "platform-dev": []
+    "platform-dev": [],
+    "plugin-api-version": "1.1.0"
 }
